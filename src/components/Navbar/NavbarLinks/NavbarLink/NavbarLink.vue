@@ -17,18 +17,12 @@
     </li>
 </template>
 
-<script>
+<script lang="ts" setup>
 import DropDown from '../../../Dropdown/DropDown.vue'
 
-export default {
-    name: 'NavbarLink',
-    components: {
-        DropDown,
-    },
-    props: {
-        navbarItem: Object,
-    },
-}
+const props = defineProps({
+    navbarItem: { type: Object, default: {} },
+})
 </script>
 
 <style scoped>

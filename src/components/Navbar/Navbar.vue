@@ -23,7 +23,7 @@
     </nav>
 </template>
 
-<script>
+<script lang="ts" setup>
 import QuickButton from './QuickButton/QuickButton.vue'
 import User from './User/User.vue'
 import NavbarLinks from './NavbarLinks/NavbarLinks.vue'
@@ -33,30 +33,13 @@ import userDropdownItems from './UserData.json'
 
 import Logo from '../Logo/Logo.vue'
 import Hamburger from './Hamburger/Hamburger.vue'
+import { ref } from '@vue/reactivity'
 
-export default {
-    name: 'Navbar',
-    components: {
-        Logo,
-        Hamburger,
-        QuickButton,
-        User,
-        NavbarLinks,
-    },
-    data() {
-        return {
-            navbarLogo: 'logo',
-            minWidthToShowSidebar: 992,
-            navbarData: navbarData,
-            userDropdownItems: userDropdownItems,
-            isUserSignedIn: true,
-        }
-    },
-    methods: {
-        showSidebar() {
-            return window.innerWidth < this.minWidthToShowSidebar ? true : false
-        },
-    },
+const navbarLogo = ref('logo')
+const minWidthToShowSidebar = ref(992)
+const isUserSignedIn = ref(true)
+function showSidebar() {
+    return window.innerWidth < minWidthToShowSidebar.value ? true : false
 }
 </script>
 

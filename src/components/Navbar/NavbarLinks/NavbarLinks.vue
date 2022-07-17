@@ -9,18 +9,12 @@
     </ul>
 </template>
 
-<script>
+<script lang="ts" setup>
 import NavbarLink from './NavbarLink/NavbarLink.vue'
 
-export default {
-    name: 'NavbarLinks',
-    components: {
-        NavbarLink,
-    },
-    props: {
-        navbarData: Array,
-    },
-}
+const props = defineProps({
+    navbarData: { type: Array, default: [] },
+})
 </script>
 
 <style scoped>
