@@ -1,7 +1,7 @@
 <template>
     <nav class="navbar navbar-expand-lg navbar-dark header">
         <Logo :cvlogo="navbarLogo" />
-        <Hamburger v-if="showSidebar()" />
+        <Hamburger v-if="showSidebar" />
 
         <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse">
             <NavbarLinks :navbar-data="navbarData" />
@@ -34,12 +34,20 @@ import userDropdownItems from './UserData.json'
 import Logo from '../Logo/Logo.vue'
 import Hamburger from './Hamburger/Hamburger.vue'
 import { ref } from '@vue/reactivity'
+import { onMounted } from '@vue/runtime-core'
 
 const navbarLogo = ref('logo')
 const minWidthToShowSidebar = ref(992)
-const isUserSignedIn = ref(true)
-function showSidebar() {
-    return window.innerWidth < minWidthToShowSidebar.value ? true : false
+const isUserSignedIn = ref(false)
+const showSidebar = ref(false)
+showSidebar.value =
+    window.innerWidth < minWidthToShowSidebar.value ? true : false
+onMounted(() => {
+    window.addEventListener('resize', checkShowSidebar)
+})
+function checkShowSidebar() {
+    showSidebar.value =
+        window.innerWidth < minWidthToShowSidebar.value ? true : false
 }
 </script>
 
