@@ -50,5 +50,5 @@ function checkShowSidebar() {
 </script>
 
 <style scoped>
-@import './Navbar.css';
+/* @import './Navbar.css'; */
 </style>
