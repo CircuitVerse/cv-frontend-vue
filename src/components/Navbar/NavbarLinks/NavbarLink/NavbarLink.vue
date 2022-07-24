@@ -7,11 +7,14 @@
             role="button"
             aria-haspopup="true"
             aria-expanded="false"
-            >{{ navbarItem.text }}<span></span>
+        >
+            {{ $t('simulator.nav.' + navbarItem.text + '.heading') }}
+            <span></span>
         </a>
 
         <DropDown
             :list-items="navbarItem.dropdownItems"
+            :drop-down-header="navbarItem.text"
             drop-down-type="navLink"
         />
     </li>

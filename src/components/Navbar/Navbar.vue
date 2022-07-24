@@ -12,15 +12,13 @@
             >
                 Untitled
             </span>
-
-            <QuickButton />
-
             <User
                 :is-user-signed-in="isUserSignedIn"
                 :user-data="userDropdownItems"
             />
         </div>
     </nav>
+    <QuickButton />
 </template>
 
 <script lang="ts" setup>
