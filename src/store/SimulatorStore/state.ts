@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 
 export interface State {
     title: string
+    circuit_list: []
 }
 
 export const useState = defineStore({
@@ -10,6 +11,7 @@ export const useState = defineStore({
     state: (): State => {
         return {
             title: 'Welcome to CircuitVerse Simulator',
+            circuit_list: [],
         }
     },
 })

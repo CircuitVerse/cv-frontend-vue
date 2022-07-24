@@ -14,7 +14,7 @@ import { setupUI } from './ux'
 import startMainListeners from './listeners'
 import startEmbedListeners from './embedListeners'
 import './embed'
-import { newCircuit } from './circuit'
+import { newCircuit, scopeList } from './circuit'
 import load from './data/load'
 import save from './data/save'
 import { showTourGuide } from './tutorials'
@@ -29,6 +29,7 @@ import { setupCodeMirrorEnvironment } from './Verilog2CV'
 import { keyBinder } from './hotkey_binder/keyBinder'
 import '../vendor/jquery-ui.min.css'
 import '../vendor/jquery-ui.min'
+import circuitList from '#/main'
 
 /**
  * to resize window and setup things it

@@ -5,6 +5,7 @@ export const useActions = defineStore('simulatorStore.actions', () => {
     const state = useState()
 
     function showTitle(): void {
+        state.title += '####'
         console.log(state.title)
     }
 
