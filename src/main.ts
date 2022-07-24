@@ -25,7 +25,3 @@ createApp(App)
     .use(router)
     .use(i18n)
     .mount('#app')
-
-import { SimulatorStore } from './store/SimulatorStore/SimulatorStore'
-var circuitList = SimulatorStore
-export default circuitList

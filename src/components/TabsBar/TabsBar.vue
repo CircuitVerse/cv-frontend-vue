@@ -16,7 +16,7 @@
             <span
                 id="scope.id"
                 class="tabsCloseButton"
-                @click="closeCircuit($event, item.id)"
+                @click="closeCircuit($event, item)"
             >
                 x
             </span>
@@ -28,19 +28,23 @@
 </template>
 
 <script lang="ts" setup>
-import circuitList from '#/main'
-import { deleteCurrentCircuit, switchCircuit } from '#/simulator/src/circuit'
 import { truncateString } from '#/simulator/src/utils'
 import { ref } from '@vue/reactivity'
 import { onMounted } from '@vue/runtime-core'
-
+import { deleteCurrentCircuit, switchCircuit } from '#/simulator/src/circuit'
+import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
 const tabList = ref([])
 onMounted(() => {
-    tabList.value = circuitList().circuit_list
+    tabList.value = SimulatorStore().circuit_list
 })
 
-function closeCircuit(e, circuitId) {
+function closeCircuit(e, circuitItem) {
     e.stopPropagation()
-    deleteCurrentCircuit(circuitId)
+    console.log(circuitItem)
+    var index = tabList.value.indexOf(circuitItem)
+    if (index !== -1) {
+        tabList.value.splice(index, 1)
+    }
+    deleteCurrentCircuit(circuitItem.id)
 }
 </script>

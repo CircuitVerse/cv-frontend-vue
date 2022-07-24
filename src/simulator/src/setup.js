@@ -29,7 +29,6 @@ import { setupCodeMirrorEnvironment } from './Verilog2CV'
 import { keyBinder } from './hotkey_binder/keyBinder'
 import '../vendor/jquery-ui.min.css'
 import '../vendor/jquery-ui.min'
-import circuitList from '#/main'
 
 /**
  * to resize window and setup things it

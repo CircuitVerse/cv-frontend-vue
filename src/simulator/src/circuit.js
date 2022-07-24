@@ -37,7 +37,7 @@ import { changeClockEnable } from './sequential'
 import { changeInputSize } from './modules'
 import { verilogModeGet, verilogModeSet } from './Verilog2CV'
 import { updateTestbenchUI } from './testbench'
-import circuitList from '#/main'
+import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
 
 export const circuitProperty = {
     toggleLayoutMode,
@@ -172,7 +172,7 @@ export function createNewCircuitScope() {
  * @category circuit
  */
 export function newCircuit(name, id, isVerilog = false, isVerilogMain = false) {
-    console.log(circuitList().circuit_list)
+    console.log(SimulatorStore().circuit_list)
     if (layoutModeGet()) {
         toggleLayoutMode()
     }
@@ -189,7 +189,7 @@ export function newCircuit(name, id, isVerilog = false, isVerilogMain = false) {
         name: scope.name,
         id: scope.id,
     }
-    circuitList().circuit_list.push(currCircuit)
+    SimulatorStore().circuit_list.push(currCircuit)
     if (isVerilog) {
         scope.verilogMetadata.isVerilogCircuit = true
         scope.verilogMetadata.isMainCircuit = isVerilogMain
