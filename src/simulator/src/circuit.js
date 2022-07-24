@@ -198,47 +198,40 @@ export function newCircuit(name, id, isVerilog = false, isVerilogMain = false) {
     $('.circuits').removeClass('current')
     if (!isVerilog || isVerilogMain) {
         if (embed) {
-            var html = `<div style='' class='circuits toolbarButton current' draggable='true' id='${
-                scope.id
-            }'><span class='circuitName noSelect'>${truncateString(
-                name,
-                18
-            )}</span></div>`
-            $('#tabsBar').append(html)
-            $('#tabsBar').addClass('embed-tabs')
+            // added calss - embed-tab using vue logic
+            // var html = `<div style='' class='circuits toolbarButton current' draggable='true' id='${
+            //     scope.id
+            // }'><span class='circuitName noSelect'>${truncateString(
+            //     name,
+            //     18
+            // )}</span></div>`
+            // $('#tabsBar').append(html)
+            // $('#tabsBar').addClass('embed-tabs')
         } else {
-            var html = `<div style='' class='circuits toolbarButton current' draggable='true' id='${
-                scope.id
-            }'><span class='circuitName noSelect'>${truncateString(
-                name,
-                18
-            )}</span><span class ='tabsCloseButton' id='${
-                scope.id
-            }'  >x</span></div>`
-            $('#tabsBar').children().last().before(html)
+            // logic implemented in vue
         }
 
         // Remove listeners
-        $('.circuits').off('click')
+        //$('.circuits').off('click')
         $('.circuitName').off('click')
-        $('.tabsCloseButton').off('click')
+        //$('.tabsCloseButton').off('click')
 
-        // Add listeners
-        $('.circuits').on('click', function () {
-            switchCircuit(this.id)
-        })
+        // switch circuit function moved inside vue component
 
         $('.circuitName').on('click', (e) => {
             simulationArea.lastSelected = globalScope.root
             setTimeout(() => {
+                // here link with the properties panel
                 document.getElementById('circname').select()
             }, 100)
         })
 
-        $('.tabsCloseButton').on('click', function (e) {
-            e.stopPropagation()
-            deleteCurrentCircuit(this.id)
-        })
+        // moved inside vue - component
+        // $('.tabsCloseButton').on('click', function (e) {
+        //     e.stopPropagation()
+        //     deleteCurrentCircuit(this.id)
+        // })
+
         if (!embed) {
             showProperties(scope.root)
         }
