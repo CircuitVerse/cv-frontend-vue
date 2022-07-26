@@ -172,7 +172,6 @@ export function createNewCircuitScope() {
  * @category circuit
  */
 export function newCircuit(name, id, isVerilog = false, isVerilogMain = false) {
-    console.log(SimulatorStore().circuit_list)
     if (layoutModeGet()) {
         toggleLayoutMode()
     }

@@ -1,7 +1,7 @@
 <template>
     <div id="tabsBar" class="noSelect pointerCursor">
         <draggable
-            v-model="tabList"
+            v-model="SimulatorStore().circuit_list"
             class="list-group"
             tag="transition-group"
             :component-data="{
@@ -49,24 +49,20 @@ import { ref } from '@vue/reactivity'
 import { computed, onMounted } from '@vue/runtime-core'
 import { deleteCurrentCircuit, switchCircuit } from '#/simulator/src/circuit'
 import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
-const tabList = ref([])
+
 const drag = ref(false)
-onMounted(() => {
-    tabList.value = SimulatorStore().circuit_list
-})
 
 function closeCircuit(e, circuitItem) {
     e.stopPropagation()
     console.log(circuitItem)
-    var index = tabList.value.indexOf(circuitItem)
+    var index = SimulatorStore().circuit_list.indexOf(circuitItem)
     if (index !== -1) {
-        tabList.value.splice(index, 1)
+        SimulatorStore().circuit_list.splice(index, 1)
     }
     deleteCurrentCircuit(circuitItem.id)
 }
 
 function dragOptions() {
-    console.log('drag options')
     return {
         animation: 200,
         group: 'description',
