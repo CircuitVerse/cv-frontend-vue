@@ -41,6 +41,11 @@
             &#43;
         </button>
     </div>
+    <MessageBox
+        v-model="showMessage"
+        :message-text="messageVal"
+        @hide-message="showMessage = false"
+    />
 </template>
 
 <script lang="ts" setup>
@@ -50,12 +55,23 @@ import { ref } from '@vue/reactivity'
 import { computed, onMounted } from '@vue/runtime-core'
 import { deleteCurrentCircuit, switchCircuit } from '#/simulator/src/circuit'
 import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
+import MessageBox from '#/components/MessageBox/messageBox.vue'
 
 const drag = ref(false)
 const updateCount = ref(0)
+const showMessage = ref(false)
+const messageVal = ref('')
 
 function closeCircuit(e, circuitItem) {
     e.stopPropagation()
+
+    // check circuit count
+    if (SimulatorStore().circuit_list.length <= 1) {
+        showMessage.value = true
+        messageVal.value = 'Not Enough Circuits Available'
+        return
+    }
+
     console.log(circuitItem)
     var index = SimulatorStore().circuit_list.indexOf(circuitItem)
     if (index !== -1) {
