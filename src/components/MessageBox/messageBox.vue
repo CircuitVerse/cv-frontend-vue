@@ -10,7 +10,9 @@
                     :key="buttonItem.text"
                     class="messageBtn"
                     block
-                    @click="$emit('buttonClick', buttonItem.emitOption)"
+                    @click="
+                        $emit('buttonClick', buttonItem.emitOption, circuitItem)
+                    "
                 >
                     {{ buttonItem.text }}
                 </v-btn>
@@ -24,6 +26,7 @@ const props = defineProps({
     messageText: { type: String, default: '' },
     isPersistent: { type: Boolean, default: false },
     buttonList: { type: Array, default: undefined },
+    circuitItem: { type: Object, default: undefined },
 })
 const emit = defineEmits(['buttonClick'])
 </script>

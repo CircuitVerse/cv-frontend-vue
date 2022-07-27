@@ -43,10 +43,14 @@
     </div>
     <MessageBox
         v-model="dispMessage"
+        :circuit-item="circuitToBeDeleted"
         :button-list="buttonArr"
         :is-persistent="persistentShow"
         :message-text="messageVal"
-        @button-click="(x) => updateOption(x)"
+        @button-click="
+            (selectedOption, circuitItem) =>
+                dialogBoxConformation(selectedOption, circuitItem)
+        "
     />
 </template>
 
@@ -69,7 +73,7 @@ const dispMessage = ref(false)
 const persistentShow = ref(false)
 const messageVal = ref('')
 const buttonArr = ref([{}])
-const deleteConfirmation = ref('undecided')
+const circuitToBeDeleted = ref({})
 
 async function closeCircuit(e, circuitItem) {
     e.stopPropagation()
@@ -122,29 +126,30 @@ async function closeCircuit(e, circuitItem) {
             emitOption: 'cancelDeletion',
         },
     ]
+    circuitToBeDeleted.value = circuitItem
     messageVal.value = `Are you sure want to close: ${circuitItem.name}\nThis cannot be undone.`
-    // while (deleteConfirmation.value == 'undecided') {
-    //     console.log('still deciding')
-    // }
-    // const confirmation = confirm(
-    //     `Are you sure want to close: ${circuitItem.name}\nThis cannot be undone.`
-    // )
-    console.log(deleteConfirmation.value)
-    if (deleteConfirmation.value == 'true') {
-        var index = SimulatorStore().circuit_list.indexOf(circuitItem)
-        if (index !== -1) {
-            SimulatorStore().circuit_list.splice(index, 1)
-        }
-        deleteCurrentCircuit(circuitItem.id)
-        showMessage('Circuit was successfully closed')
-    } else {
+    console.log(circuitItem)
+}
+
+function deleteCircuit(circuitItem) {
+    var index = SimulatorStore().circuit_list.indexOf(circuitItem)
+    if (index !== -1) {
+        SimulatorStore().circuit_list.splice(index, 1)
+    }
+    deleteCurrentCircuit(circuitItem.id)
+    showMessage('Circuit was successfully closed')
+    updateCount.value++
+}
+
+function dialogBoxConformation(selectedOption, circuitItem) {
+    dispMessage.value = false
+    console.log(selectedOption)
+    if (selectedOption == 'confirmDeletion') {
+        deleteCircuit(circuitItem)
+    }
+    if (selectedOption == 'cancelDeletion') {
         showMessage('Circuit was not closed')
     }
-    deleteConfirmation.value = 'false'
-
-    console.log(circuitItem)
-
-    updateCount.value++
 }
 
 function dragOptions() {
@@ -153,21 +158,6 @@ function dragOptions() {
         group: 'description',
         disabled: false,
         ghostClass: 'ghost',
-    }
-}
-
-function updateOption(x) {
-    console.log(x)
-    if (x == 'dispMessage') {
-        dispMessage.value = false
-    }
-    if (x == 'confirmDeletion') {
-        deleteConfirmation.value = 'true'
-        dispMessage.value = false
-    }
-    if (x == 'cancelDeletion') {
-        deleteConfirmation.value = 'false'
-        dispMessage.value = false
     }
 }
 </script>
