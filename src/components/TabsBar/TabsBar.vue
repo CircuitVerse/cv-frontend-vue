@@ -43,6 +43,8 @@
     </div>
     <MessageBox
         v-model="showMessage"
+        :button-list="buttonArr"
+        :is-persistent="persistentShow"
         :message-text="messageVal"
         @hide-message="showMessage = false"
     />
@@ -53,14 +55,20 @@ import draggable from 'vuedraggable'
 import { truncateString } from '#/simulator/src/utils'
 import { ref } from '@vue/reactivity'
 import { computed, onMounted } from '@vue/runtime-core'
-import { deleteCurrentCircuit, switchCircuit } from '#/simulator/src/circuit'
+import {
+    deleteCurrentCircuit,
+    getDependenciesList,
+    switchCircuit,
+} from '#/simulator/src/circuit'
 import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
 import MessageBox from '#/components/MessageBox/messageBox.vue'
 
 const drag = ref(false)
 const updateCount = ref(0)
 const showMessage = ref(false)
+const persistentShow = ref(false)
 const messageVal = ref('')
+const buttonArr = ref([''])
 
 function closeCircuit(e, circuitItem) {
     e.stopPropagation()
@@ -68,8 +76,23 @@ function closeCircuit(e, circuitItem) {
     // check circuit count
     if (SimulatorStore().circuit_list.length <= 1) {
         showMessage.value = true
+        persistentShow.value = false
         messageVal.value =
             'At least 2 circuits need to be there in order to delete a circuit.'
+        buttonArr.value = ['close']
+        return
+    }
+    showMessage.value = false
+    persistentShow.value = false
+    buttonArr.value = []
+
+    let dependencies = getDependenciesList(circuitItem.id)
+    if (dependencies) {
+        dependencies = `\nThe following circuits are depending on '${circuitItem.name}': ${dependencies}\nDelete subcircuits of ${circuitItem.name} before trying to delete ${circuitItem.name}`
+        showMessage.value = true
+        persistentShow.value = true
+        messageVal.value = dependencies
+        buttonArr.value = ['OK']
         return
     }
 

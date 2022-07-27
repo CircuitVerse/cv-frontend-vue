@@ -101,14 +101,7 @@ export function switchCircuit(id) {
     updateRestrictedElementsList()
 }
 
-/**
- * Deletes the current circuit
- * Ensures that at least one circuit is there
- * Ensures that no circuit depends on the current circuit
- * Switched to a random circuit
- * @category circuit
- */
-export function deleteCurrentCircuit(scopeId = globalScope.id) {
+export function getDependenciesList(scopeId) {
     let scope = scopeList[scopeId]
     if (scope == undefined) scope = scopeList[globalScope.id]
 
@@ -122,11 +115,21 @@ export function deleteCurrentCircuit(scopeId = globalScope.id) {
             }
         }
     }
-    if (dependencies) {
-        dependencies = `\nThe following circuits are depending on '${scope.name}': ${dependencies}\nDelete subcircuits of ${scope.name} before trying to delete ${scope.name}`
-        alert(dependencies)
-        return
-    }
+    return dependencies
+}
+
+/**
+ * Deletes the current circuit
+ * Ensures that at least one circuit is there
+ * Ensures that no circuit depends on the current circuit
+ * Switched to a random circuit
+ * @category circuit
+ */
+export function deleteCurrentCircuit(scopeId = globalScope.id) {
+    let scope = scopeList[scopeId]
+    if (scope == undefined) scope = scopeList[globalScope.id]
+
+    
 
     const confirmation = confirm(
         `Are you sure want to close: ${scope.name}\nThis cannot be undone.`

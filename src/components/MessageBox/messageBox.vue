@@ -1,13 +1,19 @@
 <template>
-    <v-dialog>
+    <v-dialog :persistent="isPersistent">
         <v-card class="circuitDeletionMessageBox">
             <v-card-text>
                 {{ messageText }}
             </v-card-text>
             <v-card-actions>
-                <v-btn class="messageBtn" block @click="$emit('hideMessage')"
-                    >Close</v-btn
+                <v-btn
+                    v-for="buttonItem in buttonList"
+                    :key="buttonItem"
+                    class="messageBtn"
+                    block
+                    @click="$emit('hideMessage')"
                 >
+                    {{ buttonItem }}
+                </v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -16,6 +22,8 @@
 <script lang="ts" setup>
 const props = defineProps({
     messageText: { type: String, default: '' },
+    isPersistent: { type: Boolean, default: false },
+    buttonList: { type: Array, default: [''] },
 })
 const emit = defineEmits(['hideMessage'])
 </script>
@@ -33,12 +41,20 @@ const emit = defineEmits(['hideMessage'])
 }
 
 .messageBtn {
-    width: 50px;
+    width: fit-content;
     border: 1px solid #c5c5c5;
-    padding: 5px 0;
+    padding: 5px 5px;
 }
 .messageBtn:hover {
     background: #c5c5c5;
     color: black;
+}
+
+.v-card-actions {
+    width: fit-content;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: auto;
 }
 </style>
