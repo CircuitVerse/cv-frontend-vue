@@ -46,7 +46,7 @@
         :button-list="buttonArr"
         :is-persistent="persistentShow"
         :message-text="messageVal"
-        @hide-message="dispMessage = false"
+        @button-click="(x) => updateOption(x)"
     />
 </template>
 
@@ -68,9 +68,10 @@ const updateCount = ref(0)
 const dispMessage = ref(false)
 const persistentShow = ref(false)
 const messageVal = ref('')
-const buttonArr = ref([''])
+const buttonArr = ref([{}])
+const deleteConfirmation = ref('undecided')
 
-function closeCircuit(e, circuitItem) {
+async function closeCircuit(e, circuitItem) {
     e.stopPropagation()
 
     // check circuit count
@@ -79,7 +80,12 @@ function closeCircuit(e, circuitItem) {
         persistentShow.value = false
         messageVal.value =
             'At least 2 circuits need to be there in order to delete a circuit.'
-        buttonArr.value = ['close']
+        buttonArr.value = [
+            {
+                text: 'Close',
+                emitOption: 'dispMessage',
+            },
+        ]
         return
     }
     dispMessage.value = false
@@ -92,15 +98,39 @@ function closeCircuit(e, circuitItem) {
         dispMessage.value = true
         persistentShow.value = true
         messageVal.value = dependencies
-        buttonArr.value = ['OK']
+        buttonArr.value = [
+            {
+                text: 'OK',
+                emitOption: 'dispMessage',
+            },
+        ]
         return
     }
+    dispMessage.value = false
+    persistentShow.value = false
+    buttonArr.value = []
 
-    const confirmation = confirm(
-        `Are you sure want to close: ${circuitItem.name}\nThis cannot be undone.`
-    )
-
-    if (confirmation) {
+    dispMessage.value = true
+    persistentShow.value = true
+    buttonArr.value = [
+        {
+            text: 'Continue',
+            emitOption: 'confirmDeletion',
+        },
+        {
+            text: 'Cancel',
+            emitOption: 'cancelDeletion',
+        },
+    ]
+    messageVal.value = `Are you sure want to close: ${circuitItem.name}\nThis cannot be undone.`
+    // while (deleteConfirmation.value == 'undecided') {
+    //     console.log('still deciding')
+    // }
+    // const confirmation = confirm(
+    //     `Are you sure want to close: ${circuitItem.name}\nThis cannot be undone.`
+    // )
+    console.log(deleteConfirmation.value)
+    if (deleteConfirmation.value == 'true') {
         var index = SimulatorStore().circuit_list.indexOf(circuitItem)
         if (index !== -1) {
             SimulatorStore().circuit_list.splice(index, 1)
@@ -110,6 +140,7 @@ function closeCircuit(e, circuitItem) {
     } else {
         showMessage('Circuit was not closed')
     }
+    deleteConfirmation.value = 'false'
 
     console.log(circuitItem)
 
@@ -122,6 +153,21 @@ function dragOptions() {
         group: 'description',
         disabled: false,
         ghostClass: 'ghost',
+    }
+}
+
+function updateOption(x) {
+    console.log(x)
+    if (x == 'dispMessage') {
+        dispMessage.value = false
+    }
+    if (x == 'confirmDeletion') {
+        deleteConfirmation.value = 'true'
+        dispMessage.value = false
+    }
+    if (x == 'cancelDeletion') {
+        deleteConfirmation.value = 'false'
+        dispMessage.value = false
     }
 }
 </script>

@@ -7,12 +7,12 @@
             <v-card-actions>
                 <v-btn
                     v-for="buttonItem in buttonList"
-                    :key="buttonItem"
+                    :key="buttonItem.text"
                     class="messageBtn"
                     block
-                    @click="$emit('hideMessage')"
+                    @click="$emit('buttonClick', buttonItem.emitOption)"
                 >
-                    {{ buttonItem }}
+                    {{ buttonItem.text }}
                 </v-btn>
             </v-card-actions>
         </v-card>
@@ -23,9 +23,9 @@
 const props = defineProps({
     messageText: { type: String, default: '' },
     isPersistent: { type: Boolean, default: false },
-    buttonList: { type: Array, default: [''] },
+    buttonList: { type: Array, default: undefined },
 })
-const emit = defineEmits(['hideMessage'])
+const emit = defineEmits(['buttonClick'])
 </script>
 
 <style scoped>
