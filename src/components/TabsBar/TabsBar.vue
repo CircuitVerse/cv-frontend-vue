@@ -1,6 +1,7 @@
 <template>
     <div id="tabsBar" class="noSelect pointerCursor">
         <draggable
+            :key="updateCount"
             v-model="SimulatorStore().circuit_list"
             class="list-group"
             tag="transition-group"
@@ -51,6 +52,7 @@ import { deleteCurrentCircuit, switchCircuit } from '#/simulator/src/circuit'
 import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
 
 const drag = ref(false)
+const updateCount = ref(0)
 
 function closeCircuit(e, circuitItem) {
     e.stopPropagation()
@@ -60,6 +62,7 @@ function closeCircuit(e, circuitItem) {
         SimulatorStore().circuit_list.splice(index, 1)
     }
     deleteCurrentCircuit(circuitItem.id)
+    updateCount.value++
 }
 
 function dragOptions() {
