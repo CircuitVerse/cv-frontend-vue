@@ -129,24 +129,14 @@ export function deleteCurrentCircuit(scopeId = globalScope.id) {
     let scope = scopeList[scopeId]
     if (scope == undefined) scope = scopeList[globalScope.id]
 
-    
-
-    const confirmation = confirm(
-        `Are you sure want to close: ${scope.name}\nThis cannot be undone.`
-    )
-    if (confirmation) {
-        if (scope.verilogMetadata.isVerilogCircuit) {
-            scope.initialize()
-            for (var id in scope.verilogMetadata.subCircuitScopeIds)
-                delete scopeList[id]
-        }
-        $(`#${scope.id}`).remove()
-        delete scopeList[scope.id]
-        switchCircuit(Object.keys(scopeList)[0])
-        showMessage('Circuit was successfully closed')
-    } else {
-        showMessage('Circuit was not closed')
+    if (scope.verilogMetadata.isVerilogCircuit) {
+        scope.initialize()
+        for (var id in scope.verilogMetadata.subCircuitScopeIds)
+            delete scopeList[id]
     }
+    $(`#${scope.id}`).remove()
+    delete scopeList[scope.id]
+    switchCircuit(Object.keys(scopeList)[0])
 }
 
 /**
