@@ -111,12 +111,7 @@ export function switchCircuit(id) {
 export function deleteCurrentCircuit(scopeId = globalScope.id) {
     let scope = scopeList[scopeId]
     if (scope == undefined) scope = scopeList[globalScope.id]
-    if (Object.keys(scopeList).length <= 1) {
-        showError(
-            'At least 2 circuits need to be there in order to delete a circuit.'
-        )
-        return
-    }
+
     let dependencies = ''
     for (id in scopeList) {
         if (id != scope.id && scopeList[id].checkDependency(scope.id)) {

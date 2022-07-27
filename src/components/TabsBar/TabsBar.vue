@@ -68,7 +68,8 @@ function closeCircuit(e, circuitItem) {
     // check circuit count
     if (SimulatorStore().circuit_list.length <= 1) {
         showMessage.value = true
-        messageVal.value = 'Not Enough Circuits Available'
+        messageVal.value =
+            'At least 2 circuits need to be there in order to delete a circuit.'
         return
     }
 
