@@ -142,9 +142,9 @@ export function deleteCurrentCircuit(scopeId = globalScope.id) {
 /**
  * Wrapper function around newCircuit to be called from + button on UI
  */
-export function createNewCircuitScope() {
+export function createNewCircuitScope(name = 'Untitled-Circuit') {
     simulationArea.lastSelected = undefined
-    const scope = newCircuit()
+    const scope = newCircuit(name)
     if (!embed) {
         showProperties(simulationArea.lastSelected)
         updateTestbenchUI()

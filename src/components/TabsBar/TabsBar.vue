@@ -37,19 +37,22 @@
                 </div>
             </template>
         </draggable>
-        <button id="createNewCircuitScope" class="logixButton" onclick="">
-            &#43;
-        </button>
+        <button @click="createNewCircuit()">&#43;</button>
     </div>
     <MessageBox
         v-model="dispMessage"
         :circuit-item="circuitToBeDeleted"
         :button-list="buttonArr"
+        :input-list="inputArr"
         :is-persistent="persistentShow"
         :message-text="messageVal"
         @button-click="
-            (selectedOption, circuitItem) =>
-                dialogBoxConformation(selectedOption, circuitItem)
+            (selectedOption, circuitItem, circuitNameVal) =>
+                dialogBoxConformation(
+                    selectedOption,
+                    circuitItem,
+                    circuitNameVal
+                )
         "
     />
 </template>
@@ -60,6 +63,7 @@ import { showMessage, truncateString } from '#/simulator/src/utils'
 import { ref } from '@vue/reactivity'
 import { computed, onMounted } from '@vue/runtime-core'
 import {
+    createNewCircuitScope,
     deleteCurrentCircuit,
     getDependenciesList,
     switchCircuit,
@@ -73,11 +77,21 @@ const dispMessage = ref(false)
 const persistentShow = ref(false)
 const messageVal = ref('')
 const buttonArr = ref([{}])
+const inputArr = ref([''])
 const circuitToBeDeleted = ref({})
+
+function clearMessageBoxFields() {
+    dispMessage.value = false
+    persistentShow.value = false
+    messageVal.value = ''
+    buttonArr.value = []
+    inputArr.value = []
+}
 
 async function closeCircuit(e, circuitItem) {
     e.stopPropagation()
 
+    clearMessageBoxFields()
     // check circuit count
     if (SimulatorStore().circuit_list.length <= 1) {
         dispMessage.value = true
@@ -92,9 +106,7 @@ async function closeCircuit(e, circuitItem) {
         ]
         return
     }
-    dispMessage.value = false
-    persistentShow.value = false
-    buttonArr.value = []
+    clearMessageBoxFields()
 
     let dependencies = getDependenciesList(circuitItem.id)
     if (dependencies) {
@@ -110,10 +122,8 @@ async function closeCircuit(e, circuitItem) {
         ]
         return
     }
-    dispMessage.value = false
-    persistentShow.value = false
-    buttonArr.value = []
 
+    clearMessageBoxFields()
     dispMessage.value = true
     persistentShow.value = true
     buttonArr.value = [
@@ -141,7 +151,7 @@ function deleteCircuit(circuitItem) {
     updateCount.value++
 }
 
-function dialogBoxConformation(selectedOption, circuitItem) {
+function dialogBoxConformation(selectedOption, circuitItem, circuitNameVal) {
     dispMessage.value = false
     console.log(selectedOption)
     if (selectedOption == 'confirmDeletion') {
@@ -150,6 +160,26 @@ function dialogBoxConformation(selectedOption, circuitItem) {
     if (selectedOption == 'cancelDeletion') {
         showMessage('Circuit was not closed')
     }
+    if (selectedOption == 'confirmCreation') {
+        createNewCircuitScope(circuitNameVal)
+    }
+}
+
+function createNewCircuit() {
+    clearMessageBoxFields()
+    dispMessage.value = true
+    persistentShow.value = true
+    buttonArr.value = [
+        {
+            text: 'Create',
+            emitOption: 'confirmCreation',
+        },
+        {
+            text: 'Cancel',
+            emitOption: 'cancelCreation',
+        },
+    ]
+    inputArr.value = ['Enter Circuit Name']
 }
 
 function dragOptions() {
