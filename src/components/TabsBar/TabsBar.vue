@@ -153,7 +153,6 @@ function deleteCircuit(circuitItem) {
 
 function dialogBoxConformation(selectedOption, circuitItem, circuitNameVal) {
     dispMessage.value = false
-    console.log(selectedOption)
     if (selectedOption == 'confirmDeletion') {
         deleteCircuit(circuitItem)
     }

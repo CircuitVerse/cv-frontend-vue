@@ -36,8 +36,12 @@
 
 <script lang="ts" setup>
 import { ref } from '@vue/reactivity'
+import { onUpdated } from '@vue/runtime-core'
 const inputVal = ref('')
-inputVal.value = 'Untitled-Circuit'
+
+onUpdated(() => {
+    inputVal.value = 'Untitled-Circuit'
+})
 
 const props = defineProps({
     messageText: { type: String, default: '' },
@@ -47,7 +51,6 @@ const props = defineProps({
     circuitItem: { type: Object, default: undefined },
 })
 const emit = defineEmits(['buttonClick'])
-console.log(props.inputList)
 </script>
 
 <style scoped>
@@ -73,9 +76,13 @@ console.log(props.inputList)
     padding: 10px 10px;
     margin: 8px 0;
     box-sizing: border-box;
-    border: 2px solid #c5c5c5;
-    color: #c5c5c5;
+    border-radius: 5px;
+    border: 1px solid #c5c5c5;
+    color: white;
     outline: none;
+}
+.inputField:focus {
+    border: 2px solid #c5c5c5;
 }
 
 .messageBtn {
@@ -94,12 +101,5 @@ console.log(props.inputList)
     flex-direction: row;
     justify-content: center;
     margin: auto;
-}
-
-.v-field__field {
-    padding: 5px 0 !important;
-}
-.v-input__details {
-    display: none;
 }
 </style>
