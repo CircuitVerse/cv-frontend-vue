@@ -19,8 +19,8 @@
                     :id="element.id"
                     :key="element.id"
                     style=""
-                    class="circuits toolbarButton current"
-                    :class="embed ? 'embed-tabs' : ''"
+                    class="circuits toolbarButton"
+                    :class="tabsbarClasses(element.id)"
                     draggable="true"
                     @click="switchCircuit(element.id)"
                 >
@@ -61,7 +61,7 @@
 import draggable from 'vuedraggable'
 import { showMessage, truncateString } from '#/simulator/src/utils'
 import { ref } from '@vue/reactivity'
-import { computed, onMounted } from '@vue/runtime-core'
+import { computed, onMounted, onUpdated } from '@vue/runtime-core'
 import {
     createNewCircuitScope,
     deleteCurrentCircuit,
@@ -138,7 +138,7 @@ async function closeCircuit(e, circuitItem) {
     ]
     circuitToBeDeleted.value = circuitItem
     messageVal.value = `Are you sure want to close: ${circuitItem.name}\nThis cannot be undone.`
-    console.log(circuitItem)
+    // console.log(circuitItem)
 }
 
 function deleteCircuit(circuitItem) {
@@ -188,6 +188,17 @@ function dragOptions() {
         disabled: false,
         ghostClass: 'ghost',
     }
+}
+
+function tabsbarClasses(id) {
+    let class_list = ''
+    if (embed) {
+        class_list = 'embed-tabs'
+    }
+    if (globalScope.id == id) {
+        class_list += ' current'
+    }
+    return class_list
 }
 </script>
 
