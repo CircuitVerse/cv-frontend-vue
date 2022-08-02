@@ -25,7 +25,7 @@
                     @click="switchCircuit(element.id)"
                 >
                     <span class="circuitName noSelect">
-                        {{ truncateString(element.name, 18) }}
+                        {{ truncateString(scopeList[element.id].name, 18) }}
                     </span>
                     <span
                         id="scope.id"
@@ -66,6 +66,7 @@ import {
     createNewCircuitScope,
     deleteCurrentCircuit,
     getDependenciesList,
+    scopeList,
     switchCircuit,
 } from '#/simulator/src/circuit'
 import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
