@@ -7,7 +7,11 @@
         <div class="panel-body">
             <div id="moduleProperty-inner">
                 <div id="moduleProperty-header">{{ panelBodyHeader }}</div>
-                <ProjectProperty v-if="panelType == 1" />
+                <ProjectProperty
+                    v-if="panelType == 1"
+                    :key="circuitId"
+                    :circuit-name="circuitName"
+                />
                 <ElementProperty
                     v-else-if="panelType == 2"
                     :key="panleBodyData"
@@ -30,7 +34,8 @@ import HelpButton from '#/components/Panels/Shared/HelpButton.vue'
 import ElementProperty from '#/components/Panels/PropertiesPanel/ModuleProperty/ElementProperty/ElementProperty.vue'
 import ProjectProperty from '#/components/Panels/PropertiesPanel/ModuleProperty/ProjectProperty/ProjectProperty.vue'
 import SubcircuitPropert from '#/components/Panels/PropertiesPanel/ModuleProperty/SubcircuitProperty/SubcircuitProperty.vue'
-import { toRefs } from '@vue/reactivity'
+import { ref, toRefs } from '@vue/reactivity'
+import { onMounted } from '@vue/runtime-core'
 
 const props = defineProps({
     panleBodyData: { type: Object, default: undefined },
@@ -39,4 +44,17 @@ const props = defineProps({
 })
 
 const { panleBodyData, panelType, panelBodyHeader } = toRefs(props)
+
+const circuitId = ref(0)
+const circuitName = ref('Untitled-Cirucit')
+
+onMounted(() => {
+    // checking if circuit or tab is switched
+    setInterval(() => {
+        if (circuitId.value != globalScope.id) {
+            circuitName.value = globalScope.name
+            circuitId.value = globalScope.id
+        }
+    }, 100)
+})
 </script>

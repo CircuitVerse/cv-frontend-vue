@@ -15,7 +15,6 @@
         <span>Circuit:</span>
         <input
             id="circname"
-            :key="circuitId"
             class="objectPropertyAttribute"
             type="text"
             autocomplete="off"
@@ -84,16 +83,8 @@ import InputGroups from '#/components/Panels/Shared/InputGroups.vue'
 import { ref } from '@vue/reactivity'
 import { onMounted } from '@vue/runtime-core'
 
-const circuitId = ref(0)
-const circuitName = ref('Untitled-Cirucit')
-
-onMounted(() => {
-    setInterval(() => {
-        if (circuitId.value != globalScope.id) {
-            circuitId.value = globalScope.id
-            circuitName.value = globalScope.name
-        }
-    }, 100)
+const props = defineProps({
+    circuitName: { type: String, default: 'Untitled-Circuit' },
 })
 </script>
 
