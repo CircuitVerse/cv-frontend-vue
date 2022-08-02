@@ -7,11 +7,7 @@
         <div class="panel-body">
             <div id="moduleProperty-inner">
                 <div id="moduleProperty-header">{{ panelBodyHeader }}</div>
-                <ProjectProperty
-                    v-if="panelType == 1"
-                    :key="circuitId"
-                    :circuit-name="circuitName"
-                />
+                <ProjectProperty v-if="panelType == 1" />
                 <ElementProperty
                     v-else-if="panelType == 2"
                     :key="panleBodyData"
@@ -44,17 +40,4 @@ const props = defineProps({
 })
 
 const { panleBodyData, panelType, panelBodyHeader } = toRefs(props)
-
-const circuitId = ref(0)
-const circuitName = ref('Untitled-Cirucit')
-
-onMounted(() => {
-    // checking if circuit or tab is switched
-    setInterval(() => {
-        if (circuitId.value != globalScope.id) {
-            circuitName.value = globalScope.name
-            circuitId.value = globalScope.id
-        }
-    }, 100)
-})
 </script>
