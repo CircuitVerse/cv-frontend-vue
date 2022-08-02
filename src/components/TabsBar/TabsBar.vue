@@ -89,7 +89,7 @@ function clearMessageBoxFields() {
     inputArr.value = []
 }
 
-async function closeCircuit(e, circuitItem) {
+function closeCircuit(e, circuitItem) {
     e.stopPropagation()
 
     clearMessageBoxFields()
@@ -111,7 +111,11 @@ async function closeCircuit(e, circuitItem) {
 
     let dependencies = getDependenciesList(circuitItem.id)
     if (dependencies) {
-        dependencies = `\nThe following circuits are depending on '${circuitItem.name}': ${dependencies}\nDelete subcircuits of ${circuitItem.name} before trying to delete ${circuitItem.name}`
+        dependencies = `\nThe following circuits are depending on '${
+            scopeList[circuitItem.id].name
+        }': ${dependencies}\nDelete subcircuits of ${
+            scopeList[circuitItem.id].name
+        } before trying to delete ${scopeList[circuitItem.id].name}`
         dispMessage.value = true
         persistentShow.value = true
         messageVal.value = dependencies
@@ -138,7 +142,9 @@ async function closeCircuit(e, circuitItem) {
         },
     ]
     circuitToBeDeleted.value = circuitItem
-    messageVal.value = `Are you sure want to close: ${circuitItem.name}\nThis cannot be undone.`
+    messageVal.value = `Are you sure want to close: ${
+        scopeList[circuitItem.id].name
+    }\nThis cannot be undone.`
     // console.log(circuitItem)
 }
 

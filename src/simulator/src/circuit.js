@@ -173,7 +173,6 @@ export function newCircuit(name, id, isVerilog = false, isVerilogMain = false) {
     if (id) scope.id = id
     scopeList[scope.id] = scope
     let currCircuit = {
-        name: scope.name,
         id: scope.id,
     }
     SimulatorStore().circuit_list.push(currCircuit)
