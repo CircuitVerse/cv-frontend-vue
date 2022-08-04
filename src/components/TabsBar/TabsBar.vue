@@ -2,7 +2,7 @@
     <div id="tabsBar" class="noSelect pointerCursor">
         <draggable
             :key="updateCount"
-            v-model="SimulatorStore().circuit_list"
+            v-model="SimulatorState.circuit_list"
             class="list-group"
             tag="transition-group"
             :component-data="{
@@ -40,7 +40,7 @@
         <button @click="createNewCircuit()">&#43;</button>
     </div>
     <MessageBox
-        v-model="dispMessage"
+        v-model="SimulatorState.dialogBox.create_circuit"
         :circuit-item="circuitToBeDeleted"
         :button-list="buttonArr"
         :input-list="inputArr"
@@ -69,12 +69,12 @@ import {
     scopeList,
     switchCircuit,
 } from '#/simulator/src/circuit'
-import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
 import MessageBox from '#/components/MessageBox/messageBox.vue'
+import { useState } from '#/store/SimulatorStore/state'
 
+const SimulatorState = useState()
 const drag = ref(false)
 const updateCount = ref(0)
-const dispMessage = ref(false)
 const persistentShow = ref(false)
 const messageVal = ref('')
 const buttonArr = ref([{}])
@@ -82,7 +82,7 @@ const inputArr = ref([''])
 const circuitToBeDeleted = ref({})
 
 function clearMessageBoxFields() {
-    dispMessage.value = false
+    SimulatorState.dialogBox.create_circuit = false
     persistentShow.value = false
     messageVal.value = ''
     buttonArr.value = []
@@ -94,8 +94,8 @@ function closeCircuit(e, circuitItem) {
 
     clearMessageBoxFields()
     // check circuit count
-    if (SimulatorStore().circuit_list.length <= 1) {
-        dispMessage.value = true
+    if (SimulatorState.circuit_list.length <= 1) {
+        SimulatorState.dialogBox.create_circuit = true
         persistentShow.value = false
         messageVal.value =
             'At least 2 circuits need to be there in order to delete a circuit.'
@@ -116,7 +116,7 @@ function closeCircuit(e, circuitItem) {
         }': ${dependencies}\nDelete subcircuits of ${
             scopeList[circuitItem.id].name
         } before trying to delete ${scopeList[circuitItem.id].name}`
-        dispMessage.value = true
+        SimulatorState.dialogBox.create_circuit = true
         persistentShow.value = true
         messageVal.value = dependencies
         buttonArr.value = [
@@ -129,7 +129,7 @@ function closeCircuit(e, circuitItem) {
     }
 
     clearMessageBoxFields()
-    dispMessage.value = true
+    SimulatorState.dialogBox.create_circuit = true
     persistentShow.value = true
     buttonArr.value = [
         {
@@ -149,9 +149,9 @@ function closeCircuit(e, circuitItem) {
 }
 
 function deleteCircuit(circuitItem) {
-    var index = SimulatorStore().circuit_list.indexOf(circuitItem)
+    var index = SimulatorState.circuit_list.indexOf(circuitItem)
     if (index !== -1) {
-        SimulatorStore().circuit_list.splice(index, 1)
+        SimulatorState.circuit_list.splice(index, 1)
     }
     deleteCurrentCircuit(circuitItem.id)
     showMessage('Circuit was successfully closed')
@@ -159,7 +159,7 @@ function deleteCircuit(circuitItem) {
 }
 
 function dialogBoxConformation(selectedOption, circuitItem, circuitNameVal) {
-    dispMessage.value = false
+    SimulatorState.dialogBox.create_circuit = false
     if (selectedOption == 'confirmDeletion') {
         deleteCircuit(circuitItem)
     }
@@ -173,7 +173,7 @@ function dialogBoxConformation(selectedOption, circuitItem, circuitNameVal) {
 
 function createNewCircuit() {
     clearMessageBoxFields()
-    dispMessage.value = true
+    SimulatorState.dialogBox.create_circuit = true
     persistentShow.value = true
     buttonArr.value = [
         {
