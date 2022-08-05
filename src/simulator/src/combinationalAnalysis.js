@@ -13,6 +13,7 @@ import NotGate from './modules/NotGate'
 import { stripTags } from './utils'
 import simulationArea from './simulationArea'
 import { findDimensions } from './canvasApi'
+import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
 
 var inputSample = 5
 var dataSample = [
@@ -32,6 +33,10 @@ var sampleOutputListNames = ['X']
  */
 export function createCombinationalAnalysisPrompt(scope = globalScope) {
     scheduleBackup()
+    SimulatorStore().dialogBox.combinationalanalysis_dialog = true
+    console.log('combinational Analysis')
+    console.log(SimulatorStore().dialogBox.combinationalanalysis_dialog)
+    /*
     $('#combinationalAnalysis').empty()
     $('#combinationalAnalysis').append(
         "<p>Enter Input names separated by commas: <input id='inputNameList' type='text'  placeHolder='eg. In A, In B'></p>"
@@ -126,7 +131,9 @@ export function createCombinationalAnalysisPrompt(scope = globalScope) {
             },
         ],
     })
+    
     $('#combinationalAnalysis').checkBo()
+    */
 }
 /**
  * This funciton hashes the output array and makes required JSON using

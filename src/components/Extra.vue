@@ -525,11 +525,7 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Dialog Box - Combinational Analysis -->
-    <div
-        id="combinationalAnalysis"
-        style="display: none"
-        title="BooleanLogicTable"
-    ></div>
+    <combinationalAnalysis />
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
@@ -693,4 +689,5 @@
 import ElementsPanel from './Panels/ElementsPanel/ElementsPanel.vue'
 import PropertiesPanel from './Panels/PropertiesPanel/PropertiesPanel.vue'
 import TabsBar from './TabsBar/TabsBar.vue'
+import combinationalAnalysis from './DialogBox/combinationalAnalysis.vue'
 </script>

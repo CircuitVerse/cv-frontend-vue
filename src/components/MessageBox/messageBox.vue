@@ -5,11 +5,16 @@
                 {{ messageText }}
                 <div
                     v-for="inputItem in inputList"
-                    :key="inputItem"
+                    :key="inputItem.text"
                     class="inputContent"
                 >
-                    <p>{{ inputItem }}</p>
-                    <input class="inputField" v-model="inputVal" type="text" />
+                    <p>{{ inputItem.text }}</p>
+                    <input
+                        class="inputField"
+                        v-model="inputVal"
+                        :placeholder="inputItem.placeholder"
+                        :type="inputItem.type"
+                    />
                 </div>
             </v-card-text>
             <v-card-actions>
@@ -40,7 +45,7 @@ import { onUpdated } from '@vue/runtime-core'
 const inputVal = ref('')
 
 onUpdated(() => {
-    inputVal.value = 'Untitled-Circuit'
+    inputVal.value = ''
 })
 
 const props = defineProps({

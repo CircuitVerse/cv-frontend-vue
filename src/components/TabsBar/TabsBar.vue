@@ -78,7 +78,7 @@ const updateCount = ref(0)
 const persistentShow = ref(false)
 const messageVal = ref('')
 const buttonArr = ref([{}])
-const inputArr = ref([''])
+const inputArr = ref([{}])
 const circuitToBeDeleted = ref({})
 
 function clearMessageBoxFields() {
@@ -185,7 +185,15 @@ function createNewCircuit() {
             emitOption: 'cancelCreation',
         },
     ]
-    inputArr.value = ['Enter Circuit Name']
+    inputArr.value = [
+        {
+            text: 'Enter Circuit Name',
+            placeholder: 'Untitled-Circuit',
+            id: 'inputNameList',
+            style: '',
+            type: 'text',
+        },
+    ]
 }
 
 function dragOptions() {
