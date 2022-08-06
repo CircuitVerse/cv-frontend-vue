@@ -3,6 +3,7 @@
         v-model="SimulatorState.dialogBox.combinationalanalysis_dialog"
         :button-list="buttonArr"
         :input-list="inputArr"
+        input-class="combinationalAnalysisInput"
         :is-persistent="true"
         message-text="BooleanLogicTable"
         @button-click="
@@ -32,6 +33,7 @@ inputArr.value = [
         placeholder: 'eg. In A, In B',
         id: 'inputNameList',
         style: '',
+        class: 'cAinput',
         type: 'text',
     },
     {
@@ -39,6 +41,7 @@ inputArr.value = [
         placeholder: 'eg. Out X, Out Y',
         id: 'outputNameList',
         style: '',
+        class: 'cAinput',
         type: 'text',
     },
     {
@@ -46,6 +49,7 @@ inputArr.value = [
         placeholder: '',
         id: '',
         style: 'text-align:center;',
+        class: 'cAinput',
         type: 'nil',
     },
     {
@@ -53,6 +57,7 @@ inputArr.value = [
         placeholder: 'Example: (AB)',
         id: 'booleanExpression',
         style: '',
+        class: 'cAinput',
         type: 'text',
     },
     {
@@ -60,6 +65,7 @@ inputArr.value = [
         placeholder: '',
         id: 'decimalColumnBox',
         style: '',
+        class: 'cAinput',
         type: 'checkbox',
     },
 ]

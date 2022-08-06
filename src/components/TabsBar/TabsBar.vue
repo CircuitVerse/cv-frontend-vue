@@ -44,6 +44,7 @@
         :circuit-item="circuitToBeDeleted"
         :button-list="buttonArr"
         :input-list="inputArr"
+        input-class="tabsbarInput"
         :is-persistent="persistentShow"
         :message-text="messageVal"
         @button-click="
@@ -190,6 +191,7 @@ function createNewCircuit() {
             text: 'Enter Circuit Name',
             placeholder: 'Untitled-Circuit',
             id: 'inputNameList',
+            class: 'inputField',
             style: '',
             type: 'text',
         },
