@@ -48,12 +48,8 @@
         :is-persistent="persistentShow"
         :message-text="messageVal"
         @button-click="
-            (selectedOption, circuitItem, circuitNameVal) =>
-                dialogBoxConformation(
-                    selectedOption,
-                    circuitItem,
-                    circuitNameVal
-                )
+            (selectedOption, circuitItem) =>
+                dialogBoxConformation(selectedOption, circuitItem)
         "
     />
 </template>
@@ -159,7 +155,7 @@ function deleteCircuit(circuitItem) {
     updateCount.value++
 }
 
-function dialogBoxConformation(selectedOption, circuitItem, circuitNameVal) {
+function dialogBoxConformation(selectedOption, circuitItem) {
     SimulatorState.dialogBox.create_circuit = false
     if (selectedOption == 'confirmDeletion') {
         deleteCircuit(circuitItem)
@@ -168,7 +164,7 @@ function dialogBoxConformation(selectedOption, circuitItem, circuitNameVal) {
         showMessage('Circuit was not closed')
     }
     if (selectedOption == 'confirmCreation') {
-        createNewCircuitScope(circuitNameVal)
+        createNewCircuitScope(inputArr.value[0].val)
     }
 }
 
@@ -189,8 +185,9 @@ function createNewCircuit() {
     inputArr.value = [
         {
             text: 'Enter Circuit Name',
+            val: '',
             placeholder: 'Untitled-Circuit',
-            id: 'inputNameList',
+            id: 'circuitName',
             class: 'inputField',
             style: '',
             type: 'text',

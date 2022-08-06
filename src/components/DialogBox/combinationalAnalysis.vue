@@ -30,6 +30,7 @@ const buttonArr = ref([{}])
 inputArr.value = [
     {
         text: 'Enter Input names separated by commas: ',
+        val: '',
         placeholder: 'eg. In A, In B',
         id: 'inputNameList',
         style: '',
@@ -38,6 +39,7 @@ inputArr.value = [
     },
     {
         text: 'Enter Output names separated by commas: ',
+        val: '',
         placeholder: 'eg. Out X, Out Y',
         id: 'outputNameList',
         style: '',
@@ -54,6 +56,7 @@ inputArr.value = [
     },
     {
         text: 'Enter Boolean Function:',
+        val: '',
         placeholder: 'Example: (AB)',
         id: 'booleanExpression',
         style: '',
@@ -62,6 +65,7 @@ inputArr.value = [
     },
     {
         text: 'I need a decimal column.',
+        val: '',
         placeholder: '',
         id: 'decimalColumnBox',
         style: '',
@@ -81,8 +85,10 @@ buttonArr.value = [
     },
 ]
 
-function dialogBoxConformation(selectedOption) {
+function dialogBoxConformation(selectedOption, circuitItem) {
     SimulatorState.dialogBox.combinationalanalysis_dialog = false
+    console.log(inputArr.value)
+    // use the above value to show tables
     if (selectedOption == 'showLogicTable') {
         console.log('Show Table')
     }

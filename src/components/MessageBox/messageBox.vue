@@ -13,7 +13,7 @@
                     <p>{{ inputItem.text }}</p>
                     <input
                         v-if="inputItem.type != 'nil'"
-                        v-model="inputVal"
+                        v-model="inputItem.val"
                         :class="inputItem.class"
                         :placeholder="inputItem.placeholder"
                         :type="inputItem.type"
@@ -27,12 +27,7 @@
                     class="messageBtn"
                     block
                     @click="
-                        $emit(
-                            'buttonClick',
-                            buttonItem.emitOption,
-                            circuitItem,
-                            inputVal
-                        )
+                        $emit('buttonClick', buttonItem.emitOption, circuitItem)
                     "
                 >
                     {{ buttonItem.text }}
@@ -45,11 +40,6 @@
 <script lang="ts" setup>
 import { ref } from '@vue/reactivity'
 import { onUpdated } from '@vue/runtime-core'
-const inputVal = ref('')
-
-onUpdated(() => {
-    inputVal.value = ''
-})
 
 const props = defineProps({
     messageText: { type: String, default: '' },
