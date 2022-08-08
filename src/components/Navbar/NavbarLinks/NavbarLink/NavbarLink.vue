@@ -24,7 +24,7 @@
 import DropDown from '@/Dropdown/DropDown.vue'
 
 const props = defineProps({
-    navbarItem: { type: Object, default: {} },
+    navbarItem: { type: Object, default: () => {} },
 })
 </script>
 

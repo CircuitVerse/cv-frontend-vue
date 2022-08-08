@@ -27,7 +27,7 @@
 
 <script lang="ts" setup>
 const props = defineProps({
-    listItems: { type: Array, default: undefined },
+    listItems: { type: Array, default: () => [] },
     dropDownHeader: { type: String, default: '' },
     dropDownType: { type: String, default: '' },
 })

@@ -13,7 +13,7 @@
 import NavbarLink from '@/Navbar/NavbarLinks/NavbarLink/NavbarLink.vue'
 
 const props = defineProps({
-    navbarData: { type: Array, default: [] },
+    navbarData: { type: Array, default: () => [] },
 })
 </script>
 

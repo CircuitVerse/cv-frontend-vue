@@ -33,7 +33,7 @@ import DropDown from '@/Dropdown/DropDown.vue'
 
 const props = defineProps({
     isUserSignedIn: { type: Boolean, default: false },
-    userData: { type: Array, default: undefined },
+    userData: { type: Array, default: () => [] },
 })
 </script>
 
