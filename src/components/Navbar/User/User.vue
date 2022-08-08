@@ -29,7 +29,7 @@
 </template>
 
 <script lang="ts" setup>
-import DropDown from '../../Dropdown/DropDown.vue'
+import DropDown from '@/Dropdown/DropDown.vue'
 
 const props = defineProps({
     isUserSignedIn: { type: Boolean, default: false },

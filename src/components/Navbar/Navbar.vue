@@ -22,17 +22,16 @@
 </template>
 
 <script lang="ts" setup>
-import QuickButton from './QuickButton/QuickButton.vue'
-import User from './User/User.vue'
-import NavbarLinks from './NavbarLinks/NavbarLinks.vue'
+import QuickButton from '@/Navbar/QuickButton/QuickButton.vue'
+import User from '@/Navbar/User/User.vue'
+import NavbarLinks from '@/Navbar/NavbarLinks/NavbarLinks.vue'
 
-import navbarData from './NavbarData.json'
-import userDropdownItems from './UserData.json'
+import navbarData from '#/assets/constants/Navbar/NAVBAR_DATA'
+import userDropdownItems from '#/assets/constants/Navbar/USER_DATA'
 
-import Logo from '../Logo/Logo.vue'
-import Hamburger from './Hamburger/Hamburger.vue'
-import { ref } from '@vue/reactivity'
-import { onMounted } from '@vue/runtime-core'
+import Logo from '@/Logo/Logo.vue'
+import Hamburger from '@/Navbar/Hamburger/Hamburger.vue'
+import { ref, onMounted } from 'vue'
 
 const navbarLogo = ref('logo')
 const minWidthToShowSidebar = ref(992)

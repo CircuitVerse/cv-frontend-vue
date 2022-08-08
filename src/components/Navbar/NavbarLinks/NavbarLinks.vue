@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts" setup>
-import NavbarLink from './NavbarLink/NavbarLink.vue'
+import NavbarLink from '@/Navbar/NavbarLinks/NavbarLink/NavbarLink.vue'
 
 const props = defineProps({
     navbarData: { type: Array, default: [] },
