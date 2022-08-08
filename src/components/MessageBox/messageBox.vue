@@ -1,25 +1,31 @@
 <template>
-    <v-dialog :persistent="isPersistent">
+    <v-dialog>
         <v-card class="messageBoxContent">
             <v-card-text>
-                {{ messageText }}
-                <div
-                    v-for="inputItem in inputList"
-                    :id="inputItem.id"
-                    :key="inputItem.id"
-                    :style="inputItem.style"
-                    :class="inputClass"
-                >
-                    <p>{{ inputItem.text }}</p>
-                    <input
-                        v-if="inputItem.type != 'nil'"
-                        v-model="inputItem.val"
-                        :class="inputItem.class"
-                        :placeholder="inputItem.placeholder"
-                        :type="inputItem.type"
-                    />
-                </div>
+                <!-- NOTE: Add v-ifs -->
+                <p v-if="messageText" style="font-weight: bold">
+                    {{ messageText }}
+                </p>
+                <template v-if="inputList.length > 0">
+                    <div
+                        v-for="inputItem in inputList"
+                        :id="inputItem.id"
+                        :key="inputItem.id"
+                        :style="inputItem.style"
+                        :class="inputClass"
+                    >
+                        <p>{{ inputItem.text }}</p>
+                        <input
+                            v-if="inputItem.type != 'nil'"
+                            v-model="inputItem.val"
+                            :class="inputItem.class"
+                            :placeholder="inputItem.placeholder"
+                            :type="inputItem.type"
+                        />
+                    </div>
+                </template>
             </v-card-text>
+
             <v-card-actions>
                 <v-btn
                     v-for="buttonItem in buttonList"
@@ -44,10 +50,10 @@ import { onUpdated } from '@vue/runtime-core'
 const props = defineProps({
     messageText: { type: String, default: '' },
     isPersistent: { type: Boolean, default: false },
-    buttonList: { type: Array, default: undefined },
-    inputList: { type: Array, default: undefined },
+    buttonList: { type: Array, default: () => [] },
+    inputList: { type: Array, default: () => [] },
     inputClass: { type: String, default: '' },
-    circuitItem: { type: Object, default: undefined },
+    circuitItem: { type: Object, default: () => ({}) },
 })
 const emit = defineEmits(['buttonClick'])
 </script>
