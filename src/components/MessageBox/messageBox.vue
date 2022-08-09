@@ -24,8 +24,12 @@
                         />
                     </div>
                 </template>
+                <BooleanTable
+                    v-if="tableHeader.length > 0"
+                    :table-header="tableHeader"
+                    :table-body="tableBody"
+                />
             </v-card-text>
-
             <v-card-actions>
                 <v-btn
                     v-for="buttonItem in buttonList"
@@ -44,6 +48,7 @@
 </template>
 
 <script lang="ts" setup>
+import BooleanTable from '@/DialogBox/BooleanTable.vue'
 import { ref } from '@vue/reactivity'
 import { onUpdated } from '@vue/runtime-core'
 
@@ -54,6 +59,8 @@ const props = defineProps({
     inputList: { type: Array, default: () => [] },
     inputClass: { type: String, default: '' },
     circuitItem: { type: Object, default: () => ({}) },
+    tableHeader: { type: Array, default: () => [] },
+    tableBody: { type: Array, default: () => [] },
 })
 const emit = defineEmits(['buttonClick'])
 </script>

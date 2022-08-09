@@ -5,13 +5,14 @@
         :input-list="inputArr"
         input-class="combinationalAnalysisInput"
         :is-persistent="true"
+        :table-header="tableHeader"
+        :table-body="tableBody"
         message-text="BooleanLogicTable"
         @button-click="
             (selectedOption, circuitItem, circuitNameVal) =>
                 dialogBoxConformation(selectedOption)
         "
     />
-
     <v-alert v-if="showAlert" :type="alertType" class="alertStyle">{{
         alertMessage
     }}</v-alert>
@@ -125,6 +126,14 @@ function dialogBoxConformation(selectedOption, circuitItem) {
         }
         SimulatorState.dialogBox.combinationalanalysis_dialog = false
     }
+    if (selectedOption == 'generateCircuit') {
+        console.log('Generate Cirucit')
+        SimulatorState.dialogBox.combinationalanalysis_dialog = false
+    }
+    if (selectedOption == 'printTruthTable') {
+        console.log('Print Truth Table')
+        SimulatorState.dialogBox.combinationalanalysis_dialog = false
+    }
 }
 
 function createLogicTable() {
@@ -222,6 +231,7 @@ function createBooleanPrompt(
     } else {
         outputListNamesInteger = [13]
     }
+    tableBody.value = []
     tableHeader.value = []
     tableHeader.value.push('dec')
     for (var i = 0; i < inputListNames.length; i++) {
@@ -235,32 +245,45 @@ function createBooleanPrompt(
         tableHeader.value.push(outputListNames)
     }
 
-    for (var i = 0; i < tableHeader.value.length; i++) {
-        tableBody.value[i] = new Array(1 << inputListNames.length)
+    for (var i = 0; i < 1 << inputListNames.length; i++) {
+        tableBody.value[i] = new Array(tableHeader.value.length)
     }
     for (var i = 0; i < inputListNames.length; i++) {
         for (var j = 0; j < 1 << inputListNames.length; j++) {
-            tableBody.value[i + 1][j] = +(
+            tableBody.value[j][i + 1] = +(
                 (j & (1 << (inputListNames.length - i - 1))) !=
                 0
             )
         }
     }
     for (var j = 0; j < 1 << inputListNames.length; j++) {
-        tableBody.value[0][j] = j
+        tableBody.value[j][0] = j
     }
     for (var j = 0; j < 1 << inputListNames.length; j++) {
         for (var i = 0; i < outputListNamesInteger.length; i++) {
             if (output == null) {
-                tableBody.value[inputListNames.length + 1 + i][j] = 'x'
+                tableBody.value[j][inputListNames.length + 1 + i] = 'x'
             }
         }
         if (output != null) {
-            tableBody.value[inputListNames.length + 1][j] = output[j]
+            tableBody.value[j][inputListNames.length + 1] = output[j]
         }
     }
     console.log(tableHeader.value)
     console.log(tableBody.value)
+    // display Message Box
+    SimulatorState.dialogBox.combinationalanalysis_dialog = true
+    inputArr.value = []
+    buttonArr.value = [
+        {
+            text: 'Generate Circuit',
+            emitOption: 'generateCircuit',
+        },
+        {
+            text: 'Print Truth Table',
+            emitOption: 'printTruthTable',
+        },
+    ]
 }
 
 function generateBooleanTableData(outputListNames) {
