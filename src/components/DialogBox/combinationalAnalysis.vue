@@ -11,7 +11,7 @@
                 dialogBoxConformation(selectedOption)
         "
     />
-    
+
     <v-alert v-if="showAlert" :type="alertType" class="alertStyle">{{
         alertMessage
     }}</v-alert>
@@ -35,6 +35,7 @@ import OrGate from '#/simulator/src/modules/OrGate'
 import NotGate from '#/simulator/src/modules/NotGate'
 import simulationArea from '#/simulator/src/simulationArea'
 import { findDimensions } from '#/simulator/src/canvasApi'
+import { Console } from 'console'
 
 const SimulatorState = useState()
 onMounted(() => {
@@ -200,6 +201,8 @@ function createLogicTable() {
     }
 }
 
+const tableHeader = ref([])
+const tableBody = ref([])
 function createBooleanPrompt(
     inputListNames,
     outputListNames,
@@ -219,153 +222,45 @@ function createBooleanPrompt(
     } else {
         outputListNamesInteger = [13]
     }
-    var s = '<table  class="content-table">'
-    s += '<tbody style="display:block; max-height:70vh; overflow-y:scroll" >'
-    s += '<tr>'
-    if ($('#decimalColumnBox').is(':checked')) {
-        s += '<th>' + 'dec' + '</th>'
-    }
+    tableHeader.value = []
+    tableHeader.value.push('dec')
     for (var i = 0; i < inputListNames.length; i++) {
-        s += `<th>${inputListNames[i]}</th>`
+        tableHeader.value.push(inputListNames[i])
     }
     if (output == null) {
         for (var i = 0; i < outputListNames.length; i++) {
-            s += `<th>${outputListNames[i]}</th>`
+            tableHeader.value.push(outputListNames[i])
         }
     } else {
-        s += `<th>${outputListNames}</th>`
-    }
-    s += '</tr>'
-
-    var matrix = []
-    for (var i = 0; i < inputListNames.length; i++) {
-        matrix[i] = new Array(1 << inputListNames.length)
+        tableHeader.value.push(outputListNames)
     }
 
+    for (var i = 0; i < tableHeader.value.length; i++) {
+        tableBody.value[i] = new Array(1 << inputListNames.length)
+    }
     for (var i = 0; i < inputListNames.length; i++) {
         for (var j = 0; j < 1 << inputListNames.length; j++) {
-            matrix[i][j] = +((j & (1 << (inputListNames.length - i - 1))) != 0)
+            tableBody.value[i + 1][j] = +(
+                (j & (1 << (inputListNames.length - i - 1))) !=
+                0
+            )
         }
     }
-
     for (var j = 0; j < 1 << inputListNames.length; j++) {
-        s += '<tr>'
-        if ($('#decimalColumnBox').is(':checked')) {
-            s += `<td>${j}</td>`
-        }
-        for (var i = 0; i < inputListNames.length; i++) {
-            s += `<td>${matrix[i][j]}</td>`
-        }
+        tableBody.value[0][j] = j
+    }
+    for (var j = 0; j < 1 << inputListNames.length; j++) {
         for (var i = 0; i < outputListNamesInteger.length; i++) {
             if (output == null) {
-                s +=
-                    `<td class ="output ${outputListNamesInteger[i]}" id="${j}">` +
-                    'x' +
-                    '</td>'
-                // using hash values as they'll be used in the generateBooleanTableData function
+                tableBody.value[inputListNames.length + 1 + i][j] = 'x'
             }
         }
         if (output != null) {
-            s +=
-                `<td class="${outputListNamesInteger[0]}" id="${j}">` +
-                `${output[j]}` +
-                '</td>'
+            tableBody.value[inputListNames.length + 1][j] = output[j]
         }
-        s += '</tr>'
     }
-    s += '</tbody>'
-    s += '</table>'
-    /*
-    $('#combinationalAnalysis').empty()
-    $('#combinationalAnalysis').append(s)
-    $('#combinationalAnalysis').dialog({
-        resizable: false,
-        width: 'auto',
-        buttons: [
-            {
-                style: 'padding: 6px',
-                text: 'Generate Circuit',
-                click() {
-                    $(this).dialog('close')
-                    var data = generateBooleanTableData(outputListNamesInteger)
-                    // passing the hash values to avoid spaces being passed which is causing a problem
-                    var minimizedCircuit = []
-                    let inputCount = inputListNames.length
-                    for (const output in data) {
-                        let oneCount = data[output][1].length // Number of ones
-                        let zeroCount = data[output][0].length // Number of zeroes
-                        if (oneCount == 0) {
-                            // Hardcode to 0 as output
-                            minimizedCircuit.push([
-                                '-'.repeat(inputCount) + '0',
-                            ])
-                        } else if (zeroCount == 0) {
-                            // Hardcode to 1 as output
-                            minimizedCircuit.push([
-                                '-'.repeat(inputCount) + '1',
-                            ])
-                        } else {
-                            // Perform KMap like minimzation
-                            const temp = new BooleanMinimize(
-                                inputListNames.length,
-                                data[output][1].map(Number),
-                                data[output].x.map(Number)
-                            )
-                            minimizedCircuit.push(temp.result)
-                        }
-                    }
-                    if (output == null) {
-                        drawCombinationalAnalysis(
-                            minimizedCircuit,
-                            inputListNames,
-                            outputListNames,
-                            scope
-                        )
-                    } else {
-                        drawCombinationalAnalysis(
-                            minimizedCircuit,
-                            inputListNames,
-                            [`${outputListNames}`],
-                            scope
-                        )
-                    }
-                },
-            },
-            {
-                style: 'padding: 6px',
-                text: 'Print Truth Table',
-                click() {
-                    var sTable = document.getElementById(
-                        'combinationalAnalysis'
-                    ).innerHTML
-                    var style =
-                        '<style> table {font: 20px Calibri;} table, th, td {border: solid 1px #DDD;border-collapse: collapse;} padding: 2px 3px;text-align: center;} </style>'
-                    var win = window.open('', '', 'height=700,width=700')
-                    var htmlBody = `
-                      <html><head>\
-                      <title>Boolean Logic Table</title>\
-                      ${style}\
-                      </head>\
-                      <body>\
-                      <center>${sTable}</center>\
-                      </body></html>
-                    `
-                    win.document.write(htmlBody)
-                    win.document.close()
-                    win.print()
-                },
-            },
-        ],
-    })
-
-    $('.output').on('click', function () {
-        var v = $(this).html()
-        if (v == 0) v = $(this).html(1)
-        else if (v == 1) v = $(this).html('x')
-        else if (v == 'x') v = $(this).html(0)
-    })
-
-    */
+    console.log(tableHeader.value)
+    console.log(tableBody.value)
 }
 
 function generateBooleanTableData(outputListNames) {
@@ -383,7 +278,6 @@ function generateBooleanTableData(outputListNames) {
     }
     return data
 }
-
 
 function drawCombinationalAnalysis(
     combinationalData,
@@ -603,7 +497,6 @@ function drawCombinationalAnalysis(
     }
     globalScope.centerFocus()
 }
-
 
 /**
  * This function solves passed boolean expression and returns
