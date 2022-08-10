@@ -113,6 +113,20 @@ const buttonArray = [
 ]
 buttonArr.value = buttonArray
 
+function clearData() {
+    inputArr.value[0].val = ''
+    inputArr.value[1].val = ''
+    inputArr.value[3].val = ''
+    inputArr.value[4].val = ''
+    buttonArr.value = buttonArray
+    outputListNamesInteger.value = []
+    inputListNames.value = []
+    outputListNames.value = []
+    tableHeader.value = []
+    tableBody.value = []
+    output.value = []
+}
+
 function dialogBoxConformation(selectedOption, circuitItem) {
     // SimulatorState.dialogBox.combinationalanalysis_dialog = false
     console.log(inputArr.value)
@@ -131,39 +145,20 @@ function dialogBoxConformation(selectedOption, circuitItem) {
                 inputArr.value[ind].val = false
             }
         }
-        inputArr.value[0].val = ''
-        inputArr.value[1].val = ''
-        inputArr.value[3].val = ''
-        inputArr.value[4].val = ''
-        buttonArr.value = buttonArray
-        outputListNamesInteger.value = []
-        inputListNames.value = []
-        outputListNames.value = []
-        tableHeader.value = []
-        tableBody.value = []
-        output.value = []
+        clearData()
         SimulatorState.dialogBox.combinationalanalysis_dialog = false
     }
     if (selectedOption == 'generateCircuit') {
         console.log('Generate Cirucit')
         SimulatorState.dialogBox.combinationalanalysis_dialog = false
         generateCircuit()
-        inputArr.value[0].val = ''
-        inputArr.value[1].val = ''
-        inputArr.value[3].val = ''
-        inputArr.value[4].val = ''
-        buttonArr.value = buttonArray
-        outputListNamesInteger.value = []
-        inputListNames.value = []
-        outputListNames.value = []
-        tableHeader.value = []
-        tableBody.value = []
-        output.value = []
+        clearData()
         SimulatorState.dialogBox.combinationalanalysis_dialog = false
     }
     if (selectedOption == 'printTruthTable') {
         console.log('Print Truth Table')
         printBooleanTable()
+        clearData()
         SimulatorState.dialogBox.combinationalanalysis_dialog = false
     }
 }
