@@ -36,7 +36,6 @@ import OrGate from '#/simulator/src/modules/OrGate'
 import NotGate from '#/simulator/src/modules/NotGate'
 import simulationArea from '#/simulator/src/simulationArea'
 import { findDimensions } from '#/simulator/src/canvasApi'
-import { Console } from 'console'
 
 const SimulatorState = useState()
 onMounted(() => {
@@ -53,6 +52,7 @@ const outputListNames = ref([])
 const tableHeader = ref([])
 const tableBody = ref([])
 const output = ref([])
+
 inputArr.value = [
     {
         text: 'Enter Input names separated by commas: ',
@@ -100,7 +100,7 @@ inputArr.value = [
     },
 ]
 
-buttonArr.value = [
+const buttonArray = [
     {
         text: 'Next',
         emitOption: 'showLogicTable',
@@ -110,6 +110,7 @@ buttonArr.value = [
         emitOption: 'closeMessageBox',
     },
 ]
+buttonArr.value = buttonArray
 
 function dialogBoxConformation(selectedOption, circuitItem) {
     // SimulatorState.dialogBox.combinationalanalysis_dialog = false
@@ -129,6 +130,17 @@ function dialogBoxConformation(selectedOption, circuitItem) {
                 inputArr.value[ind].val = false
             }
         }
+        inputArr.value[0].val = ''
+        inputArr.value[1].val = ''
+        inputArr.value[3].val = ''
+        inputArr.value[4].val = ''
+        buttonArr.value = buttonArray
+        outputListNamesInteger.value = []
+        inputListNames.value = []
+        outputListNames.value = []
+        tableHeader.value = []
+        tableBody.value = []
+        output.value = []
         SimulatorState.dialogBox.combinationalanalysis_dialog = false
     }
     if (selectedOption == 'generateCircuit') {
@@ -138,6 +150,8 @@ function dialogBoxConformation(selectedOption, circuitItem) {
         inputArr.value[0].val = ''
         inputArr.value[1].val = ''
         inputArr.value[3].val = ''
+        inputArr.value[4].val = ''
+        buttonArr.value = buttonArray
         outputListNamesInteger.value = []
         inputListNames.value = []
         outputListNames.value = []
@@ -238,7 +252,11 @@ function createBooleanPrompt(inputList, outputList, scope = globalScope) {
     }
     tableBody.value = []
     tableHeader.value = []
-    tableHeader.value.push('dec')
+    let fw = 0
+    if (inputArr.value[4].val == true) {
+        fw = 1
+        tableHeader.value.push('dec')
+    }
     for (var i = 0; i < inputListNames.value.length; i++) {
         tableHeader.value.push(inputListNames.value[i])
     }
@@ -255,23 +273,25 @@ function createBooleanPrompt(inputList, outputList, scope = globalScope) {
     }
     for (var i = 0; i < inputListNames.value.length; i++) {
         for (var j = 0; j < 1 << inputListNames.value.length; j++) {
-            tableBody.value[j][i + 1] = +(
+            tableBody.value[j][i + fw] = +(
                 (j & (1 << (inputListNames.value.length - i - 1))) !=
                 0
             )
         }
     }
-    for (var j = 0; j < 1 << inputListNames.value.length; j++) {
-        tableBody.value[j][0] = j
+    if (inputArr.value[4].val == true) {
+        for (var j = 0; j < 1 << inputListNames.value.length; j++) {
+            tableBody.value[j][0] = j
+        }
     }
     for (var j = 0; j < 1 << inputListNames.value.length; j++) {
         for (var i = 0; i < outputListNamesInteger.value.length; i++) {
             if (output.value == null) {
-                tableBody.value[j][inputListNames.value.length + 1 + i] = 'x'
+                tableBody.value[j][inputListNames.value.length + fw + i] = 'x'
             }
         }
         if (output.value != null) {
-            tableBody.value[j][inputListNames.value.length + 1] =
+            tableBody.value[j][inputListNames.value.length + fw] =
                 output.value[j]
         }
     }

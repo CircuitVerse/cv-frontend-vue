@@ -1,5 +1,5 @@
 <template>
-    <v-dialog>
+    <v-dialog :persistent="isPersistent">
         <v-card class="messageBoxContent">
             <v-card-text>
                 <!-- NOTE: Add v-ifs -->
