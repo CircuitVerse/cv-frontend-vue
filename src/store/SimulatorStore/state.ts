@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 
+// use camel case variable names
 export interface State {
     title: string
     circuit_list: []

@@ -38,6 +38,7 @@ import { changeInputSize } from './modules'
 import { verilogModeGet, verilogModeSet } from './Verilog2CV'
 import { updateTestbenchUI } from './testbench'
 import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
+import { toRef, toRefs } from 'vue'
 
 export const circuitProperty = {
     toggleLayoutMode,
@@ -160,6 +161,8 @@ export function createNewCircuitScope(name = 'Untitled-Circuit') {
  * @category circuit
  */
 export function newCircuit(name, id, isVerilog = false, isVerilogMain = false) {
+    const simulatorStore = SimulatorStore()
+    const { circuit_list } = toRefs(simulatorStore)
     if (layoutModeGet()) {
         toggleLayoutMode()
     }
@@ -175,7 +178,8 @@ export function newCircuit(name, id, isVerilog = false, isVerilogMain = false) {
     let currCircuit = {
         id: scope.id,
     }
-    SimulatorStore().circuit_list.push(currCircuit)
+    circuit_list.value.push(currCircuit)
+
     if (isVerilog) {
         scope.verilogMetadata.isVerilogCircuit = true
         scope.verilogMetadata.isMainCircuit = isVerilogMain
