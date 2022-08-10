@@ -47,6 +47,12 @@ const buttonArr = ref([{}])
 const showAlert = ref(false)
 const alertType = ref('error')
 const alertMessage = ref('')
+const outputListNamesInteger = ref([])
+const inputListNames = ref([])
+const outputListNames = ref([])
+const tableHeader = ref([])
+const tableBody = ref([])
+const output = ref([])
 
 inputArr.value = [
     {
@@ -129,10 +135,11 @@ function dialogBoxConformation(selectedOption, circuitItem) {
     if (selectedOption == 'generateCircuit') {
         console.log('Generate Cirucit')
         SimulatorState.dialogBox.combinationalanalysis_dialog = false
+        generateCircuit()
     }
     if (selectedOption == 'printTruthTable') {
         console.log('Print Truth Table')
-        SimulatorState.dialogBox.combinationalanalysis_dialog = false
+        SimulatorState.dialogBox.combinationalanalysis_dialog = false.value
     }
 }
 
@@ -177,16 +184,10 @@ function createLogicTable() {
     ) {
         // $(this).dialog('close')
         SimulatorState.dialogBox.combinationalanalysis_dialog = false
-        var output = solveBooleanFunction(
-            booleanInputVariables,
-            booleanExpression
-        )
+        output.value = []
+        solveBooleanFunction(booleanInputVariables, booleanExpression)
         if (output != null) {
-            createBooleanPrompt(
-                booleanInputVariables,
-                booleanExpression,
-                output
-            )
+            createBooleanPrompt(booleanInputVariables, booleanExpression)
         }
     } else if (
         (inputList.length == 0 || outputList.length == 0) &&
@@ -210,63 +211,55 @@ function createLogicTable() {
     }
 }
 
-const tableHeader = ref([])
-const tableBody = ref([])
-function createBooleanPrompt(
-    inputListNames,
-    outputListNames,
-    output,
-    scope = globalScope
-) {
-    var inputListNames =
-        inputListNames || prompt('Enter inputs separated by commas').split(',')
-    var outputListNames =
-        outputListNames ||
-        prompt('Enter outputs separated by commas').split(',')
-    var outputListNamesInteger = []
-    if (output == null) {
-        for (var i = 0; i < outputListNames.length; i++) {
-            outputListNamesInteger[i] = 7 * i + 13
+function createBooleanPrompt(inputList, outputList, scope = globalScope) {
+    inputListNames.value =
+        inputList || prompt('Enter inputs separated by commas').split(',')
+    outputListNames.value =
+        outputList || prompt('Enter outputs separated by commas').split(',')
+    if (output.value == null) {
+        for (var i = 0; i < outputListNames.value.length; i++) {
+            outputListNamesInteger.value[i] = 7 * i + 13
         } // assigning an integer to the value, 7*i + 13 is random
     } else {
-        outputListNamesInteger = [13]
+        outputListNamesInteger.value = [13]
     }
     tableBody.value = []
     tableHeader.value = []
     tableHeader.value.push('dec')
-    for (var i = 0; i < inputListNames.length; i++) {
-        tableHeader.value.push(inputListNames[i])
+    for (var i = 0; i < inputListNames.value.length; i++) {
+        tableHeader.value.push(inputListNames.value[i])
     }
-    if (output == null) {
-        for (var i = 0; i < outputListNames.length; i++) {
-            tableHeader.value.push(outputListNames[i])
+    if (output.value == null) {
+        for (var i = 0; i < outputListNames.value.length; i++) {
+            tableHeader.value.push(outputListNames.value[i])
         }
     } else {
-        tableHeader.value.push(outputListNames)
+        tableHeader.value.push(outputListNames.value)
     }
 
-    for (var i = 0; i < 1 << inputListNames.length; i++) {
+    for (var i = 0; i < 1 << inputListNames.value.length; i++) {
         tableBody.value[i] = new Array(tableHeader.value.length)
     }
-    for (var i = 0; i < inputListNames.length; i++) {
-        for (var j = 0; j < 1 << inputListNames.length; j++) {
+    for (var i = 0; i < inputListNames.value.length; i++) {
+        for (var j = 0; j < 1 << inputListNames.value.length; j++) {
             tableBody.value[j][i + 1] = +(
-                (j & (1 << (inputListNames.length - i - 1))) !=
+                (j & (1 << (inputListNames.value.length - i - 1))) !=
                 0
             )
         }
     }
-    for (var j = 0; j < 1 << inputListNames.length; j++) {
+    for (var j = 0; j < 1 << inputListNames.value.length; j++) {
         tableBody.value[j][0] = j
     }
-    for (var j = 0; j < 1 << inputListNames.length; j++) {
-        for (var i = 0; i < outputListNamesInteger.length; i++) {
-            if (output == null) {
-                tableBody.value[j][inputListNames.length + 1 + i] = 'x'
+    for (var j = 0; j < 1 << inputListNames.value.length; j++) {
+        for (var i = 0; i < outputListNamesInteger.value.length; i++) {
+            if (output.value == null) {
+                tableBody.value[j][inputListNames.value.length + 1 + i] = 'x'
             }
         }
-        if (output != null) {
-            tableBody.value[j][inputListNames.length + 1] = output[j]
+        if (output.value != null) {
+            tableBody.value[j][inputListNames.value.length + 1] =
+                output.value[j]
         }
     }
     console.log(tableHeader.value)
@@ -305,9 +298,10 @@ function generateBooleanTableData(outputListNames) {
 function drawCombinationalAnalysis(
     combinationalData,
     inputList,
-    outputListNames,
+    outputList,
     scope = globalScope
 ) {
+    console.log('inside draw CA')
     findDimensions(scope)
     var inputCount = inputList.length
     var maxTerms = 0
@@ -509,7 +503,7 @@ function drawCombinationalAnalysis(
             )
             out.inp1.connect(andGateNodes[0])
         }
-        out.setLabel(outputListNames[i])
+        out.setLabel(outputList[i])
         out.newLabelDirection('RIGHT')
     }
     for (var i = 0; i < logixNodes.length; i++) {
@@ -531,7 +525,7 @@ function drawCombinationalAnalysis(
 function solveBooleanFunction(inputListNames, booleanExpression) {
     let i
     let j
-    let output = []
+    output.value = []
 
     if (
         booleanExpression.match(
@@ -571,7 +565,7 @@ function solveBooleanFunction(inputListNames, booleanExpression) {
             )
         }
 
-        output[i] = solve(equation)
+        output.value[i] = solve(equation)
     }
     // generates solution for the truth table of booleanexpression
     function solve(equation) {
@@ -613,8 +607,50 @@ function solveBooleanFunction(inputListNames, booleanExpression) {
             return ''
         }
     }
-    console.log(output)
-    return output
+    console.log(output.value)
+}
+
+function generateCircuit() {
+    var data = generateBooleanTableData(outputListNamesInteger.value)
+    console.log(data)
+    var minimizedCircuit = []
+    let inputCount = inputListNames.value.length
+    for (const output in data) {
+        let oneCount = data[output][1].length // Number of ones
+        let zeroCount = data[output][0].length // Number of zeroes
+        if (oneCount == 0) {
+            // Hardcode to 0 as output
+            minimizedCircuit.push(['-'.repeat(inputCount) + '0'])
+        } else if (zeroCount == 0) {
+            // Hardcode to 1 as output
+            minimizedCircuit.push(['-'.repeat(inputCount) + '1'])
+        } else {
+            // Perform KMap like minimzation
+            const temp = new BooleanMinimize(
+                inputListNames.value.length,
+                data[output][1].map(Number),
+                data[output].x.map(Number)
+            )
+            minimizedCircuit.push(temp.result)
+        }
+    }
+    console.log(output.value)
+    if (output.value == null) {
+        drawCombinationalAnalysis(
+            minimizedCircuit,
+            inputListNames.value,
+            outputListNames.value,
+            globalScope
+        )
+    } else {
+        console.log('HI')
+        drawCombinationalAnalysis(
+            minimizedCircuit,
+            inputListNames.value,
+            [`${outputListNames.value}`],
+            globalScope
+        )
+    }
 }
 </script>
 
