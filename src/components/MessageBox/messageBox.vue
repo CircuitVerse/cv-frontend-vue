@@ -6,7 +6,7 @@
                 <p v-if="messageText" style="font-weight: bold">
                     {{ messageText }}
                 </p>
-                <template v-if="inputList.length > 0">
+                <template v-if="tableHeader.length == 0">
                     <div
                         v-for="inputItem in inputList"
                         :id="inputItem.id"
@@ -130,6 +130,7 @@ const emit = defineEmits(['buttonClick'])
 
 .messageBtn {
     width: fit-content;
+    max-width: 100px;
     border: 1px solid #c5c5c5;
     padding: 5px 5px;
 }

@@ -23,7 +23,7 @@ import { stripTags } from '#/simulator/src/utils'
 import { useState } from '#/store/SimulatorStore/state'
 import messageBox from '@/MessageBox/messageBox.vue'
 import { ref } from '@vue/reactivity'
-import { onMounted } from '@vue/runtime-core'
+import { onMounted, onUpdated } from '@vue/runtime-core'
 
 /* imports from combinationalAnalysis.js */
 import Node from '#/simulator/src/node'
@@ -53,7 +53,6 @@ const outputListNames = ref([])
 const tableHeader = ref([])
 const tableBody = ref([])
 const output = ref([])
-
 inputArr.value = [
     {
         text: 'Enter Input names separated by commas: ',
@@ -136,10 +135,20 @@ function dialogBoxConformation(selectedOption, circuitItem) {
         console.log('Generate Cirucit')
         SimulatorState.dialogBox.combinationalanalysis_dialog = false
         generateCircuit()
+        inputArr.value[0].val = ''
+        inputArr.value[1].val = ''
+        inputArr.value[3].val = ''
+        outputListNamesInteger.value = []
+        inputListNames.value = []
+        outputListNames.value = []
+        tableHeader.value = []
+        tableBody.value = []
+        output.value = []
+        SimulatorState.dialogBox.combinationalanalysis_dialog = false
     }
     if (selectedOption == 'printTruthTable') {
         console.log('Print Truth Table')
-        SimulatorState.dialogBox.combinationalanalysis_dialog = false.value
+        SimulatorState.dialogBox.combinationalanalysis_dialog = false
     }
 }
 
@@ -147,12 +156,16 @@ function createLogicTable() {
     let inputList = stripTags(inputArr.value[0].val).split(',')
     let outputList = stripTags(inputArr.value[1].val).split(',')
     let booleanExpression = inputArr.value[3].val
+
     inputList = inputList.map((x) => x.trim())
     inputList = inputList.filter((e) => e)
     outputList = outputList.map((x) => x.trim())
     outputList = outputList.filter((e) => e)
     booleanExpression = booleanExpression.replace(/ /g, '')
     booleanExpression = booleanExpression.toUpperCase()
+    console.log(inputList)
+    console.log(outputList)
+    console.log(booleanExpression)
 
     var booleanInputVariables = []
     for (var i = 0; i < booleanExpression.length; i++) {
@@ -266,7 +279,6 @@ function createBooleanPrompt(inputList, outputList, scope = globalScope) {
     console.log(tableBody.value)
     // display Message Box
     SimulatorState.dialogBox.combinationalanalysis_dialog = true
-    inputArr.value = []
     buttonArr.value = [
         {
             text: 'Generate Circuit',
