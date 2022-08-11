@@ -1,6 +1,7 @@
 <template>
     <messageBox
         v-model="SimulatorState.dialogBox.combinationalanalysis_dialog"
+        class="messageBox"
         :button-list="buttonArr"
         :input-list="inputArr"
         input-class="combinationalAnalysisInput"
@@ -112,6 +113,20 @@ const buttonArray = [
 ]
 buttonArr.value = buttonArray
 
+function clearData() {
+    inputArr.value[0].val = ''
+    inputArr.value[1].val = ''
+    inputArr.value[3].val = ''
+    inputArr.value[4].val = ''
+    buttonArr.value = buttonArray
+    outputListNamesInteger.value = []
+    inputListNames.value = []
+    outputListNames.value = []
+    tableHeader.value = []
+    tableBody.value = []
+    output.value = []
+}
+
 function dialogBoxConformation(selectedOption, circuitItem) {
     // SimulatorState.dialogBox.combinationalanalysis_dialog = false
     console.log(inputArr.value)
@@ -130,38 +145,20 @@ function dialogBoxConformation(selectedOption, circuitItem) {
                 inputArr.value[ind].val = false
             }
         }
-        inputArr.value[0].val = ''
-        inputArr.value[1].val = ''
-        inputArr.value[3].val = ''
-        inputArr.value[4].val = ''
-        buttonArr.value = buttonArray
-        outputListNamesInteger.value = []
-        inputListNames.value = []
-        outputListNames.value = []
-        tableHeader.value = []
-        tableBody.value = []
-        output.value = []
+        clearData()
         SimulatorState.dialogBox.combinationalanalysis_dialog = false
     }
     if (selectedOption == 'generateCircuit') {
         console.log('Generate Cirucit')
         SimulatorState.dialogBox.combinationalanalysis_dialog = false
         generateCircuit()
-        inputArr.value[0].val = ''
-        inputArr.value[1].val = ''
-        inputArr.value[3].val = ''
-        inputArr.value[4].val = ''
-        buttonArr.value = buttonArray
-        outputListNamesInteger.value = []
-        inputListNames.value = []
-        outputListNames.value = []
-        tableHeader.value = []
-        tableBody.value = []
-        output.value = []
+        clearData()
         SimulatorState.dialogBox.combinationalanalysis_dialog = false
     }
     if (selectedOption == 'printTruthTable') {
         console.log('Print Truth Table')
+        printBooleanTable()
+        clearData()
         SimulatorState.dialogBox.combinationalanalysis_dialog = false
     }
 }
@@ -262,9 +259,11 @@ function createBooleanPrompt(inputList, outputList, scope = globalScope) {
     }
     if (output.value == null) {
         for (var i = 0; i < outputListNames.value.length; i++) {
+            console.log(outputListNames.value[i])
             tableHeader.value.push(outputListNames.value[i])
         }
     } else {
+        console.log(outputListNames.value)
         tableHeader.value.push(outputListNames.value)
     }
 
@@ -684,6 +683,27 @@ function generateCircuit() {
         )
     }
 }
+
+function printBooleanTable() {
+    console.log($('.messageBox .v-card-text')[0])
+    var sTable = $('.messageBox .v-card-text')[0].innerHTML
+    console.log(sTable)
+    var style =
+        '<style> table {font: 20px Calibri;} table, th, td {border: solid 1px #DDD;border-collapse: collapse;} padding: 2px 3px;text-align: center;} </style>'
+    var win = window.open('', '', 'height=700,width=700')
+    var htmlBody = `
+                       <html><head>\
+                       <title>Boolean Logic Table</title>\
+                       ${style}\
+                       </head>\
+                       <body>\
+                       <center>${sTable}</center>\
+                       </body></html>
+                     `
+    win.document.write(htmlBody)
+    win.document.close()
+    win.print()
+}
 </script>
 
 <style scoped>
@@ -696,3 +716,8 @@ function generateCircuit() {
     z-index: 10000;
 }
 </style>
+
+<!-- 
+    some errors due to output.value 
+    output.value == null not working
+-->
