@@ -560,48 +560,8 @@
     ></div>
     <!-- --------------------------------------------------------------------------------------------- -->
 
-    <!-- --------------------------------------------------------------------------------------------- -->
-    <div
-        id="bitconverterprompt"
-        title="Dec-Bin-Hex-Converter"
-        style="display: none"
-    >
-        <label>Decimal value</label><br /><input
-            id="decimalInput"
-            type="text"
-            value="16"
-            label="Decimal"
-            name="text1"
-        /><br /><br />
-        <label>Binary value</label><br /><input
-            id="binaryInput"
-            type="text"
-            value="0b10000"
-            label="Binary"
-            name="text1"
-        /><br /><br />
-        <label>Binary-coded decimal value</label><br /><input
-            id="bcdInput"
-            type="text"
-            value="10110"
-            label="BCD"
-            name="text1"
-        /><br /><br />
-        <label>Octal value</label><br /><input
-            id="octalInput"
-            type="text"
-            value="020"
-            label="Octal"
-            name="text1"
-        /><br /><br />
-        <label>Hexadecimal value</label><br /><input
-            id="hexInput"
-            type="text"
-            value="0x10"
-            label="Hex"
-            name="text1"
-        /><br /><br />
-    </div>
+    <!-- Dialog Box - Hex Bin Dec --------------------------------------------------------------------------------------------- -->
+    <Hex_Bin_Dec />
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
@@ -690,4 +650,5 @@ import ElementsPanel from './Panels/ElementsPanel/ElementsPanel.vue'
 import PropertiesPanel from './Panels/PropertiesPanel/PropertiesPanel.vue'
 import TabsBar from './TabsBar/TabsBar.vue'
 import combinationalAnalysis from './DialogBox/combinationalAnalysis.vue'
+import Hex_Bin_Dec from './DialogBox/Hex_Bin_Dec.vue'
 </script>

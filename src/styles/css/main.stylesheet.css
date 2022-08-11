@@ -1918,3 +1918,80 @@ canvas {
     /* margin-bottom: 5px; */
     border-radius: 3px;
 }
+
+/* Vue Dialog Box Styles STARTS */
+
+.inputField {
+    width: 100%;
+    padding: 10px 10px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border-radius: 5px;
+    border: 1px solid #c5c5c5;
+    color: white;
+    outline: none;
+}
+
+.cAinput {
+    width: 30%;
+    padding: 0 5px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border-radius: 5px;
+    border: 1px solid #c5c5c5;
+    color: white;
+    outline: none;
+}
+
+.combinationalAnalysisInput:first-child {
+    padding-top: 20px;
+}
+
+.combinationalAnalysisInput {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: baseline;
+}
+
+.inputField:focus {
+    border: 2px solid #c5c5c5;
+}
+
+.v-card-actions {
+    width: fit-content;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: auto;
+}
+
+.messageBoxContent {
+    height: auto;
+    min-width: 300px;
+    justify-content: center;
+    margin: auto;
+    backdrop-filter: blur(5px);
+    border-radius: 5px;
+    border: 0.5px solid var(--br-primary) !important;
+    background: var(--bg-primary-moz) !important;
+    background-color: var(--bg-primary-chr) !important;
+    color: white;
+}
+
+.tabsbarInput {
+    align-items: center;
+}
+
+.messageBtn {
+    width: fit-content;
+    max-width: 50px;
+    border: 1px solid #c5c5c5;
+    padding: 5px 5px;
+}
+
+.messageBtn:hover {
+    background: #c5c5c5;
+    color: black;
+}
+/* STYLE ENDS */
