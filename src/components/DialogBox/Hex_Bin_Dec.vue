@@ -5,6 +5,17 @@
     >
         <v-card class="messageBoxContent">
             <v-card-text>
+                <p class="dialogHeader">Hex-Bin-Dec Convertor</p>
+                <v-btn
+                    size="x-small"
+                    icon
+                    class="dialogClose"
+                    @click="
+                        SimulatorState.dialogBox.hex_bin_dec_converter_dialog = false
+                    "
+                >
+                    <v-icon>mdi-close</v-icon>
+                </v-btn>
                 <div
                     v-for="inputEle in inputArr"
                     id="bitconverterprompt"
@@ -44,27 +55,27 @@ inputArr.value = [
     {
         inputId: 'decimalInput',
         val: '16',
-        label: 'Decimal',
+        label: 'Decimal value',
     },
     {
         inputId: 'binaryInput',
         val: '0b10000',
-        label: 'Binary',
+        label: 'Binary value',
     },
     {
         inputId: 'bcdInput',
         val: '10110',
-        label: 'BCD',
+        label: 'Binary-coded decimal vlaue',
     },
     {
         inputId: 'octalInput',
         val: '020',
-        label: 'octal',
+        label: 'Octal value',
     },
     {
         inputId: 'hexInput',
         val: '0x10',
-        label: 'Hex',
+        label: 'Hexadecimal value',
     },
 ]
 

@@ -1592,7 +1592,7 @@ input:checked + .slider:before {
     text-align: center;
     font: inherit;
     border: none;
-    margin-top: 15px;
+    margin-top: 5px;
     padding: 0;
 }
 
@@ -1993,5 +1993,33 @@ canvas {
 .messageBtn:hover {
     background: #c5c5c5;
     color: black;
+}
+
+.dialogHeader {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.dialogClose {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    color: white;
+    background: none;
+    font-size: x-small;
+    box-shadow: none;
+}
+.dialogClose:hover {
+    font-weight: bold;
+    background: white;
+    opacity: 0.5;
+    color: black;
+}
+
+.dialogHeader {
+    font-weight: bold;
+    margin-bottom: 25px;
 }
 /* STYLE ENDS */
