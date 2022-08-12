@@ -5,60 +5,21 @@
     >
         <v-card class="messageBoxContent">
             <v-card-text>
-                <div id="bitconverterprompt" title="Dec-Bin-Hex-Converter">
-                    <label>Decimal value</label>
+                <div
+                    v-for="inputEle in inputArr"
+                    id="bitconverterprompt"
+                    :key="inputEle.inputId"
+                    title="Dec-Bin-Hex-Converter"
+                >
+                    <label>{{ inputEle.label }}</label>
                     <br />
                     <input
-                        id="decimalInput"
+                        :id="inputEle.inputId"
                         type="text"
-                        value="16"
-                        label="Decimal"
+                        :value="inputEle.val"
+                        :label="inputEle.label"
                         name="text1"
-                        @keyup="decimalConvertor"
-                    />
-                    <br /><br />
-                    <label>Binary value</label>
-                    <br />
-                    <input
-                        id="binaryInput"
-                        type="text"
-                        value="0b10000"
-                        label="Binary"
-                        name="text1"
-                        @keyup="binaryConvertor"
-                    />
-                    <br /><br />
-                    <label>Binary-coded decimal value</label>
-                    <br />
-                    <input
-                        id="bcdInput"
-                        type="text"
-                        value="10110"
-                        label="BCD"
-                        name="text1"
-                        @keyup="bcdConvertor"
-                    />
-                    <br /><br />
-                    <label>Octal value</label>
-                    <br />
-                    <input
-                        id="octalInput"
-                        type="text"
-                        value="020"
-                        label="Octal"
-                        name="text1"
-                        @keyup="octalConvertor"
-                    />
-                    <br /><br />
-                    <label>Hexadecimal value</label>
-                    <br />
-                    <input
-                        id="hexInput"
-                        type="text"
-                        value="0x10"
-                        label="Hex"
-                        name="text1"
-                        @keyup="hexConvertor"
+                        @keyup="() => converter(inputEle.inputId)"
                     />
                     <br /><br />
                 </div>
@@ -75,25 +36,56 @@
 <script lang="ts" setup>
 import { useState } from '#/store/SimulatorStore/state'
 const SimulatorState = useState()
-import {
-    convertors,
-    setupBitConvertor,
-    setBaseValues,
-} from '#/simulator/src/utils'
-import { onMounted, onUpdated } from '@vue/runtime-core'
+import { setBaseValues } from '#/simulator/src/utils'
+import { onMounted, ref } from '@vue/runtime-core'
+
+const inputArr = ref([])
+inputArr.value = [
+    {
+        inputId: 'decimalInput',
+        val: '16',
+        label: 'Decimal',
+    },
+    {
+        inputId: 'binaryInput',
+        val: '0b10000',
+        label: 'Binary',
+    },
+    {
+        inputId: 'bcdInput',
+        val: '10110',
+        label: 'BCD',
+    },
+    {
+        inputId: 'octalInput',
+        val: '020',
+        label: 'octal',
+    },
+    {
+        inputId: 'hexInput',
+        val: '0x10',
+        label: 'Hex',
+    },
+]
 
 onMounted(() => {
     SimulatorState.dialogBox.hex_bin_dec_converter_dialog = false
 })
 
+function converter(feildChange) {
+    if (feildChange == 'decimalInput') decimalConvertor()
+    if (feildChange == 'binaryInput') binaryConvertor()
+    if (feildChange == 'bcdInput') bcdConvertor()
+    if (feildChange == 'octalInput') decimalConvertor()
+    if (feildChange == 'hexInput') octalConvertor()
+}
+
 function decimalConvertor() {
-    console.log('decimal-input change')
     var x = parseInt($('#decimalInput').val(), 10)
     setBaseValues(x)
 }
 
 function binaryConvertor() {
-    console.log('binary-input change')
     var inp = $('#binaryInput').val()
     var x
     if (inp.slice(0, 2) == '0b') x = parseInt(inp.slice(2), 2)
@@ -102,7 +94,6 @@ function binaryConvertor() {
 }
 
 function bcdConvertor() {
-    console.log('bcd change')
     var input = $('#bcdInput').val()
     var num = 0
     while (input.length % 4 !== 0) {
@@ -121,13 +112,11 @@ function bcdConvertor() {
 }
 
 function octalConvertor() {
-    console.log('octal change')
     var x = parseInt($('#octalInput').val(), 8)
     setBaseValues(x)
 }
 
 function hexConvertor() {
-    console.log('hex change')
     var x = parseInt($('#hexInput').val(), 16)
     setBaseValues(x)
 }
