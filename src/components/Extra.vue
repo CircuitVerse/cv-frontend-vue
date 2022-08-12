@@ -649,6 +649,6 @@
 import ElementsPanel from './Panels/ElementsPanel/ElementsPanel.vue'
 import PropertiesPanel from './Panels/PropertiesPanel/PropertiesPanel.vue'
 import TabsBar from './TabsBar/TabsBar.vue'
-import combinationalAnalysis from './DialogBox/combinationalAnalysis.vue'
-import Hex_Bin_Dec from './DialogBox/Hex_Bin_Dec.vue'
+import combinationalAnalysis from './DialogBox/CombinationalAnalysis.vue'
+import Hex_Bin_Dec from './DialogBox/HexBinDec.vue'
 </script>
