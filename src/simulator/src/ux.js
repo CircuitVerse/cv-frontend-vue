@@ -667,6 +667,7 @@ export function deleteSelected() {
  * @category ux
  */
 $('#bitconverter').on('click', () => {
+    console.log('something clicked')
     $('#bitconverterprompt').dialog({
         resizable: false,
         buttons: [
