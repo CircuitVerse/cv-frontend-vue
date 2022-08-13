@@ -89,8 +89,8 @@
                 </div>
             </v-card-text>
             <v-card-actions>
-                <v-btn class="messageBtn" block @click="setBaseValues(0)">
-                    Reset
+                <v-btn class="messageBtn" block @click="renderCircuit">
+                    Render Circuit Image
                 </v-btn>
             </v-card-actions>
         </v-card>
@@ -98,6 +98,7 @@
 </template>
 
 <script lang="ts" setup>
+import { generateImage } from '#/simulator/src/data/save'
 import { useState } from '#/store/SimulatorStore/state'
 import { onMounted, ref } from '@vue/runtime-core'
 const SimulatorState = useState()
@@ -133,4 +134,14 @@ $('input[name=imgType]').change(() => {
         $('.cb-inner').removeClass('disable')
     }
 })
+
+function renderCircuit() {
+    SimulatorState.dialogBox.saveimage_dialog = false
+    generateImage(
+        $('input[name=imgType]:checked').val(),
+        $('input[name=view]:checked').val(),
+        $('input[name=transparent]:checked').val(),
+        $('input[name=resolution]:checked').val()
+    )
+}
 </script>
