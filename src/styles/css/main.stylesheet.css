@@ -1262,6 +1262,7 @@ input:checked + .slider:before {
     padding: 0 7px;
     position: relative;
     cursor: pointer;
+    margin: 2px 3px;
 }
 
 .option input[type='radio'] {
@@ -1985,7 +1986,7 @@ canvas {
 
 .messageBtn {
     width: fit-content;
-    max-width: 50px;
+    min-width: 50px;
     border: 1px solid #c5c5c5;
     padding: 5px 5px;
 }
