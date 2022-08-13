@@ -359,89 +359,7 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Dialog Box - Save -->
-    <div
-        id="saveImageDialog"
-        class="noSelect"
-        style="display: none"
-        title="Render Image"
-    >
-        <div class="download-dialog-section-1">
-            <label class="option custom-radio inline"
-                ><input
-                    type="radio"
-                    name="imgType"
-                    value="png"
-                    checked="checked" />PNG<span></span
-            ></label>
-            <label class="option custom-radio inline"
-                ><input type="radio" name="imgType" value="jpeg" />JPEG<span
-                ></span
-            ></label>
-            <label class="option custom-radio inline"
-                ><input type="radio" name="imgType" value="svg" />SVG<span
-                ></span
-            ></label>
-            <label class="option custom-radio inline"
-                ><input type="radio" name="imgType" value="bmp" />BMP<span
-                ></span
-            ></label>
-            <label class="option custom-radio inline"
-                ><input type="radio" name="imgType" value="gif" />GIF<span
-                ></span
-            ></label>
-            <label class="option custom-radio inline"
-                ><input type="radio" name="imgType" value="tiff" />TIFF<span
-                ></span
-            ></label>
-        </div>
-        <div class="download-dialog-section-2">
-            <div
-                class="option inline btn-group btn-group-toggle"
-                style="border: none"
-                data-toggle="buttons"
-            >
-                <div id="radio-full" class="btn" role="button">
-                    <input type="radio" name="view" value="full" /> Full Circuit
-                    View
-                </div>
-                <div id="radio-current" class="btn active" role="button">
-                    <input
-                        type="radio"
-                        name="view"
-                        value="current"
-                        checked="checked"
-                    />Current View
-                </div>
-            </div>
-            <div class="download-dialog-section-2_2">
-                <label class="cb-checkbox"
-                    ><input
-                        type="checkbox"
-                        name="transparent"
-                        value="transparent"
-                    />Transparent Background</label
-                >
-            </div>
-        </div>
-        <div class="download-dialog-section-3">
-            <span>Resolution:</span>
-            <label class="option custom-radio inline"
-                ><input
-                    type="radio"
-                    name="resolution"
-                    value="1"
-                    checked="checked" />1x<span></span
-            ></label>
-            <label class="option custom-radio inline"
-                ><input type="radio" name="resolution" value="2" />2x<span
-                ></span
-            ></label>
-            <label class="option custom-radio inline"
-                ><input type="radio" name="resolution" value="4" />4x<span
-                ></span
-            ></label>
-        </div>
-    </div>
+    <SaveImage />
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
@@ -525,7 +443,7 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Dialog Box - Combinational Analysis -->
-    <combinationalAnalysis />
+    <CombinationalAnalysis />
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
@@ -561,7 +479,7 @@
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- Dialog Box - Hex Bin Dec --------------------------------------------------------------------------------------------- -->
-    <Hex_Bin_Dec />
+    <HexBinDec />
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
@@ -649,6 +567,7 @@
 import ElementsPanel from './Panels/ElementsPanel/ElementsPanel.vue'
 import PropertiesPanel from './Panels/PropertiesPanel/PropertiesPanel.vue'
 import TabsBar from './TabsBar/TabsBar.vue'
-import combinationalAnalysis from './DialogBox/CombinationalAnalysis.vue'
-import Hex_Bin_Dec from './DialogBox/HexBinDec.vue'
+import CombinationalAnalysis from './DialogBox/CombinationalAnalysis.vue'
+import HexBinDec from './DialogBox/HexBinDec.vue'
+import SaveImage from './DialogBox/SaveImage.vue'
 </script>
