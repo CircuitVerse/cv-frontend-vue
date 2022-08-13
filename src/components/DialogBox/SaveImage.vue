@@ -110,6 +110,7 @@ onMounted(() => {
     SimulatorState.dialogBox.saveimage_dialog = false
 })
 
+/* Fix below part */
 $('input[name=imgType]').change(() => {
     $('input[name=resolution]').prop('disabled', false)
     $('input[name=transparent]').prop('disabled', false)
@@ -137,6 +138,12 @@ $('input[name=imgType]').change(() => {
 
 function renderCircuit() {
     SimulatorState.dialogBox.saveimage_dialog = false
+    // console.log(
+    //     $('input[name=imgType]:checked').val(),
+    //     $('input[name=view]:checked').val(),
+    //     $('input[name=transparent]:checked').val(),
+    //     $('input[name=resolution]:checked').val()
+    // )
     generateImage(
         $('input[name=imgType]:checked').val(),
         $('input[name=view]:checked').val(),
