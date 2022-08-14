@@ -2023,4 +2023,9 @@ canvas {
     font-weight: bold;
     margin-bottom: 25px;
 }
+
+.downloadCheckbox {
+    width: 5px;
+    height: 5px;
+}
 /* STYLE ENDS */

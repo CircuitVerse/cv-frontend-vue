@@ -26,6 +26,7 @@
                                 name="imgType"
                                 :value="imageType.toLowerCase()"
                                 checked="checked"
+                                @click="trying"
                             />
                             {{ imageType }}
                             <span></span>
@@ -33,6 +34,7 @@
                     </div>
                     <div class="download-dialog-section-2">
                         <div
+                            v-if="toShow == true"
                             class="option inline btn-group btn-group-toggle"
                             style="border: none"
                             data-toggle="buttons"
@@ -54,17 +56,24 @@
                                 />Current View
                             </div>
                         </div>
-                        <div class="download-dialog-section-2_2">
-                            <label class="cb-checkbox"
-                                ><input
+                        <div
+                            v-if="toShow1 == true"
+                            class="download-dialog-section-2_2"
+                        >
+                            <label class="cb-checkbox">
+                                <input
                                     type="checkbox"
                                     name="transparent"
                                     value="transparent"
-                                />Transparent Background</label
-                            >
+                                />
+                                Transparent Background
+                            </label>
                         </div>
                     </div>
-                    <div class="download-dialog-section-3">
+                    <div
+                        v-if="toShow == true"
+                        class="download-dialog-section-3"
+                    >
                         <span>Resolution:</span>
                         <label class="option custom-radio inline"
                             ><input
@@ -111,30 +120,7 @@ onMounted(() => {
 })
 
 /* Fix below part */
-$('input[name=imgType]').change(() => {
-    $('input[name=resolution]').prop('disabled', false)
-    $('input[name=transparent]').prop('disabled', false)
-    const imgType = $('input[name=imgType]:checked').val()
-    imgType == 'svg'
-        ? $('.btn-group-toggle, .download-dialog-section-3').addClass('disable')
-        : $(
-              '.btn-group-toggle, .download-dialog-section-3, .cb-inner'
-          ).removeClass('disable')
-    if (imgType === 'svg') {
-        $('input[name=resolution][value=1]').trigger('click')
-        $('input[name=view][value="full"]').trigger('click')
-        $('input[name=resolution]').prop('disabled', true)
-        $('input[name=view]').prop('disabled', true)
-    } else if (imgType !== 'png') {
-        $('input[name=transparent]').attr('checked', false)
-        $('input[name=transparent]').prop('disabled', true)
-        $('input[name=view]').prop('disabled', false)
-        $('.cb-inner').addClass('disable')
-    } else {
-        $('input[name=view]').prop('disabled', false)
-        $('.cb-inner').removeClass('disable')
-    }
-})
+$('input[name=imgType]').change(() => {})
 
 function renderCircuit() {
     SimulatorState.dialogBox.saveimage_dialog = false
@@ -150,5 +136,34 @@ function renderCircuit() {
         $('input[name=transparent]:checked').val(),
         $('input[name=resolution]:checked').val()
     )
+}
+const toShow = ref(true)
+const toShow1 = ref(true)
+
+function trying() {
+    $('input[name=resolution]').prop('disabled', false)
+    $('input[name=transparent]').prop('disabled', false)
+    const imgType = $('input[name=imgType]:checked').val()
+    console.log('image type : ', imgType)
+    imgType == 'svg' ? (toShow.value = false) : (toShow.value = true)
+    if (imgType === 'png') {
+        toShow1.value = true
+    } else {
+        toShow1.value = false
+    }
+    if (imgType === 'svg') {
+        $('input[name=resolution][value=1]').trigger('click')
+        $('input[name=view][value="full"]').trigger('click')
+        $('input[name=resolution]').prop('disabled', true)
+        $('input[name=view]').prop('disabled', true)
+    } else if (imgType !== 'png') {
+        $('input[name=transparent]').attr('checked', false)
+        $('input[name=transparent]').prop('disabled', true)
+        $('input[name=view]').prop('disabled', false)
+        $('.cb-inner').addClass('disable')
+    } else {
+        $('input[name=view]').prop('disabled', false)
+        $('.cb-inner').removeClass('disable')
+    }
 }
 </script>
