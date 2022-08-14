@@ -1269,6 +1269,17 @@ input:checked + .slider:before {
     visibility: hidden;
 }
 
+.download-dialog-section-2 .btn {
+    color: var(--text-lite);
+}
+.download-dialog-section-2 .btn:hover {
+    color: var(--text-lite);
+}
+
+.download-dialog-section-2 .option {
+    background: transparent;
+}
+
 .custom-radio span {
     height: 20px;
     width: 20px;
