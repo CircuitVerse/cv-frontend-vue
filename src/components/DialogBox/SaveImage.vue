@@ -5,7 +5,7 @@
     >
         <v-card class="messageBoxContent">
             <v-card-text>
-                <p class="dialogHeader">Download Image</p>
+                <p class="dialogHeader">Render Image</p>
                 <v-btn
                     size="x-small"
                     icon
@@ -26,6 +26,7 @@
                                 name="imgType"
                                 :value="imageType.toLowerCase()"
                                 checked="checked"
+                                @click="checkImgType"
                             />
                             {{ imageType }}
                             <span></span>
@@ -33,18 +34,35 @@
                     </div>
                     <div class="download-dialog-section-2">
                         <div
+                            v-if="toShow == true"
                             class="option inline btn-group btn-group-toggle"
                             style="border: none"
                             data-toggle="buttons"
                         >
-                            <div id="radio-full" class="btn" role="button">
+                            <div
+                                id="radio-full"
+                                class="btn"
+                                :class="
+                                    fullImg == true
+                                        ? 'active-btn'
+                                        : 'inactive-btn'
+                                "
+                                role="button"
+                                @click="updateView(1)"
+                            >
                                 <input type="radio" name="view" value="full" />
                                 Full Circuit View
                             </div>
                             <div
                                 id="radio-current"
-                                class="btn active-btn"
+                                class="btn"
+                                :class="
+                                    fullImg == false
+                                        ? 'active-btn'
+                                        : 'inactive-btn'
+                                "
                                 role="button"
+                                @click="updateView(0)"
                             >
                                 <input
                                     type="radio"
@@ -54,17 +72,24 @@
                                 />Current View
                             </div>
                         </div>
-                        <div class="download-dialog-section-2_2">
-                            <label class="cb-checkbox"
-                                ><input
+                        <div
+                            v-if="toShow1 == true"
+                            class="download-dialog-section-2_2"
+                        >
+                            <label class="cb-checkbox">
+                                <input
                                     type="checkbox"
                                     name="transparent"
                                     value="transparent"
-                                />Transparent Background</label
-                            >
+                                />
+                                Transparent Background
+                            </label>
                         </div>
                     </div>
-                    <div class="download-dialog-section-3">
+                    <div
+                        v-if="toShow == true"
+                        class="download-dialog-section-3"
+                    >
                         <span>Resolution:</span>
                         <label class="option custom-radio inline"
                             ><input
@@ -89,7 +114,7 @@
                 </div>
             </v-card-text>
             <v-card-actions>
-                <v-btn class="messageBtn" block @click="renderCircuit">
+                <v-btn class="messageBtn" block @click="renderCircuit()">
                     Render Circuit Image
                 </v-btn>
             </v-card-actions>
@@ -105,21 +130,34 @@ const SimulatorState = useState()
 
 const imgTypeList = ref([''])
 imgTypeList.value = ['PNG', 'JPEG', 'SVG', 'BMP', 'GIF', 'TIFF']
+const toShow = ref(true)
+const toShow1 = ref(true)
+const fullImg = ref(false)
 
 onMounted(() => {
     SimulatorState.dialogBox.saveimage_dialog = false
 })
 
-/* Fix below part */
-$('input[name=imgType]').change(() => {
+function renderCircuit() {
+    SimulatorState.dialogBox.saveimage_dialog = false
+    generateImage(
+        $('input[name=imgType]:checked').val(),
+        $('input[name=view]:checked').val(),
+        $('input[name=transparent]:checked').val(),
+        $('input[name=resolution]:checked').val()
+    )
+}
+
+function checkImgType() {
     $('input[name=resolution]').prop('disabled', false)
     $('input[name=transparent]').prop('disabled', false)
     const imgType = $('input[name=imgType]:checked').val()
-    imgType == 'svg'
-        ? $('.btn-group-toggle, .download-dialog-section-3').addClass('disable')
-        : $(
-              '.btn-group-toggle, .download-dialog-section-3, .cb-inner'
-          ).removeClass('disable')
+    imgType == 'svg' ? (toShow.value = false) : (toShow.value = true)
+    if (imgType === 'png') {
+        toShow1.value = true
+    } else {
+        toShow1.value = false
+    }
     if (imgType === 'svg') {
         $('input[name=resolution][value=1]').trigger('click')
         $('input[name=view][value="full"]').trigger('click')
@@ -134,21 +172,13 @@ $('input[name=imgType]').change(() => {
         $('input[name=view]').prop('disabled', false)
         $('.cb-inner').removeClass('disable')
     }
-})
+}
 
-function renderCircuit() {
-    SimulatorState.dialogBox.saveimage_dialog = false
-    // console.log(
-    //     $('input[name=imgType]:checked').val(),
-    //     $('input[name=view]:checked').val(),
-    //     $('input[name=transparent]:checked').val(),
-    //     $('input[name=resolution]:checked').val()
-    // )
-    generateImage(
-        $('input[name=imgType]:checked').val(),
-        $('input[name=view]:checked').val(),
-        $('input[name=transparent]:checked').val(),
-        $('input[name=resolution]:checked').val()
-    )
+function updateView(x) {
+    if (x == 1) {
+        fullImg.value = true
+    } else {
+        fullImg.value = false
+    }
 }
 </script>
