@@ -37,6 +37,7 @@ const getCustomThemeCard = () => {
     downloadAnchor.setAttribute('id', 'downloadThemeFile')
     downloadAnchor.setAttribute('style', 'display:none')
     propertiesContainer.appendChild(downloadAnchor)
+    console.log(propertiesContainer)
     return propertiesContainer
 }
 
@@ -45,6 +46,7 @@ const getCustomThemeCard = () => {
  */
 export const CustomColorThemes = () => {
     $('#CustomColorThemesDialog').empty()
+    console.log(getCustomThemeCard())
     $('#CustomColorThemesDialog').append(getCustomThemeCard())
     $('#CustomColorThemesDialog').dialog({
         resizable: false,
