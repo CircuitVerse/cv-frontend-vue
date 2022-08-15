@@ -364,13 +364,14 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Dialog Box - Custom Themes -->
-    <div
+    <!-- <div
         id="colorThemesDialog"
         class="customScroll colorThemesDialog"
         tabindex="0"
         style="display: none"
         title="Select Theme"
-    ></div>
+    ></div> -->
+    <ApplyThemes />
     <div
         id="CustomColorThemesDialog"
         class="customScroll"
@@ -570,4 +571,5 @@ import TabsBar from './TabsBar/TabsBar.vue'
 import CombinationalAnalysis from './DialogBox/CombinationalAnalysis.vue'
 import HexBinDec from './DialogBox/HexBinDec.vue'
 import SaveImage from './DialogBox/SaveImage.vue'
+import ApplyThemes from './DialogBox/Themes/ApplyThemes.vue'
 </script>
