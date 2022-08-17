@@ -180,14 +180,25 @@ function changeCustomTheme(e) {
 }
 
 function applyTheme() {
-    SimulatorState.dialogBox.theme_dialog = false
     console.log('Apply Theme')
-    if ($('.selected label').text()) {
-        localStorage.removeItem('Custom Theme')
-        localStorage.setItem('theme', $('.selected label').text())
+    if (iscustomTheme.value == false) {
+        if ($('.selected label').text()) {
+            localStorage.removeItem('Custom Theme')
+            localStorage.setItem('theme', $('.selected label').text())
+        }
+    } else {
+        // update theme to Custom Theme
+        localStorage.setItem('theme', 'Custom Theme')
+        // add Custom theme to custom theme object
+        localStorage.setItem(
+            'Custom Theme',
+            JSON.stringify(themeOptions['Custom Theme'])
+        )
     }
     $('.set').removeClass('set')
     $('.selected').addClass('set')
+    SimulatorState.dialogBox.theme_dialog = false
+    setTimeout(() => (iscustomTheme.value = false), 1000)
 }
 function applyCustomTheme() {
     iscustomTheme.value = true
@@ -252,13 +263,13 @@ function exportCustomTheme() {
 
 function closeThemeDialog() {
     SimulatorState.dialogBox.theme_dialog = false
-    iscustomTheme.value = false
+    setTimeout(() => (iscustomTheme.value = false), 1000)
     updateThemeForStyle(localStorage.getItem('theme'))
     updateBG()
 }
 function closeCustomThemeDialog() {
     SimulatorState.dialogBox.theme_dialog = false
-    iscustomTheme.value = false
+    setTimeout(() => (iscustomTheme.value = false), 1000)
     themeOptions['Custom Theme'] =
         JSON.parse(localStorage.getItem('Custom Theme')) ||
         themeOptions['Default Theme'] // hack for closing dialog box without saving
