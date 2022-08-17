@@ -16,6 +16,7 @@
         "@mdi/font": "5.9.55",
         "bootstrap": "^4.6.1",
         "codemirror": "^5.65.1",
+        "codemirror-editor-vue3": "^2.1.7",
         "dom-to-image": "^2.6.0",
         "driver.js": "^0.9.8",
         "esbuild": "^0.14.45",

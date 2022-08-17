@@ -213,7 +213,7 @@ export function setupUI() {
     // });
     // $('#moduleProperty').draggable();
     setupPanels()
-    setupVerilogExportCodeWindow()
+    // setupVerilogExportCodeWindow()
     setupBitConvertor()
 }
 

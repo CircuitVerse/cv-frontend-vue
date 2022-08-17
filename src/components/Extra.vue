@@ -6,13 +6,7 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Verilog Code Editor -->
-    <div
-        id="verilog-export-code-window-div"
-        title="Export Verilog"
-        style="display: none"
-    >
-        <textarea id="verilog-export-code-window"></textarea>
-    </div>
+    <ExportVerilog />
     <div id="code-window" class="code-window">
         <textarea id="codeTextArea"></textarea>
     </div>
@@ -572,4 +566,5 @@ import CombinationalAnalysis from './DialogBox/CombinationalAnalysis.vue'
 import HexBinDec from './DialogBox/HexBinDec.vue'
 import SaveImage from './DialogBox/SaveImage.vue'
 import ApplyThemes from './DialogBox/Themes/ApplyThemes.vue'
+import ExportVerilog from './DialogBox/ExportVerilog.vue'
 </script>
