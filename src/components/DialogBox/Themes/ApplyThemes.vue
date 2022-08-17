@@ -1,7 +1,7 @@
 <template>
     <v-dialog
         v-model="SimulatorState.dialogBox.theme_dialog"
-        :persistent="false"
+        :persistent="true"
     >
         <v-card class="messageBoxContent">
             <v-card-text>
@@ -16,7 +16,6 @@
                         <v-icon>mdi-close</v-icon>
                     </v-btn>
                     <div
-                        v-if="selectedTheme != 'Custom Theme'"
                         id="colorThemesDialog"
                         class="customScroll colorThemesDialog"
                         tabindex="0"
@@ -60,6 +59,15 @@
                     </div>
                 </template>
                 <template v-else>
+                    <p class="dialogHeader">Custom Theme</p>
+                    <v-btn
+                        size="x-small"
+                        icon
+                        class="dialogClose"
+                        @click="closeCustomThemeDialog()"
+                    >
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
                     <form @change="changeCustomTheme($event)">
                         <div
                             v-for="customTheme in customThemes"
@@ -185,19 +193,45 @@ function applyTheme() {
 function applyCustomTheme() {
     iscustomTheme.value = true
     console.log('Apply Custom Theme')
-    CustomColorThemes()
+    updateThemeForStyle(localStorage.getItem('theme'))
+    updateBG()
+    localStorage.setItem('theme', 'Custom Theme')
+    // add Custom theme to custom theme object
+    localStorage.setItem(
+        'Custom Theme',
+        JSON.stringify(themeOptions['Custom Theme'])
+    )
+    $('.set').removeClass('set')
+    $('.selected').addClass('set')
 }
 function importCustomTheme() {
-    iscustomTheme.value = true
     console.log('Import Custom Theme')
+    $('#importThemeFile').click()
 }
 function exportCustomTheme() {
-    iscustomTheme.value = true
     console.log('Export Custom Theme')
+    const dlAnchorElem = document.getElementById('downloadThemeFile')
+    dlAnchorElem.setAttribute(
+        'href',
+        `data:text/json;charset=utf-8,${encodeURIComponent(
+            JSON.stringify(themeOptions['Custom Theme'])
+        )}`
+    )
+    dlAnchorElem.setAttribute('download', 'CV_CustomTheme.json')
+    dlAnchorElem.click()
 }
 
 function closeThemeDialog() {
     SimulatorState.dialogBox.theme_dialog = false
+    iscustomTheme.value = false
+    updateThemeForStyle(localStorage.getItem('theme'))
+    updateBG()
+}
+function closeCustomThemeDialog() {
+    themeOptions['Custom Theme'] =
+        JSON.parse(localStorage.getItem('Custom Theme')) ||
+        themeOptions['Default Theme'] // hack for closing dialog box without saving
+    // Rollback to previous theme
     updateThemeForStyle(localStorage.getItem('theme'))
     updateBG()
 }
