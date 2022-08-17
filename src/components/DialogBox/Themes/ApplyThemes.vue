@@ -5,64 +5,108 @@
     >
         <v-card class="messageBoxContent">
             <v-card-text>
-                <p class="dialogHeader">Select Theme</p>
-                <v-btn
-                    size="x-small"
-                    icon
-                    class="dialogClose"
-                    @click="SimulatorState.dialogBox.theme_dialog = false"
-                >
-                    <v-icon>mdi-close</v-icon>
-                </v-btn>
-                <div
-                    v-if="selectedTheme != 'Custom Theme'"
-                    id="colorThemesDialog"
-                    class="customScroll colorThemesDialog"
-                    tabindex="0"
-                    title="Select Theme"
-                >
+                <template v-if="iscustomTheme == false">
+                    <p class="dialogHeader">Select Theme</p>
+                    <v-btn
+                        size="x-small"
+                        icon
+                        class="dialogClose"
+                        @click="closeThemeDialog()"
+                    >
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
                     <div
-                        v-for="theme in themes"
-                        :id="theme"
-                        :key="theme"
-                        class="theme"
-                        :class="theme == selectedTheme ? 'selected set' : ''"
+                        v-if="selectedTheme != 'Custom Theme'"
+                        id="colorThemesDialog"
+                        class="customScroll colorThemesDialog"
+                        tabindex="0"
+                        title="Select Theme"
                     >
                         <div
-                            class="themeSel"
-                            @click="changeTheme($event)"
-                        ></div>
-                        <span>
-                            <DefaultTheme v-if="theme == 'Default Theme'" />
-                            <NightSky v-if="theme == 'Night Sky'" />
-                            <LitebornSpring
-                                v-if="theme == 'Lite-born Spring'"
-                            />
-                            <GnW v-if="theme == 'G&W'" />
-                            <HighContrast v-if="theme == 'High Contrast'" />
-                            <ColorBlind v-if="theme == 'Color Blind'" />
-                        </span>
-                        <span id="themeNameBox" class="themeNameBox">
-                            <input
-                                :id="theme.replace(' ', '')"
-                                type="radio"
-                                value="theme"
-                                name="theme"
-                            />
-                            <label :for="theme.replace(' ', '')">{{
-                                theme
-                            }}</label>
-                        </span>
+                            v-for="theme in themes"
+                            :id="theme"
+                            :key="theme"
+                            class="theme"
+                            :class="
+                                theme == selectedTheme ? 'selected set' : ''
+                            "
+                        >
+                            <div
+                                class="themeSel"
+                                @click="changeTheme($event)"
+                            ></div>
+                            <span>
+                                <DefaultTheme v-if="theme == 'Default Theme'" />
+                                <NightSky v-if="theme == 'Night Sky'" />
+                                <LitebornSpring
+                                    v-if="theme == 'Lite-born Spring'"
+                                />
+                                <GnW v-if="theme == 'G&W'" />
+                                <HighContrast v-if="theme == 'High Contrast'" />
+                                <ColorBlind v-if="theme == 'Color Blind'" />
+                            </span>
+                            <span id="themeNameBox" class="themeNameBox">
+                                <input
+                                    :id="theme.replace(' ', '')"
+                                    type="radio"
+                                    value="theme"
+                                    name="theme"
+                                />
+                                <label :for="theme.replace(' ', '')">{{
+                                    theme
+                                }}</label>
+                            </span>
+                        </div>
                     </div>
-                </div>
+                </template>
+                <template v-else>
+                    <form @change="changeCustomTheme($event)">
+                        <div
+                            v-for="customTheme in customThemes"
+                            :key="customTheme"
+                        >
+                            <label :for="customTheme">
+                                {{ customTheme }}
+                                ({{
+                                    customThemesList[customTheme].description
+                                }})
+                            </label>
+                            <input
+                                type="color"
+                                :name="customTheme"
+                                :value="customThemesList[customTheme].color"
+                                class="customColorInput"
+                            />
+                        </div>
+                        <a id="downloadThemeFile" style="display: none"></a>
+                    </form>
+                </template>
             </v-card-text>
             <v-card-actions>
                 <v-btn class="messageBtn" block @click="applyTheme()">
                     Apply Theme
                 </v-btn>
-                <v-btn class="messageBtn" block @click="customTheme()">
-                    Custom Theme
-                </v-btn>
+                <template v-if="iscustomTheme == false">
+                    <v-btn class="messageBtn" block @click="applyCustomTheme()">
+                        Custom Theme
+                    </v-btn>
+                </template>
+                <template v-else>
+                    <v-btn
+                        class="messageBtn"
+                        block
+                        @click="importCustomTheme()"
+                    >
+                        Import Theme
+                    </v-btn>
+                    <v-btn
+                        class="messageBtn"
+                        block
+                        @click="exportCustomTheme()"
+                    >
+                        Export Theme
+                    </v-btn>
+                </template>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -84,8 +128,13 @@ import LitebornSpring from '#/assets/themes/LitebornSpring.svg'
 import GnW from '#/assets/themes/GnW.svg'
 import HighContrast from '#/assets/themes/HighContrast.svg'
 import ColorBlind from '#/assets/themes/ColorBlind.svg'
+import { CustomColorThemes } from '#/simulator/src/themer/customThemer'
+import { CreateAbstraction } from '#/simulator/src/themer/customThemeAbstraction'
 const themes = ref([''])
+const customThemes = ref([''])
+const customThemesList = ref([''])
 const selectedTheme = ref('default-theme')
+const iscustomTheme = ref(false)
 
 onMounted(() => {
     SimulatorState.dialogBox.theme_dialog = false
@@ -93,6 +142,10 @@ onMounted(() => {
     themes.value = Object.keys(themeOptions)
     themes.value.splice(-1, 1)
     console.log(themes.value)
+    customThemesList.value = CreateAbstraction(themeOptions['Custom Theme'])
+    customThemes.value = Object.keys(customThemesList.value)
+    console.log(customThemesList.value)
+    console.log(customThemes.value)
 })
 
 function changeTheme(e) {
@@ -108,37 +161,44 @@ function changeTheme(e) {
     updateBG()
 }
 
-function applyTheme() {
-    console.log('Apply Theme')
+function changeCustomTheme(e) {
+    console.log('update custom theme')
+    console.log(e)
+    customThemesList.value[e.target.name].color = e.target.value
+    customThemesList.value[e.target.name].ref.forEach((property) => {
+        themeOptions['Custom Theme'][property] = e.target.value
+    })
+    updateThemeForStyle('Custom Theme')
+    updateBG()
 }
-function customTheme() {
+
+function applyTheme() {
+    SimulatorState.dialogBox.theme_dialog = false
+    console.log('Apply Theme')
+    if ($('.selected label').text()) {
+        localStorage.removeItem('Custom Theme')
+        localStorage.setItem('theme', $('.selected label').text())
+    }
+    $('.set').removeClass('set')
+    $('.selected').addClass('set')
+}
+function applyCustomTheme() {
+    iscustomTheme.value = true
     console.log('Apply Custom Theme')
+    CustomColorThemes()
+}
+function importCustomTheme() {
+    iscustomTheme.value = true
+    console.log('Import Custom Theme')
+}
+function exportCustomTheme() {
+    iscustomTheme.value = true
+    console.log('Export Custom Theme')
+}
+
+function closeThemeDialog() {
+    SimulatorState.dialogBox.theme_dialog = false
+    updateThemeForStyle(localStorage.getItem('theme'))
+    updateBG()
 }
 </script>
-
-<!-- 
-export const getThemeCard = (themeName, selected) => {
-    if (themeName === 'Custom Theme') return '<div></div>'
-    let themeId = themeName.replace(' ', '')
-    let selectedClass = selected ? 'selected set' : ''
-    // themeSel is the hit area
-    return `
-            <div id="theme" class="theme ${selectedClass}">
-              <div class='themeSel'></div>
-              <span>${getThemeCardSvg(themeName)}</span>
-              <span id='themeNameBox' class='themeNameBox'>
-                <input type='radio' id='${themeId}' value='${themeName}' name='theme'>
-                <label for='${themeId}'>${themeName}</label>
-              </span>
-            </div>
-            `
-} 
-
-
-"Default Theme"
-"Night Sky"
-"Lite-born Spring"
-"G&W"
-"High Contrast"
-"Color Blind
--->

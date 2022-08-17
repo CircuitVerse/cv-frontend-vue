@@ -197,7 +197,7 @@ export const colorThemes = () => {
     //         {
     //             text: 'Custom Theme',
     //             click() {
-    //                 CustomColorThemes()
+    //                  CustomColorThemes()
     //                 $(this).dialog('close')
     //             },
     //         },
