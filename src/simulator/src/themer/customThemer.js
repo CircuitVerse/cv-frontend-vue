@@ -2,7 +2,7 @@
 /* eslint-disable import/no-cycle */
 import { dots } from '../canvasApi'
 import themeOptions from './themes'
-import updateThemeForStyle from './themer'
+import { updateThemeForStyle } from './themer'
 import { CreateAbstraction } from './customThemeAbstraction'
 
 /**

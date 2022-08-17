@@ -28,7 +28,10 @@
                         class="theme"
                         :class="theme == selectedTheme ? 'selected set' : ''"
                     >
-                        <div class="themeSel"></div>
+                        <div
+                            class="themeSel"
+                            @click="changeTheme($event)"
+                        ></div>
                         <span>
                             <DefaultTheme v-if="theme == 'Default Theme'" />
                             <NightSky v-if="theme == 'Night Sky'" />
@@ -69,7 +72,11 @@
 import { useState } from '#/store/SimulatorStore/state'
 import { onMounted, onUpdated, ref } from '@vue/runtime-core'
 import themeOptions from '#/simulator/src/themer/themes'
-import { getThemeCardSvg } from '#/simulator/src/themer/themer'
+import {
+    getThemeCardSvg,
+    updateBG,
+    updateThemeForStyle,
+} from '#/simulator/src/themer/themer'
 const SimulatorState = useState()
 import DefaultTheme from '#/assets/themes/DefaultTheme.svg'
 import NightSky from '#/assets/themes/NightSky.svg'
@@ -87,6 +94,19 @@ onMounted(() => {
     themes.value.splice(-1, 1)
     console.log(themes.value)
 })
+
+function changeTheme(e) {
+    console.log(e)
+    e.preventDefault()
+    $('.selected').removeClass('selected')
+    let themeCard = $(e.target.parentElement)
+    themeCard.addClass('selected')
+    // Extract radio button
+    var radioButton = themeCard.find('input[type=radio]')
+    radioButton.trigger('click') // Mark as selected
+    updateThemeForStyle(themeCard.find('label').text()) // Extract theme name and set
+    updateBG()
+}
 
 function applyTheme() {
     console.log('Apply Theme')

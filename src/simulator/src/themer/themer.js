@@ -84,7 +84,7 @@ export let colors = getCanvasColors()
  * 1) Sets CSS Variables for UI elements
  * 2) Sets color variable for Canvas elements
  */
-function updateThemeForStyle(themeName) {
+export function updateThemeForStyle(themeName) {
     const selectedTheme = themeOptions[themeName]
     if (selectedTheme === undefined) return
     const html = document.getElementsByTagName('html')[0]
@@ -93,8 +93,6 @@ function updateThemeForStyle(themeName) {
     })
     colors = getCanvasColors()
 }
-
-export default updateThemeForStyle
 
 /**
  * Theme Preview Card SVG
@@ -224,8 +222,7 @@ export const colorThemes = () => {
     })
 }
 
-const updateBG = () => dots(true, false, true)
-
+export const updateBG = () => dots(true, false, true)
 ;(() => {
     if (!localStorage.getItem('theme'))
         localStorage.setItem('theme', 'Default Theme')
