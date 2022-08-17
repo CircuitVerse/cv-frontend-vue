@@ -1,9 +1,7 @@
 import { dots } from '../canvasApi'
 import themeOptions from './themes'
 import themeCardSvg from './themeCardSvg'
-import { CustomColorThemes } from './customThemer'
 import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
-import { toRefs } from 'vue'
 
 /**
  * Extracts canvas theme colors from CSS-Variables and returns a JSON Object
@@ -84,7 +82,7 @@ export let colors = getCanvasColors()
  * 1) Sets CSS Variables for UI elements
  * 2) Sets color variable for Canvas elements
  */
-function updateThemeForStyle(themeName) {
+export function updateThemeForStyle(themeName) {
     const selectedTheme = themeOptions[themeName]
     if (selectedTheme === undefined) return
     const html = document.getElementsByTagName('html')[0]
@@ -94,15 +92,13 @@ function updateThemeForStyle(themeName) {
     colors = getCanvasColors()
 }
 
-export default updateThemeForStyle
-
 /**
  * Theme Preview Card SVG
  * Sets the SVG colors according to theme
  * @param {string} themeName Name of theme
  * @returns {SVG}
  */
-const getThemeCardSvg = (themeName) => {
+export const getThemeCardSvg = (themeName) => {
     const colors = themeOptions[themeName]
     let svgIcon = $(themeCardSvg)
 
@@ -121,7 +117,11 @@ const getThemeCardSvg = (themeName) => {
     $('.svgChev', svgIcon).attr('stroke', colors['--br-secondary'])
 
     $('.svgHeader', svgIcon).attr('fill', colors['--primary'])
-
+    let temp = svgIcon.prop('outerHTML')
+    console.log('----------')
+    console.log('===OKK===')
+    console.log(temp)
+    console.log('----------')
     return svgIcon.prop('outerHTML')
 }
 
@@ -195,33 +195,32 @@ export const colorThemes = () => {
     //         {
     //             text: 'Custom Theme',
     //             click() {
-    //                 CustomColorThemes()
+    //                  CustomColorThemes()
     //                 $(this).dialog('close')
     //             },
     //         },
     //     ],
     // })
 
-    // $('#colorThemesDialog').focus()
-    // $('.ui-dialog[aria-describedby="colorThemesDialog"]').on('click', () =>
-    //     $('#colorThemesDialog').focus()
-    // ) //hack for losing focus
+    $('#colorThemesDialog').focus()
+    $('.ui-dialog[aria-describedby="colorThemesDialog"]').on('click', () =>
+        $('#colorThemesDialog').focus()
+    ) //hack for losing focus
 
-    // $('.themeSel').on('mousedown', (e) => {
-    //     e.preventDefault()
-    //     $('.selected').removeClass('selected')
-    //     let themeCard = $(e.target.parentElement)
-    //     themeCard.addClass('selected')
-    //     // Extract radio button
-    //     var radioButton = themeCard.find('input[type=radio]')
-    //     radioButton.trigger('click') // Mark as selected
-    //     updateThemeForStyle(themeCard.find('label').text()) // Extract theme name and set
-    //     updateBG()
-    // })
+    $('.themeSel').on('mousedown', (e) => {
+        e.preventDefault()
+        $('.selected').removeClass('selected')
+        let themeCard = $(e.target.parentElement)
+        themeCard.addClass('selected')
+        // Extract radio button
+        var radioButton = themeCard.find('input[type=radio]')
+        radioButton.trigger('click') // Mark as selected
+        updateThemeForStyle(themeCard.find('label').text()) // Extract theme name and set
+        updateBG()
+    })
 }
 
-const updateBG = () => dots(true, false, true)
-
+export const updateBG = () => dots(true, false, true)
 ;(() => {
     if (!localStorage.getItem('theme'))
         localStorage.setItem('theme', 'Default Theme')

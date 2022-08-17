@@ -1821,13 +1821,12 @@ canvas {
     -webkit-user-select: none;
     -moz-user-select: none;
     user-select: none;
-    margin: 15px 0;
+    margin: 15px;
     border-radius: 1.5px;
     transition: all 0.1s ease-out;
     position: relative;
     overflow-x: hidden;
     height: 154px;
-    margin: auto;
 }
 
 .themeNameBox {
