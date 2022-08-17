@@ -1,9 +1,7 @@
 import { dots } from '../canvasApi'
 import themeOptions from './themes'
 import themeCardSvg from './themeCardSvg'
-import { CustomColorThemes } from './customThemer'
 import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
-import { toRefs } from 'vue'
 
 /**
  * Extracts canvas theme colors from CSS-Variables and returns a JSON Object

@@ -68,7 +68,7 @@
                     >
                         <v-icon>mdi-close</v-icon>
                     </v-btn>
-                    <form @change="changeCustomTheme($event)">
+                    <form @input="changeCustomTheme($event)">
                         <div
                             v-for="customTheme in customThemes"
                             :key="customTheme"
@@ -136,7 +136,6 @@ import LitebornSpring from '#/assets/themes/LitebornSpring.svg'
 import GnW from '#/assets/themes/GnW.svg'
 import HighContrast from '#/assets/themes/HighContrast.svg'
 import ColorBlind from '#/assets/themes/ColorBlind.svg'
-import { CustomColorThemes } from '#/simulator/src/themer/customThemer'
 import { CreateAbstraction } from '#/simulator/src/themer/customThemeAbstraction'
 const themes = ref([''])
 const customThemes = ref([''])
@@ -204,9 +203,39 @@ function applyCustomTheme() {
     $('.set').removeClass('set')
     $('.selected').addClass('set')
 }
+
+function receivedText(e) {
+    const lines = JSON.parse(e.target.result)
+    let customTheme = CreateAbstraction(lines)
+    themeOptions['Custom Theme'] = lines
+    // preview theme
+    updateThemeForStyle('Custom Theme')
+    updateBG()
+    // update colors in dialog box
+    SimulatorState.dialogBox.theme_dialog = false
+    SimulatorState.dialogBox.theme_dialog = true
+    customThemesList.value = CreateAbstraction(themeOptions['Custom Theme'])
+    customThemes.value = Object.keys(customThemesList.value)
+    $('.customColorInput').on('input', (e) => {
+        changeCustomTheme(e)
+    })
+}
+
 function importCustomTheme() {
     console.log('Import Custom Theme')
     $('#importThemeFile').click()
+
+    $('#importThemeFile').on('change', (event) => {
+        var File = event.target.files[0]
+        if (File !== null && File.name.split('.')[1] === 'json') {
+            var fr = new FileReader()
+            fr.onload = receivedText
+            fr.readAsText(File)
+            $('#importThemeFile').val('')
+        } else {
+            alert('File Not Supported !')
+        }
+    })
 }
 function exportCustomTheme() {
     console.log('Export Custom Theme')
@@ -228,6 +257,8 @@ function closeThemeDialog() {
     updateBG()
 }
 function closeCustomThemeDialog() {
+    SimulatorState.dialogBox.theme_dialog = false
+    iscustomTheme.value = false
     themeOptions['Custom Theme'] =
         JSON.parse(localStorage.getItem('Custom Theme')) ||
         themeOptions['Default Theme'] // hack for closing dialog box without saving
