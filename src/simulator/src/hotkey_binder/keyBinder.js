@@ -10,9 +10,14 @@ import {
 import { setDefault, checkUpdate, addKeys, warnOverride } from './model/actions'
 import { KeyCode } from './model/normalize/normalizer.plugin.js'
 import { checkRestricted } from './model/utils.js'
+import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
 
 //** keyBinder dialog */
 export function keyBinder() {
+    const simulatorStore = SimulatorStore()
+    simulatorStore.dialogBox.customshortcut_dialog = true
+    console.log(simulatorStore.dialogBox.customshortcut_dialog)
+    markUp
     $('#customShortcutDialog').append(editPanel)
     $('#customShortcutDialog').append(heading)
     $('#customShortcutDialog').append(markUp)

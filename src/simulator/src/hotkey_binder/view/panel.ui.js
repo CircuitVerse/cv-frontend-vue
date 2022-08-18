@@ -6,8 +6,10 @@ import { setUserKeys } from '../model/actions'
  * @param {object} metadata keycombo object
  */
 const createElements = (metadata) => {
+    console.log(Object.entries(metadata))
     let elements = ``
     Object.entries(metadata).forEach((entry) => {
+        console.log(entry[0])
         elements += `
         <div>
         <span id='edit-icon'></span>
