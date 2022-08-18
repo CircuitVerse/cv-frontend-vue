@@ -83,7 +83,8 @@
 }
 
 #preference {
-    width: 100%;
+    max-width: 600px;
+    height: 350px;
     overflow-y: auto;
 }
 

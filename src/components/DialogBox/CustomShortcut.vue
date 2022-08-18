@@ -43,7 +43,7 @@
                             <span id="edit-icon"></span>
                             <div>
                                 <span id="command">{{ keyOption[0] }}</span>
-                                <span id="keyword">{{ keyOption[1] }}</span>
+                                <span id="keyword"></span>
                             </div>
                         </div>
                     </div>
@@ -74,10 +74,11 @@ import { checkRestricted } from '#/simulator/src/hotkey_binder/model/utils'
 import {
     closeEdit,
     override,
+    submit,
     updateHTML,
 } from '#/simulator/src/hotkey_binder/view/panel.ui'
 import { useState } from '#/store/SimulatorStore/state'
-import { onMounted, ref } from '@vue/runtime-core'
+import { onMounted, onUpdated, ref } from '@vue/runtime-core'
 const SimulatorState = useState()
 const keyOptions = ref([])
 const targetPref = ref(null)
@@ -85,6 +86,9 @@ const targetPref = ref(null)
 onMounted(() => {
     SimulatorState.dialogBox.customshortcut_dialog = false
     keyOptions.value = Object.entries(defaultKeys)
+})
+
+onUpdated(() => {
     if (localStorage.userKeys) {
         checkUpdate()
         addKeys('user')
@@ -172,10 +176,13 @@ function updateEdit(e) {
 
 function resetKeybinding() {
     console.log('Reset Keybinding')
+    if (confirm('Remove all custom keys & set the default keys?')) setDefault()
 }
 
 function saveKeybinding() {
     console.log('Save Keybinding')
+    submit()
+    SimulatorState.dialogBox.customshortcut_dialog = false
 }
 function closeDialog() {
     if (localStorage.userKeys) {
