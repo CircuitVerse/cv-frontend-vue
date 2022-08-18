@@ -348,7 +348,7 @@
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
-    <div id="customShortcutDialog" title="Keybinding Preference"></div>
+    <CustomShortcut />
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
@@ -567,4 +567,5 @@ import HexBinDec from './DialogBox/HexBinDec.vue'
 import SaveImage from './DialogBox/SaveImage.vue'
 import ApplyThemes from './DialogBox/Themes/ApplyThemes.vue'
 import ExportVerilog from './DialogBox/ExportVerilog.vue'
+import CustomShortcut from './DialogBox/CustomShortcut.vue'
 </script>
