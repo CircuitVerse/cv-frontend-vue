@@ -21,23 +21,26 @@
                     class="subcircuitdialog"
                     title="Insert SubCircuit"
                 >
-                    <label
+                    <template
                         v-for="(value, scopeId) in scopeList"
                         :key="scopeId"
-                        class="option custom-radio inline"
                     >
-                        <input
+                        <label
                             v-if="
                                 !value.checkDependency(scopeId) &&
                                 value.isVisible()
                             "
-                            type="radio"
-                            name="subCircuitId"
-                            :value="scopeId"
-                        />
-                        {{ getName(value) }}
-                        <span></span>
-                    </label>
+                            class="option custom-radio inline"
+                        >
+                            <input
+                                type="radio"
+                                name="subCircuitId"
+                                :value="scopeId"
+                            />
+                            {{ getName(value) }}
+                            <span></span>
+                        </label>
+                    </template>
                 </div>
             </v-card-text>
             <v-card-actions>
