@@ -457,11 +457,7 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Dialog Box - Insert Subcircuit -->
-    <div
-        id="insertSubcircuitDialog"
-        class="subcircuitdialog"
-        title="Insert SubCircuit"
-    ></div>
+    <InsertSubcircuit />
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
@@ -568,4 +564,5 @@ import SaveImage from './DialogBox/SaveImage.vue'
 import ApplyThemes from './DialogBox/Themes/ApplyThemes.vue'
 import ExportVerilog from './DialogBox/ExportVerilog.vue'
 import CustomShortcut from './DialogBox/CustomShortcut.vue'
+import InsertSubcircuit from './DialogBox/InsertSubcircuit.vue'
 </script>
