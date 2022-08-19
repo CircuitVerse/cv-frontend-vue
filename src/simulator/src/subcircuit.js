@@ -41,7 +41,6 @@ export function createSubCircuitPrompt(scope = globalScope) {
     }
     const simulatorStore = SimulatorStore()
     simulatorStore.dialogBox.insertsubcircuit_dialog = true
-    console.log(scopeList)
     /*
     $('#insertSubcircuitDialog').empty()
     let flag = true

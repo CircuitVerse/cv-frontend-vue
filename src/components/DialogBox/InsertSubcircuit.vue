@@ -41,6 +41,10 @@
                             <span></span>
                         </label>
                     </template>
+                    <p v-if="flag == true">
+                        Looks like there are no other circuits which doesn't
+                        have this circuit as a dependency. Create a new one!
+                    </p>
                 </div>
             </v-card-text>
             <v-card-actions>
@@ -63,9 +67,6 @@ const flag = ref(true)
 onMounted(() => {
     SimulatorState.dialogBox.insertsubcircuit_dialog = false
 })
-onUpdated(() => {
-    console.log(scopeList)
-})
 
 function insertSubcircuit() {
     if (!$('input[name=subCircuitId]:checked').val()) return
@@ -75,10 +76,17 @@ function insertSubcircuit() {
         globalScope,
         $('input[name=subCircuitId]:checked').val()
     )
+    flag.value = true
     SimulatorState.dialogBox.insertsubcircuit_dialog = false
 }
 
 function getName(x) {
+    flag.value = false
     return x.name
 }
 </script>
+
+<!-- 
+	Some error on inserting empty circuit as subcircuit
+	Some error on checking for rendering 
+-->
