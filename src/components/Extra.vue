@@ -462,11 +462,7 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Dialog Box - Open Project -->
-    <div
-        id="openProjectDialog"
-        style="display: none"
-        title="Open Project"
-    ></div>
+    <OpenOffline />
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- Dialog Box - Hex Bin Dec --------------------------------------------------------------------------------------------- -->
@@ -565,4 +561,5 @@ import ApplyThemes from './DialogBox/Themes/ApplyThemes.vue'
 import ExportVerilog from './DialogBox/ExportVerilog.vue'
 import CustomShortcut from './DialogBox/CustomShortcut.vue'
 import InsertSubcircuit from './DialogBox/InsertSubcircuit.vue'
+import OpenOffline from './DialogBox/OpenOffline.vue'
 </script>
