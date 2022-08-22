@@ -32,7 +32,7 @@
                         class="tabsCloseButton"
                         @click="closeCircuit($event, element)"
                     >
-                        x
+                        <v-icon class="tabsbar-close">mdi-close</v-icon>
                     </span>
                 </div>
             </template>
@@ -212,5 +212,9 @@ function tabsbarClasses(id) {
 <style scoped>
 .list-group {
     display: inline;
+}
+
+.tabsbar-close {
+    font-size: 13px;
 }
 </style>
