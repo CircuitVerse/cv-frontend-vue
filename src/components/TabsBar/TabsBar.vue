@@ -64,7 +64,6 @@ import { ref } from '@vue/reactivity'
 import { computed, onMounted, onUpdated } from '@vue/runtime-core'
 import {
     createNewCircuitScope,
-    deleteCurrentCircuit,
     getDependenciesList,
     scopeList,
     switchCircuit,
@@ -153,7 +152,19 @@ function deleteCircuit(circuitItem) {
     if (index !== -1) {
         SimulatorState.circuit_list.splice(index, 1)
     }
-    deleteCurrentCircuit(circuitItem.id)
+
+    let scope = scopeList[circuitItem.id]
+    if (scope == undefined) scope = scopeList[globalScope.id]
+
+    if (scope.verilogMetadata.isVerilogCircuit) {
+        scope.initialize()
+        for (var id in scope.verilogMetadata.subCircuitScopeIds)
+            delete scopeList[id]
+    }
+    $(`#${scope.id}`).remove()
+    delete scopeList[scope.id]
+    switchCircuit(Object.keys(scopeList)[0])
+
     showMessage('Circuit was successfully closed')
     updateCount.value++
 }

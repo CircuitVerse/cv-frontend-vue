@@ -126,17 +126,45 @@ export function getDependenciesList(scopeId) {
  * @category circuit
  */
 export function deleteCurrentCircuit(scopeId = globalScope.id) {
-    let scope = scopeList[scopeId]
-    if (scope == undefined) scope = scopeList[globalScope.id]
-
-    if (scope.verilogMetadata.isVerilogCircuit) {
-        scope.initialize()
-        for (var id in scope.verilogMetadata.subCircuitScopeIds)
-            delete scopeList[id]
+    const scope = scopeList[scopeId]
+    if (Object.keys(scopeList).length <= 1) {
+        showError(
+            'At least 2 circuits need to be there in order to delete a circuit.'
+        )
+        return
     }
-    $(`#${scope.id}`).remove()
-    delete scopeList[scope.id]
-    switchCircuit(Object.keys(scopeList)[0])
+    let dependencies = ''
+    for (id in scopeList) {
+        if (id != scope.id && scopeList[id].checkDependency(scope.id)) {
+            if (dependencies === '') {
+                dependencies = scopeList[id].name
+            } else {
+                dependencies += `, ${scopeList[id].name}`
+            }
+        }
+    }
+    if (dependencies) {
+        dependencies = `\nThe following circuits are depending on '${scope.name}': ${dependencies}\nDelete subcircuits of ${scope.name} before trying to delete ${scope.name}`
+        alert(dependencies)
+        return
+    }
+
+    const confirmation = confirm(
+        `Are you sure want to close: ${scope.name}\nThis cannot be undone.`
+    )
+    if (confirmation) {
+        if (scope.verilogMetadata.isVerilogCircuit) {
+            scope.initialize()
+            for (var id in scope.verilogMetadata.subCircuitScopeIds)
+                delete scopeList[id]
+        }
+        $(`#${scope.id}`).remove()
+        delete scopeList[scope.id]
+        switchCircuit(Object.keys(scopeList)[0])
+        showMessage('Circuit was successfully closed')
+    } else {
+        showMessage('Circuit was not closed')
+    }
 }
 
 /**
