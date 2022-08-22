@@ -46,9 +46,9 @@ onUpdated(() => {
 const props = defineProps({
     messageText: { type: String, default: '' },
     isPersistent: { type: Boolean, default: false },
-    buttonList: { type: Array, default: undefined },
-    inputList: { type: Array, default: undefined },
-    circuitItem: { type: Object, default: undefined },
+    buttonList: { type: Array, default: () => [] },
+    inputList: { type: Array, default: () => [] },
+    circuitItem: { type: Object, default: () => {} },
 })
 const emit = defineEmits(['buttonClick'])
 </script>
