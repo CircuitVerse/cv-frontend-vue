@@ -9,7 +9,7 @@
                     class="inputContent"
                 >
                     <p>{{ inputItem }}</p>
-                    <input class="inputField" v-model="inputVal" type="text" />
+                    <input v-model="inputVal" class="inputField" type="text" />
                 </div>
             </v-card-text>
             <v-card-actions>
@@ -23,7 +23,7 @@
                             'buttonClick',
                             buttonItem.emitOption,
                             circuitItem,
-                            inputVal
+                            inputVal == '' ? 'Untitled-Circuit' : inputVal
                         )
                     "
                 >
@@ -40,7 +40,7 @@ import { onUpdated } from '@vue/runtime-core'
 const inputVal = ref('')
 
 onUpdated(() => {
-    inputVal.value = 'Untitled-Circuit'
+    inputVal.value = ''
 })
 
 const props = defineProps({
