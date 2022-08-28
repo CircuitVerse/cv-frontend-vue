@@ -67,7 +67,7 @@ import {
     switchCircuit,
 } from '#/simulator/src/circuit'
 import MessageBox from '#/components/MessageBox/messageBox.vue'
-import { useState } from '#/store/SimulatorStore/state'
+import { useState } from '#/store/SimulatorStore/states'
 
 const SimulatorState = useState()
 const drag = ref(false)
