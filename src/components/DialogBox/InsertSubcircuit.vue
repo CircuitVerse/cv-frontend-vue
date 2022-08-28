@@ -58,7 +58,7 @@
 
 <script lang="ts" setup>
 import { onMounted, onUpdated, ref } from '@vue/runtime-core'
-import { useState } from '#/store/SimulatorStore/state'
+import { useState } from '#/store/SimulatorStore/states'
 import { scopeList } from '#/simulator/src/circuit'
 import SubCircuit from '#/simulator/src/subcircuit'
 import simulationArea from '#/simulator/src/simulationArea'

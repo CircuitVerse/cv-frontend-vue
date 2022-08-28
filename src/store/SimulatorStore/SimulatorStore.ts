@@ -2,7 +2,7 @@ import { extractStore } from '../extractStore'
 import { defineStore } from 'pinia'
 import { useActions } from './actions'
 import { useGetters } from './getters'
-import { useState } from './state'
+import { useState } from './states'
 
 export const SimulatorStore = defineStore('simulatorStore', () => {
     return {

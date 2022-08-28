@@ -1,6 +1,6 @@
 import { dots } from '#/simulator/src/canvasApi';
 import { defineStore } from 'pinia'
-import { useState } from './state'
+import { useState } from './states'
 
 export const useActions = defineStore('simulatorStore.actions', () => {
     const state = useState()

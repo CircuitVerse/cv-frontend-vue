@@ -124,7 +124,7 @@
 
 <script lang="ts" setup>
 import { generateImage } from '#/simulator/src/data/save'
-import { useState } from '#/store/SimulatorStore/state'
+import { useState } from '#/store/SimulatorStore/states'
 import { onMounted, ref } from '@vue/runtime-core'
 const SimulatorState = useState()
 

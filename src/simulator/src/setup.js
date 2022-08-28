@@ -5,7 +5,6 @@
 import { Tooltip } from 'bootstrap'
 import metadata from './metadata.json'
 import { generateId, showMessage } from './utils'
-import backgroundArea from './backgroundArea'
 import plotArea from './plotArea'
 import simulationArea from './simulationArea'
 import { dots } from './canvasApi'
@@ -29,7 +28,6 @@ import { setupCodeMirrorEnvironment } from './Verilog2CV'
 import { keyBinder } from './hotkey_binder/keyBinder'
 import '../vendor/jquery-ui.min.css'
 import '../vendor/jquery-ui.min'
-import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
 import { BackgroundareaStore } from '#/store/BackgroundareaCanvas/BackgroundareaStore'
 import { colors } from './themer/themer'
 /**
@@ -40,8 +38,8 @@ import { colors } from './themer/themer'
  */
 export function resetup() {
     console.log('hello from re setup')
-    const store = BackgroundareaStore()
-    console.log(store)
+    const backgroundAreaStore = BackgroundareaStore()
+    console.log(backgroundAreaStore)
     DPR = window.devicePixelRatio || 1
     if (lightMode) {
         DPR = 1
@@ -56,8 +54,8 @@ export function resetup() {
         height = document.getElementById('simulation').clientHeight * DPR
     }
     // setup simulationArea and backgroundArea variables used to make changes to canvas.
-    // backgroundArea.setup()
-    store.setup()
+    // backgroundAreaStore.setup()
+    backgroundAreaStore.setup()
     simulationArea.setup()
     // redraw grid
     dots()
@@ -68,8 +66,8 @@ export function resetup() {
     document.getElementById('canvasArea').style.height = height / DPR + 'px'
     simulationArea.canvas.width = width
     simulationArea.canvas.height = height
-    store.canvas.width = width + 100 * DPR
-    store.canvas.height = height + 100 * DPR
+    backgroundAreaStore.canvas.width = width + 100 * DPR
+    backgroundAreaStore.canvas.height = height + 100 * DPR
     if (!embed) {
         plotArea.setup()
     }

@@ -1,5 +1,4 @@
 /* eslint-disable no-param-reassign */
-import backgroundArea from './backgroundArea'
 import simulationArea from './simulationArea'
 import miniMapArea, { removeMiniMap, updatelastMinimapShown } from './minimap'
 import { colors } from './themer/themer'
@@ -124,7 +123,7 @@ export function dots(
     force = false
 ) {
     console.trace('in dot function')
-    const store = BackgroundareaStore()
+    const backgroundAreaStore = BackgroundareaStore()
     var scale = unit * globalScope.scale
     var ox = globalScope.ox % scale // offset
     var oy = globalScope.oy % scale // offset
@@ -133,16 +132,16 @@ export function dots(
     document.getElementById('backgroundArea').style.top = (oy - scale) / DPR
     if (globalScope.scale === simulationArea.prevScale && !force) return
 
-    if (!store.context) return
+    if (!backgroundAreaStore.context) return
     simulationArea.prevScale = globalScope.scale
 
-    var canvasWidth = store.canvas.width // max X distance
-    var canvasHeight = store.canvas.height // max Y distance
+    var canvasWidth = backgroundAreaStore.canvas.width // max X distance
+    var canvasHeight = backgroundAreaStore.canvas.height // max Y distance
     console.log(canvasWidth)
     console.log(canvasHeight)
-    var ctx = store.context
+    var ctx = backgroundAreaStore.context
     ctx.beginPath()
-    backgroundArea.clear()
+    backgroundAreaStore.clear()
     ctx.strokeStyle = colors['canvas_stroke']
     ctx.lineWidth = 1
     if (!transparentBackground) {

@@ -77,7 +77,7 @@ import {
     submit,
     updateHTML,
 } from '#/simulator/src/hotkey_binder/view/panel.ui'
-import { useState } from '#/store/SimulatorStore/state'
+import { useState } from '#/store/SimulatorStore/states'
 import { onMounted, onUpdated, ref } from '@vue/runtime-core'
 const SimulatorState = useState()
 const keyOptions = ref([])

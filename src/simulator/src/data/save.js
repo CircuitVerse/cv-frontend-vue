@@ -4,7 +4,6 @@ import { update } from '../engine'
 import { stripTags, showMessage } from '../utils'
 import { backUp } from './backupCircuit'
 import simulationArea from '../simulationArea'
-import backgroundArea from '../backgroundArea'
 import { findDimensions } from '../canvasApi'
 import { projectSavedSet } from './project'
 import { colors } from '../themer/themer'
@@ -12,6 +11,7 @@ import { layoutModeGet, toggleLayoutMode } from '../layoutMode'
 import { verilogModeGet } from '../Verilog2CV'
 import domtoimage from 'dom-to-image'
 import '../../vendor/canvas2svg'
+import { BackgroundareaStore } from '#/store/BackgroundareaCanvas/BackgroundareaStore'
 
 var projectName = undefined
 
@@ -155,16 +155,17 @@ export function generateImage(
     resolution,
     down = true
 ) {
+    const backgroundAreaStore = BackgroundareaStore()
     // Backup all data
     const backUpOx = globalScope.ox
     const backUpOy = globalScope.oy
     const backUpWidth = width
     const backUpHeight = height
     const backUpScale = globalScope.scale
-    const backUpContextBackground = backgroundArea.context
+    const backUpContextBackground = backgroundAreaStore.context
     const backUpContextSimulation = simulationArea.context
 
-    backgroundArea.context = simulationArea.context
+    backgroundAreaStore.context = simulationArea.context
 
     globalScope.ox *= 1 / backUpScale
     globalScope.oy *= 1 / backUpScale
@@ -208,10 +209,10 @@ export function generateImage(
 
     simulationArea.canvas.width = width
     simulationArea.canvas.height = height
-    backgroundArea.canvas.width = width
-    backgroundArea.canvas.height = height
+    backgroundAreaStore.canvas.width = width
+    backgroundAreaStore.canvas.height = height
 
-    backgroundArea.context = simulationArea.context
+    backgroundAreaStore.context = simulationArea.context
 
     simulationArea.clear()
 
@@ -247,10 +248,10 @@ export function generateImage(
     height = backUpHeight
     simulationArea.canvas.width = width
     simulationArea.canvas.height = height
-    backgroundArea.canvas.width = width
-    backgroundArea.canvas.height = height
+    backgroundAreaStore.canvas.width = width
+    backgroundAreaStore.canvas.height = height
     globalScope.scale = backUpScale
-    backgroundArea.context = backUpContextBackground
+    backgroundAreaStore.context = backUpContextBackground
     simulationArea.context = backUpContextSimulation
     globalScope.ox = backUpOx
     globalScope.oy = backUpOy

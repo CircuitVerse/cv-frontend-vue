@@ -45,7 +45,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useState } from '#/store/SimulatorStore/state'
+import { useState } from '#/store/SimulatorStore/states'
 const SimulatorState = useState()
 import { setBaseValues } from '#/simulator/src/utils'
 import { onMounted, ref } from '@vue/runtime-core'

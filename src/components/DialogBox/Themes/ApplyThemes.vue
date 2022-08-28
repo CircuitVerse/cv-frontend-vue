@@ -121,7 +121,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useState } from '#/store/SimulatorStore/state'
+import { useState } from '#/store/SimulatorStore/states'
 import { onMounted, onUpdated, ref } from '@vue/runtime-core'
 import themeOptions from '#/simulator/src/themer/themes'
 import {
