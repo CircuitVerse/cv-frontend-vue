@@ -3,6 +3,7 @@ import backgroundArea from './backgroundArea'
 import simulationArea from './simulationArea'
 import miniMapArea, { removeMiniMap, updatelastMinimapShown } from './minimap'
 import { colors } from './themer/themer'
+import { BackgroundareaStore } from '#/store/BackgroundareaCanvas/BackgroundareaStore'
 
 var unit = 10
 
@@ -122,6 +123,8 @@ export function dots(
     transparentBackground = false,
     force = false
 ) {
+    console.trace('in dot function')
+    const store = BackgroundareaStore()
     var scale = unit * globalScope.scale
     var ox = globalScope.ox % scale // offset
     var oy = globalScope.oy % scale // offset
@@ -130,13 +133,14 @@ export function dots(
     document.getElementById('backgroundArea').style.top = (oy - scale) / DPR
     if (globalScope.scale === simulationArea.prevScale && !force) return
 
-    if (!backgroundArea.context) return
+    if (!store.context) return
     simulationArea.prevScale = globalScope.scale
 
-    var canvasWidth = backgroundArea.canvas.width // max X distance
-    var canvasHeight = backgroundArea.canvas.height // max Y distance
-
-    var ctx = backgroundArea.context
+    var canvasWidth = store.canvas.width // max X distance
+    var canvasHeight = store.canvas.height // max Y distance
+    console.log(canvasWidth)
+    console.log(canvasHeight)
+    var ctx = store.context
     ctx.beginPath()
     backgroundArea.clear()
     ctx.strokeStyle = colors['canvas_stroke']

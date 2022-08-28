@@ -225,7 +225,7 @@ export function newCircuit(name, id, isVerilog = false, isVerilogMain = false) {
         if (!embed) {
             showProperties(scope.root)
         }
-        dots(false)
+        //dots(false)
     }
 
     return scope

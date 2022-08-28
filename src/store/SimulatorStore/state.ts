@@ -7,6 +7,7 @@ export interface State {
     dialogBox: Object
     createCircuit: Object
     combinationalAnalysis: Object
+    canvas: () => {}
 }
 
 export const useState = defineStore({
@@ -37,6 +38,7 @@ export const useState = defineStore({
                 booleanExpression: 'Example: (AB)',
                 decimalColumnBox: false,
             },
+            canvas: document.getElementById('backgroundArea') || {},
         }
     },
 })
