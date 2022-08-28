@@ -89,6 +89,7 @@ const simulationArea = {
         t = t || prompt('Enter Time Period:')
         simulationArea.timePeriod = t
         simulationArea.ClockInterval = setInterval(clockTick, t)
+        console.log(simulationArea.ClockInterval)
     },
     clear() {
         if (!this.context) return
