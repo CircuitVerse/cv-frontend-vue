@@ -1,5 +1,4 @@
 /* eslint-disable no-param-reassign */
-// import simulationArea from './simulationArea'
 import miniMapArea, { removeMiniMap, updatelastMinimapShown } from './minimap'
 import { colors } from './themer/themer'
 import { BackgroundareaStore } from '#/store/BackgroundareaCanvas/BackgroundareaStore'

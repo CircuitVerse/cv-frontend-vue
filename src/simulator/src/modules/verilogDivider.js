@@ -1,7 +1,8 @@
 /* eslint-disable no-bitwise */
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 
 /**
  * @class
@@ -98,6 +99,7 @@ export default class verilogDivider extends CircuitElement {
      * resolve output values based on inputData
      */
     resolve() {
+        const simulationAreaStore = SimulationareaStore()
         if (this.isResolvable() === false) {
             return
         }
@@ -109,8 +111,8 @@ export default class verilogDivider extends CircuitElement {
         this.quotient.value =
             (quotient << (32 - this.outputBitWidth)) >>>
             (32 - this.outputBitWidth)
-        simulationArea.simulationQueue.add(this.quotient)
-        simulationArea.simulationQueue.add(this.remainder)
+        simulationAreaStore.simulationQueue.add(this.quotient)
+        simulationAreaStore.simulationQueue.add(this.remainder)
     }
 }
 

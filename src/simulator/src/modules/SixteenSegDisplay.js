@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 import {
     colorToRGBA,
     correctWidth,
@@ -11,6 +11,7 @@ import {
     validColor,
 } from '../canvasApi'
 import { changeInputSize } from '../modules'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 /**
  * @class
  * SixteenSegDisplay
@@ -75,8 +76,9 @@ export default class SixteenSegDisplay extends CircuitElement {
      * function to draw element
      */
     customDrawSegment(x1, y1, x2, y2, color) {
+        const simulationAreaStore = SimulationareaStore()
         if (color === undefined) color = 'lightgrey'
-        var ctx = simulationArea.context
+        var ctx = simulationAreaStore.context
         ctx.beginPath()
         ctx.strokeStyle = color
         ctx.lineWidth = correctWidth(4)
@@ -93,8 +95,9 @@ export default class SixteenSegDisplay extends CircuitElement {
      * function to draw element
      */
     customDrawSegmentSlant(x1, y1, x2, y2, color) {
+        const simulationAreaStore = SimulationareaStore()
         if (color === undefined) color = 'lightgrey'
-        var ctx = simulationArea.context
+        var ctx = simulationAreaStore.context
         ctx.beginPath()
         ctx.strokeStyle = color
         ctx.lineWidth = correctWidth(3)
@@ -111,7 +114,8 @@ export default class SixteenSegDisplay extends CircuitElement {
      * function to draw element
      */
     customDraw() {
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
         const xx = this.x
         const yy = this.y
         const color = ['lightgrey', this.actualColor]
@@ -237,8 +241,9 @@ export default class SixteenSegDisplay extends CircuitElement {
     }
 
     subcircuitDrawSegment(x1, y1, x2, y2, color, xxSegment, yySegment) {
+        const simulationAreaStore = SimulationareaStore()
         if (color == undefined) color = 'lightgrey'
-        var ctx = simulationArea.context
+        var ctx = simulationAreaStore.context
         ctx.beginPath()
         ctx.strokeStyle = color
         ctx.lineWidth = correctWidth(3)
@@ -251,8 +256,9 @@ export default class SixteenSegDisplay extends CircuitElement {
     }
 
     subcircuitDrawSegmentSlant(x1, y1, x2, y2, color, xxSegment, yySegment) {
+        const simulationAreaStore = SimulationareaStore()
         if (color == undefined) color = 'lightgrey'
-        var ctx = simulationArea.context
+        var ctx = simulationAreaStore.context
         ctx.beginPath()
         ctx.strokeStyle = color
         ctx.lineWidth = correctWidth(2)
@@ -266,7 +272,8 @@ export default class SixteenSegDisplay extends CircuitElement {
 
     // Draws the element in the subcircuit. Used in layout mode
     subcircuitDraw(xOffset = 0, yOffset = 0) {
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
 
         var xx = this.subcircuitMetadata.x + xOffset
         var yy = this.subcircuitMetadata.y + yOffset
@@ -433,9 +440,9 @@ export default class SixteenSegDisplay extends CircuitElement {
         ctx.stroke()
 
         if (
-            (this.hover && !simulationArea.shiftDown) ||
-            simulationArea.lastSelected == this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            (this.hover && !simulationAreaStore.shiftDown) ||
+            simulationAreaStore.lastSelected == this ||
+            simulationAreaStore.multipleObjectSelections.contains(this)
         ) {
             ctx.fillStyle = 'rgba(255, 255, 32,0.6)'
             ctx.fill()

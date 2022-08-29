@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 import { correctWidth, rect2, fillText } from '../canvasApi'
 import plotArea from '../plotArea'
 import { showError } from '../utils'
@@ -17,6 +17,7 @@ import { showError } from '../utils'
  * @category modules
  */
 import { colors } from '../themer/themer'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 export default class Tunnel extends CircuitElement {
     constructor(
@@ -86,6 +87,7 @@ export default class Tunnel extends CircuitElement {
      * resolve output values based on inputData
      */
     resolve() {
+        const simulationAreaStore = SimulationareaStore()
         // Don't check for paired tunnels' value if already checked by another paired tunnel (O(n))
         if (this.checked) {
             this.checked = false
@@ -102,7 +104,7 @@ export default class Tunnel extends CircuitElement {
             }
             if (tunnel.inp1.value !== this.inp1.value) {
                 tunnel.inp1.value = this.inp1.value
-                simulationArea.simulationQueue.add(tunnel.inp1)
+                simulationAreaStore.simulationQueue.add(tunnel.inp1)
             }
             if (tunnel !== this) tunnel.checked = true
         }
@@ -213,7 +215,8 @@ export default class Tunnel extends CircuitElement {
      * function to draw element
      */
     customDraw() {
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
         ctx.beginPath()
         ctx.strokeStyle = colors['stroke']
         ctx.fillStyle = colors['fill']
@@ -248,9 +251,9 @@ export default class Tunnel extends CircuitElement {
             'RIGHT'
         )
         if (
-            (this.hover && !simulationArea.shiftDown) ||
-            simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            (this.hover && !simulationAreaStore.shiftDown) ||
+            simulationAreaStore.lastSelected === this ||
+            simulationAreaStore.multipleObjectSelections.contains(this)
         ) {
             ctx.fillStyle = colors['hover_select']
         }

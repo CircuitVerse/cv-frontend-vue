@@ -1,8 +1,9 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 import { correctWidth, lineTo, moveTo } from '../canvasApi'
 import { colors } from '../themer/themer'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 /**
  * @class
  * Clock
@@ -39,8 +40,9 @@ export default class Clock extends CircuitElement {
     }
 
     resolve() {
+        const simulationAreaStore = SimulationareaStore()
         this.output1.value = this.state
-        simulationArea.simulationQueue.add(this.output1)
+        simulationAreaStore.simulationQueue.add(this.output1)
     }
 
     toggleState() {
@@ -50,7 +52,8 @@ export default class Clock extends CircuitElement {
     }
 
     customDraw() {
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
         ctx.strokeStyle = colors['stroke']
         ctx.fillStyle = colors['fill']
         ctx.lineWidth = correctWidth(3)
