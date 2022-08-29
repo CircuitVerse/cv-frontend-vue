@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 import { correctWidth, lineTo, moveTo, fillText } from '../canvasApi'
 import { changeInputSize } from '../modules'
 /**
@@ -16,6 +16,7 @@ import { changeInputSize } from '../modules'
  * @category modules
  */
 import { colors } from '../themer/themer'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 export default class Multiplexer extends CircuitElement {
     constructor(
@@ -70,6 +71,7 @@ export default class Multiplexer extends CircuitElement {
      * function to change control signal of the element
      */
     changeControlSignalSize(size) {
+        const simulationAreaStore = SimulationareaStore()
         if (size === undefined || size < 1 || size > 32) return
         if (this.controlSignalSize === size) return
         const obj = new Multiplexer(
@@ -81,7 +83,7 @@ export default class Multiplexer extends CircuitElement {
             size
         )
         this.cleanDelete()
-        simulationArea.lastSelected = obj
+        simulationAreaStore.lastSelected = obj
         return obj
     }
 
@@ -137,11 +139,12 @@ export default class Multiplexer extends CircuitElement {
      * resolve output values based on inputData
      */
     resolve() {
+        const simulationAreaStore = SimulationareaStore()
         if (this.isResolvable() === false) {
             return
         }
         this.output1.value = this.inp[this.controlSignalInput.value].value
-        simulationArea.simulationQueue.add(this.output1)
+        simulationAreaStore.simulationQueue.add(this.output1)
     }
 
     /**
@@ -149,7 +152,8 @@ export default class Multiplexer extends CircuitElement {
      * function to draw element
      */
     customDraw() {
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
 
         const xx = this.x
         const yy = this.y
@@ -213,9 +217,9 @@ export default class Multiplexer extends CircuitElement {
 
         ctx.closePath()
         if (
-            (this.hover && !simulationArea.shiftDown) ||
-            simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            (this.hover && !simulationAreaStore.shiftDown) ||
+            simulationAreaStore.lastSelected === this ||
+            simulationAreaStore.multipleObjectSelections.contains(this)
         ) {
             ctx.fillStyle = colors['hover_select']
         }

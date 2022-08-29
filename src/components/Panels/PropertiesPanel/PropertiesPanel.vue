@@ -12,10 +12,10 @@
 import ModuleProperty from '#/components/Panels/PropertiesPanel/ModuleProperty/ModuleProperty.vue'
 import LayoutProperty from '#/components/Panels/PropertiesPanel/LayoutProperty/LayoutProperty.vue'
 import { ref, toRaw } from '@vue/reactivity'
-import simulationArea from '#/simulator/src/simulationArea'
 import { onMounted } from 'vue'
 import { checkPropertiesUpdate, prevPropertyObjSet } from '#/simulator/src/ux'
 import { layoutModeGet } from '#/simulator/src/layoutMode'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 const inLayoutMode = ref(false)
 const panelBodyHeader = ref('PROJECT PROPERTIES')
@@ -27,12 +27,14 @@ onMounted(() => {
     setInterval(showPropertiesPanel, 100)
 })
 function showPropertiesPanel() {
+    const simulationAreaStore = SimulationareaStore()
     if (inLayoutMode.value != layoutModeGet())
         inLayoutMode.value = layoutModeGet()
     checkPropertiesUpdate()
-    if (toRaw(propertiesPanelObj.value) == simulationArea.lastSelected) return
-    prevPropertyObjSet(simulationArea.lastSelected)
-    propertiesPanelObj.value = simulationArea.lastSelected
+    if (toRaw(propertiesPanelObj.value) == simulationAreaStore.lastSelected)
+        return
+    prevPropertyObjSet(simulationAreaStore.lastSelected)
+    propertiesPanelObj.value = simulationAreaStore.lastSelected
     // there are 3 types of panel body for Properties Panel
     // depending upon which is last selected
     // 1. Properties Panel in Layout mode
@@ -41,9 +43,9 @@ function showPropertiesPanel() {
     if (inLayoutMode.value) {
         // will look into it later !!!
         if (
-            simulationArea.lastSelected === undefined ||
+            simulationAreaStore.lastSelected === undefined ||
             ['Wire', 'CircuitElement', 'Node'].indexOf(
-                simulationArea.lastSelected.objectType
+                simulationAreaStore.lastSelected.objectType
             ) !== -1
         ) {
             panelType.value = 1
@@ -54,14 +56,14 @@ function showPropertiesPanel() {
         }
     } else {
         if (
-            simulationArea.lastSelected === undefined ||
+            simulationAreaStore.lastSelected === undefined ||
             ['Wire', 'CircuitElement', 'Node'].indexOf(
-                simulationArea.lastSelected.objectType
+                simulationAreaStore.lastSelected.objectType
             ) !== -1
         ) {
             panelType.value = 1
             panelBodyHeader.value = 'PROJECT PROPERTIES'
-            if (simulationArea.lastSelected === undefined)
+            if (simulationAreaStore.lastSelected === undefined)
                 propertiesPanelObj.value = undefined
         } else {
             panelType.value = 2

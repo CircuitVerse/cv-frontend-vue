@@ -1,10 +1,11 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 import { correctWidth, lineTo, moveTo, arc } from '../canvasApi'
 import { changeInputSize } from '../modules'
 import { colors } from '../themer/themer'
 import { gateGenerateVerilog } from '../utils'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 /**
  * @class
@@ -90,6 +91,7 @@ export default class AndGate extends CircuitElement {
      * resolve output values based on inputData
      */
     resolve() {
+        const simulationAreaStore = SimulationareaStore()
         let result = this.inp[0].value || 0
         if (this.isResolvable() === false) {
             return
@@ -97,7 +99,7 @@ export default class AndGate extends CircuitElement {
         for (let i = 1; i < this.inputSize; i++)
             result &= this.inp[i].value || 0
         this.output1.value = result >>> 0
-        simulationArea.simulationQueue.add(this.output1)
+        simulationAreaStore.simulationQueue.add(this.output1)
     }
 
     /**
@@ -105,7 +107,8 @@ export default class AndGate extends CircuitElement {
      * function to draw And Gate
      */
     customDraw() {
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
         ctx.beginPath()
         ctx.lineWidth = correctWidth(3)
         ctx.strokeStyle = colors['stroke'] // ("rgba(0,0,0,1)");
@@ -121,9 +124,9 @@ export default class AndGate extends CircuitElement {
         ctx.closePath()
 
         if (
-            (this.hover && !simulationArea.shiftDown) ||
-            simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            (this.hover && !simulationAreaStore.shiftDown) ||
+            simulationAreaStore.lastSelected === this ||
+            simulationAreaStore.multipleObjectSelections.contains(this)
         )
             ctx.fillStyle = colors['hover_select']
         ctx.fill()

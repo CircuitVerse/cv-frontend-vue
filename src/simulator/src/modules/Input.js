@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 import { correctWidth, oppositeDirection, fillText } from '../canvasApi'
 import { getNextPosition } from '../modules'
 import { generateId } from '../utils'
@@ -18,6 +18,7 @@ import { generateId } from '../utils'
  * @category modules
  */
 import { colors } from '../themer/themer'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 function bin2dec(binString) {
     return parseInt(binString, 2)
@@ -90,8 +91,9 @@ export default class Input extends CircuitElement {
      * resolve output values based on inputData
      */
     resolve() {
+        const simulationAreaStore = SimulationareaStore()
         this.output1.value = this.state
-        simulationArea.simulationQueue.add(this.output1)
+        simulationAreaStore.simulationQueue.add(this.output1)
     }
 
     // Check if override is necessary!!
@@ -136,7 +138,8 @@ export default class Input extends CircuitElement {
      * function to draw element
      */
     customDraw() {
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
         ctx.beginPath()
         ctx.lineWidth = correctWidth(3)
         const xx = this.x
@@ -177,8 +180,9 @@ export default class Input extends CircuitElement {
      * function to find position of mouse click
      */
     findPos() {
+        const simulationAreaStore = SimulationareaStore()
         return Math.round(
-            (simulationArea.mouseX - this.x + 10 * this.bitWidth) / 20.0
+            (simulationAreaStore.mouseX - this.x + 10 * this.bitWidth) / 20.0
         )
     }
 }

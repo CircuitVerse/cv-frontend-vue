@@ -1,4 +1,5 @@
-import simulationArea from './simulationArea'
+// import simulationArea from './simulationArea'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 import { convertors } from './utils'
 
 var DPR = window.devicePixelRatio || 1
@@ -136,10 +137,11 @@ const plotArea = {
     },
     // Used to resolve analytical time in clock cycles
     getPlotTime(timeUnit) {
+        const simulationAreaStore = SimulationareaStore()
         var time = this.cycleCount // Current cycle count
         time += timeUnit / this.cycleUnit // Add propagation delay
         // For user interactions like buttons - calculate time since clock tick
-        var timePeriod = simulationArea.timePeriod
+        var timePeriod = simulationAreaStore.timePeriod
         var executionDelay = this.executionStartTime - this.cycleTime
         var delayFraction = executionDelay / timePeriod
         // Add time since clock tick
@@ -155,20 +157,22 @@ const plotArea = {
     },
     // Get current time in clock cycles
     getCurrentTime() {
+        const simulationAreaStore = SimulationareaStore()
         var time = this.cycleCount
-        var timePeriod = simulationArea.timePeriod
+        var timePeriod = simulationAreaStore.timePeriod
         var delay = new Date().getTime() - this.cycleTime
         var delayFraction = delay / timePeriod
         time += delayFraction
         return time
     },
     update() {
+        const simulationAreaStore = SimulationareaStore()
         this.resize()
         var dangerColor = '#dc5656'
         var normalColor = '#42b983'
         this.unitUsed = Math.max(
             this.unitUsed,
-            simulationArea.simulationQueue.time
+            simulationAreaStore.simulationQueue.time
         )
         var unitUsed = this.unitUsed
         var units = this.cycleUnit

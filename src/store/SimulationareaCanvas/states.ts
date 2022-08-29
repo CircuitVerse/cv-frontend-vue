@@ -24,7 +24,7 @@ export const states = {
     mouseY: 0,
     mouseDownX: 0,
     mouseDownY: 0,
-    simulationQueue: undefined,
+    simulationQueue: {},
     multiAddElement: false,
     mouseDown: false,
     clickCount: 0, // double click

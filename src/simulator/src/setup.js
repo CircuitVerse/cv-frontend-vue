@@ -6,7 +6,7 @@ import { Tooltip } from 'bootstrap'
 import metadata from './metadata.json'
 import { generateId, showMessage } from './utils'
 import plotArea from './plotArea'
-import simulationArea from './simulationArea'
+// import simulationArea from './simulationArea'
 import { dots } from './canvasApi'
 import { update, updateSimulationSet, updateCanvasSet } from './engine'
 import { setupUI } from './ux'
@@ -30,6 +30,7 @@ import '../vendor/jquery-ui.min.css'
 import '../vendor/jquery-ui.min'
 import { BackgroundareaStore } from '#/store/BackgroundareaCanvas/BackgroundareaStore'
 import { colors } from './themer/themer'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 /**
  * to resize window and setup things it
  * sets up new width for the canvas variables.
@@ -39,7 +40,7 @@ import { colors } from './themer/themer'
 export function resetup() {
     console.log('hello from re setup')
     const backgroundAreaStore = BackgroundareaStore()
-    console.log(backgroundAreaStore)
+    const simulationAreaStore = SimulationareaStore()
     DPR = window.devicePixelRatio || 1
     if (lightMode) {
         DPR = 1
@@ -56,7 +57,8 @@ export function resetup() {
     // setup simulationArea and backgroundArea variables used to make changes to canvas.
     // backgroundAreaStore.setup()
     backgroundAreaStore.setup()
-    simulationArea.setup()
+    simulationAreaStore.setup()
+    console.log(simulationAreaStore.simulationQueue)
     // redraw grid
     dots()
     document.getElementById('backgroundArea').style.height =
@@ -64,8 +66,8 @@ export function resetup() {
     document.getElementById('backgroundArea').style.width =
         width / DPR + 100 + 'px'
     document.getElementById('canvasArea').style.height = height / DPR + 'px'
-    simulationArea.canvas.width = width
-    simulationArea.canvas.height = height
+    simulationAreaStore.canvas.width = width
+    simulationAreaStore.canvas.height = height
     backgroundAreaStore.canvas.width = width + 100 * DPR
     backgroundAreaStore.canvas.height = height + 100 * DPR
     if (!embed) {
@@ -73,7 +75,7 @@ export function resetup() {
     }
     updateCanvasSet(true)
     update() // INEFFICIENT, needs to be deprecated
-    simulationArea.prevScale = 0
+    simulationAreaStore.prevScale = 0
     dots()
 }
 
@@ -129,6 +131,8 @@ function setupElementLists() {
  */
 export function setup() {
     // console.log('hello from set up')
+    const simulationAreaStore = SimulationareaStore()
+    console.log(simulationAreaStore)
     let embed = false
     const startListeners = embed ? startEmbedListeners : startMainListeners
     setupElementLists()
@@ -154,7 +158,9 @@ export function setup() {
                     var data = response
                     if (data) {
                         load(data)
-                        simulationArea.changeClockTime(data.timePeriod || 500)
+                        simulationAreaStore.changeClockTime(
+                            data.timePeriod || 500
+                        )
                     }
                     $('.loadingIcon').fadeOut()
                 },

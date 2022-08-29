@@ -11,8 +11,9 @@ import {
 import { backUp } from './data/backupCircuit'
 import { getNextPosition } from './modules'
 import { generateId } from './utils'
-import simulationArea from './simulationArea'
+// import simulationArea from './simulationArea'
 import { TestbenchData } from './testbench'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 /**
  * Helper function to paste
@@ -20,6 +21,7 @@ import { TestbenchData } from './testbench'
  * @category events
  */
 export function paste(copyData) {
+    const simulationAreaStore = SimulationareaStore()
     if (copyData === undefined) return
     var data = JSON.parse(copyData)
     if (!data.logixClipBoardData) return
@@ -92,8 +94,8 @@ export function paste(copyData) {
         for (let j = 0; j < tempScope[updateOrder[i]].length; j++) {
             const obj = tempScope[updateOrder[i]][j]
             if (obj.objectType !== 'Wire') {
-                obj.x += simulationArea.mouseX - approxX
-                obj.y += simulationArea.mouseY - approxY
+                obj.x += simulationAreaStore.mouseX - approxX
+                obj.y += simulationAreaStore.mouseY - approxY
             }
         }
     }
@@ -135,6 +137,7 @@ export function paste(copyData) {
  * @category events
  */
 export function cut(copyList) {
+    const simulationAreaStore = SimulationareaStore()
     if (copyList.length === 0) return
     var tempScope = new Scope(globalScope.name, globalScope.id)
     var oldOx = globalScope.ox
@@ -198,8 +201,8 @@ export function cut(copyList) {
     data.logixClipBoardData = true
     data = JSON.stringify(data)
 
-    simulationArea.multipleObjectSelections = [] // copyList.slice();
-    simulationArea.copyList = [] // copyList.slice();
+    simulationAreaStore.multipleObjectSelections = [] // copyList.slice();
+    simulationAreaStore.copyList = [] // copyList.slice();
     var canvasUpdate = true
     updateSimulationSet(true)
     globalScope = tempScope
@@ -218,6 +221,7 @@ export function cut(copyList) {
  * @category events
  */
 export function copy(copyList, cutflag = false) {
+    const simulationAreaStore = SimulationareaStore()
     if (copyList.length === 0) return
     var tempScope = new Scope(globalScope.name, globalScope.id)
     var oldOx = globalScope.ox
@@ -297,8 +301,8 @@ export function copy(copyList, cutflag = false) {
     data.logixClipBoardData = true
     data.testbenchData = undefined // Don't copy testbench data
     data = JSON.stringify(data)
-    simulationArea.multipleObjectSelections = [] // copyList.slice();
-    simulationArea.copyList = [] // copyList.slice();
+    simulationAreaStore.multipleObjectSelections = [] // copyList.slice();
+    simulationAreaStore.copyList = [] // copyList.slice();
     var canvasUpdate = true
     updateSimulationSet(true)
     globalScope = tempScope
@@ -326,13 +330,14 @@ export function copy(copyList, cutflag = false) {
  * @category events
  */
 export function selectAll(scope = globalScope) {
+    const simulationAreaStore = SimulationareaStore()
     moduleList.forEach((val, _, __) => {
         if (scope.hasOwnProperty(val)) {
-            simulationArea.multipleObjectSelections.push(...scope[val])
+            simulationAreaStore.multipleObjectSelections.push(...scope[val])
         }
     })
 
     if (scope.nodes) {
-        simulationArea.multipleObjectSelections.push(...scope.nodes)
+        simulationAreaStore.multipleObjectSelections.push(...scope.nodes)
     }
 }

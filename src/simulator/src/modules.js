@@ -1,5 +1,6 @@
 /* eslint-disable import/no-cycle */
-import simulationArea from './simulationArea'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
+// import simulationArea from './simulationArea'
 
 export function getNextPosition(x = 0, scope = globalScope) {
     let possibleY = 20
@@ -43,6 +44,7 @@ var modules = {}
 export default modules
 
 export function changeInputSize(size) {
+    const simulationAreaStore = SimulationareaStore()
     if (size == undefined || size < 2 || size > 10) return
     if (this.inputSize == size) return
     size = parseInt(size, 10)
@@ -55,6 +57,6 @@ export function changeInputSize(size) {
         this.bitWidth
     )
     this.delete()
-    simulationArea.lastSelected = obj
+    simulationAreaStore.lastSelected = obj
     return obj
 }
