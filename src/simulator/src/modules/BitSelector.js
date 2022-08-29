@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode, extractBits } from '../node'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 import { correctWidth, rect, fillText } from '../canvasApi'
 /**
  * @class
@@ -15,6 +15,7 @@ import { correctWidth, rect, fillText } from '../canvasApi'
  * @category modules
  */
 import { colors } from '../themer/themer'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 export default class BitSelector extends CircuitElement {
     constructor(
@@ -92,12 +93,13 @@ export default class BitSelector extends CircuitElement {
      * resolve output values based on inputData
      */
     resolve() {
+        const simulationAreaStore = SimulationareaStore()
         this.output1.value = extractBits(
             this.inp1.value,
             this.bitSelectorInp.value + 1,
             this.bitSelectorInp.value + 1
         ) // (this.inp1.value^(1<<this.bitSelectorInp.value))==(1<<this.bitSelectorInp.value);
-        simulationArea.simulationQueue.add(this.output1)
+        simulationAreaStore.simulationQueue.add(this.output1)
     }
 
     /**
@@ -105,7 +107,9 @@ export default class BitSelector extends CircuitElement {
      * function to draw element
      */
     customDraw() {
-        var ctx = simulationArea.context
+            const simulationAreaStore = SimulationareaStore()
+
+        var ctx = simulationAreaStore.context
         ctx.beginPath()
         ctx.strokeStyle = ['blue', colors['stroke_alt']][
             (this.state === undefined) + 0
@@ -116,9 +120,9 @@ export default class BitSelector extends CircuitElement {
         const yy = this.y
         rect(ctx, xx - 20, yy - 20, 40, 40)
         if (
-            (this.hover && !simulationArea.shiftDown) ||
-            simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            (this.hover && !simulationAreaStore.shiftDown) ||
+            simulationAreaStore.lastSelected === this ||
+            simulationAreaStore.multipleObjectSelections.contains(this)
         )
             ctx.fillStyle = colors['hover_select']
         ctx.fill()

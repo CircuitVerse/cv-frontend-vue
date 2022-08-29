@@ -1,7 +1,8 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 import { correctWidth, lineTo, moveTo, drawCircle2 } from '../canvasApi'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 /**
  * @class
@@ -49,6 +50,7 @@ export default class Button extends CircuitElement {
      * resolve output values based on inputData
      */
     resolve() {
+        const simulationAreaStore = SimulationareaStore()
         if (this.wasClicked) {
             this.state = 1
             this.output1.value = this.state
@@ -56,7 +58,7 @@ export default class Button extends CircuitElement {
             this.state = 0
             this.output1.value = this.state
         }
-        simulationArea.simulationQueue.add(this.output1)
+        simulationAreaStore.simulationQueue.add(this.output1)
     }
 
     /**
@@ -64,7 +66,8 @@ export default class Button extends CircuitElement {
      * function to draw element
      */
     customDraw() {
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
         const xx = this.x
         const yy = this.y
         ctx.fillStyle = '#ddd'
@@ -84,9 +87,9 @@ export default class Button extends CircuitElement {
         ctx.stroke()
 
         if (
-            (this.hover && !simulationArea.shiftDown) ||
-            simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            (this.hover && !simulationAreaStore.shiftDown) ||
+            simulationAreaStore.lastSelected === this ||
+            simulationAreaStore.multipleObjectSelections.contains(this)
         ) {
             ctx.fillStyle = 'rgba(232, 13, 13,0.6)'
         }
@@ -98,7 +101,8 @@ export default class Button extends CircuitElement {
     }
 
     subcircuitDraw(xOffset = 0, yOffset = 0) {
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
         var xx = this.subcircuitMetadata.x + xOffset
         var yy = this.subcircuitMetadata.y + yOffset
         ctx.fillStyle = '#ddd'
@@ -109,9 +113,9 @@ export default class Button extends CircuitElement {
         drawCircle2(ctx, 0, 0, 6, xx, yy, this.direction)
         ctx.stroke()
         if (
-            (this.hover && !simulationArea.shiftDown) ||
-            simulationArea.lastSelected == this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            (this.hover && !simulationAreaStore.shiftDown) ||
+            simulationAreaStore.lastSelected == this ||
+            simulationAreaStore.multipleObjectSelections.contains(this)
         )
             ctx.fillStyle = 'rgba(232, 13, 13,0.6)'
         if (this.wasClicked) ctx.fillStyle = 'rgba(232, 13, 13,0.8)'

@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 import { correctWidth, lineTo, moveTo, fillText3 } from '../canvasApi'
 /**
  * @class
@@ -15,6 +15,7 @@ import { correctWidth, lineTo, moveTo, fillText3 } from '../canvasApi'
  * @category sequential
  */
 import { colors } from '../themer/themer'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 export default class Keyboard extends CircuitElement {
     constructor(x, y, scope = globalScope, bufferSize = 32) {
         super(x, y, scope, 'RIGHT', 1)
@@ -67,11 +68,12 @@ export default class Keyboard extends CircuitElement {
      * be given to the keyboard at once before it starts sending data.
      */
     changeBufferSize(size) {
+        const simulationAreaStore = SimulationareaStore()
         if (size == undefined || size < 20 || size > 100) return
         if (this.bufferSize == size) return
         var obj = new Keyboard(this.x, this.y, this.scope, size)
         this.delete()
-        simulationArea.lastSelected = obj
+        simulationAreaStore.lastSelected = obj
         return obj
     }
 
@@ -109,6 +111,7 @@ export default class Keyboard extends CircuitElement {
      * through the output nodes.
      */
     resolve() {
+        const simulationAreaStore = SimulationareaStore()
         if (this.reset.value == 1) {
             this.buffer = ''
             return
@@ -119,7 +122,7 @@ export default class Keyboard extends CircuitElement {
 
         if (this.available.value != 0) {
             this.available.value = 0 // this.bufferOutValue;
-            simulationArea.simulationQueue.add(this.available)
+            simulationAreaStore.simulationQueue.add(this.available)
         }
 
         if (this.clockInp.value == this.prevClockState) {
@@ -146,12 +149,12 @@ export default class Keyboard extends CircuitElement {
 
         if (this.asciiOutput.value != this.bufferOutValue) {
             this.asciiOutput.value = this.bufferOutValue
-            simulationArea.simulationQueue.add(this.asciiOutput)
+            simulationAreaStore.simulationQueue.add(this.asciiOutput)
         }
 
         if (this.bufferOutValue !== undefined && this.available.value != 1) {
             this.available.value = 1 // this.bufferOutValue;
-            simulationArea.simulationQueue.add(this.available)
+            simulationAreaStore.simulationQueue.add(this.available)
         }
     }
 
@@ -170,7 +173,8 @@ export default class Keyboard extends CircuitElement {
     }
 
     customDraw() {
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
         //
         ctx.strokeStyle = colors['stroke']
         ctx.fillStyle = colors['fill']

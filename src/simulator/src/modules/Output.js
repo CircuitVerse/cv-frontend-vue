@@ -1,10 +1,11 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 import { correctWidth, fillText, rect2, oppositeDirection } from '../canvasApi'
 import { getNextPosition } from '../modules'
 import { generateId } from '../utils'
 import { colors } from '../themer/themer'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 function bin2dec(binString) {
     return parseInt(binString, 2)
@@ -116,8 +117,9 @@ export default class Output extends CircuitElement {
      * function to draw element
      */
     customDraw() {
+        const simulationAreaStore = SimulationareaStore()
         this.state = this.inp1.value
-        var ctx = simulationArea.context
+        var ctx = simulationAreaStore.context
         ctx.beginPath()
         ctx.strokeStyle = [colors['out_rect'], colors['stroke_alt']][
             +(this.inp1.value === undefined)
@@ -138,9 +140,9 @@ export default class Output extends CircuitElement {
             'RIGHT'
         )
         if (
-            (this.hover && !simulationArea.shiftDown) ||
-            simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            (this.hover && !simulationAreaStore.shiftDown) ||
+            simulationAreaStore.lastSelected === this ||
+            simulationAreaStore.multipleObjectSelections.contains(this)
         ) {
             ctx.fillStyle = colors['hover_select']
         }

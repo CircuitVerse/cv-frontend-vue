@@ -1,8 +1,9 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 import { correctWidth, lineTo, moveTo, fillText3 } from '../canvasApi'
 import { colors } from '../themer/themer'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 /**
  * @class
@@ -81,11 +82,12 @@ export default class TTY extends CircuitElement {
      * this funciton is used to change the size of the screen
      */
     changeRowSize(size) {
+        const simulationAreaStore = SimulationareaStore()
         if (size == undefined || size < 1 || size > 10) return
         if (this.rows == size) return
         var obj = new TTY(this.x, this.y, this.scope, size, this.cols)
         this.delete()
-        simulationArea.lastSelected = obj
+        simulationAreaStore.lastSelected = obj
         return obj
     }
 
@@ -94,11 +96,12 @@ export default class TTY extends CircuitElement {
      * this funciton is used to change the size of the screen
      */
     changeColSize(size) {
+        const simulationAreaStore = SimulationareaStore()
         if (size == undefined || size < 20 || size > 100) return
         if (this.cols == size) return
         var obj = new TTY(this.x, this.y, this.scope, this.rows, size)
         this.delete()
-        simulationArea.lastSelected = obj
+        simulationAreaStore.lastSelected = obj
         return obj
     }
 
@@ -165,7 +168,8 @@ export default class TTY extends CircuitElement {
     }
 
     customDraw() {
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
         //
         ctx.strokeStyle = colors['stroke']
         ctx.fillStyle = colors['fill']
@@ -200,7 +204,7 @@ export default class TTY extends CircuitElement {
             this.direction
         )
 
-        // if ((this.b.hover&&!simulationArea.shiftDown)|| simulationArea.lastSelected == this || simulationArea.multipleObjectSelections.contains(this))
+        // if ((this.b.hover&&!simulationAreaStore.shiftDown)|| simulationAreaStore.lastSelected == this || simulationAreaStore.multipleObjectSelections.contains(this))
         //     ctx.fillStyle = "rgba(255, 255, 32,0.8)";
         ctx.stroke()
 

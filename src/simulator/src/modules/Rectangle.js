@@ -1,7 +1,8 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 import { correctWidth, rect } from '../canvasApi'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 /**
  * @class
  * Rectangle
@@ -88,7 +89,8 @@ export default class Rectangle extends CircuitElement {
      * function to draw element
      */
     customDraw() {
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
         ctx.beginPath()
         ctx.strokeStyle = 'rgba(0,0,0,1)'
         ctx.setLineDash([5 * globalScope.scale, 5 * globalScope.scale])
@@ -99,8 +101,8 @@ export default class Rectangle extends CircuitElement {
         ctx.stroke()
 
         if (
-            simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationAreaStore.lastSelected === this ||
+            simulationAreaStore.multipleObjectSelections.contains(this)
         ) {
             ctx.fillStyle = 'rgba(255, 255, 32,0.1)'
             ctx.fill()

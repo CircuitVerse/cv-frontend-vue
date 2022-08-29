@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 import { correctWidth, rect2, fillText3 } from '../canvasApi'
 /**
  * @class
@@ -13,6 +13,7 @@ import { correctWidth, rect2, fillText3 } from '../canvasApi'
  * @category sequential
  */
 import { colors } from '../themer/themer'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 export default class Rom extends CircuitElement {
     constructor(
         x,
@@ -75,8 +76,9 @@ export default class Rom extends CircuitElement {
      * @return {number}
      */
     findPos() {
-        const i = Math.floor((simulationArea.mouseX - this.x + 35) / 20)
-        const j = Math.floor((simulationArea.mouseY - this.y + 35) / 16)
+        const simulationAreaStore = SimulationareaStore()
+        const i = Math.floor((simulationAreaStore.mouseX - this.x + 35) / 20)
+        const j = Math.floor((simulationAreaStore.mouseY - this.y + 35) / 16)
         if (i < 0 || j < 0 || i > 3 || j > 3) return undefined
         return j * 4 + i
     }
@@ -111,7 +113,8 @@ export default class Rom extends CircuitElement {
      * function to draw element
      */
     customDraw() {
-        const ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        const ctx = simulationAreaStore.context
         const xx = this.x
         const yy = this.y
         const hoverIndex = this.findPos()
@@ -131,9 +134,9 @@ export default class Rom extends CircuitElement {
         )
         if (
             hoverIndex === undefined &&
-            ((!simulationArea.shiftDown && this.hover) ||
-                simulationArea.lastSelected === this ||
-                simulationArea.multipleObjectSelections.contains(this))
+            ((!simulationAreaStore.shiftDown && this.hover) ||
+                simulationAreaStore.lastSelected === this ||
+                simulationAreaStore.multipleObjectSelections.contains(this))
         )
             ctx.fillStyle = colors['hover_select']
         ctx.fill()
@@ -248,11 +251,12 @@ export default class Rom extends CircuitElement {
      * resolve output values based on inputData
      */
     resolve() {
+        const simulationAreaStore = SimulationareaStore()
         if (this.isResolvable() === false) {
             return
         }
         this.dataOut.value = this.data[this.memAddr.value]
-        simulationArea.simulationQueue.add(this.dataOut)
+        simulationAreaStore.simulationQueue.add(this.dataOut)
     }
 
     verilogBaseType() {

@@ -100,10 +100,10 @@
 <script lang="ts" setup>
 import PanelHeader from '../Shared/PanelHeader.vue'
 import metadata from '#/simulator/src/metadata.json'
-import simulationArea from '#/simulator/src/simulationArea'
 import { uxvar } from '#/simulator/src/ux'
 import modules from '#/simulator/src/modules'
 import { onBeforeMount, ref } from 'vue'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 var panelData = []
 window.elementHierarchy = metadata.elementHierarchy
 window.elementPanelList = []
@@ -162,10 +162,14 @@ function searchElements() {
 }
 
 function createElement(elementName) {
-    if (simulationArea.lastSelected && simulationArea.lastSelected.newElement)
-        simulationArea.lastSelected.delete()
+    const simulationAreaStore = SimulationareaStore()
+    if (
+        simulationAreaStore.lastSelected &&
+        simulationAreaStore.lastSelected.newElement
+    )
+        simulationAreaStore.lastSelected.delete()
     var obj = new modules[elementName]()
-    simulationArea.lastSelected = obj
+    simulationAreaStore.lastSelected = obj
     uxvar.smartDropXX += 70
     if (uxvar.smartDropXX / globalScope.scale > width) {
         uxvar.smartDropXX = 50

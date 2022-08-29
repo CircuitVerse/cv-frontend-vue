@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 import { correctWidth, fillText2, fillText4, drawCircle2 } from '../canvasApi'
 /**
  * @class
@@ -43,6 +43,7 @@ import { correctWidth, fillText2, fillText4, drawCircle2 } from '../canvasApi'
  * @category sequential
  */
 import { colors } from '../themer/themer'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 function customResolve(
     clockInp,
@@ -56,6 +57,7 @@ function customResolve(
     enable_polarity,
     numIterations
 ) {
+    const simulationAreaStore = SimulationareaStore()
     for (var i = 0; i < numIterations; i++) {
         if (clock_polarity[i] != undefined) {
             clock_polarity[i] == true ? 1 : 0
@@ -68,7 +70,7 @@ function customResolve(
         if (clock_polarity[i] == undefined && enable_polarity[i] == undefined) {
             if (dInp[i].value != undefined) {
                 qOutput[i].value = dInp[i].value
-                simulationArea.simulationQueue.add(qOutput[i])
+                simulationAreaStore.simulationQueue.add(qOutput[i])
             }
         } else if (
             clock_polarity[i] == undefined &&
@@ -80,7 +82,7 @@ function customResolve(
                 dInp[i].value != undefined
             ) {
                 qOutput[i].value = dInp[i].value
-                simulationArea.simulationQueue.add(qOutput[i])
+                simulationAreaStore.simulationQueue.add(qOutput[i])
             }
         } else if (
             clock_polarity[i] != undefined &&
@@ -104,7 +106,7 @@ function customResolve(
 
             if (qOutput[i].value != slaveState[i]) {
                 qOutput[i].value = slaveState[i]
-                simulationArea.simulationQueue.add(qOutput[i])
+                simulationAreaStore.simulationQueue.add(qOutput[i])
             }
         } else {
             if (en[i].value == 0) {
@@ -130,7 +132,7 @@ function customResolve(
 
             if (qOutput[i].value != slaveState[i]) {
                 qOutput[i].value = slaveState[i]
-                simulationArea.simulationQueue.add(qOutput[i])
+                simulationAreaStore.simulationQueue.add(qOutput[i])
             }
         }
     }
@@ -444,6 +446,7 @@ export default class verilogRAM extends CircuitElement {
     }
 
     resolve() {
+        const simulationAreaStore = SimulationareaStore()
         // resolve write
 
         customResolve(
@@ -480,7 +483,7 @@ export default class verilogRAM extends CircuitElement {
 
         for (var i = 0; i < this.numRead; i++) {
             this.dataOut[i].value = this.data[this.readAddress[i].value] || 0
-            simulationArea.simulationQueue.add(this.dataOut[i])
+            simulationAreaStore.simulationQueue.add(this.dataOut[i])
         }
 
         customResolve(
@@ -498,7 +501,8 @@ export default class verilogRAM extends CircuitElement {
     }
 
     customDraw() {
-        // var ctx = simulationArea.context;
+        // const simulationAreaStore = SimulationareaStore()
+        // var ctx = simulationAreaStore.context;
         // //
         // var xx = this.x;
         // var yy = this.y;

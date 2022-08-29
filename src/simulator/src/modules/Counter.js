@@ -1,8 +1,9 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 import { lineTo, moveTo, fillText, correctWidth, rect2 } from '../canvasApi'
 import { colors } from '../themer/themer'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 /**
  * @class
@@ -65,6 +66,7 @@ export default class Counter extends CircuitElement {
     }
 
     resolve() {
+        const simulationAreaStore = SimulationareaStore()
         // Max value is either the value in the input pin or the max allowed by the bitWidth.
         var maxValue =
             this.maxValue.value != undefined
@@ -90,19 +92,20 @@ export default class Counter extends CircuitElement {
         this.value = outputValue
         if (this.output.value != outputValue) {
             this.output.value = outputValue
-            simulationArea.simulationQueue.add(this.output)
+            simulationAreaStore.simulationQueue.add(this.output)
         }
 
         // Output the zero signal
         var zeroValue = this.clock.value == 1 && outputValue == 0 ? 1 : 0
         if (this.zero.value != zeroValue) {
             this.zero.value = zeroValue
-            simulationArea.simulationQueue.add(this.zero)
+            simulationAreaStore.simulationQueue.add(this.zero)
         }
     }
 
     customDraw() {
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
         var xx = this.x
         var yy = this.y
 
@@ -123,7 +126,8 @@ export default class Counter extends CircuitElement {
 
     // Draws the element in the subcuircuit. Used in layout mode
     subcircuitDraw(xOffset = 0, yOffset = 0) {
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
         var xx = this.subcircuitMetadata.x + xOffset
         var yy = this.subcircuitMetadata.y + yOffset
 
@@ -140,9 +144,9 @@ export default class Counter extends CircuitElement {
         ctx.stroke()
 
         if (
-            (this.hover && !simulationArea.shiftDown) ||
-            simulationArea.lastSelected == this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            (this.hover && !simulationAreaStore.shiftDown) ||
+            simulationAreaStore.lastSelected == this ||
+            simulationAreaStore.multipleObjectSelections.contains(this)
         ) {
             ctx.fillStyle = 'rgba(255, 255, 32,0.6)'
             ctx.fill()

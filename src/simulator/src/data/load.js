@@ -8,7 +8,7 @@ import {
     gridUpdateSet,
 } from '../engine'
 import { updateRestrictedElementsInScope } from '../restrictedElementDiv'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 
 import { loadSubCircuit } from '../subcircuit'
 import { scheduleBackup } from './backupCircuit'
@@ -19,6 +19,7 @@ import modules from '../modules'
 import { oppositeDirection } from '../canvasApi'
 import plotArea from '../plotArea'
 import { updateTestbenchUI, TestbenchData } from '../testbench'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 /**
  * Backward compatibility - needs to be deprecated
@@ -202,6 +203,7 @@ export function loadScope(scope, data) {
  * @exports load
  */
 export default function load(data) {
+    const simulationAreaStore = SimulationareaStore()
     // If project is new and no data is there, then just set project name
     if (!data) {
         setProjectName(__projectName)
@@ -254,12 +256,12 @@ export default function load(data) {
     }
 
     // Restore clock
-    simulationArea.changeClockTime(data.timePeriod || 500)
-    simulationArea.clockEnabled =
+    simulationAreaStore.changeClockTime(data.timePeriod || 500)
+    simulationAreaStore.clockEnabled =
         data.clockEnabled === undefined ? true : data.clockEnabled
 
     if (!embed) {
-        showProperties(simulationArea.lastSelected)
+        showProperties(simulationAreaStore.lastSelected)
     }
 
     // Reorder tabs according to the saved order

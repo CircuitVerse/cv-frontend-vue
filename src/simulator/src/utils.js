@@ -1,4 +1,4 @@
-import simulationArea from './simulationArea'
+// import simulationArea from './simulationArea'
 import {
     scheduleUpdate,
     play,
@@ -9,6 +9,7 @@ import {
 import { layoutModeGet } from './layoutMode'
 import plotArea from './plotArea'
 import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 window.globalScope = undefined
 window.lightMode = false // To be deprecated
@@ -36,7 +37,8 @@ export function stripTags(string = '') {
 }
 
 export function clockTick() {
-    if (!simulationArea.clockEnabled) return
+    const simulationAreaStore = SimulationareaStore()
+    if (!simulationAreaStore.clockEnabled) return
     if (errorDetectedGet()) return
     if (layoutModeGet()) return
     updateCanvasSet(true)

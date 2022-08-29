@@ -1,7 +1,8 @@
 import CircuitElement from '../circuitElement'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 import { correctWidth, fillText } from '../canvasApi'
 import Node, { findNode } from '../node'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 // helper function to convert decimal to binary
 function dec2bin(dec, bitWidth = undefined) {
@@ -137,7 +138,8 @@ export default class TB_Output extends CircuitElement {
     }
 
     customDraw() {
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
         ctx.beginPath()
         ctx.strokeStyle = 'grey'
         ctx.fillStyle = '#fcfcfc'
@@ -162,7 +164,7 @@ export default class TB_Output extends CircuitElement {
         }
 
         // rect2(ctx, -120+xRotate+this.xSize, -20+yRotate, 120-this.xSize, 40, xx, yy, "RIGHT");
-        // if ((this.hover && !simulationArea.shiftDown) || simulationArea.lastSelected == this || simulationArea.multipleObjectSelections.contains(this))
+        // if ((this.hover && !simulationAreaStore.shiftDown) || simulationAreaStore.lastSelected == this || simulationAreaStore.multipleObjectSelections.contains(this))
         //     ctx.fillStyle = "rgba(255, 255, 32,0.8)";
         // ctx.fill();
         // ctx.stroke();

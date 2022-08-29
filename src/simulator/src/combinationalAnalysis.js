@@ -11,7 +11,7 @@ import AndGate from './modules/AndGate'
 import OrGate from './modules/OrGate'
 import NotGate from './modules/NotGate'
 import { stripTags } from './utils'
-import simulationArea from './simulationArea'
+// import simulationArea from './simulationArea'
 import { findDimensions } from './canvasApi'
 import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
 

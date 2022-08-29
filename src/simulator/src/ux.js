@@ -12,7 +12,7 @@ import {
     update,
     updateSimulationSet,
 } from './engine'
-import simulationArea from './simulationArea'
+// import simulationArea from './simulationArea'
 import logixFunction from './data'
 import { newCircuit, circuitProperty } from './circuit'
 import modules from './modules'
@@ -25,6 +25,7 @@ import { setupVerilogExportCodeWindow } from './verilog'
 import { setupBitConvertor } from './utils'
 import { updateTestbenchUI, setupTestbenchUI } from './testbench'
 import { applyVerilogTheme } from './Verilog2CV'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 export const uxvar = {
     smartDropXX: 50,
@@ -247,6 +248,7 @@ function checkValidBitWidth() {
 }
 
 export function objectPropertyAttributeUpdate() {
+    const simulationAreaStore = SimulationareaStore()
     checkValidBitWidth()
     scheduleUpdate()
     updateCanvasSet(true)
@@ -257,24 +259,25 @@ export function objectPropertyAttributeUpdate() {
     if (this.type === 'number') {
         value = parseFloat(value)
     }
-    if (simulationArea.lastSelected && simulationArea.lastSelected[this.name]) {
-        simulationArea.lastSelected[this.name](value)
+    if (simulationAreaStore.lastSelected && simulationAreaStore.lastSelected[this.name]) {
+        simulationAreaStore.lastSelected[this.name](value)
         // Commented out due to property menu refresh bug
-        // prevPropertyObjSet(simulationArea.lastSelected[this.name](this.value)) || prevPropertyObjGet();
+        // prevPropertyObjSet(simulationAreaStore.lastSelected[this.name](this.value)) || prevPropertyObjGet();
     } else {
         circuitProperty[this.name](value)
     }
 }
 
 export function objectPropertyAttributeCheckedUpdate() {
+    const simulationAreaStore = SimulationareaStore()
     if (this.name === 'toggleLabelInLayoutMode') return // Hack to prevent toggleLabelInLayoutMode from toggling twice
     scheduleUpdate()
     updateCanvasSet(true)
     wireToBeCheckedSet(1)
-    if (simulationArea.lastSelected && simulationArea.lastSelected[this.name]) {
-        simulationArea.lastSelected[this.name](this.value)
+    if (simulationAreaStore.lastSelected && simulationAreaStore.lastSelected[this.name]) {
+        simulationAreaStore.lastSelected[this.name](this.value)
         // Commented out due to property menu refresh bug
-        // prevPropertyObjSet(simulationArea.lastSelected[this.name](this.value)) || prevPropertyObjGet();
+        // prevPropertyObjSet(simulationAreaStore.lastSelected[this.name](this.value)) || prevPropertyObjGet();
     } else {
         circuitProperty[this.name](this.checked)
     }
@@ -292,7 +295,7 @@ export function checkPropertiesUpdate(value = 0) {
         'change keyup paste click',
         objectPropertyAttributeCheckedUpdate
     )
-
+    // const simulationAreaStore = SimulationareaStore()
     //Duplicate of above (Handled above)
     // $('.objectPropertyAttributeChecked').on('click', function () {
     //     if (this.name !== 'toggleLabelInLayoutMode') return // Hack to prevent toggleLabelInLayoutMode from toggling twice
@@ -300,10 +303,10 @@ export function checkPropertiesUpdate(value = 0) {
     //     updateCanvasSet(true)
     //     wireToBeCheckedSet(1)
     //     if (
-    //         simulationArea.lastSelected &&
-    //         simulationArea.lastSelected[this.name]
+    //         simulationAreaSbtore.lastSelected &&
+    //         simulationAreaStore.lastSelected[this.name]
     //     ) {
-    //         simulationArea.lastSelected[this.name](this.value)
+    //         simulationAreaStore.lastSelected[this.name](this.value)
     //         // Commented out due to property menu refresh bug
     //         // prevPropertyObjSet(simulationArea.lastSelected[this.name](this.value)) || prevPropertyObjGet();
     //     } else {
@@ -321,14 +324,15 @@ export function showProperties(obj) {
     if (obj === prevPropertyObjGet()) return
 
     /*
+    const simulationAreaStore = SimulationareaStore()
     hideProperties()
     prevPropertyObjSet(obj)
     if (layoutModeGet()) {
         // if an element is selected, show its properties instead of the layout dialog
         if (
-            simulationArea.lastSelected === undefined ||
+            simulationAreaStore.lastSelected === undefined ||
             ['Wire', 'CircuitElement', 'Node'].indexOf(
-                simulationArea.lastSelected.objectType
+                simulationAreaStore.lastSelected.objectType
             ) !== -1
         ) {
             $('#moduleProperty').hide()
@@ -422,9 +426,9 @@ export function showProperties(obj) {
             }
         }
     } else if (
-        simulationArea.lastSelected === undefined ||
+        simulationAreaStore.lastSelected === undefined ||
         ['Wire', 'CircuitElement', 'Node'].indexOf(
-            simulationArea.lastSelected.objectType
+            simulationAreaStore.lastSelected.objectType
         ) !== -1
     ) {
         $('#moduleProperty').show()
@@ -444,7 +448,7 @@ export function showProperties(obj) {
         )
         $('#moduleProperty-inner').append(
             `<p><span>Clock Enabled:</span> <label class='switch'> <input type='checkbox' ${
-                ['', 'checked'][simulationArea.clockEnabled + 0]
+                ['', 'checked'][simulationAreaStore.clockEnabled + 0]
             } class='objectPropertyAttributeChecked' name='changeClockEnable' > <span class='slider'></span></label></p>`
         )
         $('#moduleProperty-inner').append(
@@ -630,31 +634,32 @@ function escapeHtml(unsafe) {
 }
 
 export function deleteSelected() {
+    const simulationAreaStore = SimulationareaStore()
     console.log('Delete Selected Called')
     if (
-        simulationArea.lastSelected &&
+        simulationAreaStore.lastSelected &&
         !(
-            simulationArea.lastSelected.objectType === 'Node' &&
-            simulationArea.lastSelected.type !== 2
+            simulationAreaStore.lastSelected.objectType === 'Node' &&
+            simulationAreaStore.lastSelected.type !== 2
         )
     ) {
-        simulationArea.lastSelected.delete()
+        simulationAreaStore.lastSelected.delete()
     }
 
-    for (var i = 0; i < simulationArea.multipleObjectSelections.length; i++) {
+    for (var i = 0; i < simulationAreaStore.multipleObjectSelections.length; i++) {
         if (
             !(
-                simulationArea.multipleObjectSelections[i].objectType ===
+                simulationAreaStore.multipleObjectSelections[i].objectType ===
                     'Node' &&
-                simulationArea.multipleObjectSelections[i].type !== 2
+                simulationAreaStore.multipleObjectSelections[i].type !== 2
             )
         )
-            simulationArea.multipleObjectSelections[i].cleanDelete()
+            simulationAreaStore.multipleObjectSelections[i].cleanDelete()
     }
 
-    simulationArea.multipleObjectSelections = []
-    simulationArea.lastSelected = undefined
-    showProperties(simulationArea.lastSelected)
+    simulationAreaStore.multipleObjectSelections = []
+    simulationAreaStore.lastSelected = undefined
+    showProperties(simulationAreaStore.lastSelected)
     // Updated restricted elements
     updateCanvasSet(true)
     scheduleUpdate()
@@ -821,6 +826,7 @@ export function fullView() {
     Fills the elements that can be displayed in the subcircuit, in the subcircuit menu
 **/
 export function fillSubcircuitElements() {
+    const simulationAreaStore = SimulationareaStore()
     $('#subcircuitMenu').empty()
     var subCircuitElementExists = false
     for (let el of circuitElementList) {
@@ -867,7 +873,7 @@ export function fillSubcircuitElements() {
 
         element.subcircuitMetadata.showInSubcircuit = true
         element.newElement = true
-        simulationArea.lastSelected = element
+        simulationAreaStore.lastSelected = element
         this.parentElement.removeChild(this)
     })
 }
