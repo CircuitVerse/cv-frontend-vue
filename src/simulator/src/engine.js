@@ -9,10 +9,10 @@ import plotArea from './plotArea'
 import { dots, canvasMessage, findDimensions, rect2 } from './canvasApi'
 import { showProperties, prevPropertyObjGet } from './ux'
 import { showError } from './utils'
-import miniMapArea from './minimap'
 import { resetup } from './setup'
 import { verilogModeGet } from './Verilog2CV'
 import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
+import { MinimapareaStore } from '#/store/MinimapareaCanvas/MinimapareaStore'
 
 /**
  * Core of the simulation and rendering algorithm.
@@ -306,6 +306,7 @@ export function renderCanvas(scope) {
  * @category engine
  */
 export function updateSelectionsAndPane(scope = globalScope) {
+    const miniMapAreaStore = MinimapareaStore()
     const simulationAreaStore = SimulationareaStore()
     if (!simulationAreaStore.selected && simulationAreaStore.mouseDown) {
         simulationAreaStore.selected = true
@@ -316,7 +317,7 @@ export function updateSelectionsAndPane(scope = globalScope) {
             objectSelectionSet(true)
         } else if (!embed) {
             findDimensions(scope)
-            miniMapArea.setup()
+            miniMapAreaStore.setup()
             $('#miniMap').show()
         }
     } else if (
@@ -336,7 +337,7 @@ export function updateSelectionsAndPane(scope = globalScope) {
             globalScope.ox = Math.round(globalScope.ox)
             globalScope.oy = Math.round(globalScope.oy)
             gridUpdateSet(true)
-            if (!embed && !lightMode) miniMapArea.setup()
+            if (!embed && !lightMode) miniMapAreaStore.setup()
         } else {
             // idea: kind of empty
         }

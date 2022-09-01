@@ -1,8 +1,9 @@
 /* eslint-disable no-param-reassign */
-import miniMapArea, { removeMiniMap, updatelastMinimapShown } from './minimap'
+import { removeMiniMap, updatelastMinimapShown } from './minimap'
 import { colors } from './themer/themer'
 import { BackgroundareaStore } from '#/store/BackgroundareaCanvas/BackgroundareaStore'
 import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
+import { MinimapareaStore } from '#/store/MinimapareaCanvas/MinimapareaStore'
 
 var unit = 10
 
@@ -81,6 +82,7 @@ export function changeScale(delta, xx, yy, method = 1) {
     // Otherwise zoom wrt to selected object
 
     const simulationAreaStore = SimulationareaStore()
+    const miniMapAreaStore = MinimapareaStore()
     if (method === 3) {
         xx = (width / 2 - globalScope.ox) / globalScope.scale
         yy = (height / 2 - globalScope.oy) / globalScope.scale
@@ -123,7 +125,7 @@ export function changeScale(delta, xx, yy, method = 1) {
     // MiniMap
     if (!embed && !lightMode) {
         findDimensions(globalScope)
-        miniMapArea.setup()
+        miniMapAreaStore.setup()
         $('#miniMap').show()
         updatelastMinimapShown()
         $('#miniMap').show()
