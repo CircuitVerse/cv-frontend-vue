@@ -3,8 +3,8 @@ import { actions } from './actions'
 import { getters } from './getters'
 import { states } from './states'
 
-export const BackgroundareaStore = defineStore({
-    id: 'BackgroundareaStore',
+export const MinimapareaStore = defineStore({
+    id: 'MinimapareaStore',
     state: () => states,
     getters,
     actions,

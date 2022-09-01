@@ -17,11 +17,11 @@ import {
     gridUpdateSet,
     gridUpdateGet,
 } from './engine'
-import miniMapArea from './minimap'
 import { showMessage } from './utils'
 import * as metadata from './metadata.json'
 import { verilogModeGet, verilogModeSet } from './Verilog2CV'
 import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
+import { MinimapareaStore } from '#/store/MinimapareaCanvas/MinimapareaStore'
 
 /**
  * Layout.js - all subcircuit layout related code is here
@@ -65,6 +65,7 @@ export function determineLabel(x, y) {
  * @category layoutMode
  */
 export function paneLayout(scope = globalScope) {
+    const miniMapAreaStore = MinimapareaStore()
     const simulationAreaStore = SimulationareaStore()
     if (!simulationAreaStore.selected && simulationAreaStore.mouseDown) {
         simulationAreaStore.selected = true
@@ -87,7 +88,7 @@ export function paneLayout(scope = globalScope) {
             globalScope.ox = Math.round(globalScope.ox)
             globalScope.oy = Math.round(globalScope.oy)
             gridUpdateSet(true)
-            if (!embed && !lightMode) miniMapArea.setup()
+            if (!embed && !lightMode) miniMapAreaStore.setup()
         }
     } else if (simulationAreaStore.lastSelected === scope.root) {
         // Select multiple objects
