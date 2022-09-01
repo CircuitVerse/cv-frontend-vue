@@ -1,7 +1,8 @@
 /* eslint-disable no-bitwise */
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 
 /**
  * @class
@@ -83,6 +84,7 @@ export default class verilogShiftLeft extends CircuitElement {
      * resolve output values based on inputData
      */
     resolve() {
+        const simulationAreaStore = SimulationareaStore()
         if (this.isResolvable() === false) {
             return
         }
@@ -91,7 +93,7 @@ export default class verilogShiftLeft extends CircuitElement {
         this.output1.value =
             (output1 << (32 - this.outputBitWidth)) >>>
             (32 - this.outputBitWidth)
-        simulationArea.simulationQueue.add(this.output1)
+        simulationAreaStore.simulationQueue.add(this.output1)
     }
 }
 

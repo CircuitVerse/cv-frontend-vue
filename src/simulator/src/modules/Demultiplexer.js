@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 import { correctWidth, lineTo, moveTo, fillText } from '../canvasApi'
 /**
  * @class
@@ -15,6 +15,7 @@ import { correctWidth, lineTo, moveTo, fillText } from '../canvasApi'
  * @category modules
  */
 import { colors } from '../themer/themer'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 export default class Demultiplexer extends CircuitElement {
     constructor(
@@ -25,6 +26,7 @@ export default class Demultiplexer extends CircuitElement {
         bitWidth = 1,
         controlSignalSize = 1
     ) {
+        const simulationAreaStore = SimulationareaStore()
         super(x, y, scope, dir, bitWidth)
         /* this is done in this.baseSetup() now
         this.scope['Demultiplexer'].push(this);
@@ -54,7 +56,7 @@ export default class Demultiplexer extends CircuitElement {
                 size
             )
             this.cleanDelete()
-            simulationArea.lastSelected = obj
+            simulationAreaStore.lastSelected = obj
             return obj
         }
         this.mutableProperties = {
@@ -126,6 +128,7 @@ export default class Demultiplexer extends CircuitElement {
      * resolve output values based on inputData
      */
     resolve() {
+        const simulationAreaStore = SimulationareaStore()
         for (let i = 0; i < this.output1.length; i++) {
             this.output1[i].value = 0
         }
@@ -133,7 +136,7 @@ export default class Demultiplexer extends CircuitElement {
         this.output1[this.controlSignalInput.value].value = this.input.value
 
         for (let i = 0; i < this.output1.length; i++) {
-            simulationArea.simulationQueue.add(this.output1[i])
+            simulationAreaStore.simulationQueue.add(this.output1[i])
         }
     }
 
@@ -142,7 +145,8 @@ export default class Demultiplexer extends CircuitElement {
      * function to draw element
      */
     customDraw() {
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
 
         const xx = this.x
         const yy = this.y
@@ -204,9 +208,9 @@ export default class Demultiplexer extends CircuitElement {
         )
         ctx.closePath()
         if (
-            (this.hover && !simulationArea.shiftDown) ||
-            simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            (this.hover && !simulationAreaStore.shiftDown) ||
+            simulationAreaStore.lastSelected === this ||
+            simulationAreaStore.multipleObjectSelections.contains(this)
         ) {
             ctx.fillStyle = colors['hover_select']
         }

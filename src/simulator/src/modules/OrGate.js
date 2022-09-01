@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 import { correctWidth, bezierCurveTo, moveTo, arc2 } from '../canvasApi'
 import { changeInputSize } from '../modules'
 import { gateGenerateVerilog } from '../utils'
@@ -18,6 +18,7 @@ import { gateGenerateVerilog } from '../utils'
  * @category modules
  */
 import { colors } from '../themer/themer'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 export default class OrGate extends CircuitElement {
     constructor(
@@ -88,6 +89,7 @@ export default class OrGate extends CircuitElement {
      * resolve output values based on inputData
      */
     resolve() {
+        const simulationAreaStore = SimulationareaStore()
         let result = this.inp[0].value || 0
         if (this.isResolvable() === false) {
             return
@@ -95,7 +97,7 @@ export default class OrGate extends CircuitElement {
         for (let i = 1; i < this.inputSize; i++)
             result |= this.inp[i].value || 0
         this.output1.value = result >>> 0
-        simulationArea.simulationQueue.add(this.output1)
+        simulationAreaStore.simulationQueue.add(this.output1)
     }
 
     /**
@@ -103,7 +105,8 @@ export default class OrGate extends CircuitElement {
      * function to draw element
      */
     customDraw() {
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
         ctx.strokeStyle = colors['stroke']
         ctx.lineWidth = correctWidth(3)
 
@@ -128,9 +131,9 @@ export default class OrGate extends CircuitElement {
         bezierCurveTo(0, 0, 0, 0, -10, -20, xx, yy, this.direction)
         ctx.closePath()
         if (
-            (this.hover && !simulationArea.shiftDown) ||
-            simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            (this.hover && !simulationAreaStore.shiftDown) ||
+            simulationAreaStore.lastSelected === this ||
+            simulationAreaStore.multipleObjectSelections.contains(this)
         )
             ctx.fillStyle = colors['hover_select']
         ctx.fill()

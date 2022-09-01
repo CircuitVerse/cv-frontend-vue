@@ -1,6 +1,6 @@
 import { newCircuit, switchCircuit, changeCircuitName } from './circuit'
 import SubCircuit from './subcircuit'
-import simulationArea from './simulationArea'
+// import simulationArea from './simulationArea'
 import CodeMirror from 'codemirror/lib/codemirror.js'
 import 'codemirror/lib/codemirror.css'
 
@@ -62,6 +62,7 @@ export function verilogModeGet() {
 }
 
 export function verilogModeSet(mode) {
+    const simulationAreaStore = SimulationareaStore()
     if (mode == verilogMode) return
     verilogMode = mode
     if (mode) {
@@ -71,9 +72,9 @@ export function verilogModeSet(mode) {
         $('.quick-btn').hide()
         $('#verilogEditorPanel').show()
         if (!embed) {
-            simulationArea.lastSelected = globalScope.root
+            simulationAreaStore.lastSelected = globalScope.root
             showProperties(undefined)
-            showProperties(simulationArea.lastSelected)
+            showProperties(simulationAreaStore.lastSelected)
         }
         resetVerilogCode()
     } else {
@@ -86,6 +87,7 @@ export function verilogModeSet(mode) {
 }
 
 import yosysTypeMap from './VerilogClasses'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 class verilogSubCircuit {
     constructor(circuit) {

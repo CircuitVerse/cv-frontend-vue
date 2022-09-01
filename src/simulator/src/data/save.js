@@ -3,8 +3,7 @@ import { resetup } from '../setup'
 import { update } from '../engine'
 import { stripTags, showMessage } from '../utils'
 import { backUp } from './backupCircuit'
-import simulationArea from '../simulationArea'
-import backgroundArea from '../backgroundArea'
+// import simulationArea from '../simulationArea'
 import { findDimensions } from '../canvasApi'
 import { projectSavedSet } from './project'
 import { colors } from '../themer/themer'
@@ -12,6 +11,8 @@ import { layoutModeGet, toggleLayoutMode } from '../layoutMode'
 import { verilogModeGet } from '../Verilog2CV'
 import domtoimage from 'dom-to-image'
 import '../../vendor/canvas2svg'
+import { BackgroundareaStore } from '#/store/BackgroundareaCanvas/BackgroundareaStore'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 var projectName = undefined
 
@@ -46,7 +47,8 @@ export function getProjectName() {
  * @category data
  */
 function downloadAsImg(name, imgType) {
-    const gh = simulationArea.canvas.toDataURL(`image/${imgType}`)
+    const simulationAreaStore = SimulationareaStore()
+    const gh = simulationAreaStore.canvas.toDataURL(`image/${imgType}`)
     const anchor = document.createElement('a')
     anchor.href = gh
     anchor.download = `${name}.${imgType}`
@@ -72,6 +74,7 @@ export function getTabsOrder() {
  * @category data
  */
 export function generateSaveData(name) {
+    const simulationAreaStore = SimulationareaStore
     data = {}
 
     // Prompts for name, defaults to Untitled
@@ -81,8 +84,8 @@ export function generateSaveData(name) {
     setProjectName(data.name)
 
     // Save project details
-    data.timePeriod = simulationArea.timePeriod
-    data.clockEnabled = simulationArea.clockEnabled
+    data.timePeriod = simulationAreaStore.timePeriod
+    data.clockEnabled = simulationAreaStore.clockEnabled
     data.projectId = projectId
     data.focussedCircuit = globalScope.id
     data.orderedTabs = getTabsOrder()
@@ -155,23 +158,26 @@ export function generateImage(
     resolution,
     down = true
 ) {
+    const backgroundAreaStore = BackgroundareaStore()
+    const simulationAreaStore = SimulationareaStore()
+
     // Backup all data
     const backUpOx = globalScope.ox
     const backUpOy = globalScope.oy
     const backUpWidth = width
     const backUpHeight = height
     const backUpScale = globalScope.scale
-    const backUpContextBackground = backgroundArea.context
-    const backUpContextSimulation = simulationArea.context
+    const backUpContextBackground = backgroundAreaStore.context
+    const backUpContextSimulation = simulationAreaStore.context
 
-    backgroundArea.context = simulationArea.context
+    backgroundAreaStore.context = simulationAreaStore.context
 
     globalScope.ox *= 1 / backUpScale
     globalScope.oy *= 1 / backUpScale
 
     // If SVG, create SVG context - using canvas2svg here
     if (imgType === 'svg') {
-        simulationArea.context = new C2S(width, height)
+        simulationAreaStore.context = new C2S(width, height)
         resolution = 1
     } else if (imgType !== 'png') {
         transparent = false
@@ -186,10 +192,10 @@ export function generateImage(
     if (flag) {
         if (view === 'full') {
             findDimensions()
-            const minX = simulationArea.minWidth
-            const minY = simulationArea.minHeight
-            const maxX = simulationArea.maxWidth
-            const maxY = simulationArea.maxHeight
+            const minX = simulationAreaStore.minWidth
+            const minY = simulationAreaStore.minHeight
+            const maxX = simulationAreaStore.maxWidth
+            const maxY = simulationAreaStore.maxHeight
             width = (maxX - minX + 100) * resolution
             height = (maxY - minY + 100) * resolution
 
@@ -206,20 +212,20 @@ export function generateImage(
     globalScope.ox = Math.round(globalScope.ox)
     globalScope.oy = Math.round(globalScope.oy)
 
-    simulationArea.canvas.width = width
-    simulationArea.canvas.height = height
-    backgroundArea.canvas.width = width
-    backgroundArea.canvas.height = height
+    simulationAreaStore.canvas.width = width
+    simulationAreaStore.canvas.height = height
+    backgroundAreaStore.canvas.width = width
+    backgroundAreaStore.canvas.height = height
 
-    backgroundArea.context = simulationArea.context
+    backgroundAreaStore.context = simulationAreaStore.context
 
-    simulationArea.clear()
+    simulationAreaStore.clear()
 
     // Background
     if (!transparent) {
-        simulationArea.context.fillStyle = colors['canvas_fill']
-        simulationArea.context.rect(0, 0, width, height)
-        simulationArea.context.fill()
+        simulationAreaStore.context.fillStyle = colors['canvas_fill']
+        simulationAreaStore.context.rect(0, 0, width, height)
+        simulationAreaStore.context.fill()
     }
 
     // Draw circuits, why is it updateOrder and not renderOrder?
@@ -233,25 +239,26 @@ export function generateImage(
     // If circuit is to be downloaded, download, other wise return dataURL
     if (down) {
         if (imgType === 'svg') {
-            const mySerializedSVG = simulationArea.context.getSerializedSvg() // true here, if you need to convert named to numbered entities.
+            const mySerializedSVG =
+                simulationAreaStore.context.getSerializedSvg() // true here, if you need to convert named to numbered entities.
             download(`${globalScope.name}.svg`, mySerializedSVG)
         } else {
             downloadAsImg(globalScope.name, imgType)
         }
     } else {
-        returnData = simulationArea.canvas.toDataURL(`image/${imgType}`)
+        returnData = simulationAreaStore.canvas.toDataURL(`image/${imgType}`)
     }
 
     // Restore everything
     width = backUpWidth
     height = backUpHeight
-    simulationArea.canvas.width = width
-    simulationArea.canvas.height = height
-    backgroundArea.canvas.width = width
-    backgroundArea.canvas.height = height
+    simulationAreaStore.canvas.width = width
+    simulationAreaStore.canvas.height = height
+    backgroundAreaStore.canvas.width = width
+    backgroundAreaStore.canvas.height = height
     globalScope.scale = backUpScale
-    backgroundArea.context = backUpContextBackground
-    simulationArea.context = backUpContextSimulation
+    backgroundAreaStore.context = backUpContextBackground
+    simulationAreaStore.context = backUpContextSimulation
     globalScope.ox = backUpOx
     globalScope.oy = backUpOy
 
@@ -290,6 +297,7 @@ async function generateImageForOnline() {
     // Verilog Mode -> Different logic
     // Fix aspect ratio to 1.6
     // Ensure image is approximately 700 x 440
+    const simulationAreaStore = SimulationareaStore()
     var ratio = 1.6
     if (verilogModeGet()) {
         var node = document.getElementsByClassName('CodeMirror')[0]
@@ -308,7 +316,7 @@ async function generateImageForOnline() {
         return data
     }
 
-    simulationArea.lastSelected = undefined // Unselect any selections
+    simulationAreaStore.lastSelected = undefined // Unselect any selections
 
     // Fix aspect ratio to 1.6
     if (width > height * ratio) {
@@ -322,8 +330,8 @@ async function generateImageForOnline() {
 
     // Ensure image is approximately 700 x 440
     const resolution = Math.min(
-        700 / (simulationArea.maxWidth - simulationArea.minWidth),
-        440 / (simulationArea.maxHeight - simulationArea.minHeight)
+        700 / (simulationAreaStore.maxWidth - simulationAreaStore.minWidth),
+        440 / (simulationAreaStore.maxHeight - simulationAreaStore.minHeight)
     )
 
     data = generateImage('jpeg', 'current', false, resolution, false)

@@ -1,7 +1,7 @@
 import { defaultKeys } from '../defaultKeys'
 import { addShortcut } from './addShortcut'
 import { updateHTML } from '../view/panel.ui'
-import simulationArea from '../../simulationArea'
+// import simulationArea from '../../simulationArea'
 import {
     scheduleUpdate,
     update,
@@ -16,6 +16,7 @@ import {
 
 import { getOS } from './utils.js'
 import { shortcut } from './shortcuts.plugin.js'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 /**
  * Function used to add or change keys user or default
  * grabs the keycombo from localstorage &
@@ -131,26 +132,29 @@ export const warnOverride = (combo, target) => {
 }
 
 export const elementDirection = (direct) => () => {
-    if (simulationArea.lastSelected) {
-        simulationArea.lastSelected.newDirection(direct.toUpperCase())
+    const simulationAreaStore = SimulationareaStore()
+    if (simulationAreaStore.lastSelected) {
+        simulationAreaStore.lastSelected.newDirection(direct.toUpperCase())
         $("select[name |= 'newDirection']").val(direct.toUpperCase())
         updateSystem()
     }
 }
 
 export const labelDirection = (direct) => () => {
+    const simulationAreaStore = SimulationareaStore()
     if (
-        simulationArea.lastSelected &&
-        !simulationArea.lastSelected.labelDirectionFixed
+        simulationAreaStore.lastSelected &&
+        !simulationAreaStore.lastSelected.labelDirectionFixed
     ) {
-        simulationArea.lastSelected.labelDirection = direct.toUpperCase()
+        simulationAreaStore.lastSelected.labelDirection = direct.toUpperCase()
         $("select[name |= 'newLabelDirection']").val(direct.toUpperCase())
         updateSystem()
     }
 }
 
 export const insertLabel = () => {
-    if (simulationArea.lastSelected) {
+    const simulationAreaStore = SimulationareaStore()
+    if (simulationAreaStore.lastSelected) {
         $("input[name |= 'setLabel']").focus()
         $("input[name |= 'setLabel']").val().length
             ? null
@@ -161,19 +165,20 @@ export const insertLabel = () => {
 }
 
 export const moveElement = (direct) => () => {
-    if (simulationArea.lastSelected) {
+    const simulationAreaStore = SimulationareaStore()
+    if (simulationAreaStore.lastSelected) {
         switch (direct) {
             case 'up':
-                simulationArea.lastSelected.y -= 10
+                simulationAreaStore.lastSelected.y -= 10
                 break
             case 'down':
-                simulationArea.lastSelected.y += 10
+                simulationAreaStore.lastSelected.y += 10
                 break
             case 'left':
-                simulationArea.lastSelected.x -= 10
+                simulationAreaStore.lastSelected.x -= 10
                 break
             case 'right':
-                simulationArea.lastSelected.x += 10
+                simulationAreaStore.lastSelected.x += 10
                 break
         }
         updateSystem()
@@ -185,14 +190,15 @@ export const openHotkey = () => $('#customShortcut').trigger('click')
 export const newCircuitCall = () => $('#newCircuit').trigger('click')
 
 export const openDocumentation = () => {
+    const simulationAreaStore = SimulationareaStore()
     if (
-        simulationArea.lastSelected == undefined ||
-        simulationArea.lastSelected.helplink == undefined
+        simulationAreaStore.lastSelected == undefined ||
+        simulationAreaStore.lastSelected.helplink == undefined
     ) {
         // didn't select any element or documentation not found
         window.open('https://docs.circuitverse.org/', '_blank')
     } else {
-        window.open(simulationArea.lastSelected.helplink, '_blank')
+        window.open(simulationAreaStore.lastSelected.helplink, '_blank')
     }
 }
 

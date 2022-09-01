@@ -1,7 +1,7 @@
 /* eslint-disable import/no-cycle */
 import Scope, { scopeList, switchCircuit } from './circuit'
 import CircuitElement from './circuitElement'
-import simulationArea from './simulationArea'
+// import simulationArea from './simulationArea'
 import { scheduleBackup, checkIfBackup } from './data/backupCircuit'
 import {
     scheduleUpdate,
@@ -19,6 +19,8 @@ import { colors } from './themer/themer'
 import { layoutModeGet } from './layoutMode'
 import { verilogModeGet } from './Verilog2CV'
 import { sanitizeLabel } from './verilogHelpers'
+import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 /**
  * Function to load a subcicuit
  * @category subcircuit
@@ -33,10 +35,14 @@ export function loadSubCircuit(savedData, scope) {
  * @category subcircuit
  */
 export function createSubCircuitPrompt(scope = globalScope) {
+    console.log('Hello')
     if (verilogModeGet() || layoutModeGet()) {
         showError('Subcircuit cannot be inserted in this mode')
         return
     }
+    const simulatorStore = SimulatorStore()
+    simulatorStore.dialogBox.insertsubcircuit_dialog = true
+    /*
     $('#insertSubcircuitDialog').empty()
     let flag = true
     for (id in scopeList) {
@@ -67,7 +73,7 @@ export function createSubCircuitPrompt(scope = globalScope) {
                       click() {
                           if (!$('input[name=subCircuitId]:checked').val())
                               return
-                          simulationArea.lastSelected = new SubCircuit(
+                          simulationAreaStore.lastSelected = new SubCircuit(
                               undefined,
                               undefined,
                               globalScope,
@@ -79,6 +85,7 @@ export function createSubCircuitPrompt(scope = globalScope) {
               ]
             : [],
     })
+    */
 }
 
 /**
@@ -530,13 +537,14 @@ export default class SubCircuit extends CircuitElement {
      * adds all local scope inputs to the global scope simulation queue
      */
     addInputs() {
+        const simulationAreaStore = SimulationareaStore()
         for (let i = 0; i < subCircuitInputList.length; i++) {
             for (
                 let j = 0;
                 j < this.localScope[subCircuitInputList[i]].length;
                 j++
             ) {
-                simulationArea.simulationQueue.add(
+                simulationAreaStore.simulationQueue.add(
                     this.localScope[subCircuitInputList[i]][j],
                     0
                 )
@@ -605,18 +613,19 @@ export default class SubCircuit extends CircuitElement {
     }
 
     checkHover() {
+        const simulationAreaStore = SimulationareaStore()
         super.checkHover()
         if (this.elementHover) {
             this.elementHover.hover = false
             this.elementHover = undefined
-            simulationArea.hover = undefined
+            simulationAreaStore.hover = undefined
         }
         var elementHover = this.getElementHover()
         if (elementHover) {
             elementHover.hover = true
             this.elementHover = elementHover
             this.hover = false
-            simulationArea.hover = elementHover
+            simulationAreaStore.hover = elementHover
         }
     }
 
@@ -625,9 +634,10 @@ export default class SubCircuit extends CircuitElement {
        in another circuit
     **/
     customDraw() {
+        const simulationAreaStore = SimulationareaStore()
         var subcircuitScope = scopeList[this.id]
 
-        var ctx = simulationArea.context
+        var ctx = simulationAreaStore.context
 
         ctx.lineWidth = globalScope.scale * 3
         ctx.strokeStyle = colors['stroke'] // ("rgba(0,0,0,1)");
@@ -651,9 +661,9 @@ export default class SubCircuit extends CircuitElement {
         )
         if (!this.elementHover) {
             if (
-                (this.hover && !simulationArea.shiftDown) ||
-                simulationArea.lastSelected === this ||
-                simulationArea.multipleObjectSelections.contains(this)
+                (this.hover && !simulationAreaStore.shiftDown) ||
+                simulationAreaStore.lastSelected === this ||
+                simulationAreaStore.multipleObjectSelections.contains(this)
             )
                 ctx.fillStyle = colors['hover_select']
         }

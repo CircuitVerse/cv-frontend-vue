@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 import { rect2, fillText } from '../canvasApi'
 /**
  * @class
@@ -15,6 +15,7 @@ import { rect2, fillText } from '../canvasApi'
  */
 import { colors } from '../themer/themer'
 import { copy, paste } from '../events'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 export default class Text extends CircuitElement {
     constructor(x, y, scope = globalScope, label = '', fontSize = 14) {
@@ -36,8 +37,9 @@ export default class Text extends CircuitElement {
      * @param {string=} str - the label
      */
     setLabel(str = '') {
+        const simulationAreaStore = SimulationareaStore()
         this.label = str
-        var ctx = simulationArea.context
+        var ctx = simulationAreaStore.context
         ctx.font = `${this.fontSize}px Raleway`
         this.leftDimensionX = 10
         this.rightDimensionX = ctx.measureText(this.label).width + 10
@@ -50,17 +52,19 @@ export default class Text extends CircuitElement {
      * @param {number=} str - the font size
      */
     setFontSize(fontSize = 14) {
+        const simulationAreaStore = SimulationareaStore()
         this.fontSize = fontSize
-        var ctx = simulationArea.context
+        var ctx = simulationAreaStore.context
         ctx.font = `${this.fontSize}px Raleway`
         this.setTextboxSize()
     }
 
     setTextboxSize() {
+        const simulationAreaStore = SimulationareaStore()
         this.leftDimensionX = 10
         var maxWidth = 0
         var labels = this.label.split('\n')
-        var ctx = simulationArea.context
+        var ctx = simulationAreaStore.context
         labels.forEach(
             (l) => (maxWidth = Math.max(maxWidth, ctx.measureText(l).width))
         )
@@ -86,11 +90,15 @@ export default class Text extends CircuitElement {
      * @param {string} key - the label
      */
     keyDown(key) {
-        if (simulationArea.controlDown && (key === 'c' || key === 'C')) {
+        const simulationAreaStore = SimulationareaStore()
+        if (simulationAreaStore.controlDown && (key === 'c' || key === 'C')) {
             const textToPutOnClipboard = copy([this])
             navigator.clipboard.writeText(textToPutOnClipboard)
             localStorage.setItem('clipboardData', textToPutOnClipboard)
-        } else if (simulationArea.controlDown && (key === 'v' || key === 'V')) {
+        } else if (
+            simulationAreaStore.controlDown &&
+            (key === 'v' || key === 'V')
+        ) {
             paste(localStorage.getItem('clipboardData'))
         } else if (key.length === 1) {
             if (this.label === 'Enter Text Here') {
@@ -119,18 +127,21 @@ export default class Text extends CircuitElement {
      * Function for drawing text box
      */
     draw() {
-        //
-        if (this.label.length === 0 && simulationArea.lastSelected !== this)
+        const simulationAreaStore = SimulationareaStore()
+        if (
+            this.label.length === 0 &&
+            simulationAreaStore.lastSelected !== this
+        )
             this.delete()
-        var ctx = simulationArea.context
+        var ctx = simulationAreaStore.context
         ctx.strokeStyle = colors['stroke']
         ctx.lineWidth = 1
         const xx = this.x
         const yy = this.y
         if (
-            (this.hover && !simulationArea.shiftDown) ||
-            simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            (this.hover && !simulationAreaStore.shiftDown) ||
+            simulationAreaStore.lastSelected === this ||
+            simulationAreaStore.multipleObjectSelections.contains(this)
         ) {
             ctx.beginPath()
             ctx.fillStyle = colors['fill']

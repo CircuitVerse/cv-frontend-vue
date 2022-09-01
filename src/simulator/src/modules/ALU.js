@@ -4,6 +4,7 @@ import Node, { findNode } from '../node'
 import simulationArea from '../simulationArea'
 import { correctWidth, lineTo, moveTo, fillText4 } from '../canvasApi'
 import { colors } from '../themer/themer'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 /**
  * @class
@@ -71,7 +72,8 @@ export default class ALU extends CircuitElement {
      * function to draw element
      */
     customDraw() {
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
         const xx = this.x
         const yy = this.y
         ctx.strokeStyle = colors['stroke']
@@ -93,9 +95,9 @@ export default class ALU extends CircuitElement {
         ctx.stroke()
 
         if (
-            (this.hover && !simulationArea.shiftDown) ||
-            simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            (this.hover && !simulationAreaStore.shiftDown) ||
+            simulationAreaStore.lastSelected === this ||
+            simulationAreaStore.multipleObjectSelections.contains(this)
         ) {
             ctx.fillStyle = colors['hover_select']
         }
@@ -123,50 +125,51 @@ export default class ALU extends CircuitElement {
      * resolve output values based on inputData
      */
     resolve() {
+        const simulationAreaStore = SimulationareaStore()
         if (this.controlSignalInput.value === 0) {
             this.output.value = this.inp1.value & this.inp2.value
-            simulationArea.simulationQueue.add(this.output)
+            simulationAreaStore.simulationQueue.add(this.output)
             this.carryOut.value = 0
-            simulationArea.simulationQueue.add(this.carryOut)
+            simulationAreaStore.simulationQueue.add(this.carryOut)
             this.message = 'A&B'
         } else if (this.controlSignalInput.value === 1) {
             this.output.value = this.inp1.value | this.inp2.value
 
-            simulationArea.simulationQueue.add(this.output)
+            simulationAreaStore.simulationQueue.add(this.output)
             this.carryOut.value = 0
-            simulationArea.simulationQueue.add(this.carryOut)
+            simulationAreaStore.simulationQueue.add(this.carryOut)
             this.message = 'A|B'
         } else if (this.controlSignalInput.value === 2) {
             const sum = this.inp1.value + this.inp2.value
             this.output.value =
                 (sum << (32 - this.bitWidth)) >>> (32 - this.bitWidth)
             this.carryOut.value = +(sum >>> this.bitWidth !== 0)
-            simulationArea.simulationQueue.add(this.carryOut)
-            simulationArea.simulationQueue.add(this.output)
+            simulationAreaStore.simulationQueue.add(this.carryOut)
+            simulationAreaStore.simulationQueue.add(this.output)
             this.message = 'A+B'
         } else if (this.controlSignalInput.value === 3) {
             this.message = 'ALU'
         } else if (this.controlSignalInput.value === 4) {
             this.message = 'A&~B'
             this.output.value = this.inp1.value & this.flipBits(this.inp2.value)
-            simulationArea.simulationQueue.add(this.output)
+            simulationAreaStore.simulationQueue.add(this.output)
             this.carryOut.value = 0
-            simulationArea.simulationQueue.add(this.carryOut)
+            simulationAreaStore.simulationQueue.add(this.carryOut)
         } else if (this.controlSignalInput.value === 5) {
             this.message = 'A|~B'
             this.output.value = this.inp1.value | this.flipBits(this.inp2.value)
-            simulationArea.simulationQueue.add(this.output)
+            simulationAreaStore.simulationQueue.add(this.output)
             this.carryOut.value = 0
-            simulationArea.simulationQueue.add(this.carryOut)
+            simulationAreaStore.simulationQueue.add(this.carryOut)
         } else if (this.controlSignalInput.value === 6) {
             this.message = 'A-B'
             this.output.value =
                 ((this.inp1.value - this.inp2.value) <<
                     (32 - this.bitWidth)) >>>
                 (32 - this.bitWidth)
-            simulationArea.simulationQueue.add(this.output)
+            simulationAreaStore.simulationQueue.add(this.output)
             this.carryOut.value = 0
-            simulationArea.simulationQueue.add(this.carryOut)
+            simulationAreaStore.simulationQueue.add(this.carryOut)
         } else if (this.controlSignalInput.value === 7) {
             this.message = 'A<B'
             if (this.inp1.value < this.inp2.value) {
@@ -174,9 +177,9 @@ export default class ALU extends CircuitElement {
             } else {
                 this.output.value = 0
             }
-            simulationArea.simulationQueue.add(this.output)
+            simulationAreaStore.simulationQueue.add(this.output)
             this.carryOut.value = 0
-            simulationArea.simulationQueue.add(this.carryOut)
+            simulationAreaStore.simulationQueue.add(this.carryOut)
         }
     }
 }

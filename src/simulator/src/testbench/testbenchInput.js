@@ -1,8 +1,9 @@
 import CircuitElement from '../circuitElement'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 import { correctWidth, lineTo, moveTo, fillText } from '../canvasApi'
 import Node, { findNode } from '../node'
 import plotArea from '../plotArea'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 /**
  * TestBench Input has a node for it's clock input.
@@ -118,6 +119,7 @@ export default class TB_Input extends CircuitElement {
      * function to resolve the testbench input adds
      */
     resolve() {
+        const simulationAreaStore = SimulationareaStore()
         if (this.clockInp.value != this.prevClockState) {
             this.prevClockState = this.clockInp.value
             if (this.clockInp.value == 1 && this.running) {
@@ -134,7 +136,7 @@ export default class TB_Input extends CircuitElement {
                     this.testData.inputs[i].values[this.iteration - 1],
                     2
                 )
-                simulationArea.simulationQueue.add(this.outputs[i])
+                simulationAreaStore.simulationQueue.add(this.outputs[i])
             }
         }
     }
@@ -219,7 +221,8 @@ export default class TB_Input extends CircuitElement {
     }
 
     customDraw() {
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
         ctx.beginPath()
         ctx.strokeStyle = 'grey'
         ctx.fillStyle = '#fcfcfc'

@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode, dec2bin } from '../node'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 import { correctWidth, rect, fillText } from '../canvasApi'
 /**
  * @class
@@ -14,6 +14,7 @@ import { correctWidth, rect, fillText } from '../canvasApi'
  * @category modules
  */
 import { colors } from '../themer/themer'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 export default class PriorityEncoder extends CircuitElement {
     constructor(x, y, scope = globalScope, dir = 'RIGHT', bitWidth = 1) {
@@ -89,6 +90,7 @@ export default class PriorityEncoder extends CircuitElement {
      * @param {number} bitWidth - new bitwidth
      */
     newBitWidth(bitWidth) {
+        const simulationAreaStore = SimulationareaStore()
         if (bitWidth === undefined || bitWidth < 1 || bitWidth > 32) return
         if (this.bitWidth === bitWidth) return
 
@@ -103,7 +105,7 @@ export default class PriorityEncoder extends CircuitElement {
         this.inputSize = 1 << bitWidth
 
         this.cleanDelete()
-        simulationArea.lastSelected = obj
+        simulationAreaStore.lastSelected = obj
         return obj
     }
 
@@ -112,6 +114,7 @@ export default class PriorityEncoder extends CircuitElement {
      * resolve output values based on inputData
      */
     resolve() {
+        const simulationAreaStore = SimulationareaStore()
         let out = 0
         let temp = 0
         for (let i = this.inputSize - 1; i >= 0; i--) {
@@ -127,7 +130,7 @@ export default class PriorityEncoder extends CircuitElement {
         } else {
             this.enable.value = 0
         }
-        simulationArea.simulationQueue.add(this.enable)
+        simulationAreaStore.simulationQueue.add(this.enable)
 
         if (temp.length === undefined) {
             temp = '0'
@@ -144,7 +147,7 @@ export default class PriorityEncoder extends CircuitElement {
 
         for (let i = this.bitWidth - 1; i >= 0; i--) {
             this.output1[this.bitWidth - 1 - i].value = Number(temp[i])
-            simulationArea.simulationQueue.add(
+            simulationAreaStore.simulationQueue.add(
                 this.output1[this.bitWidth - 1 - i]
             )
         }
@@ -155,7 +158,8 @@ export default class PriorityEncoder extends CircuitElement {
      * function to draw element
      */
     customDraw() {
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
         ctx.beginPath()
         ctx.strokeStyle = colors['stroke']
         ctx.fillStyle = colors['fill']
@@ -180,9 +184,9 @@ export default class PriorityEncoder extends CircuitElement {
             )
         }
         if (
-            (this.hover && !simulationArea.shiftDown) ||
-            simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            (this.hover && !simulationAreaStore.shiftDown) ||
+            simulationAreaStore.lastSelected === this ||
+            simulationAreaStore.multipleObjectSelections.contains(this)
         )
             ctx.fillStyle = colors['hover_select']
         ctx.fill()

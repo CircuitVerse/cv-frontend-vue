@@ -1,8 +1,9 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 import { correctWidth, lineTo, moveTo, fillText2 } from '../canvasApi'
 import { colors } from '../themer/themer'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 function extractBits(num, start, end) {
     return (num << (32 - end)) >>> (32 - (end - start + 1))
@@ -94,6 +95,7 @@ export default class Splitter extends CircuitElement {
      * @return {JSON}
      */
     removePropagation() {
+        const simulationAreaStore = SimulationareaStore()
         if (this.inp1.value === undefined) {
             let i = 0
             for (i = 0; i < this.outputs.length; i++) {
@@ -103,12 +105,12 @@ export default class Splitter extends CircuitElement {
             for (i = 0; i < this.outputs.length; i++) {
                 if (this.outputs[i].value !== undefined) {
                     this.outputs[i].value = undefined
-                    simulationArea.simulationQueue.add(this.outputs[i])
+                    simulationAreaStore.simulationQueue.add(this.outputs[i])
                 }
             }
         } else if (this.inp1.value !== undefined) {
             this.inp1.value = undefined
-            simulationArea.simulationQueue.add(this.inp1)
+            simulationAreaStore.simulationQueue.add(this.inp1)
         }
         this.prevInpValue = undefined
     }
@@ -137,6 +139,7 @@ export default class Splitter extends CircuitElement {
      * resolve output values based on inputData
      */
     resolve() {
+        const simulationAreaStore = SimulationareaStore()
         if (this.isResolvable() === false) {
             return
         }
@@ -154,7 +157,7 @@ export default class Splitter extends CircuitElement {
                 if (this.outputs[i].value !== bitSplitValue) {
                     if (this.outputs[i].value !== bitSplitValue) {
                         this.outputs[i].value = bitSplitValue
-                        simulationArea.simulationQueue.add(this.outputs[i])
+                        simulationAreaStore.simulationQueue.add(this.outputs[i])
                     }
                 }
                 bitCount += this.bitWidthSplit[i]
@@ -167,7 +170,7 @@ export default class Splitter extends CircuitElement {
             }
             if (this.inp1.value !== n >>> 0) {
                 this.inp1.value = n >>> 0
-                simulationArea.simulationQueue.add(this.inp1)
+                simulationAreaStore.simulationQueue.add(this.inp1)
             }
             // else if (this.inp1.value !== n) {
             //     console.log("CONTENTION");
@@ -231,12 +234,13 @@ export default class Splitter extends CircuitElement {
      * function to draw element
      */
     customDraw() {
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
         //
         ctx.strokeStyle = [colors['splitter'], 'brown'][
-            ((this.hover && !simulationArea.shiftDown) ||
-                simulationArea.lastSelected === this ||
-                simulationArea.multipleObjectSelections.contains(this)) + 0
+            ((this.hover && !simulationAreaStore.shiftDown) ||
+                simulationAreaStore.lastSelected === this ||
+                simulationAreaStore.multipleObjectSelections.contains(this)) + 0
         ]
         ctx.lineWidth = correctWidth(3)
         const xx = this.x

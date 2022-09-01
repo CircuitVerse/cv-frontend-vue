@@ -1,10 +1,11 @@
 /* eslint-disable no-multi-assign */
 // wire object
 import { drawLine } from './canvasApi'
-import simulationArea from './simulationArea'
+// import simulationArea from './simulationArea'
 import Node from './node'
 import { updateSimulationSet, forceResetNodesSet } from './engine'
 import { colors } from './themer/themer'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 /**
  * Wire - To connect two nodes.
@@ -54,16 +55,21 @@ export default class Wire {
     }
 
     dblclick() {
+        const simulationAreaStore = SimulationareaStore()
         if (
             this.node1.parent == globalScope.root &&
             this.node2.parent == globalScope.root
         ) {
-            simulationArea.multipleObjectSelections = [this.node1, this.node2]
-            simulationArea.lastSelected = undefined
+            simulationAreaStore.multipleObjectSelections = [
+                this.node1,
+                this.node2,
+            ]
+            simulationAreaStore.lastSelected = undefined
         }
     }
 
     update() {
+        const simulationAreaStore = SimulationareaStore()
         var updated = false
         if (embed) return updated
 
@@ -80,35 +86,38 @@ export default class Wire {
         //     return updated;
         // } // SLOW , REMOVE
         if (
-            simulationArea.shiftDown === false &&
-            simulationArea.mouseDown === true &&
-            simulationArea.selected === false &&
+            simulationAreaStore.shiftDown === false &&
+            simulationAreaStore.mouseDown === true &&
+            simulationAreaStore.selected === false &&
             this.checkWithin(
-                simulationArea.mouseDownX,
-                simulationArea.mouseDownY
+                simulationAreaStore.mouseDownX,
+                simulationAreaStore.mouseDownY
             )
         ) {
-            simulationArea.selected = true
-            simulationArea.lastSelected = this
+            simulationAreaStore.selected = true
+            simulationAreaStore.lastSelected = this
             updated = true
         } else if (
-            simulationArea.mouseDown &&
-            simulationArea.lastSelected === this &&
-            !this.checkWithin(simulationArea.mouseX, simulationArea.mouseY)
+            simulationAreaStore.mouseDown &&
+            simulationAreaStore.lastSelected === this &&
+            !this.checkWithin(
+                simulationAreaStore.mouseX,
+                simulationAreaStore.mouseY
+            )
         ) {
             var n = new Node(
-                simulationArea.mouseDownX,
-                simulationArea.mouseDownY,
+                simulationAreaStore.mouseDownX,
+                simulationAreaStore.mouseDownY,
                 2,
                 this.scope.root
             )
             n.clicked = true
             n.wasClicked = true
-            simulationArea.lastSelected = n
+            simulationAreaStore.lastSelected = n
             this.converge(n)
         }
         // eslint-disable-next-line no-empty
-        if (simulationArea.lastSelected === this) {
+        if (simulationAreaStore.lastSelected === this) {
         }
 
         if (this.node1.deleted || this.node2.deleted) {
@@ -116,7 +125,7 @@ export default class Wire {
             return updated
         } // if either of the nodes are deleted
 
-        if (simulationArea.mouseDown === false) {
+        if (simulationAreaStore.mouseDown === false) {
             if (this.type === 'horizontal') {
                 if (this.node1.absY() !== this.y1) {
                     // if(this.checkConnections()){this.delete();return;}
@@ -147,12 +156,13 @@ export default class Wire {
     }
 
     draw() {
+        const simulationAreaStore = SimulationareaStore()
         // for calculating min-max Width,min-max Height
         //
-        const ctx = simulationArea.context
+        const ctx = simulationAreaStore.context
 
         var color
-        if (simulationArea.lastSelected == this) {
+        if (simulationAreaStore.lastSelected == this) {
             color = colors['color_wire_sel']
         } else if (
             this.node1.value == undefined ||

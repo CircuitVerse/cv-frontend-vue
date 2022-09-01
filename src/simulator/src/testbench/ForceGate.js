@@ -1,7 +1,8 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 import { fillText4 } from '../canvasApi'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 /**
  * @class
  * ForceGate
@@ -55,12 +56,13 @@ export default class ForceGate extends CircuitElement {
      * resolve output values based on inputData
      */
     resolve() {
+        const simulationAreaStore = SimulationareaStore()
         if (this.inp2.value !== undefined) {
             this.output1.value = this.inp2.value
         } else {
             this.output1.value = this.inp1.value
         }
-        simulationArea.simulationQueue.add(this.output1)
+        simulationAreaStore.simulationQueue.add(this.output1)
     }
 
     /**
@@ -68,7 +70,8 @@ export default class ForceGate extends CircuitElement {
      * function to draw element
      */
     customDraw() {
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
         const xx = this.x
         const yy = this.y
 

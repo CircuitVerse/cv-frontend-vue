@@ -1,4 +1,4 @@
-import simulationArea from './simulationArea'
+// import simulationArea from './simulationArea'
 import {
     scheduleUpdate,
     play,
@@ -8,6 +8,8 @@ import {
 } from './engine'
 import { layoutModeGet } from './layoutMode'
 import plotArea from './plotArea'
+import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 window.globalScope = undefined
 window.lightMode = false // To be deprecated
@@ -35,7 +37,8 @@ export function stripTags(string = '') {
 }
 
 export function clockTick() {
-    if (!simulationArea.clockEnabled) return
+    const simulationAreaStore = SimulationareaStore()
+    if (!simulationAreaStore.clockEnabled) return
     if (errorDetectedGet()) return
     if (layoutModeGet()) return
     updateCanvasSet(true)
@@ -215,16 +218,20 @@ export function truncateString(str, num) {
 }
 
 export function bitConverterDialog() {
-    $('#bitconverterprompt').dialog({
-        buttons: [
-            {
-                text: 'Reset',
-                click: function () {
-                    setBaseValues(0)
-                },
-            },
-        ],
-    })
+    console.log('Open dialog box')
+    const simulatorStore = SimulatorStore()
+    simulatorStore.dialogBox.hex_bin_dec_converter_dialog = true
+    console.log(simulatorStore.dialogBox.hex_bin_dec_converter_dialog)
+    // $('#bitconverterprompt').dialog({
+    //     buttons: [
+    //         {
+    //             text: 'Reset',
+    //             click: function () {
+    //                 setBaseValues(0)
+    //             },
+    //         },
+    //     ],
+    // })
 }
 
 export function getImageDimensions(file) {
@@ -245,7 +252,7 @@ export var convertors = {
     dec2bcd: (x) => parseInt(x.toString(10), 16).toString(2),
 }
 
-function setBaseValues(x) {
+export function setBaseValues(x) {
     if (isNaN(x)) return
     $('#binaryInput').val(convertors.dec2bin(x))
     $('#bcdInput').val(convertors.dec2bcd(x))
@@ -265,6 +272,7 @@ export function parseNumber(num) {
 }
 
 export function setupBitConvertor() {
+    console.log('check bit convertor')
     $('#decimalInput').on('keyup', function () {
         var x = parseInt($('#decimalInput').val(), 10)
         setBaseValues(x)

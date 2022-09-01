@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 import { fillText } from '../canvasApi'
 import { changeInputSize } from '../modules'
 /**
@@ -15,6 +15,7 @@ import { changeInputSize } from '../modules'
  * @category modules
  */
 import { colors } from '../themer/themer'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 export default class Stepper extends CircuitElement {
     constructor(x, y, scope = globalScope, dir = 'RIGHT', bitWidth = 8) {
@@ -51,7 +52,8 @@ export default class Stepper extends CircuitElement {
      * function to draw element
      */
     customDraw() {
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
         ctx.beginPath()
         ctx.font = '20px Raleway'
         ctx.fillStyle = colors['input_text']
@@ -65,9 +67,10 @@ export default class Stepper extends CircuitElement {
      * resolve output values based on inputData
      */
     resolve() {
+        const simulationAreaStore = SimulationareaStore()
         this.state = Math.min(this.state, (1 << this.bitWidth) - 1)
         this.output1.value = this.state
-        simulationArea.simulationQueue.add(this.output1)
+        simulationAreaStore.simulationQueue.add(this.output1)
     }
 
     /**

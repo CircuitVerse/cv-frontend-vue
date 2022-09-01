@@ -1,6 +1,7 @@
 import { drawCircle } from '../canvasApi'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 import { tempBuffer } from '../layoutMode'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 /**
  * @class
@@ -45,12 +46,14 @@ export default class LayoutNode {
     }
 
     update() {
+        const simulationAreaStore = SimulationareaStore()
         // Code copied from node.update() - Some code is redundant - needs to be removed
 
-        if (this === simulationArea.hover) simulationArea.hover = undefined
+        if (this === simulationAreaStore.hover)
+            simulationAreaStore.hover = undefined
         this.hover = this.isHover()
 
-        if (!simulationArea.mouseDown) {
+        if (!simulationAreaStore.mouseDown) {
             if (this.absX() !== this.prevx || this.absY() !== this.prevy) {
                 // Store position before clicked
                 this.prevx = this.absX()
@@ -59,16 +62,16 @@ export default class LayoutNode {
         }
 
         if (this.hover) {
-            simulationArea.hover = this
+            simulationAreaStore.hover = this
         }
 
         if (
-            simulationArea.mouseDown &&
-            ((this.hover && !simulationArea.selected) ||
-                simulationArea.lastSelected === this)
+            simulationAreaStore.mouseDown &&
+            ((this.hover && !simulationAreaStore.selected) ||
+                simulationAreaStore.lastSelected === this)
         ) {
-            simulationArea.selected = true
-            simulationArea.lastSelected = this
+            simulationAreaStore.selected = true
+            simulationAreaStore.lastSelected = this
             this.clicked = true
         } else {
             this.clicked = false
@@ -77,21 +80,21 @@ export default class LayoutNode {
         if (!this.wasClicked && this.clicked) {
             this.wasClicked = true
             this.prev = 'a'
-            simulationArea.lastSelected = this
+            simulationAreaStore.lastSelected = this
         } else if (this.wasClicked && this.clicked) {
             // Check if valid position and update accordingly
             if (
                 tempBuffer.isAllowed(
-                    simulationArea.mouseX,
-                    simulationArea.mouseY
+                    simulationAreaStore.mouseX,
+                    simulationAreaStore.mouseY
                 ) &&
                 !tempBuffer.isNodeAt(
-                    simulationArea.mouseX,
-                    simulationArea.mouseY
+                    simulationAreaStore.mouseX,
+                    simulationAreaStore.mouseY
                 )
             ) {
-                this.x = simulationArea.mouseX
-                this.y = simulationArea.mouseY
+                this.x = simulationAreaStore.mouseX
+                this.y = simulationAreaStore.mouseY
             }
         }
     }
@@ -101,13 +104,14 @@ export default class LayoutNode {
      * this function is used to draw the nodes
      */
     draw() {
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
         drawCircle(
             ctx,
             this.absX(),
             this.absY(),
             3,
-            ['green', 'red'][+(simulationArea.lastSelected === this)]
+            ['green', 'red'][+(simulationAreaStore.lastSelected === this)]
         )
     }
 
@@ -116,9 +120,10 @@ export default class LayoutNode {
      * this function is used to check if hover
      */
     isHover() {
+        const simulationAreaStore = SimulationareaStore()
         return (
-            this.absX() === simulationArea.mouseX &&
-            this.absY() === simulationArea.mouseY
+            this.absX() === simulationAreaStore.mouseX &&
+            this.absY() === simulationAreaStore.mouseY
         )
     }
 }

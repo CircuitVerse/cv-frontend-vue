@@ -1,7 +1,8 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 import { correctWidth, lineTo, moveTo, rect2 } from '../canvasApi'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 /**
  * @class
@@ -16,6 +17,7 @@ import { correctWidth, lineTo, moveTo, rect2 } from '../canvasApi'
  */
 export default class SquareRGBLed extends CircuitElement {
     constructor(x, y, scope = globalScope, dir = 'UP', pinLength = 1) {
+        const simulationAreaStore = SimulationareaStore()
         super(x, y, scope, dir, 8)
         /* this is done in this.baseSetup() now
         this.scope['SquareRGBLed'].push(this);
@@ -66,7 +68,7 @@ export default class SquareRGBLed extends CircuitElement {
             obj.labelDirection = this.labelDirection
 
             this.cleanDelete()
-            simulationArea.lastSelected = obj
+            simulationAreaStore.lastSelected = obj
             return obj
         }
 
@@ -103,7 +105,8 @@ export default class SquareRGBLed extends CircuitElement {
      * function to draw element
      */
     customDraw() {
-        const ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        const ctx = simulationAreaStore.context
         const xx = this.x
         const yy = this.y
         const r = this.inp1.value
@@ -144,9 +147,9 @@ export default class SquareRGBLed extends CircuitElement {
         ctx.stroke()
 
         if (
-            (this.hover && !simulationArea.shiftDown) ||
-            simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            (this.hover && !simulationAreaStore.shiftDown) ||
+            simulationAreaStore.lastSelected === this ||
+            simulationAreaStore.multipleObjectSelections.contains(this)
         ) {
             ctx.fillStyle = 'rgba(255, 255, 32)'
         }
@@ -155,7 +158,8 @@ export default class SquareRGBLed extends CircuitElement {
     }
     // Draws the element in the subcuircuit. Used in layout mode
     subcircuitDraw(xOffset = 0, yOffset = 0) {
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
         var xx = this.subcircuitMetadata.x + xOffset
         var yy = this.subcircuitMetadata.y + yOffset
         var r = this.inp1.value
@@ -173,9 +177,9 @@ export default class SquareRGBLed extends CircuitElement {
         ctx.stroke()
 
         if (
-            (this.hover && !simulationArea.shiftDown) ||
-            simulationArea.lastSelected == this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            (this.hover && !simulationAreaStore.shiftDown) ||
+            simulationAreaStore.lastSelected == this ||
+            simulationAreaStore.multipleObjectSelections.contains(this)
         ) {
             ctx.fillStyle = 'rgba(255, 255, 32)'
         }

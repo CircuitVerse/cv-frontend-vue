@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 import { correctWidth, lineTo, moveTo, fillText } from '../canvasApi'
 /**
  * @class
@@ -15,6 +15,7 @@ import { correctWidth, lineTo, moveTo, fillText } from '../canvasApi'
  * @category sequential
  */
 import { colors } from '../themer/themer'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 export default class JKflipFlop extends CircuitElement {
     constructor(x, y, scope = globalScope, dir = 'RIGHT') {
         super(x, y, scope, dir, 1)
@@ -71,6 +72,7 @@ export default class JKflipFlop extends CircuitElement {
      * in the clock. masterState = this.J when no change in clock.
      */
     resolve() {
+        const simulationAreaStore = SimulationareaStore()
         if (this.reset.value == 1) {
             this.masterState = this.slaveState = this.preset.value || 0
         } else if (this.en.value == 0) {
@@ -109,8 +111,8 @@ export default class JKflipFlop extends CircuitElement {
         if (this.qOutput.value != this.slaveState) {
             this.qOutput.value = this.slaveState
             this.qInvOutput.value = this.flipBits(this.slaveState)
-            simulationArea.simulationQueue.add(this.qOutput)
-            simulationArea.simulationQueue.add(this.qInvOutput)
+            simulationAreaStore.simulationQueue.add(this.qOutput)
+            simulationAreaStore.simulationQueue.add(this.qInvOutput)
         }
     }
 
@@ -132,7 +134,8 @@ export default class JKflipFlop extends CircuitElement {
     }
 
     customDraw() {
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
         ctx.strokeStyle = colors['stroke']
         ctx.fillStyle = colors['fill']
         ctx.beginPath()
@@ -145,7 +148,7 @@ export default class JKflipFlop extends CircuitElement {
         lineTo(ctx, -15, 10, xx, yy, this.direction)
         lineTo(ctx, -20, 15, xx, yy, this.direction)
 
-        // if ((this.b.hover&&!simulationArea.shiftDown)|| simulationArea.lastSelected == this || simulationArea.multipleObjectSelections.contains(this)) ctx.fillStyle = "rgba(255, 255, 32,0.8)";ctx.fill();
+        // if ((this.b.hover&&!simulationAreaStore.shiftDown)|| simulationAreaStore.lastSelected == this || simulationAreaStore.multipleObjectSelections.contains(this)) ctx.fillStyle = "rgba(255, 255, 32,0.8)";ctx.fill();
         ctx.stroke()
 
         ctx.beginPath()

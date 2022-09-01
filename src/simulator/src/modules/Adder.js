@@ -1,7 +1,8 @@
 /* eslint-disable no-bitwise */
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 
 /**
  * @class
@@ -74,6 +75,7 @@ export default class Adder extends CircuitElement {
      * resolve output values based on inputData
      */
     resolve() {
+        const simulationAreaStore = SimulationareaStore()
         if (this.isResolvable() === false) {
             return
         }
@@ -83,8 +85,8 @@ export default class Adder extends CircuitElement {
 
         this.sum.value = (sum << (32 - this.bitWidth)) >>> (32 - this.bitWidth)
         this.carryOut.value = +(sum >>> this.bitWidth !== 0)
-        simulationArea.simulationQueue.add(this.carryOut)
-        simulationArea.simulationQueue.add(this.sum)
+        simulationAreaStore.simulationQueue.add(this.carryOut)
+        simulationAreaStore.simulationQueue.add(this.sum)
     }
 
     generateVerilog() {

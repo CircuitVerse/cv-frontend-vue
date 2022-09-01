@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { computed } from 'vue'
-import { useState } from './state'
+import { useState } from './states'
 
 export const useGetters = defineStore('simulatorStore.getters', () => {
     const state = useState()

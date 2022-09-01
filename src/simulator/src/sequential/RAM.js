@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 import { correctWidth, fillText2, fillText4, drawCircle2 } from '../canvasApi'
 import { parseNumber, showMessage } from '../utils'
 /**
@@ -45,6 +45,7 @@ import { parseNumber, showMessage } from '../utils'
  */
 import { colors } from '../themer/themer'
 import { showError } from '../utils'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 export default class RAM extends CircuitElement {
     constructor(
         x,
@@ -168,6 +169,7 @@ export default class RAM extends CircuitElement {
     }
 
     resolve() {
+        const simulationAreaStore = SimulationareaStore()
         if (this.write.value == 1) {
             this.data[this.address.value] = this.dataIn.value
         }
@@ -185,11 +187,12 @@ export default class RAM extends CircuitElement {
         this.prevCoreDumpValue = this.coreDump.value
 
         this.dataOut.value = this.data[this.address.value] || 0
-        simulationArea.simulationQueue.add(this.dataOut)
+        simulationAreaStore.simulationQueue.add(this.dataOut)
     }
 
     customDraw() {
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
         //
         var xx = this.x
         var yy = this.y

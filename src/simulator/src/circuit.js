@@ -11,7 +11,6 @@
 /* eslint-disable no-alert */
 import CircuitElement from './circuitElement'
 import plotArea from './plotArea'
-import simulationArea, { changeClockTime } from './simulationArea'
 import {
     stripTags,
     uniq,
@@ -37,6 +36,9 @@ import { changeClockEnable } from './sequential'
 import { changeInputSize } from './modules'
 import { verilogModeGet, verilogModeSet } from './Verilog2CV'
 import { updateTestbenchUI } from './testbench'
+import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
+import { toRef, toRefs } from 'vue'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 export const circuitProperty = {
     toggleLayoutMode,
@@ -48,6 +50,7 @@ export const circuitProperty = {
     changeInputSize,
     changeLightMode,
 }
+
 export var scopeList = {}
 export function resetScopeList() {
     scopeList = {}
@@ -61,6 +64,7 @@ export function resetScopeList() {
  * @category circuit
  */
 export function switchCircuit(id) {
+    const simulationAreaStore = SimulationareaStore()
     if (layoutModeGet()) {
         toggleLayoutMode()
     }
@@ -72,9 +76,9 @@ export function switchCircuit(id) {
     scheduleBackup()
     if (id === globalScope.id) return
     $(`.circuits`).removeClass('current')
-    simulationArea.lastSelected = undefined
-    simulationArea.multipleObjectSelections = []
-    simulationArea.copyList = []
+    simulationAreaStore.lastSelected = undefined
+    simulationAreaStore.multipleObjectSelections = []
+    simulationAreaStore.copyList = []
     globalScope = scopeList[id]
     if (globalScope.verilogMetadata.isVerilogCircuit) {
         verilogModeSet(true)
@@ -86,9 +90,9 @@ export function switchCircuit(id) {
     updateSubcircuitSet(true)
     forceResetNodesSet(true)
     dots(false)
-    simulationArea.lastSelected = globalScope.root
+    simulationAreaStore.lastSelected = globalScope.root
     if (!embed) {
-        showProperties(simulationArea.lastSelected)
+        showProperties(simulationAreaStore.lastSelected)
         updateTestbenchUI()
         plotArea.reset()
     }
@@ -97,6 +101,23 @@ export function switchCircuit(id) {
 
     // to update the restricted elements information
     updateRestrictedElementsList()
+}
+
+export function getDependenciesList(scopeId) {
+    let scope = scopeList[scopeId]
+    if (scope == undefined) scope = scopeList[globalScope.id]
+
+    let dependencies = ''
+    for (id in scopeList) {
+        if (id != scope.id && scopeList[id].checkDependency(scope.id)) {
+            if (dependencies === '') {
+                dependencies = scopeList[id].name
+            } else {
+                dependencies += `, ${scopeList[id].name}`
+            }
+        }
+    }
+    return dependencies
 }
 
 /**
@@ -109,54 +130,26 @@ export function switchCircuit(id) {
 export function deleteCurrentCircuit(scopeId = globalScope.id) {
     let scope = scopeList[scopeId]
     if (scope == undefined) scope = scopeList[globalScope.id]
-    if (Object.keys(scopeList).length <= 1) {
-        showError(
-            'At least 2 circuits need to be there in order to delete a circuit.'
-        )
-        return
-    }
-    let dependencies = ''
-    for (id in scopeList) {
-        if (id != scope.id && scopeList[id].checkDependency(scope.id)) {
-            if (dependencies === '') {
-                dependencies = scopeList[id].name
-            } else {
-                dependencies += `, ${scopeList[id].name}`
-            }
-        }
-    }
-    if (dependencies) {
-        dependencies = `\nThe following circuits are depending on '${scope.name}': ${dependencies}\nDelete subcircuits of ${scope.name} before trying to delete ${scope.name}`
-        alert(dependencies)
-        return
-    }
 
-    const confirmation = confirm(
-        `Are you sure want to close: ${scope.name}\nThis cannot be undone.`
-    )
-    if (confirmation) {
-        if (scope.verilogMetadata.isVerilogCircuit) {
-            scope.initialize()
-            for (var id in scope.verilogMetadata.subCircuitScopeIds)
-                delete scopeList[id]
-        }
-        $(`#${scope.id}`).remove()
-        delete scopeList[scope.id]
-        switchCircuit(Object.keys(scopeList)[0])
-        showMessage('Circuit was successfully closed')
-    } else {
-        showMessage('Circuit was not closed')
+    if (scope.verilogMetadata.isVerilogCircuit) {
+        scope.initialize()
+        for (var id in scope.verilogMetadata.subCircuitScopeIds)
+            delete scopeList[id]
     }
+    $(`#${scope.id}`).remove()
+    delete scopeList[scope.id]
+    switchCircuit(Object.keys(scopeList)[0])
 }
 
 /**
  * Wrapper function around newCircuit to be called from + button on UI
  */
-export function createNewCircuitScope() {
-    simulationArea.lastSelected = undefined
-    const scope = newCircuit()
+export function createNewCircuitScope(name = 'Untitled-Circuit') {
+    const simulationAreaStore = SimulationareaStore()
+    simulationAreaStore.lastSelected = undefined
+    const scope = newCircuit(name)
     if (!embed) {
-        showProperties(simulationArea.lastSelected)
+        showProperties(simulationAreaStore.lastSelected)
         updateTestbenchUI()
         plotArea.reset()
     }
@@ -170,6 +163,9 @@ export function createNewCircuitScope() {
  * @category circuit
  */
 export function newCircuit(name, id, isVerilog = false, isVerilogMain = false) {
+    const simulatorStore = SimulatorStore()
+    const simulationAreaStore = SimulationareaStore()
+    const { circuit_list } = toRefs(simulatorStore)
     if (layoutModeGet()) {
         toggleLayoutMode()
     }
@@ -182,6 +178,11 @@ export function newCircuit(name, id, isVerilog = false, isVerilogMain = false) {
     const scope = new Scope(name)
     if (id) scope.id = id
     scopeList[scope.id] = scope
+    let currCircuit = {
+        id: scope.id,
+    }
+    circuit_list.value.push(currCircuit)
+
     if (isVerilog) {
         scope.verilogMetadata.isVerilogCircuit = true
         scope.verilogMetadata.isMainCircuit = isVerilogMain
@@ -190,51 +191,44 @@ export function newCircuit(name, id, isVerilog = false, isVerilogMain = false) {
     $('.circuits').removeClass('current')
     if (!isVerilog || isVerilogMain) {
         if (embed) {
-            var html = `<div style='' class='circuits toolbarButton current' draggable='true' id='${
-                scope.id
-            }'><span class='circuitName noSelect'>${truncateString(
-                name,
-                18
-            )}</span></div>`
-            $('#tabsBar').append(html)
-            $('#tabsBar').addClass('embed-tabs')
+            // added calss - embed-tab using vue logic
+            // var html = `<div style='' class='circuits toolbarButton current' draggable='true' id='${
+            //     scope.id
+            // }'><span class='circuitName noSelect'>${truncateString(
+            //     name,
+            //     18
+            // )}</span></div>`
+            // $('#tabsBar').append(html)
+            // $('#tabsBar').addClass('embed-tabs')
         } else {
-            var html = `<div style='' class='circuits toolbarButton current' draggable='true' id='${
-                scope.id
-            }'><span class='circuitName noSelect'>${truncateString(
-                name,
-                18
-            )}</span><span class ='tabsCloseButton' id='${
-                scope.id
-            }'  >x</span></div>`
-            $('#tabsBar').children().last().before(html)
+            // logic implemented in vue
         }
 
         // Remove listeners
-        $('.circuits').off('click')
+        //$('.circuits').off('click')
         $('.circuitName').off('click')
-        $('.tabsCloseButton').off('click')
+        //$('.tabsCloseButton').off('click')
 
-        // Add listeners
-        $('.circuits').on('click', function () {
-            switchCircuit(this.id)
-        })
+        // switch circuit function moved inside vue component
 
         $('.circuitName').on('click', (e) => {
-            simulationArea.lastSelected = globalScope.root
+            simulationAreaStore.lastSelected = globalScope.root
             setTimeout(() => {
+                // here link with the properties panel
                 document.getElementById('circname').select()
             }, 100)
         })
 
-        $('.tabsCloseButton').on('click', function (e) {
-            e.stopPropagation()
-            deleteCurrentCircuit(this.id)
-        })
+        // moved inside vue - component
+        // $('.tabsCloseButton').on('click', function (e) {
+        //     e.stopPropagation()
+        //     deleteCurrentCircuit(this.id)
+        // })
+
         if (!embed) {
             showProperties(scope.root)
         }
-        dots(false)
+        //dots(false)
     }
 
     return scope
@@ -335,9 +329,13 @@ export default class Scope {
      * Adds all inputs to simulationQueue
      */
     addInputs() {
+        const simulationAreaStore = SimulationareaStore()
         for (let i = 0; i < inputList.length; i++) {
             for (var j = 0; j < this[inputList[i]].length; j++) {
-                simulationArea.simulationQueue.add(this[inputList[i]][j], 0)
+                simulationAreaStore.simulationQueue.add(
+                    this[inputList[i]][j],
+                    0
+                )
             }
         }
 
@@ -408,15 +406,16 @@ export default class Scope {
      * Function which centers the circuit to the correct zoom level
      */
     centerFocus(zoomIn = true) {
+        const simulationAreaStore = SimulationareaStore()
         if (layoutModeGet()) return
         findDimensions(this)
 
         var ytoolbarOffset = embed ? 0 : 60 * DPR // Some part ofcanvas is hidden behind the toolbar
 
-        var minX = simulationArea.minWidth || 0
-        var minY = simulationArea.minHeight || 0
-        var maxX = simulationArea.maxWidth || 0
-        var maxY = simulationArea.maxHeight || 0
+        var minX = simulationAreaStore.minWidth || 0
+        var minY = simulationAreaStore.minHeight || 0
+        var maxX = simulationAreaStore.maxWidth || 0
+        var maxY = simulationAreaStore.maxHeight || 0
 
         var reqWidth = maxX - minX + 75 * DPR
         var reqHeight = maxY - minY + 75 * DPR
