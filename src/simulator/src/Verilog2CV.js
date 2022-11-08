@@ -65,11 +65,11 @@ export function verilogModeSet(mode) {
     if (mode == verilogMode) return
     verilogMode = mode
     if (mode) {
-        document.querySelector('#code-window').style.display = 'block';
+        document.getElementById('code-window').style.display = 'block';
         document.querySelector('.elementPanel').style.display = 'none';
         document.querySelector('.timing-diagram-panel').style.display = 'none';
         document.querySelector('.quick-btn').style.display = 'none';
-        document.querySelector('#verilogEditorPanel').style.display = 'block';
+        document.getElementById('verilogEditorPanel').style.display = 'block';
         if (!embed) {
             simulationArea.lastSelected = globalScope.root
             showProperties(undefined)
@@ -77,11 +77,11 @@ export function verilogModeSet(mode) {
         }
         resetVerilogCode()
     } else {
-        document.querySelector('#code-window').style.display = 'none';
+        document.getElementById('code-window').style.display = 'none';
         document.querySelector('.elementPanel').style.display = 'block';
         document.querySelector('.timing-diagram-panel').style.display = 'block';
         document.querySelector('.quick-btn').style.display = 'block';
-        document.querySelector('#verilogEditorPanel').style.display = 'none';
+        document.getElementById('verilogEditorPanel').style.display = 'none';
     }
 }
 
@@ -209,12 +209,12 @@ export default function generateVerilogCircuit(
             )
             changeCircuitName(circuitData.name)
             showMessage('Verilog Circuit Successfully Created')
-            document.querySelector('#verilogOutput').innerHTML = "";
+            document.getElementById('verilogOutput').innerHTML = "";
         }
     }).catch((error) => {
         showError('There is some issue with the code');
         var errorMessage = error
-        document.querySelector('#verilogOutput').innerHTML = errorMessage
+        document.getElementById('verilogOutput').innerHTML = errorMessage
     })
 }
 
