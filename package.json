@@ -9,7 +9,9 @@
         "preview": "vite preview",
         "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src",
         "format": "prettier .  --write",
-        "postinstall": "husky install"
+        "postinstall": "husky install",
+        "predeploy": "npm run build",
+        "deploy": "gh-pages -d build"
     },
     "dependencies": {
         "@fortawesome/fontawesome-free": "^5.15.4",
