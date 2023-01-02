@@ -44,33 +44,33 @@ var unit = 10
 var listenToSimulator = true
 
 export default function startListeners() {
-    $('#deleteSelected').on('click', () => {
+    document.getElementById('deleteSelected').addEventListener('click', () => {
         deleteSelected()
     })
 
-    $('#zoomIn').on('click', () => {
+    document.getElementById('zoomIn').addEventListener('click', () => {
         changeScale(0.2, 'zoomButton', 'zoomButton', 2)
     })
 
-    $('#zoomOut').on('click', () => {
+    document.getElementById('zoomOut').addEventListener('click', () => {
         changeScale(-0.2, 'zoomButton', 'zoomButton', 2)
     })
 
-    $('#undoButton').on('click', () => {
+    document.getElementById('undoButton').addEventListener('click', () => {
         undo()
     })
-    $('#redoButton').on('click', () => {
+    document.getElementById('redoButton').addEventListener('click', () => {
         redo()
     })
-    $('#viewButton').on('click', () => {
+    document.getElementById('viewButton').addEventListener('click', () => {
         fullView()
     })
 
-    $(document).on('keyup', (e) => {
+    document.addEventListener('keyup', (e) => {
         if (e.key === 'Escape') exitFullView()
     })
 
-    $('#projectName').on('click', () => {
+    document.getElementById('projectName').addEventListener('click', () => {
         simulationArea.lastSelected = globalScope.root
         setTimeout(() => {
             document.getElementById('projname').select()
@@ -125,7 +125,7 @@ export default function startListeners() {
             e.preventDefault()
             scheduleBackup()
             scheduleUpdate(1)
-            $('.dropdown.open').removeClass('open')
+            document.querySelector('.dropdown.open').classList.remove('open')
         })
     document
         .getElementById('simulationArea')
@@ -530,11 +530,11 @@ export default function startListeners() {
     })
 
     // 'drag and drop' event listener for subcircuit elements in layout mode
-    $('#subcircuitMenu').on(
+    document.getElementById('subcircuitMenu').addEventListener(
         'dragstop',
         '.draggableSubcircuitElement',
         function (event, ui) {
-            const sideBarWidth = $('#guide_1')[0].clientWidth
+            const sideBarWidth = document.getElementById('guide_1')[0].clientWidth
             let tempElement
 
             if (ui.position.top > 10 && ui.position.left > sideBarWidth) {
@@ -559,11 +559,11 @@ export default function startListeners() {
     )
 
     restrictedElements.forEach((element) => {
-        $(`#${element}`).mouseover(() => {
+        document.getElementById(element).addEventListener('mouseover', () => {
             showRestricted()
         })
 
-        $(`#${element}`).mouseout(() => {
+        document.getElementById(element).addEventListener('mouseout', () => {
             hideRestricted()
         })
     })
@@ -662,11 +662,11 @@ function onMouseUp(e) {
 }
 
 function resizeTabs() {
-    var $windowsize = $('body').width()
-    var $sideBarsize = $('.side').width()
+    var $windowsize = document.querySelector('body').style.width;
+    var $sideBarsize = document.querySelector('.side').style.width
     var $maxwidth = $windowsize - $sideBarsize
-    $('#tabsBar div').each(function (e) {
-        $(this).css({ 'max-width': $maxwidth - 30 })
+    document.querySelectorAll('#tabsBar div').map((el) => {
+      el.style.maxWidth = $maxwidth - 30 ;   
     })
 }
 
@@ -679,7 +679,7 @@ resizeTabs()
 
 // direction is only 1 or -1
 function handleZoom(direction) {
-    var zoomSlider = $('#customRange1')
+    var zoomSlider = document.getElementById('customRange1')
     var currentSliderValue = parseInt(zoomSlider.val(), 10)
     currentSliderValue += direction
 
@@ -710,14 +710,17 @@ function zoomSliderListeners() {
         .getElementById('simulationArea')
         .addEventListener('mousewheel', zoomSliderScroll)
     let curLevel = document.getElementById('customRange1').value
-    $(document).on('input change', '#customRange1', function (e) {
-        let newValue = $(this).val()
-        let changeInScale = newValue - curLevel
-        updateCanvasSet(true)
-        changeScale(changeInScale * 0.1, 'zoomButton', 'zoomButton', 3)
-        gridUpdateSet(true)
-        curLevel = newValue
-    })
+    'input change'.split(" ").map((ev) => document.addEventListener(ev, function (e) {
+        if(e.target.id == 'customRange1'){
+          let newValue = e.target.value
+          let changeInScale = newValue - curLevel
+          updateCanvasSet(true)
+          changeScale(changeInScale * 0.1, 'zoomButton', 'zoomButton', 3)
+          gridUpdateSet(true)
+          curLevel = newValue
+        }
+    }))
+
     function zoomSliderScroll(e) {
         let zoomLevel = document.getElementById('customRange1').value
         let deltaY = e.wheelDelta ? e.wheelDelta : -e.detail
@@ -736,7 +739,7 @@ function zoomSliderListeners() {
         }
     }
     function sliderZoomButton(direction) {
-        var zoomSlider = $('#customRange1')
+        var zoomSlider = document.getElementById('customRange1')
         var currentSliderValue = parseInt(zoomSlider.val(), 10)
         if (direction === -1) {
             currentSliderValue--
@@ -745,11 +748,11 @@ function zoomSliderListeners() {
         }
         zoomSlider.val(currentSliderValue).change()
     }
-    $('#decrement').click(() => {
+    document.getElementById('decrement').click(() => {
         sliderZoomButton(-1)
     })
 
-    $('#increment').click(() => {
+    document.getElementById('increment').click(() => {
         sliderZoomButton(1)
     })
 }
