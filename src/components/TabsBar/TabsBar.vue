@@ -32,7 +32,7 @@
                         class="tabsCloseButton"
                         @click="closeCircuit($event, element)"
                     >
-                        x
+                        <v-icon class="tabsbar-close">mdi-close</v-icon>
                     </span>
                 </div>
             </template>
@@ -150,12 +150,15 @@ function deleteCircuit(circuitItem) {
     if (index !== -1) {
         SimulatorState.circuit_list.splice(index, 1)
     }
+
     deleteCurrentCircuit(circuitItem.id)
     showMessage('Circuit was successfully closed')
     updateCount.value++
 }
 
+
 function dialogBoxConformation(selectedOption, circuitItem) {
+
     SimulatorState.dialogBox.create_circuit = false
     if (selectedOption == 'confirmDeletion') {
         deleteCircuit(circuitItem)
@@ -182,6 +185,7 @@ function createNewCircuit() {
             emitOption: 'cancelCreation',
         },
     ]
+
     inputArr.value = [
         {
             text: 'Enter Circuit Name',
