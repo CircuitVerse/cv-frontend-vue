@@ -37,6 +37,7 @@ import OrGate from '#/simulator/src/modules/OrGate'
 // import NotGate from '#/simulator/src/modules/NotGate'
 import { findDimensions } from '#/simulator/src/canvasApi'
 import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
+import NotGate from '#/simulator/src/modules/NotGate'
 
 const SimulatorState = useState()
 onMounted(() => {
@@ -347,7 +348,10 @@ function drawCombinationalAnalysis(
     var currentPosY = 300
 
     if (simulationAreaStore.maxWidth && simulationAreaStore.maxHeight) {
-        if (simulationAreaStore.maxHeight + currentPosY > simulationAreaStore.maxWidth) {
+        if (
+            simulationAreaStore.maxHeight + currentPosY >
+            simulationAreaStore.maxWidth
+        ) {
             startPosX += simulationAreaStore.maxWidth
         } else {
             startPosY += simulationAreaStore.maxHeight

@@ -51,6 +51,7 @@ export const circuitProperty = {
     changeLightMode,
 }
 
+
 export var scopeList = {}
 export function resetScopeList() {
     scopeList = {}
@@ -104,6 +105,7 @@ export function switchCircuit(id) {
 }
 
 export function getDependenciesList(scopeId) {
+export function getDependenciesList(scopeId) {
     let scope = scopeList[scopeId]
     if (scope == undefined) scope = scopeList[globalScope.id]
 
@@ -119,7 +121,28 @@ export function getDependenciesList(scopeId) {
     }
     return dependencies
 }
+    return dependencies
+}
 
+/**
+ * Deletes the current circuit
+ * Ensures that at least one circuit is there
+ * Ensures that no circuit depends on the current circuit
+ * Switched to a random circuit
+ * @category circuit
+ */
+export function deleteCurrentCircuit(scopeId = globalScope.id) {
+    let scope = scopeList[scopeId]
+    if (scope == undefined) scope = scopeList[globalScope.id]
+
+    if (scope.verilogMetadata.isVerilogCircuit) {
+        scope.initialize()
+        for (var id in scope.verilogMetadata.subCircuitScopeIds)
+            delete scopeList[id]
+    }
+    $(`#${scope.id}`).remove()
+    delete scopeList[scope.id]
+    switchCircuit(Object.keys(scopeList)[0])
 /**
  * Deletes the current circuit
  * Ensures that at least one circuit is there
@@ -200,24 +223,44 @@ export function newCircuit(name, id, isVerilog = false, isVerilogMain = false) {
             // )}</span></div>`
             // $('#tabsBar').append(html)
             // $('#tabsBar').addClass('embed-tabs')
+            // added calss - embed-tab using vue logic
+            // var html = `<div style='' class='circuits toolbarButton current' draggable='true' id='${
+            //     scope.id
+            // }'><span class='circuitName noSelect'>${truncateString(
+            //     name,
+            //     18
+            // )}</span></div>`
+            // $('#tabsBar').append(html)
+            // $('#tabsBar').addClass('embed-tabs')
         } else {
+            // logic implemented in vue
             // logic implemented in vue
         }
 
         // Remove listeners
         //$('.circuits').off('click')
+        //$('.circuits').off('click')
         $('.circuitName').off('click')
         //$('.tabsCloseButton').off('click')
+        //$('.tabsCloseButton').off('click')
 
+        // switch circuit function moved inside vue component
         // switch circuit function moved inside vue component
 
         $('.circuitName').on('click', (e) => {
             simulationAreaStore.lastSelected = globalScope.root
             setTimeout(() => {
                 // here link with the properties panel
+                // here link with the properties panel
                 document.getElementById('circname').select()
             }, 100)
         })
+
+        // moved inside vue - component
+        // $('.tabsCloseButton').on('click', function (e) {
+        //     e.stopPropagation()
+        //     deleteCurrentCircuit(this.id)
+        // })
 
         // moved inside vue - component
         // $('.tabsCloseButton').on('click', function (e) {
