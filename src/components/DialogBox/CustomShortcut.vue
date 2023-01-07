@@ -14,7 +14,8 @@
                 >
                     <v-icon>mdi-close</v-icon>
                 </v-btn>
-                <div id="customShortcutDialog" title="Keybinding Preference">
+                <v-text-field label="Search Command" v-model="search"></v-text-field>
+                <div v-if="search && searchCommand().length" id="customShortcutDialog" title="Keybinding Preference">
                     <!-- Edit Panel -->
                     <div id="edit" tabindex="0" @keydown="updateEdit($event)">
                         <span style="font-size: 14px">
@@ -37,13 +38,47 @@
                     >
                         <!-- Elements -->
                         <div
-                            v-for="(keyOption, index) in keyOptions"
+                            v-for="(keyOption, index) in searchCommand()"
                             :key="index"
                         >
                             <span id="edit-icon"></span>
                             <div>
                                 <span id="command">{{ keyOption[0] }}</span>
-                                <span id="keyword"></span>
+                                <span id="keyword">{{keyOption[1]}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div v-if="!search" id="customShortcutDialog" title="Keybinding Preference">
+                    <!-- Edit Panel -->
+                    <div id="edit" tabindex="0" @keydown="updateEdit($event)">
+                        <span style="font-size: 14px">
+                            Press Desire Key Combination & press Enter or press
+                            ESC to cancel.
+                        </span>
+                        <div id="pressedKeys"></div>
+                        <div id="warning"></div>
+                    </div>
+                    <!-- Heading -->
+                    <div id="heading">
+                        <span>Command</span>
+                        <span>Keymapping</span>
+                    </div>
+                    <!-- Markup -->
+                    <div
+                      id="preference"
+                      class="customScroll"
+                      @click="updatePreference($event)"
+                    >
+                        <!-- Elements -->
+                        <div
+                          v-for="(keyOption, index) in keyOptions"
+                          :key="index"
+                        >
+                            <span id="edit-icon"></span>
+                            <div>
+                                <span id="command">{{ keyOption[0] }}</span>
+                                <span id="keyword">{{keyOption[1]}}</span>
                             </div>
                         </div>
                     </div>
@@ -82,6 +117,8 @@ import { onMounted, onUpdated, ref } from '@vue/runtime-core'
 const SimulatorState = useState()
 const keyOptions = ref([])
 const targetPref = ref(null)
+const search = ref('');
+
 
 onMounted(() => {
     SimulatorState.dialogBox.customshortcut_dialog = false
@@ -95,6 +132,13 @@ onUpdated(() => {
     } else setDefault()
 })
 
+const searchCommand=()=>{
+    if(!search.value) return [];
+    const searchResult = keyOptions.value.filter((target)=>{
+         return target[0].toLowerCase().includes(search.value.toLowerCase());
+    })
+    return searchResult;
+}
 function updatePreference(e) {
     $('#pressedKeys').text('')
     $('#warning').text('')
@@ -154,11 +198,11 @@ function updateEdit(e) {
         $('#pressedKeys').text(currentKey)
     }
     if (
-        ($('#pressedKeys').text().split(' + ').length === 2 &&
+         ($('#pressedKeys').text().split(' + ').length === 2 &&
             ['Ctrl', 'Meta'].includes(
-                $('#pressedKeys').text().split(' + ')[1]
+              $('#pressedKeys').text().split(' + ')[1]
             )) ||
-        ($('#pressedKeys').text().split(' + ')[0] === 'Alt' &&
+         ($('#pressedKeys').text().split(' + ')[0] === 'Alt' &&
             $('#pressedKeys').text().split(' + ')[1] === 'Shift')
     ) {
         $('#pressedKeys').text(
