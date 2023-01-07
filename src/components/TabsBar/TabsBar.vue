@@ -189,8 +189,7 @@ function createNewCircuit() {
     inputArr.value = [
         {
             text: 'Enter Circuit Name',
-            val: '',
-            placeholder: 'Untitled-Circuit',
+            val: 'Untitled-Circuit',
             id: 'circuitName',
             class: 'inputField',
             style: '',
