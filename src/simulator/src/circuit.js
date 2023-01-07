@@ -51,7 +51,6 @@ export const circuitProperty = {
     changeLightMode,
 }
 
-
 export var scopeList = {}
 export function resetScopeList() {
     scopeList = {}
@@ -105,7 +104,6 @@ export function switchCircuit(id) {
 }
 
 export function getDependenciesList(scopeId) {
-export function getDependenciesList(scopeId) {
     let scope = scopeList[scopeId]
     if (scope == undefined) scope = scopeList[globalScope.id]
 
@@ -121,28 +119,7 @@ export function getDependenciesList(scopeId) {
     }
     return dependencies
 }
-    return dependencies
-}
 
-/**
- * Deletes the current circuit
- * Ensures that at least one circuit is there
- * Ensures that no circuit depends on the current circuit
- * Switched to a random circuit
- * @category circuit
- */
-export function deleteCurrentCircuit(scopeId = globalScope.id) {
-    let scope = scopeList[scopeId]
-    if (scope == undefined) scope = scopeList[globalScope.id]
-
-    if (scope.verilogMetadata.isVerilogCircuit) {
-        scope.initialize()
-        for (var id in scope.verilogMetadata.subCircuitScopeIds)
-            delete scopeList[id]
-    }
-    $(`#${scope.id}`).remove()
-    delete scopeList[scope.id]
-    switchCircuit(Object.keys(scopeList)[0])
 /**
  * Deletes the current circuit
  * Ensures that at least one circuit is there
