@@ -47,6 +47,7 @@
         input-class="tabsbarInput"
         :is-persistent="persistentShow"
         :message-text="messageVal"
+        @click="SelectInput"
         @button-click="
             (selectedOption, circuitItem) =>
                 dialogBoxConformation(selectedOption, circuitItem)
@@ -216,6 +217,10 @@ function tabsbarClasses(id) {
         class_list += ' current'
     }
     return class_list
+}
+
+function SelectInput(event){
+    event.target.setSelectionRange(0,inputArr.value[0].val.length);
 }
 </script>
 
