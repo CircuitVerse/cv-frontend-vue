@@ -40,7 +40,7 @@
                             v-for="(keyOption, index) in keyOptions"
                             :key="index"
                         >
-                            <span id="edit-icon"><v-icon>small mdi-pencil-outline</v-icon></span>
+                            <span id="edit-icon"></span>
                             <div>
                                 <span id="command">{{ keyOption[0] }}</span>
                                 <span id="keyword"></span>

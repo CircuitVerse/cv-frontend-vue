@@ -114,7 +114,7 @@
 }
 
 #edit-icon {
-    background: url(../img/edit_icon.png) no-repeat;
+    background: url(src/assets/img/edit_icon.png) no-repeat;
     background-size: 15px 15px;
     display: inline-block;
     visibility: hidden;
