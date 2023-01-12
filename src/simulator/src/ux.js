@@ -803,6 +803,7 @@ export function exitFullView() {
     $('#moduleProperty').show()
     $('.timing-diagram-panel').show()
     $('.testbench-manual-panel').show()
+    $('.quick-btn').show()
 }
 
 export function fullView() {
@@ -814,7 +815,8 @@ export function fullView() {
     $('#moduleProperty').hide()
     $('.timing-diagram-panel').hide()
     $('.testbench-manual-panel').hide()
-    $('#exitView').append(markUp)
+    $('.quick-btn').hide()
+    $('#app').append(markUp)
     $('#exitViewBtn').on('click', exitFullView)
 }
 /** 
