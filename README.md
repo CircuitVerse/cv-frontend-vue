@@ -24,7 +24,6 @@
 
 ### Setting up CV-frontend-vue
 
-
 Please go through the [Contribution Guidelines](CONTRIBUTING.md) before going forward with any development. This helps us keep the process streamlined and results in better PRs.
 
 If you have any setup problems, please ensure you have read through all the instructions have all the required software installed before creating an issue.
