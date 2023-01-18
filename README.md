@@ -21,3 +21,22 @@
 5. **Refactoring of Styles** - Refactor the global stylesheet to local stylesheets for individual components. There is also a scope of removing SASS using modern CSS features.
 6. Few components - Verilog Module, Quick-Button, Testbench, and Timing-Diagram are yet to be converted to Vue. 
 7. With the removal of jQuery-UI, there is also a scope of removing the use of jQuery from the project.
+
+### Setting up CV-frontend-vue
+
+
+Please go through the [Contribution Guidelines](CONTRIBUTING.md) before going forward with any development. This helps us keep the process streamlined and results in better PRs.
+
+If you have any setup problems, please ensure you have read through all the instructions have all the required software installed before creating an issue.
+
+### Manual Setup (Local Environment)
+#### Dependencies
+- [Git](https://git-scm.com/) - Vuetify
+- [Vue Router](https://router.vuejs.org/) - Vue Router
+- [Pinia](https://pinia.vuejs.org/)  - Pinia (State Management)
+- [npm](https://www.npmjs.com/) - JavaScript package manager
+- [Vue i18n](https://kazupon.github.io/vue-i18n/) - Vue i18n
+- [ES Lint + Preetier](https://imagemagick.org/) -  ES Lint + Preetier (Code Linting & Fomatting)
+
+
+#### Setup
