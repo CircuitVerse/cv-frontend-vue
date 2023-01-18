@@ -25,7 +25,7 @@
                     @click="switchCircuit(element.id)"
                 >
                     <span class="circuitName noSelect">
-                        {{ truncateString(scopeList[element.id].name, 18) }}
+                        {{ truncateString(scopeList[element.id  as keyof typeof scopeList]['name'], 18) }}
                     </span>
                     <span
                         id="scope.id"
