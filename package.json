@@ -14,6 +14,7 @@
     "dependencies": {
         "@fortawesome/fontawesome-free": "^5.15.4",
         "@mdi/font": "5.9.55",
+        "@rollup/plugin-inject": "^5.0.3",
         "bootstrap": "^4.6.1",
         "codemirror": "^5.65.1",
         "codemirror-editor-vue3": "^2.1.7",
@@ -21,6 +22,7 @@
         "driver.js": "^0.9.8",
         "esbuild": "^0.14.45",
         "jquery": "^3.6.0",
+        "jquery-ui": "^1.13.2",
         "pinia": "^2.0.14",
         "vue": "^3.2.25",
         "vue-i18n": "^9.1.10",
