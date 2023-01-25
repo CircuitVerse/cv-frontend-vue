@@ -155,6 +155,7 @@
         <div>
             <button
                 id="viewButton"
+                @click="fullView"
                 type="button"
                 class="quick-btn-view"
                 title="Preview Circuit"
@@ -177,8 +178,38 @@
         </div>
     </div>
 </template>
+<script lang="js">
+export default {
+    methods: {
 
-<script lang="ts" setup></script>
+        exitFullView() {
+        $('.navbar').show()
+        $('.modules').show()
+        $('.report-sidebar').show()
+        $('#tabsBar').show()
+        $('#exitViewBtn').remove()
+        $('#moduleProperty').show()
+        $('.timing-diagram-panel').show()
+        $('.testbench-manual-panel').show()
+        $('.quick-btn').show()
+        },
+
+        fullView() {
+            const markUp = `<button id='exitViewBtn' >Exit Full Preview</button>`
+            $('.navbar').hide()
+            $('.modules').hide()
+            $('.report-sidebar').hide()
+            $('#tabsBar').hide()
+            $('#moduleProperty').hide()
+            $('.timing-diagram-panel').hide()
+            $('.testbench-manual-panel').hide()
+            $('.quick-btn').hide()
+            $('#app').append(markUp)
+        }
+    }
+}
+</script>
+
 
 <style scoped>
 /* @import url('./QuickButton.css'); */

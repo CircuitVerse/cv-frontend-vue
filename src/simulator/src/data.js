@@ -1,4 +1,6 @@
-import { fullView, deleteSelected } from './ux'
+import { deleteSelected } from './ux'
+import components from '@/Navbar/QuickButton/QuickButton.vue'
+const fullView = components.methods.fullView
 import { createSubCircuitPrompt } from './subcircuit'
 import save from './data/save'
 import load from './data/load'
