@@ -75,7 +75,11 @@ export function switchCircuit(id) {
     // globalScope.fixLayout();
     scheduleBackup()
     if (id === globalScope.id) return
-    $(`.circuits`).removeClass('current')
+    let circuits = document.getElementsByClassName('circuits');
+    for (let i = 0; i < circuits.length; i++) {
+        circuits[i].classList.remove('current');
+    }
+    
     simulationArea.lastSelected = undefined
     simulationArea.multipleObjectSelections = []
     simulationArea.copyList = []
@@ -84,7 +88,7 @@ export function switchCircuit(id) {
         verilogModeSet(true)
     }
     if (globalScope.isVisible()) {
-        $(`#${id}`).addClass('current')
+        document.getElementById(id).classList.add('current');
     }
     updateSimulationSet(true)
     updateSubcircuitSet(true)
@@ -137,7 +141,8 @@ export function deleteCurrentCircuit(scopeId = globalScope.id) {
         for (var id in scope.verilogMetadata.subCircuitScopeIds)
             delete scopeList[id]
     }
-    $(`#${scope.id}`).remove()
+    const element = document.getElementById(scope.id);
+    element.parentNode.removeChild(element);
     delete scopeList[scope.id]
     switchCircuit(Object.keys(scopeList)[0])
 }
@@ -187,7 +192,10 @@ export function newCircuit(name, id, isVerilog = false, isVerilogMain = false) {
         scope.verilogMetadata.isMainCircuit = isVerilogMain
     }
     globalScope = scope
-    $('.circuits').removeClass('current')
+    const elements = document.getElementsByClassName('circuits');
+    for (let i = 0; i < elements.length; i++) {
+        elements[i].classList.remove('current');
+    }
     if (!isVerilog || isVerilogMain) {
         if (embed) {
             // added calss - embed-tab using vue logic
@@ -205,18 +213,23 @@ export function newCircuit(name, id, isVerilog = false, isVerilogMain = false) {
 
         // Remove listeners
         //$('.circuits').off('click')
-        $('.circuitName').off('click')
+        let circuitNames = document.getElementsByClassName('circuitName');
+        for (let i = 0; i < circuitNames.length; i++) {
+          circuitNames[i].onclick = null;
+        }
+        
         //$('.tabsCloseButton').off('click')
 
         // switch circuit function moved inside vue component
 
-        $('.circuitName').on('click', (e) => {
-            simulationArea.lastSelected = globalScope.root
-            setTimeout(() => {
-                // here link with the properties panel
-                document.getElementById('circname').select()
-            }, 100)
-        })
+        document.querySelectorAll('.circuitName').forEach(function(el){
+            el.addEventListener('click', function(){
+                simulationArea.lastSelected = globalScope.root;
+                setTimeout(() => {
+                    document.getElementById('circname').select()
+                }, 100)
+            });
+        });
 
         // moved inside vue - component
         // $('.tabsCloseButton').on('click', function (e) {
@@ -242,7 +255,12 @@ export function newCircuit(name, id, isVerilog = false, isVerilogMain = false) {
 export function changeCircuitName(name, id = globalScope.id) {
     name = name || 'Untitled'
     name = stripTags(name)
-    $(`#${id} .circuitName`).html(`${truncateString(name, 18)}`)
+    let parentElement = document.getElementById(id)
+    let circuitNames = parentElement.getElementsByClassName('circuitName');
+    for (let i = 0; i < circuitNames.length; i++) {
+        circuitNames[i].innerHTML = truncateString(name, 18);
+    }
+    
     scopeList[id].name = name
 }
 
