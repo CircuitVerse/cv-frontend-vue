@@ -246,7 +246,7 @@ input[type='text']:focus {
     top: 90px;
     right: 280px;
     border-radius: 7px;
-    z-index: 70;
+    z-index: 99;
 }
 
 .quick-btn > div {
