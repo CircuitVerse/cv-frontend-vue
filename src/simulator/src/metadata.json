@@ -159,8 +159,8 @@
             { "name": "Text", "label": "Text" }
         ],
         "Finite Automata": [
+            { "name": "InitialState", "label": "Initial State" },
             { "name": "State", "label": "State" },
-            { "name": "IntermediateState", "label": "Intermediate State" },
             { "name": "FinalState", "label": "Final State" }
         ],
         "Misc": [

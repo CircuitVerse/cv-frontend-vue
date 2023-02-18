@@ -1,10 +1,8 @@
-/* eslint-disable no-unused-expressions */
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
 import simulationArea from '../simulationArea'
-import { correctWidth, oppositeDirection, fillText } from '../canvasApi'
-import { getNextPosition } from '../modules'
-import { generateId } from '../utils'
+import { correctWidth, fillText, drawCircle2 } from '../canvasApi'
+import { changeInputSize } from '../modules'
 /**
  * @class
  * State
@@ -13,54 +11,21 @@ import { generateId } from '../utils'
  * @param {number} y - y coordinate of element.
  * @param {Scope=} scope - Cirucit on which element is drawn
  * @param {string=} dir - direction of element
- * @param {number=} bitWidth - bit width per node.
- * @param {Object=} layoutProperties - x,y and id
+
  * @category modules
  */
 import { colors } from '../themer/themer'
 
-function bin2dec(binString) {
-    return parseInt(binString, 2)
-}
-
-function dec2bin(dec, bitWidth = undefined) {
-    // only for positive nos
-    var bin = dec.toString(2)
-    if (bitWidth == undefined) return bin
-    return '0'.repeat(bitWidth - bin.length) + bin
-}
-
 export default class State extends CircuitElement {
-    constructor(
-        x,
-        y,
-        scope = globalScope,
-        dir = 'RIGHT',
-        bitWidth = 1,
-        layoutProperties
-    ) {
+    constructor(x, y, scope = globalScope, dir = 'RIGHT', bitWidth = 1) {
         super(x, y, scope, dir, bitWidth)
         /* this is done in this.baseSetup() now
         this.scope['State'].push(this);
         */
-        if (layoutProperties) {
-            this.layoutProperties = layoutProperties
-        } else {
-            this.layoutProperties = {}
-            this.layoutProperties.x = 0
-            this.layoutProperties.y = getNextPosition(0, scope)
-            this.layoutProperties.id = generateId()
-        }
-
-        // Call base class constructor
-        this.state = 0
-        this.orientationFixed = false
-        this.state = bin2dec(this.state) // in integer format
-        this.output1 = new Node(this.bitWidth * 10, 0, 1, this)
-        this.wasClicked = false
-        this.directionFixed = true
-        this.setWidth(this.bitWidth * 10)
-        this.rectangleObject = true // Trying to make use of base class draw
+        this.rectangleObject = false
+        this.setDimensions(15, 15)
+        this.inp1 = new Node(-10, 0, 0, this, this.bitWidth, 'input stream')
+        this.output1 = new Node(20, 0, 1, this, this.bitWidth, "2's complement")
     }
 
     /**
@@ -70,17 +35,11 @@ export default class State extends CircuitElement {
      */
     customSave() {
         const data = {
+            constructorParamaters: [this.direction, this.bitWidth],
             nodes: {
                 output1: findNode(this.output1),
+                inp1: findNode(this.inp1),
             },
-            values: {
-                state: this.state,
-            },
-            constructorParamaters: [
-                this.direction,
-                this.bitWidth,
-                this.layoutProperties,
-            ],
         }
         return data
     }
@@ -90,45 +49,16 @@ export default class State extends CircuitElement {
      * resolve output values based on inputData
      */
     resolve() {
-        this.output1.value = this.state
-        simulationArea.simulationQueue.add(this.output1)
-    }
-
-    // Check if override is necessary!!
-
-    /**
-     * @memberof State
-     * function to change bitwidth of the element
-     * @param {number} bitWidth - new bitwidth
-     */
-    newBitWidth(bitWidth) {
-        if (bitWidth < 1) return
-        const diffBitWidth = bitWidth - this.bitWidth
-        this.bitWidth = bitWidth // ||parseInt(prompt("Enter bitWidth"),10);
-        this.setWidth(this.bitWidth * 10)
-        this.state = 0
-        this.output1.bitWidth = bitWidth
-        if (this.direction === 'RIGHT') {
-            this.x -= 10 * diffBitWidth
-            this.output1.x = 10 * this.bitWidth
-            this.output1.leftx = 10 * this.bitWidth
-        } else if (this.direction === 'LEFT') {
-            this.x += 10 * diffBitWidth
-            this.output1.x = -10 * this.bitWidth
-            this.output1.leftx = 10 * this.bitWidth
+        if (this.isResolvable() === false) {
+            return
         }
-    }
-
-    /**
-     * @memberof State
-     * listener function to set selected index
-     */
-    click() {
-        // toggle
-        let pos = this.findPos()
-        if (pos === 0) pos = 1 // minor correction
-        if (pos < 1 || pos > this.bitWidth) return
-        this.state = ((this.state >>> 0) ^ (1 << (this.bitWidth - pos))) >>> 0
+        let output =
+            ((~this.inp1.value >>> 0) << (32 - this.bitWidth)) >>>
+            (32 - this.bitWidth)
+        output += 1
+        this.output1.value =
+            (output << (32 - this.bitWidth)) >>> (32 - this.bitWidth)
+        simulationArea.simulationQueue.add(this.output1)
     }
 
     /**
@@ -137,49 +67,26 @@ export default class State extends CircuitElement {
      */
     customDraw() {
         var ctx = simulationArea.context
-        ctx.beginPath()
-        ctx.lineWidth = correctWidth(3)
+        ctx.strokeStyle = colors['stroke']
+        ctx.lineWidth = correctWidth(1)
         const xx = this.x
         const yy = this.y
         ctx.beginPath()
-        ctx.fillStyle = colors['input_text']
-        ctx.textAlign = 'center'
-        const bin = dec2bin(this.state, this.bitWidth)
-        for (let k = 0; k < this.bitWidth; k++) {
-            fillText(ctx, bin[k], xx - 10 * this.bitWidth + 10 + k * 20, yy + 5)
-        }
-        ctx.fill()
-    }
-
-    /**
-     * @memberof State
-     * function to change direction of input
-     * @param {string} dir - new direction
-     */
-    newDirection(dir) {
-        if (dir === this.direction) return
-        this.direction = dir
-        this.output1.refresh()
-        if (dir === 'RIGHT' || dir === 'LEFT') {
-            this.output1.leftx = 10 * this.bitWidth
-            this.output1.lefty = 0
-        } else {
-            this.output1.leftx = 10 // 10*this.bitWidth;
-            this.output1.lefty = 0
-        }
-
-        this.output1.refresh()
-        this.labelDirection = oppositeDirection[this.direction]
-    }
-
-    /**
-     * @memberof State
-     * function to find position of mouse click
-     */
-    findPos() {
-        return Math.round(
-            (simulationArea.mouseX - this.x + 10 * this.bitWidth) / 20.0
+        ctx.fillStyle = 'black'
+        if (
+            (this.hover && !simulationArea.shiftDown) ||
+            simulationArea.lastSelected === this ||
+            simulationArea.multipleObjectSelections.contains(this)
         )
+            ctx.fillStyle = colors['hover_select']
+        ctx.fill()
+        ctx.beginPath()
+        drawCircle2(ctx, 5, 0, 15, xx, yy, this.direction)
+        ctx.stroke()
+    }
+
+    generateVerilog() {
+        return `assign ${this.output1.verilogLabel} = ~${this.inp1.verilogLabel} + 1;`
     }
 }
 
@@ -189,22 +96,25 @@ export default class State extends CircuitElement {
  * @type {string}
  * @category modules
  */
+State.prototype.mutableProperties = {
+    isInitial: {
+        name: 'Is Initial: ',
+        type: 'checkbox',
+        func: 'setIsInitial',
+    },
+    isFinal: {
+        name: 'Is Final: ',
+        type: 'checkbox',
+        func: 'setIsFinal',
+    },
+    insertOutput: {
+        name: 'Output: ',
+        type: 'text',
+        func: 'setInsertOutput',
+    },
+}
+State.prototype.fixedBitWidth = true
+State.prototype.propagationDelayFixed = true
 State.prototype.tooltipText =
-    'State ToolTip: Toggle the individual bits by clicking on them.'
-
-/**
- * @memberof State
- * Help URL
- * @type {string}
- * @category modules
- */
-State.prototype.helplink =
-    'https://docs.circuitverse.org/#/inputElements?id=input'
-
-/**
- * @memberof State
- * @type {number}
- * @category modules
- */
-State.prototype.propagationDelay = 0
+    "Two's Complement Tooltip : Calculates the two's complement"
 State.prototype.objectType = 'State'
