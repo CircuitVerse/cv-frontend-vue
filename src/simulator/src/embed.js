@@ -1,76 +1,66 @@
-/* eslint-disable import/no-cycle */
 // Helper functions for when circuit is embedded
-import { scopeList, circuitProperty } from './circuit'
-import simulationArea from './simulationArea'
+import { scopeList, circuitProperty } from './circuit';
+import simulationArea from './simulationArea';
 import {
     scheduleUpdate,
     wireToBeCheckedSet,
     updateCanvasSet,
     gridUpdateSet,
-} from './engine'
-import { prevPropertyObjGet, prevPropertyObjSet } from './ux'
-import { ZoomIn, ZoomOut } from './listeners'
+} from './engine';
+import { prevPropertyObjGet, prevPropertyObjSet } from './ux';
+import { ZoomIn, ZoomOut } from './listeners';
 
-// circuitProperty.toggleFullScreen = toggleFullScreen;
-$(document).ready(() => {
-    // Clock features
-    $('#clockProperty').append(
-        "<input type='button' class='objectPropertyAttributeEmbed custom-btn--secondary embed-fullscreen-btn' name='toggleFullScreen' value='Full Screen'> </input>"
-    )
-    $('#clockProperty').append(
-        `<div>Time: <input class='objectPropertyAttributeEmbed' min='50' type='number' style='width:48px' step='10' name='changeClockTime'  value='${simulationArea.timePeriod}'></div>`
-    )
-    $('#clockProperty').append(
-        `<div>Clock: <label class='switch'> <input type='checkbox' ${
-            ['', 'checked'][simulationArea.clockEnabled + 0]
-        } class='objectPropertyAttributeEmbedChecked' name='changeClockEnable' > <span class='slider'></span> </label><div>`
-    )
+document.addEventListener('DOMContentLoaded', () => {
+    const simulationElements = simulationArea.elements;
+    const clockProperty = simulationElements && simulationElements.clockProperty;
+    if (clockProperty) {
+        // Clock features
+        clockProperty.insertAdjacentHTML(
+            'beforeend',
+            `<input type='button' class='objectPropertyAttributeEmbed custom-btn--secondary embed-fullscreen-btn' name='toggleFullScreen' value='Full Screen'> </input>`
+        );
+        clockProperty.insertAdjacentHTML(
+            'beforeend',
+            `<div>Time: <input class='objectPropertyAttributeEmbed' min='50' type='number' style='width:48px' step='10' name='changeClockTime'  value='${simulationArea.timePeriod}'></div>`
+        );
+        clockProperty.insertAdjacentHTML(
+            'beforeend',
+            `<div>Clock: <label class='switch'> <input type='checkbox' ${
+                ['', 'checked'][simulationArea.clockEnabled + 0]
+            } class='objectPropertyAttributeEmbedChecked' name='changeClockEnable' > <span class='slider'></span> </label><div>`
+        );
 
-    // Following codes need to be removed
-    $('.objectPropertyAttributeEmbed').on(
-        'change keyup paste click',
-        function () {
-            scheduleUpdate()
-            updateCanvasSet(true)
-            wireToBeCheckedSet(1)
-            if (
-                simulationArea.lastSelected &&
-                simulationArea.lastSelected[this.name]
-            ) {
-                prevPropertyObjSet(
-                    simulationArea.lastSelected[this.name](this.value)
-                ) || prevPropertyObjGet()
-            } else {
-                circuitProperty[this.name](this.value)
-            }
-        }
-    )
+        // Clock event listeners
+        clockProperty.addEventListener('change', handleClockChange);
+        clockProperty.addEventListener('keyup', handleClockChange);
+        clockProperty.addEventListener('paste', handleClockChange);
+        clockProperty.addEventListener('click', handleClockChange);
+    }
+    
+    const zoomInButton = document.getElementById('zoom-in-embed');
+    if (zoomInButton) {
+        zoomInButton.addEventListener('click', ZoomIn);
+    }
+    
+    const zoomOutButton = document.getElementById('zoom-out-embed');
+    if (zoomOutButton) {
+        zoomOutButton.addEventListener('click', ZoomOut);
+    }
+    
+});
 
-    // Following codes need to be removed
-    $('.objectPropertyAttributeEmbedChecked').on(
-        'change keyup paste click',
-        function () {
-            scheduleUpdate()
-            updateCanvasSet(true)
-            wireToBeCheckedSet(1)
-            if (
-                simulationArea.lastSelected &&
-                simulationArea.lastSelected[this.name]
-            ) {
-                prevPropertyObjSet(
-                    simulationArea.lastSelected[this.name](this.value)
-                ) || prevPropertyObjGet()
-            } else {
-                circuitProperty[this.name](this.checked)
-            }
-        }
-    )
-
-    $('#zoom-in-embed').on('click', () => ZoomIn())
-
-    $('#zoom-out-embed').on('click', () => ZoomOut())
-})
-
+function handleClockChange(event) {
+    scheduleUpdate();
+    updateCanvasSet(true);
+    wireToBeCheckedSet(1);
+    const name = event.target.name;
+    const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
+    if (simulationArea.lastSelected && simulationArea.lastSelected[name]) {
+        prevPropertyObjSet(simulationArea.lastSelected[name](value)) || prevPropertyObjGet();
+    } else {
+        circuitProperty[name](value);
+    }
+}
 // Full screen toggle helper function
 function toggleFullScreen(value) {
     if (!getfullscreenelement()) {
