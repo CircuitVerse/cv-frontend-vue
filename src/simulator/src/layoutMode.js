@@ -446,83 +446,135 @@ export function saveLayout() {
  * @category layoutMode
  */
 export function toggleLayoutMode() {
-    // hideProperties()
-    // lines from hideProperty function() <---
-    prevPropertyObjSet(undefined)
-    $('.objectPropertyAttribute').unbind('change keyup paste click')
+  // hideProperties()
+  // lines from hideProperty function() <---
+  prevPropertyObjSet(undefined)
+  const objectPropertyAttributes = document.getElementsByClassName("objectPropertyAttribute");
+  for (let i = 0; i < objectPropertyAttributes.length; i++) {
+    objectPropertyAttributes[i].removeEventListener('change', updateProperty)
+    objectPropertyAttributes[i].removeEventListener('keyup', updateProperty)
+    objectPropertyAttributes[i].removeEventListener('paste', updateProperty)
+    objectPropertyAttributes[i].removeEventListener('click', updateProperty)
+  }
+  
+  if (layoutModeGet()) {
+    layoutModeSet(false)
+    document.getElementById('layoutDialog').style.display = 'none';
 
-    if (layoutModeGet()) {
-        layoutModeSet(false)
-        $('#layoutDialog').fadeOut()
-        $('.layoutElementPanel').fadeOut()
-        $('.elementPanel').fadeIn()
-        $('.timing-diagram-panel').fadeIn()
-        $('.testbench-manual-panel').fadeIn()
-        globalScope.centerFocus(false)
-        if (globalScope.verilogMetadata.isVerilogCircuit) verilogModeSet(true)
-        dots()
-    } else {
-        layoutModeSet(true)
-        verilogModeSet(false)
-        $('#layoutDialog').fadeIn()
-        $('.layoutElementPanel').fadeIn()
-        $('.elementPanel').fadeOut()
-        $('.timing-diagram-panel').fadeOut()
-        $('.testbench-manual-panel').fadeOut()
-        fillSubcircuitElements()
+    const layoutElementPanels = document.getElementsByClassName("layoutElementPanel");
+    for (let i = 0; i < layoutElementPanels.length; i++) {
+    layoutElementPanels[i].style.display = "none";
+    }
 
+    const elementPanels = document.getElementsByClassName("elementPanel");
+    for (let i = 0; i < elementPanels.length; i++) {
+    elementPanels[i].style.display = "block";
+    }
+
+    const timingDiagramPanels = document.getElementsByClassName("timing-diagram-panel");
+    for (let i = 0; i < timingDiagramPanels.length; i++) {
+    timingDiagramPanels[i].style.display = "block";
+    }
+
+    const testbenchManualPanels = document.getElementsByClassName("testbench-manual-panel");
+    for (let i = 0; i < testbenchManualPanels.length; i++) {
+    testbenchManualPanels[i].style.display = "block";
+    }
+    globalScope.centerFocus(false)
+    if (globalScope.verilogMetadata.isVerilogCircuit) verilogModeSet(true)
+    dots()
+  } else {
+    layoutModeSet(true)
+    verilogModeSet(false)
+    const layoutElementPanels = document.getElementsByClassName("layoutElementPanel");
+    const elementPanels = document.getElementsByClassName("elementPanel");
+    const timingDiagramPanels = document.getElementsByClassName("timing-diagram-panel");
+    const testbenchManualPanels = document.getElementsByClassName("testbench-manual-panel");
+    for (let i = 0; i < layoutElementPanels.length; i++) {
+    layoutElementPanels[i].style.display = "block";
+    }
+    for (let i = 0; i < elementPanels.length; i++) {
+    elementPanels[i].style.display = "none";
+    }
+    for (let i = 0; i < timingDiagramPanels.length; i++) {
+    timingDiagramPanels[i].style.display = "none";
+    }
+    for (let i = 0; i < testbenchManualPanels.length; i++) {
+    testbenchManualPanels[i].style.display = "none";
+    }
+
+    fillSubcircuitElements()
         globalScope.ox = 0
         globalScope.oy = 0
         globalScope.scale = DPR * 1.3
         dots()
         tempBuffer = new LayoutBuffer()
-        $('#toggleLayoutTitle')[0].checked = tempBuffer.layout.titleEnabled
+        document.getElementById('toggleLayoutTitle').checked = tempBuffer.layout.titleEnabled
     }
     update(globalScope, true)
     scheduleUpdate()
 }
 
 export function setupLayoutModePanelListeners() {
-    $('#decreaseLayoutWidth').on('click', () => {
-        decreaseLayoutWidth()
-    })
-    $('#increaseLayoutWidth').on('click', () => {
-        increaseLayoutWidth()
-    })
-    $('#decreaseLayoutHeight').on('click', () => {
-        decreaseLayoutHeight()
-    })
-    $('#increaseLayoutHeight').on('click', () => {
-        increaseLayoutHeight()
-    })
-    $('#layoutResetNodes').on('click', () => {
-        layoutResetNodes()
-    })
-    $('#layoutTitleUp').on('click', () => {
-        layoutTitleUp()
-    })
-    $('#layoutTitleDown').on('click', () => {
-        layoutTitleDown()
-    })
-    $('#layoutTitleLeft').on('click', () => {
-        layoutTitleLeft()
-    })
-    $('#layoutTitleRight').on('click', () => {
-        layoutTitleRight()
-    })
-    $('#toggleLayoutTitle').on('click', () => {
-        toggleLayoutTitle()
-    })
-    $('#saveLayout').on('click', () => {
-        saveLayout()
-    })
-    $('#cancelLayout').on('click', () => {
-        cancelLayout()
-    })
-    $('#layoutDialog button').on('click', () => {
-        scheduleUpdate()
-    })
-    $('#layoutDialog input').on('click', () => {
-        scheduleUpdate()
+    const decreaseLayoutWidthBtn = document.getElementById('decreaseLayoutWidth')
+    if (decreaseLayoutWidthBtn) {
+        decreaseLayoutWidthBtn.addEventListener('click', decreaseLayoutWidth)
+    }
+    const increaseLayoutWidthBtn = document.getElementById('increaseLayoutWidth')
+    if (increaseLayoutWidthBtn) {
+        increaseLayoutWidthBtn.addEventListener('click', increaseLayoutWidth)
+    }
+    const decreaseLayoutHeightBtn = document.getElementById('decreaseLayoutHeight')
+    if (decreaseLayoutHeightBtn) {
+        decreaseLayoutHeightBtn.addEventListener('click', decreaseLayoutHeight)
+    }
+    const increaseLayoutHeightBtn = document.getElementById('increaseLayoutHeight')
+    if (increaseLayoutHeightBtn) {
+        increaseLayoutHeightBtn.addEventListener('click', increaseLayoutHeight)
+    }
+    const layoutResetNodesBtn = document.getElementById('layoutResetNodes')
+    if (layoutResetNodesBtn) {
+        layoutResetNodesBtn.addEventListener('click', layoutResetNodes)
+    }
+    const layoutTitleUpBtn = document.getElementById('layoutTitleUp')
+    if (layoutTitleUpBtn) {
+        layoutTitleUpBtn.addEventListener('click', layoutTitleUp)
+    }
+    const layoutTitleDownBtn = document.getElementById('layoutTitleDown')
+    if (layoutTitleDownBtn) {
+        layoutTitleDownBtn.addEventListener('click', layoutTitleDown)
+    }
+    const layoutTitleLeftBtn = document.getElementById('layoutTitleLeft')
+    if (layoutTitleLeftBtn) {
+        layoutTitleLeftBtn.addEventListener('click', layoutTitleLeft)
+    }
+    const layoutTitleRightBtn = document.getElementById('layoutTitleRight')
+    if (layoutTitleRightBtn) {
+        layoutTitleRightBtn.addEventListener('click', layoutTitleRight)
+    }
+    const toggleLayoutTitleBtn = document.getElementById('toggleLayoutTitle')
+    if (toggleLayoutTitleBtn) {
+        toggleLayoutTitleBtn.addEventListener('click', toggleLayoutTitle)
+    }
+    const saveLayoutBtn = document.getElementById('saveLayout')
+    if (saveLayoutBtn) {
+        saveLayoutBtn.addEventListener('click', saveLayout)
+    }
+    const cancelLayoutBtn = document.getElementById('cancelLayout')
+    if (cancelLayoutBtn) {
+        cancelLayoutBtn.addEventListener('click', cancelLayout)
+    }
+    const layoutDialogBtns = document.querySelectorAll('#layoutDialog button, #layoutDialog input')
+    layoutDialogBtns.forEach((btn) => {
+        btn.addEventListener('click', scheduleUpdate)
     })
 }
+
+
+
+function updateProperty() {
+    const obj = prevPropertyObjGet()
+    if (obj == null) return
+    obj[this.getAttribute('property')] = parseValue(this.value)
+    scheduleUpdate()
+  }
