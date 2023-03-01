@@ -164,6 +164,7 @@ input[type='text']:focus {
     right: -17px;
 }
 .navbar-menu > li > a:hover {
+    text-decoration: none;
     border-bottom: 1px solid white;
 }
 
