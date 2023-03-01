@@ -178,39 +178,47 @@
         </div>
     </div>
 </template>
-<script lang="js">
+<script lang="ts" scoped>
 export default {
     methods: {
+        fullView() {
+            const exitViewBtn = document.createElement('button');
+            exitViewBtn.id = 'exitViewBtn';
+            exitViewBtn.textContent = 'Exit Full Preview';
+            exitViewBtn.addEventListener('click', this.exitFullView);
 
-        exitFullView() {
-        $('.navbar').show()
-        $('.modules').show()
-        $('.report-sidebar').show()
-        $('#tabsBar').show()
-        $('#exitViewBtn').remove()
-        $('#moduleProperty').show()
-        $('.timing-diagram-panel').show()
-        $('.testbench-manual-panel').show()
-        $('.quick-btn').show()
+            const app = document.getElementById('app');
+            if (app) {
+                app.appendChild(exitViewBtn);
+            }
+
+            const elements = document.querySelectorAll('.navbar, .modules, .report-sidebar, .timing-diagram-panel, .testbench-manual-panel, .quick-btn, #tabsBar, #moduleProperty');
+
+            elements.forEach(el => {
+                if (el instanceof HTMLElement) {
+                    el.style.display = 'none';
+                }
+            });
         },
 
-        fullView() {
-            const markUp = `<button id='exitViewBtn' >Exit Full Preview</button>`
-            $('.navbar').hide()
-            $('.modules').hide()
-            $('.report-sidebar').hide()
-            $('#tabsBar').hide()
-            $('#moduleProperty').hide()
-            $('.timing-diagram-panel').hide()
-            $('.testbench-manual-panel').hide()
-            $('.quick-btn').hide()
-            $('#app').append(markUp)
+    exitFullView() {
+        const exitViewBtn = document.getElementById('exitViewBtn');
+        if (exitViewBtn) {
+            exitViewBtn.remove();
         }
-    }
-}
+
+            const elements = document.querySelectorAll('.navbar, .modules, .report-sidebar, .timing-diagram-panel, .testbench-manual-panel, .quick-btn, #tabsBar, #moduleProperty');
+
+            elements.forEach(el => {
+                if (el instanceof HTMLElement) {
+                    el.style.display = '';
+                }
+            });
+        }
+     
+    },
+};
 </script>
-
-
 <style scoped>
 /* @import url('./QuickButton.css'); */
 </style>
