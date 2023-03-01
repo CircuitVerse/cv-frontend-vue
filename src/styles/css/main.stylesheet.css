@@ -141,6 +141,7 @@ input[type='text']:focus {
     padding: 2px 8px;
     transition: all 0.2s ease-in-out;
     margin-right: 10px;
+   text-decoration: none;
 }
 
 .navbar-menu > li > a span,
