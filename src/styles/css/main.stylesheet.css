@@ -2019,6 +2019,7 @@ canvas {
     color: white;
 }
 
+/* media query for .messageBoxContent */
 @media screen and (max-width: 991px) {
     .messageBoxContent{
         width: 100%;
