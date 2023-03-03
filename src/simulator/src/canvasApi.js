@@ -1,59 +1,76 @@
 /* eslint-disable no-param-reassign */
-import backgroundArea from './backgroundArea'
-import simulationArea from './simulationArea'
-import miniMapArea, { removeMiniMap, updatelastMinimapShown } from './minimap'
+import { removeMiniMap, updatelastMinimapShown } from './minimap'
 import { colors } from './themer/themer'
+import { BackgroundareaStore } from '#/store/BackgroundareaCanvas/BackgroundareaStore'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
+import { MinimapareaStore } from '#/store/MinimapareaCanvas/MinimapareaStore'
 
 var unit = 10
 
 export function findDimensions(scope = globalScope) {
+    const simulationAreaStore = SimulationareaStore()
     var totalObjects = 0
-    simulationArea.minWidth = undefined
-    simulationArea.maxWidth = undefined
-    simulationArea.minHeight = undefined
-    simulationArea.maxHeight = undefined
+    simulationAreaStore.minWidth = undefined
+    simulationAreaStore.maxWidth = undefined
+    simulationAreaStore.minHeight = undefined
+    simulationAreaStore.maxHeight = undefined
     for (var i = 0; i < updateOrder.length; i++) {
         if (updateOrder[i] !== 'wires') {
             for (var j = 0; j < scope[updateOrder[i]].length; j++) {
                 totalObjects += 1
                 var obj = scope[updateOrder[i]][j]
                 if (totalObjects === 1) {
-                    simulationArea.minWidth = obj.absX()
-                    simulationArea.minHeight = obj.absY()
-                    simulationArea.maxWidth = obj.absX()
-                    simulationArea.maxHeight = obj.absY()
+                    simulationAreaStore.minWidth = obj.absX()
+                    simulationAreaStore.minHeight = obj.absY()
+                    simulationAreaStore.maxWidth = obj.absX()
+                    simulationAreaStore.maxHeight = obj.absY()
                 }
                 if (obj.objectType !== 'Node') {
-                    if (obj.y - obj.upDimensionY < simulationArea.minHeight) {
-                        simulationArea.minHeight = obj.y - obj.upDimensionY
+                    if (
+                        obj.y - obj.upDimensionY <
+                        simulationAreaStore.minHeight
+                    ) {
+                        simulationAreaStore.minHeight = obj.y - obj.upDimensionY
                     }
-                    if (obj.y + obj.downDimensionY > simulationArea.maxHeight) {
-                        simulationArea.maxHeight = obj.y + obj.downDimensionY
+                    if (
+                        obj.y + obj.downDimensionY >
+                        simulationAreaStore.maxHeight
+                    ) {
+                        simulationAreaStore.maxHeight =
+                            obj.y + obj.downDimensionY
                     }
-                    if (obj.x - obj.leftDimensionX < simulationArea.minWidth) {
-                        simulationArea.minWidth = obj.x - obj.leftDimensionX
+                    if (
+                        obj.x - obj.leftDimensionX <
+                        simulationAreaStore.minWidth
+                    ) {
+                        simulationAreaStore.minWidth =
+                            obj.x - obj.leftDimensionX
                     }
-                    if (obj.x + obj.rightDimensionX > simulationArea.maxWidth) {
-                        simulationArea.maxWidth = obj.x + obj.rightDimensionX
+                    if (
+                        obj.x + obj.rightDimensionX >
+                        simulationAreaStore.maxWidth
+                    ) {
+                        simulationAreaStore.maxWidth =
+                            obj.x + obj.rightDimensionX
                     }
                 } else {
-                    if (obj.absY() < simulationArea.minHeight) {
-                        simulationArea.minHeight = obj.absY()
+                    if (obj.absY() < simulationAreaStore.minHeight) {
+                        simulationAreaStore.minHeight = obj.absY()
                     }
-                    if (obj.absY() > simulationArea.maxHeight) {
-                        simulationArea.maxHeight = obj.absY()
+                    if (obj.absY() > simulationAreaStore.maxHeight) {
+                        simulationAreaStore.maxHeight = obj.absY()
                     }
-                    if (obj.absX() < simulationArea.minWidth) {
-                        simulationArea.minWidth = obj.absX()
+                    if (obj.absX() < simulationAreaStore.minWidth) {
+                        simulationAreaStore.minWidth = obj.absX()
                     }
-                    if (obj.absX() > simulationArea.maxWidth) {
-                        simulationArea.maxWidth = obj.absX()
+                    if (obj.absX() > simulationAreaStore.maxWidth) {
+                        simulationAreaStore.maxWidth = obj.absX()
                     }
                 }
             }
         }
     }
-    simulationArea.objectList = updateOrder
+    simulationAreaStore.objectList = updateOrder
 }
 
 // Function used to change the zoom level wrt to a point
@@ -64,6 +81,8 @@ export function changeScale(delta, xx, yy, method = 1) {
     // method = 1 - Zoom wrt position of mouse
     // Otherwise zoom wrt to selected object
 
+    const simulationAreaStore = SimulationareaStore()
+    const miniMapAreaStore = MinimapareaStore()
     if (method === 3) {
         xx = (width / 2 - globalScope.ox) / globalScope.scale
         yy = (height / 2 - globalScope.oy) / globalScope.scale
@@ -74,18 +93,18 @@ export function changeScale(delta, xx, yy, method = 1) {
         yy === 'zoomButton'
     ) {
         if (
-            simulationArea.lastSelected &&
-            simulationArea.lastSelected.objectType !== 'Wire'
+            simulationAreaStore.lastSelected &&
+            simulationAreaStore.lastSelected.objectType !== 'Wire'
         ) {
             // selected object
-            xx = simulationArea.lastSelected.x
-            yy = simulationArea.lastSelected.y
+            xx = simulationAreaStore.lastSelected.x
+            yy = simulationAreaStore.lastSelected.y
         } else {
             // mouse location
             // eslint-disable-next-line no-lonely-if
             if (method === 1) {
-                xx = simulationArea.mouseX
-                yy = simulationArea.mouseY
+                xx = simulationAreaStore.mouseX
+                yy = simulationAreaStore.mouseY
             } else if (method === 2) {
                 xx = (width / 2 - globalScope.ox) / globalScope.scale
                 yy = (height / 2 - globalScope.oy) / globalScope.scale
@@ -106,7 +125,7 @@ export function changeScale(delta, xx, yy, method = 1) {
     // MiniMap
     if (!embed && !lightMode) {
         findDimensions(globalScope)
-        miniMapArea.setup()
+        miniMapAreaStore.setup()
         $('#miniMap').show()
         updatelastMinimapShown()
         $('#miniMap').show()
@@ -122,23 +141,25 @@ export function dots(
     transparentBackground = false,
     force = false
 ) {
+    const backgroundAreaStore = BackgroundareaStore()
+    const simulationAreaStore = SimulationareaStore()
+
     var scale = unit * globalScope.scale
     var ox = globalScope.ox % scale // offset
     var oy = globalScope.oy % scale // offset
 
     document.getElementById('backgroundArea').style.left = (ox - scale) / DPR
     document.getElementById('backgroundArea').style.top = (oy - scale) / DPR
-    if (globalScope.scale === simulationArea.prevScale && !force) return
+    if (globalScope.scale === simulationAreaStore.prevScale && !force) return
 
-    if (!backgroundArea.context) return
-    simulationArea.prevScale = globalScope.scale
+    if (!backgroundAreaStore.context) return
+    simulationAreaStore.prevScale = globalScope.scale
 
-    var canvasWidth = backgroundArea.canvas.width // max X distance
-    var canvasHeight = backgroundArea.canvas.height // max Y distance
-
-    var ctx = backgroundArea.context
+    var canvasWidth = backgroundAreaStore.canvas.width // max X distance
+    var canvasHeight = backgroundAreaStore.canvas.height // max Y distance
+    var ctx = backgroundAreaStore.context
     ctx.beginPath()
-    backgroundArea.clear()
+    backgroundAreaStore.clear()
     ctx.strokeStyle = colors['canvas_stroke']
     ctx.lineWidth = 1
     if (!transparentBackground) {
@@ -186,6 +207,7 @@ export function dots(
 // Possible values for direction = "RIGHT" (default), "LEFT", "UP", "DOWN"
 
 export function bezierCurveTo(x1, y1, x2, y2, x3, y3, xx, yy, dir) {
+    const simulationAreaStore = SimulationareaStore()
     ;[x1, y1] = rotate(x1, y1, dir)
     ;[x2, y2] = rotate(x2, y2, dir)
     ;[x3, y3] = rotate(x3, y3, dir)
@@ -199,7 +221,7 @@ export function bezierCurveTo(x1, y1, x2, y2, x3, y3, xx, yy, dir) {
     y3 *= globalScope.scale
     xx *= globalScope.scale
     yy *= globalScope.scale
-    var ctx = simulationArea.context
+    var ctx = simulationAreaStore.context
     ctx.bezierCurveTo(
         Math.round(xx + ox + x1),
         Math.round(yy + oy + y1),

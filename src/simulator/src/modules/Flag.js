@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 import { correctWidth, rect2, fillText } from '../canvasApi'
 import plotArea from '../plotArea'
 import EventQueue from '../eventQueue'
@@ -17,6 +17,7 @@ import EventQueue from '../eventQueue'
  * @category modules
  */
 import { colors } from '../themer/themer'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 export default class Flag extends CircuitElement {
     constructor(
@@ -46,7 +47,8 @@ export default class Flag extends CircuitElement {
     }
 
     resolve() {
-        this.flagTimeUnit = simulationArea.simulationQueue.time
+        const simulationAreaStore = SimulationareaStore()
+        this.flagTimeUnit = simulationAreaStore.simulationQueue.time
         const time = plotArea.getPlotTime(this.flagTimeUnit)
 
         if (
@@ -106,7 +108,8 @@ export default class Flag extends CircuitElement {
      * function to draw element
      */
     customDraw() {
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
         ctx.beginPath()
         ctx.strokeStyle = colors['stroke']
         ctx.fillStyle = colors['fill']
@@ -125,9 +128,9 @@ export default class Flag extends CircuitElement {
             'RIGHT'
         )
         if (
-            (this.hover && !simulationArea.shiftDown) ||
-            simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            (this.hover && !simulationAreaStore.shiftDown) ||
+            simulationAreaStore.lastSelected === this ||
+            simulationAreaStore.multipleObjectSelections.contains(this)
         )
             ctx.fillStyle = colors['hover_select']
         ctx.fill()

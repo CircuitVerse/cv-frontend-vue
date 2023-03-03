@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 import {
     correctWidth,
     lineTo,
@@ -22,6 +22,7 @@ import { changeInputSize } from '../modules'
  * @category modules
  */
 import { colors } from '../themer/themer'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 export default class DigitalLed extends CircuitElement {
     constructor(x, y, scope = globalScope, color = 'Red') {
@@ -73,7 +74,8 @@ export default class DigitalLed extends CircuitElement {
      * function to draw element
      */
     customDraw() {
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
 
         const xx = this.x
         const yy = this.y
@@ -112,9 +114,9 @@ export default class DigitalLed extends CircuitElement {
         lineTo(ctx, -15, -9, xx, yy, this.direction)
         ctx.stroke()
         if (
-            (this.hover && !simulationArea.shiftDown) ||
-            simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            (this.hover && !simulationAreaStore.shiftDown) ||
+            simulationAreaStore.lastSelected === this ||
+            simulationAreaStore.multipleObjectSelections.contains(this)
         )
             ctx.fillStyle = colors['hover_select']
         ctx.fill()
@@ -122,7 +124,8 @@ export default class DigitalLed extends CircuitElement {
 
     // Draws the element in the subcircuit. Used in layout mode
     subcircuitDraw(xOffset = 0, yOffset = 0) {
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
 
         var xx = this.subcircuitMetadata.x + xOffset
         var yy = this.subcircuitMetadata.y + yOffset
@@ -138,9 +141,9 @@ export default class DigitalLed extends CircuitElement {
         ctx.stroke()
 
         if (
-            (this.hover && !simulationArea.shiftDown) ||
-            simulationArea.lastSelected == this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            (this.hover && !simulationAreaStore.shiftDown) ||
+            simulationAreaStore.lastSelected == this ||
+            simulationAreaStore.multipleObjectSelections.contains(this)
         )
             ctx.fillStyle = 'rgba(255, 255, 32,0.8)'
         ctx.fill()

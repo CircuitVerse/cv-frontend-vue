@@ -58,10 +58,10 @@
 
 <script lang="ts" setup>
 import { onMounted, onUpdated, ref } from '@vue/runtime-core'
-import { useState } from '#/store/SimulatorStore/state'
+import { useState } from '#/store/SimulatorStore/states'
 import { scopeList } from '#/simulator/src/circuit'
 import SubCircuit from '#/simulator/src/subcircuit'
-import simulationArea from '#/simulator/src/simulationArea'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 const SimulatorState = useState()
 const flag = ref(true)
 onMounted(() => {
@@ -69,8 +69,9 @@ onMounted(() => {
 })
 
 function insertSubcircuit() {
+    const simulationAreaStore = SimulationareaStore()
     if (!$('input[name=subCircuitId]:checked').val()) return
-    simulationArea.lastSelected = new SubCircuit(
+    simulationAreaStore.lastSelected = new SubCircuit(
         undefined,
         undefined,
         globalScope,

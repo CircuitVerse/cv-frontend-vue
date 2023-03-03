@@ -1,6 +1,6 @@
 /* eslint-disable import/no-cycle */
 import { drawCircle, drawLine, arc } from './canvasApi'
-import simulationArea from './simulationArea'
+// import simulationArea from './simulationArea'
 import { distance, showError } from './utils'
 import {
     renderCanvas,
@@ -14,6 +14,7 @@ import {
 import Wire from './wire'
 // import { colors } from './themer/themer';
 import { colors } from './themer/themer'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 /**
  * Constructs all the connections of Node node
@@ -245,8 +246,9 @@ export default class Node {
      * Helper fuction to move a node.
      */
     drag() {
-        this.x = this.oldx + simulationArea.mouseX - simulationArea.mouseDownX
-        this.y = this.oldy + simulationArea.mouseY - simulationArea.mouseDownY
+        const simulationAreaStore = SimulationareaStore()
+        this.x = this.oldx + simulationAreaStore.mouseX - simulationAreaStore.mouseDownX
+        this.y = this.oldy + simulationAreaStore.mouseY - simulationAreaStore.mouseDownY
     }
 
     /**
@@ -371,12 +373,13 @@ export default class Node {
      * function to resolve a node
      */
     resolve() {
+        const simulationAreaStore = SimulationareaStore()
         // Remove Propogation of values (TriState)
         if (this.value == undefined) {
             for (var i = 0; i < this.connections.length; i++) {
                 if (this.connections[i].value !== undefined) {
                     this.connections[i].value = undefined
-                    simulationArea.simulationQueue.add(this.connections[i])
+                    simulationAreaStore.simulationQueue.add(this.connections[i])
                 }
             }
 
@@ -384,7 +387,7 @@ export default class Node {
                 if (this.parent.objectType == 'Splitter') {
                     this.parent.removePropagation()
                 } else if (this.parent.isResolvable()) {
-                    simulationArea.simulationQueue.add(this.parent)
+                    simulationAreaStore.simulationQueue.add(this.parent)
                 } else {
                     this.parent.removePropagation()
                 }
@@ -397,10 +400,10 @@ export default class Node {
                 ) {
                     if (this.parent.objectType == 'TriState') {
                         if (this.parent.state.value) {
-                            simulationArea.simulationQueue.add(this.parent)
+                            simulationAreaStore.simulationQueue.add(this.parent)
                         }
                     } else {
-                        simulationArea.simulationQueue.add(this.parent)
+                        simulationAreaStore.simulationQueue.add(this.parent)
                     }
                 }
             }
@@ -410,7 +413,7 @@ export default class Node {
 
         if (this.type == 0) {
             if (this.parent.isResolvable()) {
-                simulationArea.simulationQueue.add(this.parent)
+                simulationAreaStore.simulationQueue.add(this.parent)
             }
         }
 
@@ -440,13 +443,13 @@ export default class Node {
                         node.type == 1
                     ) {
                         if (node.parent.state.value) {
-                            simulationArea.contentionPending.push(node.parent)
+                            simulationAreaStore.contentionPending.push(node.parent)
                         }
                     }
 
                     node.bitWidth = this.bitWidth
                     node.value = this.value
-                    simulationArea.simulationQueue.add(node)
+                    simulationAreaStore.simulationQueue.add(node)
                 } else {
                     this.highlighted = true
                     node.highlighted = true
@@ -462,17 +465,18 @@ export default class Node {
      * this function checks if hover over the node
      */
     checkHover() {
-        if (!simulationArea.mouseDown) {
-            if (simulationArea.hover == this) {
+        const simulationAreaStore = SimulationareaStore()
+        if (!simulationAreaStore.mouseDown) {
+            if (simulationAreaStore.hover == this) {
                 this.hover = this.isHover()
                 if (!this.hover) {
-                    simulationArea.hover = undefined
+                    simulationAreaStore.hover = undefined
                     this.showHover = false
                 }
-            } else if (!simulationArea.hover) {
+            } else if (!simulationAreaStore.hover) {
                 this.hover = this.isHover()
                 if (this.hover) {
-                    simulationArea.hover = this
+                    simulationAreaStore.hover = this
                 } else {
                     this.showHover = false
                 }
@@ -487,7 +491,8 @@ export default class Node {
      * this function draw a node
      */
     draw() {
-        const ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        const ctx = simulationAreaStore.context
         //
         const color = colors['color_wire_draw']
         if (this.clicked) {
@@ -496,17 +501,17 @@ export default class Node {
                     ctx,
                     this.absX(),
                     this.absY(),
-                    simulationArea.mouseX,
+                    simulationAreaStore.mouseX,
                     this.absY(),
                     color,
                     3
                 )
                 drawLine(
                     ctx,
-                    simulationArea.mouseX,
+                    simulationAreaStore.mouseX,
                     this.absY(),
-                    simulationArea.mouseX,
-                    simulationArea.mouseY,
+                    simulationAreaStore.mouseX,
+                    simulationAreaStore.mouseY,
                     color,
                     3
                 )
@@ -516,28 +521,28 @@ export default class Node {
                     this.absX(),
                     this.absY(),
                     this.absX(),
-                    simulationArea.mouseY,
+                    simulationAreaStore.mouseY,
                     color,
                     3
                 )
                 drawLine(
                     ctx,
                     this.absX(),
-                    simulationArea.mouseY,
-                    simulationArea.mouseX,
-                    simulationArea.mouseY,
+                    simulationAreaStore.mouseY,
+                    simulationAreaStore.mouseX,
+                    simulationAreaStore.mouseY,
                     color,
                     3
                 )
             } else if (
-                Math.abs(this.x + this.parent.x - simulationArea.mouseX) >
-                Math.abs(this.y + this.parent.y - simulationArea.mouseY)
+                Math.abs(this.x + this.parent.x - simulationAreaStore.mouseX) >
+                Math.abs(this.y + this.parent.y - simulationAreaStore.mouseY)
             ) {
                 drawLine(
                     ctx,
                     this.absX(),
                     this.absY(),
-                    simulationArea.mouseX,
+                    simulationAreaStore.mouseX,
                     this.absY(),
                     color,
                     3
@@ -548,7 +553,7 @@ export default class Node {
                     this.absX(),
                     this.absY(),
                     this.absX(),
-                    simulationArea.mouseY,
+                    simulationAreaStore.mouseY,
                     color,
                     3
                 )
@@ -572,11 +577,11 @@ export default class Node {
 
         if (
             this.highlighted ||
-            simulationArea.lastSelected == this ||
+            simulationAreaStore.lastSelected == this ||
             (this.isHover() &&
-                !simulationArea.selected &&
-                !simulationArea.shiftDown) ||
-            simulationArea.multipleObjectSelections.contains(this)
+                !simulationAreaStore.selected &&
+                !simulationAreaStore.shiftDown) ||
+            simulationAreaStore.multipleObjectSelections.contains(this)
         ) {
             ctx.strokeStyle = colorNodeSelected
             ctx.beginPath()
@@ -596,8 +601,8 @@ export default class Node {
             ctx.stroke()
         }
 
-        if (this.hover || simulationArea.lastSelected == this) {
-            if (this.showHover || simulationArea.lastSelected == this) {
+        if (this.hover || simulationAreaStore.lastSelected == this) {
+            if (this.showHover || simulationAreaStore.lastSelected == this) {
                 canvasMessageData.x = this.absX()
                 canvasMessageData.y = this.absY() - 15
                 if (this.type == 2) {
@@ -615,8 +620,8 @@ export default class Node {
                 }
             } else {
                 setTimeout(() => {
-                    if (simulationArea.hover)
-                        simulationArea.hover.showHover = true
+                    if (simulationAreaStore.hover)
+                        simulationAreaStore.hover.showHover = true
                     updateCanvasSet(true)
                     renderCanvas(globalScope)
                 }, 400)
@@ -637,12 +642,13 @@ export default class Node {
      * many booleans are used to check if certain properties are to be updated.
      */
     update() {
+        const simulationAreaStore = SimulationareaStore()
         if (embed) return
 
-        if (this == simulationArea.hover) simulationArea.hover = undefined
+        if (this == simulationAreaStore.hover) simulationAreaStore.hover = undefined
         this.hover = this.isHover()
 
-        if (!simulationArea.mouseDown) {
+        if (!simulationAreaStore.mouseDown) {
             if (this.absX() != this.prevx || this.absY() != this.prevy) {
                 // Connect to any node
                 this.prevx = this.absX()
@@ -652,16 +658,16 @@ export default class Node {
         }
 
         if (this.hover) {
-            simulationArea.hover = this
+            simulationAreaStore.hover = this
         }
 
         if (
-            simulationArea.mouseDown &&
-            ((this.hover && !simulationArea.selected) ||
-                simulationArea.lastSelected == this)
+            simulationAreaStore.mouseDown &&
+            ((this.hover && !simulationAreaStore.selected) ||
+                simulationAreaStore.lastSelected == this)
         ) {
-            simulationArea.selected = true
-            simulationArea.lastSelected = this
+            simulationAreaStore.selected = true
+            simulationAreaStore.lastSelected = this
             this.clicked = true
         } else {
             this.clicked = false
@@ -672,62 +678,62 @@ export default class Node {
             this.prev = 'a'
             if (this.type == 2) {
                 if (
-                    !simulationArea.shiftDown &&
-                    simulationArea.multipleObjectSelections.contains(this)
+                    !simulationAreaStore.shiftDown &&
+                    simulationAreaStore.multipleObjectSelections.contains(this)
                 ) {
                     for (
                         var i = 0;
-                        i < simulationArea.multipleObjectSelections.length;
+                        i < simulationAreaStore.multipleObjectSelections.length;
                         i++
                     ) {
-                        simulationArea.multipleObjectSelections[
+                        simulationAreaStore.multipleObjectSelections[
                             i
                         ].startDragging()
                     }
                 }
 
-                if (simulationArea.shiftDown) {
-                    simulationArea.lastSelected = undefined
+                if (simulationAreaStore.shiftDown) {
+                    simulationAreaStore.lastSelected = undefined
                     if (
-                        simulationArea.multipleObjectSelections.contains(this)
+                        simulationAreaStore.multipleObjectSelections.contains(this)
                     ) {
-                        simulationArea.multipleObjectSelections.clean(this)
+                        simulationAreaStore.multipleObjectSelections.clean(this)
                     } else {
-                        simulationArea.multipleObjectSelections.push(this)
+                        simulationAreaStore.multipleObjectSelections.push(this)
                     }
                 } else {
-                    simulationArea.lastSelected = this
+                    simulationAreaStore.lastSelected = this
                 }
             }
         } else if (this.wasClicked && this.clicked) {
             if (
-                !simulationArea.shiftDown &&
-                simulationArea.multipleObjectSelections.contains(this)
+                !simulationAreaStore.shiftDown &&
+                simulationAreaStore.multipleObjectSelections.contains(this)
             ) {
                 for (
                     var i = 0;
-                    i < simulationArea.multipleObjectSelections.length;
+                    i < simulationAreaStore.multipleObjectSelections.length;
                     i++
                 ) {
-                    simulationArea.multipleObjectSelections[i].drag()
+                    simulationAreaStore.multipleObjectSelections[i].drag()
                 }
             }
             if (this.type == 2) {
                 if (
                     this.connections.length == 1 &&
-                    this.connections[0].absX() == simulationArea.mouseX &&
-                    this.absX() == simulationArea.mouseX
+                    this.connections[0].absX() == simulationAreaStore.mouseX &&
+                    this.absX() == simulationAreaStore.mouseX
                 ) {
-                    this.y = simulationArea.mouseY - this.parent.y
+                    this.y = simulationAreaStore.mouseY - this.parent.y
                     this.prev = 'a'
                     return
                 }
                 if (
                     this.connections.length == 1 &&
-                    this.connections[0].absY() == simulationArea.mouseY &&
-                    this.absY() == simulationArea.mouseY
+                    this.connections[0].absY() == simulationAreaStore.mouseY &&
+                    this.absY() == simulationAreaStore.mouseY
                 ) {
-                    this.x = simulationArea.mouseX - this.parent.x
+                    this.x = simulationAreaStore.mouseX - this.parent.x
                     this.prev = 'a'
                     return
                 }
@@ -738,7 +744,7 @@ export default class Node {
                 ) {
                     this.connections[0].clicked = true
                     this.connections[0].wasClicked = true
-                    simulationArea.lastSelected = this.connections[0]
+                    simulationAreaStore.lastSelected = this.connections[0]
                     this.delete()
                     return
                 }
@@ -747,15 +753,15 @@ export default class Node {
             if (
                 this.prev == 'a' &&
                 distance(
-                    simulationArea.mouseX,
-                    simulationArea.mouseY,
+                    simulationAreaStore.mouseX,
+                    simulationAreaStore.mouseY,
                     this.absX(),
                     this.absY()
                 ) >= 10
             ) {
                 if (
-                    Math.abs(this.x + this.parent.x - simulationArea.mouseX) >
-                    Math.abs(this.y + this.parent.y - simulationArea.mouseY)
+                    Math.abs(this.x + this.parent.x - simulationAreaStore.mouseX) >
+                    Math.abs(this.y + this.parent.y - simulationAreaStore.mouseY)
                 ) {
                     this.prev = 'x'
                 } else {
@@ -763,12 +769,12 @@ export default class Node {
                 }
             } else if (
                 this.prev == 'x' &&
-                this.absY() == simulationArea.mouseY
+                this.absY() == simulationAreaStore.mouseY
             ) {
                 this.prev = 'a'
             } else if (
                 this.prev == 'y' &&
-                this.absX() == simulationArea.mouseX
+                this.absX() == simulationAreaStore.mouseX
             ) {
                 this.prev = 'a'
             }
@@ -776,8 +782,8 @@ export default class Node {
             this.wasClicked = false
 
             if (
-                simulationArea.mouseX == this.absX() &&
-                simulationArea.mouseY == this.absY()
+                simulationAreaStore.mouseX == this.absX() &&
+                simulationAreaStore.mouseY == this.absY()
             ) {
                 return // no new node situation
             }
@@ -795,8 +801,8 @@ export default class Node {
             // node 1 may or may not be there
             // flag = 0  - node 2 only
             // flag = 1  - node 1 and node 2
-            x2 = simulationArea.mouseX
-            y2 = simulationArea.mouseY
+            x2 = simulationAreaStore.mouseX
+            y2 = simulationAreaStore.mouseY
             const x = this.absX()
             const y = this.absY()
 
@@ -805,17 +811,17 @@ export default class Node {
                 if (
                     this.prev == 'a' &&
                     distance(
-                        simulationArea.mouseX,
-                        simulationArea.mouseY,
+                        simulationAreaStore.mouseX,
+                        simulationAreaStore.mouseY,
                         this.absX(),
                         this.absY()
                     ) >= 10
                 ) {
                     if (
                         Math.abs(
-                            this.x + this.parent.x - simulationArea.mouseX
+                            this.x + this.parent.x - simulationAreaStore.mouseX
                         ) >
-                        Math.abs(this.y + this.parent.y - simulationArea.mouseY)
+                        Math.abs(this.y + this.parent.y - simulationAreaStore.mouseY)
                     ) {
                         this.prev = 'x'
                     } else {
@@ -877,11 +883,11 @@ export default class Node {
             }
             if (flag == 0) this.connect(n2)
             else n1.connect(n2)
-            if (simulationArea.lastSelected == this)
-                simulationArea.lastSelected = n2
+            if (simulationAreaStore.lastSelected == this)
+                simulationAreaStore.lastSelected = n2
         }
 
-        if (this.type == 2 && simulationArea.mouseDown == false) {
+        if (this.type == 2 && simulationAreaStore.mouseDown == false) {
             if (this.connections.length == 2) {
                 if (
                     this.connections[0].absX() == this.connections[1].absX() ||
@@ -898,6 +904,7 @@ export default class Node {
      * function delete a node
      */
     delete() {
+        const simulationAreaStore = SimulationareaStore()
         updateSimulationSet(true)
         this.deleted = true
         this.parent.scope.allNodes.clean(this)
@@ -905,8 +912,8 @@ export default class Node {
 
         this.parent.scope.root.nodeList.clean(this) // Hope this works! - Can cause bugs
 
-        if (simulationArea.lastSelected == this)
-            simulationArea.lastSelected = undefined
+        if (simulationAreaStore.lastSelected == this)
+            simulationAreaStore.lastSelected = undefined
         for (var i = 0; i < this.connections.length; i++) {
             this.connections[i].connections.clean(this)
             this.connections[i].checkDeleted()
@@ -917,16 +924,18 @@ export default class Node {
     }
 
     isClicked() {
+        const simulationAreaStore = SimulationareaStore()
         return (
-            this.absX() == simulationArea.mouseX &&
-            this.absY() == simulationArea.mouseY
+            this.absX() == simulationAreaStore.mouseX &&
+            this.absY() == simulationAreaStore.mouseY
         )
     }
 
     isHover() {
+        const simulationAreaStore = SimulationareaStore()
         return (
-            this.absX() == simulationArea.mouseX &&
-            this.absY() == simulationArea.mouseY
+            this.absX() == simulationAreaStore.mouseX &&
+            this.absY() == simulationAreaStore.mouseY
         )
     }
 

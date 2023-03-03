@@ -5,7 +5,7 @@ import {
     layoutUpdate,
     setupLayoutModePanelListeners,
 } from './layoutMode'
-import simulationArea from './simulationArea'
+// import simulationArea from './simulationArea'
 import {
     scheduleUpdate,
     update,
@@ -39,11 +39,13 @@ import { copy, paste, selectAll } from './events'
 import save from './data/save'
 import { verilogModeGet } from './Verilog2CV'
 import { setupTimingListeners } from './plotArea'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 var unit = 10
 var listenToSimulator = true
 
 export default function startListeners() {
+    const simulationAreaStore = SimulationareaStore()
     $('#deleteSelected').on('click', () => {
         deleteSelected()
     })
@@ -71,7 +73,7 @@ export default function startListeners() {
     })
 
     $('#projectName').on('click', () => {
-        simulationArea.lastSelected = globalScope.root
+        simulationAreaStore.lastSelected = globalScope.root
         setTimeout(() => {
             document.getElementById('projname').select()
         }, 100)
@@ -90,7 +92,7 @@ export default function startListeners() {
     document
         .getElementById('simulationArea')
         .addEventListener('mousedown', (e) => {
-            simulationArea.mouseDown = true
+            simulationAreaStore.mouseDown = true
 
             // Deselect Input
             if (document.activeElement instanceof HTMLElement)
@@ -101,26 +103,26 @@ export default function startListeners() {
             updatePositionSet(true)
             updateCanvasSet(true)
 
-            simulationArea.lastSelected = undefined
-            simulationArea.selected = false
-            simulationArea.hover = undefined
-            var rect = simulationArea.canvas.getBoundingClientRect()
-            simulationArea.mouseDownRawX = (e.clientX - rect.left) * DPR
-            simulationArea.mouseDownRawY = (e.clientY - rect.top) * DPR
-            simulationArea.mouseDownX =
+            simulationAreaStore.lastSelected = undefined
+            simulationAreaStore.selected = false
+            simulationAreaStore.hover = undefined
+            var rect = simulationAreaStore.canvas.getBoundingClientRect()
+            simulationAreaStore.mouseDownRawX = (e.clientX - rect.left) * DPR
+            simulationAreaStore.mouseDownRawY = (e.clientY - rect.top) * DPR
+            simulationAreaStore.mouseDownX =
                 Math.round(
-                    (simulationArea.mouseDownRawX - globalScope.ox) /
+                    (simulationAreaStore.mouseDownRawX - globalScope.ox) /
                         globalScope.scale /
                         unit
                 ) * unit
-            simulationArea.mouseDownY =
+            simulationAreaStore.mouseDownY =
                 Math.round(
-                    (simulationArea.mouseDownRawY - globalScope.oy) /
+                    (simulationAreaStore.mouseDownRawY - globalScope.oy) /
                         globalScope.scale /
                         unit
                 ) * unit
-            simulationArea.oldx = globalScope.ox
-            simulationArea.oldy = globalScope.oy
+            simulationAreaStore.oldx = globalScope.ox
+            simulationAreaStore.oldy = globalScope.oy
 
             e.preventDefault()
             scheduleBackup()
@@ -130,38 +132,38 @@ export default function startListeners() {
     document
         .getElementById('simulationArea')
         .addEventListener('mouseup', (e) => {
-            if (simulationArea.lastSelected)
-                simulationArea.lastSelected.newElement = false
+            if (simulationAreaStore.lastSelected)
+                simulationAreaStore.lastSelected.newElement = false
             /*
         handling restricted circuit elements
         */
 
             if (
-                simulationArea.lastSelected &&
+                simulationAreaStore.lastSelected &&
                 restrictedElements.includes(
-                    simulationArea.lastSelected.objectType
+                    simulationAreaStore.lastSelected.objectType
                 ) &&
                 !globalScope.restrictedCircuitElementsUsed.includes(
-                    simulationArea.lastSelected.objectType
+                    simulationAreaStore.lastSelected.objectType
                 )
             ) {
                 globalScope.restrictedCircuitElementsUsed.push(
-                    simulationArea.lastSelected.objectType
+                    simulationAreaStore.lastSelected.objectType
                 )
                 updateRestrictedElementsList()
             }
 
             //       deselect multible elements with click
             if (
-                !simulationArea.shiftDown &&
-                simulationArea.multipleObjectSelections.length > 0
+                !simulationAreaStore.shiftDown &&
+                simulationAreaStore.multipleObjectSelections.length > 0
             ) {
                 if (
-                    !simulationArea.multipleObjectSelections.includes(
-                        simulationArea.lastSelected
+                    !simulationAreaStore.multipleObjectSelections.includes(
+                        simulationAreaStore.lastSelected
                     )
                 ) {
-                    simulationArea.multipleObjectSelections = []
+                    simulationAreaStore.multipleObjectSelections = []
                 }
             }
         })
@@ -171,12 +173,12 @@ export default function startListeners() {
 
     window.addEventListener('keyup', (e) => {
         scheduleUpdate(1)
-        simulationArea.shiftDown = e.shiftKey
+        simulationAreaStore.shiftDown = e.shiftKey
         if (e.keyCode == 16) {
-            simulationArea.shiftDown = false
+            simulationAreaStore.shiftDown = false
         }
         if (e.key == 'Meta' || e.key == 'Control') {
-            simulationArea.controlDown = false
+            simulationAreaStore.controlDown = false
         }
     })
 
@@ -186,31 +188,31 @@ export default function startListeners() {
             if (document.activeElement.tagName == 'INPUT') return
             if (document.activeElement != document.body) return
 
-            simulationArea.shiftDown = e.shiftKey
+            simulationAreaStore.shiftDown = e.shiftKey
             if (e.key == 'Meta' || e.key == 'Control') {
-                simulationArea.controlDown = true
+                simulationAreaStore.controlDown = true
             }
 
             if (
-                simulationArea.controlDown &&
+                simulationAreaStore.controlDown &&
                 e.key.charCodeAt(0) == 122 &&
-                !simulationArea.shiftDown
+                !simulationAreaStore.shiftDown
             ) {
                 // detect the special CTRL-Z code
                 undo()
             }
             if (
-                simulationArea.controlDown &&
+                simulationAreaStore.controlDown &&
                 e.key.charCodeAt(0) == 122 &&
-                simulationArea.shiftDown
+                simulationAreaStore.shiftDown
             ) {
                 // detect the special Cmd + shift + z code (macOs)
                 redo()
             }
             if (
-                simulationArea.controlDown &&
+                simulationAreaStore.controlDown &&
                 e.key.charCodeAt(0) == 121 &&
-                !simulationArea.shiftDown
+                !simulationAreaStore.shiftDown
             ) {
                 // detect the special ctrl + Y code (windows)
                 redo()
@@ -224,31 +226,31 @@ export default function startListeners() {
 
                 if (
                     document.activeElement.tagName == 'INPUT' ||
-                    simulationArea.mouseRawX < 0 ||
-                    simulationArea.mouseRawY < 0 ||
-                    simulationArea.mouseRawX > width ||
-                    simulationArea.mouseRawY > height
+                    simulationAreaStore.mouseRawX < 0 ||
+                    simulationAreaStore.mouseRawY < 0 ||
+                    simulationAreaStore.mouseRawX > width ||
+                    simulationAreaStore.mouseRawY > height
                 ) {
                     return
                 }
                 // HACK TO REMOVE FOCUS ON PROPERTIES
                 if (document.activeElement.type == 'number') {
                     hideProperties()
-                    showProperties(simulationArea.lastSelected)
+                    showProperties(simulationAreaStore.lastSelected)
                 }
 
                 errorDetectedSet(false)
                 updateSimulationSet(true)
                 updatePositionSet(true)
-                simulationArea.shiftDown = e.shiftKey
+                simulationAreaStore.shiftDown = e.shiftKey
 
                 if (e.key == 'Meta' || e.key == 'Control') {
-                    simulationArea.controlDown = true
+                    simulationAreaStore.controlDown = true
                 }
 
                 // zoom in (+)
                 if (
-                    (simulationArea.controlDown &&
+                    (simulationAreaStore.controlDown &&
                         (e.keyCode == 187 || e.keyCode == 171)) ||
                     e.keyCode == 107
                 ) {
@@ -257,7 +259,7 @@ export default function startListeners() {
                 }
                 // zoom out (-)
                 if (
-                    (simulationArea.controlDown &&
+                    (simulationAreaStore.controlDown &&
                         (e.keyCode == 189 || e.keyCode == 173)) ||
                     e.keyCode == 109
                 ) {
@@ -266,10 +268,10 @@ export default function startListeners() {
                 }
 
                 if (
-                    simulationArea.mouseRawX < 0 ||
-                    simulationArea.mouseRawY < 0 ||
-                    simulationArea.mouseRawX > width ||
-                    simulationArea.mouseRawY > height
+                    simulationAreaStore.mouseRawX < 0 ||
+                    simulationAreaStore.mouseRawY < 0 ||
+                    simulationAreaStore.mouseRawX > width ||
+                    simulationAreaStore.mouseRawY > height
                 )
                     return
 
@@ -279,26 +281,28 @@ export default function startListeners() {
 
                 // Needs to be deprecated, moved to more recent listeners
                 if (
-                    simulationArea.controlDown &&
+                    simulationAreaStore.controlDown &&
                     (e.key == 'C' || e.key == 'c')
                 ) {
-                    //    simulationArea.copyList=simulationArea.multipleObjectSelections.slice();
-                    //    if(simulationArea.lastSelected&&simulationArea.lastSelected!==simulationArea.root&&!simulationArea.copyList.contains(simulationArea.lastSelected)){
-                    //        simulationArea.copyList.push(simulationArea.lastSelected);
+                    //    simulationAreaStore.copyList=simulationAreaStore.multipleObjectSelections.slice();
+                    //    if(simulationAreaStore.lastSelected&&simulationAreaStore.lastSelected!==simulationAreaStore.root&&!simulationAreaStore.copyList.contains(simulationAreaStore.lastSelected)){
+                    //        simulationAreaStore.copyList.push(simulationAreaStore.lastSelected);
                     //    }
-                    //    copy(simulationArea.copyList);
+                    //    copy(simulationAreaStore.copyList);
                 }
 
                 if (
-                    simulationArea.lastSelected &&
-                    simulationArea.lastSelected.keyDown
+                    simulationAreaStore.lastSelected &&
+                    simulationAreaStore.lastSelected.keyDown
                 ) {
                     if (
                         e.key.toString().length == 1 ||
                         e.key.toString() == 'Backspace' ||
                         e.key.toString() == 'Enter'
                     ) {
-                        simulationArea.lastSelected.keyDown(e.key.toString())
+                        simulationAreaStore.lastSelected.keyDown(
+                            e.key.toString()
+                        )
                         e.cancelBubble = true
                         e.returnValue = false
 
@@ -312,51 +316,55 @@ export default function startListeners() {
                 }
 
                 if (
-                    simulationArea.lastSelected &&
-                    simulationArea.lastSelected.keyDown2
+                    simulationAreaStore.lastSelected &&
+                    simulationAreaStore.lastSelected.keyDown2
                 ) {
                     if (e.key.toString().length == 1) {
-                        simulationArea.lastSelected.keyDown2(e.key.toString())
+                        simulationAreaStore.lastSelected.keyDown2(
+                            e.key.toString()
+                        )
                         return
                     }
                 }
 
                 if (
-                    simulationArea.lastSelected &&
-                    simulationArea.lastSelected.keyDown3
+                    simulationAreaStore.lastSelected &&
+                    simulationAreaStore.lastSelected.keyDown3
                 ) {
                     if (
                         e.key.toString() != 'Backspace' &&
                         e.key.toString() != 'Delete'
                     ) {
-                        simulationArea.lastSelected.keyDown3(e.key.toString())
+                        simulationAreaStore.lastSelected.keyDown3(
+                            e.key.toString()
+                        )
                         return
                     }
                 }
 
                 if (e.keyCode == 16) {
-                    simulationArea.shiftDown = true
+                    simulationAreaStore.shiftDown = true
                     if (
-                        simulationArea.lastSelected &&
-                        !simulationArea.lastSelected.keyDown &&
-                        simulationArea.lastSelected.objectType != 'Wire' &&
-                        simulationArea.lastSelected.objectType !=
+                        simulationAreaStore.lastSelected &&
+                        !simulationAreaStore.lastSelected.keyDown &&
+                        simulationAreaStore.lastSelected.objectType != 'Wire' &&
+                        simulationAreaStore.lastSelected.objectType !=
                             'CircuitElement' &&
-                        !simulationArea.multipleObjectSelections.contains(
-                            simulationArea.lastSelected
+                        !simulationAreaStore.multipleObjectSelections.contains(
+                            simulationAreaStore.lastSelected
                         )
                     ) {
-                        simulationArea.multipleObjectSelections.push(
-                            simulationArea.lastSelected
+                        simulationAreaStore.multipleObjectSelections.push(
+                            simulationAreaStore.lastSelected
                         )
                     }
                 }
 
                 // Detect offline save shortcut (CTRL+SHIFT+S)
                 if (
-                    simulationArea.controlDown &&
+                    simulationAreaStore.controlDown &&
                     e.keyCode == 83 &&
-                    simulationArea.shiftDown
+                    simulationAreaStore.shiftDown
                 ) {
                     saveOffline()
                     e.preventDefault()
@@ -364,7 +372,7 @@ export default function startListeners() {
 
                 // Detect Select all Shortcut
                 if (
-                    simulationArea.controlDown &&
+                    simulationAreaStore.controlDown &&
                     (e.keyCode == 65 || e.keyCode == 97)
                 ) {
                     selectAll()
@@ -373,28 +381,30 @@ export default function startListeners() {
 
                 // deselect all Shortcut
                 if (e.keyCode == 27) {
-                    simulationArea.multipleObjectSelections = []
-                    simulationArea.lastSelected = undefined
+                    simulationAreaStore.multipleObjectSelections = []
+                    simulationAreaStore.lastSelected = undefined
                     e.preventDefault()
                 }
 
                 if (
                     (e.keyCode == 113 || e.keyCode == 81) &&
-                    simulationArea.lastSelected != undefined
+                    simulationAreaStore.lastSelected != undefined
                 ) {
-                    if (simulationArea.lastSelected.bitWidth !== undefined) {
-                        simulationArea.lastSelected.newBitWidth(
+                    if (
+                        simulationAreaStore.lastSelected.bitWidth !== undefined
+                    ) {
+                        simulationAreaStore.lastSelected.newBitWidth(
                             parseInt(prompt('Enter new bitWidth'), 10)
                         )
                     }
                 }
 
                 if (
-                    simulationArea.controlDown &&
+                    simulationAreaStore.controlDown &&
                     (e.key == 'T' || e.key == 't')
                 ) {
                     // e.preventDefault(); //browsers normally open a new tab
-                    simulationArea.changeClockTime(prompt('Enter Time:'))
+                    simulationAreaStore.changeClockTime(prompt('Enter Time:'))
                 }
             }
 
@@ -410,12 +420,12 @@ export default function startListeners() {
         .addEventListener('dblclick', (e) => {
             updateCanvasSet(true)
             if (
-                simulationArea.lastSelected &&
-                simulationArea.lastSelected.dblclick !== undefined
+                simulationAreaStore.lastSelected &&
+                simulationAreaStore.lastSelected.dblclick !== undefined
             ) {
-                simulationArea.lastSelected.dblclick()
-            } else if (!simulationArea.shiftDown) {
-                simulationArea.multipleObjectSelections = []
+                simulationAreaStore.lastSelected.dblclick()
+            } else if (!simulationAreaStore.shiftDown) {
+                simulationAreaStore.multipleObjectSelections = []
             }
             scheduleUpdate(2)
         })
@@ -452,17 +462,21 @@ export default function startListeners() {
         if (document.activeElement.tagName != 'BODY') return
 
         if (listenToSimulator) {
-            simulationArea.copyList =
-                simulationArea.multipleObjectSelections.slice()
+            simulationAreaStore.copyList =
+                simulationAreaStore.multipleObjectSelections.slice()
             if (
-                simulationArea.lastSelected &&
-                simulationArea.lastSelected !== simulationArea.root &&
-                !simulationArea.copyList.contains(simulationArea.lastSelected)
+                simulationAreaStore.lastSelected &&
+                simulationAreaStore.lastSelected !== simulationAreaStore.root &&
+                !simulationAreaStore.copyList.contains(
+                    simulationAreaStore.lastSelected
+                )
             ) {
-                simulationArea.copyList.push(simulationArea.lastSelected)
+                simulationAreaStore.copyList.push(
+                    simulationAreaStore.lastSelected
+                )
             }
 
-            var textToPutOnClipboard = copy(simulationArea.copyList, true)
+            var textToPutOnClipboard = copy(simulationAreaStore.copyList, true)
 
             // Updated restricted elements
             updateRestrictedElementsInScope()
@@ -483,17 +497,21 @@ export default function startListeners() {
         if (document.activeElement.tagName != 'BODY') return
 
         if (listenToSimulator) {
-            simulationArea.copyList =
-                simulationArea.multipleObjectSelections.slice()
+            simulationAreaStore.copyList =
+                simulationAreaStore.multipleObjectSelections.slice()
             if (
-                simulationArea.lastSelected &&
-                simulationArea.lastSelected !== simulationArea.root &&
-                !simulationArea.copyList.contains(simulationArea.lastSelected)
+                simulationAreaStore.lastSelected &&
+                simulationAreaStore.lastSelected !== simulationAreaStore.root &&
+                !simulationAreaStore.copyList.contains(
+                    simulationAreaStore.lastSelected
+                )
             ) {
-                simulationArea.copyList.push(simulationArea.lastSelected)
+                simulationAreaStore.copyList.push(
+                    simulationAreaStore.lastSelected
+                )
             }
 
-            var textToPutOnClipboard = copy(simulationArea.copyList)
+            var textToPutOnClipboard = copy(simulationAreaStore.copyList)
 
             // Updated restricted elements
             updateRestrictedElementsInScope()
@@ -580,33 +598,37 @@ var isIe =
     navigator.userAgent.toLowerCase().indexOf('trident') != -1
 
 function onMouseMove(e) {
-    var rect = simulationArea.canvas.getBoundingClientRect()
-    simulationArea.mouseRawX = (e.clientX - rect.left) * DPR
-    simulationArea.mouseRawY = (e.clientY - rect.top) * DPR
-    simulationArea.mouseXf =
-        (simulationArea.mouseRawX - globalScope.ox) / globalScope.scale
-    simulationArea.mouseYf =
-        (simulationArea.mouseRawY - globalScope.oy) / globalScope.scale
-    simulationArea.mouseX = Math.round(simulationArea.mouseXf / unit) * unit
-    simulationArea.mouseY = Math.round(simulationArea.mouseYf / unit) * unit
+    const simulationAreaStore = SimulationareaStore()
+    var rect = simulationAreaStore.canvas.getBoundingClientRect()
+    simulationAreaStore.mouseRawX = (e.clientX - rect.left) * DPR
+    simulationAreaStore.mouseRawY = (e.clientY - rect.top) * DPR
+    simulationAreaStore.mouseXf =
+        (simulationAreaStore.mouseRawX - globalScope.ox) / globalScope.scale
+    simulationAreaStore.mouseYf =
+        (simulationAreaStore.mouseRawY - globalScope.oy) / globalScope.scale
+    simulationAreaStore.mouseX =
+        Math.round(simulationAreaStore.mouseXf / unit) * unit
+    simulationAreaStore.mouseY =
+        Math.round(simulationAreaStore.mouseYf / unit) * unit
 
     updateCanvasSet(true)
 
     if (
-        simulationArea.lastSelected &&
-        (simulationArea.mouseDown || simulationArea.lastSelected.newElement)
+        simulationAreaStore.lastSelected &&
+        (simulationAreaStore.mouseDown ||
+            simulationAreaStore.lastSelected.newElement)
     ) {
         updateCanvasSet(true)
         var fn
 
-        if (simulationArea.lastSelected == globalScope.root) {
+        if (simulationAreaStore.lastSelected == globalScope.root) {
             fn = function () {
                 updateSelectionsAndPane()
             }
         } else {
             fn = function () {
-                if (simulationArea.lastSelected) {
-                    simulationArea.lastSelected.update()
+                if (simulationAreaStore.lastSelected) {
+                    simulationAreaStore.lastSelected.update()
                 }
             }
         }
@@ -617,7 +639,8 @@ function onMouseMove(e) {
 }
 
 function onMouseUp(e) {
-    simulationArea.mouseDown = false
+    const simulationAreaStore = SimulationareaStore()
+    simulationAreaStore.mouseDown = false
     if (!lightMode) {
         updatelastMinimapShown()
         setTimeout(removeMiniMap, 2000)
@@ -631,7 +654,7 @@ function onMouseUp(e) {
     wireToBeCheckedSet(1)
 
     scheduleUpdate(1)
-    simulationArea.mouseDown = false
+    simulationAreaStore.mouseDown = false
 
     for (var i = 0; i < 2; i++) {
         updatePositionSet(true)
@@ -646,18 +669,18 @@ function onMouseUp(e) {
     wireToBeCheckedSet(1)
 
     scheduleUpdate(1)
-    var rect = simulationArea.canvas.getBoundingClientRect()
+    var rect = simulationAreaStore.canvas.getBoundingClientRect()
 
     if (
         !(
-            simulationArea.mouseRawX < 0 ||
-            simulationArea.mouseRawY < 0 ||
-            simulationArea.mouseRawX > width ||
-            simulationArea.mouseRawY > height
+            simulationAreaStore.mouseRawX < 0 ||
+            simulationAreaStore.mouseRawY < 0 ||
+            simulationAreaStore.mouseRawX > width ||
+            simulationAreaStore.mouseRawY > height
         )
     ) {
-        uxvar.smartDropXX = simulationArea.mouseX + 100 // Math.round(((simulationArea.mouseRawX - globalScope.ox+100) / globalScope.scale) / unit) * unit;
-        uxvar.smartDropYY = simulationArea.mouseY - 50 // Math.round(((simulationArea.mouseRawY - globalScope.oy+100) / globalScope.scale) / unit) * unit;
+        uxvar.smartDropXX = simulationAreaStore.mouseX + 100 // Math.round(((simulationAreaStore.mouseRawX - globalScope.ox+100) / globalScope.scale) / unit) * unit;
+        uxvar.smartDropYY = simulationAreaStore.mouseY - 50 // Math.round(((simulationAreaStore.mouseRawY - globalScope.oy+100) / globalScope.scale) / unit) * unit;
     }
 }
 

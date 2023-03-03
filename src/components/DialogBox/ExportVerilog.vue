@@ -44,7 +44,7 @@
 
 <script lang="ts" setup>
 import { onMounted, ref } from '@vue/runtime-core'
-import { useState } from '#/store/SimulatorStore/state'
+import { useState } from '#/store/SimulatorStore/states'
 const SimulatorState = useState()
 import Codemirror from 'codemirror-editor-vue3'
 

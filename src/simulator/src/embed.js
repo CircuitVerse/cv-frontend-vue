@@ -1,7 +1,7 @@
 /* eslint-disable import/no-cycle */
 // Helper functions for when circuit is embedded
 import { scopeList, circuitProperty } from './circuit'
-import simulationArea from './simulationArea'
+// import simulationArea from './simulationArea'
 import {
     scheduleUpdate,
     wireToBeCheckedSet,
@@ -10,19 +10,21 @@ import {
 } from './engine'
 import { prevPropertyObjGet, prevPropertyObjSet } from './ux'
 import { ZoomIn, ZoomOut } from './listeners'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 // circuitProperty.toggleFullScreen = toggleFullScreen;
 $(document).ready(() => {
+    const simulationAreaStore = SimulationareaStore()
     // Clock features
     $('#clockProperty').append(
         "<input type='button' class='objectPropertyAttributeEmbed custom-btn--secondary embed-fullscreen-btn' name='toggleFullScreen' value='Full Screen'> </input>"
     )
     $('#clockProperty').append(
-        `<div>Time: <input class='objectPropertyAttributeEmbed' min='50' type='number' style='width:48px' step='10' name='changeClockTime'  value='${simulationArea.timePeriod}'></div>`
+        `<div>Time: <input class='objectPropertyAttributeEmbed' min='50' type='number' style='width:48px' step='10' name='changeClockTime'  value='${simulationAreaStore.timePeriod}'></div>`
     )
     $('#clockProperty').append(
         `<div>Clock: <label class='switch'> <input type='checkbox' ${
-            ['', 'checked'][simulationArea.clockEnabled + 0]
+            ['', 'checked'][simulationAreaStore.clockEnabled + 0]
         } class='objectPropertyAttributeEmbedChecked' name='changeClockEnable' > <span class='slider'></span> </label><div>`
     )
 
@@ -34,11 +36,11 @@ $(document).ready(() => {
             updateCanvasSet(true)
             wireToBeCheckedSet(1)
             if (
-                simulationArea.lastSelected &&
-                simulationArea.lastSelected[this.name]
+                simulationAreaStore.lastSelected &&
+                simulationAreaStore.lastSelected[this.name]
             ) {
                 prevPropertyObjSet(
-                    simulationArea.lastSelected[this.name](this.value)
+                    simulationAreaStore.lastSelected[this.name](this.value)
                 ) || prevPropertyObjGet()
             } else {
                 circuitProperty[this.name](this.value)
@@ -54,11 +56,11 @@ $(document).ready(() => {
             updateCanvasSet(true)
             wireToBeCheckedSet(1)
             if (
-                simulationArea.lastSelected &&
-                simulationArea.lastSelected[this.name]
+                simulationAreaStore.lastSelected &&
+                simulationAreaStore.lastSelected[this.name]
             ) {
                 prevPropertyObjSet(
-                    simulationArea.lastSelected[this.name](this.value)
+                    simulationAreaStore.lastSelected[this.name](this.value)
                 ) || prevPropertyObjGet()
             } else {
                 circuitProperty[this.name](this.checked)

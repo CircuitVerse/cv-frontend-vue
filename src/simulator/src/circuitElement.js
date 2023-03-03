@@ -1,7 +1,6 @@
 /* eslint-disable no-multi-assign */
 /* eslint-disable no-bitwise */
 import { scheduleUpdate } from './engine'
-import simulationArea from './simulationArea'
 import {
     fixDirection,
     fillText,
@@ -13,6 +12,7 @@ import { colors } from './themer/themer'
 import { layoutModeGet, tempBuffer } from './layoutMode'
 import { fillSubcircuitElements } from './ux'
 import { generateNodeName } from './verilogHelpers'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 /**
  * Base class for circuit elements.
@@ -26,12 +26,13 @@ import { generateNodeName } from './verilogHelpers'
 export default class CircuitElement {
     constructor(x, y, scope, dir, bitWidth) {
         // Data member initializations
+        const simulationAreaStore = SimulationareaStore()
         this.x = x
         this.y = y
         this.hover = false
         if (this.x === undefined || this.y === undefined) {
-            this.x = simulationArea.mouseX
-            this.y = simulationArea.mouseY
+            this.x = simulationAreaStore.mouseX
+            this.y = simulationAreaStore.mouseY
             this.newElement = true
             this.hover = true
         }
@@ -192,17 +193,18 @@ export default class CircuitElement {
      * @return {boolean}
      */
     checkHover() {
-        if (simulationArea.mouseDown) return
+        const simulationAreaStore = SimulationareaStore()
+        if (simulationAreaStore.mouseDown) return
         for (let i = 0; i < this.nodeList.length; i++) {
             this.nodeList[i].checkHover()
         }
-        if (!simulationArea.mouseDown) {
-            if (simulationArea.hover === this) {
+        if (!simulationAreaStore.mouseDown) {
+            if (simulationAreaStore.hover === this) {
                 this.hover = this.isHover()
-                if (!this.hover) simulationArea.hover = undefined
-            } else if (!simulationArea.hover) {
+                if (!this.hover) simulationAreaStore.hover = undefined
+            } else if (!simulationAreaStore.hover) {
                 this.hover = this.isHover()
-                if (this.hover) simulationArea.hover = this
+                if (this.hover) simulationAreaStore.hover = this
             } else {
                 this.hover = false
             }
@@ -256,16 +258,25 @@ export default class CircuitElement {
      * @memberof CircuitElement
      */
     drag() {
+        const simulationAreaStore = SimulationareaStore()
         if (!layoutModeGet()) {
             this.x =
-                this.oldx + simulationArea.mouseX - simulationArea.mouseDownX
+                this.oldx +
+                simulationAreaStore.mouseX -
+                simulationAreaStore.mouseDownX
             this.y =
-                this.oldy + simulationArea.mouseY - simulationArea.mouseDownY
+                this.oldy +
+                simulationAreaStore.mouseY -
+                simulationAreaStore.mouseDownY
         } else {
             this.subcircuitMetadata.x =
-                this.oldx + simulationArea.mouseX - simulationArea.mouseDownX
+                this.oldx +
+                simulationAreaStore.mouseX -
+                simulationAreaStore.mouseDownX
             this.subcircuitMetadata.y =
-                this.oldy + simulationArea.mouseY - simulationArea.mouseDownY
+                this.oldy +
+                simulationAreaStore.mouseY -
+                simulationAreaStore.mouseDownY
         }
     }
 
@@ -275,6 +286,7 @@ export default class CircuitElement {
      * NOT OVERRIDABLE
      */
     update() {
+        const simulationAreaStore = SimulationareaStore()
         if (layoutModeGet()) {
             return this.layoutUpdate()
         }
@@ -285,24 +297,24 @@ export default class CircuitElement {
             if (this.centerElement) {
                 this.x =
                     Math.round(
-                        (simulationArea.mouseX -
+                        (simulationAreaStore.mouseX -
                             (this.rightDimensionX - this.leftDimensionX) / 2) /
                             10
                     ) * 10
                 this.y =
                     Math.round(
-                        (simulationArea.mouseY -
+                        (simulationAreaStore.mouseY -
                             (this.downDimensionY - this.upDimensionY) / 2) /
                             10
                     ) * 10
             } else {
-                this.x = simulationArea.mouseX
-                this.y = simulationArea.mouseY
+                this.x = simulationAreaStore.mouseX
+                this.y = simulationAreaStore.mouseY
             }
 
-            if (simulationArea.mouseDown) {
+            if (simulationAreaStore.mouseDown) {
                 this.newElement = false
-                simulationArea.lastSelected = this
+                simulationAreaStore.lastSelected = this
             } else return update
         }
 
@@ -310,80 +322,87 @@ export default class CircuitElement {
             update |= this.nodeList[i].update()
         }
 
-        if (!simulationArea.hover || simulationArea.hover === this) {
+        if (!simulationAreaStore.hover || simulationAreaStore.hover === this) {
             this.hover = this.isHover()
         }
 
-        if (!simulationArea.mouseDown) this.hover = false
+        if (!simulationAreaStore.mouseDown) this.hover = false
 
-        if ((this.clicked || !simulationArea.hover) && this.isHover()) {
+        if ((this.clicked || !simulationAreaStore.hover) && this.isHover()) {
             this.hover = true
-            simulationArea.hover = this
+            simulationAreaStore.hover = this
         } else if (
-            !simulationArea.mouseDown &&
+            !simulationAreaStore.mouseDown &&
             this.hover &&
             this.isHover() === false
         ) {
-            if (this.hover) simulationArea.hover = undefined
+            if (this.hover) simulationAreaStore.hover = undefined
             this.hover = false
         }
 
-        if (simulationArea.mouseDown && this.clicked) {
+        if (simulationAreaStore.mouseDown && this.clicked) {
             this.drag()
             if (
-                !simulationArea.shiftDown &&
-                simulationArea.multipleObjectSelections.contains(this)
+                !simulationAreaStore.shiftDown &&
+                simulationAreaStore.multipleObjectSelections.contains(this)
             ) {
                 for (
                     let i = 0;
-                    i < simulationArea.multipleObjectSelections.length;
+                    i < simulationAreaStore.multipleObjectSelections.length;
                     i++
                 ) {
-                    simulationArea.multipleObjectSelections[i].drag()
+                    simulationAreaStore.multipleObjectSelections[i].drag()
                 }
             }
 
             update |= true
-        } else if (simulationArea.mouseDown && !simulationArea.selected) {
+        } else if (
+            simulationAreaStore.mouseDown &&
+            !simulationAreaStore.selected
+        ) {
             this.startDragging()
             if (
-                !simulationArea.shiftDown &&
-                simulationArea.multipleObjectSelections.contains(this)
+                !simulationAreaStore.shiftDown &&
+                simulationAreaStore.multipleObjectSelections.contains(this)
             ) {
                 for (
                     let i = 0;
-                    i < simulationArea.multipleObjectSelections.length;
+                    i < simulationAreaStore.multipleObjectSelections.length;
                     i++
                 ) {
-                    simulationArea.multipleObjectSelections[i].startDragging()
+                    simulationAreaStore.multipleObjectSelections[
+                        i
+                    ].startDragging()
                 }
             }
-            simulationArea.selected = this.clicked = this.hover
+            simulationAreaStore.selected = this.clicked = this.hover
 
             update |= this.clicked
         } else {
-            if (this.clicked) simulationArea.selected = false
+            if (this.clicked) simulationAreaStore.selected = false
             this.clicked = false
             this.wasClicked = false
             // If this is SubCircuit, then call releaseClick to recursively release clicks on each subcircuit object
             if (this.objectType == 'SubCircuit') this.releaseClick()
         }
 
-        if (simulationArea.mouseDown && !this.wasClicked) {
+        if (simulationAreaStore.mouseDown && !this.wasClicked) {
             if (this.clicked) {
                 this.wasClicked = true
                 if (this.click) this.click()
-                if (simulationArea.shiftDown) {
-                    simulationArea.lastSelected = undefined
+                if (simulationAreaStore.shiftDown) {
+                    simulationAreaStore.lastSelected = undefined
                     if (
-                        simulationArea.multipleObjectSelections.contains(this)
+                        simulationAreaStore.multipleObjectSelections.contains(
+                            this
+                        )
                     ) {
-                        simulationArea.multipleObjectSelections.clean(this)
+                        simulationAreaStore.multipleObjectSelections.clean(this)
                     } else {
-                        simulationArea.multipleObjectSelections.push(this)
+                        simulationAreaStore.multipleObjectSelections.push(this)
                     }
                 } else {
-                    simulationArea.lastSelected = this
+                    simulationAreaStore.lastSelected = this
                 }
             }
         }
@@ -397,50 +416,54 @@ export default class CircuitElement {
      **/
 
     layoutUpdate() {
+        const simulationAreaStore = SimulationareaStore()
         var update = false
         update |= this.newElement
         if (this.newElement) {
-            this.subcircuitMetadata.x = simulationArea.mouseX
-            this.subcircuitMetadata.y = simulationArea.mouseY
+            this.subcircuitMetadata.x = simulationAreaStore.mouseX
+            this.subcircuitMetadata.y = simulationAreaStore.mouseY
 
-            if (simulationArea.mouseDown) {
+            if (simulationAreaStore.mouseDown) {
                 this.newElement = false
-                simulationArea.lastSelected = this
+                simulationAreaStore.lastSelected = this
             } else return
         }
 
-        if (!simulationArea.hover || simulationArea.hover == this)
+        if (!simulationAreaStore.hover || simulationAreaStore.hover == this)
             this.hover = this.isHover()
 
-        if ((this.clicked || !simulationArea.hover) && this.isHover()) {
+        if ((this.clicked || !simulationAreaStore.hover) && this.isHover()) {
             this.hover = true
-            simulationArea.hover = this
+            simulationAreaStore.hover = this
         } else if (
-            !simulationArea.mouseDown &&
+            !simulationAreaStore.mouseDown &&
             this.hover &&
             this.isHover() == false
         ) {
-            if (this.hover) simulationArea.hover = undefined
+            if (this.hover) simulationAreaStore.hover = undefined
             this.hover = false
         }
 
-        if (simulationArea.mouseDown && this.clicked) {
+        if (simulationAreaStore.mouseDown && this.clicked) {
             this.drag()
             update |= true
-        } else if (simulationArea.mouseDown && !simulationArea.selected) {
+        } else if (
+            simulationAreaStore.mouseDown &&
+            !simulationAreaStore.selected
+        ) {
             this.startDragging()
-            simulationArea.selected = this.clicked = this.hover
+            simulationAreaStore.selected = this.clicked = this.hover
             update |= this.clicked
         } else {
-            if (this.clicked) simulationArea.selected = false
+            if (this.clicked) simulationAreaStore.selected = false
             this.clicked = false
             this.wasClicked = false
         }
 
-        if (simulationArea.mouseDown && !this.wasClicked) {
+        if (simulationAreaStore.mouseDown && !this.wasClicked) {
             if (this.clicked) {
                 this.wasClicked = true
-                simulationArea.lastSelected = this
+                simulationAreaStore.lastSelected = this
             }
         }
 
@@ -479,8 +502,9 @@ export default class CircuitElement {
      * NOT OVERRIDABLE
      */
     isHover() {
-        var mX = simulationArea.mouseXf - this.x
-        var mY = this.y - simulationArea.mouseYf
+        const simulationAreaStore = SimulationareaStore()
+        var mX = simulationAreaStore.mouseXf - this.x
+        var mY = this.y - simulationAreaStore.mouseYf
 
         var rX = this.rightDimensionX
         var lX = this.leftDimensionX
@@ -488,8 +512,8 @@ export default class CircuitElement {
         var dY = this.downDimensionY
 
         if (layoutModeGet()) {
-            var mX = simulationArea.mouseXf - this.subcircuitMetadata.x
-            var mY = this.subcircuitMetadata.y - simulationArea.mouseYf
+            var mX = simulationAreaStore.mouseXf - this.subcircuitMetadata.x
+            var mY = this.subcircuitMetadata.y - simulationAreaStore.mouseYf
 
             var rX = this.layoutProperties.rightDimensionX
             var lX = this.layoutProperties.leftDimensionX
@@ -518,8 +542,11 @@ export default class CircuitElement {
     }
 
     isSubcircuitHover(xoffset = 0, yoffset = 0) {
-        var mX = simulationArea.mouseXf - this.subcircuitMetadata.x - xoffset
-        var mY = yoffset + this.subcircuitMetadata.y - simulationArea.mouseYf
+        const simulationAreaStore = SimulationareaStore()
+        var mX =
+            simulationAreaStore.mouseXf - this.subcircuitMetadata.x - xoffset
+        var mY =
+            yoffset + this.subcircuitMetadata.y - simulationAreaStore.mouseYf
 
         var rX = this.layoutProperties.rightDimensionX
         var lX = this.layoutProperties.leftDimensionX
@@ -543,8 +570,8 @@ export default class CircuitElement {
      * NOT OVERRIDABLE
      */
     draw() {
-        //
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
         this.checkHover()
 
         if (
@@ -576,9 +603,9 @@ export default class CircuitElement {
                 [this.direction, 'RIGHT'][+this.directionFixed]
             )
             if (
-                (this.hover && !simulationArea.shiftDown) ||
-                simulationArea.lastSelected === this ||
-                simulationArea.multipleObjectSelections.contains(this)
+                (this.hover && !simulationAreaStore.shiftDown) ||
+                simulationAreaStore.lastSelected === this ||
+                simulationAreaStore.multipleObjectSelections.contains(this)
             )
                 ctx.fillStyle = colors['hover_select']
             ctx.fill()
@@ -652,7 +679,8 @@ export default class CircuitElement {
         and layoutMode.js/renderLayout() -  for drawing in layoutMode
     **/
     drawLayoutMode(xOffset = 0, yOffset = 0) {
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
         if (layoutModeGet()) {
             this.checkHover()
         }
@@ -733,7 +761,8 @@ export default class CircuitElement {
     // method to delete object
     // OVERRIDE WITH CAUTION
     delete() {
-        simulationArea.lastSelected = undefined
+        const simulationAreaStore = SimulationareaStore()
+        simulationAreaStore.lastSelected = undefined
         this.scope[this.objectType].clean(this) // CHECK IF THIS IS VALID
         if (this.deleteNodesWhenDeleted) {
             this.deleteNodes()
@@ -924,11 +953,12 @@ export default class CircuitElement {
      * Helper Function to remove proporgation.
      */
     removePropagation() {
+        const simulationAreaStore = SimulationareaStore()
         for (let i = 0; i < this.nodeList.length; i++) {
             if (this.nodeList[i].type === NODE_OUTPUT) {
                 if (this.nodeList[i].value !== undefined) {
                     this.nodeList[i].value = undefined
-                    simulationArea.simulationQueue.add(this.nodeList[i])
+                    simulationAreaStore.simulationQueue.add(this.nodeList[i])
                 }
             }
         }

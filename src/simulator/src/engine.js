@@ -5,13 +5,14 @@
 /* eslint-disable no-bitwise */
 import { layoutModeGet, layoutUpdate } from './layoutMode'
 import plotArea from './plotArea'
-import simulationArea from './simulationArea'
+// import simulationArea from './simulationArea'
 import { dots, canvasMessage, findDimensions, rect2 } from './canvasApi'
 import { showProperties, prevPropertyObjGet } from './ux'
 import { showError } from './utils'
-import miniMapArea from './minimap'
 import { resetup } from './setup'
 import { verilogModeGet } from './Verilog2CV'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
+import { MinimapareaStore } from '#/store/MinimapareaCanvas/MinimapareaStore'
 
 /**
  * Core of the simulation and rendering algorithm.
@@ -237,13 +238,14 @@ export function changeLightMode(val) {
  * @category engine
  */
 export function renderCanvas(scope) {
+    const simulationAreaStore = SimulationareaStore()
     if (layoutModeGet() || verilogModeGet()) {
         // Different Algorithm
         return
     }
-    var ctx = simulationArea.context
+    var ctx = simulationAreaStore.context
     // Reset canvas
-    simulationArea.clear()
+    simulationAreaStore.clear()
     // Update Grid
     if (gridUpdate) {
         gridUpdateSet(false)
@@ -277,10 +279,10 @@ export function renderCanvas(scope) {
         ctx.fillStyle = 'rgba(0,0,0,0.1)'
         rect2(
             ctx,
-            simulationArea.mouseDownX,
-            simulationArea.mouseDownY,
-            simulationArea.mouseX - simulationArea.mouseDownX,
-            simulationArea.mouseY - simulationArea.mouseDownY,
+            simulationAreaStore.mouseDownX,
+            simulationAreaStore.mouseDownY,
+            simulationAreaStore.mouseX - simulationAreaStore.mouseDownX,
+            simulationAreaStore.mouseY - simulationAreaStore.mouseDownY,
             0,
             0,
             'RIGHT'
@@ -288,12 +290,12 @@ export function renderCanvas(scope) {
         ctx.stroke()
         ctx.fill()
     }
-    if (simulationArea.hover !== undefined) {
-        simulationArea.canvas.style.cursor = 'pointer'
-    } else if (simulationArea.mouseDown) {
-        simulationArea.canvas.style.cursor = 'grabbing'
+    if (simulationAreaStore.hover !== undefined) {
+        simulationAreaStore.canvas.style.cursor = 'pointer'
+    } else if (simulationAreaStore.mouseDown) {
+        simulationAreaStore.canvas.style.cursor = 'grabbing'
     } else {
-        simulationArea.canvas.style.cursor = 'default'
+        simulationAreaStore.canvas.style.cursor = 'default'
     }
 }
 
@@ -304,55 +306,57 @@ export function renderCanvas(scope) {
  * @category engine
  */
 export function updateSelectionsAndPane(scope = globalScope) {
-    if (!simulationArea.selected && simulationArea.mouseDown) {
-        simulationArea.selected = true
-        simulationArea.lastSelected = scope.root
-        simulationArea.hover = scope.root
+    const miniMapAreaStore = MinimapareaStore()
+    const simulationAreaStore = SimulationareaStore()
+    if (!simulationAreaStore.selected && simulationAreaStore.mouseDown) {
+        simulationAreaStore.selected = true
+        simulationAreaStore.lastSelected = scope.root
+        simulationAreaStore.hover = scope.root
         // Selecting multiple objects
-        if (simulationArea.shiftDown) {
+        if (simulationAreaStore.shiftDown) {
             objectSelectionSet(true)
         } else if (!embed) {
             findDimensions(scope)
-            miniMapArea.setup()
+            miniMapAreaStore.setup()
             $('#miniMap').show()
         }
     } else if (
-        simulationArea.lastSelected === scope.root &&
-        simulationArea.mouseDown
+        simulationAreaStore.lastSelected === scope.root &&
+        simulationAreaStore.mouseDown
     ) {
         // pane canvas to give an idea of grid moving
         if (!objectSelection) {
             globalScope.ox =
-                simulationArea.mouseRawX -
-                simulationArea.mouseDownRawX +
-                simulationArea.oldx
+                simulationAreaStore.mouseRawX -
+                simulationAreaStore.mouseDownRawX +
+                simulationAreaStore.oldx
             globalScope.oy =
-                simulationArea.mouseRawY -
-                simulationArea.mouseDownRawY +
-                simulationArea.oldy
+                simulationAreaStore.mouseRawY -
+                simulationAreaStore.mouseDownRawY +
+                simulationAreaStore.oldy
             globalScope.ox = Math.round(globalScope.ox)
             globalScope.oy = Math.round(globalScope.oy)
             gridUpdateSet(true)
-            if (!embed && !lightMode) miniMapArea.setup()
+            if (!embed && !lightMode) miniMapAreaStore.setup()
         } else {
             // idea: kind of empty
         }
-    } else if (simulationArea.lastSelected === scope.root) {
+    } else if (simulationAreaStore.lastSelected === scope.root) {
         /*
         Select multiple objects by adding them to the array
         simulationArea.multipleObjectSelections when we select
         using shift + mouse movement to select an area but
         not shift + click
         */
-        simulationArea.lastSelected = undefined
-        simulationArea.selected = false
-        simulationArea.hover = undefined
+        simulationAreaStore.lastSelected = undefined
+        simulationAreaStore.selected = false
+        simulationAreaStore.hover = undefined
         if (objectSelection) {
             objectSelectionSet(false)
-            var x1 = simulationArea.mouseDownX
-            var x2 = simulationArea.mouseX
-            var y1 = simulationArea.mouseDownY
-            var y2 = simulationArea.mouseY
+            var x1 = simulationAreaStore.mouseDownX
+            var x2 = simulationAreaStore.mouseX
+            var y1 = simulationAreaStore.mouseDownY
+            var y2 = simulationAreaStore.mouseY
             // Sort those four points to make a selection pane
             if (x1 > x2) {
                 const temp = x1
@@ -368,7 +372,11 @@ export function updateSelectionsAndPane(scope = globalScope) {
             for (let i = 0; i < updateOrder.length; i++) {
                 for (var j = 0; j < scope[updateOrder[i]].length; j++) {
                     var obj = scope[updateOrder[i]][j]
-                    if (simulationArea.multipleObjectSelections.contains(obj))
+                    if (
+                        simulationAreaStore.multipleObjectSelections.contains(
+                            obj
+                        )
+                    )
                         continue
                     var x
                     var y
@@ -382,7 +390,7 @@ export function updateSelectionsAndPane(scope = globalScope) {
                         continue
                     }
                     if (x > x1 && x < x2 && y > y1 && y < y2) {
-                        simulationArea.multipleObjectSelections.push(obj)
+                        simulationAreaStore.multipleObjectSelections.push(obj)
                     }
                 }
             }
@@ -399,32 +407,33 @@ export function updateSelectionsAndPane(scope = globalScope) {
  * @category engine
  */
 export function play(scope = globalScope, resetNodes = false) {
+    const simulationAreaStore = SimulationareaStore()
     if (errorDetected) return // Don't simulate until error is fixed
     if (loading === true) return // Don't simulate until loaded
 
-    simulationArea.simulationQueue.reset()
+    simulationAreaStore.simulationQueue.reset()
     plotArea.setExecutionTime() // Waveform thing
     // Reset Nodes if required
     if (resetNodes || forceResetNodes) {
         scope.reset()
-        simulationArea.simulationQueue.reset()
+        simulationAreaStore.simulationQueue.reset()
         forceResetNodesSet(false)
     }
 
     // To store list of circuitselements that have shown contention but kept temporarily
     // Mainly to resolve tristate bus issues
-    simulationArea.contentionPending = []
+    simulationAreaStore.contentionPending = []
     // add inputs to the simulation queue
     scope.addInputs()
     // to check if we have infinite loop in circuit
     let stepCount = 0
     let elem
-    while (!simulationArea.simulationQueue.isEmpty()) {
+    while (!simulationAreaStore.simulationQueue.isEmpty()) {
         if (errorDetected) {
-            simulationArea.simulationQueue.reset()
+            simulationAreaStore.simulationQueue.reset()
             return
         }
-        elem = simulationArea.simulationQueue.pop()
+        elem = simulationAreaStore.simulationQueue.pop()
         elem.resolve()
         stepCount++
         if (stepCount > 1000000) {
@@ -437,7 +446,7 @@ export function play(scope = globalScope, resetNodes = false) {
         }
     }
     // Check for TriState Contentions
-    if (simulationArea.contentionPending.length) {
+    if (simulationAreaStore.contentionPending.length) {
         showError('Contention at TriState')
         forceResetNodesSet(true)
         errorDetectedSet(true)
@@ -482,10 +491,11 @@ export function scheduleUpdate(count = 0, time = 100, fn) {
  * @category engine
  */
 export function update(scope = globalScope, updateEverything = false) {
+    const simulationAreaStore = SimulationareaStore()
     willBeUpdatedSet(false)
     if (loading === true || layoutModeGet()) return
     var updated = false
-    simulationArea.hover = undefined
+    simulationAreaStore.hover = undefined
     // Update wires
     if (wireToBeChecked || updateEverything) {
         if (wireToBeChecked === 2)
@@ -525,9 +535,9 @@ export function update(scope = globalScope, updateEverything = false) {
     // Update MiniMap
     if (
         !embed &&
-        simulationArea.mouseDown &&
-        simulationArea.lastSelected &&
-        simulationArea.lastSelected !== globalScope.root
+        simulationAreaStore.mouseDown &&
+        simulationAreaStore.lastSelected &&
+        simulationAreaStore.lastSelected !== globalScope.root
     ) {
         if (!lightMode) {
             $('#miniMap').fadeOut('fast')
@@ -538,13 +548,13 @@ export function update(scope = globalScope, updateEverything = false) {
         play()
     }
     // Show properties of selected element
-    if (!embed && prevPropertyObjGet() !== simulationArea.lastSelected) {
+    if (!embed && prevPropertyObjGet() !== simulationAreaStore.lastSelected) {
         if (
-            simulationArea.lastSelected &&
-            simulationArea.lastSelected.objectType !== 'Wire'
+            simulationAreaStore.lastSelected &&
+            simulationAreaStore.lastSelected.objectType !== 'Wire'
         ) {
             // ideas: why show properties of project in Nodes but not wires?
-            showProperties(simulationArea.lastSelected)
+            showProperties(simulationAreaStore.lastSelected)
         } else {
             // hideProperties();
         }

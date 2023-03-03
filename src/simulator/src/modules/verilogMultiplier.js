@@ -1,7 +1,8 @@
 /* eslint-disable no-bitwise */
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 
 /**
  * @class
@@ -81,6 +82,7 @@ export default class verilogMultiplier extends CircuitElement {
      * resolve output values based on inputData
      */
     resolve() {
+        const simulationAreaStore = SimulationareaStore()
         if (this.isResolvable() === false) {
             return
         }
@@ -89,7 +91,7 @@ export default class verilogMultiplier extends CircuitElement {
         this.product.value =
             (product << (32 - this.outputBitWidth)) >>>
             (32 - this.outputBitWidth)
-        simulationArea.simulationQueue.add(this.product)
+        simulationAreaStore.simulationQueue.add(this.product)
     }
 }
 

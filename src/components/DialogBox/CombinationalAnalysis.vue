@@ -21,7 +21,7 @@
 
 <script lang="ts" setup>
 import { stripTags } from '#/simulator/src/utils'
-import { useState } from '#/store/SimulatorStore/state'
+import { useState } from '#/store/SimulatorStore/states'
 import messageBox from '@/MessageBox/messageBox.vue'
 import { ref } from '@vue/reactivity'
 import { onMounted, onUpdated } from '@vue/runtime-core'
@@ -34,9 +34,10 @@ import ConstantVal from '#/simulator/src/modules/ConstantVal'
 import Output from '#/simulator/src/modules/Output'
 import AndGate from '#/simulator/src/modules/AndGate'
 import OrGate from '#/simulator/src/modules/OrGate'
-import NotGate from '#/simulator/src/modules/NotGate'
-import simulationArea from '#/simulator/src/simulationArea'
+// import NotGate from '#/simulator/src/modules/NotGate'
 import { findDimensions } from '#/simulator/src/canvasApi'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
+import NotGate from '#/simulator/src/modules/NotGate'
 
 const SimulatorState = useState()
 onMounted(() => {
@@ -332,6 +333,7 @@ function drawCombinationalAnalysis(
     outputList,
     scope = globalScope
 ) {
+    const simulationAreaStore = SimulationareaStore()
     console.log('inside draw CA')
     findDimensions(scope)
     var inputCount = inputList.length
@@ -345,12 +347,15 @@ function drawCombinationalAnalysis(
 
     var currentPosY = 300
 
-    if (simulationArea.maxWidth && simulationArea.maxHeight) {
-        if (simulationArea.maxHeight + currentPosY > simulationArea.maxWidth) {
-            startPosX += simulationArea.maxWidth
+    if (simulationAreaStore.maxWidth && simulationAreaStore.maxHeight) {
+        if (
+            simulationAreaStore.maxHeight + currentPosY >
+            simulationAreaStore.maxWidth
+        ) {
+            startPosX += simulationAreaStore.maxWidth
         } else {
-            startPosY += simulationArea.maxHeight
-            currentPosY += simulationArea.maxHeight
+            startPosY += simulationAreaStore.maxHeight
+            currentPosY += simulationAreaStore.maxHeight
         }
     }
     var andPosX = startPosX + inputCount * 40 + 40 + 40

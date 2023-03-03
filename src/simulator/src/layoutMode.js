@@ -2,7 +2,7 @@
 /* eslint-disable no-continue */
 import { dots, correctWidth, fillText, rect2 } from './canvasApi'
 import LayoutBuffer from './layout/layoutBuffer'
-import simulationArea from './simulationArea'
+// import simulationArea from './simulationArea'
 import {
     hideProperties,
     fillSubcircuitElements,
@@ -17,10 +17,11 @@ import {
     gridUpdateSet,
     gridUpdateGet,
 } from './engine'
-import miniMapArea from './minimap'
 import { showMessage } from './utils'
 import * as metadata from './metadata.json'
 import { verilogModeGet, verilogModeSet } from './Verilog2CV'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
+import { MinimapareaStore } from '#/store/MinimapareaCanvas/MinimapareaStore'
 
 /**
  * Layout.js - all subcircuit layout related code is here
@@ -64,35 +65,37 @@ export function determineLabel(x, y) {
  * @category layoutMode
  */
 export function paneLayout(scope = globalScope) {
-    if (!simulationArea.selected && simulationArea.mouseDown) {
-        simulationArea.selected = true
-        simulationArea.lastSelected = scope.root
-        simulationArea.hover = scope.root
+    const miniMapAreaStore = MinimapareaStore()
+    const simulationAreaStore = SimulationareaStore()
+    if (!simulationAreaStore.selected && simulationAreaStore.mouseDown) {
+        simulationAreaStore.selected = true
+        simulationAreaStore.lastSelected = scope.root
+        simulationAreaStore.hover = scope.root
     } else if (
-        simulationArea.lastSelected === scope.root &&
-        simulationArea.mouseDown
+        simulationAreaStore.lastSelected === scope.root &&
+        simulationAreaStore.mouseDown
     ) {
         // pane canvas
         if (true) {
             globalScope.ox =
-                simulationArea.mouseRawX -
-                simulationArea.mouseDownRawX +
-                simulationArea.oldx
+                simulationAreaStore.mouseRawX -
+                simulationAreaStore.mouseDownRawX +
+                simulationAreaStore.oldx
             globalScope.oy =
-                simulationArea.mouseRawY -
-                simulationArea.mouseDownRawY +
-                simulationArea.oldy
+                simulationAreaStore.mouseRawY -
+                simulationAreaStore.mouseDownRawY +
+                simulationAreaStore.oldy
             globalScope.ox = Math.round(globalScope.ox)
             globalScope.oy = Math.round(globalScope.oy)
             gridUpdateSet(true)
-            if (!embed && !lightMode) miniMapArea.setup()
+            if (!embed && !lightMode) miniMapAreaStore.setup()
         }
-    } else if (simulationArea.lastSelected === scope.root) {
+    } else if (simulationAreaStore.lastSelected === scope.root) {
         // Select multiple objects
 
-        simulationArea.lastSelected = undefined
-        simulationArea.selected = false
-        simulationArea.hover = undefined
+        simulationAreaStore.lastSelected = undefined
+        simulationAreaStore.selected = false
+        simulationAreaStore.hover = undefined
     }
 }
 
@@ -102,9 +105,10 @@ export function paneLayout(scope = globalScope) {
  * @category layoutMode
  */
 export function renderLayout(scope = globalScope) {
+    const simulationAreaStore = SimulationareaStore()
     if (!layoutModeGet()) return
-    var ctx = simulationArea.context
-    simulationArea.clear()
+    var ctx = simulationAreaStore.context
+    simulationAreaStore.clear()
     ctx.strokeStyle = 'black'
     ctx.fillStyle = 'white'
     ctx.lineWidth = correctWidth(3)
@@ -193,9 +197,9 @@ export function renderLayout(scope = globalScope) {
     }
 
     // Show properties of selected element
-    if (!embed && prevPropertyObjGet() != simulationArea.lastSelected) {
-        if (simulationArea.lastSelected) {
-            showProperties(simulationArea.lastSelected)
+    if (!embed && prevPropertyObjGet() != simulationAreaStore.lastSelected) {
+        if (simulationAreaStore.lastSelected) {
+            showProperties(simulationAreaStore.lastSelected)
         }
     }
     // Render objects

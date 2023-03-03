@@ -26,7 +26,7 @@
 
     <InputGroups
         property-name="Clock Time (ms):"
-        :property-value="simulationArea.timePeriod"
+        :property-value="getTimeperiod()"
         property-value-type="number"
         value-min="50"
         step-size="10"
@@ -79,13 +79,12 @@
 import { deleteCurrentCircuit } from '#/simulator/src/circuit'
 import { getProjectName } from '#/simulator/src/data/save'
 import { toggleLayoutMode } from '#/simulator/src/layoutMode'
-import simulationArea from '#/simulator/src/simulationArea'
 import InputGroups from '#/components/Panels/Shared/InputGroups.vue'
 import { ref } from '@vue/reactivity'
 import { onMounted } from '@vue/runtime-core'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 const circuitId = ref(0)
 const circuitName = ref('Untitled-Cirucit')
-
 
 onMounted(() => {
     // checking if circuit or tab is switched
@@ -96,6 +95,11 @@ onMounted(() => {
         }
     }, 100)
 })
+
+function getTimeperiod() {
+    const simulationAreaStore = SimulationareaStore()
+    return simulationAreaStore.timePeriod
+}
 </script>
 
 <style scoped>

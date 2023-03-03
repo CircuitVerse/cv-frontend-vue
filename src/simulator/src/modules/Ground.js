@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 import { correctWidth, lineTo, moveTo, arc } from '../canvasApi'
 import { changeInputSize } from '../modules'
 /**
@@ -14,6 +14,7 @@ import { changeInputSize } from '../modules'
  * @category modules
  */
 import { colors } from '../themer/themer'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 export default class Ground extends CircuitElement {
     constructor(x, y, scope = globalScope, bitWidth = 1) {
@@ -50,8 +51,9 @@ export default class Ground extends CircuitElement {
      * resolve output values based on inputData
      */
     resolve() {
+        const simulationAreaStore = SimulationareaStore()
         this.output1.value = 0
-        simulationArea.simulationQueue.add(this.output1)
+        simulationAreaStore.simulationQueue.add(this.output1)
     }
 
     /**
@@ -74,13 +76,14 @@ export default class Ground extends CircuitElement {
      * function to draw element
      */
     customDraw() {
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
         //
         ctx.beginPath()
         ctx.strokeStyle = [colors['stroke'], 'brown'][
-            ((this.hover && !simulationArea.shiftDown) ||
-                simulationArea.lastSelected === this ||
-                simulationArea.multipleObjectSelections.contains(this)) + 0
+            ((this.hover && !simulationAreaStore.shiftDown) ||
+                simulationAreaStore.lastSelected === this ||
+                simulationAreaStore.multipleObjectSelections.contains(this)) + 0
         ]
         ctx.lineWidth = correctWidth(3)
 

@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 import { fillText, lineTo, moveTo, correctWidth, rect2 } from '../canvasApi'
 /**
  * @class
@@ -16,6 +16,7 @@ import { fillText, lineTo, moveTo, correctWidth, rect2 } from '../canvasApi'
  * @category modules
  */
 import { colors } from '../themer/themer'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 export default class Random extends CircuitElement {
     constructor(x, y, scope = globalScope, dir = 'RIGHT', bitWidth = 1) {
@@ -61,6 +62,7 @@ export default class Random extends CircuitElement {
      * Random number is generated less then the maxValue.
      */
     resolve() {
+        const simulationAreaStore = SimulationareaStore()
         var maxValue = this.maxValue.connections.length
             ? this.maxValue.value + 1
             : 2 << (this.bitWidth - 1)
@@ -74,7 +76,7 @@ export default class Random extends CircuitElement {
         }
         if (this.output.value != this.currentRandomNo) {
             this.output.value = this.currentRandomNo
-            simulationArea.simulationQueue.add(this.output)
+            simulationAreaStore.simulationQueue.add(this.output)
         }
     }
 
@@ -91,7 +93,8 @@ export default class Random extends CircuitElement {
     }
 
     customDraw() {
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
         //
         ctx.fillStyle = colors['fill']
         ctx.strokeStyle = colors['stroke']
@@ -112,7 +115,8 @@ export default class Random extends CircuitElement {
 
     // Draws the element in the subcircuit. Used in layout mode
     subcircuitDraw(xOffset = 0, yOffset = 0) {
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
         var xx = this.subcircuitMetadata.x + xOffset
         var yy = this.subcircuitMetadata.y + yOffset
 
@@ -129,9 +133,9 @@ export default class Random extends CircuitElement {
         ctx.stroke()
 
         if (
-            (this.hover && !simulationArea.shiftDown) ||
-            simulationArea.lastSelected == this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            (this.hover && !simulationAreaStore.shiftDown) ||
+            simulationAreaStore.lastSelected == this ||
+            simulationAreaStore.multipleObjectSelections.contains(this)
         ) {
             ctx.fillStyle = 'rgba(255, 255, 32,0.6)'
             ctx.fill()

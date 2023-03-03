@@ -65,5 +65,4 @@ const props = defineProps({
 const emit = defineEmits(['buttonClick'])
 </script>
 
-
 <style scoped></style>

@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+// import simulationArea from '../simulationArea'
 import {
     colorToRGBA,
     correctWidth,
@@ -10,6 +10,7 @@ import {
     rect2,
     validColor,
 } from '../canvasApi'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 
 /**
  * @class
@@ -87,8 +88,9 @@ export default class SevenSegDisplay extends CircuitElement {
      * helper function to create save Json Data of object
      */
     customDrawSegment(x1, y1, x2, y2, color) {
+        const simulationAreaStore = SimulationareaStore()
         if (color === undefined) color = 'lightgrey'
-        var ctx = simulationArea.context
+        var ctx = simulationAreaStore.context
         ctx.beginPath()
         ctx.strokeStyle = color
         ctx.lineWidth = correctWidth(5)
@@ -105,7 +107,8 @@ export default class SevenSegDisplay extends CircuitElement {
      * function to draw element
      */
     customDraw() {
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
         const xx = this.x
         const yy = this.y
         this.customDrawSegment(
@@ -166,8 +169,9 @@ export default class SevenSegDisplay extends CircuitElement {
     }
 
     subcircuitDrawSegment(x1, y1, x2, y2, color, xxSegment, yySegment) {
+        const simulationAreaStore = SimulationareaStore()
         if (color == undefined) color = 'lightgrey'
-        var ctx = simulationArea.context
+        var ctx = simulationAreaStore.context
         ctx.beginPath()
         ctx.strokeStyle = color
         ctx.lineWidth = correctWidth(3)
@@ -181,7 +185,8 @@ export default class SevenSegDisplay extends CircuitElement {
 
     // Draws the element in the subcuircuit. Used in layout mode
     subcircuitDraw(xOffset = 0, yOffset = 0) {
-        var ctx = simulationArea.context
+        const simulationAreaStore = SimulationareaStore()
+        var ctx = simulationAreaStore.context
 
         var xx = this.subcircuitMetadata.x + xOffset
         var yy = this.subcircuitMetadata.y + yOffset
@@ -264,9 +269,9 @@ export default class SevenSegDisplay extends CircuitElement {
         ctx.stroke()
 
         if (
-            (this.hover && !simulationArea.shiftDown) ||
-            simulationArea.lastSelected == this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            (this.hover && !simulationAreaStore.shiftDown) ||
+            simulationAreaStore.lastSelected == this ||
+            simulationAreaStore.multipleObjectSelections.contains(this)
         ) {
             ctx.fillStyle = 'rgba(255, 255, 32,0.6)'
             ctx.fill()

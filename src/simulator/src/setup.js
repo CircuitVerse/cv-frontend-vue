@@ -5,9 +5,8 @@
 import { Tooltip } from 'bootstrap'
 import metadata from './metadata.json'
 import { generateId, showMessage } from './utils'
-import backgroundArea from './backgroundArea'
 import plotArea from './plotArea'
-import simulationArea from './simulationArea'
+// import simulationArea from './simulationArea'
 import { dots } from './canvasApi'
 import { update, updateSimulationSet, updateCanvasSet } from './engine'
 import { setupUI } from './ux'
@@ -29,7 +28,9 @@ import { setupCodeMirrorEnvironment } from './Verilog2CV'
 import { keyBinder } from './hotkey_binder/keyBinder'
 import '../vendor/jquery-ui.min.css'
 import '../vendor/jquery-ui.min'
-
+import { BackgroundareaStore } from '#/store/BackgroundareaCanvas/BackgroundareaStore'
+import { colors } from './themer/themer'
+import { SimulationareaStore } from '#/store/SimulationareaCanvas/SimulationareaStore'
 /**
  * to resize window and setup things it
  * sets up new width for the canvas variables.
@@ -38,6 +39,8 @@ import '../vendor/jquery-ui.min'
  */
 export function resetup() {
     console.log('hello from re setup')
+    const backgroundAreaStore = BackgroundareaStore()
+    const simulationAreaStore = SimulationareaStore()
     DPR = window.devicePixelRatio || 1
     if (lightMode) {
         DPR = 1
@@ -52,8 +55,10 @@ export function resetup() {
         height = document.getElementById('simulation').clientHeight * DPR
     }
     // setup simulationArea and backgroundArea variables used to make changes to canvas.
-    backgroundArea.setup()
-    simulationArea.setup()
+    // backgroundAreaStore.setup()
+    backgroundAreaStore.setup()
+    simulationAreaStore.setup()
+    console.log(simulationAreaStore.simulationQueue)
     // redraw grid
     dots()
     document.getElementById('backgroundArea').style.height =
@@ -61,16 +66,16 @@ export function resetup() {
     document.getElementById('backgroundArea').style.width =
         width / DPR + 100 + 'px'
     document.getElementById('canvasArea').style.height = height / DPR + 'px'
-    simulationArea.canvas.width = width
-    simulationArea.canvas.height = height
-    backgroundArea.canvas.width = width + 100 * DPR
-    backgroundArea.canvas.height = height + 100 * DPR
+    simulationAreaStore.canvas.width = width
+    simulationAreaStore.canvas.height = height
+    backgroundAreaStore.canvas.width = width + 100 * DPR
+    backgroundAreaStore.canvas.height = height + 100 * DPR
     if (!embed) {
         plotArea.setup()
     }
     updateCanvasSet(true)
     update() // INEFFICIENT, needs to be deprecated
-    simulationArea.prevScale = 0
+    simulationAreaStore.prevScale = 0
     dots()
 }
 
@@ -126,6 +131,8 @@ function setupElementLists() {
  */
 export function setup() {
     // console.log('hello from set up')
+    const simulationAreaStore = SimulationareaStore()
+    console.log(simulationAreaStore)
     let embed = false
     const startListeners = embed ? startEmbedListeners : startMainListeners
     setupElementLists()
@@ -151,7 +158,9 @@ export function setup() {
                     var data = response
                     if (data) {
                         load(data)
-                        simulationArea.changeClockTime(data.timePeriod || 500)
+                        simulationAreaStore.changeClockTime(
+                            data.timePeriod || 500
+                        )
                     }
                     $('.loadingIcon').fadeOut()
                 },
