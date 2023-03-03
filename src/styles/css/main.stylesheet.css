@@ -165,6 +165,7 @@ input[type='text']:focus {
 }
 .navbar-menu > li > a:hover {
     border-bottom: 1px solid white;
+    text-decoration: none;
 }
 
 .navbar-menu > li > a:hover span,
@@ -227,6 +228,7 @@ input[type='text']:focus {
 }
 
 .signIn-btn:hover {
+    text-decoration: none;
     color: var(--text-primary);
 }
 
