@@ -74,6 +74,16 @@ function showContextMenu() {
         opacity: 1,
     })
 
+    const contextMenuDisplay = simulationArea.lastSelected ? 'block' : 'none'
+
+    const withoutItemSelection = document.querySelectorAll(
+        '#contextMenu li:first-child, #contextMenu li:nth-child(2), #contextMenu li:nth-child(4)'
+    )
+
+    withoutItemSelection.forEach((item) => {
+        item.style.display = contextMenuDisplay
+    })
+
     var windowHeight =
         $('#simulationArea').height() - $('#contextMenu').height() - 10
     var windowWidth =
