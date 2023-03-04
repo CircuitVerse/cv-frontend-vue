@@ -138,7 +138,6 @@ export function deleteCurrentCircuit(scopeId = globalScope.id) {
             delete scopeList[id]
     }
     $(`#${scope.id}`).remove()
-    delete scopeList[scope.id]
     switchCircuit(Object.keys(scopeList)[0])
 }
 
