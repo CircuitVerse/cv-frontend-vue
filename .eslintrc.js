@@ -1,3 +1,6 @@
+const tsParser = require('@typescript-eslint/parser')
+const espree = require('espree')
+
 module.exports = {
     env: {
         node: true,
@@ -6,7 +9,15 @@ module.exports = {
         es6: true,
         jquery: true,
     },
-    extends: ['eslint:recommended', 'plugin:vue/vue3-recommended', 'prettier'],
+    extends: ['eslint:recommended', 'prettier'],
+    parser: 'vue-eslint-parser',
+    parserOptions: {
+        // Multiple parser
+        parser: {
+            js: espree,
+            ts: tsParser,
+        },
+    },
     rules: {
         // override/add rules settings here, such as:
         // 'vue/no-unused-vars': 'error'
