@@ -49,14 +49,30 @@
 
 <script lang="ts" setup>
 import BooleanTable from '@/DialogBox/BooleanTable.vue'
-import { ref } from '@vue/reactivity'
+import { ref, PropType } from 'vue'
 import { onUpdated } from '@vue/runtime-core'
+
+export interface MessageBoxInputItem {
+  id: string;
+  style: Record<string, any>;
+  text: string;
+  val: string;
+  type: string;
+  class: string;
+  placeholder: string;
+}
+
+
+export interface ButtonItem {
+  text: string;
+  emitOption: string;
+}
 
 const props = defineProps({
     messageText: { type: String, default: '' },
     isPersistent: { type: Boolean, default: false },
-    buttonList: { type: Array, default: () => [] },
-    inputList: { type: Array, default: () => [] },
+    buttonList: { type: Array as PropType<ButtonItem[]>, default: () => [] },
+    inputList: { type: Array as PropType<MessageBoxInputItem[]>, default: () => [] },
     inputClass: { type: String, default: '' },
     circuitItem: { type: Object, default: () => ({}) },
     tableHeader: { type: Array, default: () => [] },
