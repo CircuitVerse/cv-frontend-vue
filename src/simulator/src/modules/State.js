@@ -23,6 +23,8 @@ export default class State extends CircuitElement {
         this.scope['State'].push(this);
         */
         this.rectangleObject = false
+        this.directionFixed = true
+        this.fixedBitWidth = true
         this.setDimensions(15, 15)
         this.inp1 = new Node(-10, 0, 0, this, this.bitWidth, 'input stream')
         this.output1 = new Node(20, 0, 1, this, this.bitWidth, "2's complement")
@@ -113,8 +115,7 @@ State.prototype.mutableProperties = {
         func: 'setInsertOutput',
     },
 }
-State.prototype.fixedBitWidth = true
 State.prototype.propagationDelayFixed = true
 State.prototype.tooltipText =
-    "Two's Complement Tooltip : Calculates the two's complement"
+    "Finite Automata State"
 State.prototype.objectType = 'State'

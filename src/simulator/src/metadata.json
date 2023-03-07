@@ -80,7 +80,8 @@
         "ConstantVal",
         "Input",
         "Clock",
-        "Button" 
+        "Button",
+        "State"
     ],
     "subCircuitInputList": [
         "Random",
@@ -96,7 +97,8 @@
         "ConstantVal",
         "Clock",
         "Button",
-        "Counter"
+        "Counter",
+        "State"
     ],
     "elementHierarchy": {
         "Input": [
