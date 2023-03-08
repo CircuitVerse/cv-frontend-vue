@@ -108,12 +108,15 @@
                 "copy": "Copy",
                 "cut": "Cut",
                 "delete": "Delete",
+                "undo": "Undo",
                 "new_circuit": "New Circuit",
+                "insert_subcircuit": "Insert SubCircuit",
                 "center_focus": "Center Focus"
             },
             "bit_converter": {
                 "decimal_value": "Decimal Value",
                 "binary_value": "Binary value",
+                "binary_coded_decimal_value": "Binary Coded Decimal Value",
                 "octal_value": "Octal value",
                 "hexadecimal_value": "Hexadecimal value"
             },
