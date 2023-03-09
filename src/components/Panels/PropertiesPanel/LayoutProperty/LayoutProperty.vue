@@ -9,7 +9,7 @@
                     variant="text"
                     icon="mdi-minus"
                 />
-                <span>Width</span>
+                <span>{{ $t('simulator.panel_body.layout.width') }}</span>
                 <v-btn
                     id="increaseLayoutWidth"
                     title="Increase Width"
@@ -24,7 +24,7 @@
                     variant="text"
                     icon="mdi-minus"
                 />
-                <span>Height</span>
+                <span>{{ $t('simulator.panel_body.layout.height') }}</span>
                 <v-btn
                     id="increaseLayoutHeight"
                     title="Increase Height"
@@ -33,11 +33,13 @@
                 />
             </div>
             <div class="">
-                <span>Reset all nodes:</span>
+                <span>{{
+                    $t('simulator.panel_body.layout.reset_all_nodes')
+                }}</span>
                 <v-btn id="layoutResetNodes" variant="text" icon="mdi-sync" />
             </div>
             <div class="layout-title">
-                <span>Title</span>
+                <span>{{ $t('simulator.panel_body.layout.title') }}</span>
                 <div class="layout--btn-group">
                     <v-btn
                         id="layoutTitleUp"
@@ -67,7 +69,9 @@
                 </div>
             </div>
             <div class="layout-title--enable">
-                <span>Title Enabled:</span>
+                <span>{{
+                    $t('simulator.panel_body.layout.title_enabled')
+                }}</span>
                 <label class="switch">
                     <input id="toggleLayoutTitle" type="checkbox" checked />
                     <span class="slider"></span>
@@ -75,14 +79,14 @@
             </div>
             <div class="">
                 <button id="saveLayout" class="Layout-btn custom-btn--primary">
-                    Save
+                    {{ $t('simulator.panel_body.layout.save') }}
                 </button>
 
                 <button
                     id="cancelLayout"
                     class="Layout-btn custom-btn--tertiary"
                 >
-                    Cancel
+                    {{ $t('simulator.panel_body.layout.cancel') }}
                 </button>
             </div>
         </div>

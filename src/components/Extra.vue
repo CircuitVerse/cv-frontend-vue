@@ -127,7 +127,7 @@
                 >
                     <span class="fas fa-pause timing-diagram-pause"></span>
                 </button>
-                1 cycle =
+                {{ $t('simulator.panel_body.timing_diagram.one_cycle') }}
                 <input
                     id="timing-diagram-units"
                     type="number"
@@ -135,7 +135,7 @@
                     autocomplete="off"
                     value="1000"
                 />
-                Units
+                {{ $t('simulator.panel_body.timing_diagram.units') }}
                 <span id="timing-diagram-log"></span>
             </div>
             <div id="plot">
@@ -478,7 +478,9 @@
             data-toggle="modal"
             data-target=".issue"
         >
-            <span class="fa fa-bug"></span>&nbsp;&nbsp;Report an issue</a
+            <span class="fa fa-bug"></span>&nbsp;&nbsp;{{
+                $t('simulator.report_issue')
+            }}</a
         >
     </div>
     <!-- --------------------------------------------------------------------------------------------- -->
@@ -504,12 +506,16 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                     <div class="container text-center">
-                        <h4>Report an issue</h4>
+                        <h4>{{ $t('simulator.report_issue') }}</h4>
                     </div>
                     <hr />
                     <div id="result" class="container my-2 text-center"></div>
                     <label id="report-label" style="font-weight: lighter"
-                        ><b>Describe your issue:</b></label
+                        ><b>{{
+                            $t(
+                                'simulator.panel_body.report_issue.describe_issue'
+                            )
+                        }}</b></label
                     >
                     <div class="form-group">
                         <textarea
@@ -522,7 +528,14 @@
                         id="email-label"
                         for="emailtext"
                         style="font-weight: lighter"
-                        ><b>Email</b><span> [Optional]</span>:</label
+                        ><b>{{
+                            $t('simulator.panel_body.report_issue.email')
+                        }}</b>
+                        <span>
+                            {{
+                                $t('simulator.panel_body.report_issue.optional')
+                            }}</span
+                        >:</label
                     >
                     <div class="form-group">
                         <input
@@ -539,7 +552,11 @@
                                 type="submit"
                                 class="btn btn-primary"
                             >
-                                Report
+                                {{
+                                    $t(
+                                        'simulator.panel_body.report_issue.report_btn'
+                                    )
+                                }}
                             </button>
                         </center>
                     </div>

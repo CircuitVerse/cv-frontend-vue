@@ -5,7 +5,9 @@
     >
         <v-card class="messageBoxContent">
             <v-card-text>
-                <p class="dialogHeader">Render Image</p>
+                <p class="dialogHeader">
+                    {{ $t('simulator.panel_header.render_image') }}
+                </p>
                 <v-btn
                     size="x-small"
                     icon
@@ -51,7 +53,11 @@
                                 @click="updateView(1)"
                             >
                                 <input type="radio" name="view" value="full" />
-                                Full Circuit View
+                                {{
+                                    $t(
+                                        'simulator.panel_body.render_image.full_circuit_view'
+                                    )
+                                }}
                             </div>
                             <div
                                 id="radio-current"
@@ -69,7 +75,11 @@
                                     name="view"
                                     value="current"
                                     checked="checked"
-                                />Current View
+                                />{{
+                                    $t(
+                                        'simulator.panel_body.render_image.current_view'
+                                    )
+                                }}
                             </div>
                         </div>
                         <div
@@ -82,7 +92,11 @@
                                     name="transparent"
                                     value="transparent"
                                 />
-                                Transparent Background
+                                {{
+                                    $t(
+                                        'simulator.panel_body.render_image.transparent_background'
+                                    )
+                                }}
                             </label>
                         </div>
                     </div>
@@ -90,7 +104,9 @@
                         v-if="toShow == true"
                         class="download-dialog-section-3"
                     >
-                        <span>Resolution:</span>
+                        <span>{{
+                            $t('simulator.panel_body.render_image.resolution')
+                        }}</span>
                         <label class="option custom-radio inline"
                             ><input
                                 type="radio"
@@ -115,7 +131,11 @@
             </v-card-text>
             <v-card-actions>
                 <v-btn class="messageBtn" block @click="renderCircuit()">
-                    Render Circuit Image
+                    {{
+                        $t(
+                            'simulator.panel_body.render_image.render_circuit_image'
+                        )
+                    }}
                 </v-btn>
             </v-card-actions>
         </v-card>
