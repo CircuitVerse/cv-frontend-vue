@@ -213,7 +213,7 @@ export default function load(data) {
 
     globalScope = undefined
     resetScopeList() // Remove default scope
-    $('.circuits').remove() // Delete default scope
+    document.querySelector('.circuits').remove() // Delete default scope
 
     // Load all  according to the dependency order
     for (let i = 0; i < data.scopes.length; i++) {
@@ -264,12 +264,12 @@ export default function load(data) {
 
     // Reorder tabs according to the saved order
     if (data.orderedTabs) {
-        var unorderedTabs = $('.circuits').detach()
-        var plusButton = $('#tabsBar').children().detach()
+        var unorderedTabs = document.querySelector('.circuits').detach()
+        var plusButton = document.querySelector('#tabsBar').children().detach()
         for (const tab of data.orderedTabs) {
-            $('#tabsBar').append(unorderedTabs.filter(`#${tab}`))
+            document.querySelector('#tabsBar').append(unorderedTabs.filter(`#${tab}`))
         }
-        $('#tabsBar').append(plusButton)
+        document.querySelector('#tabsBar').append(plusButton)
     }
 
     // Switch to last focussedCircuit
