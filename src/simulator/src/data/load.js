@@ -267,7 +267,9 @@ export default function load(data) {
         var unorderedTabs = document.querySelector('.circuits').detach()
         var plusButton = document.querySelector('#tabsBar').children().detach()
         for (const tab of data.orderedTabs) {
-            document.querySelector('#tabsBar').append(unorderedTabs.filter(`#${tab}`))
+            document
+                .querySelector('#tabsBar')
+                .append(unorderedTabs.filter(`#${tab}`))
         }
         document.querySelector('#tabsBar').append(plusButton)
     }
