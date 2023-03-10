@@ -88,6 +88,30 @@
                 "save_code": "Save Code",
                 "module_in_experiment_notice": "This is an experimental module. The code is not saved unless the \"Save Code\" button is clicked."
             },
+            "project_property": {
+                "project": "Project:",
+                "circuit": "Circuit:",
+                "clock_time": "Clock Time (ms):",
+                "clock_enabled": "Clock Enabled:",
+                "lite_mode": "Lite Mode:",
+                "edit_layout": "Edit Layout",
+                "delete_circuit": "Delete Circuit"
+            },
+            "element_property": {
+                "bit_width": "Bit-width:",
+                "input_size": "Input Size:",
+                "delay": "Delay:",
+                "label": "Label:",
+                "label_direction": "Label Direction:",
+                "direction": "Direction:",
+                "orientation": "Orientation:",
+                "label_directions": {
+                    "up": "UP",
+                    "down": "DOWN",
+                    "left": "LEFT",
+                    "right": "RIGHT"
+                }
+            },
             "layout": {
                 "width": "Width",
                 "height": "Height",
