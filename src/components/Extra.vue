@@ -456,5 +456,5 @@ import ExportVerilog from './DialogBox/ExportVerilog.vue'
 import CustomShortcut from './DialogBox/CustomShortcut.vue'
 import InsertSubcircuit from './DialogBox/InsertSubcircuit.vue'
 import OpenOffline from './DialogBox/OpenOffline.vue'
-import TimingDiagram from './timingDiagram/TimingDiagram.vue'
+import TimingDiagram from './TimingDiagram/TimingDiagram.vue'
 </script>
