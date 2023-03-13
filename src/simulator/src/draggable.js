@@ -12,7 +12,7 @@ export default function draggableListeners() {
         header.addEventListener('mousedown', () => {
             header.addEventListener('mousemove', onDrag)
         })
-        header.addEventListener('mouseup', () => {
+        document.addEventListener('mouseup', () => {
             header.removeEventListener('mousemove', onDrag)
         })
     })
