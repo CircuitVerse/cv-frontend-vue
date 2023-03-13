@@ -150,7 +150,7 @@ const plotArea = {
     calibrate() {
         var recommendedUnit = Math.max(20, Math.round(this.unitUsed * 3))
         this.cycleUnit = recommendedUnit
-        $('#timing-diagram-units').val(recommendedUnit)
+        document.getElementById('timing-diagram-units').value = recommendedUnit
         this.reset()
     },
     // Get current time in clock cycles
@@ -173,21 +173,18 @@ const plotArea = {
         var unitUsed = this.unitUsed
         var units = this.cycleUnit
         var utilization = Math.round((unitUsed * 10000) / units) / 100
-        $('#timing-diagram-log').html(
-            `Utilization: ${Math.round(unitUsed)} Units (${utilization}%)`
-        )
+        document.getElementById('timing-diagram-log').innerHTML = `Utilization: ${Math.round(unitUsed)} Units (${utilization}%)`
+        
         if (utilization >= 90 || utilization <= 10) {
             var recommendedUnit = Math.max(20, Math.round(unitUsed * 3))
-            $('#timing-diagram-log').append(
-                ` Recommended Units: ${recommendedUnit}`
-            )
-            $('#timing-diagram-log').css('background-color', dangerColor)
+            document.getElementById('timing-diagram-log').insertAdjacentHTML('beforeend', ` Recommended Units: ${recommendedUnit}`)
+            document.getElementById('timing-diagram-log').style.backgroundColor = dangerColor
             if (utilization >= 100) {
                 this.clear()
                 return
             }
         } else {
-            $('#timing-diagram-log').css('background-color', normalColor)
+            document.getElementById('timing-diagram-log').style.backgroundColor = normalColor
         }
 
         var width = this.width
@@ -420,52 +417,52 @@ const plotArea = {
 export default plotArea
 
 export function setupTimingListeners() {
-    $('.timing-diagram-smaller').on('click', () => {
-        $('#plot').width(Math.max($('#plot').width() - 20, 560))
+    document.querySelector('.timing-diagram-smaller').addEventListener('click', () => {
+        document.getElementById('plot').style.width = Math.max(document.getElementById('plot').style.width - 20, 560)
         plotArea.resize()
     })
-    $('.timing-diagram-larger').on('click', () => {
-        $('#plot').width($('#plot').width() + 20)
+    document.querySelector('.timing-diagram-larger').addEventListener('click', () => {
+        document.getElementById('plot').style.width = document.getElementById('plot').style.width + 20
         plotArea.resize()
     })
-    $('.timing-diagram-small-height').on('click', () => {
+    document.querySelector('.timing-diagram-small-height').addEventListener('click', () => {
         if (plotHeight >= sh(20)) {
             plotHeight -= sh(5)
             waveFormHeight = plotHeight - 2 * waveFormPadding
         }
     })
-    $('.timing-diagram-large-height').on('click', () => {
+    document.querySelector('.timing-diagram-large-height').addEventListener('click', () => {
         if (plotHeight < sh(50)) {
             plotHeight += sh(5)
             waveFormHeight = plotHeight - 2 * waveFormPadding
         }
     })
-    $('.timing-diagram-reset').on('click', () => {
+    document.querySelector('.timing-diagram-reset').addEventListener('click', () => {
         plotArea.reset()
     })
-    $('.timing-diagram-calibrate').on('click', () => {
+    document.querySelector('.timing-diagram-calibrate').addEventListener('click', () => {
         plotArea.calibrate()
     })
-    $('.timing-diagram-resume').on('click', () => {
+    document.querySelector('.timing-diagram-resume').addEventListener('click', () => {
         plotArea.resume()
     })
-    $('.timing-diagram-pause').on('click', () => {
+    document.querySelector('.timing-diagram-pause').addEventListener('click', () => {
         plotArea.pause()
     })
-    $('.timing-diagram-download').on('click', () => {
+    document.querySelector('.timing-diagram-download').addEventListener('click', () => {
         plotArea.download()
     })
-    $('.timing-diagram-zoom-in').on('click', () => {
+    document.querySelector('.timing-diagram-zoom-in').addEventListener('click', () => {
         plotArea.zoomIn()
     })
-    $('.timing-diagram-zoom-out').on('click', () => {
+    document.querySelector('.timing-diagram-zoom-out').addEventListener('click', () => {
         plotArea.zoomOut()
     })
-    $('#timing-diagram-units').on('change paste keyup', function () {
-        var timeUnits = parseInt($(this).val(), 10)
+    'change paste keyup'.split(' ').map(ev => document.getElementById('timing-diagram-units').addEventListener(ev, function () {
+        var timeUnits = parseInt(this.value, 10)
         if (isNaN(timeUnits) || timeUnits < 1) return
         plotArea.cycleUnit = timeUnits
-    })
+    }))
     document.getElementById('plotArea').addEventListener('mousedown', (e) => {
         var rect = plotArea.canvas.getBoundingClientRect()
         var x = sh(e.clientX - rect.left)
