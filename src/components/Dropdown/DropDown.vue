@@ -10,6 +10,14 @@
                         : ''
                 "
                 style="white-space: pre-line"
+                v-bind="
+                    Object.fromEntries(
+                        listItem.attributes.map((attr) => [
+                            attr.name,
+                            attr.value,
+                        ])
+                    )
+                "
             >
                 {{
                     $t('simulator.nav.' + dropDownHeader + '.' + listItem.item)
