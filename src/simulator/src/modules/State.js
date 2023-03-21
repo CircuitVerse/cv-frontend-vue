@@ -1,5 +1,5 @@
 import CircuitElement from '../circuitElement'
-import Node, { findNode } from '../node'
+import FANode, { findNode } from '../faNode'
 import simulationArea from '../simulationArea'
 import { correctWidth, fillText, drawCircle2 } from '../canvasApi'
 import { changeInputSize } from '../modules'
@@ -26,8 +26,8 @@ export default class State extends CircuitElement {
         this.directionFixed = true
         this.fixedBitWidth = true
         this.setDimensions(15, 15)
-        this.inp1 = new Node(-10, 0, 0, this, this.bitWidth, 'input stream')
-        this.output1 = new Node(20, 0, 1, this, this.bitWidth, "2's complement")
+        this.inp1 = new FANode(-10, 0, 0, this, this.bitWidth, 'input stream')
+        this.output1 = new FANode(20, 0, 1, this, this.bitWidth, "2's complement")
     }
 
     /**
