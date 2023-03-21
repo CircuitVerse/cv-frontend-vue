@@ -98,9 +98,13 @@
                             @click="closeReportModal"
                         >
                             {{
-                                $t(
-                                    'simulator.panel_body.report_issue.cancel_btn'
-                                )
+                                resultOpen
+                                    ? $t(
+                                          'simulator.panel_body.report_issue.close_btn'
+                                      )
+                                    : $t(
+                                          'simulator.panel_body.report_issue.cancel_btn'
+                                      )
                             }}
                         </button>
                     </div>
@@ -173,11 +177,11 @@ function reportIssue(): void {
     reportLabel.value = false
     emailLabel.value = false
 }
-async function postUserIssue(message: any) {
-    const img = generateImage('jpeg', 'full', false, 1, false).split(',')[1]
+async function postUserIssue(message: string): Promise<void> {
+    let result: string | undefined
 
-    let result
     try {
+        const img = generateImage('jpeg', 'full', false, 1, false).split(',')[1]
         const response = await fetch('https://api.imgur.com/3/image', {
             method: 'POST',
             headers: {
@@ -187,27 +191,27 @@ async function postUserIssue(message: any) {
             body: `image=${img}`,
         })
         const data = await response.json()
-        result = data.data.link
+        result = data?.data?.link
     } catch (err) {
-        console.error('Could not generate image, reporting anyway')
+        console.error('Could not generate image, reporting anyway', err)
     }
 
-    if (result) {
-        message += `\n${result}`
-    }
+    message += result ? `\n${result}` : ''
 
-    let circuitData
+    let circuitData: JSON | string
     try {
         circuitData = generateSaveData('Untitled')
     } catch (err) {
         circuitData = `Circuit data generation failed: ${err}`
     }
 
-    // Report issue to server
     try {
-        const csrfToken = document.querySelector(
-            'meta[name="csrf-token"]'
-        ).content
+        const csrfTokenEl = document.querySelector('meta[name="csrf-token"]')
+        const csrfToken = csrfTokenEl ? csrfTokenEl.content : 'content'
+
+        // delay between requests
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+
         const response = await fetch('/simulator/post_issue', {
             method: 'POST',
             headers: {
@@ -220,15 +224,19 @@ async function postUserIssue(message: any) {
             }),
         })
         const data = await response.json()
-        if (data.success) {
-            document.getElementById('result').innerHTML =
-                "<i class='fa fa-check' style='color:green'></i> You've successfully submitted the issue. Thanks for improving our platform."
+        if (data?.success) {
+            const resultEl = document.getElementById('result')
+            if (resultEl) {
+                resultEl.innerHTML = `<i class='fa fa-check' style='color:green'></i> You've successfully submitted the issue. Thanks for improving our platform.`
+            }
         } else {
-            throw new Error(data.error || 'Failed to submit issue')
+            throw new Error(data?.error || 'Failed to submit issue')
         }
     } catch (err) {
-        document.getElementById('result').innerHTML =
-            "<i class='fa fa-minus-circle' style='color:red'></i> There seems to be a network issue. Please reach out to us at support@ciruitverse.org"
+        const resultEl = document.getElementById('result')
+        if (resultEl) {
+            resultEl.innerHTML = `<i class='fa fa-minus-circle' style='color:red'></i> There seems to be a network issue. Please reach out to us at support@ciruitverse.org`
+        }
         console.error(err)
     }
 }
@@ -243,7 +251,7 @@ async function postUserIssue(message: any) {
     background-color: rgba(255, 0, 0, 0.65);
     color: white;
     margin: 8px;
-    padding: 8px 16px;
+    padding: 8px 12px;
     border: none;
 }
 .close-btn:hover,

@@ -122,7 +122,8 @@
                 "email": "Email",
                 "optional": " [Optional]",
                 "report_btn": "Report",
-                "cancel_btn": "Cancel"
+                "cancel_btn": "Cancel",
+                "close_btn": "Close"
             }
         },
         "tooltip": {

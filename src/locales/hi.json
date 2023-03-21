@@ -122,7 +122,8 @@
                 "email": "ईमेल",
                 "optional": " [वैकल्पिक]",
                 "report_btn": "रिपोर्ट करें",
-                "cancel_btn": "रद्द करें"
+                "cancel_btn": "रद्द करें",
+                "close_btn": "बंद करें"
             }
         },
         "tooltip": {
