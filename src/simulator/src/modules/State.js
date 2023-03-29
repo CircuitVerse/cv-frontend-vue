@@ -16,6 +16,19 @@ import { changeInputSize } from '../modules'
  */
 import { colors } from '../themer/themer'
 
+const BASE_AZ_CHARSET = 'ABCDEFGHIKJLMNOPQRSTUVWXYZ'
+function toBaseAZ(n) {
+    let baseAz = ''
+    do {
+        baseAz = BASE_AZ_CHARSET[n % 26] + baseAz
+        n = Math.floor(n / 26)
+    } while (n > 0)
+
+    return baseAz
+}
+
+let globalStateCounter = 0
+
 export default class State extends CircuitElement {
     constructor(x, y, scope = globalScope, dir = 'RIGHT', bitWidth = 1) {
         super(x, y, scope, dir, bitWidth)
@@ -26,8 +39,11 @@ export default class State extends CircuitElement {
         this.directionFixed = true
         this.fixedBitWidth = true
         this.setDimensions(15, 15)
-        this.inp1 = new FANode(-10, 0, 0, this, this.bitWidth, 'input stream')
-        this.output1 = new FANode(20, 0, 1, this, this.bitWidth, "2's complement")
+
+        this.label = toBaseAZ(globalStateCounter++)
+        this.labelDirection = 'UP'
+        this.inp1 = new FANode(-10, 0, 0, this, this.bitWidth, 'c0')
+        this.output1 = new FANode(20, 0, 1, this, this.bitWidth, 'c1')
     }
 
     /**
@@ -87,9 +103,73 @@ export default class State extends CircuitElement {
         ctx.stroke()
     }
 
-    generateVerilog() {
-        return `assign ${this.output1.verilogLabel} = ~${this.inp1.verilogLabel} + 1;`
+    getTransitionTable() {
+        let inputSet = new Set()
+        let stateTransitionMap = {}
+        function addTransition(from, to, transition) {
+            if (!(from in stateTransitionMap)) stateTransitionMap[from] = []
+            inputSet.add(transition)
+            stateTransitionMap[from].push([transition, to])
+        }
+
+        let visitedSet = new Set()
+        let currentStates = [this]
+        while (currentStates.length > 0) {
+            let fromState = currentStates.shift()
+            visitedSet.add(fromState.label)
+            for (let n of fromState.nodeList) {
+                let { state, transition } = findOtherEndOfWire(
+                    n,
+                    this.scope.wires
+                )
+                if (!state) continue
+
+                if (!visitedSet.has(state.label)) currentStates.push(state)
+                addTransition(fromState.label, state.label, transition)
+            }
+        }
+
+        let orderedInputs = Array.from(inputSet).sort()
+        let stateTable = []
+        let stateTransitionMapEntries = Object.entries(stateTransitionMap).sort(
+            ([a], [b]) => a.localeCompare(b)
+        )
+        for (let [state, transitions] of stateTransitionMapEntries) {
+            let row = [state]
+            for (let [input, nextState] of transitions)
+                row[1 + orderedInputs.indexOf(input)] = nextState
+            stateTable.push(row)
+        }
+
+        return [['State', ...orderedInputs], ...stateTable]
     }
+}
+
+// wires = [["node1", "tnode2"], ["tnode2", "node3"]]
+
+function findOtherEndOfWire(start, wires) {
+    let visitedSet = new Set()
+    let node = start
+    let transition = null
+    while (true) {
+        let nextNode = null
+        for (let i = 0; i < wires.length; i++) {
+            if (visitedSet.has(i)) continue
+            let { node1, node2, label } = wires[i]
+            if (node.id == node1.id) {
+                nextNode = node2
+                transition ||= label
+                visitedSet.add(i)
+            }
+        }
+        if (!nextNode) break
+
+        node = nextNode
+        if (node.parent instanceof State)
+            return { state: node.parent, transition }
+    }
+
+    return { state: null, transition }
 }
 
 /**
@@ -100,22 +180,26 @@ export default class State extends CircuitElement {
  */
 State.prototype.mutableProperties = {
     isInitial: {
-        name: 'Is Initial: ',
+        name: 'Is Initial',
         type: 'checkbox',
         func: 'setIsInitial',
     },
     isFinal: {
-        name: 'Is Final: ',
+        name: 'Is Final',
         type: 'checkbox',
         func: 'setIsFinal',
     },
     insertOutput: {
-        name: 'Output: ',
+        name: 'Output',
         type: 'text',
         func: 'setInsertOutput',
     },
+    transitionTable: {
+        name: 'Transition Table',
+        type: 'table',
+        func: 'getTransitionTable',
+    },
 }
 State.prototype.propagationDelayFixed = true
-State.prototype.tooltipText =
-    "Finite Automata State"
+State.prototype.tooltipText = 'Finite Automata State'
 State.prototype.objectType = 'State'

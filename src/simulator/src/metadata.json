@@ -161,9 +161,7 @@
             { "name": "Text", "label": "Text" }
         ],
         "Finite Automata": [
-            { "name": "InitialState", "label": "Initial State" },
-            { "name": "State", "label": "State" },
-            { "name": "FinalState", "label": "Final State" }
+            { "name": "State", "label": "State" }
         ],
         "Misc": [
             { "name": "TwoComplement", "label": "Two Complement" },

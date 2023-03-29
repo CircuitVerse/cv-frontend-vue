@@ -128,6 +128,29 @@
                 {{ obj[name] }}
             </textarea>
         </p>
+        <div v-if="value.type === 'table'">
+            <span>{{ value.name }}</span>
+            <table class="objectPropertyAttribute">
+                {{
+                    void (table = obj[value.func]())
+                }}
+                <thead>
+                    <tr>
+                        <th v-for="header in table[0]" :key="header">
+                            {{ header }}
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr v-for="row in table.slice(1)" :key="row">
+                        <td v-for="cell in row" :key="cell">
+                            {{ cell }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </template>
 

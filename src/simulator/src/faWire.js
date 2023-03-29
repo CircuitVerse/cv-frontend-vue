@@ -1,6 +1,6 @@
 /* eslint-disable no-multi-assign */
 // wire object
-import { drawLine } from './canvasApi'
+import { drawLine, fillText } from './canvasApi'
 import simulationArea from './simulationArea'
 import FANode from './faNode'
 import { updateSimulationSet, forceResetNodesSet } from './engine'
@@ -17,11 +17,14 @@ import { colors } from './themer/themer'
  */
 export default class FAWire {
     constructor(node1, node2, scope) {
-        this.objectType = 'Wire'
+        this.objectType = 'FAWire'
         this.node1 = node1
         this.scope = scope
         this.node2 = node2
         this.type = 'horizontal'
+
+        this.label = ''
+        this.fixedBitWidth = true
 
         this.updateData()
         this.scope.wires.push(this)
@@ -146,6 +149,15 @@ export default class FAWire {
         return updated
     }
 
+    /**
+     * Helper Function to set label of an element.
+     * @memberof CircuitElement
+     * @param {string} label - the label for element
+     */
+    setLabel(label) {
+        this.label = label || ''
+    }
+
     draw() {
         // for calculating min-max Width,min-max Height
         //
@@ -168,16 +180,25 @@ export default class FAWire {
         } else {
             color = colors['color_wire']
         }
-        color = "black"
-        drawLine(
-            ctx,
-            this.node1.absX(),
-            this.node1.absY(),
-            this.node2.absX(),
-            this.node2.absY(),
-            color,
-            3
-        )
+        color = 'black'
+
+        let x1 = this.node1.absX(),
+            y1 = this.node1.absY(),
+            x2 = this.node2.absX(),
+            y2 = this.node2.absY()
+        drawLine(ctx, x1, y1, x2, y2, color, 3)
+
+        if (x1 == x2) {
+            let dy = 5 * Math.sign(y2 - y1)
+            drawLine(ctx, x2, y2, x2 - 3, y2 - dy, 'blue', 2)
+            drawLine(ctx, x2, y2, x2 + 3, y2 - dy, 'blue', 2)
+        } else if (y1 == y2) {
+            let dx = 5 * Math.sign(x2 - x1)
+            drawLine(ctx, x2, y2, x2 - dx, y2 - 3, 'blue', 2)
+            drawLine(ctx, x2, y2, x2 - dx, y2 + 3, 'blue', 2)
+        }
+
+        fillText(ctx, this.label, (x1 + x2) / 2, (y1 + y2) / 2 - 10, 14)
     }
 
     // checks if node lies on wire
@@ -238,4 +259,30 @@ export default class FAWire {
         this.node1.checkDeleted()
         this.node2.checkDeleted()
     }
+}
+
+FAWire.prototype.alwaysResolve = false
+FAWire.prototype.tooltip = undefined
+FAWire.prototype.propagationDelayFixed = true
+FAWire.prototype.rectangleObject = true
+FAWire.prototype.objectType = 'FAWire'
+FAWire.prototype.canShowInSubcircuit = false // determines whether the element is supported to be shown inside a subcircuit
+FAWire.prototype.subcircuitMetadata = {} // stores the coordinates and stuff for the elements in the subcircuit
+FAWire.prototype.layoutProperties = {
+    rightDimensionX: 5,
+    leftDimensionX: 5,
+    upDimensionY: 5,
+    downDimensionY: 5,
+}
+FAWire.prototype.subcircuitMutableProperties = {
+    label: {
+        name: 'label: ',
+        type: 'text',
+        func: 'setLabel',
+    },
+    'show label': {
+        name: 'show label ',
+        type: 'checkbox',
+        func: 'toggleLabelInLayoutMode',
+    },
 }
