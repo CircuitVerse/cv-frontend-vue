@@ -1,6 +1,6 @@
 <template>
     <p>
-        <span>Project:</span>
+        <span>{{ $t('simulator.panel_body.project_property.project') }}</span>
         <input
             id="projname"
             class="objectPropertyAttribute"
@@ -12,7 +12,7 @@
     </p>
 
     <p>
-        <span>Circuit:</span>
+        <span>{{ $t('simulator.panel_body.project_property.circuit') }}</span>
         <input
             id="circname"
             :key="circuitId"
@@ -25,7 +25,7 @@
     </p>
 
     <InputGroups
-        property-name="Clock Time (ms):"
+        :property-name="$t('simulator.panel_body.project_property.clock_time')"
         :property-value="simulationArea.timePeriod"
         property-value-type="number"
         value-min="50"
@@ -35,7 +35,9 @@
     />
 
     <p>
-        <span>Clock Enabled:</span>
+        <span>{{
+            $t('simulator.panel_body.project_property.clock_enabled')
+        }}</span>
         <label class="switch">
             <input
                 type="checkbox"
@@ -46,7 +48,7 @@
     </p>
 
     <p>
-        <span>Lite Mode:</span>
+        <span>{{ $t('simulator.panel_body.project_property.lite_mode') }}</span>
         <label class="switch">
             <input
                 type="checkbox"
@@ -63,14 +65,14 @@
             class="panelButton btn btn-xs custom-btn--primary"
             @click="toggleLayoutMode"
         >
-            Edit Layout
+            {{ $t('simulator.panel_body.project_property.edit_layout') }}
         </button>
         <button
             type="button"
             class="panelButton btn btn-xs custom-btn--tertiary"
             @click="deleteCurrentCircuit"
         >
-            Delete Circuit
+            {{ $t('simulator.panel_body.project_property.delete_circuit') }}
         </button>
     </p>
 </template>
@@ -85,7 +87,6 @@ import { ref } from '@vue/reactivity'
 import { onMounted } from '@vue/runtime-core'
 const circuitId = ref(0)
 const circuitName = ref('Untitled-Cirucit')
-
 
 onMounted(() => {
     // checking if circuit or tab is switched
