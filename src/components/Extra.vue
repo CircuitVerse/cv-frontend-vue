@@ -471,14 +471,15 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!---issue reporting-system----->
-    <div class="report-sidebar">
+    <div class="report-sidebar" style="background: linear-gradient(to bottom right, #06d6a0, #1B3A4B); box-shadow: 0 0 .25rem rgba(0, 0, 0, 0.5), -.125rem -.125rem 1rem rgba(60, 179, 113, 0.5), .125rem .125rem 1rem rgba(27, 58, 75, 0.5);">
         <a
             type="button"
-            class="btn btn-primary text-light"
+            class="btn text-bold"
             data-toggle="modal"
             data-target=".issue"
+            style="background: linear-gradient(to bottom right, #06d6a0, #1B3A4B); box-shadow: 0 0 .25rem rgba(0, 0, 0, 0.5), -.125rem -.125rem 1rem rgba(60, 179, 113, 0.5), .125rem .125rem 1rem rgba(27, 58, 75, 0.5);"
         >
-            <span class="fa fa-bug"></span>&nbsp;&nbsp;Report an issue</a
+            <span class="fa fa-bug" ></span>&nbsp;&nbsp;Report an issue</a
         >
     </div>
     <!-- --------------------------------------------------------------------------------------------- -->
