@@ -81,7 +81,8 @@
                 }
             },
             "timing_diagram": {
-                "one_cycle_unit_html": "1 cycle = <br/><input id='timing-diagram-units' type='number' min='1' autocomplete='off' value='1000'><br/>Units"
+                "one_cycle": "1 cycle = ",
+                "units": "Units"
             },
             "verilog_module": {
                 "reset_code": "Reset Code",
@@ -101,7 +102,8 @@
                 "full_circuit_view": "Full Circuit View",
                 "current_view": "Current View",
                 "transparent_background": "Transparent Background",
-                "resolution": "Resolution:"
+                "resolution": "Resolution:",
+                "render_circuit_image": "Render Circuit Image"
             },
             "context_menu": {
                 "paste": "Paste",
@@ -119,7 +121,8 @@
             },
             "report_issue": {
                 "describe_issue": "Describe your issue:",
-                "email_html": "<b>Email</b><span> [Optional]</span>:",
+                "email": "Email",
+                "optional": " [Optional]",
                 "report_btn": "Report"
             }
         },

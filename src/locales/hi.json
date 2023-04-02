@@ -81,7 +81,8 @@
                 }
             },
             "timing_diagram": {
-                "one_cycle_unit_html": "1 साइकिल = <br/><input id='timing-diagram-units' type='number' min='1' autocomplete='off' value='1000'><br/>यूनिट"
+                "one_cycle": "1 साइकिल = ",
+                "units": "यूनिट"
             },
             "verilog_module": {
                 "reset_code": "कोड रिसेट करें",
@@ -101,7 +102,8 @@
                 "full_circuit_view": "सर्किट का पूर्ण दृश्य देखें",
                 "current_view": "वर्तमान का दृश्य",
                 "transparent_background": "बैकग्राउंड ट्रांसपेरेंट करें",
-                "resolution": "रेजोलुएशन"
+                "resolution": "रेजोलुएशन",
+                "render_circuit_image": "सर्किट छवि प्रस्तुत करें"
             },
             "context_menu": {
                 "paste": "पेस्ट करें",
@@ -119,7 +121,8 @@
             },
             "report_issue": {
                 "describe_issue": "अपनी समस्या का वर्णन करें:",
-                "email_html": "<b>ईमेल</b><span> [वैकल्पिक]</span>:",
+                "email": "ईमेल",
+                "optional": " [वैकल्पिक]",
                 "report_btn": "रिपोर्ट करें"
             }
         },
