@@ -41,7 +41,7 @@ import { verilogModeGet } from './Verilog2CV'
 import { setupTimingListeners } from './plotArea'
 
 var unit = 10
-var listenToSimulator = true
+export var listenToSimulator = true
 
 export default function startListeners() {
     $('#deleteSelected').on('click', () => {

@@ -25,6 +25,7 @@ import { setupVerilogExportCodeWindow } from './verilog'
 import { setupBitConvertor } from './utils'
 import { updateTestbenchUI, setupTestbenchUI } from './testbench'
 import { applyVerilogTheme } from './Verilog2CV'
+import { listenToSimulator } from './listeners'
 
 export const uxvar = {
     smartDropXX: 50,
@@ -191,7 +192,7 @@ export function setupUI() {
         $('#email-label').hide()
     })
     $('.issue').on('hide.bs.modal', function (e) {
-        listenToSimulator = true
+        this.listenToSimulator = true
         $('#result').html('')
         $('#issuetext').show()
         $('#emailtext').show()
@@ -202,7 +203,7 @@ export function setupUI() {
         $('#email-label').show()
     })
     $('#reportIssue').on('click', function () {
-        listenToSimulator = false
+        this.listenToSimulator = false
     })
 
     // $('#saveAsImg').on('click',function(){
