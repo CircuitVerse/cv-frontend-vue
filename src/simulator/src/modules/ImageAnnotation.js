@@ -218,6 +218,17 @@ ImageAnnotation.prototype.mutableProperties = {
         func: 'changeRowSize',
     },
 }
+
+/**
+ * @memberof Image
+ * Help URL
+ * @type {string}
+ * @category modules
+ */
+ImageAnnotation.prototype.helplink =
+    'https://docs.circuitverse.org/#/chapter4/7annotation?id=imageannotation'
+
+
 ImageAnnotation.prototype.objectType = 'ImageAnnotation'
 ImageAnnotation.prototype.rectangleObject = false
 ImageAnnotation.prototype.mutableProperties = {
