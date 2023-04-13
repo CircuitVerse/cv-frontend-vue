@@ -113,7 +113,7 @@
                 class="objectPropertyAttribute"
                 type="checkbox"
                 :name="value.func"
-                :value="obj[name]"
+                :checked="obj[name]"
             />
         </p>
         <p v-if="value.type === 'textarea'">

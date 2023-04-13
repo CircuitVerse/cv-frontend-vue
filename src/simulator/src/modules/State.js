@@ -40,6 +40,10 @@ export default class State extends CircuitElement {
         this.fixedBitWidth = true
         this.setDimensions(15, 15)
 
+        this.isInitial = false
+        this.isFinal = false
+        this.output = ''
+
         this.label = toBaseAZ(globalStateCounter++)
         this.labelDirection = 'UP'
         this.inp1 = new FANode(-10, 0, 0, this, this.bitWidth, 'c0')
@@ -101,6 +105,18 @@ export default class State extends CircuitElement {
         ctx.beginPath()
         drawCircle2(ctx, 5, 0, 15, xx, yy, this.direction)
         ctx.stroke()
+    }
+
+    setIsInitial(value) {
+        this.isInitial = value
+    }
+
+    setIsFinal(value) {
+        this.isFinal = value
+    }
+
+    setOutput(value) {
+        this.output = value
     }
 
     getTransitionTable() {
@@ -189,10 +205,10 @@ State.prototype.mutableProperties = {
         type: 'checkbox',
         func: 'setIsFinal',
     },
-    insertOutput: {
+    output: {
         name: 'Output',
         type: 'text',
-        func: 'setInsertOutput',
+        func: 'setOutput',
     },
     transitionTable: {
         name: 'Transition Table',
