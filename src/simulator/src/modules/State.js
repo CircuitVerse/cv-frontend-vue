@@ -1,7 +1,13 @@
 import CircuitElement from '../circuitElement'
 import FANode, { findNode } from '../faNode'
 import simulationArea from '../simulationArea'
-import { correctWidth, fillText, drawCircle2 } from '../canvasApi'
+import {
+    correctWidth,
+    fillText,
+    drawCircle2,
+    moveTo,
+    lineTo,
+} from '../canvasApi'
 import { changeInputSize } from '../modules'
 /**
  * @class
@@ -105,6 +111,22 @@ export default class State extends CircuitElement {
         ctx.beginPath()
         drawCircle2(ctx, 5, 0, 15, xx, yy, this.direction)
         ctx.stroke()
+
+        if (this.isInitial) {
+            ctx.beginPath()
+            moveTo(ctx, -30, 0, xx, yy, this.direction)
+            lineTo(ctx, -10, 0, xx, yy, this.direction)
+
+            moveTo(ctx, -16, -4, xx, yy, this.direction)
+            lineTo(ctx, -10, 0, xx, yy, this.direction)
+            lineTo(ctx, -16, 4, xx, yy, this.direction)
+            ctx.stroke()
+        }
+        if (this.isFinal) {
+            ctx.beginPath()
+            drawCircle2(ctx, 5, 0, 10, xx, yy, this.direction)
+            ctx.stroke()
+        }
     }
 
     setIsInitial(value) {
