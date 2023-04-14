@@ -107,6 +107,50 @@
                 {{ obj[name] }}
             </textarea>
         </p>
+        <p v-if="value.type === 'checkbox'">
+            <span>{{ value.name }}:</span>
+            <input
+                class="objectPropertyAttribute"
+                type="checkbox"
+                :name="value.func"
+                :checked="obj[name]"
+            />
+        </p>
+        <p v-if="value.type === 'textarea'">
+            <span>{{ value.name }}</span>
+            <textarea
+                class="objectPropertyAttribute"
+                type="text"
+                autocomplete="off"
+                rows="9"
+                :name="value.func"
+            >
+                {{ obj[name] }}
+            </textarea>
+        </p>
+        <div v-if="value.type === 'table'">
+            <span>{{ value.name }}</span>
+            <table class="objectPropertyAttribute">
+                {{
+                    void (table = obj[value.func]())
+                }}
+                <thead>
+                    <tr>
+                        <th v-for="header in table[0]" :key="header">
+                            {{ header }}
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr v-for="row in table.slice(1)" :key="row">
+                        <td v-for="cell in row" :key="cell">
+                            {{ cell }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </template>
 

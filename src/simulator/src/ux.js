@@ -252,10 +252,12 @@ export function objectPropertyAttributeUpdate() {
     updateCanvasSet(true)
     wireToBeCheckedSet(1)
     // console.log(this)
-    let { value } = this
+    let { value, checked } = this
     // console.log(value)
     if (this.type === 'number') {
         value = parseFloat(value)
+    } else if (this.type === 'checkbox') {
+        value = checked
     }
     if (simulationArea.lastSelected && simulationArea.lastSelected[this.name]) {
         simulationArea.lastSelected[this.name](value)

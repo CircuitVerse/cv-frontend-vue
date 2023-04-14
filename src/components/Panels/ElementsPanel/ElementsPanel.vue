@@ -164,6 +164,7 @@ function searchElements() {
 function createElement(elementName) {
     if (simulationArea.lastSelected && simulationArea.lastSelected.newElement)
         simulationArea.lastSelected.delete()
+        console.log(modules[elementName],elementName)
     var obj = new modules[elementName]()
     simulationArea.lastSelected = obj
     uxvar.smartDropXX += 70
@@ -175,6 +176,7 @@ function createElement(elementName) {
 
 const tooltipText = ref('null')
 function getTooltipText(elementName) {
+    console.log(elementName)
     tooltipText.value = modules[elementName].prototype.tooltipText
 }
 </script>

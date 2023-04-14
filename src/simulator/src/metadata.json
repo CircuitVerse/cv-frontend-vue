@@ -13,6 +13,9 @@
         "SixteenSegDisplay",
         "HexDisplay",
         "Multiplexer",
+        "State",
+        "IntermediateState",
+        "FinalState",
         "BitSelector",
         "Splitter",
         "Power",
@@ -78,7 +81,7 @@
         "Input",
         "Clock",
         "Button",
-        "Counter"
+        "State"
     ],
     "subCircuitInputList": [
         "Random",
@@ -94,7 +97,8 @@
         "ConstantVal",
         "Clock",
         "Button",
-        "Counter"
+        "Counter",
+        "State"
     ],
     "elementHierarchy": {
         "Input": [
@@ -155,6 +159,9 @@
             { "name": "Arrow", "label": "Arrow" },
             { "name": "ImageAnnotation", "label": "Image Annotation" },
             { "name": "Text", "label": "Text" }
+        ],
+        "Finite Automata": [
+            { "name": "State", "label": "State" }
         ],
         "Misc": [
             { "name": "TwoComplement", "label": "Two Complement" },
