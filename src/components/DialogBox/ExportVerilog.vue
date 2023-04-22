@@ -1,6 +1,6 @@
 <template>
     <v-dialog
-        v-model="SimulatorState.dialogBox.exportverilog_dialog"
+        v-model="simulatorState.dialogBox.exportverilog_dialog"
         :persistent="false"
     >
         <v-card class="messageBoxContent">
@@ -11,7 +11,7 @@
                     icon
                     class="dialogClose"
                     @click="
-                        SimulatorState.dialogBox.exportverilog_dialog = false
+                        simulatorState.dialogBox.exportverilog_dialog = false
                     "
                 >
                     <v-icon>mdi-close</v-icon>
@@ -41,11 +41,9 @@
         </v-card>
     </v-dialog>
 </template>
-
 <script lang="ts" setup>
-import { onMounted, ref } from '@vue/runtime-core'
+import { onMounted, ref } from 'vue'
 import { useState } from '#/store/SimulatorStore/state'
-const SimulatorState = useState()
 import Codemirror from 'codemirror-editor-vue3'
 
 // language
@@ -63,10 +61,19 @@ import {
     showMessage,
 } from '#/simulator/src/utils'
 import { getProjectName } from '#/simulator/src/data/save'
+
+interface SimulatorState {
+    dialogBox: {
+        exportverilog_dialog: boolean;
+    }
+}
+
+const simulatorState = useState() as any as SimulatorState;
 const code = ref('')
 const cmOptions = ref({})
+
 onMounted(() => {
-    SimulatorState.dialogBox.exportverilog_dialog = false
+    simulatorState.dialogBox.exportverilog_dialog = false
     code.value = verilog.exportVerilog()
     cmOptions.value = {
         mode: 'verilog',
@@ -80,19 +87,21 @@ onMounted(() => {
     }
 })
 
-function downloadVerilog() {
+function downloadVerilog(): void {
     let fileName = getProjectName() || 'Untitled'
     download(fileName + '.v', code.value)
-    SimulatorState.dialogBox.exportverilog_dialog = false
+    simulatorState.dialogBox.exportverilog_dialog = false
 }
-function copyClipboard() {
+
+function copyClipboard(): void {
     copyToClipboard(code.value)
     showMessage('Code has been copied')
-    SimulatorState.dialogBox.exportverilog_dialog = false
+    simulatorState.dialogBox.exportverilog_dialog = false
 }
-function edaPlayground() {
+
+function edaPlayground(): void {
     copyToClipboard(code.value)
     openInNewTab('https://www.edaplayground.com/x/XZpY')
-    SimulatorState.dialogBox.exportverilog_dialog = false
+    simulatorState.dialogBox.exportverilog_dialog = false
 }
 </script>
