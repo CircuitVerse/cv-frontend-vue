@@ -25,12 +25,33 @@
     </ul>
 </template>
 
-<script lang="ts" setup>
-const props = defineProps({
-    listItems: { type: Array, default: () => [] },
-    dropDownHeader: { type: String, default: '' },
-    dropDownType: { type: String, default: '' },
-})
-console.log(props.dropDownHeader)
-console.log(props.listItems)
+<script lang="ts">
+
+interface ListItem {
+  id: number;
+  itemid: string;
+  item: string;
+}
+
+export default {
+  props: {
+    listItems: {
+      type: Array as () => ListItem[],
+      default: () => [],
+    },
+    dropDownHeader: {
+      type: String,
+      default: '',
+    },
+    dropDownType: {
+      type: String,
+      default: '',
+    },
+  },
+  setup(props) {
+    console.log(props.dropDownHeader);
+    console.log(props.listItems);
+    return {};
+  },
+};
 </script>
