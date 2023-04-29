@@ -26,7 +26,7 @@
 
     <InputGroups
         property-name="Clock Time (ms):"
-        :property-value="simulationArea.timePeriod"
+        :property-value="simulationAreaTyped.timePeriod as number"
         property-value-type="number"
         value-min="50"
         step-size="10"
@@ -41,8 +41,8 @@
                 type="checkbox"
                 class="objectPropertyAttributeChecked"
                 name="changeClockEnable" />
-            <span class="slider"></span
-        ></label>
+            <span class="slider"></span>
+        </label>
     </p>
 
     <p>
@@ -83,9 +83,21 @@ import simulationArea from '#/simulator/src/simulationArea'
 import InputGroups from '#/components/Panels/Shared/InputGroups.vue'
 import { ref } from '@vue/reactivity'
 import { onMounted } from '@vue/runtime-core'
+
+interface GlobalScope {
+    id: number;
+    name: string;
+}
+
+declare const globalScope: GlobalScope;
+
+interface SimulationArea {
+    timePeriod: number;
+}
+
 const circuitId = ref(0)
 const circuitName = ref('Untitled-Cirucit')
-
+const simulationAreaTyped: SimulationArea = simulationArea as SimulationArea;
 
 onMounted(() => {
     // checking if circuit or tab is switched
