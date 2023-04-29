@@ -7,18 +7,18 @@
         <div class="panel-body">
             <div id="moduleProperty-inner">
                 <div id="moduleProperty-header">{{ panelBodyHeader }}</div>
-                <ProjectProperty v-if="panelType == 1" />
+                <ProjectProperty v-if="panelType === 1" :key="'project-property'" />
                 <ElementProperty
-                    v-else-if="panelType == 2"
-                    :key="panleBodyData"
+                    v-else-if="panelType === 2"
+                    :key="panleBodyData ? 'element-property-' + flatted.stringify(panleBodyData) : undefined"
                     :obj="panleBodyData"
                 />
                 <SubcircuitProperty
-                    v-else-if="panelType == 3"
-                    :key="panleBodyData"
+                    v-else-if="panelType === 3"
+                    :key="panleBodyData ? 'subcircuit-property-' + flatted.stringify(panleBodyData) : undefined"
                     :obj="panleBodyData"
                 />
-                <HelpButton :key="panleBodyData" :obj="panleBodyData" />
+                <HelpButton :key="panleBodyData ? 'help-button-' + flatted.stringify(panleBodyData) : undefined" :obj="panleBodyData" />
             </div>
         </div>
     </div>
@@ -29,9 +29,10 @@ import PanelHeader from '#/components/Panels/Shared/PanelHeader.vue'
 import HelpButton from '#/components/Panels/Shared/HelpButton.vue'
 import ElementProperty from '#/components/Panels/PropertiesPanel/ModuleProperty/ElementProperty/ElementProperty.vue'
 import ProjectProperty from '#/components/Panels/PropertiesPanel/ModuleProperty/ProjectProperty/ProjectProperty.vue'
-import SubcircuitPropert from '#/components/Panels/PropertiesPanel/ModuleProperty/SubcircuitProperty/SubcircuitProperty.vue'
+import SubcircuitProperty from '#/components/Panels/PropertiesPanel/ModuleProperty/SubcircuitProperty/SubcircuitProperty.vue'
 import { ref, toRefs } from '@vue/reactivity'
 import { onMounted } from '@vue/runtime-core'
+import * as flatted from 'flatted'
 
 const props = defineProps({
     panleBodyData: { type: Object, default: undefined },
