@@ -4,10 +4,10 @@ import simulator from '../pages/simulator.vue'
 const routes = [
     {
         path: '/',
-        redirect: '/simulatorvue',
+        redirect: '/simulatorvue', // @TODO: update later back to /simulator
     },
     {
-        path: '/simulatorvue',
+        path: '/simulatorvue', // @TODO: update later back to /simulator
         name: 'simulator',
         component: simulator,
     },
