@@ -12,8 +12,11 @@ import { layoutModeGet, toggleLayoutMode } from '../layoutMode'
 import { verilogModeGet } from '../Verilog2CV'
 import domtoimage from 'dom-to-image'
 import '../../vendor/canvas2svg'
+import { useProjectStore } from '#/store/projectStore'
+// import provideProjectName from '#/components/DialogBox/save.vue'
+import { provideProjectName } from '#/components/DialogBox/ProjectNameSetHelper'
 
-var projectName = undefined
+// var projectName = undefined
 
 /**
  * Function to set the name of project.
@@ -21,13 +24,15 @@ var projectName = undefined
  * @category data
  */
 export function setProjectName(name) {
+    const projectStore = useProjectStore()
     if (name == undefined) {
-        $('#projectName').html('Untitled')
+        // $('#projectName').html('Untitled')
         return
     }
     name = stripTags(name)
-    projectName = name
-    $('#projectName').html(name)
+    // projectName = name
+    // $('#projectName').html(name)
+    projectStore.setProjectName(name)
 }
 
 /**
@@ -36,9 +41,10 @@ export function setProjectName(name) {
  * @category data
  */
 export function getProjectName() {
-    return projectName
+    const projectStore = useProjectStore()
+    if (projectStore.getProjectNameDefined) return projectStore.getProjectName
+    else return undefined
 }
-
 /**
  * Helper function to save canvas as image based on image type
  * @param {string} name -name of the circuit
@@ -57,7 +63,7 @@ function downloadAsImg(name, imgType) {
  * Returns the order of tabs in the project
  */
 export function getTabsOrder() {
-    var tabs = $('#tabsBar').children().not('button')
+    var tabs = document.getElementById('tabsBar').firstChild.children
     var order = []
     for (let i = 0; i < tabs.length; i++) {
         order.push(tabs[i].id)
@@ -71,12 +77,12 @@ export function getTabsOrder() {
  * @return {JSON}
  * @category data
  */
-export function generateSaveData(name) {
+export async function generateSaveData(name) {
     data = {}
 
     // Prompts for name, defaults to Untitled
     name =
-        getProjectName() || name || prompt('Enter Project Name:') || 'Untitled'
+        getProjectName() || name || (await provideProjectName()) || 'Untitled'
     data.name = stripTags(name)
     setProjectName(data.name)
 
@@ -342,13 +348,13 @@ export default async function save() {
 
     projectSavedSet(true)
 
+    const data = await generateSaveData()
     $('.loadingIcon').fadeIn()
-    const data = generateSaveData()
 
     const projectName = getProjectName()
     var imageData = await generateImageForOnline()
 
-    if (!userSignedIn) {
+    if (!window.isUserLoggedIn) {
         // user not signed in, save locally temporarily and force user to sign in
         localStorage.setItem('recover_login', data)
         // Asking user whether they want to login.
@@ -360,7 +366,7 @@ export default async function save() {
             window.location.href = '/users/sign_in'
         else $('.loadingIcon').fadeOut()
         // eslint-disable-next-line camelcase
-    } else if (__logix_project_id == '0') {
+    } else if (logixProjectId == '0') {
         // Create new project - this part needs to be improved and optimised
         const form = $('<form/>', {
             action: '/simulator/create_data',
@@ -400,35 +406,67 @@ export default async function save() {
         form.submit()
     } else {
         // updates project - this part needs to be improved and optimised
-        $.ajax({
-            url: '/simulator/update_data',
-            type: 'POST',
-            contentType: 'application/json',
-            beforeSend(xhr) {
-                xhr.setRequestHeader(
-                    'X-CSRF-Token',
-                    $('meta[name="csrf-token"]').attr('content')
-                )
+        // $.ajax({
+        // url: '/api/v1/simulator/update',
+        // type: 'PATCH',
+        // contentType: 'application/json',
+        // beforeSend(xhr) {
+        // xhr.setRequestHeader(
+        // 'X-CSRF-Token',
+        // $('meta[name="csrf-token"]').attr('content')
+        // )
+        // },
+        // data: JSON.stringify({
+        // data,
+        // id: logixProjectId,
+        // image: imageData,
+        // name: projectName,
+        // }),
+        // success(response) {
+        // showMessage(
+        // `We have saved your project: ${projectName} in our servers.`
+        // )
+        // $('.loadingIcon').fadeOut()
+        // localStorage.removeItem('recover')
+        // },
+        // failure(err) {
+        // showMessage(
+        // "There was an error, we couldn't save to our servers"
+        // )
+        // $('.loadingIcon').fadeOut()
+        // },
+        // })
+        // function getCookie(name) {
+        // const value = `; ${document.cookie}`;
+        // const parts = value.split(`; ${name}=`);
+        // if (parts.length === 2) return parts.pop().split(';').shift();
+        // }
+
+        fetch('/api/v1/simulator/update', {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content'),
+                Authorization: `Token`,
             },
-            data: JSON.stringify({
+            body: JSON.stringify({
                 data,
-                id: __logix_project_id,
+                id: logixProjectId,
                 image: imageData,
                 name: projectName,
             }),
-            success(response) {
+        }).then((response) => {
+            if (response.ok) {
                 showMessage(
                     `We have saved your project: ${projectName} in our servers.`
                 )
-                $('.loadingIcon').fadeOut()
                 localStorage.removeItem('recover')
-            },
-            failure(err) {
+            } else {
                 showMessage(
                     "There was an error, we couldn't save to our servers"
                 )
-                $('.loadingIcon').fadeOut()
-            },
+            }
+            $('.loadingIcon').fadeOut()
         })
     }
 

@@ -120,6 +120,29 @@ function setupElementLists() {
     window.renderOrder = [...moduleList.slice().reverse(), 'wires', 'allNodes'] // Order of render
 }
 
+async function fetchProjectData(projectId) {
+    try {
+        const response = await fetch(`/api/v1/simulator/${projectId}/data`, {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+            }
+        })
+        if (response.ok) {
+            const data = await response.json()
+            await load(data)
+            await simulationArea.changeClockTime(data.timePeriod || 500)
+            $('.loadingIcon').fadeOut()
+        } else {
+            throw new Error('API call failed')
+        }
+    } catch (error) {
+        console.error(error)
+        alert('Error: Could not load.')
+        $('.loadingIcon').fadeOut()
+    }
+}
+
 /**
  * The first function to be called to setup the whole simulator
  * @category setup
@@ -141,26 +164,16 @@ export function setup() {
 
     // Load project data after 1 second - needs to be improved, delay needs to be eliminated
     setTimeout(() => {
-        let __logix_project_id = 0
-        if (__logix_project_id != 0) {
+        // let __logix_project_id
+        if (!window.logixProjectId) {
+            // __logix_project_id = window.logixProjectId
+            window.logixProjectId = 0
+        }
+        // else { __logix_project_id = 0 }
+        if (logixProjectId != 0) {
             $('.loadingIcon').fadeIn()
-            $.ajax({
-                url: `/simulator/get_data/${__logix_project_id}`,
-                type: 'GET',
-                success(response) {
-                    var data = response
-                    if (data) {
-                        load(data)
-                        simulationArea.changeClockTime(data.timePeriod || 500)
-                    }
-                    $('.loadingIcon').fadeOut()
-                },
-                failure() {
-                    alert('Error: could not load ')
-                    $('.loadingIcon').fadeOut()
-                },
-            })
-        } else if (localStorage.getItem('recover_login') && userSignedIn) {
+            fetchProjectData(logixProjectId)
+        } else if (localStorage.getItem('recover_login') && isUserLoggedIn) {
             // Restore unsaved data and save
             var data = JSON.parse(localStorage.getItem('recover_login'))
             load(data)
