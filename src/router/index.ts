@@ -3,10 +3,10 @@ import { createRouter, createWebHistory } from 'vue-router'
 import simulatorHandler from '../pages/simulatorHandler.vue'
 
 const routes = [
-    // {
-    //     path: '/',
-    //     redirect: '/simulatorvue', // @TODO: update later back to /simulator
-    // },
+    {
+        path: '/',
+        redirect: '/simulatorvue', // @TODO: update later back to /simulator
+    },
     {
         path: '/simulatorvue', // @TODO: update later back to /simulator
         name: 'simulator',
