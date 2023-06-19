@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-export interface projectStoreType {
+interface projectStoreType {
     project: {
         // id: number //use later if needed
         name: string
@@ -29,7 +29,7 @@ export interface projectStoreType {
 
 export const useProjectStore = defineStore({
     id: 'projectStore',
-    state: () => ({
+    state: (): projectStoreType => ({
         project: {
             // id: 0, //use later if needed
             name: 'Untitled',

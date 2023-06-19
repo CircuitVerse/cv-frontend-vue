@@ -1,9 +1,9 @@
-import { useProjectStore, projectStoreType } from '#/store/projectStore'
+import { useProjectStore } from '#/store/projectStore'
 
 let resolvePromise: (value?: string) => void // will be used to store the resolve function of the Promise
 
 export const confirmName = (selectedOption: string): void => {
-    const projectStore: projectStoreType = useProjectStore()
+    const projectStore = useProjectStore()
     projectStore.CreateProjectHelper.changeProjectName = false
     if (selectedOption === 'save') {
         resolvePromise(projectStore.CreateProjectHelper.inputList[0].val)
@@ -13,7 +13,7 @@ export const confirmName = (selectedOption: string): void => {
 }
 
 export const provideProjectName = async (): Promise<string | undefined> => {
-    const projectStore: projectStoreType = useProjectStore()
+    const projectStore = useProjectStore()
     projectStore.CreateProjectHelper.changeProjectName = true
     projectStore.CreateProjectHelper.isPersistent = true
     projectStore.CreateProjectHelper.messageText =

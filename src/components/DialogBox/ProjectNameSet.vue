@@ -12,10 +12,10 @@
 
 <script lang="ts" setup>
 import messageBox from '../MessageBox/messageBox.vue'
-import { useProjectStore, projectStoreType } from '#/store/projectStore'
+import { useProjectStore } from '#/store/projectStore'
 import { confirmName } from './ProjectNameSetHelper'
 
-const projectStore: projectStoreType = useProjectStore()
+const projectStore = useProjectStore()
 </script>
 
 <style scoped></style>

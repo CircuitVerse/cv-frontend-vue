@@ -1,5 +1,13 @@
 import { defineStore } from 'pinia'
 
+interface AuthStoreType {
+    isLoggedIn: boolean
+    userId: string | number
+    username: string
+    locale: string
+    isAdmin: boolean
+}
+
 interface UserInfo {
     isLoggedIn: boolean
     id: string
@@ -11,7 +19,7 @@ interface UserInfo {
 }
 export const useAuthStore = defineStore({
     id: 'authStore',
-    state: () => ({
+    state: (): AuthStoreType => ({
         isLoggedIn: false,
         userId: '',
         username: '',
@@ -31,7 +39,7 @@ export const useAuthStore = defineStore({
         getIsLoggedIn(): boolean {
             return this.isLoggedIn
         },
-        getUserId(): string {
+        getUserId(): string | number {
             return this.userId
         },
         getUsername(): string {
@@ -45,3 +53,5 @@ export const useAuthStore = defineStore({
         },
     },
 })
+
+//  TODO: extract store verify and check better ways to impliment
