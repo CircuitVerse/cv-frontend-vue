@@ -6,25 +6,6 @@ interface projectStoreType {
         name: string
         nameDefined: boolean
     }
-    CreateProjectHelper: {
-        changeProjectName: boolean
-        resolvePromise: null | ((value?: string) => void)
-        messageText: string
-        isPersistent: boolean
-        buttonList: Array<{
-            text: string
-            emitOption: string
-        }>
-        inputList: Array<{
-            text: string
-            val: string
-            placeholder: string
-            id: string
-            class: string
-            style: string
-            type: string
-        }>
-    }
 }
 
 export const useProjectStore = defineStore({
@@ -34,14 +15,6 @@ export const useProjectStore = defineStore({
             // id: 0, //use later if needed
             name: 'Untitled',
             nameDefined: false,
-        },
-        CreateProjectHelper: {
-            changeProjectName: false,
-            resolvePromise: null,
-            messageText: '',
-            isPersistent: false,
-            buttonList: [],
-            inputList: [],
         },
     }),
     actions: {

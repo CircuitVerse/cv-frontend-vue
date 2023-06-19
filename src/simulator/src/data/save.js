@@ -14,7 +14,7 @@ import domtoimage from 'dom-to-image'
 import '../../vendor/canvas2svg'
 import { useProjectStore } from '#/store/projectStore'
 // import provideProjectName from '#/components/DialogBox/save.vue'
-import { provideProjectName } from '#/components/DialogBox/ProjectNameSetHelper'
+import { provideProjectName } from '#/helpers/promptComponent/ts/provideProjectName'
 
 // var projectName = undefined
 

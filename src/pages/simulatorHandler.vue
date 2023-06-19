@@ -8,7 +8,7 @@
     <template v-else-if="!isLoading && hasAccess">
         <simulator />
     </template>
-    <projectNameSet />
+    <PromptComponent />
     <setDetailsOnCreate />
 </template>
 
@@ -17,7 +17,7 @@ import simulator from './simulator.vue'
 import { onBeforeMount, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '#/store/authStore'
-import projectNameSet from '#/components/DialogBox/ProjectNameSet.vue'
+import PromptComponent from '#/helpers/promptComponent/components/PromptComponent.vue'
 import setDetailsOnCreate from '#/components/DialogBox/SetDetailsOnCreate.vue'
 
 const route = useRoute()
