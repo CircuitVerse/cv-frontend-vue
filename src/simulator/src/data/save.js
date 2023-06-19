@@ -42,7 +42,8 @@ export function setProjectName(name) {
  */
 export function getProjectName() {
     const projectStore = useProjectStore()
-    if (projectStore.getProjectNameDefined) return projectStore.getProjectName
+    if (projectStore.getProjectNameDefined)
+        return projectStore.getProjectName.trim()
     else return undefined
 }
 /**
@@ -81,8 +82,12 @@ export async function generateSaveData(name) {
     data = {}
 
     // Prompts for name, defaults to Untitled
-    name =
-        getProjectName() || name || (await provideProjectName()) || 'Untitled'
+    name = getProjectName() || name || (await provideProjectName())
+    if (name == undefined) {
+        return undefined
+    } else if (name == '') {
+        name = 'Untitled'
+    }
     data.name = stripTags(name)
     setProjectName(data.name)
 
@@ -349,6 +354,7 @@ export default async function save() {
     projectSavedSet(true)
 
     const data = await generateSaveData()
+    if (data == undefined) return
     $('.loadingIcon').fadeIn()
 
     const projectName = getProjectName()
