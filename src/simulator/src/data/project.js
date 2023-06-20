@@ -89,8 +89,9 @@ export function projectSavedSet(param) {
  * Helper function to store to localStorage -- needs to be deprecated/removed
  * @category data
  */
-export function saveOffline() {
-    const data = generateSaveData()
+export async function saveOffline() {
+    const data = await generateSaveData()
+    if (data instanceof Error) return
     localStorage.setItem(projectId, data)
     const temp = JSON.parse(localStorage.getItem('projectList')) || {}
     temp[projectId] = getProjectName()
@@ -139,7 +140,7 @@ export function clearProject() {
     if (confirm('Would you like to clear the project?')) {
         globalScope = undefined
         resetScopeList()
-        $('.circuits').remove()
+        // $('.circuits').remove()
         newCircuit('main')
         showMessage('Your project is as good as new!')
     }

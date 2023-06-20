@@ -37,9 +37,9 @@
                 </div>
             </template>
         </draggable>
-        <button @click="createNewCircuit()">&#43;</button>
+        <button @click="createNewCircuitScope()">&#43;</button>
     </div>
-    <MessageBox
+    <!-- <MessageBox
         v-model="SimulatorState.dialogBox.create_circuit"
         :circuit-item="circuitToBeDeleted"
         :button-list="buttonArr"
@@ -51,7 +51,7 @@
             (selectedOption, circuitItem) =>
                 dialogBoxConformation(selectedOption, circuitItem)
         "
-    />
+    /> -->
 </template>
 
 <script lang="ts" setup>
@@ -60,38 +60,39 @@ import { showMessage, truncateString } from '#/simulator/src/utils'
 import { ref, Ref } from 'vue'
 import {
     createNewCircuitScope,
-    deleteCurrentCircuit,
-    getDependenciesList,
-    scopeList,
+    // deleteCurrentCircuit,
+    // getDependenciesList,
+    // scopeList,
     switchCircuit,
 } from '#/simulator/src/circuit'
-import MessageBox from '#/components/MessageBox/messageBox.vue'
+// import MessageBox from '#/components/MessageBox/messageBox.vue'
 import { useState } from '#/store/SimulatorStore/state'
+import { closeCircuit } from '../helpers/deleteCircuit/DeleteCircuit.vue'
 
 const SimulatorState = <SimulatorStateType>useState()
 const drag: Ref<boolean> = ref(false)
 const updateCount: Ref<number> = ref(0)
-const persistentShow: Ref<boolean> = ref(false)
-const messageVal: Ref<string> = ref('')
-const buttonArr: Ref<Array<buttonArrType>> = ref([{ text: '', emitOption: '' }])
-const inputArr: Ref<Array<InputArrType>> = ref([
-    {
-        text: '',
-        val: '',
-        placeholder: '',
-        id: '',
-        class: '',
-        style: '',
-        type: '',
-    },
-])
-const circuitToBeDeleted: Ref<Object> = ref({})
+// const persistentShow: Ref<boolean> = ref(false)
+// const messageVal: Ref<string> = ref('')
+// const buttonArr: Ref<Array<buttonArrType>> = ref([{ text: '', emitOption: '' }])
+// const inputArr: Ref<Array<InputArrType>> = ref([
+//     {
+//         text: '',
+//         val: '',
+//         placeholder: '',
+//         id: '',
+//         class: '',
+//         style: '',
+//         type: '',
+//     },
+// ])
+// const circuitToBeDeleted: Ref<Object> = ref({})
 
-type CircuitItem = {
-    id: string | number
-    name: string
-    focussed: boolean
-}
+// type CircuitItem = {
+//     id: string | number
+//     name: string
+//     focussed: boolean
+// }
 
 type SimulatorStateType = {
     circuit_list: Array<Object>
@@ -100,133 +101,138 @@ type SimulatorStateType = {
     }
 }
 
-type InputArrType = {
-    text: string
-    val: string
-    placeholder: string
-    id: string
-    class: string
-    style: string
-    type: string
-}
+// type InputArrType = {
+//     text: string
+//     val: string
+//     placeholder: string
+//     id: string
+//     class: string
+//     style: string
+//     type: string
+// }
 
-type buttonArrType = {
-    text: string
-    emitOption: string
-}
+// type buttonArrType = {
+//     text: string
+//     emitOption: string
+// }
 
-function clearMessageBoxFields(): void {
-    SimulatorState.dialogBox.create_circuit = false
-    persistentShow.value = false
-    messageVal.value = ''
-    buttonArr.value = []
-    inputArr.value = []
-}
+// function clearMessageBoxFields(): void {
+//     SimulatorState.dialogBox.create_circuit = false
+//     persistentShow.value = false
+//     messageVal.value = ''
+//     buttonArr.value = []
+//     inputArr.value = []
+// }
 
-function closeCircuit(circuitItem: CircuitItem): void {
-    clearMessageBoxFields()
-    // check circuit count
-    if (SimulatorState.circuit_list.length <= 1) {
-        SimulatorState.dialogBox.create_circuit = true
-        persistentShow.value = false
-        messageVal.value =
-            'At least 2 circuits need to be there in order to delete a circuit.'
-        buttonArr.value = [
-            {
-                text: 'Close',
-                emitOption: 'dispMessage',
-            },
-        ]
-        return
-    }
-    clearMessageBoxFields()
+// function closeCircuit(circuitItem: CircuitItem): void {
+//     clearMessageBoxFields()
+//     // check circuit count
+//     if (SimulatorState.circuit_list.length <= 1) {
+//         SimulatorState.dialogBox.create_circuit = true
+//         persistentShow.value = false
+//         messageVal.value =
+//             'At least 2 circuits need to be there in order to delete a circuit.'
+//         buttonArr.value = [
+//             {
+//                 text: 'Close',
+//                 emitOption: 'dispMessage',
+//             },
+//         ]
+//         return
+//     }
+//     clearMessageBoxFields()
 
-    let dependencies = getDependenciesList(circuitItem.id)
-    if (dependencies) {
-        dependencies = `\nThe following circuits are depending on '${
-            scopeList[circuitItem.id].name
-        }': [ ${dependencies} ].\nDelete subcircuits of ${
-            scopeList[circuitItem.id].name
-        } before trying to delete ${scopeList[circuitItem.id].name}`
-        SimulatorState.dialogBox.create_circuit = true
-        persistentShow.value = true
-        messageVal.value = dependencies
-        buttonArr.value = [
-            {
-                text: 'OK',
-                emitOption: 'dispMessage',
-            },
-        ]
-        return
-    }
+//     let dependencies = getDependenciesList(circuitItem.id)
+//     if (dependencies) {
+//         dependencies = `\nThe following circuits are depending on '${
+//             scopeList[circuitItem.id].name
+//         }': [ ${dependencies} ].\nDelete subcircuits of ${
+//             scopeList[circuitItem.id].name
+//         } before trying to delete ${scopeList[circuitItem.id].name}`
+//         SimulatorState.dialogBox.create_circuit = true
+//         persistentShow.value = true
+//         messageVal.value = dependencies
+//         buttonArr.value = [
+//             {
+//                 text: 'OK',
+//                 emitOption: 'dispMessage',
+//             },
+//         ]
+//         return
+//     }
 
-    clearMessageBoxFields()
-    SimulatorState.dialogBox.create_circuit = true
-    persistentShow.value = true
-    buttonArr.value = [
-        {
-            text: 'Continue',
-            emitOption: 'confirmDeletion',
-        },
-        {
-            text: 'Cancel',
-            emitOption: 'cancelDeletion',
-        },
-    ]
-    circuitToBeDeleted.value = circuitItem
-    messageVal.value = `Are you sure want to close: ${
-        scopeList[circuitItem.id].name
-    }\nThis cannot be undone.`
-}
+//     clearMessageBoxFields()
+//     SimulatorState.dialogBox.create_circuit = true
+//     persistentShow.value = true
+//     buttonArr.value = [
+//         {
+//             text: 'Continue',
+//             emitOption: 'confirmDeletion',
+//         },
+//         {
+//             text: 'Cancel',
+//             emitOption: 'cancelDeletion',
+//         },
+//     ]
+//     circuitToBeDeleted.value = circuitItem
+//     messageVal.value = `Are you sure want to close: ${
+//         scopeList[circuitItem.id].name
+//     }\nThis cannot be undone.`
+// }
 
-function deleteCircuit(circuitItem: CircuitItem): void {
-    deleteCurrentCircuit(circuitItem.id)
-    updateCount.value++
-}
+// function deleteCircuit(circuitItem: CircuitItem): void {
+//     deleteCurrentCircuit(circuitItem.id)
+//     updateCount.value++
+// }
 
-function dialogBoxConformation(
-    selectedOption: string,
-    circuitItem: CircuitItem
-): void {
-    SimulatorState.dialogBox.create_circuit = false
-    if (selectedOption == 'confirmDeletion') {
-        deleteCircuit(circuitItem)
-    }
-    if (selectedOption == 'cancelDeletion') {
-        showMessage('Circuit was not closed')
-    }
-    if (selectedOption == 'confirmCreation') {
-        createNewCircuitScope(inputArr.value[0].val)
-    }
-}
+// function dialogBoxConformation(
+//     selectedOption: string,
+//     circuitItem: CircuitItem
+// ): void {
+//     SimulatorState.dialogBox.create_circuit = false
+//     if (selectedOption == 'confirmDeletion') {
+//         deleteCircuit(circuitItem)
+//     }
+//     if (selectedOption == 'cancelDeletion') {
+//         showMessage('Circuit was not closed')
+//     }
+//     if (selectedOption == 'confirmCreation') {
+//         createNewCircuitScope(inputArr.value[0].val)
+//     }
+// }
 
-function createNewCircuit(): void {
-    clearMessageBoxFields()
-    SimulatorState.dialogBox.create_circuit = true
-    persistentShow.value = true
-    buttonArr.value = [
-        {
-            text: 'Create',
-            emitOption: 'confirmCreation',
-        },
-        {
-            text: 'Cancel',
-            emitOption: 'cancelCreation',
-        },
-    ]
+// function createNewCircuit() {
+//     updateCount.value++
+//     createNewCircuitScope()
+// }
 
-    inputArr.value = [
-        {
-            text: 'Enter Circuit Name',
-            val: '',
-            placeholder: 'Untitled-Circuit',
-            id: 'circuitName',
-            class: 'inputField',
-            style: '',
-            type: 'text',
-        },
-    ]
-}
+// function createNewCircuit(): void {
+//     clearMessageBoxFields()
+//     SimulatorState.dialogBox.create_circuit = true
+//     persistentShow.value = true
+//     buttonArr.value = [
+//         {
+//             text: 'Create',
+//             emitOption: 'confirmCreation',
+//         },
+//         {
+//             text: 'Cancel',
+//             emitOption: 'cancelCreation',
+//         },
+//     ]
+
+//     inputArr.value = [
+//         {
+//             text: 'Enter Circuit Name',
+//             val: '',
+//             placeholder: 'Untitled-Circuit',
+//             id: 'circuitName',
+//             class: 'inputField',
+//             style: '',
+//             type: 'text',
+//         },
+//     ]
+// }
 
 function dragOptions(): Object {
     return {

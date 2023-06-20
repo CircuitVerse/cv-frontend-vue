@@ -9,12 +9,12 @@ window.$ = window.jQuery = jQuery
 import Array from './simulator/src/arrayHelpers.js'
 window.Array = Array
 window.isUserLoggedIn = false
+window.logixProjectId = undefined
 
 window.restrictedElements = []
 window.globalScope = undefined
 window.lightMode = false // To be deprecated
 window.projectId = undefined
-window.logixProjectId = undefined
 window.id = undefined
 window.loading = false // Flag - all assets are loaded
 

@@ -8,8 +8,6 @@
     <template v-else-if="!isLoading && hasAccess">
         <simulator />
     </template>
-    <PromptComponent />
-    <setDetailsOnCreate />
 </template>
 
 <script setup lang="ts">
@@ -17,8 +15,6 @@ import simulator from './simulator.vue'
 import { onBeforeMount, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '#/store/authStore'
-import PromptComponent from '#/helpers/promptComponent/components/PromptComponent.vue'
-import setDetailsOnCreate from '#/components/DialogBox/SetDetailsOnCreate.vue'
 
 const route = useRoute()
 const hasAccess = ref(true)

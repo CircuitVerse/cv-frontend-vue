@@ -13,8 +13,7 @@ import { verilogModeGet } from '../Verilog2CV'
 import domtoimage from 'dom-to-image'
 import '../../vendor/canvas2svg'
 import { useProjectStore } from '#/store/projectStore'
-// import provideProjectName from '#/components/DialogBox/save.vue'
-import { provideProjectName } from '#/helpers/promptComponent/ts/provideProjectName'
+import { provideProjectName } from '#/components/helpers/promptComponent/PromptComponent.vue'
 
 // var projectName = undefined
 
@@ -83,8 +82,9 @@ export async function generateSaveData(name) {
 
     // Prompts for name, defaults to Untitled
     name = getProjectName() || name || (await provideProjectName())
-    if (name == undefined) {
-        return undefined
+    if (name instanceof Error) {
+        return new Error('cancel')
+        // throw 'save has been canceled'
     } else if (name == '') {
         name = 'Untitled'
     }
@@ -354,7 +354,7 @@ export default async function save() {
     projectSavedSet(true)
 
     const data = await generateSaveData()
-    if (data == undefined) return
+    if (data instanceof Error) return
     $('.loadingIcon').fadeIn()
 
     const projectName = getProjectName()

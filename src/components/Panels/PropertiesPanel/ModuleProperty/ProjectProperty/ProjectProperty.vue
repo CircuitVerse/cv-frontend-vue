@@ -16,12 +16,12 @@
         <span>Circuit:</span>
         <input
             id="circname"
-            :key="circuitId"
+            :key="SimulatorState.activeCircuit.id"
             class="objectPropertyAttribute"
             type="text"
             autocomplete="off"
             name="changeCircuitName"
-            :value="circuitName"
+            :value="SimulatorState.activeCircuit.name"
         />
     </p>
 
@@ -74,7 +74,7 @@
             Delete Circuit
         </button>
     </p>
-    <MessageBox
+    <!-- <MessageBox
         v-model="SimulatorState.dialogBox.delete_circuit"
         :circuit-item="circuitToDelete"
         :button-list="buttonArray"
@@ -84,34 +84,37 @@
             (selectedOption, circuitItem) =>
                 dialogBoxConformation(selectedOption, circuitItem)
         "
-    />
+    /> -->
+    <!-- <DeleteCircuit /> -->
 </template>
 
 <script lang="ts" setup>
 import { toggleLayoutMode } from '#/simulator/src/layoutMode'
-import {
-    deleteCurrentCircuit,
-    getDependenciesList,
-    scopeList,
-} from '#/simulator/src/circuit'
-import { showMessage } from '#/simulator/src/utils'
+// import {
+//     deleteCurrentCircuit,
+//     getDependenciesList,
+//     scopeList,
+// } from '#/simulator/src/circuit'
+// import { showMessage } from '#/simulator/src/utils'
 import simulationArea from '#/simulator/src/simulationArea'
 import InputGroups from '#/components/Panels/Shared/InputGroups.vue'
-import MessageBox from '#/components/MessageBox/messageBox.vue'
-import { ref, Ref, onMounted, watch } from 'vue'
+// import MessageBox from '#/components/MessageBox/messageBox.vue'
+// import { ref, Ref, onMounted, watch } from 'vue'
 import { useState } from '#/store/SimulatorStore/state'
 import { useProjectStore } from '#/store/projectStore'
+// import DeleteCircuit from '#/components/helpers/deleteCircuit/DeleteCircuit.vue'
+import { closeCircuit } from '#/components/helpers/deleteCircuit/DeleteCircuit.vue'
 
 const projectStore = useProjectStore()
 const SimulatorState = <SimulatorStateType>useState()
-const circuitId: Ref<string | number> = ref(0)
-const circuitName: Ref<string> = ref('Untitled-Cirucit')
-const ifPersistentShow: Ref<boolean> = ref(false)
-const messageValue: Ref<string> = ref('')
-const buttonArray: Ref<Array<buttonArrType>> = ref([
-    { text: '', emitOption: '' },
-])
-const circuitToDelete: Ref<Object> = ref({})
+// const circuitId: Ref<string | number> = ref(0)
+// const circuitName: Ref<string> = ref('Untitled-Cirucit')
+// const ifPersistentShow: Ref<boolean> = ref(false)
+// const messageValue: Ref<string> = ref('')
+// const buttonArray: Ref<Array<buttonArrType>> = ref([
+//     { text: '', emitOption: '' },
+// ])
+// const circuitToDelete: Ref<Object> = ref({})
 
 type SimulatorStateType = {
     activeCircuit: {
@@ -124,109 +127,109 @@ type SimulatorStateType = {
     }
 }
 
-type CircuitItem = {
-    id: string | number
-    name: string
-}
+// type CircuitItem = {
+//     id: string | number
+//     name: string
+// }
 
-type buttonArrType = {
-    text: string
-    emitOption: string
-}
+// type buttonArrType = {
+//     text: string
+//     emitOption: string
+// }
 
-onMounted(() => {
-    //     // checking if circuit or tab is switched
-    //     // setInterval(() => {
-    //     //     if (circuitId.value != globalScope.id) {
-    //     //         circuitName.value = globalScope.name
-    //     //         circuitId.value = globalScope.id
-    //     //     }
-    //     // }, 250)
-    watch(
-        () => SimulatorState.activeCircuit,
-        () => {
-            circuitName.value = SimulatorState.activeCircuit.name
-            circuitId.value = SimulatorState.activeCircuit.id
-            console.log(circuitName.value, circuitId.value)
-        },
-        { deep: true }
-    )
-})
+// onMounted(() => {
+//     // checking if circuit or tab is switched
+//     // setInterval(() => {
+//     //     if (circuitId.value != globalScope.id) {
+//     //         circuitName.value = globalScope.name
+//     //         circuitId.value = globalScope.id
+//     //     }
+//     // }, 250)
+//     watch(
+//         () => SimulatorState.activeCircuit,
+//         () => {
+//             circuitName.value = SimulatorState.activeCircuit.name
+//             circuitId.value = SimulatorState.activeCircuit.id
+//             console.log(circuitName.value, circuitId.value)
+//         },
+//         { deep: true }
+//     )
+// })
 
-function clearMessageBoxFields(): void {
-    SimulatorState.dialogBox.delete_circuit = false
-    ifPersistentShow.value = false
-    messageValue.value = ''
-    buttonArray.value = []
-}
+// function clearMessageBoxFields(): void {
+//     SimulatorState.dialogBox.delete_circuit = false
+//     ifPersistentShow.value = false
+//     messageValue.value = ''
+//     buttonArray.value = []
+// }
 
-function closeCircuit(circuitItem: CircuitItem): void {
-    clearMessageBoxFields()
-    // check circuit count
-    if (SimulatorState.circuit_list.length <= 1) {
-        SimulatorState.dialogBox.delete_circuit = true
-        ifPersistentShow.value = false
-        messageValue.value =
-            'At least 2 circuits need to be there in order to delete a circuit.'
-        buttonArray.value = [
-            {
-                text: 'Close',
-                emitOption: 'dispMessage',
-            },
-        ]
-        return
-    }
-    clearMessageBoxFields()
+// function closeCircuit(circuitItem: CircuitItem): void {
+//     clearMessageBoxFields()
+//     // check circuit count
+//     if (SimulatorState.circuit_list.length <= 1) {
+//         SimulatorState.dialogBox.delete_circuit = true
+//         ifPersistentShow.value = false
+//         messageValue.value =
+//             'At least 2 circuits need to be there in order to delete a circuit.'
+//         buttonArray.value = [
+//             {
+//                 text: 'Close',
+//                 emitOption: 'dispMessage',
+//             },
+//         ]
+//         return
+//     }
+//     clearMessageBoxFields()
 
-    let dependencies = getDependenciesList(circuitItem.id)
-    if (dependencies) {
-        dependencies = `\nThe following circuits are depending on '${
-            scopeList[circuitItem.id].name
-        }': [ ${dependencies} ].\n Delete subcircuits of ${
-            scopeList[circuitItem.id].name
-        } before trying to delete ${scopeList[circuitItem.id].name}`
-        SimulatorState.dialogBox.delete_circuit = true
-        ifPersistentShow.value = true
-        messageValue.value = dependencies
-        buttonArray.value = [
-            {
-                text: 'OK',
-                emitOption: 'dispMessage',
-            },
-        ]
-        return
-    }
+//     let dependencies = getDependenciesList(circuitItem.id)
+//     if (dependencies) {
+//         dependencies = `\nThe following circuits are depending on '${
+//             scopeList[circuitItem.id].name
+//         }': [ ${dependencies} ].\n Delete subcircuits of ${
+//             scopeList[circuitItem.id].name
+//         } before trying to delete ${scopeList[circuitItem.id].name}`
+//         SimulatorState.dialogBox.delete_circuit = true
+//         ifPersistentShow.value = true
+//         messageValue.value = dependencies
+//         buttonArray.value = [
+//             {
+//                 text: 'OK',
+//                 emitOption: 'dispMessage',
+//             },
+//         ]
+//         return
+//     }
 
-    clearMessageBoxFields()
-    SimulatorState.dialogBox.delete_circuit = true
-    ifPersistentShow.value = true
-    buttonArray.value = [
-        {
-            text: 'Continue',
-            emitOption: 'confirmDeletion',
-        },
-        {
-            text: 'Cancel',
-            emitOption: 'cancelDeletion',
-        },
-    ]
-    circuitToDelete.value = circuitItem
-    messageValue.value = `Are you sure want to close: ${
-        scopeList[circuitItem.id].name
-    }\nThis cannot be undone.`
-}
+//     clearMessageBoxFields()
+//     SimulatorState.dialogBox.delete_circuit = true
+//     ifPersistentShow.value = true
+//     buttonArray.value = [
+//         {
+//             text: 'Continue',
+//             emitOption: 'confirmDeletion',
+//         },
+//         {
+//             text: 'Cancel',
+//             emitOption: 'cancelDeletion',
+//         },
+//     ]
+//     circuitToDelete.value = circuitItem
+//     messageValue.value = `Are you sure want to close: ${
+//         scopeList[circuitItem.id].name
+//     }\nThis cannot be undone.`
+// }
 
-function dialogBoxConformation(
-    selectedOption: string,
-    circuitItem: CircuitItem
-): void {
-    SimulatorState.dialogBox.delete_circuit = false
-    if (selectedOption == 'confirmDeletion') {
-        deleteCurrentCircuit(circuitItem.id)
-    } else if (selectedOption == 'cancelDeletion') {
-        showMessage('Circuit was not closed')
-    }
-}
+// function dialogBoxConformation(
+//     selectedOption: string,
+//     circuitItem: CircuitItem
+// ): void {
+//     SimulatorState.dialogBox.delete_circuit = false
+//     if (selectedOption == 'confirmDeletion') {
+//         deleteCurrentCircuit(circuitItem.id)
+//     } else if (selectedOption == 'cancelDeletion') {
+//         showMessage('Circuit was not closed')
+//     }
+// }
 </script>
 
 <style scoped>
