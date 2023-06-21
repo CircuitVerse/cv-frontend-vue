@@ -14,6 +14,7 @@ import domtoimage from 'dom-to-image'
 import '../../vendor/canvas2svg'
 import { useProjectStore } from '#/store/projectStore'
 import { provideProjectName } from '#/components/helpers/promptComponent/PromptComponent.vue'
+import { UpdateProjectDetail } from '#/components/helpers/createNewProject/UpdateProjectDetail.vue'
 
 // var projectName = undefined
 
@@ -374,42 +375,69 @@ export default async function save() {
         // eslint-disable-next-line camelcase
     } else if (logixProjectId == '0') {
         // Create new project - this part needs to be improved and optimised
-        const form = $('<form/>', {
-            action: '/simulator/create_data',
-            method: 'post',
+        // const form = $('<form/>', {
+        //     action: '/api/v1/simulator/create',
+        //     method: 'post',
+        // })
+        // form.append(
+        //     $('<input>', {
+        //         type: 'hidden',
+        //         name: 'authenticity_token',
+        //         value: $('meta[name="csrf-token"]').attr('content'),
+        //     })
+        // )
+        // form.append(
+        //     $('<input>', {
+        //         type: 'text',
+        //         name: 'data',
+        //         value: data,
+        //     })
+        // )
+        // form.append(
+        //     $('<input>', {
+        //         type: 'text',
+        //         name: 'image',
+        //         value: imageData,
+        //     })
+        // )
+        // form.append(
+        //     $('<input>', {
+        //         type: 'text',
+        //         name: 'name',
+        //         value: projectName,
+        //     })
+        // )
+        // $('body').append(form)
+        // form.submit()
+        fetch('/api/v1/simulator/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content'),
+                Authorization: 'Token',
+            },
+            body: JSON.stringify({
+                data,
+                image: imageData,
+                name: projectName,
+            }),
         })
-        form.append(
-            $('<input>', {
-                type: 'hidden',
-                name: 'authenticity_token',
-                value: $('meta[name="csrf-token"]').attr('content'),
+            .then((response) => {
+                if (response.ok) {
+                    showMessage(
+                        `We have Created a new project: ${projectName} in our servers.`
+                    )
+                    $('.loadingIcon').fadeOut()
+                    localStorage.removeItem('recover')
+                    const responseJson = response.json()
+                    responseJson.then((data) => {
+                        UpdateProjectDetail(data)
+                    })
+                }
             })
-        )
-        form.append(
-            $('<input>', {
-                type: 'text',
-                name: 'data',
-                value: data,
+            .catch((error) => {
+                console.error('Error:', error)
             })
-        )
-        form.append(
-            $('<input>', {
-                type: 'text',
-                name: 'image',
-                value: imageData,
-            })
-        )
-
-        form.append(
-            $('<input>', {
-                type: 'text',
-                name: 'name',
-                value: projectName,
-            })
-        )
-
-        $('body').append(form)
-        form.submit()
     } else {
         // updates project - this part needs to be improved and optimised
         // $.ajax({
@@ -461,19 +489,23 @@ export default async function save() {
                 image: imageData,
                 name: projectName,
             }),
-        }).then((response) => {
-            if (response.ok) {
-                showMessage(
-                    `We have saved your project: ${projectName} in our servers.`
-                )
-                localStorage.removeItem('recover')
-            } else {
-                showMessage(
-                    "There was an error, we couldn't save to our servers"
-                )
-            }
-            $('.loadingIcon').fadeOut()
         })
+            .then((response) => {
+                if (response.ok) {
+                    showMessage(
+                        `We have saved your project: ${projectName} in our servers.`
+                    )
+                    localStorage.removeItem('recover')
+                } else {
+                    showMessage(
+                        "There was an error, we couldn't save to our servers"
+                    )
+                }
+                $('.loadingIcon').fadeOut()
+            })
+            .catch((error) => {
+                console.error('Error:', error)
+            })
     }
 
     // Restore everything
