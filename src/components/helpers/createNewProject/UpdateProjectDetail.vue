@@ -182,7 +182,7 @@ async function successPrompt() {
 
 async function failurePrompt() {
     const response = await confirmSingleOption(
-        'Project details could not be updated. Please update on the project page.'
+        'Project details could not be updated. You will be redirected to Project Edit page.'
     )
     if (response === true) {
         window.location.href = `/users/${useAuthStore().getUserId}/projects/${

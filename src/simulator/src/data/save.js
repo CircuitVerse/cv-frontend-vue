@@ -15,6 +15,7 @@ import '../../vendor/canvas2svg'
 import { useProjectStore } from '#/store/projectStore'
 import { provideProjectName } from '#/components/helpers/promptComponent/PromptComponent.vue'
 import { UpdateProjectDetail } from '#/components/helpers/createNewProject/UpdateProjectDetail.vue'
+import { confirmOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
 
 // var projectName = undefined
 
@@ -366,7 +367,7 @@ export default async function save() {
         localStorage.setItem('recover_login', data)
         // Asking user whether they want to login.
         if (
-            confirm(
+            await confirmOption(
                 'You have to login to save the project, you will be redirected to the login page.'
             )
         )

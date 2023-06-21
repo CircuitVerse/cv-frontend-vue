@@ -29,6 +29,7 @@ import { setupCodeMirrorEnvironment } from './Verilog2CV'
 import { keyBinder } from './hotkey_binder/keyBinder'
 import '../vendor/jquery-ui.min.css'
 import '../vendor/jquery-ui.min'
+import { confirmSingleOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
 
 /**
  * to resize window and setup things it
@@ -126,7 +127,7 @@ async function fetchProjectData(projectId) {
             method: 'GET',
             headers: {
                 Accept: 'application/json',
-            }
+            },
         })
         if (response.ok) {
             const data = await response.json()
@@ -138,7 +139,8 @@ async function fetchProjectData(projectId) {
         }
     } catch (error) {
         console.error(error)
-        alert('Error: Could not load.')
+        // alert('Error: Could not load.')
+        confirmSingleOption('Error: Could not load.')
         $('.loadingIcon').fadeOut()
     }
 }

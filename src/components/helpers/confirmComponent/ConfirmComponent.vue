@@ -43,8 +43,8 @@ export const confirmOption = async (
     messageText: string = 'confirm'
 ): Promise<string | boolean> => {
     const buttonList: Array<{ text: string; emitOption: boolean }> = [
-        { text: 'no', emitOption: false },
-        { text: 'yes', emitOption: true },
+        { text: 'Cancel', emitOption: false },
+        { text: 'Ok', emitOption: true },
     ]
 
     const confirmation = await promptActivator(messageText, buttonList)
@@ -70,7 +70,7 @@ export const confirmSingleOption = async (
     messageText: string = 'confirm'
 ): Promise<string | boolean> => {
     const buttonList: Array<{ text: string; emitOption: boolean }> = [
-        { text: 'okay', emitOption: true },
+        { text: 'Ok', emitOption: true },
     ]
 
     const confirmation = await promptActivator(messageText, buttonList)

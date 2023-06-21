@@ -9,15 +9,19 @@ import { checkIfBackup } from './backupCircuit'
 import { generateSaveData, getProjectName, setProjectName } from './save'
 import load from './load'
 import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
+import {
+    confirmOption,
+    confirmSingleOption,
+} from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
 
 /**
  * Helper function to recover unsaved data
  * @category data
  */
-export function recoverProject() {
+export async function recoverProject() {
     if (localStorage.getItem('recover')) {
         var data = JSON.parse(localStorage.getItem('recover'))
-        if (confirm(`Would you like to recover: ${data.name}`)) {
+        if (await confirmOption(`Would you like to recover: ${data.name}`)) {
             load(data)
         }
         localStorage.removeItem('recover')
@@ -126,6 +130,9 @@ window.onbeforeunload = function () {
     alert(
         'You have unsaved changes on this page. Do you want to leave this page and discard your changes or stay on this page?'
     )
+    // await confirmSingleOption(
+    //     'You have unsaved changes on this page. Do you want to leave this page and discard your changes or stay on this page?'
+    // )
     const data = generateSaveData('Untitled')
     localStorage.setItem('recover', data)
     // eslint-disable-next-line consistent-return
@@ -136,8 +143,8 @@ window.onbeforeunload = function () {
  * Function to clear project
  * @category data
  */
-export function clearProject() {
-    if (confirm('Would you like to clear the project?')) {
+export async function clearProject() {
+    if (await confirmOption('Would you like to clear the project?')) {
         globalScope = undefined
         resetScopeList()
         // $('.circuits').remove()
@@ -151,14 +158,14 @@ export function clearProject() {
  * @param {boolean} verify - flag to verify a new project
  * @category data
  */
-export function newProject(verify) {
+export async function newProject(verify) {
     if (
         verify ||
         projectSaved ||
         !checkToSave() ||
-        confirm(
+        (await confirmOption(
             'What you like to start a new project? Any unsaved changes will be lost.'
-        )
+        ))
     ) {
         clearProject()
         localStorage.removeItem('recover')
