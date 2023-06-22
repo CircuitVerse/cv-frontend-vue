@@ -79,7 +79,7 @@ export function getTabsOrder() {
  * @return {JSON}
  * @category data
  */
-export async function generateSaveData(name) {
+export async function generateSaveData(name, setName = true) {
     data = {}
 
     // Prompts for name, defaults to Untitled
@@ -91,7 +91,7 @@ export async function generateSaveData(name) {
         name = 'Untitled'
     }
     data.name = stripTags(name)
-    setProjectName(data.name)
+    if (setName) setProjectName(data.name)
 
     // Save project details
     data.timePeriod = simulationArea.timePeriod
@@ -135,7 +135,7 @@ export async function generateSaveData(name) {
 }
 
 // Helper function to download text
-function download(filename, text) {
+export function download(filename, text) {
     var pom = document.createElement('a')
     pom.setAttribute(
         'href',
