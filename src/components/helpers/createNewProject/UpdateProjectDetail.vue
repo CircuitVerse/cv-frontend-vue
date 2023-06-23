@@ -21,6 +21,17 @@
                             required
                         ></v-text-field>
                     </div>
+                    <template v-if="promptStore.getProjectTags">
+                        <v-chip
+                            v-for="tag in promptStore.getProjectTags.split(',')"
+                            :key="tag"
+                            class="ma-1"
+                            size="small"
+                            text-color="white"
+                        >
+                            {{ tag }}
+                        </v-chip>
+                    </template>
                     <div class="tag-input one-line-input">
                         <p class="tag-input-title one-line-input-title">
                             Project Tags:
@@ -134,10 +145,10 @@ function updateProjectButton(selectedOption: string) {
     if (selectedOption == 'update') {
         const projectData = {
             project: {
-                name: promptStore.getProjectName,
-                tag_list: promptStore.getProjectTags, // assuming getProjectTags returns a comma separated string
-                project_access_type: promptStore.getProjectType,
-                description: promptStore.getProjectDescription,
+                name: promptStore.getProjectName, // returns string (project name)
+                tag_list: promptStore.getProjectTags, // getProjectTags must return a comma separated string (in case of multiple tags)
+                project_access_type: promptStore.getProjectType, // returns string (Public, Private, Limited access)
+                description: promptStore.getProjectDescription, // returns html text
             },
         }
 
