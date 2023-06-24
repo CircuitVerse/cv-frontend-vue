@@ -18,6 +18,7 @@
         <div class="menuListContainer">
             <v-list class="menuList">
                 <v-list-item
+                    class="menuListItem"
                     v-for="(listItem, index) in navbarItem.dropdownItems"
                     :key="index"
                     density="compact"
@@ -84,6 +85,12 @@ const menuButtonIsActive = ref(false)
 
 .menuListContainer {
     margin-top: 5px;
+}
+
+.menuListItem:hover,
+.menuListItem:active {
+    background-color: var(--cus-btn-hov--bg) !important;
+    color: var(--cus-btn-hov-text) !important;
 }
 
 .menuListContainer::before {
