@@ -84,6 +84,10 @@ const keyOptions = ref([])
 const targetPref = ref(null)
 
 onMounted(() => {
+    if (localStorage.userKeys) {
+        checkUpdate()
+        addKeys('user')
+    } else setDefault()
     SimulatorState.dialogBox.customshortcut_dialog = false
     keyOptions.value = Object.entries(defaultKeys)
 })
