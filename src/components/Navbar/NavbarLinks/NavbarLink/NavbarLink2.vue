@@ -7,6 +7,7 @@
                 color="transparent"
                 size="small"
                 flat
+                @click.prevent=""
                 v-bind="props"
                 :append-icon="
                     menuButtonIsActive ? 'mdi-menu-up' : 'mdi-menu-down'
