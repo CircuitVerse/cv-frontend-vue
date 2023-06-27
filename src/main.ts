@@ -13,9 +13,9 @@ import './globalVariables'
 
 import './styles/css/main.stylesheet.css'
 import '../node_modules/bootstrap/scss/bootstrap.scss'
-import './styles/color_theme.scss'
-import './styles/simulator.scss'
-import './styles/tutorials.scss'
+import './styles/color_theme.css'
+import './styles/simulator.css'
+import './styles/tutorials.css'
 
 loadFonts()
 
