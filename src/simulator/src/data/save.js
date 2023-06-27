@@ -374,7 +374,7 @@ export default async function save() {
             window.location.href = '/users/sign_in'
         else $('.loadingIcon').fadeOut()
         // eslint-disable-next-line camelcase
-    } else if (logixProjectId == '0') {
+    } else if (window.logixProjectId === 0) {
         // Create new project - this part needs to be improved and optimised
         // const form = $('<form/>', {
         //     action: '/api/v1/simulator/create',
@@ -486,7 +486,7 @@ export default async function save() {
             },
             body: JSON.stringify({
                 data,
-                id: logixProjectId,
+                id: window.logixProjectId,
                 image: imageData,
                 name: projectName,
             }),

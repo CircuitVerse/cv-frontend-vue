@@ -161,7 +161,7 @@ async function loadProjectData() {
         await fetchProjectData(window.logixProjectId)
     } else if (localStorage.getItem('recover_login') && window.isUserLoggedIn) {
         // Restore unsaved data and save
-        var data = JSON.parse(localStorage.getItem('recover_login'))
+        const data = JSON.parse(localStorage.getItem('recover_login'))
         await load(data)
         localStorage.removeItem('recover')
         localStorage.removeItem('recover_login')
