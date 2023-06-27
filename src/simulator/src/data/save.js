@@ -16,6 +16,7 @@ import { useProjectStore } from '#/store/projectStore'
 import { provideProjectName } from '#/components/helpers/promptComponent/PromptComponent.vue'
 import { UpdateProjectDetail } from '#/components/helpers/createNewProject/UpdateProjectDetail.vue'
 import { confirmOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
+import { getToken } from '#/pages/simulatorHandler.vue'
 
 // var projectName = undefined
 
@@ -374,7 +375,7 @@ export default async function save() {
             window.location.href = '/users/sign_in'
         else $('.loadingIcon').fadeOut()
         // eslint-disable-next-line camelcase
-    } else if (window.logixProjectId === 0) {
+    } else if ([0, undefined, null, '', '0'].includes(window.logixProjectId)) {
         // Create new project - this part needs to be improved and optimised
         // const form = $('<form/>', {
         //     action: '/api/v1/simulator/create',
@@ -410,12 +411,13 @@ export default async function save() {
         // )
         // $('body').append(form)
         // form.submit()
+
         fetch('/api/v1/simulator/create', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content'),
-                Authorization: 'Token',
+                Authorization: `Token ${getToken('cvt')}`,
             },
             body: JSON.stringify({
                 data,
@@ -482,7 +484,7 @@ export default async function save() {
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content'),
-                Authorization: `Token`,
+                Authorization: `Token ${getToken('cvt')}`,
             },
             body: JSON.stringify({
                 data,

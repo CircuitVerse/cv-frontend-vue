@@ -91,6 +91,7 @@ import {
     confirmMultiOption,
     confirmSingleOption,
 } from '../confirmComponent/ConfirmComponent.vue'
+import { getToken } from '#/pages/simulatorHandler.vue'
 
 interface dataType {
     project: {
@@ -159,7 +160,7 @@ function updateProjectButton(selectedOption: string) {
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
-                Authorization: `Token`,
+                Authorization: `Token ${getToken('cvt')}`,
             },
             body: projectJson,
         })

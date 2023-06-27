@@ -10,6 +10,13 @@
     </template>
 </template>
 
+<script lang="ts">
+export function getToken(name: string) {
+    var match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'))
+    if (match) return match[2]
+}
+</script>
+
 <script setup lang="ts">
 import simulator from './simulator.vue'
 import { onBeforeMount, ref } from 'vue'
@@ -27,6 +34,7 @@ async function checkEditAccess() {
         method: 'GET',
         headers: {
             Accept: 'application/json',
+            Authorization: `Token ${getToken('cvt')}`,
         },
     }).then((res) => {
         // if user has edit access load circuit data
@@ -63,6 +71,7 @@ async function getLoginData() {
             method: 'GET',
             headers: {
                 Accept: 'application/json',
+                Authorization: `Token ${getToken('cvt')}`,
             },
         })
         if (response.ok) {

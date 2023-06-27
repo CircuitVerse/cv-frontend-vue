@@ -30,6 +30,7 @@ import { keyBinder } from './hotkey_binder/keyBinder'
 import '../vendor/jquery-ui.min.css'
 import '../vendor/jquery-ui.min'
 import { confirmSingleOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
+import { getToken } from '#/pages/simulatorHandler.vue'
 
 /**
  * to resize window and setup things it
@@ -132,6 +133,7 @@ async function fetchProjectData(projectId) {
             method: 'GET',
             headers: {
                 Accept: 'application/json',
+                Authorization: `Token ${getToken('cvt')}`,
             },
         })
         if (response.ok) {
