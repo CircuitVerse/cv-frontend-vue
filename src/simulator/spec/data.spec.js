@@ -23,7 +23,7 @@ import createSaveAsImgPrompt from '../src/data/saveImage'
 jest.mock('codemirror')
 
 describe('data dir working', () => {
-    CodeMirror.fromTextArea.mockReturnValueOnce({ setValue: (text) => { } })
+    CodeMirror.fromTextArea.mockReturnValueOnce({ setValue: () => {} })
     window.confirm = jest.fn(() => true)
     setup()
 
