@@ -119,7 +119,7 @@ function checkToSave() {
  * Prompt user to save data if unsaved
  * @category data
  */
-window.onbeforeunload = function () {
+window.onbeforeunload = async function () {
     if (projectSaved || embed) return
 
     if (!checkToSave()) return
@@ -130,8 +130,8 @@ window.onbeforeunload = function () {
     // await confirmSingleOption(
     //     'You have unsaved changes on this page. Do you want to leave this page and discard your changes or stay on this page?'
     // )
-    const data = generateSaveData('Untitled')
-    localStorage.setItem('recover', data)
+    const data = await generateSaveData('Untitled')
+    localStorage.setItem('recover', await data)
     // eslint-disable-next-line consistent-return
     return 'Are u sure u want to leave? Any unsaved changes may not be recoverable'
 }

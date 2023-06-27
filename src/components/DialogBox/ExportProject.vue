@@ -40,7 +40,8 @@
 import { ref } from 'vue'
 import { useState } from '#/store/SimulatorStore/state'
 import { useProjectStore } from '#/store/projectStore'
-import { generateSaveData, download } from '#/simulator/src/data/save'
+import { generateSaveData } from '#/simulator/src/data/save'
+import { download } from '#/simulator/src/utils'
 import { escapeHtml } from '#/simulator/src/utils'
 
 export function ExportProject() {
