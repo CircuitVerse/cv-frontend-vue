@@ -16,6 +16,7 @@ import { useProjectStore } from '#/store/projectStore'
 import { provideProjectName } from '#/components/helpers/promptComponent/PromptComponent.vue'
 import { UpdateProjectDetail } from '#/components/helpers/createNewProject/UpdateProjectDetail.vue'
 import { confirmOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
+import { getToken } from '#/pages/simulatorHandler.vue'
 
 // var projectName = undefined
 
@@ -362,6 +363,12 @@ export default async function save() {
     const projectName = getProjectName()
     var imageData = await generateImageForOnline()
 
+    const headers = {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content'),
+        Authorization: `Token ${getToken('cvt')}`,
+    }
+
     if (!window.isUserLoggedIn) {
         // user not signed in, save locally temporarily and force user to sign in
         localStorage.setItem('recover_login', data)
@@ -374,7 +381,7 @@ export default async function save() {
             window.location.href = '/users/sign_in'
         else $('.loadingIcon').fadeOut()
         // eslint-disable-next-line camelcase
-    } else if (logixProjectId == '0') {
+    } else if ([0, undefined, null, '', '0'].includes(window.logixProjectId)) {
         // Create new project - this part needs to be improved and optimised
         // const form = $('<form/>', {
         //     action: '/api/v1/simulator/create',
@@ -410,13 +417,10 @@ export default async function save() {
         // )
         // $('body').append(form)
         // form.submit()
+
         fetch('/api/v1/simulator/create', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content'),
-                Authorization: 'Token',
-            },
+            headers,
             body: JSON.stringify({
                 data,
                 image: imageData,
@@ -479,14 +483,10 @@ export default async function save() {
 
         fetch('/api/v1/simulator/update', {
             method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content'),
-                Authorization: `Token`,
-            },
+            headers,
             body: JSON.stringify({
                 data,
-                id: logixProjectId,
+                id: window.logixProjectId,
                 image: imageData,
                 name: projectName,
             }),

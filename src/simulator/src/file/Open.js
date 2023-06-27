@@ -1,12 +1,25 @@
-/* **************************************************************************************************** */
-/* Implemented in ImportProject.vue Kept for reference in case any bugs occur */
-/* TODO: Remove this file after testing */
-/* **************************************************************************************************** */
+import load from '../data/load'
+import { generateSaveData } from '../data/save'
+import { escapeHtml } from '../ux'
 
-// import load from '../data/load'
-// import { generateSaveData } from '../data/save'
-// import { escapeHtml } from '../ux'
-
+// const scopeSchema = [
+//     'layout',
+//     'verilogMetadata',
+//     'allNodes',
+//     'id',
+//     'name',
+//     'restrictedCircuitElementsUsed',
+//     'nodes',
+// ]
+// const JSONSchema = [
+//     'name',
+//     'timePeriod',
+//     'clockEnabled',
+//     'projectId',
+//     'focussedCircuit',
+//     'orderedTabs',
+//     'scopes',
+// ]
 // const scopeSchema = [
 //     'layout',
 //     'verilogMetadata',
