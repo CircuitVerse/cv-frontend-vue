@@ -81,7 +81,7 @@ export function getTabsOrder() {
  * @category data
  */
 export async function generateSaveData(name, setName = true) {
-    data = {}
+    let data = {}
 
     // Prompts for name, defaults to Untitled
     name = getProjectName() || name || (await provideProjectName())
@@ -136,7 +136,7 @@ export async function generateSaveData(name, setName = true) {
 }
 
 // Helper function to download text
-export function download(filename, text) {
+function download(filename, text) {
     var pom = document.createElement('a')
     pom.setAttribute(
         'href',
