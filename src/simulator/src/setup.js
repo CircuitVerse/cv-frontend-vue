@@ -90,7 +90,7 @@ function setupEnvironment() {
     const projectId = generateId()
     window.projectId = projectId
     updateSimulationSet(true)
-    const DPR = window.devicePixelRatio || 1
+    // const DPR = window.devicePixelRatio || 1 // unused variable
     newCircuit('Main')
     window.data = {}
     resetup()
@@ -121,6 +121,11 @@ function setupElementLists() {
     window.renderOrder = [...moduleList.slice().reverse(), 'wires', 'allNodes'] // Order of render
 }
 
+/**
+ * Fetches project data from API and loads it into the simulator.
+ * @param {number} projectId The ID of the project to fetch data for
+ * @category setup
+ */
 async function fetchProjectData(projectId) {
     try {
         const response = await fetch(`/api/v1/simulator/${projectId}/data`, {
@@ -139,18 +144,56 @@ async function fetchProjectData(projectId) {
         }
     } catch (error) {
         console.error(error)
-        // alert('Error: Could not load.')
         confirmSingleOption('Error: Could not load.')
         $('.loadingIcon').fadeOut()
     }
 }
 
 /**
- * The first function to be called to setup the whole simulator
+ * Load project data immediately when available.
+ * Improvement to eliminate delay caused by setTimeout in previous implementation revert if issues arise.
+ * @category setup
+ */
+async function loadProjectData() {
+    window.logixProjectId = window.logixProjectId ?? 0
+    if (window.logixProjectId !== 0) {
+        $('.loadingIcon').fadeIn()
+        await fetchProjectData(window.logixProjectId)
+    } else if (localStorage.getItem('recover_login') && window.isUserLoggedIn) {
+        // Restore unsaved data and save
+        var data = JSON.parse(localStorage.getItem('recover_login'))
+        await load(data)
+        localStorage.removeItem('recover')
+        localStorage.removeItem('recover_login')
+        await save()
+    } else if (localStorage.getItem('recover')) {
+        // Restore unsaved data which didn't get saved due to error
+        showMessage(
+            "We have detected that you did not save your last work. Don't worry we have recovered them. Access them using Project->Recover"
+        )
+    }
+}
+
+/**
+ * Show tour guide if it hasn't been completed yet.
+ * The tour is shown after a delay of 2 seconds.
+ * @category setup
+ */
+function showTour() {
+    if (!localStorage.tutorials_tour_done && !embed) {
+        setTimeout(() => {
+            showTourGuide()
+        }, 2000)
+    }
+}
+
+/**
+ * The first function to be called to setup the whole simulator.
+ * This function sets up the simulator environment, the UI, the listeners,
+ * loads the project data, and shows the tour guide.
  * @category setup
  */
 export function setup() {
-    // console.log('hello from set up')
     let embed = false
     const startListeners = embed ? startEmbedListeners : startMainListeners
     setupElementLists()
@@ -158,41 +201,7 @@ export function setup() {
     if (!embed) {
         setupUI()
     }
-    // console.log('start_lis')
     startListeners()
-    // if (!embed) {
-    //     keyBinder()
-    // }
-
-    // Load project data after 1 second - needs to be improved, delay needs to be eliminated
-    setTimeout(() => {
-        // let __logix_project_id
-        if (!window.logixProjectId) {
-            // __logix_project_id = window.logixProjectId
-            window.logixProjectId = 0
-        }
-        // else { __logix_project_id = 0 }
-        if (logixProjectId != 0) {
-            $('.loadingIcon').fadeIn()
-            fetchProjectData(logixProjectId)
-        } else if (localStorage.getItem('recover_login') && isUserLoggedIn) {
-            // Restore unsaved data and save
-            var data = JSON.parse(localStorage.getItem('recover_login'))
-            load(data)
-            localStorage.removeItem('recover')
-            localStorage.removeItem('recover_login')
-            save()
-        } else if (localStorage.getItem('recover')) {
-            // Restore unsaved data which didn't get saved due to error
-            showMessage(
-                "We have detected that you did not save your last work. Don't worry we have recovered them. Access them using Project->Recover"
-            )
-        }
-    }, 1000)
-
-    if (!localStorage.tutorials_tour_done && !embed) {
-        setTimeout(() => {
-            showTourGuide()
-        }, 2000)
-    }
+    loadProjectData()
+    showTour()
 }

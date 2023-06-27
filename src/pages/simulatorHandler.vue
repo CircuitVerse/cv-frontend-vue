@@ -69,6 +69,8 @@ async function getLoginData() {
             const data = await response.json()
             authStore.setUserInfo(data.data)
             ;(window as any).isUserLoggedIn = true
+        } else if (response.status === 401) {
+            ;(window as any).isUserLoggedIn = false
         }
     } catch (err) {
         console.error(err)
