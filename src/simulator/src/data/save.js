@@ -363,6 +363,12 @@ export default async function save() {
     const projectName = getProjectName()
     var imageData = await generateImageForOnline()
 
+    const headers = {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content'),
+        Authorization: `Token ${getToken('cvt')}`,
+    }
+
     if (!window.isUserLoggedIn) {
         // user not signed in, save locally temporarily and force user to sign in
         localStorage.setItem('recover_login', data)
@@ -414,11 +420,7 @@ export default async function save() {
 
         fetch('/api/v1/simulator/create', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content'),
-                Authorization: `Token ${getToken('cvt')}`,
-            },
+            headers,
             body: JSON.stringify({
                 data,
                 image: imageData,
@@ -481,11 +483,7 @@ export default async function save() {
 
         fetch('/api/v1/simulator/update', {
             method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content'),
-                Authorization: `Token ${getToken('cvt')}`,
-            },
+            headers,
             body: JSON.stringify({
                 data,
                 id: window.logixProjectId,
