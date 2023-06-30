@@ -1,9 +1,14 @@
 <template>
     <nav class="navbar navbar-expand-lg navbar-dark header">
         <Logo :cvlogo="navbarLogo" />
-        <Hamburger v-if="showSidebar" />
+        <!-- <Hamburger v-if="showSidebar" /> -->
+        <Hamburger2 v-if="showSidebar" :navbar-data="navbarData" />
 
-        <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse">
+        <div
+            v-else
+            id="bs-example-navbar-collapse-1"
+            class="collapse navbar-collapse"
+        >
             <NavbarLinks :navbar-data="navbarData" />
 
             <span
@@ -13,7 +18,7 @@
                 {{ projectStore.getProjectName }}
             </span>
             <!-- <User :user-data="userDropdownItems" /> -->
-            <UserMenu style="margin: 0 2rem 0 auto" />
+            <UserMenu class="useMenuBtn" />
         </div>
     </nav>
     <QuickButton />
@@ -30,6 +35,7 @@ import userDropdownItems from '#/assets/constants/Navbar/USER_DATA.json'
 
 import Logo from '@/Logo/Logo.vue'
 import Hamburger from '@/Navbar/Hamburger/Hamburger.vue'
+import Hamburger2 from './Hamburger/Hamburger2.vue'
 import { ref, onMounted } from 'vue'
 import { useProjectStore } from '#/store/projectStore'
 
@@ -50,4 +56,8 @@ function checkShowSidebar() {
 
 <style scoped>
 @import './Navbar.css';
+
+.useMenuBtn {
+    margin: 0 2rem 0 auto;
+}
 </style>

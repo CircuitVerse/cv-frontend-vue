@@ -86,7 +86,12 @@ const menuButtonIsActive = ref(false)
 
 .menuListContainer {
     margin-top: 5px;
+    /* transform: translate(-100%, 0%); */
+    overflow-y: auto;
 }
+/* .menuList {
+    width: 100%;
+} */
 
 .menuListItem:hover,
 .menuListItem:active {
