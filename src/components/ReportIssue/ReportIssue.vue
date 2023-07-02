@@ -119,7 +119,10 @@ import { generateSaveData, generateImage } from '#/simulator/src/data/save'
 import ReportIssueButton from './ReportIssueButton.vue'
 import { ref, Ref } from 'vue'
 import { useState } from '#/store/SimulatorStore/state'
+import { useAuthStore } from '#/store/authStore'
+import { getToken } from '#/pages/simulatorHandler.vue'
 
+const authStore = useAuthStore()
 const reportState = useState()
 const reportLabel: Ref<boolean> = ref(false)
 const issueText: Ref<boolean> = ref(false)
@@ -160,7 +163,7 @@ function reportIssue(): void {
     resultOpen.value = true
     const issuetext = issueTextContent.value
     const emailtext = issueEmailContent.value
-    const userId = window.user_id
+    const userId = `${authStore.getUserId} - ${authStore.getUsername}`
     const message =
         issuetext +
         '\nEmail:' +
@@ -181,14 +184,18 @@ async function postUserIssue(message: string): Promise<void> {
     let result: string | undefined
 
     try {
-        const img = generateImage('jpeg', 'full', false, 1, false).split(',')[1]
+        const img = await generateImage('jpeg', 'full', false, 1, false).split(
+            ','
+        )[1]
         const response = await fetch('https://api.imgur.com/3/image', {
             method: 'POST',
             headers: {
                 Authorization: 'Client-ID 9a33b3b370f1054',
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: `image=${img}`,
+            body: new URLSearchParams({
+                image: img,
+            }),
         })
         const data = await response.json()
         result = data?.data?.link
@@ -200,23 +207,20 @@ async function postUserIssue(message: string): Promise<void> {
 
     let circuitData: JSON | string
     try {
-        circuitData = generateSaveData('Untitled')
+        circuitData = await generateSaveData('Untitled', false)
     } catch (err) {
         circuitData = `Circuit data generation failed: ${err}`
     }
 
     try {
-        const csrfTokenEl = document.querySelector('meta[name="csrf-token"]')
-        const csrfToken = csrfTokenEl ? csrfTokenEl.content : 'content'
-
         // delay between requests
         await new Promise((resolve) => setTimeout(resolve, 1000))
 
-        const response = await fetch('/simulator/post_issue', {
+        const response = await fetch('/api/v1/simulator/post_issue', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-Token': csrfToken,
+                Authorization: `Token ${getToken('cvt')}`,
             },
             body: JSON.stringify({
                 text: message,
