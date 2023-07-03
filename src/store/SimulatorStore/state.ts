@@ -7,7 +7,6 @@ export interface State {
     dialogBox: Object
     createCircuit: Object
     combinationalAnalysis: Object
-    reportIssueOpen: boolean
 }
 
 export const useState = defineStore({
@@ -38,7 +37,6 @@ export const useState = defineStore({
                 booleanExpression: 'Example: (AB)',
                 decimalColumnBox: false,
             },
-            reportIssueOpen: false,
         }
     },
 })
