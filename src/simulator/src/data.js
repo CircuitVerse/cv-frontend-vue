@@ -16,9 +16,9 @@ import { colorThemes } from './themer/themer'
 import { showTourGuide } from './tutorials'
 import {
     createVerilogCircuit,
-    saveVerilogCode,
-    resetVerilogCode,
-    applyVerilogTheme,
+    // saveVerilogCode,
+    // resetVerilogCode,
+    // applyVerilogTheme,
 } from './Verilog2CV'
 import { generateVerilog } from './verilog'
 import { bitConverterDialog } from './utils'

@@ -183,7 +183,7 @@ export async function createNewCircuitScope(
         name = 'Untitled-Circuit'
     }
     simulationArea.lastSelected = undefined
-    const scope = newCircuit(name, id, isVerilog, isVerilogMain)
+    newCircuit(name, id, isVerilog, isVerilogMain)
     if (!embed) {
         showProperties(simulationArea.lastSelected)
         updateTestbenchUI()
