@@ -95,7 +95,6 @@ import {
     submit,
     updateHTML,
 } from '#/simulator/src/hotkey_binder/view/panel.ui'
-import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
 import { useState } from '#/store/SimulatorStore/state'
 import { onMounted, onUpdated, ref, Ref } from '@vue/runtime-core'
 
