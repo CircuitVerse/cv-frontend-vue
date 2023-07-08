@@ -134,7 +134,6 @@ const issueEmail: Ref<boolean> = ref(false)
 const issueEmailContent: Ref<string> = ref('')
 const reportIssueButtonVisible: Ref<boolean> = ref(false)
 const resultOpen: Ref<boolean> = ref(false)
-const Client_ID: Ref<string> = ref('9a33b3b370f1054')
 
 function openReportModal(): void {
     if (!reportIssueOpen.value) {
@@ -193,7 +192,7 @@ async function postUserIssue(message: string): Promise<void> {
         const response = await fetch('https://api.imgur.com/3/image', {
             method: 'POST',
             headers: {
-                Authorization: `Client-ID ${Client_ID.value}`,
+                Authorization: 'Client-ID 9a33b3b370f1054', // eslint-disable-line
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
             body: new URLSearchParams({
