@@ -1,4 +1,7 @@
 <template>
+    <div id="code-window" class="code-window">
+        <textarea id="codeTextArea"></textarea>
+    </div>
     <div
         id="verilogEditorPanel"
         class="noSelect defaultCursor draggable-panel draggable-panel-css"
