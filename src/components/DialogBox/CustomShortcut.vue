@@ -5,7 +5,9 @@
     >
         <v-card class="messageBoxContent">
             <v-card-text>
-                <p class="dialogHeader">Keybinding Preference</p>
+                <p class="dialogHeader">
+                    {{ $t('simulator.panel_header.keybinding_preference') }}
+                </p>
                 <v-btn
                     size="x-small"
                     icon
@@ -18,16 +20,25 @@
                     <!-- Edit Panel -->
                     <div id="edit" tabindex="0" @keydown="updateEdit($event)">
                         <span style="font-size: 14px">
-                            Press Desire Key Combination & press Enter or press
-                            ESC to cancel.
+                            {{
+                                $t(
+                                    'simulator.panel_body.custom_shortcut.esc_cancel'
+                                )
+                            }}
                         </span>
-                        <div id="pressedKeys"></div>
-                        <div id="warning"></div>
+                        <div id="pressedKeys">{{ pressedKeys }}</div>
+                        <div id="warning">{{ warning }}</div>
                     </div>
                     <!-- Heading -->
                     <div id="heading">
-                        <span>Command</span>
-                        <span>Keymapping</span>
+                        <span>{{
+                            $t('simulator.panel_body.custom_shortcut.command')
+                        }}</span>
+                        <span>{{
+                            $t(
+                                'simulator.panel_body.custom_shortcut.keymapping'
+                            )
+                        }}</span>
                     </div>
                     <!-- Markup -->
                     <div
@@ -51,10 +62,14 @@
             </v-card-text>
             <v-card-actions>
                 <v-btn class="messageBtn" block @click="resetKeybinding()">
-                    Reset To Default
+                    {{
+                        $t(
+                            'simulator.panel_body.custom_shortcut.reset_to_default'
+                        )
+                    }}
                 </v-btn>
                 <v-btn class="messageBtn" block @click="saveKeybinding()">
-                    Save
+                    {{ $t('simulator.panel_body.custom_shortcut.save') }}
                 </v-btn>
             </v-card-actions>
         </v-card>
@@ -69,7 +84,10 @@ import {
     setDefault,
     warnOverride,
 } from '#/simulator/src/hotkey_binder/model/actions'
-import { KeyCode } from '#/simulator/src/hotkey_binder/model/normalize/normalizer.plugin'
+import {
+    KeyCode,
+    KeyCombination,
+} from '#/simulator/src/hotkey_binder/model/normalize/normalizer.plugin'
 import { checkRestricted } from '#/simulator/src/hotkey_binder/model/utils'
 import {
     closeEdit,
@@ -78,10 +96,18 @@ import {
     updateHTML,
 } from '#/simulator/src/hotkey_binder/view/panel.ui'
 import { useState } from '#/store/SimulatorStore/state'
-import { onMounted, onUpdated, ref } from '@vue/runtime-core'
+import { onMounted, onUpdated, ref, Ref } from '@vue/runtime-core'
+
+interface KeyOption {
+    0: string
+    1: string
+}
+
 const SimulatorState = useState()
-const keyOptions = ref([])
-const targetPref = ref(null)
+const keyOptions = ref<KeyOption[]>([])
+const targetPref = ref<HTMLSpanElement | null>(null)
+const pressedKeys: Ref<string> = ref('')
+const warning: Ref<string> = ref('')
 
 onMounted(() => {
     if (localStorage.userKeys) {
@@ -89,50 +115,57 @@ onMounted(() => {
         addKeys('user')
     } else setDefault()
     SimulatorState.dialogBox.customshortcut_dialog = false
-    keyOptions.value = Object.entries(defaultKeys)
+    keyOptions.value = Object.entries(defaultKeys) as KeyOption[]
 })
 
 onUpdated(() => {
     if (localStorage.userKeys) {
         checkUpdate()
         addKeys('user')
-    } else setDefault()
+    } else {
+        setDefault()
+    }
 })
 
-function updatePreference(e) {
-    $('#pressedKeys').text('')
-    $('#warning').text('')
-    $('#edit').css('border', 'none')
-    $('#edit').css('display', 'block')
-    $($('#edit')).focus()
-    ;[, targetPref.value] = e.target.closest('div').children
+function updatePreference(e: MouseEvent) {
+    pressedKeys.value = ''
+    warning.value = ''
+    document.getElementById('edit')!.style.border = 'none'
+    document.getElementById('edit')!.style.display = 'block'
+    document.getElementById('edit')!.focus()
+    ;[, targetPref.value] = e.target!.closest('div')!.children as [
+        HTMLSpanElement,
+        HTMLSpanElement
+    ]
 }
 
-function updateEdit(e) {
-    e = e || window.event
+function updateEdit(e: KeyboardEvent) {
+    e = e || window.event!
     e.stopPropagation()
     e.preventDefault()
-    var k = KeyCode
+    const k = KeyCode
     let modifiers = ['CTRL', 'ALT', 'SHIFT', 'META']
-    $('#edit').css('animation', 'none')
-    $('#warning').text('')
+    document.getElementById('edit')!.style.animation = 'none'
+    warning.value = ''
     if (e.keyCode === 27) closeEdit()
     if (e.keyCode === 13) {
-        if ($('#pressedKeys').text() === '') {
-            $('#warning').text('Please enter some key(s)')
-            $('#edit').css('animation', 'shake .3s linear')
+        if (pressedKeys.value === '') {
+            warning.value = 'Please enter some key(s)'
+            document.getElementById('edit')!.style.animation =
+                'shake .3s linear'
             return
         }
 
-        if (!checkRestricted($('#pressedKeys').text())) {
-            override($('#pressedKeys').text())
-            targetPref.value.innerText = $('#pressedKeys').text()
-            $('#pressedKeys').text('')
-            $('#edit').css('display', 'none')
+        if (!checkRestricted(pressedKeys.value)) {
+            override(pressedKeys.value)
+            targetPref.value!.innerText = pressedKeys.value
+            pressedKeys.value = ''
+            document.getElementById('edit')!.style.display = 'none'
         } else {
-            $('#warning').text('Please enter different key(s).')
-            $('#edit').css('animation', 'shake .3s linear')
-            $('#pressedKeys').text('')
+            warning.value = 'Please enter different key(s).'
+            document.getElementById('edit')!.style.animation =
+                'shake .3s linear'
+            pressedKeys.value = ''
         }
     }
     const currentKey =
@@ -140,41 +173,36 @@ function updateEdit(e) {
             ? k.hot_key(k.translate_event(e)).split('+').join(' + ')
             : ''
     if (
-        $('#pressedKeys').text().split(' + ').length === 2 &&
+        pressedKeys.value.split(' + ').length === 2 &&
         !modifiers.includes(currentKey) &&
-        modifiers.includes($('#pressedKeys').text().split(' + ')[1])
+        modifiers.includes(pressedKeys.value.split(' + ')[1])
     ) {
-        $('#pressedKeys').append(` + ${currentKey}`)
-    } else if (modifiers.includes($('#pressedKeys').text())) {
-        modifiers = modifiers.filter((mod) => mod === $('#pressedKeys').text())
+        pressedKeys.value += `+ ${currentKey}`
+    } else if (modifiers.includes(pressedKeys.value)) {
+        modifiers = modifiers.filter((mod) => mod === pressedKeys.value)
         if (!modifiers.includes(currentKey)) {
-            $('#pressedKeys').append(` + ${currentKey}`)
+            pressedKeys.value += `+ ${currentKey}`
         }
     } else {
-        $('#pressedKeys').text('')
-        $('#pressedKeys').text(currentKey)
+        pressedKeys.value = ''
+        pressedKeys.value = currentKey
     }
-    if (!$('#pressedKeys').text()) {
-        $('#pressedKeys').text(currentKey)
+    if (!pressedKeys.value) {
+        pressedKeys.value = currentKey
     }
     if (
-        ($('#pressedKeys').text().split(' + ').length === 2 &&
-            ['Ctrl', 'Meta'].includes(
-                $('#pressedKeys').text().split(' + ')[1]
-            )) ||
-        ($('#pressedKeys').text().split(' + ')[0] === 'Alt' &&
-            $('#pressedKeys').text().split(' + ')[1] === 'Shift')
+        (pressedKeys.value.split(' + ').length === 2 &&
+            ['Ctrl', 'Meta'].includes(pressedKeys.value.split(' + ')[1])) ||
+        (pressedKeys.value.split(' + ')[0] === 'Alt' &&
+            pressedKeys.value.split(' + ')[1] === 'Shift')
     ) {
-        $('#pressedKeys').text(
-            $('#pressedKeys').text().split(' + ').reverse().join(' + ')
-        )
+        pressedKeys.value = pressedKeys.value.split(' + ').reverse().join(' + ')
     }
 
-    warnOverride($('#pressedKeys').text(), targetPref.value)
-    if (checkRestricted($('#pressedKeys').text())) {
-        $('#warning').text(
+    warnOverride(pressedKeys.value, targetPref.value!)
+    if (checkRestricted(pressedKeys.value)) {
+        warning.value =
             'The above combination is a system default shortcut & cannot be set.'
-        )
     }
 }
 
@@ -188,10 +216,13 @@ function saveKeybinding() {
     submit()
     SimulatorState.dialogBox.customshortcut_dialog = false
 }
+
 function closeDialog() {
     if (localStorage.userKeys) {
         updateHTML('user')
-    } else updateHTML('default')
+    } else {
+        updateHTML('default')
+    }
     SimulatorState.dialogBox.customshortcut_dialog = false
 }
 </script>
