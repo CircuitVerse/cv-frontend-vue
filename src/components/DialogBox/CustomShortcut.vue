@@ -174,6 +174,7 @@ function updateEdit(e: KeyboardEvent) {
             document.getElementById('edit')!.style.animation =
                 'shake .3s linear'
             pressedKeys.value = ''
+            return
         }
     }
     const currentKey =
