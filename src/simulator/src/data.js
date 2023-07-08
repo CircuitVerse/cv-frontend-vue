@@ -21,7 +21,7 @@ import {
 } from './Verilog2CV'
 import { generateVerilog } from './verilog'
 import { bitConverterDialog } from './utils'
-import { keyBinder } from './hotkey_binder/keyBinder'
+import { keyBinder } from '#/components/DialogBox/CustomShortcut.vue'
 
 const logixFunction = {}
 logixFunction.save = save

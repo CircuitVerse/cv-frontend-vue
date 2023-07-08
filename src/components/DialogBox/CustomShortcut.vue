@@ -76,7 +76,7 @@
     </v-dialog>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts">
 import { defaultKeys } from '#/simulator/src/hotkey_binder/defaultKeys'
 import {
     addKeys,
@@ -95,9 +95,17 @@ import {
     submit,
     updateHTML,
 } from '#/simulator/src/hotkey_binder/view/panel.ui'
+import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
 import { useState } from '#/store/SimulatorStore/state'
 import { onMounted, onUpdated, ref, Ref } from '@vue/runtime-core'
 
+export function keyBinder() {
+    const SimulatorState = useState()
+    SimulatorState.dialogBox.customshortcut_dialog = true
+}
+</script>
+
+<script lang="ts" setup>
 interface KeyOption {
     0: string
     1: string
@@ -199,7 +207,7 @@ function updateEdit(e: KeyboardEvent) {
         pressedKeys.value = pressedKeys.value.split(' + ').reverse().join(' + ')
     }
 
-    warnOverride(pressedKeys.value, targetPref.value!)
+    warnOverride(pressedKeys.value, targetPref.value!, warning)
     if (checkRestricted(pressedKeys.value)) {
         warning.value =
             'The above combination is a system default shortcut & cannot be set.'
