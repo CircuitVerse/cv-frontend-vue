@@ -18,6 +18,7 @@ import {
     createVerilogCircuit,
     saveVerilogCode,
     resetVerilogCode,
+    applyVerilogTheme,
 } from './Verilog2CV'
 import { generateVerilog } from './verilog'
 import { bitConverterDialog } from './utils'
@@ -46,6 +47,7 @@ logixFunction.newVerilogModule = createVerilogCircuit
 logixFunction.saveVerilogCode = saveVerilogCode
 logixFunction.resetVerilogCode = resetVerilogCode
 logixFunction.generateVerilog = generateVerilog
+logixFunction.applyVerilogTheme = applyVerilogTheme
 logixFunction.bitconverter = bitConverterDialog
 logixFunction.createNewCircuitScope = createNewCircuitScope
 logixFunction.customShortcut = keyBinder
