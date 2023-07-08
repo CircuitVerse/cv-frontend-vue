@@ -44,10 +44,7 @@
                             )
                         }}
                     </p>
-                    <select
-                        v-model="selectedTheme"
-                        class="applyTheme"
-                    >
+                    <select v-model="selectedTheme" class="applyTheme">
                         <optgroup
                             v-for="optgroup in Themes"
                             :key="optgroup.label"
@@ -68,32 +65,30 @@
 </template>
 
 <script lang="ts" setup>
-import PanelHeader from '../Shared/PanelHeader.vue'
 import Themes from '../../../assets/constants/Panels/VerilogEditorPanel/THEMES.json'
+import {
+    saveVerilogCode,
+    resetVerilogCode,
+    applyVerilogTheme,
+} from '#/simulator/src/Verilog2CV'
+import PanelHeader from '../Shared/PanelHeader.vue'
 import { ref, Ref, watch, onMounted } from 'vue'
-import logixFunction from '#/simulator/src/data'
+// import logixFunction from '#/simulator/src/data'
 
-const selectedTheme:Ref<string> = ref(localStorage.getItem('verilog-theme') || 'default');
+const selectedTheme: Ref<string> = ref(
+    localStorage.getItem('verilog-theme') || 'default'
+)
 
 onMounted(() => {
-  const savedTheme = localStorage.getItem('verilog-theme');
-  if (savedTheme) {
-    selectedTheme.value = savedTheme;
-  }
-});
-
-
-function saveVerilogCode(): void {
-    logixFunction.saveVerilogCode()
-}
-function resetVerilogCode(): void {
-    logixFunction.resetVerilogCode()
-}
-
-watch(selectedTheme, (newTheme: string) => {
-    logixFunction.applyVerilogTheme(newTheme)
+    const savedTheme = localStorage.getItem('verilog-theme')
+    if (savedTheme) {
+        selectedTheme.value = savedTheme
+    }
 })
 
+watch(selectedTheme, (newTheme: string) => {
+    applyVerilogTheme(newTheme)
+})
 </script>
 
 <style scoped>
