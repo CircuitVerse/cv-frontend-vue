@@ -85,9 +85,9 @@ export function verilogModeSet(mode) {
         resetVerilogCode()
     } else {
         document.getElementById('code-window').style.display = 'none'
-        document.querySelector('.elementPanel').style.display = 'block'
-        document.querySelector('.timing-diagram-panel').style.display = 'block'
-        document.querySelector('.quick-btn').style.display = 'block'
+        document.querySelector('.elementPanel').style.display = ''
+        document.querySelector('.timing-diagram-panel').style.display = ''
+        document.querySelector('.quick-btn').style.display = ''
         document.getElementById('verilogEditorPanel').style.display = 'none'
     }
 }
