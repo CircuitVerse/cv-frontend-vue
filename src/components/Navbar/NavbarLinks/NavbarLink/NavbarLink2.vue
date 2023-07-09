@@ -4,6 +4,7 @@
             <v-btn
                 id="navbarMenuButton"
                 :class="menuButtonIsActive ? 'activeMenuButton' : ''"
+                class="navbarMenuButton"
                 color="transparent"
                 size="small"
                 flat
@@ -65,6 +66,15 @@ const menuButtonIsActive = ref(false)
 </script>
 
 <style scoped>
+.navbarMenuButton {
+    color: white !important;
+    font-size: 1rem !important;
+    font-weight: 400 !important;
+    text-transform: capitalize !important;
+    padding: 0 0 0 0.3rem !important;
+    letter-spacing: 0 !important;
+}
+
 .menuList {
     /* height: auto; */
     backdrop-filter: blur(5px) !important;
@@ -75,9 +85,9 @@ const menuButtonIsActive = ref(false)
     color: white !important;
 }
 
-.v-btn {
+/* .v-btn {
     color: white !important;
-}
+} */
 
 .activeMenuButton {
     /* outline: 1px solid white; */
@@ -109,5 +119,11 @@ const menuButtonIsActive = ref(false)
     height: 10px;
     position: absolute;
     transform: translate(2.5rem, -3px) rotate(-45deg);
+}
+</style>
+
+<style>
+.navbarMenuButton i {
+    margin: 0 !important;
 }
 </style>
