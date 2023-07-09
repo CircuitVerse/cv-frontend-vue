@@ -21,7 +21,7 @@
                     <v-select
                         :items="availableLocale"
                         label="Locale"
-                        v-model="(locale as any)"
+                        v-model="locale"
                         density="compact"
                         outlined
                         dense
