@@ -1,7 +1,8 @@
 <template>
     <div class="quick-btn" @ondragover="dragover">
         <div id="dragQPanel" class="panel-drag">
-            <DragSvgDots />
+            <!-- <DragSvgDots /> -->
+            <div class="drag-dot-svg"></div>
         </div>
         <div>
             <button
@@ -173,6 +174,15 @@ function increment(): void {
 .quick-btn > div > button {
     margin: auto;
     border: none;
+}
+
+.drag-dot-svg {
+    width: 12px;
+    height: 20px;
+    background: url(../../../styles/css/assets/shorcuts/dragDots.svg)
+        center/contain;
+    display: block;
+    margin-left: 4px;
 }
 
 .quick-btn-save-online {
