@@ -22,6 +22,8 @@ import {
 import { generateVerilog } from './verilog'
 import { bitConverterDialog } from './utils'
 import { keyBinder } from '#/components/DialogBox/CustomShortcut.vue'
+import { ExportProject } from '#/components/DialogBox/ExportProject.vue'
+import { ImportProject } from '#/components/DialogBox/ImportProject.vue'
 
 const logixFunction = {}
 logixFunction.save = save
@@ -30,7 +32,7 @@ logixFunction.createSaveAsImgPrompt = createSaveAsImgPrompt
 logixFunction.clearProject = clearProject
 logixFunction.newProject = newProject
 logixFunction.saveOffline = saveOffline
-logixFunction.newCircuit = newCircuit
+// logixFunction.newCircuit = newCircuit
 logixFunction.createOpenLocalPrompt = openOffline
 logixFunction.recoverProject = recoverProject
 logixFunction.createSubCircuitPrompt = createSubCircuitPrompt
@@ -47,6 +49,8 @@ logixFunction.generateVerilog = generateVerilog
 logixFunction.bitconverter = bitConverterDialog
 logixFunction.createNewCircuitScope = createNewCircuitScope
 logixFunction.customShortcut = keyBinder
+logixFunction.ExportProject = ExportProject
+logixFunction.ImportProject = ImportProject
 export default logixFunction
 
 // Hack to restart tour guide

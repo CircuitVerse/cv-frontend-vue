@@ -97,6 +97,7 @@ import {
 } from '#/simulator/src/hotkey_binder/view/panel.ui'
 import { useState } from '#/store/SimulatorStore/state'
 import { onMounted, onUpdated, ref, Ref } from '@vue/runtime-core'
+import { confirmOption } from '../helpers/confirmComponent/ConfirmComponent.vue'
 
 export function keyBinder() {
     const SimulatorState = useState()
@@ -214,9 +215,10 @@ function updateEdit(e: KeyboardEvent) {
     }
 }
 
-function resetKeybinding() {
+async function resetKeybinding() {
     console.log('Reset Keybinding')
-    if (confirm('Remove all custom keys & set the default keys?')) setDefault()
+    if (await confirmOption('Remove all custom keys & set the default keys?'))
+        setDefault()
 }
 
 function saveKeybinding() {
