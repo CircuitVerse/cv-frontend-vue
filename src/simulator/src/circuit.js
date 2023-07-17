@@ -84,7 +84,6 @@ export function switchCircuit(id) {
     // globalScope.fixLayout();
     scheduleBackup()
     if (id === globalScope.id) return
-    console.log('tab changed')
     // $(`.circuits`).removeClass('current')
     circuit_list.value.forEach((circuit) =>
         circuit.focussed ? (circuit.focussed = false) : null
