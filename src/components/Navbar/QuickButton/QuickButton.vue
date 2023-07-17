@@ -155,6 +155,7 @@
         <div>
             <button
                 id="viewButton"
+                @click="fullView"
                 type="button"
                 class="quick-btn-view"
                 title="Preview Circuit"
@@ -177,9 +178,47 @@
         </div>
     </div>
 </template>
+<script lang="ts" scoped>
+export default {
+    methods: {
+        fullView() {
+            const exitViewBtn = document.createElement('button');
+            exitViewBtn.id = 'exitViewBtn';
+            exitViewBtn.textContent = 'Exit Full Preview';
+            exitViewBtn.addEventListener('click', this.exitFullView);
 
-<script lang="ts" setup></script>
+            const app = document.getElementById('app');
+            if (app) {
+                app.appendChild(exitViewBtn);
+            }
 
+            const elements = document.querySelectorAll('.navbar, .modules, .report-sidebar, .timing-diagram-panel, .testbench-manual-panel, .quick-btn, #tabsBar, #moduleProperty');
+
+            elements.forEach(el => {
+                if (el instanceof HTMLElement) {
+                    el.style.display = 'none';
+                }
+            });
+        },
+
+    exitFullView() {
+        const exitViewBtn = document.getElementById('exitViewBtn');
+        if (exitViewBtn) {
+            exitViewBtn.remove();
+        }
+
+            const elements = document.querySelectorAll('.navbar, .modules, .report-sidebar, .timing-diagram-panel, .testbench-manual-panel, .quick-btn, #tabsBar, #moduleProperty');
+
+            elements.forEach(el => {
+                if (el instanceof HTMLElement) {
+                    el.style.display = '';
+                }
+            });
+        }
+     
+    },
+};
+</script>
 <style scoped>
 /* @import url('./QuickButton.css'); */
 </style>

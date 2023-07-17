@@ -17,14 +17,16 @@ import {
     gridUpdateSet,
     errorDetectedSet,
 } from './engine'
+
+import components from'@/Navbar/QuickButton/QuickButton.vue'
+const exitFullView = components.methods.exitFullView;
+
 import { changeScale } from './canvasApi'
 import { scheduleBackup } from './data/backupCircuit'
 import {
     hideProperties,
     deleteSelected,
     uxvar,
-    fullView,
-    exitFullView,
 } from './ux'
 import {
     updateRestrictedElementsList,
@@ -62,9 +64,14 @@ export default function startListeners() {
     $('#redoButton').on('click', () => {
         redo()
     })
-    $('#viewButton').on('click', () => {
-        fullView()
+
+    $(document).on('click','#exitViewBtn', () => {
+        exitFullView();
     })
+    
+        
+    
+    
 
     $(document).on('keyup', (e) => {
         if (e.key === 'Escape') exitFullView()
