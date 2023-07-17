@@ -113,3 +113,5 @@ const exportAsFile = async () => {
     text-align: center;
 }
 </style>
+
+<!-- For any bugs refer to SaveAs.js file in main repo -->

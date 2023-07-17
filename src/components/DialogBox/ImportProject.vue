@@ -247,3 +247,5 @@ function importDataFromFile() {
     background-color: #450a0a;
 }
 </style>
+
+<!-- For any bugs refer to Open.js file in main repo -->
