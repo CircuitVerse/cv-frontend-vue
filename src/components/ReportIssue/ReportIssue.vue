@@ -76,40 +76,42 @@
                                 rows="3"
                             />
                         </div>
-                        <div class="container center">
-                            <button
-                                v-if="reportIssueButtonVisible"
-                                id="report"
-                                type="submit"
-                                class="btn btn-primary"
-                                @click="reportIssue"
-                            >
-                                {{
-                                    $t(
-                                        'simulator.panel_body.report_issue.report_btn'
-                                    )
-                                }}
-                            </button>
-                        </div>
-                        <div class="container center">
-                            <button
-                                type="button"
-                                class="btn btn-primary close-btn"
-                                data-dismiss="modal"
-                                aria-label="Close"
-                                @click="closeReportModal"
-                            >
-                                {{
-                                    resultOpen
-                                        ? $t(
-                                              'simulator.panel_body.report_issue.close_btn'
-                                          )
-                                        : $t(
-                                              'simulator.panel_body.report_issue.cancel_btn'
-                                          )
-                                }}
-                            </button>
-                        </div>
+                        <section class="action-buttons">
+                            <div class="container center">
+                                <button
+                                    type="button"
+                                    class="btn btn-primary close-btn"
+                                    data-dismiss="modal"
+                                    aria-label="Close"
+                                    @click="closeReportModal"
+                                >
+                                    {{
+                                        resultOpen
+                                            ? $t(
+                                                  'simulator.panel_body.report_issue.close_btn'
+                                              )
+                                            : $t(
+                                                  'simulator.panel_body.report_issue.cancel_btn'
+                                              )
+                                    }}
+                                </button>
+                            </div>
+                            <div class="container center">
+                                <button
+                                    v-if="reportIssueButtonVisible"
+                                    id="report"
+                                    type="submit"
+                                    class="btn btn-primary"
+                                    @click="reportIssue"
+                                >
+                                    {{
+                                        $t(
+                                            'simulator.panel_body.report_issue.report_btn'
+                                        )
+                                    }}
+                                </button>
+                            </div>
+                        </section>
                     </div>
                 </div>
             </div>
@@ -254,14 +256,19 @@ async function postUserIssue(message: string): Promise<void> {
     justify-content: center;
 }
 .close-btn {
-    background-color: rgba(255, 0, 0, 0.65);
-    color: white;
-    margin: 8px;
-    padding: 8px 12px;
-    border: none;
+    background-color: var(--btn-danger);
+    border: 1px solid var(--btn-danger);
+    color: #fff;
 }
 .close-btn:hover,
 .close-btn:active {
-    background-color: rgba(154, 4, 4);
+    background-color: var(--btn-danger-darken);
+    border: 1px solid var(--btn-danger-darken);
+}
+
+.action-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 </style>
