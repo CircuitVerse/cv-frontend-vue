@@ -416,81 +416,8 @@ const plotArea = {
     clear() {
         this.ctx.clearRect(0, 0, plotArea.canvas.width, plotArea.canvas.height)
     },
+
+    
 }
 export default plotArea
 
-export function setupTimingListeners() {
-    $('.timing-diagram-smaller').on('click', () => {
-        $('#plot').width(Math.max($('#plot').width() - 20, 560))
-        plotArea.resize()
-    })
-    $('.timing-diagram-larger').on('click', () => {
-        $('#plot').width($('#plot').width() + 20)
-        plotArea.resize()
-    })
-    $('.timing-diagram-small-height').on('click', () => {
-        if (plotHeight >= sh(20)) {
-            plotHeight -= sh(5)
-            waveFormHeight = plotHeight - 2 * waveFormPadding
-        }
-    })
-    $('.timing-diagram-large-height').on('click', () => {
-        if (plotHeight < sh(50)) {
-            plotHeight += sh(5)
-            waveFormHeight = plotHeight - 2 * waveFormPadding
-        }
-    })
-    $('.timing-diagram-reset').on('click', () => {
-        plotArea.reset()
-    })
-    $('.timing-diagram-calibrate').on('click', () => {
-        plotArea.calibrate()
-    })
-    $('.timing-diagram-resume').on('click', () => {
-        plotArea.resume()
-    })
-    $('.timing-diagram-pause').on('click', () => {
-        plotArea.pause()
-    })
-    $('.timing-diagram-download').on('click', () => {
-        plotArea.download()
-    })
-    $('.timing-diagram-zoom-in').on('click', () => {
-        plotArea.zoomIn()
-    })
-    $('.timing-diagram-zoom-out').on('click', () => {
-        plotArea.zoomOut()
-    })
-    $('#timing-diagram-units').on('change paste keyup', function () {
-        var timeUnits = parseInt($(this).val(), 10)
-        if (isNaN(timeUnits) || timeUnits < 1) return
-        plotArea.cycleUnit = timeUnits
-    })
-    document.getElementById('plotArea').addEventListener('mousedown', (e) => {
-        var rect = plotArea.canvas.getBoundingClientRect()
-        var x = sh(e.clientX - rect.left)
-        plotArea.scrollAcc = 0
-        plotArea.autoScroll = false
-        plotArea.mouseDown = true
-        plotArea.mouseX = x
-        plotArea.mouseDownX = x
-        plotArea.mouseDownTime = new Date().getTime()
-    })
-    document.getElementById('plotArea').addEventListener('mouseup', (e) => {
-        plotArea.mouseDown = false
-        var time = new Date().getTime() - plotArea.mouseDownTime
-        var offset = (plotArea.mouseX - plotArea.mouseDownX) / cycleWidth
-        plotArea.scrollAcc = (offset * frameInterval) / time
-    })
-
-    document.getElementById('plotArea').addEventListener('mousemove', (e) => {
-        var rect = plotArea.canvas.getBoundingClientRect()
-        var x = sh(e.clientX - rect.left)
-        if (plotArea.mouseDown) {
-            plotArea.cycleOffset -= (x - plotArea.mouseX) / cycleWidth
-            plotArea.mouseX = x
-        } else {
-            plotArea.mouseDown = false
-        }
-    })
-}
