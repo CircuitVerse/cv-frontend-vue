@@ -3,7 +3,7 @@
         v-model="SimulatorState.dialogBox.customshortcut_dialog"
         :persistent="false"
     >
-        <v-card class="messageBoxContent">
+        <v-card class="customShortcutBox">
             <v-card-text>
                 <p class="dialogHeader">
                     {{ $t('simulator.panel_header.keybinding_preference') }}
@@ -236,3 +236,25 @@ function closeDialog() {
     SimulatorState.dialogBox.customshortcut_dialog = false
 }
 </script>
+
+<style scoped>
+.customShortcutBox {
+    height: auto;
+    width: 660px;
+    justify-content: center;
+    margin: auto;
+    backdrop-filter: blur(5px);
+    border-radius: 5px;
+    border: 0.5px solid var(--br-primary) !important;
+    background: var(--bg-primary-moz) !important;
+    background-color: var(--bg-primary-chr) !important;
+    color: white;
+}
+
+/* media query for .customShortcutBox */
+@media screen and (max-width: 991px) {
+    .customShortcutBox {
+        width: 100%;
+    }
+}
+</style>
