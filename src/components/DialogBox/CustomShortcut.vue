@@ -1,7 +1,9 @@
 <template>
     <v-dialog
-        v-model="SimulatorState.dialogBox.customshortcut_dialog"
+        :model-value="SimulatorState.dialogBox.customshortcut_dialog"
         :persistent="false"
+        @click:outside="closeDialog()"
+        @keydown.esc="closeDialog()"
     >
         <v-card class="customShortcutBox">
             <v-card-text>
@@ -228,12 +230,17 @@ function saveKeybinding() {
 }
 
 function closeDialog() {
-    if (localStorage.userKeys) {
-        updateHTML('user')
+    const editDialogState = document.getElementById('edit')!.style.display
+    if (editDialogState === 'block') {
+        document.getElementById('edit')!.style.display = 'none'
     } else {
-        updateHTML('default')
+        if (localStorage.userKeys) {
+            updateHTML('user')
+        } else {
+            updateHTML('default')
+        }
+        SimulatorState.dialogBox.customshortcut_dialog = false
     }
-    SimulatorState.dialogBox.customshortcut_dialog = false
 }
 </script>
 
