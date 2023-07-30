@@ -1,18 +1,27 @@
 import interact from 'interactjs'
 
+interface Position {
+    x: number
+    y: number
+}
+
 /**
  * Make an element draggable within a specified container.
- * @param {string} targetEl - Selector for the element that triggers the drag event.
- * @param {string} DragEl - Selector for the element to be dragged.
+ * @param {HTMLElement} targetEl - Element that triggers the drag event.
+ * @param {HTMLElement} DragEl - Element to be dragged.
  */
-export function dragging(targetEl: HTMLElement, DragEl: HTMLElement) {
+export function dragging(targetEl: HTMLElement, DragEl: HTMLElement): void {
     /**
      * Helper function to update the position of an element.
      * @param {HTMLElement} element - The element to be repositioned.
      * @param {number} dx - Change in x-axis position.
      * @param {number} dy - Change in y-axis position.
      */
-    function updatePosition(element, dx, dy) {
+    function updatePosition(
+        element: HTMLElement,
+        dx: number,
+        dy: number
+    ): void {
         if (!element) return // Check if the element is valid
 
         // If the element does not exist in the positions WeakMap, create it
@@ -22,6 +31,7 @@ export function dragging(targetEl: HTMLElement, DragEl: HTMLElement) {
 
         // Update the element's x and y position
         const currentPosition = positions.get(element)
+        if (!currentPosition) return // Check if the currentPosition is valid
         currentPosition.x += dx
         currentPosition.y += dy
 
@@ -30,7 +40,7 @@ export function dragging(targetEl: HTMLElement, DragEl: HTMLElement) {
     }
 
     // WeakMap to store the position of each dragged element
-    const positions = new WeakMap()
+    const positions = new WeakMap<HTMLElement, Position>()
 
     // Initialize the interact.js library with the draggable element selector
     interact(DragEl).draggable({
@@ -40,7 +50,7 @@ export function dragging(targetEl: HTMLElement, DragEl: HTMLElement) {
         listeners: {
             // Update the element's position when the move event is triggered
             move(event) {
-                updatePosition(event.target, event.dx, event.dy)
+                updatePosition(event.target as HTMLElement, event.dx, event.dy)
             },
         },
         // Set up modifiers to apply constraints to the draggable element
@@ -57,7 +67,7 @@ export function dragging(targetEl: HTMLElement, DragEl: HTMLElement) {
         $(DragEl).css('z-index', '101')
     })
 
-    function disableSelection(element) {
+    function disableSelection(element: HTMLElement): void {
         element.setAttribute('unselectable', 'on')
         element.style.userSelect = 'none'
         element.style.webkitUserSelect = 'none'
@@ -66,10 +76,12 @@ export function dragging(targetEl: HTMLElement, DragEl: HTMLElement) {
         element.style.OUserSelect = 'none'
         element.onselectstart = () => false
     }
+
     let panelElements = document.querySelectorAll(
         '.elementPanel, .layoutElementPanel, #moduleProperty, #layoutDialog, #verilogEditorPanel, .timing-diagram-panel, .testbench-manual-panel, .quick-btn'
     )
+
     panelElements.forEach((element) => {
-        disableSelection(element)
+        disableSelection(element as HTMLElement)
     })
 }
