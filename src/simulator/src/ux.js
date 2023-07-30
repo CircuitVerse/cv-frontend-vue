@@ -25,6 +25,7 @@ import { setupVerilogExportCodeWindow } from './verilog'
 import { setupBitConvertor } from './utils'
 import { updateTestbenchUI, setupTestbenchUI } from './testbench'
 import { applyVerilogTheme } from './Verilog2CV'
+import { dragging } from './drag'
 
 export const uxvar = {
     smartDropXX: 50,
@@ -719,14 +720,28 @@ $('#octalInput').on('keyup', () => {
 })
 
 export function setupPanels() {
-    $('#dragQPanel')
-        .on('mousedown', () =>
-            $('.quick-btn').draggable({
-                disabled: false,
-                containment: 'window',
-            })
-        )
-        .on('mouseup', () => $('.quick-btn').draggable({ disabled: true }))
+    // $('#dragQPanel')
+    //     .on('mousedown', () =>
+    //         $('.quick-btn').draggable({
+    //             disabled: false,
+    //             containment: 'window',
+    //         })
+    //     )
+    //     .on('mouseup', () => $('.quick-btn').draggable({ disabled: true }))
+
+    // let position = { x: 0, y: 0 }
+    // interact('.quick-btn').draggable({
+    //     allowFrom: '#dragQPanel',
+    //     listeners: {
+    //         move(event) {
+    //             position.x = position.x + event.dx
+    //             position.y = position.y + event.dy
+    //             event.target.style.transform = `translate(${position.x}px, ${position.y}px)`
+    //         },
+    //     },
+    // })
+
+    dragging('#dragQPanel', '.quick-btn')
 
     setupPanelListeners('.elementPanel')
     setupPanelListeners('.layoutElementPanel')
@@ -759,19 +774,29 @@ function setupPanelListeners(panelSelector) {
     var minimizeSelector = `${panelSelector} .minimize`
     var maximizeSelector = `${panelSelector} .maximize`
     var bodySelector = `${panelSelector} > .panel-body`
+
+    dragging(headerSelector, panelSelector)
+    // let position = { x: 0, y: 0 }
     // Drag Start
-    $(headerSelector).on('mousedown', () =>
-        $(panelSelector).draggable({ disabled: false, containment: 'window' })
-    )
-    // Drag End
-    $(headerSelector).on('mouseup', () =>
-        $(panelSelector).draggable({ disabled: true })
-    )
+    // $(headerSelector).on('mousedown', () =>
+    // $(panelSelector).draggable({ disabled: false, containment: 'window' })
+    // interact(panelSelector).draggable({
+    //     allowFrom: headerSelector,
+    //     listeners: {
+    //         move(event) {
+    //             position.x += event.dx
+    //             position.y += event.dy
+
+    //             event.target.style.transform = `translate(${position.x}px, ${position.y}px)`
+    //         },
+    //     },
+    // })
+    // )
+    // // Drag End
+    // $(headerSelector).on('mouseup', () =>
+    //     $(panelSelector).draggable({ disabled: true })
+    // )
     // Current Panel on Top
-    $(panelSelector).on('mousedown', () => {
-        $(`.draggable-panel:not(${panelSelector})`).css('z-index', '70')
-        $(panelSelector).css('z-index', '71')
-    })
     var minimized = false
     $(headerSelector).on('dblclick', () =>
         minimized
