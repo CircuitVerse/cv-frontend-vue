@@ -1,9 +1,8 @@
 <template>
     <v-dialog
-        :model-value="SimulatorState.dialogBox.customshortcut_dialog"
+        v-model="SimulatorState.dialogBox.customshortcut_dialog"
         :persistent="false"
         @click:outside="closeDialog()"
-        @keydown.esc="closeDialog()"
     >
         <v-card class="customShortcutBox">
             <v-card-text>
@@ -14,7 +13,7 @@
                     size="x-small"
                     icon
                     class="dialogClose"
-                    @click="closeDialog()"
+                    @click="closeAllDialog()"
                 >
                     <v-icon>mdi-close</v-icon>
                 </v-btn>
@@ -28,6 +27,14 @@
                                 )
                             }}
                         </span>
+                        <v-btn
+                            size="x-small"
+                            icon
+                            class="dialogClose"
+                            @click.prevent="closeDialog()"
+                        >
+                            <v-icon>mdi-close</v-icon>
+                        </v-btn>
                         <div id="pressedKeys">{{ pressedKeys }}</div>
                         <div id="warning">{{ warning }}</div>
                     </div>
@@ -86,10 +93,7 @@ import {
     setDefault,
     warnOverride,
 } from '#/simulator/src/hotkey_binder/model/actions'
-import {
-    KeyCode,
-    KeyCombination,
-} from '#/simulator/src/hotkey_binder/model/normalize/normalizer.plugin'
+import { KeyCode } from '#/simulator/src/hotkey_binder/model/normalize/normalizer.plugin'
 import { checkRestricted } from '#/simulator/src/hotkey_binder/model/utils'
 import {
     closeEdit,
@@ -233,14 +237,20 @@ function closeDialog() {
     const editDialogState = document.getElementById('edit')!.style.display
     if (editDialogState === 'block') {
         document.getElementById('edit')!.style.display = 'none'
-    } else {
-        if (localStorage.userKeys) {
-            updateHTML('user')
-        } else {
-            updateHTML('default')
-        }
-        SimulatorState.dialogBox.customshortcut_dialog = false
     }
+}
+
+function closeAllDialog() {
+    const editDialogState = document.getElementById('edit')!.style.display
+    if (editDialogState === 'block') {
+        document.getElementById('edit')!.style.display = 'none'
+    }
+    if (localStorage.userKeys) {
+        updateHTML('user')
+    } else {
+        updateHTML('default')
+    }
+    SimulatorState.dialogBox.customshortcut_dialog = false
 }
 </script>
 

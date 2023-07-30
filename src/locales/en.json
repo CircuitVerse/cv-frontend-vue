@@ -121,7 +121,7 @@
                 "hexadecimal_value": "Hexadecimal value"
             },
             "custom_shortcut": {
-                "esc_cancel": "Press Desire Key Combination & press Enter or press ESC to cancel.",
+                "esc_cancel": "Press Desire Key Combination & press Enter",
                 "command": "Command",
                 "keymapping": "Keymapping",
                 "reset_to_default": "Reset to Default",
