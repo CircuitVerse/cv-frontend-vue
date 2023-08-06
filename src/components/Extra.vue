@@ -16,19 +16,7 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Layout Element Panel -->
-    <div
-        class="noSelect defaultCursor layoutElementPanel draggable-panel draggable-panel-css"
-    >
-        <div class="panel-header">
-            Layout Elements
-            <span class="fas fa-minus-square minimize"></span>
-            <span class="fas fa-external-link-square-alt maximize"></span>
-        </div>
-        <div class="panel-body">
-            <div class="search-results"></div>
-            <div id="subcircuitMenu" class="accordion"></div>
-        </div>
-    </div>
+    <LayoutElementsPanel />
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
@@ -489,6 +477,7 @@
 <script lang="ts" setup>
 import VerilogEditorPanel from './Panels/VerilogEditorPanel/VerilogEditorPanel.vue'
 import ElementsPanel from './Panels/ElementsPanel/ElementsPanel.vue'
+import LayoutElementsPanel from './Panels/LayoutElementsPanel/LayoutElementsPanel.vue'
 import PropertiesPanel from './Panels/PropertiesPanel/PropertiesPanel.vue'
 import TabsBar from './TabsBar/TabsBar.vue'
 import CombinationalAnalysis from './DialogBox/CombinationalAnalysis.vue'
