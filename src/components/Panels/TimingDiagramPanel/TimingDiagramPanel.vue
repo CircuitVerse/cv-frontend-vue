@@ -1,7 +1,9 @@
 <template>
     <div class="timing-diagram-panel draggable-panel">
         <!-- Timing Diagram Panel -->
-        <PanelHeader title="Timing Diagram" />
+        <PanelHeader
+            :header-title="$t('simulator.panel_header.timing_diagram')"
+        />
         <div class="panel-body">
             <div class="timing-diagram-toolbar noSelect">
                 <TimingDiagramButtons
@@ -18,7 +20,7 @@
                         }
                     "
                 />
-                1 cycle =
+                {{ $t('simulator.panel_body.timing_diagram.one_cycle') }}
                 <input
                     id="timing-diagram-units"
                     type="number"
@@ -29,7 +31,7 @@
                     @paste="handleUnitsChange"
                     @keyup="handleUnitsChange"
                 />
-                Units
+                {{ $t('simulator.panel_body.timing_diagram.units') }}
                 <span id="timing-diagram-log"></span>
             </div>
             <div id="plot" ref="plotRef">
