@@ -24,7 +24,10 @@
                     type="number"
                     min="1"
                     autocomplete="off"
-                    value="1000"
+                    :value="cycleUnits"
+                    @change="handleUnitsChange"
+                    @paste="handleUnitsChange"
+                    @keyup="handleUnitsChange"
                 />
                 Units
                 <span id="timing-diagram-log"></span>
@@ -38,14 +41,29 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
-import plotArea from '#/simulator/src/plotArea'
-import { buttonActions } from '#/simulator/src/plotArea'
+import _plotArea from '#/simulator/src/plotArea'
+import { timingDiagramButtonActions } from '#/simulator/src/plotArea'
 import TimingDiagramButtons from './TimingDiagramButtons.vue'
 import buttonsJSON from '#/assets/constants/Panels/TimingDiagramPanel/buttons.json'
 import PanelHeader from '../Shared/PanelHeader.vue'
 
-const buttons = ref<object>(buttonsJSON)
+interface TimingDiagramButton {
+    title: string
+    icon: string
+    class: string
+    type: string
+    click: string
+}
+
+interface PlotArea {
+    resize: () => void
+    [key: string]: () => void
+}
+
+const plotArea: PlotArea = _plotArea
+const buttons = ref<TimingDiagramButton[]>(buttonsJSON)
 const plotRef = ref<HTMLElement | null>(null)
+const cycleUnits = ref(1000)
 
 function handleButtonClick(button: string) {
     console.log('clicked', button)
@@ -63,12 +81,19 @@ function handleButtonClick(button: string) {
         }
         plotArea.resize()
     } else if (button === 'smallHeight') {
-        buttonActions.smallHeight()
+        timingDiagramButtonActions.smallHeight()
     } else if (button === 'largeHeight') {
-        buttonActions.largeHeight()
+        timingDiagramButtonActions.largeHeight()
     } else {
         plotArea[button]()
     }
+}
+
+function handleUnitsChange(event: Event) {
+    const inputElem = event.target as HTMLInputElement
+    const timeUnits = parseInt(inputElem.value, 10)
+    if (isNaN(timeUnits) || timeUnits < 1) return
+    plotArea.cycleUnit = timeUnits
 }
 </script>
 

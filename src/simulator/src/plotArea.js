@@ -419,7 +419,15 @@ const plotArea = {
 }
 export default plotArea
 
-const buttonActions = {
+/**
+ * type {Object} timingDiagramButtonActions
+ * @category plotArea
+ * @description Actions for buttons in timing diagram
+ * @property {function} smallHeight - Decrease waveform height
+ * @property {function} largeHeight - Increase waveform height
+ */
+
+const timingDiagramButtonActions = {
     smallHeight() {
         if (plotHeight >= sh(20)) {
             plotHeight -= sh(5)
@@ -434,7 +442,7 @@ const buttonActions = {
     },
 }
 
-export { buttonActions }
+export { timingDiagramButtonActions }
 
 export function setupTimingListeners() {
     // $('.timing-diagram-smaller').on('click', () => {
@@ -478,11 +486,11 @@ export function setupTimingListeners() {
     // $('.timing-diagram-zoom-out').on('click', () => {
     //     plotArea.zoomOut()
     // })
-    $('#timing-diagram-units').on('change paste keyup', function () {
-        var timeUnits = parseInt($(this).val(), 10)
-        if (isNaN(timeUnits) || timeUnits < 1) return
-        plotArea.cycleUnit = timeUnits
-    })
+    // $('#timing-diagram-units').on('change paste keyup', function () {
+    //     var timeUnits = parseInt($(this).val(), 10)
+    //     if (isNaN(timeUnits) || timeUnits < 1) return
+    //     plotArea.cycleUnit = timeUnits
+    // })
     document.getElementById('plotArea').addEventListener('mousedown', (e) => {
         var rect = plotArea.canvas.getBoundingClientRect()
         var x = sh(e.clientX - rect.left)
