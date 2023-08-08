@@ -35,7 +35,7 @@
                 Units
                 <span id="timing-diagram-log"></span>
             </div>
-            <div id="plot">
+            <div id="plot" ref="plotRef">
                 <canvas id="plotArea"></canvas>
             </div>
         </div>
@@ -50,14 +50,22 @@ import TimingDiagramButtons from './TimingDiagramButtons.vue'
 import buttonsJSON from '#/assets/constants/Panels/TimingDiagramPanel/buttons.json'
 
 const buttons = ref(buttonsJSON)
+const plotRef = ref<HTMLElement | null>(null)
 
 function handleButtonClick(button: string) {
     console.log('clicked', button)
     if (button === 'smaller') {
-        $('#plot').width(Math.max($('#plot').width() - 20, 560))
+        if (plotRef.value) {
+            plotRef.value.style.width = `${Math.max(
+                plotRef.value.offsetWidth - 20,
+                560
+            )}px`
+        }
         plotArea.resize()
     } else if (button === 'larger') {
-        $('#plot').width($('#plot').width() + 20)
+        if (plotRef.value) {
+            plotRef.value.style.width = `${plotRef.value.offsetWidth + 20}px`
+        }
         plotArea.resize()
     } else if (button === 'smallHeight') {
         buttonActions.smallHeight()
@@ -74,3 +82,5 @@ function handleButtonClick(button: string) {
     margin-right: 5px;
 }
 </style>
+
+<!-- TODO: input element to vue, remove remaining dom manipulation, header component -->
