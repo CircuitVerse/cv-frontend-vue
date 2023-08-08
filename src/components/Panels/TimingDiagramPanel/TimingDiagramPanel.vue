@@ -1,13 +1,7 @@
 <template>
     <div class="timing-diagram-panel draggable-panel">
         <!-- Timing Diagram Panel -->
-        <div class="panel-header">
-            Timing Diagram
-            <span class="fas fa-minus-square minimize panel-button"></span>
-            <span
-                class="fas fa-external-link-square-alt maximize panel-button-icon"
-            ></span>
-        </div>
+        <PanelHeader title="Timing Diagram" />
         <div class="panel-body">
             <div class="timing-diagram-toolbar noSelect">
                 <TimingDiagramButtons
@@ -48,8 +42,9 @@ import plotArea from '#/simulator/src/plotArea'
 import { buttonActions } from '#/simulator/src/plotArea'
 import TimingDiagramButtons from './TimingDiagramButtons.vue'
 import buttonsJSON from '#/assets/constants/Panels/TimingDiagramPanel/buttons.json'
+import PanelHeader from '../Shared/PanelHeader.vue'
 
-const buttons = ref(buttonsJSON)
+const buttons = ref<object>(buttonsJSON)
 const plotRef = ref<HTMLElement | null>(null)
 
 function handleButtonClick(button: string) {
