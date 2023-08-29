@@ -498,7 +498,7 @@ input[type='text']:focus {
 }
 
 .accordion {
-    width: 90%;
+    width: 95%;
     margin: auto;
     position: relative;
 }

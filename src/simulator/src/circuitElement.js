@@ -458,7 +458,7 @@ export default class CircuitElement {
             if (lX <= x && x + rX <= xx && y >= uY && y + dY <= yy) return
 
             this.subcircuitMetadata.showInSubcircuit = false
-            fillSubcircuitElements()
+            // fillSubcircuitElements()
         }
 
         return update
