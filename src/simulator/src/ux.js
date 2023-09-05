@@ -174,37 +174,6 @@ export function setupUI() {
     // var dummyCounter=0;
 
     // calling apply on select theme in dropdown
-    $('.applyTheme').on('change', function () {
-        applyVerilogTheme()
-    })
-
-    $('#report').on('click', function () {
-        var message = $('#issuetext').val()
-        var email = $('#emailtext').val()
-        message += '\nEmail:' + email
-        message += '\nURL: ' + window.location.href
-        message += `\nUser Id: ${window.user_id}`
-        postUserIssue(message)
-        $('#issuetext').hide()
-        $('#emailtext').hide()
-        $('#report').hide()
-        $('#report-label').hide()
-        $('#email-label').hide()
-    })
-    $('.issue').on('hide.bs.modal', function (e) {
-        listenToSimulator = true
-        $('#result').html('')
-        $('#issuetext').show()
-        $('#emailtext').show()
-        $('#issuetext').val('')
-        $('#emailtext').val('')
-        $('#report').show()
-        $('#report-label').show()
-        $('#email-label').show()
-    })
-    $('#reportIssue').on('click', function () {
-        listenToSimulator = false
-    })
 
     // $('#saveAsImg').on('click',function(){
     //     saveAsImg();
@@ -820,28 +789,39 @@ function setupPanelListeners(panelSelector) {
 }
 
 export function exitFullView() {
-    $('.navbar').show()
-    $('.modules').show()
-    $('.report-sidebar').show()
-    $('#tabsBar').show()
-    $('#exitViewBtn').remove()
-    $('#moduleProperty').show()
-    $('.timing-diagram-panel').show()
-    $('.testbench-manual-panel').show()
+    const exitViewBtn = document.querySelector('#exitViewBtn')
+    if (exitViewBtn) exitViewBtn.remove()
+
+    const elements = document.querySelectorAll(
+        '.navbar, .modules, .report-sidebar, #tabsBar, #moduleProperty, .timing-diagram-panel, .testbench-manual-panel, .quick-btn'
+    )
+    elements.forEach((element) => {
+        if (element instanceof HTMLElement) {
+            element.style.display = ''
+        }
+    })
 }
 
 export function fullView() {
-    const markUp = `<button id='exitViewBtn' >Exit Full Preview</button>`
-    $('.navbar').hide()
-    $('.modules').hide()
-    $('.report-sidebar').hide()
-    $('#tabsBar').hide()
-    $('#moduleProperty').hide()
-    $('.timing-diagram-panel').hide()
-    $('.testbench-manual-panel').hide()
-    $('#exitView').append(markUp)
-    $('#exitViewBtn').on('click', exitFullView)
+    const app = document.querySelector('#app')
+
+    const exitViewEl = document.createElement('button')
+    exitViewEl.id = 'exitViewBtn'
+    exitViewEl.textContent = 'Exit Full Preview'
+
+    const elements = document.querySelectorAll(
+        '.navbar, .modules, .report-sidebar, #tabsBar, #moduleProperty, .timing-diagram-panel, .testbench-manual-panel, .quick-btn'
+    )
+    elements.forEach((element) => {
+        if (element instanceof HTMLElement) {
+            element.style.display = 'none'
+        }
+    })
+
+    app.appendChild(exitViewEl)
+    exitViewEl.addEventListener('click', exitFullView)
 }
+
 /** 
     Fills the elements that can be displayed in the subcircuit, in the subcircuit menu
 **/
@@ -894,63 +874,5 @@ export function fillSubcircuitElements() {
         element.newElement = true
         simulationArea.lastSelected = element
         this.parentElement.removeChild(this)
-    })
-}
-
-async function postUserIssue(message) {
-    var img = generateImage('jpeg', 'full', false, 1, false).split(',')[1]
-
-    let result
-    try {
-        result = await $.ajax({
-            url: 'https://api.imgur.com/3/image',
-            type: 'POST',
-            data: {
-                image: img,
-            },
-            dataType: 'json',
-            headers: {
-                Authorization: 'Client-ID 9a33b3b370f1054',
-            },
-        })
-    } catch (err) {
-        console.error('Could not generate image, reporting anyway')
-    }
-
-    if (result) message += '\n' + result.data.link
-
-    // Generate circuit data for reporting
-    let circuitData
-    try {
-        // Writing default project name to prevent unnecessary prompt in case the
-        // project is unnamed
-        circuitData = generateSaveData('Untitled')
-    } catch (err) {
-        circuitData = `Circuit data generation failed: ${err}`
-    }
-
-    $.ajax({
-        url: '/simulator/post_issue',
-        type: 'POST',
-        beforeSend: function (xhr) {
-            xhr.setRequestHeader(
-                'X-CSRF-Token',
-                $('meta[name="csrf-token"]').attr('content')
-            )
-        },
-        data: {
-            text: message,
-            circuit_data: circuitData,
-        },
-        success: function (response) {
-            $('#result').html(
-                "<i class='fa fa-check' style='color:green'></i> You've successfully submitted the issue. Thanks for improving our platform."
-            )
-        },
-        failure: function (err) {
-            $('#result').html(
-                "<i class='fa fa-check' style='color:red'></i> There seems to be a network issue. Please reach out to us at support@ciruitverse.org"
-            )
-        },
     })
 }
