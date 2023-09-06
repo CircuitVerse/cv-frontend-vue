@@ -257,7 +257,7 @@ export function newCircuit(name, id, isVerilog = false, isVerilogMain = false) {
         // switch circuit function moved inside vue component
 
         if (!embed) {
-            $('.circuitName').on('click', (e) => {
+            $('.circuitName').on('click', () => {
                 simulationArea.lastSelected = globalScope.root
                 setTimeout(() => {
                     // here link with the properties panel
