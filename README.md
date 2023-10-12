@@ -21,3 +21,29 @@
 5. **Refactoring of Styles** - Refactor the global stylesheet to local stylesheets for individual components. There is also a scope of removing SASS using modern CSS features.
 6. Few components - Verilog Module, Quick-Button, Testbench, and Timing-Diagram are yet to be converted to Vue. 
 7. With the removal of jQuery-UI, there is also a scope of removing the use of jQuery from the project.
+
+
+### Contributing - 
+
+Before you start contributing please make  sure you read through the [Contribution Guidelines](CONTRIBUTING.md) 
+
+### Setup -
+
+#### Prerequisites
+Before starting, please make sure you have installed [NodeJs](https://nodejs.org/en/download/) on your machine.
+
+Follow below mentioned instructions to manually setup the project (Local Environment).
+
+ - First fork the original repository and clone your forked repository into your local machine. If you dont do this you wont be able to make commits or change any files.
+```sh
+git clone https://github.com/<username>/cv-frontend-vue.git
+cd cv-frontend-vue
+```
+ - Install all the required dependencies for this project.
+```sh
+npm install 
+```
+ - Run the development server using the below command and navigate to `localhost:3000` in your web browser to access the website.
+```sh
+npm run dev 
+```
