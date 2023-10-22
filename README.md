@@ -1,7 +1,6 @@
 # CircuitVerse Frontend Vue
 
 ## Installation
-
 To set up the project on your local machine, follow these steps:
 
 1. Clone the repository to your local machine using the following command:
@@ -25,6 +24,5 @@ npm run dev
 1. **Creating the mobile version of the vue simulator** 
 2. **Testing and bug fixing**
 3. **Typescript integration & style Refactoring**
-5. **Refactoring of Styles**
-6. **Creating the desktop application** 
-7. **Removing JQuery**
+4. **Creating the desktop application** 
+5. **Removing JQuery**
