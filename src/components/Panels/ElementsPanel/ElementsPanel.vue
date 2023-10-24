@@ -104,9 +104,15 @@ import simulationArea from '#/simulator/src/simulationArea'
 import { uxvar } from '#/simulator/src/ux'
 import modules from '#/simulator/src/modules'
 import { onBeforeMount, ref } from 'vue'
+import draggableListeners from '#/simulator/src/draggable'
+import { onMounted } from 'vue'
 var panelData = []
 window.elementHierarchy = metadata.elementHierarchy
 window.elementPanelList = []
+
+onMounted(() => {
+    draggableListeners()
+})
 
 onBeforeMount(() => {
     for (const category in elementHierarchy) {
