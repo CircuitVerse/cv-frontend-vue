@@ -145,21 +145,21 @@ export const elementDirection = (direct) => () => {
 }
 
 export const labelDirection = (direct) => () => {
-    if (
-        simulationArea.lastSelected &&
-        !simulationArea.lastSelected.labelDirectionFixed
-    ) {
-        simulationArea.lastSelected.labelDirection = direct.toUpperCase()
+    const lastSelected = simulationArea.lastSelected;
+    if (lastSelected && !lastSelected.labelDirectionFixed) {
+        const uppercaseDirect = direct.toUpperCase();
+        lastSelected.labelDirection = uppercaseDirect;
         const selectElement = document.querySelector("select[name^='newLabelDirection']");
         if (selectElement) {
-            selectElement.value = direct.toUpperCase();
+            selectElement.value = uppercaseDirect;
         }
         updateSystem()
     }
 }
 
 export const insertLabel = () => {
-    if (simulationArea.lastSelected) {
+    const lastSelected = simulationArea.lastSelected;
+    if (lastSelected) {
         const labelInput = document.querySelector("input[name^='setLabel']");
         if (labelInput) {
             labelInput.focus();
