@@ -145,28 +145,23 @@ export const elementDirection = (direct) => () => {
 }
 
 export const labelDirection = (direct) => () => {
-    const lastSelected = simulationArea.lastSelected;
-    if (lastSelected && !lastSelected.labelDirectionFixed) {
-        const uppercaseDirect = direct.toUpperCase();
-        lastSelected.labelDirection = uppercaseDirect;
-        const selectElement = document.querySelector("select[name^='newLabelDirection']");
-        if (selectElement) {
-            selectElement.value = uppercaseDirect;
+    if (simulationArea.lastSelected && !simulationArea.lastSelected.labelDirectionFixed) {
+        simulationArea.lastSelected.labelDirection = direct.toUpperCase();
+        if (document.querySelector("select[name^='newLabelDirection']")) {
+            document.querySelector("select[name^='newLabelDirection']").value = direct.toUpperCase();
         }
         updateSystem()
     }
 }
 
 export const insertLabel = () => {
-    const lastSelected = simulationArea.lastSelected;
-    if (lastSelected) {
-        const labelInput = document.querySelector("input[name^='setLabel']");
-        if (labelInput) {
-            labelInput.focus();
-            if (!labelInput.value) {
-                labelInput.value = 'Untitled';
+    if (simulationArea.lastSelected) {
+        if (document.querySelector("input[name^='setLabel']")) {
+            document.querySelector("input[name^='setLabel']").focus();
+            if (!document.querySelector("input[name^='setLabel']").value) {
+                document.querySelector("input[name^='setLabel']").value = 'Untitled';
             }
-            labelInput.select();
+            document.querySelector("input[name^='setLabel']").select();
         }
         updateSystem()
     }
