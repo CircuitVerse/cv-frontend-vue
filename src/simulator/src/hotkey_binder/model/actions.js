@@ -147,22 +147,18 @@ export const elementDirection = (direct) => () => {
 export const labelDirection = (direct) => () => {
     if (simulationArea.lastSelected && !simulationArea.lastSelected.labelDirectionFixed) {
         simulationArea.lastSelected.labelDirection = direct.toUpperCase();
-        if (document.querySelector("select[name^='newLabelDirection']")) {
-            document.querySelector("select[name^='newLabelDirection']").value = direct.toUpperCase();
-        }
+        document.querySelector("select[name^='newLabelDirection']").value = direct.toUpperCase();
         updateSystem()
     }
 }
 
 export const insertLabel = () => {
     if (simulationArea.lastSelected) {
-        if (document.querySelector("input[name^='setLabel']")) {
-            document.querySelector("input[name^='setLabel']").focus();
-            if (!document.querySelector("input[name^='setLabel']").value) {
-                document.querySelector("input[name^='setLabel']").value = 'Untitled';
-            }
-            document.querySelector("input[name^='setLabel']").select();
+        document.querySelector("input[name^='setLabel']").focus();
+        if (!document.querySelector("input[name^='setLabel']").value) {
+            document.querySelector("input[name^='setLabel']").value = 'Untitled';
         }
+        document.querySelector("input[name^='setLabel']").select();
         updateSystem()
     }
 }
