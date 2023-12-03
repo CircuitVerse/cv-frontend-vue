@@ -1,18 +1,18 @@
-import RAM from './RAM'
+import RAM from './RAM';
 /**
- * @class
  * EEPROM Component.
  * @extends CircuitElement
  * @param {number} x - x coord of element
  * @param {number} y - y coord of element
- * @param {Scope=} scope - the ciruit in which we want the Element
- * @param {string=} dir - direcion in which element has to drawn
- 
+ * @param {Scope} scope - the circuit in which we want the Element
+ * @param {string} dir - direction in which element has to drawn
+
  *
  * This is basically a RAM component that persists its contents.
  *
  * We consider EEPROMs more 'expensive' than RAMs, so we arbitrarily limit
- * the addressWith to a maximum of 10 bits (1024 addresses) with a default of 8-bit (256).
+ * the addressWith to a maximum of 10 bits (1024 addresses) with a default
+ * of 8-bit (256).
  *
  * In the EEPROM all addresses are initialized to zero.
  * This way we serialize unused values as "0" instead of "null".
@@ -21,42 +21,54 @@ import RAM from './RAM'
  * @category sequential
  */
 export default class EEPROM extends RAM {
-    constructor(
-        x,
-        y,
-        scope = globalScope,
-        dir = 'RIGHT',
-        bitWidth = 8,
-        addressWidth = 8,
-        data = null
-    ) {
-        super(x, y, scope, dir, bitWidth, addressWidth)
-        /*
-        this.scope['EEPROM'].push(this);
-        */
-        this.data = data || this.data
+  /**
+   * @param {number} x - x coord of element
+   * @param {number} y - y coord of element
+   * @param {Scope} scope - the circuit in which we want the Element
+   * @param {string} dir - direction in which element has to drawn
+   * @param {number} bitWidth - bitwidth
+   * @param {number} addressWidth - address width
+   * @param {*} data - data stored.
+   */
+  constructor(
+      x,
+      y,
+      scope = globalScope,
+      dir = 'RIGHT',
+      bitWidth = 8,
+      addressWidth = 8,
+      data = null,
+  ) {
+    super(x, y, scope, dir, bitWidth, addressWidth);
+    this.data = data || this.data;
+  }
+
+  clearData() {
+    super.clearData();
+    for (let i = 0; i < this.data.length; i++) {
+      this.data[i] = this.data[i] || 0;
     }
+  }
 
-    clearData() {
-        super.clearData()
-        for (var i = 0; i < this.data.length; i++)
-            this.data[i] = this.data[i] || 0
-    }
+  /**
+   * @memberof EEPROM
+   * Create save JSON data of object.
+   * @return {JSON}
+   */
+  customSave() {
+    const saveInfo = super.customSave(this);
 
-    customSave() {
-        var saveInfo = super.customSave(this)
+    // Normalize this.data to use zeroes instead of null when serialized.
+    const {data} = this;
 
-        // Normalize this.data to use zeroes instead of null when serialized.
-        var { data } = this
+    saveInfo.constructorParamaters.push(data);
+    return saveInfo;
+  }
 
-        saveInfo.constructorParamaters.push(data)
-        return saveInfo
-    }
-
-    //This is a EERAM without a clock - not normal
-    //reset is supported
-    static moduleVerilog() {
-        return `
+  // This is a EERAM without a clock - not normal
+  // reset is supported
+  static moduleVerilog() {
+    return `
     module EEPROM(dout, addr, din, we, dmp, rst);
         parameter WIDTH = 8;
         parameter ADDR = 10;
@@ -81,24 +93,24 @@ export default class EEPROM extends RAM {
         dout = mem[addr];
         end
     endmodule
-    `
-    }
+    `;
+  }
 }
 
 EEPROM.prototype.tooltipText =
-    'Electrically Erasable Programmable Read-Only Memory'
-EEPROM.prototype.shortName = 'EEPROM'
-EEPROM.prototype.maxAddressWidth = 10
+  'Electrically Erasable Programmable Read-Only Memory';
+EEPROM.prototype.shortName = 'EEPROM';
+EEPROM.prototype.maxAddressWidth = 10;
 EEPROM.prototype.mutableProperties = {
-    addressWidth: {
-        name: 'Address Width',
-        type: 'number',
-        max: '10',
-        min: '1',
-        func: 'changeAddressWidth',
-    },
-    dump: RAM.prototype.mutableProperties.dump,
-    load: RAM.prototype.mutableProperties.load,
-    reset: RAM.prototype.mutableProperties.reset,
-}
-EEPROM.prototype.objectType = 'EEPROM'
+  addressWidth: {
+    name: 'Address Width',
+    type: 'number',
+    max: '10',
+    min: '1',
+    func: 'changeAddressWidth',
+  },
+  dump: RAM.prototype.mutableProperties.dump,
+  load: RAM.prototype.mutableProperties.load,
+  reset: RAM.prototype.mutableProperties.reset,
+};
+EEPROM.prototype.objectType = 'EEPROM';

@@ -1,147 +1,161 @@
-import CircuitElement from '../circuitElement'
-import Node, { findNode, extractBits } from '../node'
-import simulationArea from '../simulationArea'
-import { correctWidth, rect, fillText } from '../canvasApi'
+import CircuitElement from '../circuitElement';
+import Node, {findNode, extractBits} from '../node';
+import simulationArea from '../simulationArea';
+import {correctWidth, rect, fillText} from '../canvasApi';
+import {colors} from '../themer/themer';
+
 /**
  * @class
  * BitSelector
  * @extends CircuitElement
  * @param {number} x - x coordinate of element.
  * @param {number} y - y coordinate of element.
- * @param {Scope=} scope - Cirucit on which element is drawn
- * @param {string=} dir - direction of element
- * @param {number=} bitWidth - bit width per node.
- * @param {number=} selectorBitWidth - 1 by default
+ * @param {Scope} scope - Circuit on which element is drawn
+ * @param {string} dir - direction of element
+ * @param {number} bitWidth - bit width per node.
+ * @param {number} selectorBitWidth - 1 by default
  * @category modules
  */
-import { colors } from '../themer/themer'
-
 export default class BitSelector extends CircuitElement {
-    constructor(
-        x,
-        y,
-        scope = globalScope,
-        dir = 'RIGHT',
-        bitWidth = 2,
-        selectorBitWidth = 1
-    ) {
-        super(x, y, scope, dir, bitWidth)
-        /* this is done in this.baseSetup() now
-        this.scope['BitSelector'].push(this);
-        */
-        this.setDimensions(20, 20)
-        this.selectorBitWidth =
-            selectorBitWidth || parseInt(prompt('Enter Selector bitWidth'), 10)
-        this.rectangleObject = false
-        this.inp1 = new Node(-20, 0, 0, this, this.bitWidth, 'Input')
-        this.output1 = new Node(20, 0, 1, this, 1, 'Output')
-        this.bitSelectorInp = new Node(
-            0,
-            20,
-            0,
-            this,
-            this.selectorBitWidth,
-            'Bit Selector'
-        )
-    }
+  /**
+   *
+   * @param {number} x - x coordinate of element.
+   * @param {number} y - y coordinate of element.
+   * @param {Scope} scope - Circuit on which element is drawn
+   * @param {string} dir - direction of element
+   * @param {number} bitWidth - bit width per node.
+   * @param {number} selectorBitWidth - 1 by default
+   */
+  constructor(
+      x,
+      y,
+      scope = globalScope,
+      dir = 'RIGHT',
+      bitWidth = 2,
+      selectorBitWidth = 1,
+  ) {
+    super(x, y, scope, dir, bitWidth);
+    this.setDimensions(20, 20);
+    this.selectorBitWidth =
+      selectorBitWidth || parseInt(prompt('Enter Selector bitWidth'), 10);
+    this.rectangleObject = false;
+    this.inp1 = new Node(-20, 0, 0, this, this.bitWidth, 'Input');
+    this.output1 = new Node(20, 0, 1, this, 1, 'Output');
+    this.bitSelectorInp = new Node(
+        0,
+        20,
+        0,
+        this,
+        this.selectorBitWidth,
+        'Bit Selector',
+    );
+  }
 
-    /**
+  /**
      * @memberof BitSelector
      * Function to change selector Bitwidth
-     * @param {size}
+     * @param {number} size bitwidth
      */
-    changeSelectorBitWidth(size) {
-        if (size === undefined || size < 1 || size > 32) return
-        this.selectorBitWidth = size
-        this.bitSelectorInp.bitWidth = size
+  changeSelectorBitWidth(size) {
+    if (size === undefined || size < 1 || size > 32) {
+      return;
     }
+    this.selectorBitWidth = size;
+    this.bitSelectorInp.bitWidth = size;
+  }
 
-    /**
-     * @memberof BitSelector
-     * fn to create save Json Data of object
-     * @return {JSON}
-     */
-    customSave() {
-        const data = {
-            nodes: {
-                inp1: findNode(this.inp1),
-                output1: findNode(this.output1),
-                bitSelectorInp: findNode(this.bitSelectorInp),
-            },
-            constructorParamaters: [
-                this.direction,
-                this.bitWidth,
-                this.selectorBitWidth,
-            ],
-        }
-        return data
-    }
+  /**
+   * @memberof BitSelector
+   * Create save JSON data of object.
+   * @return {JSON}
+   */
+  customSave() {
+    const data = {
+      nodes: {
+        inp1: findNode(this.inp1),
+        output1: findNode(this.output1),
+        bitSelectorInp: findNode(this.bitSelectorInp),
+      },
+      constructorParamaters: [
+        this.direction,
+        this.bitWidth,
+        this.selectorBitWidth,
+      ],
+    };
+    return data;
+  }
 
-    /**
+  /**
      * @memberof BitSelector
      * function to change bitwidth of the element
      * @param {number} bitWidth - new bitwidth
      */
-    newBitWidth(bitWidth) {
-        this.inp1.bitWidth = bitWidth
-        this.bitWidth = bitWidth
+  newBitWidth(bitWidth) {
+    this.inp1.bitWidth = bitWidth;
+    this.bitWidth = bitWidth;
+  }
+
+  /**
+   * @memberof BitSelector
+   * resolve output values based on inputData
+   */
+  resolve() {
+    this.output1.value = extractBits(
+        this.inp1.value,
+        this.bitSelectorInp.value + 1,
+        this.bitSelectorInp.value + 1,
+    );
+    simulationArea.simulationQueue.add(this.output1);
+  }
+
+  /**
+   * @memberof BitSelector
+   * function to draw element
+   */
+  customDraw() {
+    const ctx = simulationArea.context;
+    ctx.beginPath();
+    ctx.strokeStyle = ['blue', colors['stroke_alt']][
+        (this.state === undefined) + 0
+    ];
+    ctx.fillStyle = colors['fill'];
+    ctx.lineWidth = correctWidth(3);
+    const xx = this.x;
+    const yy = this.y;
+    rect(ctx, xx - 20, yy - 20, 40, 40);
+    if (
+      (this.hover && !simulationArea.shiftDown) ||
+      simulationArea.lastSelected === this ||
+      simulationArea.multipleObjectSelections.contains(this)
+    ) {
+      ctx.fillStyle = colors['hover_select'];
+    }
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.font = '20px Raleway';
+    ctx.fillStyle = colors['input_text'];
+    ctx.textAlign = 'center';
+    let bit;
+    if (this.bitSelectorInp.value === undefined) {
+      bit = 'x';
+    } else {
+      bit = this.bitSelectorInp.value;
     }
 
-    /**
-     * @memberof BitSelector
-     * resolve output values based on inputData
-     */
-    resolve() {
-        this.output1.value = extractBits(
-            this.inp1.value,
-            this.bitSelectorInp.value + 1,
-            this.bitSelectorInp.value + 1
-        ) // (this.inp1.value^(1<<this.bitSelectorInp.value))==(1<<this.bitSelectorInp.value);
-        simulationArea.simulationQueue.add(this.output1)
-    }
+    fillText(ctx, bit, xx, yy + 5);
+    ctx.fill();
+  }
 
-    /**
-     * @memberof BitSelector
-     * function to draw element
-     */
-    customDraw() {
-        var ctx = simulationArea.context
-        ctx.beginPath()
-        ctx.strokeStyle = ['blue', colors['stroke_alt']][
-            (this.state === undefined) + 0
-        ]
-        ctx.fillStyle = colors['fill']
-        ctx.lineWidth = correctWidth(3)
-        const xx = this.x
-        const yy = this.y
-        rect(ctx, xx - 20, yy - 20, 40, 40)
-        if (
-            (this.hover && !simulationArea.shiftDown) ||
-            simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
-        )
-            ctx.fillStyle = colors['hover_select']
-        ctx.fill()
-        ctx.stroke()
-
-        ctx.beginPath()
-        ctx.font = '20px Raleway'
-        ctx.fillStyle = colors['input_text']
-        ctx.textAlign = 'center'
-        var bit
-        if (this.bitSelectorInp.value === undefined) {
-            bit = 'x'
-        } else {
-            bit = this.bitSelectorInp.value
-        }
-
-        fillText(ctx, bit, xx, yy + 5)
-        ctx.fill()
-    }
-
-    generateVerilog() {
-        return `assign ${this.output1.verilogLabel} = ${this.inp1.verilogLabel} >> ${this.bitSelectorInp.verilogLabel};`
-    }
+  /**
+   * @memberof BitSelector
+   * Generates Verilog string for this CircuitElement.
+   * @return {string} String representing the Verilog.
+   */
+  generateVerilog() {
+    return `assign ${this.output1.verilogLabel} = ${this.inp1.verilogLabel} >> ${this.bitSelectorInp.verilogLabel};`;
+  }
 }
 
 /**
@@ -151,9 +165,9 @@ export default class BitSelector extends CircuitElement {
  * @category modules
  */
 BitSelector.prototype.tooltipText =
-    'BitSelector ToolTip : Divides input bits into several equal-sized groups.'
+  'BitSelector ToolTip : Divides input bits into several equal-sized groups.';
 BitSelector.prototype.helplink =
-    'https://docs.circuitverse.org/#/decodersandplexers?id=bit-selector'
+  'https://docs.circuitverse.org/#/decodersandplexers?id=bit-selector';
 
 /**
  * @memberof BitSelector
@@ -162,12 +176,12 @@ BitSelector.prototype.helplink =
  * @category modules
  */
 BitSelector.prototype.mutableProperties = {
-    selectorBitWidth: {
-        name: 'Selector Bit Width: ',
-        type: 'number',
-        max: '32',
-        min: '1',
-        func: 'changeSelectorBitWidth',
-    },
-}
-BitSelector.prototype.objectType = 'BitSelector'
+  selectorBitWidth: {
+    name: 'Selector Bit Width: ',
+    type: 'number',
+    max: '32',
+    min: '1',
+    func: 'changeSelectorBitWidth',
+  },
+};
+BitSelector.prototype.objectType = 'BitSelector';

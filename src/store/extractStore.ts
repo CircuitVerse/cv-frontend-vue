@@ -34,7 +34,5 @@ export function extractStore<SS extends StoreGeneric>(
             refs[key] = value
         }
     }
-
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     return refs as Extracted<SS>
 }

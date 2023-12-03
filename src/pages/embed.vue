@@ -224,18 +224,13 @@ watch(clockEnabled, (val) => {
 })
 
 onBeforeMount(() => {
-    window.embed = true
-    window.logixProjectId = route.params.projectId
-    console.log(window.logixProjectId)
+    window.embed = true;
+    window.logixProjectId = route.params.projectId;
 })
 
 onMounted(() => {
-    // $('#zoom-in-embed').on('click', () => ZoomIn())
-    // $('#zoom-out-embed').on('click', () => ZoomOut())
-
-    console.log('embed setup')
-    startListeners()
-    setup()
+    startListeners();
+    setup();
 })
 
 function zoomInEmbed() {
