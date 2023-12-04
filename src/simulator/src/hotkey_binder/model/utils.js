@@ -10,7 +10,9 @@ Object.size = function(obj) {
   let size = 0;
   let key;
   for (key in obj) {
-    if (obj.hasOwnProperty(key)) size++;
+    if (obj.hasOwnProperty(key)) {
+      size++;
+    }
   }
   return size;
 };
@@ -20,10 +22,18 @@ export const getKey = (obj, val) =>
 
 export const getOS = () => {
   let OSName = '';
-  if (navigator.appVersion.indexOf('Win') != -1) OSName = 'Windows';
-  if (navigator.appVersion.indexOf('Mac') != -1) OSName = 'MacOS';
-  if (navigator.appVersion.indexOf('X11') != -1) OSName = 'UNIX';
-  if (navigator.appVersion.indexOf('Linux') != -1) OSName = 'Linux';
+  if (navigator.appVersion.indexOf('Win') != -1) {
+    OSName = 'Windows';
+  }
+  if (navigator.appVersion.indexOf('Mac') != -1) {
+    OSName = 'MacOS';
+  }
+  if (navigator.appVersion.indexOf('X11') != -1) {
+    OSName = 'UNIX';
+  }
+  if (navigator.appVersion.indexOf('Linux') != -1) {
+    OSName = 'Linux';
+  }
   return OSName;
 };
 
@@ -56,7 +66,9 @@ export const checkRestricted = (key) => {
   ];
   if (getOS == 'macOS') {
     restrictedKeys.forEach((value, i) => {
-      if (value.split(' + ')[0] == 'Ctrl');
+      if (value.split(' + ')[0] == 'Ctrl') {
+
+      }
       restrictedKeys[i] =
                 value.split(' + ')[0] == 'Ctrl' ?
                     value.replace('Ctrl', 'Meta') :

@@ -3,10 +3,15 @@
  * @category eventQueue
  */
 export default class EventQueue {
+	public size: number;
+	public queue: any[];
+	public frontIndex: number;
+	public time: number;
+
   /**
    * @param {number} size - the size of the queue.
    */
-  constructor(size) {
+  constructor(size: number) {
     this.size = size;
     this.queue = new Array(size);
     this.frontIndex = 0;
@@ -17,7 +22,7 @@ export default class EventQueue {
      * @param {CircuitElement} obj - the element to be added
      * @param {number} delay - the delay in adding an object to queue
      */
-  add(obj, delay) {
+  add(obj: any, delay: number) {
     if (obj.queueProperties.inQueue) {
       obj.queueProperties.time =
         this.time + (delay || obj.propagationDelay);
@@ -61,10 +66,10 @@ export default class EventQueue {
   }
 
   /**
-     * To add without any delay.
-     * @param {CircuitElement} obj - the object to be added
-     */
-  addImmediate(obj) {
+   * To add without any delay.
+   * @param {CircuitElement} obj - the object to be added
+   */
+  addImmediate(obj: any) {
     this.queue[this.frontIndex] = obj;
     obj.queueProperties.time = this.time;
     obj.queueProperties.index = this.frontIndex;
@@ -73,11 +78,11 @@ export default class EventQueue {
   }
 
   /**
-     * Function to swap two objects in queue.
-     * @param {number} v1
-     * @param {number} v2
-     */
-  swap(v1, v2) {
+   * Swap two objects in queue.
+   * @param {number} v1
+   * @param {number} v2
+   */
+  swap(v1: number, v2: number) {
     const obj1 = this.queue[v1];
     obj1.queueProperties.index = v2;
 
@@ -89,8 +94,8 @@ export default class EventQueue {
   }
 
   /**
-     * function to pop element from queue.
-     */
+   * Pop element from queue.
+   */
   pop() {
     if (this.isEmpty()) {
       throw new Error('Queue Empty');
@@ -103,8 +108,8 @@ export default class EventQueue {
   }
 
   /**
-     * function to reset queue.
-     */
+   * Reset queue.
+   */
   reset() {
     for (let i = 0; i < this.frontIndex; i++) {
       this.queue[i].queueProperties.inQueue = false;
@@ -114,8 +119,8 @@ export default class EventQueue {
   }
 
   /**
-     * function to check if empty queue.
-     */
+   * Check if empty queue.
+   */
   isEmpty() {
     return this.frontIndex == 0;
   }

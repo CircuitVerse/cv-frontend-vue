@@ -173,9 +173,13 @@ export function newCircuit(name, id, isVerilog = false, isVerilogMain = false) {
   }
   name = name || 'Untitled-Circuit';
   name = stripTags(name);
-  if (!name) return;
+  if (!name) {
+    return;
+  }
   const scope = new Scope(name);
-  if (id) scope.id = id;
+  if (id) {
+    scope.id = id;
+  }
   scopeList[scope.id] = scope;
   const currCircuit = {
     id: scope.id,
@@ -197,24 +201,7 @@ export function newCircuit(name, id, isVerilog = false, isVerilogMain = false) {
   activeCircuit.value.name = scope.name;
 
   if (!isVerilog || isVerilogMain) {
-    if (embed) {
-      // added calss - embed-tab using vue logic
-      // var html = `<div style='' class='circuits toolbarButton current' draggable='true' id='${
-      //     scope.id
-      // }'><span class='circuitName noSelect'>${truncateString(
-      //     name,
-      //     18
-      // )}</span></div>`
-      // $('#tabsBar').append(html)
-      // $('#tabsBar').addClass('embed-tabs')
-    } else {
-      // logic implemented in vue
-    }
-
-    // Remove listeners
-    // $('.circuits').off('click')
     $('.circuitName').off('click');
-    // $('.tabsCloseButton').off('click')
 
     // switch circuit function moved inside vue component
 
@@ -259,6 +246,11 @@ export function changeCircuitName(name, id = globalScope.id) {
  * @category circuit
  */
 export default class Scope {
+  /**
+   *
+   * @param {string} name
+   * @param {number} id
+   */
   constructor(name = 'localScope', id = undefined) {
     this.restrictedCircuitElementsUsed = [];
     this.id = id || Math.floor(Math.random() * 100000000000 + 1);
@@ -297,7 +289,9 @@ export default class Scope {
   }
 
   isVisible() {
-    if (!this.verilogMetadata.isVerilogCircuit) return true;
+    if (!this.verilogMetadata.isVerilogCircuit) {
+      return true;
+    }
     return this.verilogMetadata.isMainCircuit;
   }
 

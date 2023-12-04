@@ -29,7 +29,9 @@ export const addKeys = (mode) => {
     }
     updateHTML('user');
   } else if (mode == 'default') {
-    if (localStorage.userKeys) localStorage.removeItem('userKeys');
+    if (localStorage.userKeys) {
+      localStorage.removeItem('userKeys');
+    }
     const defaultKeys = localStorage.get('defaultKeys');
     for (let i = 0; i < defaultKeys.length; i++) {
       const pref = defaultKeys[i];
@@ -62,7 +64,9 @@ export const checkUpdate = () => {
  * removes the defaultkeys from localStorage
  */
 export const setUserKeys = () => {
-  if (localStorage.defaultKeys) localStorage.removeItem('defaultKeys');
+  if (localStorage.defaultKeys) {
+    localStorage.removeItem('defaultKeys');
+  }
   const userKeys = {};
   let x = 0;
   while ($('#preference').children()[x]) {
@@ -81,11 +85,15 @@ export const setUserKeys = () => {
  * also checks for OS type
  */
 export const setDefault = () => {
-  if (localStorage.userKeys) localStorage.removeItem('userKeys');
+  if (localStorage.userKeys) {
+    localStorage.removeItem('userKeys');
+  }
   if (getOS() === 'MacOS') {
     const macDefaultKeys = {};
     for (const [key, value] of Object.entries(defaultKeys)) {
-      if (value.split(' + ')[0] == 'Ctrl');
+      if (value.split(' + ')[0] == 'Ctrl') {
+
+      }
       macDefaultKeys[key] =
                 value.split(' + ')[0] == 'Ctrl' ?
                     value.replace('Ctrl', 'Meta') :

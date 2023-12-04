@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts">
-import { showMessage } from '#/simulator/src/utils'
+import { showMessage } from '#/simulator/src/utils_clock'
 import { getDependenciesList, scopeList } from '#/simulator/src/circuit'
 import { switchCircuit } from '#/simulator/src/circuit'
 import { usePromptStore } from '#/store/promptStore'

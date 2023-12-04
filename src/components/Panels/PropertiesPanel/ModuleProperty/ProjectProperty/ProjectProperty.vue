@@ -90,31 +90,14 @@
 
 <script lang="ts" setup>
 import { toggleLayoutMode } from '#/simulator/src/layoutMode'
-// import {
-//     deleteCurrentCircuit,
-//     getDependenciesList,
-//     scopeList,
-// } from '#/simulator/src/circuit'
-// import { showMessage } from '#/simulator/src/utils'
 import simulationArea from '#/simulator/src/simulationArea'
 import InputGroups from '#/components/Panels/Shared/InputGroups.vue'
-// import MessageBox from '#/components/MessageBox/messageBox.vue'
-// import { ref, Ref, onMounted, watch } from 'vue'
 import { useState } from '#/store/SimulatorStore/state'
 import { useProjectStore } from '#/store/projectStore'
-// import DeleteCircuit from '#/components/helpers/deleteCircuit/DeleteCircuit.vue'
 import { closeCircuit } from '#/components/helpers/deleteCircuit/DeleteCircuit.vue'
 
 const projectStore = useProjectStore()
 const SimulatorState = <SimulatorStateType>useState()
-// const circuitId: Ref<string | number> = ref(0)
-// const circuitName: Ref<string> = ref('Untitled-Cirucit')
-// const ifPersistentShow: Ref<boolean> = ref(false)
-// const messageValue: Ref<string> = ref('')
-// const buttonArray: Ref<Array<buttonArrType>> = ref([
-//     { text: '', emitOption: '' },
-// ])
-// const circuitToDelete: Ref<Object> = ref({})
 
 type SimulatorStateType = {
     activeCircuit: {

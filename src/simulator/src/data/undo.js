@@ -15,8 +15,12 @@ import {forceResetNodesSet} from '../engine';
  * @exports undo
  */
 export default function undo(scope = globalScope) {
-  if (layoutModeGet()) return;
-  if (scope.backups.length < 2) return;
+  if (layoutModeGet()) {
+    return;
+  }
+  if (scope.backups.length < 2) {
+    return;
+  }
   const backupOx = globalScope.ox;
   const backupOy = globalScope.oy;
   const backupScale = globalScope.scale;

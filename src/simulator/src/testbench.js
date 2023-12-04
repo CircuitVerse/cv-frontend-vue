@@ -6,8 +6,8 @@
 import {scheduleBackup} from './data/backupCircuit';
 import {changeClockEnable} from './sequential';
 import {play} from './engine';
-import Scope from './circuit';
-import {converters, showMessage, escapeHtml} from './utils';
+import {converters, escapeHtml} from './utils';
+import {showMessage} from './utils_clock';
 import {confirmOption} from '#/components/helpers/confirmComponent/ConfirmComponent.vue';
 
 /**

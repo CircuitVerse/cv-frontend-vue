@@ -14,6 +14,8 @@ import {createNewCircuitScope} from './circuit';
 import {createCombinationalAnalysisPrompt} from './combinationalAnalysis';
 import {colorThemes} from './themer/themer';
 import {showTourGuide} from './tutorials';
+import {SimulatorStore} from '#/store/SimulatorStore/SimulatorStore';
+
 import {
   createVerilogCircuit,
   // saveVerilogCode,
@@ -47,7 +49,10 @@ logixFunction.newVerilogModule = createVerilogCircuit;
 // logixFunction.resetVerilogCode = resetVerilogCode
 logixFunction.generateVerilog = generateVerilog;
 // logixFunction.applyVerilogTheme = applyVerilogTheme
-logixFunction.bitconverter = bitConverterDialog;
+logixFunction.bitconverter = function bitConverterDialog() {
+  const simulatorStore = SimulatorStore();
+  simulatorStore.dialogBox.hex_bin_dec_converter_dialog = true;
+};
 logixFunction.createNewCircuitScope = createNewCircuitScope;
 logixFunction.customShortcut = keyBinder;
 logixFunction.ExportProject = ExportProject;

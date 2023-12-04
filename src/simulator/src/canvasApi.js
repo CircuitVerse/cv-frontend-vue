@@ -333,15 +333,24 @@ export function rect(ctx, x1, y1, x2, y2) {
   );
 }
 
-export function drawImage(ctx, img, x1, y1, w_canvas, h_canvas) {
+/**
+ *
+ * @param {*} ctx
+ * @param {*} img
+ * @param {number} x1
+ * @param {number} y1
+ * @param {number} canvasWidth
+ * @param {number} canvasHeight
+ */
+export function drawImage(ctx, img, x1, y1, canvasWidth, canvasHeight) {
   x1 *= globalScope.scale;
   y1 *= globalScope.scale;
   x1 += globalScope.ox;
   y1 += globalScope.oy;
 
-  w_canvas *= globalScope.scale;
-  h_canvas *= globalScope.scale;
-  ctx.drawImage(img, x1, y1, w_canvas, h_canvas);
+  canvasWidth *= globalScope.scale;
+  canvasHeight *= globalScope.scale;
+  ctx.drawImage(img, x1, y1, canvasWidth, canvasHeight);
 }
 
 export function rect2(ctx, x1, y1, x2, y2, xx, yy, dir = 'RIGHT') {
@@ -404,8 +413,12 @@ export function drawLine(ctx, x1, y1, x2, y2, color, width) {
   const correction = 0.5 * (ctx.lineWidth % 2);
   let hCorrection = 0;
   let vCorrection = 0;
-  if (y1 === y2) vCorrection = correction;
-  if (x1 === x2) hCorrection = correction;
+  if (y1 === y2) {
+    vCorrection = correction;
+  }
+  if (x1 === x2) {
+    hCorrection = correction;
+  }
   ctx.moveTo(
       Math.round(x1 + globalScope.ox + hCorrection) - hCorrection,
       Math.round(y1 + globalScope.oy + vCorrection) - vCorrection,
@@ -460,7 +473,9 @@ export function drawCircle(ctx, x1, y1, r, color) {
 
 // To show message like values, node name etc
 export function canvasMessage(ctx, str, x1, y1, fontSize = 10) {
-  if (!str || !str.length) return;
+  if (!str || !str.length) {
+    return;
+  }
 
   ctx.font = `${Math.round(fontSize * globalScope.scale)}px Raleway`;
   ctx.textAlign = 'center';

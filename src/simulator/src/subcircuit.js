@@ -10,7 +10,7 @@ import {
   forceResetNodesSet,
 } from './engine';
 import {loadScope} from './data/load';
-import {showError} from './utils';
+import {showError} from './utils_clock';
 
 import Node, {findNode} from './node';
 import {fillText, correctWidth, rect2} from './canvasApi';
@@ -462,8 +462,12 @@ export default class SubCircuit extends CircuitElement {
     const dY = this.layoutProperties.downDimensionY;
 
     for (const el of circuitElementList) {
-      if (this.localScope[el].length === 0) continue;
-      if (!this.localScope[el][0].canShowInSubcircuit) continue;
+      if (this.localScope[el].length === 0) {
+        continue;
+      }
+      if (!this.localScope[el][0].canShowInSubcircuit) {
+        continue;
+      }
       for (let i = 0; i < this.localScope[el].length; i++) {
         const obj = this.localScope[el][i];
         if (
@@ -511,7 +515,9 @@ export default class SubCircuit extends CircuitElement {
      * Procedure if any element is double clicked inside a subcircuit
      **/
   dblclick() {
-    if (this.elementHover) return;
+    if (this.elementHover) {
+      return;
+    }
     switchCircuit(this.id);
   }
 
@@ -558,9 +564,15 @@ export default class SubCircuit extends CircuitElement {
      * determines where to show label
      */
   determine_label(x, y) {
-    if (x == 0) return ['left', 5, 5];
-    if (x == scopeList[this.id].layout.width) return ['right', -5, 5];
-    if (y == 0) return ['center', 0, 13];
+    if (x == 0) {
+      return ['left', 5, 5];
+    }
+    if (x == scopeList[this.id].layout.width) {
+      return ['right', -5, 5];
+    }
+    if (y == 0) {
+      return ['center', 0, 13];
+    }
     return ['center', 0, -6];
   }
 
@@ -664,7 +676,9 @@ export default class SubCircuit extends CircuitElement {
     }
 
     for (var i = 0; i < subcircuitScope.Output.length; i++) {
-      if (!subcircuitScope.Output[i].label) continue;
+      if (!subcircuitScope.Output[i].label) {
+        continue;
+      }
       var info = this.determine_label(
           this.outputNodes[i].x,
           this.outputNodes[i].y,
@@ -688,8 +702,12 @@ export default class SubCircuit extends CircuitElement {
 
     // draw subcircuitElements
     for (const el of circuitElementList) {
-      if (this.localScope[el].length === 0) continue;
-      if (!this.localScope[el][0].canShowInSubcircuit) continue;
+      if (this.localScope[el].length === 0) {
+        continue;
+      }
+      if (!this.localScope[el][0].canShowInSubcircuit) {
+        continue;
+      }
       for (let i = 0; i < this.localScope[el].length; i++) {
         if (
           this.localScope[el][i].subcircuitMetadata.showInSubcircuit

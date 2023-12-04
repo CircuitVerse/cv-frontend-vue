@@ -9,7 +9,7 @@ import {SimulatorStore} from '#/store/SimulatorStore/SimulatorStore';
 /**
  * Function called to generate a prompt to save an image
  * @category data
- * @param {Scope} - circuit whose image we want
+ * @param {Scope} scope - circuit whose image we want
  * @exports createSaveAsImgPrompt
  */
 export default function createSaveAsImgPrompt(scope = globalScope) {

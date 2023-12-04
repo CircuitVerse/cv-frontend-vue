@@ -15,7 +15,7 @@ import {
   gridUpdateGet,
 } from './engine';
 import miniMapArea from './minimap';
-import {showMessage} from './utils';
+import {showMessage} from './utils_clock';
 import {verilogModeSet} from './Verilog2CV';
 
 /**
@@ -75,21 +75,19 @@ export function paneLayout(scope = globalScope) {
     simulationArea.mouseDown
   ) {
     // pane canvas
-    if (true) {
-      globalScope.ox =
+    globalScope.ox =
         simulationArea.mouseRawX -
         simulationArea.mouseDownRawX +
         simulationArea.oldx;
-      globalScope.oy =
+    globalScope.oy =
         simulationArea.mouseRawY -
         simulationArea.mouseDownRawY +
         simulationArea.oldy;
-      globalScope.ox = Math.round(globalScope.ox);
-      globalScope.oy = Math.round(globalScope.oy);
-      gridUpdateSet(true);
-      if (!embed && !lightMode) {
-        miniMapArea.setup();
-      }
+    globalScope.ox = Math.round(globalScope.ox);
+    globalScope.oy = Math.round(globalScope.oy);
+    gridUpdateSet(true);
+    if (!embed && !lightMode) {
+      miniMapArea.setup();
     }
   } else if (simulationArea.lastSelected === scope.root) {
     // Select multiple objects
@@ -522,48 +520,3 @@ export const layoutFunctions = {
   saveLayout,
   toggleLayoutMode,
 };
-
-// export function setupLayoutModePanelListeners() {
-//     $('#decreaseLayoutWidth').on('click', () => {
-//         decreaseLayoutWidth()
-//     })
-//     $('#increaseLayoutWidth').on('click', () => {
-//         increaseLayoutWidth()
-//     })
-//     $('#decreaseLayoutHeight').on('click', () => {
-//         decreaseLayoutHeight()
-//     })
-//     $('#increaseLayoutHeight').on('click', () => {
-//         increaseLayoutHeight()
-//     })
-//     $('#layoutResetNodes').on('click', () => {
-//         layoutResetNodes()
-//     })
-//     $('#layoutTitleUp').on('click', () => {
-//         layoutTitleUp()
-//     })
-//     $('#layoutTitleDown').on('click', () => {
-//         layoutTitleDown()
-//     })
-//     $('#layoutTitleLeft').on('click', () => {
-//         layoutTitleLeft()
-//     })
-//     $('#layoutTitleRight').on('click', () => {
-//         layoutTitleRight()
-//     })
-//     $('#toggleLayoutTitle').on('click', () => {
-//         toggleLayoutTitle()
-//     })
-//     $('#saveLayout').on('click', () => {
-//         saveLayout()
-//     })
-//     $('#cancelLayout').on('click', () => {
-//         cancelLayout()
-//     })
-//     $('#layoutDialog button').on('click', () => {
-//         scheduleUpdate()
-//     })
-//     $('#layoutDialog input').on('click', () => {
-//         scheduleUpdate()
-//     })
-// }

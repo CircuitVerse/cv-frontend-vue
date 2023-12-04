@@ -15,8 +15,12 @@ import {forceResetNodesSet} from '../engine';
  * @exports redo
  */
 export default function redo(scope = globalScope) {
-  if (layoutModeGet()) return;
-  if (scope.history.length === 0) return;
+  if (layoutModeGet()) {
+    return;
+  }
+  if (scope.history.length === 0) {
+    return;
+  }
   const backupOx = globalScope.ox;
   const backupOy = globalScope.oy;
   const backupScale = globalScope.scale;

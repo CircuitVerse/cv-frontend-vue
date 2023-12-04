@@ -1,5 +1,5 @@
 import EventQueue from './eventQueue';
-import {clockTick} from './utils';
+import {clockTick} from './utils_clock';
 
 /**
  * simulation environment object - holds simulation canvas
@@ -32,7 +32,7 @@ import {clockTick} from './utils';
  * @property {number} clickCount - number of clicks
  * @property {string} lock - locked or unlocked
  * @property {function} timer - timer
- * @property {function} setup - to setup the simulaton area
+ * @property {function} setup - to setup the simulation area
  * @property {function} changeClockTime - change clock time
  * @property {function} clear - clear the simulation area
  * @category simulationArea
@@ -83,14 +83,18 @@ const simulationArea = {
     this.mouseDown = false;
   },
   changeClockTime(t) {
-    if (t < 50) return;
+    if (t < 50) {
+      return;
+    }
     clearInterval(simulationArea.ClockInterval);
     t = t || prompt('Enter Time Period:');
     simulationArea.timePeriod = t;
     simulationArea.ClockInterval = setInterval(clockTick, t);
   },
   clear() {
-    if (!this.context) return;
+    if (!this.context) {
+      return;
+    }
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
   },
 };

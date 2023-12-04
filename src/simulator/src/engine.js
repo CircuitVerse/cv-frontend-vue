@@ -3,7 +3,7 @@ import plotArea from './plotArea';
 import simulationArea from './simulationArea';
 import {dots, canvasMessage, findDimensions, rect2} from './canvasApi';
 import {showProperties, prevPropertyObjGet} from './ux';
-import {showError} from './utils';
+import {showError} from './utils_clock';
 import miniMapArea from './minimap';
 import {resetup} from './setup';
 import {verilogModeGet} from './Verilog2CV';
@@ -330,7 +330,9 @@ export function updateSelectionsAndPane(scope = globalScope) {
       globalScope.ox = Math.round(globalScope.ox);
       globalScope.oy = Math.round(globalScope.oy);
       gridUpdateSet(true);
-      if (!embed && !lightMode) miniMapArea.setup();
+      if (!embed && !lightMode) {
+        miniMapArea.setup();
+      }
     } else {
       // idea: kind of empty
     }
@@ -397,8 +399,12 @@ export function updateSelectionsAndPane(scope = globalScope) {
  * @category engine
  */
 export function play(scope = globalScope, resetNodes = false) {
-  if (errorDetected) return; // Don't simulate until error is fixed
-  if (loading === true) return; // Don't simulate until loaded
+  if (errorDetected) {
+    return;
+  } // Don't simulate until error is fixed
+  if (loading === true) {
+    return;
+  } // Don't simulate until loaded
 
   simulationArea.simulationQueue.reset();
   plotArea.setExecutionTime(); // Waveform thing
@@ -449,7 +455,9 @@ export function play(scope = globalScope, resetNodes = false) {
  * @category engine
  */
 export function scheduleUpdate(count = 0, time = 100, fn) {
-  if (lightMode) time *= 5;
+  if (lightMode) {
+    time *= 5;
+  }
   const updateFn = layoutModeGet() ? layoutUpdate : update;
   if (count) {
     // Force update
@@ -458,7 +466,9 @@ export function scheduleUpdate(count = 0, time = 100, fn) {
       setTimeout(updateFn, 10 + 50 * i);
     }
   }
-  if (willBeUpdated) return; // Throttling
+  if (willBeUpdated) {
+    return;
+  } // Throttling
   willBeUpdatedSet(true);
   // Call a function before update ..
   if (fn) {
@@ -466,7 +476,9 @@ export function scheduleUpdate(count = 0, time = 100, fn) {
       fn();
       updateFn();
     }, time);
-  } else setTimeout(updateFn, time);
+  } else {
+    setTimeout(updateFn, time);
+  }
 }
 
 /**
@@ -481,7 +493,9 @@ export function scheduleUpdate(count = 0, time = 100, fn) {
  */
 export function update(scope = globalScope, updateEverything = false) {
   willBeUpdatedSet(false);
-  if (loading === true || layoutModeGet()) return;
+  if (loading === true || layoutModeGet()) {
+    return;
+  }
   let updated = false;
   simulationArea.hover = undefined;
   // Update wires

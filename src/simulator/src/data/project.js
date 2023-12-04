@@ -1,5 +1,6 @@
 import {resetScopeList, scopeList, newCircuit} from '../circuit';
-import {showMessage, showError, generateId} from '../utils';
+import {generateId} from '../utils';
+import {showMessage, showError} from '../utils_clock';
 import {checkIfBackup} from './backupCircuit';
 import {generateSaveData, getProjectName, setProjectName} from './save';
 import load from './load';
@@ -46,7 +47,9 @@ export function projectSavedSet(param) {
  */
 export async function saveOffline() {
   const data = await generateSaveData();
-  if (data instanceof Error) return;
+  if (data instanceof Error) {
+    return;
+  }
   localStorage.setItem(projectId, data);
   const temp = JSON.parse(localStorage.getItem('projectList')) || {};
   temp[projectId] = getProjectName();
@@ -73,9 +76,13 @@ function checkToSave() {
  * @category data
  */
 window.onbeforeunload = async function() {
-  if (projectSaved || embed) return;
+  if (projectSaved || embed) {
+    return;
+  }
 
-  if (!checkToSave()) return;
+  if (!checkToSave()) {
+    return;
+  }
 
   alert(
       'You have unsaved changes on this page. Do you want to leave this page and discard your changes or stay on this page?',

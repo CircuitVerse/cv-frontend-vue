@@ -58,20 +58,11 @@
 </template>
 
 <script lang="ts" setup>
-import draggable from 'vuedraggable'
-import { showMessage, truncateString } from '#/simulator/src/utils'
-import { ref, Ref } from 'vue'
-import {
-    createNewCircuitScope,
-    // deleteCurrentCircuit,
-    // getDependenciesList,
-    // scopeList,
-    switchCircuit,
-} from '#/simulator/src/circuit'
-// import MessageBox from '#/components/MessageBox/messageBox.vue'
-import { useState } from '#/store/SimulatorStore/state'
-import { closeCircuit } from '../helpers/deleteCircuit/DeleteCircuit.vue'
-
+import draggable from 'vuedraggable';
+import { ref, Ref } from 'vue';
+import { useState } from '#/store/SimulatorStore/state';
+import { closeCircuit } from '../helpers/deleteCircuit/DeleteCircuit.vue';
+import { truncateString } from '#/simulator/src/utils';
 const SimulatorState = <SimulatorStateType>useState()
 const drag: Ref<boolean> = ref(false)
 const updateCount: Ref<number> = ref(0)

@@ -1,7 +1,8 @@
 import {scopeList} from '../circuit';
 import {resetup} from '../setup';
 import {update} from '../engine';
-import {stripTags, showMessage} from '../utils';
+import {stripTags} from '../utils';
+import {showMessage} from '../utils_clock';
 import {backUp} from './backupCircuit';
 import simulationArea from '../simulationArea';
 import backgroundArea from '../backgroundArea';
@@ -46,7 +47,9 @@ export function getProjectName() {
   const projectStore = useProjectStore();
   if (projectStore.getProjectNameDefined) {
     return projectStore.getProjectName.trim();
-  } else return undefined;
+  } else {
+    return undefined;
+  }
 }
 /**
  * Helper function to save canvas as image based on image type
@@ -92,7 +95,9 @@ export async function generateSaveData(name, setName = true) {
     name = 'Untitled';
   }
   data.name = stripTags(name);
-  if (setName) setProjectName(data.name);
+  if (setName) {
+    setProjectName(data.name);
+  }
 
   // Save project details
   data.timePeriod = simulationArea.timePeriod;
@@ -113,7 +118,9 @@ export async function generateSaveData(name, setName = true) {
   // Helper function to save Scope
   // Recursively saves inner subcircuits first, before saving parent circuits
   function saveScope(id) {
-    if (completed[id]) return;
+    if (completed[id]) {
+      return;
+    }
 
     for (let i = 0; i < dependencyList[id].length; i++) {
       // Save inner subcircuits
@@ -272,7 +279,9 @@ export function generateImage(
 
   resetup();
 
-  if (!down) return returnData;
+  if (!down) {
+    return returnData;
+  }
 }
 
 async function crop(dataURL, w, h) {
@@ -353,12 +362,16 @@ async function generateImageForOnline() {
  * @exports save
  */
 export default async function save() {
-  if (layoutModeGet()) toggleLayoutMode();
+  if (layoutModeGet()) {
+    toggleLayoutMode();
+  }
 
   projectSavedSet(true);
 
   const data = await generateSaveData();
-  if (data instanceof Error) return;
+  if (data instanceof Error) {
+    return;
+  }
   $('.loadingIcon').fadeIn();
 
   const projectName = getProjectName();
@@ -380,7 +393,9 @@ export default async function save() {
       )
     ) {
       window.location.href = '/users/sign_in';
-    } else $('.loadingIcon').fadeOut();
+    } else {
+      $('.loadingIcon').fadeOut();
+    }
   } else if ([0, undefined, null, '', '0'].includes(window.logixProjectId)) {
     fetch('/api/v1/projects', {
       method: 'POST',

@@ -29,7 +29,7 @@ import 'codemirror/addon/edit/closebrackets.js';
 import 'codemirror/addon/hint/anyword-hint.js';
 import 'codemirror/addon/hint/show-hint.js';
 import 'codemirror/addon/display/autorefresh.js';
-import {showError, showMessage} from './utils';
+import {showError, showMessage} from './utils_clock';
 import {showProperties} from './ux';
 
 let editor;
@@ -42,7 +42,9 @@ export async function createVerilogCircuit() {
       true,
       true,
   );
-  if (returned) verilogModeSet(true);
+  if (returned) {
+    verilogModeSet(true);
+  }
 }
 
 export function saveVerilogCode() {
@@ -69,7 +71,9 @@ export function verilogModeGet() {
 }
 
 export function verilogModeSet(mode) {
-  if (mode == verilogMode) return;
+  if (mode == verilogMode) {
+    return;
+  }
   verilogMode = mode;
   if (mode) {
     document.getElementById('code-window').style.display = 'block';

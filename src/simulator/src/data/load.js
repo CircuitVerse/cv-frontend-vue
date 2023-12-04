@@ -263,7 +263,9 @@ export default function load(data) {
   }
 
   // Switch to last focussedCircuit
-  if (data.focussedCircuit) switchCircuit(String(data.focussedCircuit));
+  if (data.focussedCircuit) {
+    switchCircuit(String(data.focussedCircuit));
+  }
 
   // Update the testbench UI
   updateTestbenchUI();

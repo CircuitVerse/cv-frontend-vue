@@ -1,7 +1,7 @@
 import {drawCircle, drawLine, arc} from './canvasApi';
-import simulationArea from './simulationArea';
+import {simulationArea} from './simulationArea';
 import {distance} from './utils';
-import {showError} from './utils_clock';
+import {showError} from './utils_clock'
 import {
   renderCanvas,
   scheduleUpdate,
@@ -13,44 +13,9 @@ import {
 } from './engine';
 import Wire from './wire';
 import {colors} from './themer/themer';
+import {CircuitElement} from './circuitElement';
 
-/**
- * Constructs all the connections of Node node
- * @param {Node} node - node to be constructed
- * @param {JSON} data - the saved data which is used to load
- * @category node
- */
-export function constructNodeConnections(node, data) {
-  for (let i = 0; i < data.connections.length; i++) {
-    if (
-      !node.connections.contains(node.scope.allNodes[data.connections[i]])
-    ) {
-      node.connect(node.scope.allNodes[data.connections[i]]);
-    }
-  }
-}
-
-/**
- * Fn to replace node by node @ index in global Node List - used when loading
- * @param {Node} node - node to be replaced
- * @param {number} index - index of node to be replaced
- * @category node
- */
-export function replace(node, index) {
-  if (index == -1) {
-    return node;
-  }
-  const {scope} = node;
-  const {parent} = node;
-  parent.nodeList.clean(node);
-  node.delete();
-  node = scope.allNodes[index];
-  node.parent = parent;
-  parent.nodeList.push(node);
-  node.updateRotation();
-  return node;
-}
-function rotate(x1, y1, dir) {
+function rotate(x1: number, y1:number, dir: string): number[] {
   if (dir == 'LEFT') {
     return [-x1, y1];
   }
@@ -63,18 +28,18 @@ function rotate(x1, y1, dir) {
   return [x1, y1];
 }
 
-export function extractBits(num, start, end) {
+export function extractBits(num: number, start: number, end: number): number {
   return (num << (32 - end)) >>> (32 - (end - start + 1));
 }
 
 /**
  * find Index of a node
- * @param {Node} x - Node to be found
+ * @param {Node} node - Node to be found
  * @return {number} - index of found Node.
  * @category node
  */
-export function findNode(x) {
-  return x.scope.allNodes.indexOf(x);
+export function findNode(node: Node): number {
+  return node.scope.allNodes.indexOf(node);
 }
 
 /**
@@ -97,10 +62,10 @@ export function loadNode(data, scope) {
 // output node=1
 // input node=0
 // intermediate node =2
-export const NodeType = {
-  Input: 0,
-  Output: 1,
-  Intermediate: 2,
+export enum NodeType {
+  Input= 0,
+  Output= 1,
+  Intermediate= 2,
 };
 
 /**
@@ -123,6 +88,36 @@ let uniqueIdCounter = 10;
  * @category node
  */
 export default class Node {
+	public objectType: string;
+	public subcircuitOverride: any;
+	public id: any;
+	public parent: CircuitElement;
+	public bitWidth: number;
+	public label: string;
+	public prevx: number;
+	public prevy: number;
+	public leftx: number;
+	public lefty: number;
+	public x: number;
+	public y: number;
+	public type: number;
+	public connections: any;
+	public value: any;
+	public radius: number;
+	public clicked: boolean;
+	public hover: boolean;
+	public wasClicked: boolean;
+	public scope: any;
+	public prev: any;
+	public count: number;
+	public highlighted: any;
+	public queueProperties: any;
+	public oldx: number;
+	public oldy: number;
+	public showHover: boolean;
+	public deleted: boolean;
+	public verilogLabel: string;
+
   /**
    * @param {number} x - x coord of Node.
    * @param {number} y - y coord of Node.
@@ -131,14 +126,8 @@ export default class Node {
    * @param {?number} bitWidth - the bits of node in input and output nodes.
    * @param {string} label - label for a node.
    */
-  constructor(x, y, type, parent, bitWidth = undefined, label = '') {
-    // Should never raise, but just in case
-    if (isNaN(x) || isNaN(y)) {
-      this.delete();
-      showError('Fatal error occurred');
-      return;
-    }
-
+  constructor(x: number, y: number, type: number, parent: CircuitElement,
+    bitWidth: number | undefined = undefined, label: string = '') {
     forceResetNodesSet(true);
 
     this.objectType = 'Node';
@@ -218,7 +207,7 @@ export default class Node {
   }
 
   /**
-   * Helper fuction to move a node.
+   * Helper function to move a node.
    * Sets up some variable which help in changing node.
    */
   startDragging() {
@@ -236,6 +225,7 @@ export default class Node {
 
   /**
    * Function for saving a node
+   * @return {JSON} JSON describing this Node.
    */
   saveObject() {
     if (this.type == 2) {
@@ -421,7 +411,8 @@ export default class Node {
           node.type == 1 &&
           node.value != undefined &&
           node.parent.objectType != 'TriState' &&
-          !(node.subcircuitOverride && node.scope != this.scope) && // Subcircuit Input Node Output Override
+          // Subcircuit Input Node Output Override
+          !(node.subcircuitOverride && node.scope != this.scope) &&
           node.parent.objectType != 'SubCircuit'
         ) {
           // Subcircuit Output Node Override
@@ -1038,3 +1029,41 @@ Node.prototype.processVerilog = function() {
     }
   }
 };
+
+/**
+ * Constructs all the connections of Node node
+ * @param {Node} node - node to be constructed
+ * @param {JSON} data - the saved data which is used to load
+ * @category node
+ */
+export function constructNodeConnections(node: Node, data: any) {
+  for (let i = 0; i < data.connections.length; i++) {
+    if (
+      !node.connections.contains(node.scope.allNodes[data.connections[i]])
+    ) {
+      node.connect(node.scope.allNodes[data.connections[i]]);
+    }
+  }
+}
+
+/**
+ * Fn to replace node by node @ index in global Node List - used when loading
+ * @param {Node} node - node to be replaced
+ * @param {number} index - index of node to be replaced
+ * @return {Node} the replaced Node.
+ * @category node
+ */
+export function replace(node: Node, index: number): Node {
+  if (index == -1) {
+    return node;
+  }
+  const {scope} = node;
+  const {parent} = node;
+  parent.nodeList.clean(node);
+  node.delete();
+  node = scope.allNodes[index];
+  node.parent = parent;
+  parent.nodeList.push(node);
+  node.updateRotation();
+  return node;
+}

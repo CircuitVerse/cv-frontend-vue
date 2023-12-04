@@ -60,8 +60,8 @@ import {
     copyToClipboard,
     download,
     openInNewTab,
-    showMessage,
 } from '#/simulator/src/utils'
+import { showMessage } from '#/simulator/src/utils_clock'
 import { getProjectName } from '#/simulator/src/data/save'
 const code = ref('')
 const cmOptions = ref({})

@@ -5,20 +5,22 @@ import {layoutModeGet} from './layoutMode';
 /**
  * @type {Object} miniMapArea
  * This object is used to draw the miniMap.
- * @property {number} pageY
- * @property {number} pageX
- * @property {HTMLCanvasObject} canvas - the canvas object
- * @property {function} setup - used to setup the parameters and dimensions
- * @property {function} play - used to draw outline of minimap and call resolve
- * @property {function} resolve - used to resolve all objects and draw them on minimap
- * @property {function} clear - used to clear minimap
+ * @property {number} pageY.
+ * @property {number} pageX.
+ * @property {HTMLCanvasObject} canvas - the canvas object.
+ * @property {function} setup - used to setup the parameters and dimensions.
+ * @property {function} play - used to draw outline of minimap and call resolve.
+ * @property {function} resolve - Resolve all objects and draw them on minimap.
+ * @property {function} clear - used to clear minimap.
  * @category minimap
  */
 let miniMapArea;
 export default miniMapArea = {
   canvas: document.getElementById('miniMapArea'),
   setup() {
-    if (lightMode) return;
+    if (lightMode) {
+      return;
+    }
     this.canvas = document.getElementById('miniMapArea');
     this.pageHeight = height;
     this.pageWidth = width;
@@ -80,7 +82,9 @@ export default miniMapArea = {
   },
 
   play(ratio) {
-    if (lightMode || layoutModeGet()) return;
+    if (lightMode || layoutModeGet()) {
+      return;
+    }
 
     this.ctx.fillStyle = '#bbb';
     this.ctx.rect(0, 0, this.canvas.width, this.canvas.height);
@@ -88,7 +92,9 @@ export default miniMapArea = {
     this.resolve(ratio);
   },
   resolve(ratio) {
-    if (lightMode) return;
+    if (lightMode) {
+      return;
+    }
 
     this.ctx.fillStyle = '#ddd';
     this.ctx.beginPath();
@@ -165,17 +171,29 @@ export default miniMapArea = {
     }
   },
   clear() {
-    if (lightMode) return;
+    if (lightMode) {
+      return;
+    }
     $('#miniMapArea').css('z-index', '-1');
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
   },
 };
 let lastMiniMapShown;
+
+/**
+ *
+ */
 export function updatelastMinimapShown() {
   lastMiniMapShown = new Date().getTime();
 }
+
+/**
+ * Remove the minimap.
+ */
 export function removeMiniMap() {
-  if (lightMode) return;
+  if (lightMode) {
+    return;
+  }
 
   if (
     simulationArea.lastSelected == globalScope.root &&

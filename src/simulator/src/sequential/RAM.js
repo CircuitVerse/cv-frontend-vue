@@ -2,8 +2,8 @@ import CircuitElement from '../circuitElement';
 import Node, {findNode} from '../node';
 import simulationArea from '../simulationArea';
 import {correctWidth, fillText2, fillText4, drawCircle2} from '../canvasApi';
-import {parseNumber, showMessage} from '../utils';
-import {showError} from '../utils';
+import {parseNumber} from '../utils';
+import {showMessage, showError} from '../utils_clock';
 /**
  * RAM Component.
  * @extends CircuitElement
@@ -324,7 +324,9 @@ export default class RAM extends CircuitElement {
         if (isNaN(dataCell)) {
           throw new Error(`Address ${i}: ${data[i]} is not a number`);
         }
-        if (dataCell < 0) throw new Error(`Address ${i}: ${data[i]} is negative`);
+        if (dataCell < 0) {
+          throw new Error(`Address ${i}: ${data[i]} is negative`);
+        }
         if (dataCell >= maxNumber) {
           throw new Error(`Address ${i}: ${data[i]} is too large`);
         }

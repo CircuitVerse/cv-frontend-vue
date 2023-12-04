@@ -11,7 +11,9 @@ export default backgroundArea = {
     dots(true, false);
   },
   clear() {
-    if (!this.context) return;
+    if (!this.context) {
+      return;
+    }
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
   },
 };

@@ -2,7 +2,8 @@ import CircuitElement from '../circuitElement';
 import simulationArea from '../simulationArea';
 import {correctWidth, rect, fillText, drawImage} from '../canvasApi';
 import {colors} from '../themer/themer';
-import {promptFile, showMessage} from '../utils';
+import {promptFile} from '../utils';
+import {showMessage} from '../utils_clock';
 /**
  * @class
  * Image

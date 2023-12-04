@@ -3,7 +3,7 @@ import Node, {findNode} from '../node';
 import simulationArea from '../simulationArea';
 import {correctWidth, rect2, fillText} from '../canvasApi';
 import plotArea from '../plotArea';
-import {showError} from '../utils';
+import {showError} from '../utils_clock';
 import {colors} from '../themer/themer';
 /**
  * @class
@@ -40,10 +40,12 @@ export default class Tunnel extends CircuitElement {
     this.xSize = 10;
     this.plotValues = [];
     this.inp1 = new Node(0, 0, 0, this);
-    this.checked = false; // has this tunnel been checked by another paired tunnel
+    // has this tunnel been checked by another paired tunnel
+    this.checked = false;
     this.setIdentifier(identifier || 'T');
     this.setBounds();
-    // if tunnels with this's identifier exist, then set the bitwidth to that of those tunnels
+    // if tunnels with this's identifier exist, then set the bitwidth to
+    // that of those tunnels
     if (this.scope.tunnelList[this.identifier].length > 0) {
       this.newBitWidth(this.scope.tunnelList[this.identifier][0].bitWidth);
     }
@@ -55,7 +57,9 @@ export default class Tunnel extends CircuitElement {
      * @param {string} dir - new direction
      */
   newDirection(dir) {
-    if (this.direction === dir) return;
+    if (this.direction === dir) {
+      return;
+    }
     this.direction = dir;
     this.setBounds();
   }
@@ -81,8 +85,6 @@ export default class Tunnel extends CircuitElement {
     this.upDimensionY = Math.abs(-20 + yRotate);
     this.rightDimensionX = Math.abs(xRotate);
     this.downDimensionY = Math.abs(20 + yRotate);
-
-    // rect2(ctx, -120 + xRotate + this.xSize, -20 + yRotate, 120 - this.xSize, 40, xx, yy, "RIGHT");
   }
 
   /**
@@ -90,12 +92,14 @@ export default class Tunnel extends CircuitElement {
      * resolve output values based on inputData
      */
   resolve() {
-    // Don't check for paired tunnels' value if already checked by another paired tunnel (O(n))
+    // Don't check for paired tunnels' value if already checked by another
+    // paired tunnel (O(n))
     if (this.checked) {
       this.checked = false;
       return;
     }
-    // Check for bitwidth error since it bypasses node's resolve() function which usually checks bitwidths
+    // Check for bitwidth error since it bypasses node's resolve()
+    // function which usually checks bitwidths
     for (const tunnel of this.scope.tunnelList[this.identifier]) {
       if (tunnel.inp1.bitWidth !== this.inp1.bitWidth) {
         this.inp1.highlighted = true;
@@ -108,7 +112,9 @@ export default class Tunnel extends CircuitElement {
         tunnel.inp1.value = this.inp1.value;
         simulationArea.simulationQueue.add(tunnel.inp1);
       }
-      if (tunnel !== this) tunnel.checked = true;
+      if (tunnel !== this) {
+        tunnel.checked = true;
+      }
     }
   }
 
@@ -178,7 +184,9 @@ export default class Tunnel extends CircuitElement {
      * @param {string} id - id so that every link is unique
      */
   setIdentifier(id = '') {
-    if (id.length === 0) return;
+    if (id.length === 0) {
+      return;
+    }
     if (this.scope.tunnelList[this.identifier]) {
       this.scope.tunnelList[this.identifier].clean(this);
     }
@@ -199,9 +207,13 @@ export default class Tunnel extends CircuitElement {
     }
 
     const len = this.identifier.length;
-    if (len === 1) this.xSize = 40;
-    else if (len > 1 && len < 4) this.xSize = 20;
-    else this.xSize = 0;
+    if (len === 1) {
+      this.xSize = 40;
+    } else if (len > 1 && len < 4) {
+      this.xSize = 20;
+    } else {
+      this.xSize = 0;
+    }
     this.setBounds();
   }
 
@@ -318,9 +330,15 @@ export default class Tunnel extends CircuitElement {
      */
   newBitWidth(bitWidth) {
     for (const tunnel of this.scope.tunnelList[this.identifier]) {
-      if (tunnel.fixedBitWidth) continue;
-      if (tunnel.bitWidth === undefined) continue;
-      if (tunnel.bitWidth < 1) continue;
+      if (tunnel.fixedBitWidth) {
+        continue;
+      }
+      if (tunnel.bitWidth === undefined) {
+        continue;
+      }
+      if (tunnel.bitWidth < 1) {
+        continue;
+      }
       tunnel.bitWidth = bitWidth;
       for (let i = 0; i < tunnel.nodeList.length; i++) {
         tunnel.nodeList[i].bitWidth = bitWidth;
