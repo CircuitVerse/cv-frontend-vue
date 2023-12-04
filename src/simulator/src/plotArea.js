@@ -1,5 +1,5 @@
 import simulationArea from './simulationArea';
-import {convertors} from './utils';
+import {converters} from './utils';
 
 const DPR = window.devicePixelRatio || 1;
 
@@ -382,7 +382,7 @@ const plotArea = {
           ctx.font = `${sh(9)}px Times New Roman`;
           ctx.fillStyle = 'white';
           ctx.fillText(
-              convertors.dec2hex(value),
+              converters.dec2hex(value),
               textPositionX,
               yMid + sh(3),
           );

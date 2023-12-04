@@ -1,8 +1,9 @@
 import CircuitElement from '../circuitElement';
-import Node, {findNode, dec2bin} from '../node';
+import Node, {findNode} from '../node';
 import simulationArea from '../simulationArea';
 import {correctWidth, rect, fillText} from '../canvasApi';
 import {colors} from '../themer/themer';
+import {converters} from '../utils';
 /**
  * @class
  * PriorityEncoder
@@ -121,7 +122,7 @@ export default class PriorityEncoder extends CircuitElement {
     let temp = 0;
     for (let i = this.inputSize - 1; i >= 0; i--) {
       if (this.inp1[i].value === 1) {
-        out = dec2bin(i);
+        out = converters.dec2bin(i);
         break;
       }
     }

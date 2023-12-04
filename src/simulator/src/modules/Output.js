@@ -3,17 +3,8 @@ import Node, {findNode} from '../node';
 import simulationArea from '../simulationArea';
 import {correctWidth, fillText, rect2, oppositeDirection} from '../canvasApi';
 import {getNextPosition} from '../modules';
-import {generateId} from '../utils';
+import {converters, generateId} from '../utils';
 import {colors} from '../themer/themer';
-
-function dec2bin(dec, bitWidth = undefined) {
-  // only for positive nos
-  const bin = dec.toString(2);
-  if (bitWidth == undefined) {
-    return bin;
-  }
-  return '0'.repeat(bitWidth - bin.length) + bin;
-}
 
 /**
  * @class
@@ -151,7 +142,7 @@ export default class Output extends CircuitElement {
     if (this.state === undefined) {
       bin = 'x'.repeat(this.bitWidth);
     } else {
-      bin = dec2bin(this.state, this.bitWidth);
+      bin = converters.dec2bin(this.state, this.bitWidth);
     }
 
     for (let k = 0; k < this.bitWidth; k++) {

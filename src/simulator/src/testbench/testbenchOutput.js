@@ -2,15 +2,7 @@ import CircuitElement from '../circuitElement';
 import simulationArea from '../simulationArea';
 import {correctWidth, fillText} from '../canvasApi';
 import Node, {findNode} from '../node';
-
-// helper function to convert decimal to binary
-function dec2bin(dec, bitWidth = undefined) {
-  // only for positive nos
-  const bin = dec.toString(2);
-  if (bitWidth == undefined) return bin;
-  return '0'.repeat(bitWidth - bin.length) + bin;
-}
-
+import {converters} from '../utils';
 /**
  * TestBench Output has a node for it's  input which is
  * compared to desired output according tp testData of
@@ -256,7 +248,7 @@ export default class TB_Output extends CircuitElement {
             }
             fillText(
                 ctx,
-                dec2bin(
+                converters.dec2bin(
                     this.inputs[i].value,
                     this.inputs[i].bitWidth,
                 ),

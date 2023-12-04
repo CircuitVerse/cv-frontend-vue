@@ -1,4 +1,4 @@
-import { layoutModeGet } from './layoutMode';
+import {layoutModeGet} from './layoutMode';
 import {
   scheduleUpdate,
   wireToBeCheckedSet,
@@ -6,11 +6,11 @@ import {
 } from './engine';
 import simulationArea from './simulationArea';
 import logixFunction from './data';
-import { circuitProperty } from './circuit';
-import { updateRestrictedElementsInScope } from './restrictedElementDiv';
-import { setupBitConvertor } from './utils';
-import { updateTestbenchUI, setupTestbenchUI } from './testbench';
-import { dragging } from './drag';
+import {circuitProperty} from './circuit';
+import {updateRestrictedElementsInScope} from './restrictedElementDiv';
+import {converters, setupBitConvertor} from './utils';
+import {updateTestbenchUI, setupTestbenchUI} from './testbench';
+import {dragging} from './drag';
 
 export const uxvar = {
   smartDropXX: 50,
@@ -147,7 +147,7 @@ export function setupUI() {
   });
   document.getElementById('canvasArea').oncontextmenu = showContextMenu;
 
-  $('.logixButton').on('click', function () {
+  $('.logixButton').on('click', function() {
     logixFunction[this.id]();
   });
   setupPanels();
@@ -188,7 +188,7 @@ export function objectPropertyAttributeUpdate() {
   scheduleUpdate();
   updateCanvasSet(true);
   wireToBeCheckedSet(1);
-  let { value } = this;
+  let {value} = this;
   if (this.type === 'number') {
     value = parseFloat(value);
   }
@@ -200,7 +200,9 @@ export function objectPropertyAttributeUpdate() {
 }
 
 export function objectPropertyAttributeCheckedUpdate() {
-  if (this.name === 'toggleLabelInLayoutMode') return; // Hack to prevent toggleLabelInLayoutMode from toggling twice
+  if (this.name === 'toggleLabelInLayoutMode') {
+    return;
+  } // Hack to prevent toggleLabelInLayoutMode from toggling twice
   scheduleUpdate();
   updateCanvasSet(true);
   wireToBeCheckedSet(1);
@@ -213,12 +215,12 @@ export function objectPropertyAttributeCheckedUpdate() {
 
 export function checkPropertiesUpdate(value = 0) {
   $('.objectPropertyAttribute').on(
-    'change keyup paste click',
-    objectPropertyAttributeUpdate,
+      'change keyup paste click',
+      objectPropertyAttributeUpdate,
   );
   $('.objectPropertyAttributeChecked').on(
-    'change keyup paste click',
-    objectPropertyAttributeCheckedUpdate,
+      'change keyup paste click',
+      objectPropertyAttributeCheckedUpdate,
   );
 }
 
@@ -251,11 +253,11 @@ export function hideProperties() {
  */
 function escapeHtml(unsafe) {
   return unsafe
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
 }
 
 export function deleteSelected() {
@@ -311,18 +313,13 @@ $('#bitconverter').on('click', () => {
   });
 });
 
-// convertors
-const convertors = {
-  dec2bin: (x) => `0b${x.toString(2)}`,
-  dec2hex: (x) => `0x${x.toString(16)}`,
-  dec2octal: (x) => `0${x.toString(8)}`,
-};
-
 function setBaseValues(x) {
-  if (isNaN(x)) return;
-  $('#binaryInput').val(convertors.dec2bin(x));
-  $('#octalInput').val(convertors.dec2octal(x));
-  $('#hexInput').val(convertors.dec2hex(x));
+  if (isNaN(x)) {
+    return;
+  }
+  $('#binaryInput').val(converters.dec2bin(x));
+  $('#octalInput').val(converters.dec2octal(x));
+  $('#hexInput').val(converters.dec2hex(x));
   $('#decimalInput').val(x);
 }
 
@@ -407,10 +404,12 @@ function setupPanelListeners(panelSelector) {
 
 export function exitFullView() {
   const exitViewBtn = document.querySelector('#exitViewBtn');
-  if (exitViewBtn) exitViewBtn.remove();
+  if (exitViewBtn) {
+    exitViewBtn.remove();
+  }
 
   const elements = document.querySelectorAll(
-    '.navbar, .modules, .report-sidebar, #tabsBar, #moduleProperty, .timing-diagram-panel, .testbench-manual-panel, .quick-btn',
+      '.navbar, .modules, .report-sidebar, #tabsBar, #moduleProperty, .timing-diagram-panel, .testbench-manual-panel, .quick-btn',
   );
   elements.forEach((element) => {
     if (element instanceof HTMLElement) {
@@ -427,7 +426,7 @@ export function fullView() {
   exitViewEl.textContent = 'Exit Full Preview';
 
   const elements = document.querySelectorAll(
-    '.navbar, .modules, .report-sidebar, #tabsBar, #moduleProperty, .timing-diagram-panel, .testbench-manual-panel, .quick-btn',
+      '.navbar, .modules, .report-sidebar, #tabsBar, #moduleProperty, .timing-diagram-panel, .testbench-manual-panel, .quick-btn',
   );
   elements.forEach((element) => {
     if (element instanceof HTMLElement) {
@@ -467,14 +466,16 @@ export function fillSubcircuitElements() {
         tempHTML += `<p class="img__description">${globalScope[el][i].label !== '' ?
           globalScope[el][i].label :
           'unlabeled'
-          }</p>`;
+        }</p>`;
         tempHTML += '</div>';
         available = true;
       }
     }
     tempHTML += '</div>';
     subCircuitElementExists = subCircuitElementExists || available;
-    if (available) $('#subcircuitMenu').append(tempHTML);
+    if (available) {
+      $('#subcircuitMenu').append(tempHTML);
+    }
   }
 
   if (subCircuitElementExists) {
@@ -483,7 +484,7 @@ export function fillSubcircuitElements() {
     $('#subcircuitMenu').append('<p>No layout elements available</p>');
   }
 
-  $('.subcircuitModule').mousedown(function () {
+  $('.subcircuitModule').mousedown(function() {
     const elementName = this.dataset.elementName;
     const elementIndex = this.dataset.elementId;
 

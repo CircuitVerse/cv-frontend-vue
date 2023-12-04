@@ -66,19 +66,6 @@ export function extractBits(num, start, end) {
   return (num << (32 - end)) >>> (32 - (end - start + 1));
 }
 
-export function bin2dec(binString) {
-  return parseInt(binString, 2);
-}
-
-export function dec2bin(dec, bitWidth = undefined) {
-  // only for positive nos
-  const bin = dec.toString(2);
-  if (bitWidth == undefined) {
-    return bin;
-  }
-  return '0'.repeat(bitWidth - bin.length) + bin;
-}
-
 /**
  * find Index of a node
  * @param {Node} x - Node to be found

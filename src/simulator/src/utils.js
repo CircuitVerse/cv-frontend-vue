@@ -1,4 +1,3 @@
-import simulationArea from './simulationArea';
 import {
   scheduleUpdate,
   play,
@@ -9,7 +8,6 @@ import {
 import {layoutModeGet} from './layoutMode';
 import plotArea from './plotArea';
 import {SimulatorStore} from '#/store/SimulatorStore/SimulatorStore';
-import CircuitElement from './circuitElement';
 
 window.globalScope = undefined;
 window.lightMode = false; // To be deprecated
@@ -36,10 +34,20 @@ export function stripTags(string = '') {
   return string.replace(/(<([^>]+)>)/gi, '').trim();
 }
 
-export function clockTick() {
-  if (!simulationArea.clockEnabled) return;
-  if (errorDetectedGet()) return;
-  if (layoutModeGet()) return;
+/**
+ * Move the simulation clock forward one tick.
+ * @param {SimulationArea} simulationAreaInstance
+ */
+export function clockTick(simulationAreaInstance) {
+  if (!simulationAreaInstance.clockEnabled) {
+    return;
+  }
+  if (errorDetectedGet()) {
+    return;
+  }
+  if (layoutModeGet()) {
+    return;
+  }
   updateCanvasSet(true);
   globalScope.clockTick();
   plotArea.nextCycle();
@@ -55,7 +63,9 @@ export function clockTick() {
 export function showError(error) {
   errorDetectedSet(true);
   // if error ha been shown return
-  if (error === prevErrorMessage) return;
+  if (error === prevErrorMessage) {
+    return;
+  }
   prevErrorMessage = error;
   const id = Math.floor(Math.random() * 10000);
   $('#MessageDiv').append(
@@ -69,7 +79,9 @@ export function showError(error) {
 
 // Helper function to show message
 export function showMessage(mes) {
-  if (mes === prevShowMessage) return;
+  if (mes === prevShowMessage) {
+    return;
+  }
   prevShowMessage = mes;
   const id = Math.floor(Math.random() * 10000);
   $('#MessageDiv').append(
@@ -238,32 +250,48 @@ export function getImageDimensions(file) {
   });
 }
 
-// convertors
-export var convertors = {
-  dec2bin: (x) => '0b' + x.toString(2),
+// converters
+export const converters = {
+  dec2bin: (dec, bitWidth = undefined) => {
+    // only for positive nos
+    const bin = dec.toString(2);
+    if (bitWidth == undefined) {
+      return bin;
+    }
+    return '0'.repeat(bitWidth - bin.length) + bin;
+  },
+  bin2dec: (x) => {
+    return parseInt(x, 2);
+  },
   dec2hex: (x) => '0x' + x.toString(16),
   dec2octal: (x) => '0' + x.toString(8),
   dec2bcd: (x) => parseInt(x.toString(10), 16).toString(2),
 };
 
 export function setBaseValues(x) {
-  if (isNaN(x)) return;
-  $('#binaryInput').val(convertors.dec2bin(x));
-  $('#bcdInput').val(convertors.dec2bcd(x));
-  $('#octalInput').val(convertors.dec2octal(x));
-  $('#hexInput').val(convertors.dec2hex(x));
+  if (isNaN(x)) {
+    return;
+  }
+  $('#binaryInput').val(converters.dec2bin(x));
+  $('#bcdInput').val(converters.dec2bcd(x));
+  $('#octalInput').val(converters.dec2octal(x));
+  $('#hexInput').val(converters.dec2hex(x));
   $('#decimalInput').val(x);
 }
 
 export function parseNumber(num) {
-  if (num instanceof Number) return num;
+  if (num instanceof Number) {
+    return num;
+  }
   if (num.slice(0, 2).toLocaleLowerCase() == '0b') {
     return parseInt(num.slice(2), 2);
   }
   if (num.slice(0, 2).toLocaleLowerCase() == '0x') {
     return parseInt(num.slice(2), 16);
   }
-  if (num.slice(0, 1).toLocaleLowerCase() == '0') return parseInt(num, 8);
+  if (num.slice(0, 1).toLocaleLowerCase() == '0') {
+    return parseInt(num, 8);
+  }
   return parseInt(num);
 }
 
@@ -276,8 +304,11 @@ export function setupBitConvertor() {
   $('#binaryInput').on('keyup', function() {
     const inp = $('#binaryInput').val();
     let x;
-    if (inp.slice(0, 2) == '0b') x = parseInt(inp.slice(2), 2);
-    else x = parseInt(inp, 2);
+    if (inp.slice(0, 2) == '0b') {
+      x = parseInt(inp.slice(2), 2);
+    } else {
+      x = parseInt(inp, 2);
+    }
     setBaseValues(x);
   });
   $('#bcdInput').on('keyup', function() {
@@ -323,7 +354,9 @@ export function promptFile(contentType, multiple) {
     };
     input.onchange = function() {
       const files = Array.from(input.files);
-      if (multiple) return resolve(files);
+      if (multiple) {
+        return resolve(files);
+      }
       resolve(files[0]);
     };
     input.click();

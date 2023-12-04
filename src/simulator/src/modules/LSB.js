@@ -1,8 +1,9 @@
 import CircuitElement from '../circuitElement';
-import Node, {findNode, dec2bin} from '../node';
+import Node, {findNode} from '../node';
 import simulationArea from '../simulationArea';
 import {correctWidth, rect, fillText} from '../canvasApi';
 import {colors} from '../themer/themer';
+import {converters} from '../utils';
 /**
  * @class
  * LSB
@@ -72,7 +73,7 @@ export default class LSB extends CircuitElement {
      * resolve output values based on inputData
      */
   resolve() {
-    const inp = dec2bin(this.inp1.value);
+    const inp = converters.dec2bin(this.inp1.value);
     let out = 0;
     for (let i = inp.length - 1; i >= 0; i--) {
       if (inp[i] === '1') {

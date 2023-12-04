@@ -1,9 +1,9 @@
 import CircuitElement from '../circuitElement';
-import Node, {findNode, dec2bin} from '../node';
+import Node, {findNode} from '../node';
 import simulationArea from '../simulationArea';
 import {correctWidth, rect, fillText} from '../canvasApi';
 import {colors} from '../themer/themer';
-
+import {converters} from '../utils';
 /**
  * @class
  * MSB
@@ -74,7 +74,7 @@ export default class MSB extends CircuitElement {
      */
   resolve() {
     const inp = this.inp1.value;
-    this.output1.value = dec2bin(inp).length - 1;
+    this.output1.value = converters.dec2bin(inp).length - 1;
     simulationArea.simulationQueue.add(this.output1);
     if (inp != 0) {
       this.enable.value = 1;

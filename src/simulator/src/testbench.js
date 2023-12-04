@@ -7,7 +7,7 @@ import {scheduleBackup} from './data/backupCircuit';
 import {changeClockEnable} from './sequential';
 import {play} from './engine';
 import Scope from './circuit';
-import {showMessage, escapeHtml} from './utils';
+import {converters, showMessage, escapeHtml} from './utils';
 import {confirmOption} from '#/components/helpers/confirmComponent/ConfirmComponent.vue';
 
 /**
@@ -27,16 +27,6 @@ const VALIDATION_ERRORS = {
 };
 
 const TESTBENCH_CREATOR_PATH = '/testbench';
-
-// Do we have any other function to do this?
-// Utility function. Converts decimal number to binary string
-function dec2bin(dec, bitWidth = undefined) {
-  if (dec === undefined) return 'X';
-  const bin = (dec >>> 0).toString(2);
-  if (!bitWidth) return bin;
-
-  return '0'.repeat(bitWidth - bin.length) + bin;
-}
 
 /**
  * Class to store all data related to the testbench and functions to use it
@@ -63,7 +53,9 @@ export class TestbenchData {
     }
     const caseCount =
             this.testData.groups[this.currentGroup].inputs[0].values.length;
-    if (this.currentCase >= caseCount || this.currentCase < 0) return false;
+    if (this.currentCase >= caseCount || this.currentCase < 0) {
+      return false;
+    }
 
     return true;
   }
@@ -97,7 +89,9 @@ export class TestbenchData {
 
     while (caseCount === 0 || this.currentGroup === newCase.currentGroup) {
       newCase.currentGroup++;
-      if (newCase.currentGroup >= groupCount) return false;
+      if (newCase.currentGroup >= groupCount) {
+        return false;
+      }
       caseCount =
                 newCase.testData.groups[newCase.currentGroup].inputs[0].values
                     .length;
@@ -121,7 +115,9 @@ export class TestbenchData {
 
     while (caseCount === 0 || this.currentGroup === newCase.currentGroup) {
       newCase.currentGroup--;
-      if (newCase.currentGroup < 0) return false;
+      if (newCase.currentGroup < 0) {
+        return false;
+      }
       caseCount =
                 newCase.testData.groups[newCase.currentGroup].inputs[0].values
                     .length;
@@ -138,7 +134,9 @@ export class TestbenchData {
   caseNext() {
     const caseCount =
             this.testData.groups[this.currentGroup].inputs[0].values.length;
-    if (this.currentCase >= caseCount - 1) return this.groupNext();
+    if (this.currentCase >= caseCount - 1) {
+      return this.groupNext();
+    }
     this.currentCase++;
     return true;
   }
@@ -148,7 +146,9 @@ export class TestbenchData {
      */
   casePrev() {
     if (this.currentCase <= 0) {
-      if (!this.groupPrev()) return false;
+      if (!this.groupPrev()) {
+        return false;
+      }
       const caseCount =
                 this.testData.groups[this.currentGroup].inputs[0].values.length;
       this.currentCase = caseCount - 1;
@@ -168,13 +168,17 @@ export class TestbenchData {
             newCase.testData.groups[this.currentGroup].inputs[0].values.length;
 
     // If the first group is not empty, do nothing
-    if (caseCount > 0) return true;
+    if (caseCount > 0) {
+      return true;
+    }
 
     // Otherwise go next until non empty group
     const validExists = newCase.groupNext();
 
     // If all groups empty return false
-    if (!validExists) return false;
+    if (!validExists) {
+      return false;
+    }
 
     // else set case to the non empty group
     this.currentGroup = newCase.currentGroup;
@@ -463,7 +467,9 @@ const buttonListenerFunctions = {
  */
 export function setupTestbenchUI() {
   // Don't change UI if UI is minimized (because hide() and show() are recursive)
-  if ($('.testbench-manual-panel .minimize').css('display') === 'none') return;
+  if ($('.testbench-manual-panel .minimize').css('display') === 'none') {
+    return;
+  }
 
   if (globalScope.testbenchData === undefined) {
     $('.tb-test-not-null').hide();
@@ -497,7 +503,9 @@ export function runAll(data, scope = globalScope) {
       // Set and propagate the inputs
       setInputValues(inputs, group, case_i, scope);
       // If sequential, trigger clock now
-      if (data.type === 'seq') tickClock(scope);
+      if (data.type === 'seq') {
+        tickClock(scope);
+      }
       // Get output values
       const caseResult = getOutputValues(data, outputs);
       // Put the results in the data
@@ -517,11 +525,15 @@ export function runAll(data, scope = globalScope) {
       });
 
       // If current case passed, then increment passedCases
-      if (casePassed) passedCases++;
+      if (casePassed) {
+        passedCases++;
+      }
     }
 
     // If sequential, trigger reset at the end of group (set)
-    if (data.type === 'seq') triggerReset(reset);
+    if (data.type === 'seq') {
+      triggerReset(reset);
+    }
   });
 
   // Tests done, restart the clocks
@@ -645,7 +657,7 @@ function getOutputValues(data, outputs) {
     // Using node value because output state only changes on rendering
     const resultValue = outputs[dataOutput.label].nodeList[0].value;
     const resultBW = outputs[dataOutput.label].nodeList[0].bitWidth;
-    values.set(dataOutput.label, dec2bin(resultValue, resultBW));
+    values.set(dataOutput.label, converters.dec2bin(resultValue, resultBW));
   });
 
   return values;
@@ -746,7 +758,9 @@ function validate(data, scope) {
   }
 
   // Don't do further checks if duplicates
-  if (invalids.length > 0) return {ok: false, invalids};
+  if (invalids.length > 0) {
+    return {ok: false, invalids};
+  }
 
   // Validate inputs and outputs
   const inputsValid = validateInputs(data, scope);
@@ -775,7 +789,9 @@ function validate(data, scope) {
     }
   }
 
-  if (invalids.length > 0) return {ok: false, invalids};
+  if (invalids.length > 0) {
+    return {ok: false, invalids};
+  }
   return {ok: true};
 }
 
@@ -788,7 +804,9 @@ function validationAutoFix(validationErrors) {
   // Currently only autofixes bitwidths
   let fixedErrors = 0;
   // Return if no errors
-  if (validationErrors.ok) return fixedErrors;
+  if (validationErrors.ok) {
+    return fixedErrors;
+  }
 
   const bitwidthErrors = validationErrors.invalids.filter(
       (vError) => vError.type === VALIDATION_ERRORS.WRONGBITWIDTH,
@@ -868,7 +886,9 @@ function validateInputs(data, scope) {
     }
   });
 
-  if (invalids.length > 0) return {ok: false, invalids};
+  if (invalids.length > 0) {
+    return {ok: false, invalids};
+  }
   return {ok: true};
 }
 
@@ -905,7 +925,9 @@ function validateOutputs(data, scope) {
     }
   });
 
-  if (invalids.length > 0) return {ok: false, invalids};
+  if (invalids.length > 0) {
+    return {ok: false, invalids};
+  }
   return {ok: true};
 }
 
@@ -1097,7 +1119,9 @@ function openCreator(type, dataString) {
     window.removeEventListener('message', dataListener);
 
     // If scopeID does not match, do nothing and return
-    if (data.scopeID != globalScope.id) return;
+    if (data.scopeID != globalScope.id) {
+      return;
+    }
 
     // Load test data onto the scope
     runTestBench(data.testData, globalScope, CONTEXT.CONTEXT_SIMULATOR);

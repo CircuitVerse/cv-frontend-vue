@@ -3,21 +3,8 @@ import Node, {findNode} from '../node';
 import simulationArea from '../simulationArea';
 import {correctWidth, oppositeDirection, fillText} from '../canvasApi';
 import {getNextPosition} from '../modules';
-import {generateId} from '../utils';
+import {converters, generateId} from '../utils';
 import {colors} from '../themer/themer';
-
-function bin2dec(binString) {
-  return parseInt(binString, 2);
-}
-
-function dec2bin(dec, bitWidth = undefined) {
-  // only for positive nos
-  const bin = dec.toString(2);
-  if (bitWidth == undefined) {
-    return bin;
-  }
-  return '0'.repeat(bitWidth - bin.length) + bin;
-}
 
 /**
  * @class
@@ -51,7 +38,7 @@ export default class Input extends CircuitElement {
     }
     this.state = 0;
     this.orientationFixed = false;
-    this.state = bin2dec(this.state); // in integer format
+    this.state = converters.bin2dec(this.state); // in integer format
     this.output1 = new Node(this.bitWidth * 10, 0, 1, this);
     this.wasClicked = false;
     this.directionFixed = true;
@@ -146,7 +133,7 @@ export default class Input extends CircuitElement {
     ctx.beginPath();
     ctx.fillStyle = colors['input_text'];
     ctx.textAlign = 'center';
-    const bin = dec2bin(this.state, this.bitWidth);
+    const bin = converters.dec2bin(this.state, this.bitWidth);
     for (let k = 0; k < this.bitWidth; k++) {
       fillText(ctx, bin[k], xx - 10 * this.bitWidth + 10 + k * 20, yy + 5);
     }

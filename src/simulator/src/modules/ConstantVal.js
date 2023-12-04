@@ -3,11 +3,7 @@ import Node, {findNode} from '../node';
 import simulationArea from '../simulationArea';
 import {correctWidth, rect2, fillText, oppositeDirection} from '../canvasApi';
 import {colors} from '../themer/themer';
-
-function bin2dec(binString) {
-  return parseInt(binString, 2);
-}
-
+import {converters} from '../utils';
 /**
  * @class
  * ConstantVal
@@ -70,7 +66,7 @@ export default class ConstantVal extends CircuitElement {
      * resolve output values based on inputData
      */
   resolve() {
-    this.output1.value = bin2dec(this.state);
+    this.output1.value = converters.bin2dec(this.state);
     simulationArea.simulationQueue.add(this.output1);
   }
 
@@ -142,7 +138,7 @@ export default class ConstantVal extends CircuitElement {
     ctx.beginPath();
     ctx.fillStyle = colors['input_text'];
     ctx.textAlign = 'center';
-    const bin = this.state; // dec2bin(this.state,this.bitWidth);
+    const bin = this.state;
     for (let k = 0; k < this.bitWidth; k++) {
       fillText(ctx, bin[k], xx - 10 * this.bitWidth + 10 + k * 20, yy + 5);
     }
