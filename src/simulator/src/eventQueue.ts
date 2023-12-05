@@ -2,7 +2,7 @@
  * Event Queue is simply a priority Queue, basic implementation O(n^2).
  * @category eventQueue
  */
-export default class EventQueue {
+export class EventQueue {
 	public size: number;
 	public queue: any[];
 	public frontIndex: number;

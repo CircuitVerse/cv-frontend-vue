@@ -1,5 +1,5 @@
 import {scheduleUpdate} from './engine';
-import simulationArea from './simulationArea';
+import {simulationArea} from './simulationArea';
 import {
   fixDirection,
   fillText,
@@ -22,7 +22,7 @@ import {NodeType} from './node';
  * @param {number} bitWidth - the number of bits per node.
  * @category circuitElement
  */
-export default class CircuitElement {
+export class CircuitElement {
   /**
    * @param {number} x - x coordinate of the element.
    * @param {number} y - y coordinate of the element.
@@ -86,8 +86,9 @@ export default class CircuitElement {
         // determines whether the label of the element is to be
         // show in the subcircuit
         showLabelInSubcircuit: true,
-        labelDirection: this.labelDirection, // determines the direction of the label of the element in the subcircuit
-        // coordinates of the element in the subcircuit relative to the subcircuit
+        // the direction of the label of the element in the subcircuit
+        labelDirection: this.labelDirection,
+        // coordinates of the element relative to the subcircuit
         x: 0,
         y: 0,
       };
@@ -283,7 +284,8 @@ export default class CircuitElement {
   }
 
   /**
-   * The update method is used to change the parameters of the object on mouse click and hover.
+   * The update method is used to change the parameters of the object on
+   * mouse click and hover.
    * Return Value: true if state has changed else false
    * NOT OVERRIDABLE
    */
@@ -386,7 +388,8 @@ export default class CircuitElement {
       }
       this.clicked = false;
       this.wasClicked = false;
-      // If this is SubCircuit, then call releaseClick to recursively release clicks on each subcircuit object
+      // If this is SubCircuit, then call releaseClick
+      // to recursively release clicks on each subcircuit object
       if (this.objectType == 'SubCircuit') {
         this.releaseClick();
       }
@@ -419,7 +422,7 @@ export default class CircuitElement {
   /**
    * Used to update the state of the elements inside the subcircuit
    * in layout mode
-   * Return Value: true if the state has changed, false otherwise
+   * @return {boolean} true if the state has changed, false otherwise
    **/
   layoutUpdate() {
     let update = false;
@@ -432,7 +435,7 @@ export default class CircuitElement {
         this.newElement = false;
         simulationArea.lastSelected = this;
       } else {
-        return;
+        return update;
       }
     }
 

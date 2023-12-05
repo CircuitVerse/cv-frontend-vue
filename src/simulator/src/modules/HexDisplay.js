@@ -1,6 +1,6 @@
-import CircuitElement from '../circuitElement';
-import Node, {findNode} from '../node';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {Node, findNode} from '../node';
+import {simulationArea} from '../simulationArea';
 import {
   correctWidth,
   lineTo,
@@ -19,7 +19,7 @@ import {colors} from '../themer/themer';
  * @param {Scope} scope - Circuit on which element is drawn
  * @category modules
  */
-export default class HexDisplay extends CircuitElement {
+export class HexDisplay extends CircuitElement {
   constructor(x, y, scope = globalScope, color = 'Red') {
     super(x, y, scope, 'RIGHT', 4);
     this.directionFixed = true;

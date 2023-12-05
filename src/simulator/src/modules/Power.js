@@ -1,6 +1,6 @@
-import CircuitElement from '../circuitElement';
-import Node, {findNode} from '../node';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {Node, findNode} from '../node';
+import {simulationArea} from '../simulationArea';
 import {correctWidth, lineTo, moveTo} from '../canvasApi';
 import {colors} from '../themer/themer';
 /**
@@ -13,7 +13,7 @@ import {colors} from '../themer/themer';
  * @param {number} bitWidth - bit width per node.
  * @category modules
  */
-export default class Power extends CircuitElement {
+export class Power extends CircuitElement {
   /**
     * @param {number} x - x coordinate of element.
     * @param {number} y - y coordinate of element.

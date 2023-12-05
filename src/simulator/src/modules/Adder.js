@@ -1,6 +1,6 @@
-import CircuitElement from '../circuitElement';
-import Node, {findNode} from '../node';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {Node, findNode} from '../node';
+import {simulationArea} from '../simulationArea';
 
 /**
  * @class
@@ -13,7 +13,7 @@ import simulationArea from '../simulationArea';
  * @param {number} bitWidth - bit width per node. modules
  * @category modules
  */
-export default class Adder extends CircuitElement {
+export class Adder extends CircuitElement {
   constructor(x, y, scope = globalScope, dir = 'RIGHT', bitWidth = 1) {
     super(x, y, scope, dir, bitWidth);
     this.setDimensions(20, 20);

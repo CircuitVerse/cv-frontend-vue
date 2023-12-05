@@ -1,5 +1,5 @@
-import CircuitElement from '../circuitElement';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {simulationArea} from '../simulationArea';
 import {correctWidth, rect, fillText, drawImage} from '../canvasApi';
 import {colors} from '../themer/themer';
 import {promptFile} from '../utils';
@@ -15,7 +15,7 @@ import {showMessage} from '../utils_clock';
  * @param {number} cols - number of columns.
  * @category modules
  */
-export default class ImageAnnotation extends CircuitElement {
+export class ImageAnnotation extends CircuitElement {
   /**
    * @param {number} x - x coordinate of element.
    * @param {number} y - y coordinate of element.

@@ -1,8 +1,8 @@
-import CircuitElement from '../circuitElement';
-import Node, {findNode} from '../node';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {Node, findNode} from '../node';
+import {simulationArea} from '../simulationArea';
 import {correctWidth, rect2, fillText} from '../canvasApi';
-import plotArea from '../plotArea';
+import {plotArea} from '../plotArea';
 import {showError} from '../utils_clock';
 import {colors} from '../themer/themer';
 /**
@@ -17,7 +17,7 @@ import {colors} from '../themer/themer';
  * @param {string} identifier - number of input nodes.
  * @category modules
  */
-export default class Tunnel extends CircuitElement {
+export class Tunnel extends CircuitElement {
   /**
      * @param {number} x - x coordinate of element.
      * @param {number} y - y coordinate of element.

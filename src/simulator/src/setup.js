@@ -1,9 +1,9 @@
 import metadata from './metadata.json';
 import {generateId} from './utils';
 import {showMessage} from './utils_clock';
-import backgroundArea from './backgroundArea';
-import plotArea from './plotArea';
-import simulationArea from './simulationArea';
+import {backgroundArea} from './backgroundArea';
+import {plotArea} from './plotArea';
+import {simulationArea} from './simulationArea';
 import {dots} from './canvasApi';
 import {update, updateSimulationSet, updateCanvasSet} from './engine';
 import {setupUI} from './ux';
@@ -46,8 +46,9 @@ export function resetup() {
   } else {
     height = document.getElementById('simulation').clientHeight * DPR;
   }
-  // setup simulationArea and backgroundArea variables used to make changes to canvas.
-  backgroundArea.setup();
+  // setup simulationArea and backgroundArea to make changes to canvas.
+  const backgroundAreaCanvas = document.getElementById('backgroundArea');
+  backgroundArea.setup(backgroundAreaCanvas);
   simulationArea.setup();
   // redraw grid
   dots();
@@ -71,7 +72,7 @@ export function resetup() {
 
 window.onresize = resetup; // listener
 window.onorientationchange = resetup; // listener
-
+screen.orientation.addEventListener('change', resetup);
 // for mobiles
 window.addEventListener('orientationchange', resetup); // listener
 

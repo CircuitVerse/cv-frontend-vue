@@ -1,4 +1,4 @@
-import RAM from './RAM';
+import {RAM} from './RAM';
 /**
  * EEPROM Component.
  * @extends CircuitElement
@@ -20,7 +20,7 @@ import RAM from './RAM';
  * These two techniques help keep reduce the size of saved projects.
  * @category sequential
  */
-export default class EEPROM extends RAM {
+export class EEPROM extends RAM {
   /**
    * @param {number} x - x coord of element
    * @param {number} y - y coord of element

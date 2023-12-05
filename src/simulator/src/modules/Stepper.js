@@ -1,6 +1,6 @@
-import CircuitElement from '../circuitElement';
-import Node, {findNode} from '../node';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {Node, findNode} from '../node';
+import {simulationArea} from '../simulationArea';
 import {fillText} from '../canvasApi';
 import {colors} from '../themer/themer';
 /**
@@ -14,7 +14,7 @@ import {colors} from '../themer/themer';
  * @param {number} bitWidth - bitwidth of element
  * @category modules
  */
-export default class Stepper extends CircuitElement {
+export class Stepper extends CircuitElement {
   /**
    * @param {number} x - x coordinate of element.
    * @param {number} y - y coordinate of element.
@@ -80,7 +80,9 @@ export default class Stepper extends CircuitElement {
     if (this.state < 1 << this.bitWidth && (key === '+' || key === '=')) {
       this.state++;
     }
-    if (this.state > 0 && (key === '_' || key === '-')) this.state--;
+    if (this.state > 0 && (key === '_' || key === '-')) {
+      this.state--;
+    }
   }
 }
 

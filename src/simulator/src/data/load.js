@@ -8,16 +8,16 @@ import {
   gridUpdateSet,
 } from '../engine';
 import {updateRestrictedElementsInScope} from '../restrictedElementDiv';
-import simulationArea from '../simulationArea';
+import {simulationArea} from '../simulationArea';
 
 import {loadSubCircuit} from '../subcircuit';
 import {scheduleBackup} from './backupCircuit';
 import {showProperties} from '../ux';
 import {constructNodeConnections, loadNode, replace} from '../node';
 import {generateId} from '../utils';
-import modules from '../modules';
+import {modules} from '../modules';
 import {oppositeDirection} from '../canvasApi';
-import plotArea from '../plotArea';
+import {plotArea} from '../plotArea';
 import {updateTestbenchUI, TestbenchData} from '../testbench';
 import {SimulatorStore} from '#/store/SimulatorStore/SimulatorStore';
 import {toRefs} from 'vue';

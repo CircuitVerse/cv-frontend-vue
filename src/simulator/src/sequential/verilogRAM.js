@@ -1,6 +1,6 @@
-import CircuitElement from '../circuitElement';
-import Node, {findNode} from '../node';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {Node, findNode} from '../node';
+import {simulationArea} from '../simulationArea';
 import {correctWidth, fillText2, fillText4, drawCircle2} from '../canvasApi';
 
 function customResolve(
@@ -147,7 +147,7 @@ function customResolve(
  * increase the max.
  * @category sequential
  */
-export default class verilogRAM extends CircuitElement {
+export class verilogRAM extends CircuitElement {
   /**
    *
    * @param {*} x

@@ -1,6 +1,6 @@
-import CircuitElement from '../circuitElement';
-import Node, {findNode} from '../node';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {Node, findNode} from '../node';
+import {simulationArea} from '../simulationArea';
 import {correctWidth, lineTo, moveTo, fillText2} from '../canvasApi';
 import {colors} from '../themer/themer';
 
@@ -20,7 +20,7 @@ function extractBits(num, start, end) {
  * @param {number} bitWidthSplit - number of input nodes
  * @category modules
  */
-export default class Splitter extends CircuitElement {
+export class Splitter extends CircuitElement {
   /**
      * @param {number} x - x coordinate of element.
      * @param {number} y - y coordinate of element.

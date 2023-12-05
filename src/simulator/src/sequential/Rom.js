@@ -1,6 +1,6 @@
-import CircuitElement from '../circuitElement';
-import Node, {findNode} from '../node';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {Node, findNode} from '../node';
+import {simulationArea} from '../simulationArea';
 import {correctWidth, rect2, fillText3} from '../canvasApi';
 import {colors} from '../themer/themer';
 /**
@@ -12,7 +12,7 @@ import {colors} from '../themer/themer';
  * @param {Array=} data - bit width per node.
  * @category sequential
  */
-export default class Rom extends CircuitElement {
+export class Rom extends CircuitElement {
   /**
    * @param {number} x - x coordinate of element.
    * @param {number} y - y coordinate of element.
@@ -80,7 +80,9 @@ export default class Rom extends CircuitElement {
   findPos() {
     const i = Math.floor((simulationArea.mouseX - this.x + 35) / 20);
     const j = Math.floor((simulationArea.mouseY - this.y + 35) / 16);
-    if (i < 0 || j < 0 || i > 3 || j > 3) return undefined;
+    if (i < 0 || j < 0 || i > 3 || j > 3) {
+      return undefined;
+    }
     return j * 4 + i;
   }
 
@@ -216,7 +218,9 @@ export default class Rom extends CircuitElement {
     for (let i = 0; i < 16; i += 4) {
       for (let j = i; j < i + 4; j++) {
         let s = this.data[j].toString(16);
-        if (s.length < 2) s = `0${s}`;
+        if (s.length < 2) {
+          s = `0${s}`;
+        }
         fillText3(
             ctx,
             s,
@@ -236,7 +240,9 @@ export default class Rom extends CircuitElement {
     ctx.fillStyle = 'Black';
     for (let i = 0; i < 16; i += 4) {
       let s = i.toString(16);
-      if (s.length < 2) s = `0${s}`;
+      if (s.length < 2) {
+        s = `0${s}`;
+      }
       fillText3(
           ctx,
           s,

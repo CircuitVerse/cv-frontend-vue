@@ -1,10 +1,9 @@
 import {dots} from './canvasApi';
 
-let backgroundArea;
-export default backgroundArea = {
+export const backgroundArea = {
   canvas: document.getElementById('backgroundArea'),
-  setup() {
-    this.canvas = document.getElementById('backgroundArea');
+  setup(canvas) {
+    this.canvas = canvas;
     this.canvas.width = width;
     this.canvas.height = height;
     this.context = this.canvas.getContext('2d');

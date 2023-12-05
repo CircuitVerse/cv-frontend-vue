@@ -1,6 +1,6 @@
-import CircuitElement from '../circuitElement';
-import Node, {findNode} from '../node';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {Node, findNode} from '../node';
+import {simulationArea} from '../simulationArea';
 import {correctWidth, rect, fillText} from '../canvasApi';
 import {colors} from '../themer/themer';
 import {converters} from '../utils';
@@ -15,7 +15,7 @@ import {converters} from '../utils';
  * @param {number} bitWidth - bit width per node.
  * @category modules
  */
-export default class PriorityEncoder extends CircuitElement {
+export class PriorityEncoder extends CircuitElement {
   /**
    * @param {number} x - x coordinate of element.
    * @param {number} y - y coordinate of element.

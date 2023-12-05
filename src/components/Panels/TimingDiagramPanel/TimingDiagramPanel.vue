@@ -43,7 +43,7 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
-import _plotArea from '#/simulator/src/plotArea'
+import {plotArea as _plotArea} from '#/simulator/src/plotArea'
 import { timingDiagramButtonActions } from '#/simulator/src/plotArea'
 import TimingDiagramButtons from './TimingDiagramButtons.vue'
 import buttonsJSON from '#/assets/constants/Panels/TimingDiagramPanel/buttons.json'

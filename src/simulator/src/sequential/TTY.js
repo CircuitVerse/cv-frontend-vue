@@ -1,6 +1,6 @@
-import CircuitElement from '../circuitElement';
-import Node, {findNode} from '../node';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {Node, findNode} from '../node';
+import {simulationArea} from '../simulationArea';
 import {correctWidth, lineTo, moveTo, fillText3} from '../canvasApi';
 import {colors} from '../themer/themer';
 
@@ -17,7 +17,7 @@ import {colors} from '../themer/themer';
  * @param {string} dir - direction in which element has to drawn
  * @category sequential
  */
-export default class TTY extends CircuitElement {
+export class TTY extends CircuitElement {
   constructor(x, y, scope = globalScope, rows = 3, cols = 32) {
     super(x, y, scope, 'RIGHT', 1);
     this.directionFixed = true;
@@ -77,8 +77,12 @@ export default class TTY extends CircuitElement {
      * this funciton is used to change the size of the screen
      */
   changeRowSize(size) {
-    if (size == undefined || size < 1 || size > 10) return;
-    if (this.rows == size) return;
+    if (size == undefined || size < 1 || size > 10) {
+      return;
+    }
+    if (this.rows == size) {
+      return;
+    }
     const obj = new TTY(this.x, this.y, this.scope, size, this.cols);
     this.delete();
     simulationArea.lastSelected = obj;
@@ -90,8 +94,12 @@ export default class TTY extends CircuitElement {
      * this funciton is used to change the size of the screen
      */
   changeColSize(size) {
-    if (size == undefined || size < 20 || size > 100) return;
-    if (this.cols == size) return;
+    if (size == undefined || size < 20 || size > 100) {
+      return;
+    }
+    if (this.cols == size) {
+      return;
+    }
     const obj = new TTY(this.x, this.y, this.scope, this.rows, size);
     this.delete();
     simulationArea.lastSelected = obj;

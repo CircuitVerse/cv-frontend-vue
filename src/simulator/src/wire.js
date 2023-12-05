@@ -1,6 +1,6 @@
 import {drawLine} from './canvasApi';
-import simulationArea from './simulationArea';
-import Node from './node';
+import {simulationArea} from './simulationArea';
+import {Node} from './node';
 import {updateSimulationSet, forceResetNodesSet} from './engine';
 import {colors} from './themer/themer';
 
@@ -13,7 +13,7 @@ import {colors} from './themer/themer';
  * @param {Scope} scope - The circuit in which wire has to be drawn
  * @category wire
  */
-export default class Wire {
+export class Wire {
   /**
    *
    * @param {*} node1

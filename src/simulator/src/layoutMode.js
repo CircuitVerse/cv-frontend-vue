@@ -1,6 +1,6 @@
 import {dots, correctWidth, fillText, rect2} from './canvasApi';
-import LayoutBuffer from './layout/layoutBuffer';
-import simulationArea from './simulationArea';
+import {LayoutBuffer} from './layout/layoutBuffer';
+import {simulationArea} from './simulationArea';
 import {
   fillSubcircuitElements,
   prevPropertyObjGet,
@@ -14,7 +14,7 @@ import {
   gridUpdateSet,
   gridUpdateGet,
 } from './engine';
-import miniMapArea from './minimap';
+import {miniMapArea} from './minimap';
 import {showMessage} from './utils_clock';
 import {verilogModeSet} from './Verilog2CV';
 

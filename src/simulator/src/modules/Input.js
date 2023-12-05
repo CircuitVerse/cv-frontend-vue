@@ -1,6 +1,6 @@
-import CircuitElement from '../circuitElement';
-import Node, {findNode} from '../node';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {Node, findNode} from '../node';
+import {simulationArea} from '../simulationArea';
 import {correctWidth, oppositeDirection, fillText} from '../canvasApi';
 import {getNextPosition} from '../modules';
 import {converters, generateId} from '../utils';
@@ -18,7 +18,7 @@ import {colors} from '../themer/themer';
  * @param {Object=} layoutProperties - x,y and id
  * @category modules
  */
-export default class Input extends CircuitElement {
+export class Input extends CircuitElement {
   constructor(
       x,
       y,

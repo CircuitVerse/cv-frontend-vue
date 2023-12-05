@@ -1,6 +1,6 @@
-import CircuitElement from '../circuitElement';
-import Node, {findNode} from '../node';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {Node, findNode} from '../node';
+import {simulationArea} from '../simulationArea';
 import {lineTo, moveTo, fillText, correctWidth, rect2} from '../canvasApi';
 import {colors} from '../themer/themer';
 
@@ -18,7 +18,7 @@ import {colors} from '../themer/themer';
  * @param {number} bitWidth - bit width.
  * @category modules
  */
-export default class Counter extends CircuitElement {
+export class Counter extends CircuitElement {
   /**
    * @param {number} x - x coordinate of element.
    * @param {number} y - y coordinate of element.

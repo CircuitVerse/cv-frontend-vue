@@ -1,6 +1,6 @@
-import CircuitElement from '../circuitElement';
-import Node, {findNode} from '../node';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {Node, findNode} from '../node';
+import {simulationArea} from '../simulationArea';
 import {correctWidth, lineTo, moveTo, drawCircle2} from '../canvasApi';
 
 /**
@@ -13,7 +13,7 @@ import {correctWidth, lineTo, moveTo, drawCircle2} from '../canvasApi';
  * @param {string} dir - direction of element
  * @category modules
  */
-export default class Button extends CircuitElement {
+export class Button extends CircuitElement {
   /**
 * @param {number} x - x coordinate of element.
  * @param {number} y - y coordinate of element.

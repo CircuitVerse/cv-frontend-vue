@@ -1,6 +1,6 @@
-import CircuitElement from '../circuitElement';
-import Node, {findNode} from '../node';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {Node, findNode} from '../node';
+import {simulationArea} from '../simulationArea';
 import {correctWidth, lineTo, moveTo, fillText3} from '../canvasApi';
 import {colors} from '../themer/themer';
 /**
@@ -13,7 +13,7 @@ import {colors} from '../themer/themer';
  * @param {Scope} scope - the circuit in which we want the Element.
  * @category sequential
  */
-export default class Keyboard extends CircuitElement {
+export class Keyboard extends CircuitElement {
   /**
    * @param {number} x - x coord of element.
    * @param {number} y - y coord of element.
@@ -68,8 +68,12 @@ export default class Keyboard extends CircuitElement {
      * be given to the keyboard at once before it starts sending data.
      */
   changeBufferSize(size) {
-    if (size == undefined || size < 20 || size > 100) return;
-    if (this.bufferSize == size) return;
+    if (size == undefined || size < 20 || size > 100) {
+      return;
+    }
+    if (this.bufferSize == size) {
+      return;
+    }
     const obj = new Keyboard(this.x, this.y, this.scope, size);
     this.delete();
     simulationArea.lastSelected = obj;
@@ -81,7 +85,9 @@ export default class Keyboard extends CircuitElement {
      * Adds the keyy pressed to the buffer
      */
   keyDown(key) {
-    if (key.length != 1) return;
+    if (key.length != 1) {
+      return;
+    }
     this.buffer += key;
     if (this.buffer.length > this.bufferSize) {
       this.buffer = this.buffer.slice(1);
@@ -93,7 +99,9 @@ export default class Keyboard extends CircuitElement {
      * not resolvable if enable = 0 or clock is undefined
      */
   isResolvable() {
-    if (this.reset.value == 1) return true;
+    if (this.reset.value == 1) {
+      return true;
+    }
     if (
       this.en.value == 0 ||
       (this.en.connections.length && this.en.value == undefined)

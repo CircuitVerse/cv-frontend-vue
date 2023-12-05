@@ -1,8 +1,8 @@
-import CircuitElement from '../circuitElement';
-import Node, {findNode} from '../node';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {Node, findNode} from '../node';
+import {simulationArea} from '../simulationArea';
 import {correctWidth, rect2, fillText} from '../canvasApi';
-import plotArea from '../plotArea';
+import {plotArea} from '../plotArea';
 import {colors} from '../themer/themer';
 
 /**
@@ -17,7 +17,7 @@ import {colors} from '../themer/themer';
  * @param {string} identifier - id
  * @category modules
  */
-export default class Flag extends CircuitElement {
+export class Flag extends CircuitElement {
   constructor(
       x,
       y,

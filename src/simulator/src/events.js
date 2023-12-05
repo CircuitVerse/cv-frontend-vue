@@ -1,4 +1,4 @@
-import Scope, {scopeList, switchCircuit, newCircuit} from './circuit';
+import {Scope, scopeList, switchCircuit, newCircuit} from './circuit';
 
 import {loadScope} from './data/load';
 import {
@@ -10,7 +10,7 @@ import {
 import {backUp} from './data/backupCircuit';
 import {getNextPosition} from './modules';
 import {generateId} from './utils';
-import simulationArea from './simulationArea';
+import {simulationArea} from './simulationArea';
 import {TestbenchData} from './testbench';
 
 /**

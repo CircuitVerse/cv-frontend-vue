@@ -1,8 +1,8 @@
-import CircuitElement from '../circuitElement';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {simulationArea} from '../simulationArea';
 import {correctWidth, lineTo, moveTo, fillText} from '../canvasApi';
-import Node, {findNode} from '../node';
-import plotArea from '../plotArea';
+import {Node, findNode} from '../node';
+import {plotArea} from '../plotArea';
 
 /**
  * TestBench Input has a node for it's clock input.
@@ -18,7 +18,7 @@ import plotArea from '../plotArea';
  * @param {JSON=} testData - input, output and number of tests.
  * @category testbench
  */
-export default class TB_Input extends CircuitElement {
+export class TB_Input extends CircuitElement {
   /**
    * @param {number} x - the x coord of TB.
    * @param {number} y - the y coord of TB.
@@ -197,7 +197,9 @@ export default class TB_Input extends CircuitElement {
      * @memberof TB_Input
      */
   setIdentifier(id = '') {
-    if (id.length == 0 || id == this.identifier) return;
+    if (id.length == 0 || id == this.identifier) {
+      return;
+    }
 
     for (var i = 0; i < this.scope.TB_Output.length; i++) {
       this.scope.TB_Output[i].checkPairing();

@@ -1,5 +1,5 @@
-import CircuitElement from '../circuitElement';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {simulationArea} from '../simulationArea';
 import {correctWidth, rect} from '../canvasApi';
 /**
  * @class
@@ -12,7 +12,7 @@ import {correctWidth, rect} from '../canvasApi';
  * @param {number} cols - number of columns.
  * @category modules
  */
-export default class Rectangle extends CircuitElement {
+export class Rectangle extends CircuitElement {
   /**
    * @param {number} x - x coordinate of element.
    * @param {number} y - y coordinate of element.

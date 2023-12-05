@@ -1,6 +1,6 @@
-import CircuitElement from '../circuitElement';
-import Node, {findNode, extractBits} from '../node';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {Node, findNode, extractBits} from '../node';
+import {simulationArea} from '../simulationArea';
 import {correctWidth, rect, fillText} from '../canvasApi';
 import {colors} from '../themer/themer';
 
@@ -16,7 +16,7 @@ import {colors} from '../themer/themer';
  * @param {number} selectorBitWidth - 1 by default
  * @category modules
  */
-export default class BitSelector extends CircuitElement {
+export class BitSelector extends CircuitElement {
   /**
    *
    * @param {number} x - x coordinate of element.

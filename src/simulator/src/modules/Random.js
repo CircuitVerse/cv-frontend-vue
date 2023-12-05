@@ -1,6 +1,6 @@
-import CircuitElement from '../circuitElement';
-import Node, {findNode} from '../node';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {Node, findNode} from '../node';
+import {simulationArea} from '../simulationArea';
 import {fillText, lineTo, moveTo, correctWidth, rect2} from '../canvasApi';
 import {colors} from '../themer/themer';
 /**
@@ -15,7 +15,7 @@ import {colors} from '../themer/themer';
  * @param {string} dir - direction in which element has to drawn.
  * @category modules
  */
-export default class Random extends CircuitElement {
+export class Random extends CircuitElement {
   /**
    * @param {number} x - x coord of element.
    * @param {number} y - y coord of element.

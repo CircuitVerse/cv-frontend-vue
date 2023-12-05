@@ -1,4 +1,4 @@
-import simulationArea from './simulationArea';
+import {simulationArea} from './simulationArea';
 
 export function getNextPosition(x = 0, scope = globalScope) {
   let possibleY = 20;
@@ -37,9 +37,7 @@ export function getNextPosition(x = 0, scope = globalScope) {
 /**
  * Global
  */
-const modules = {};
-
-export default modules;
+export const modules = {};
 
 export function changeInputSize(size) {
   if (size == undefined || size < 2 || size > 10) {

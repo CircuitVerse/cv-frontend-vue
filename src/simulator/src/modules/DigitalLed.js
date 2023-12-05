@@ -1,6 +1,6 @@
-import CircuitElement from '../circuitElement';
-import Node, {findNode} from '../node';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {Node, findNode} from '../node';
+import {simulationArea} from '../simulationArea';
 import {
   correctWidth,
   lineTo,
@@ -22,7 +22,7 @@ import {colors} from '../themer/themer';
  * @param {string} color - color of the LED.
  * @category modules
  */
-export default class DigitalLed extends CircuitElement {
+export class DigitalLed extends CircuitElement {
   /**
    * @param {number} x - x coordinate of element.
    * @param {number} y - y coordinate of element.

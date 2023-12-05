@@ -1,6 +1,6 @@
-import CircuitElement from '../circuitElement';
-import Node, {findNode} from '../node';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {Node, findNode} from '../node';
+import {simulationArea} from '../simulationArea';
 import {correctWidth, rect2, fillText, oppositeDirection} from '../canvasApi';
 import {colors} from '../themer/themer';
 import {converters} from '../utils';
@@ -16,7 +16,7 @@ import {converters} from '../utils';
  * @param {string} state - The state of element
  * @category modules
  */
-export default class ConstantVal extends CircuitElement {
+export class ConstantVal extends CircuitElement {
   /**
    * @param {number} x - x coordinate of element.
  * @param {number} y - y coordinate of element.

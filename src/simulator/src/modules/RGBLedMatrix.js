@@ -1,6 +1,6 @@
-import CircuitElement from '../circuitElement';
-import Node, {NodeType, findNode} from '../node';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {Node, NodeType, findNode} from '../node';
+import {simulationArea} from '../simulationArea';
 import {correctWidth, rect2, rotate, lineTo, moveTo} from '../canvasApi';
 
 /**
@@ -9,12 +9,17 @@ import {correctWidth, rect2, rotate, lineTo, moveTo} from '../canvasApi';
  * @extends CircuitElement
  * @param {number} x - x coordinate of element.
  * @param {number} y - y coordinate of element.
- * @param {Scope} scope - Circuit on which element is drawn
- * @param {number} rows - number of rows
+ * @param {Scope} scope - Circuit on which element is drawn.
+ * @param {number} rows - number of rows.
  * @param {number} cols - number of columns.
  * @category modules
  */
-export default class RGBLedMatrix extends CircuitElement {
+export class RGBLedMatrix extends CircuitElement {
+  /**
+   * @param {number} x - x coordinate of element.
+   * @param {number} y - y coordinate of element.
+   * @param {Scope} scope - Circuit on which element is drawn.
+   */
   constructor(
       x,
       y,

@@ -1,4 +1,4 @@
-import simulationArea from './simulationArea';
+import {simulationArea} from './simulationArea';
 import {converters} from './utils';
 
 const DPR = window.devicePixelRatio || 1;
@@ -14,7 +14,7 @@ function sh(x) {
  * NOTE: Since DPR is set on page load, changing of screen in runtime will not work well
  * @TODO
  *  - Support for color themes
- *  - Replace constants with functions? - Can support Zoom in and Zoom out of canvas then
+ *  - Replace constants with functions? - Can support Zoom in/out of canvas then
  */
 const frameInterval = 100; // Refresh rate
 const timeLineHeight = sh(20);
@@ -48,14 +48,14 @@ function getCycleStartX(cycleNumber) {
  * @type {Object} plotArea
  * @category plotArea
  */
-const plotArea = {
+export const plotArea = {
   cycleOffset: 0, // Determines timeline offset
   DPR: window.devicePixelRatio || 1,
   canvas: document.getElementById('plotArea'),
   cycleCount: 0, // Number of clock cycles passed
   cycleTime: 0, // Time of last clock tick (in ms)
   executionStartTime: 0, // Last time play() function ran in engine.js (in ms)
-  autoScroll: true, // if true, timeline will scroll to keep current time in display
+  autoScroll: true, // will timeline scroll to keep current time in display
   width: 0, // canvas width
   height: 0, // canvas height
   unitUsed: 0, // Number of simulation units used by the engine
@@ -64,7 +64,7 @@ const plotArea = {
   mouseX: 0, // Current mouse position
   mouseDownX: 0, // position of mouse when clicked
   mouseDownTime: 0, // time when mouse clicked (in ms)
-  // Reset timeline to 0 and resume autoscroll
+  // Reset timeline to 0 and resume auto-scroll
   reset() {
     this.cycleCount = 0;
     this.cycleTime = new Date().getTime();
@@ -78,11 +78,11 @@ const plotArea = {
     this.resume();
     this.resize();
   },
-  // Resume autoscroll
+  // Resume auto-scroll
   resume() {
     this.autoScroll = true;
   },
-  // pause autoscroll
+  // pause auto-scroll
   pause() {
     this.autoScroll = false;
     plotArea.scrollAcc = 0;
@@ -118,7 +118,9 @@ const plotArea = {
     const oldWidth = this.width;
     this.width = document.getElementById('plot').clientWidth * this.DPR;
     this.height = getFullHeight(globalScope.Flag.length);
-    if (oldHeight == this.height && oldWidth == this.width) return;
+    if (oldHeight == this.height && oldWidth == this.width) {
+      return;
+    }
     this.canvas.width = this.width;
     this.canvas.height = this.height;
     this.plot();
@@ -207,9 +209,13 @@ const plotArea = {
       // Friction
       plotArea.scrollAcc *= 0.95;
       // No negative numbers allowed, so negative scroll to 0
-      if (this.cycleOffset < 0) plotArea.scrollAcc = this.cycleOffset / 5;
+      if (this.cycleOffset < 0) {
+        plotArea.scrollAcc = this.cycleOffset / 5;
+      }
       // Set position to 0, to avoid infinite scrolling
-      if (Math.abs(this.cycleOffset) < 0.01) this.cycleOffset = 0;
+      if (Math.abs(this.cycleOffset) < 0.01) {
+        this.cycleOffset = 0;
+      }
     }
   },
   render() {
@@ -241,11 +247,11 @@ const plotArea = {
     ctx.strokeStyle = textColor;
     ctx.textAlign = 'center';
     for (
-      var i = Math.floor(plotArea.cycleOffset);
+      let i = Math.floor(plotArea.cycleOffset);
       getCycleStartX(i) <= width;
       i++
     ) {
-      var x = getCycleStartX(i);
+      const x = getCycleStartX(i);
       // Large ticks + number
       // @TODO - collapse number if it doesn't fit
       if (x >= timeLineStartX) {
@@ -256,7 +262,7 @@ const plotArea = {
         ctx.stroke();
       }
       // Small ticks
-      for (var j = 1; j < 5; j++) {
+      for (let j = 1; j < 5; j++) {
         var x1 = x + Math.round((j * cycleWidth) / 5);
         if (x1 >= timeLineStartX) {
           ctx.beginPath();
@@ -269,8 +275,8 @@ const plotArea = {
 
     // Flag Labels
     ctx.textAlign = 'left';
-    for (var i = 0; i < globalScope.Flag.length; i++) {
-      var startHeight = getFlagStartY(i);
+    for (let i = 0; i < globalScope.Flag.length; i++) {
+      const startHeight = getFlagStartY(i);
       ctx.fillStyle = foregroundColor;
       ctx.fillRect(0, startHeight, flagLabelWidth, plotHeight);
       ctx.fillStyle = textColor;
@@ -291,17 +297,17 @@ const plotArea = {
     ctx.textAlign = 'center';
     var endX = Math.min(getCycleStartX(endTime), width);
 
-    for (var i = 0; i < globalScope.Flag.length; i++) {
+    for (let i = 0; i < globalScope.Flag.length; i++) {
       const plotValues = globalScope.Flag[i].plotValues;
-      var startHeight = getFlagStartY(i) + waveFormPadding;
+      const startHeight = getFlagStartY(i) + waveFormPadding;
       const yTop = startHeight;
       const yMid = startHeight + waveFormHeight / 2;
       const yBottom = startHeight + waveFormHeight;
       let state = WAVEFORM_NOT_STARTED;
-      var prevY;
+      let prevY;
 
       // Find correct index to start plotting from
-      var j = 0;
+      let j = 0;
       // Using caching for optimal performance
       if (globalScope.Flag[i].cachedIndex) {
         j = globalScope.Flag[i].cachedIndex;
@@ -322,14 +328,16 @@ const plotArea = {
 
       // Plot
       for (; j < plotValues.length; j++) {
-        var x = getCycleStartX(plotValues[j][0]);
+        let x = getCycleStartX(plotValues[j][0]);
 
         // Handle out of bound
         if (x < timeLineStartX) {
           if (j + 1 != plotValues.length) {
             // Next one also is out of bound, so skip this one completely
             var x1 = getCycleStartX(plotValues[j + 1][0]);
-            if (x1 < timeLineStartX) continue;
+            if (x1 < timeLineStartX) {
+              continue;
+            }
           }
           x = timeLineStartX;
         }
@@ -343,7 +351,9 @@ const plotArea = {
           continue;
         }
         if (globalScope.Flag[i].bitWidth == 1) {
-          if (x > endX) break;
+          if (x > endX) {
+            break;
+          }
           const y = value == 1 ? yTop : yBottom;
           if (state == WAVEFORM_NOT_STARTED) {
             // Start new plot
@@ -375,7 +385,7 @@ const plotArea = {
 
           // Text position
           // Clamp start and end are within the screen
-          var x1 = Math.max(x, timeLineStartX);
+          const x1 = Math.max(x, timeLineStartX);
           const x2 = Math.min(endX, width);
           const textPositionX = (x1 + x2) / 2;
 
@@ -403,7 +413,9 @@ const plotArea = {
   },
   // Driver function to render and update
   plot() {
-    if (embed) return;
+    if (embed) {
+      return;
+    }
     if (globalScope.Flag.length === 0) {
       this.canvas.width = 0;
       this.canvas.height = 0;
@@ -417,7 +429,6 @@ const plotArea = {
     this.ctx.clearRect(0, 0, plotArea.canvas.width, plotArea.canvas.height);
   },
 };
-export default plotArea;
 
 /**
  * type {Object} timingDiagramButtonActions
@@ -426,7 +437,6 @@ export default plotArea;
  * @property {function} smallHeight - Decrease waveform height
  * @property {function} largeHeight - Increase waveform height
  */
-
 const timingDiagramButtonActions = {
   smallHeight() {
     if (plotHeight >= sh(20)) {
@@ -444,53 +454,10 @@ const timingDiagramButtonActions = {
 
 export {timingDiagramButtonActions};
 
+/**
+ *
+ */
 export function setupTimingListeners() {
-  // $('.timing-diagram-smaller').on('click', () => {
-  //     $('#plot').width(Math.max($('#plot').width() - 20, 560))
-  //     plotArea.resize()
-  // })
-  // $('.timing-diagram-larger').on('click', () => {
-  //     $('#plot').width($('#plot').width() + 20)
-  //     plotArea.resize()
-  // })
-  // $('.timing-diagram-small-height').on('click', () => {
-  //     if (plotHeight >= sh(20)) {
-  //         plotHeight -= sh(5)
-  //         waveFormHeight = plotHeight - 2 * waveFormPadding
-  //     }
-  // })
-  // $('.timing-diagram-large-height').on('click', () => {
-  //     if (plotHeight < sh(50)) {
-  //         plotHeight += sh(5)
-  //         waveFormHeight = plotHeight - 2 * waveFormPadding
-  //     }
-  // })
-  // $('.timing-diagram-reset').on('click', () => {
-  //     plotArea.reset()
-  // })
-  // $('.timing-diagram-calibrate').on('click', () => {
-  //     plotArea.calibrate()
-  // })
-  // $('.timing-diagram-resume').on('click', () => {
-  //     plotArea.resume()
-  // })
-  // $('.timing-diagram-pause').on('click', () => {
-  //     plotArea.pause()
-  // })
-  // $('.timing-diagram-download').on('click', () => {
-  //     plotArea.download()
-  // })
-  // $('.timing-diagram-zoom-in').on('click', () => {
-  //     plotArea.zoomIn()
-  // })
-  // $('.timing-diagram-zoom-out').on('click', () => {
-  //     plotArea.zoomOut()
-  // })
-  // $('#timing-diagram-units').on('change paste keyup', function () {
-  //     var timeUnits = parseInt($(this).val(), 10)
-  //     if (isNaN(timeUnits) || timeUnits < 1) return
-  //     plotArea.cycleUnit = timeUnits
-  // })
   document.getElementById('plotArea').addEventListener('mousedown', (e) => {
     const rect = plotArea.canvas.getBoundingClientRect();
     const x = sh(e.clientX - rect.left);

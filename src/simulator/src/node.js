@@ -1,5 +1,5 @@
 import {drawCircle, drawLine, arc} from './canvasApi';
-import simulationArea from './simulationArea';
+import {simulationArea} from './simulationArea';
 import {distance} from './utils';
 import {showError} from './utils_clock';
 import {
@@ -11,7 +11,7 @@ import {
   forceResetNodesSet,
   canvasMessageData,
 } from './engine';
-import Wire from './wire';
+import {Wire} from './wire';
 import {colors} from './themer/themer';
 
 /**
@@ -122,7 +122,7 @@ let uniqueIdCounter = 10;
  * @param {string} label - label for a node.
  * @category node
  */
-export default class Node {
+export class Node {
   /**
    * @param {number} x - x coord of Node.
    * @param {number} y - y coord of Node.

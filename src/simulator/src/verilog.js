@@ -7,7 +7,7 @@
 */
 import {scopeList} from './circuit';
 import {errorDetectedGet} from './engine';
-import modules from './modules';
+import {modules} from './modules';
 import {sanitizeLabel} from './verilogHelpers';
 import CodeMirror from 'codemirror/lib/codemirror.js';
 import 'codemirror/lib/codemirror.css';
@@ -18,7 +18,6 @@ import 'codemirror/addon/hint/anyword-hint.js';
 import 'codemirror/addon/hint/show-hint.js';
 import 'codemirror/addon/display/autorefresh.js';
 import {SimulatorStore} from '#/store/SimulatorStore/SimulatorStore';
-let editor;
 
 export function generateVerilog() {
   const simulatorStore = SimulatorStore();
@@ -65,7 +64,9 @@ export var verilog = {
     }
 
     for (id in scopeList) {
-      if (!SubCircuitIds.has(id)) DUTs.push(scopeList[id]);
+      if (!SubCircuitIds.has(id)) {
+        DUTs.push(scopeList[id]);
+      }
     }
 
     // DFS on SubCircuit Dependency Graph
@@ -124,7 +125,9 @@ export var verilog = {
     output += '/*\n';
     output += sp(1) + 'Element Usage Report\n';
     for (var elem in elementTypesUsed) {
-      if (elem == 'Node') continue;
+      if (elem == 'Node') {
+        continue;
+      }
       output += `${sp(2)}${elem} - ${elementTypesUsed[elem]} times\n`;
     }
     output += '*/\n';
@@ -149,15 +152,21 @@ export var verilog = {
     return output;
   },
   generateTestBenchCode: function(DUTs) {
-    if (DUTs.length == 0) return '';
+    if (DUTs.length == 0) {
+      return '';
+    }
     let output = '// Sample Testbench Code - Uncomment to use\n';
 
     output += '\n/*\n';
     output += 'module TestBench();\n';
     const registers = {};
     const wires = {};
-    for (var i = 1; i <= 32; i++) registers[i] = new Set();
-    for (var i = 1; i <= 32; i++) wires[i] = new Set();
+    for (var i = 1; i <= 32; i++) {
+      registers[i] = new Set();
+    }
+    for (var i = 1; i <= 32; i++) {
+      wires[i] = new Set();
+    }
 
     const clocks = new Set();
     const inputs = new Set();
@@ -189,10 +198,13 @@ export var verilog = {
     output += '\n';
     // Generate Reg Initialization Code
     for (var bitWidth = 1; bitWidth <= 32; bitWidth++) {
-      if (registers[bitWidth].size == 0) continue;
+      if (registers[bitWidth].size == 0) {
+        continue;
+      }
       const regArray = [...registers[bitWidth]];
-      if (bitWidth == 1) output += `${sp(1)}reg ${regArray.join(', ')};\n`;
-      else {
+      if (bitWidth == 1) {
+        output += `${sp(1)}reg ${regArray.join(', ')};\n`;
+      } else {
         output += `${sp(1)}reg [${bitWidth - 1}:0] ${regArray.join(
             ', ',
         )};\n`;
@@ -201,7 +213,9 @@ export var verilog = {
     output += '\n';
     // Generate Wire Initialization Code
     for (var bitWidth = 1; bitWidth <= 32; bitWidth++) {
-      if (wires[bitWidth].size == 0) continue;
+      if (wires[bitWidth].size == 0) {
+        continue;
+      }
       const wireArray = [...wires[bitWidth]];
       if (bitWidth == 1) {
         output += `${sp(1)}wire ${wireArray.join(', ')};\n`;
@@ -218,9 +232,13 @@ export var verilog = {
     if (clocks.size) {
       output += `${sp(1)}always begin\n`;
       output += `${sp(2)}#10\n`;
-      for (var clk of clocks) output += `${sp(2)}${clk} = 0;\n`;
+      for (var clk of clocks) {
+        output += `${sp(2)}${clk} = 0;\n`;
+      }
       output += `${sp(2)}#10\n`;
-      for (var clk of clocks) output += `${sp(2)}${clk} = 1;\n`;
+      for (var clk of clocks) {
+        output += `${sp(2)}${clk} = 1;\n`;
+      }
       output += `${sp(1)}end\n`;
       output += '\n';
     }
@@ -259,7 +277,9 @@ export var verilog = {
       elementTypesUsed,
   ) {
     // Already Visited
-    if (visited[id]) return '';
+    if (visited[id]) {
+      return '';
+    }
     // Mark as Visited
     visited[id] = true;
 
@@ -292,9 +312,12 @@ export var verilog = {
       let wireList = scope.verilogWireList[bitWidth];
       // Hack for splitter
       wireList = wireList.filter((x) => !x.includes('['));
-      if (wireList.length == 0) continue;
-      if (bitWidth == 1) output += '  wire ' + wireList.join(', ') + ';\n';
-      else {
+      if (wireList.length == 0) {
+        continue;
+      }
+      if (bitWidth == 1) {
+        output += '  wire ' + wireList.join(', ') + ';\n';
+      } else {
         output +=
           '  wire [' +
           (bitWidth - 1) +
@@ -318,7 +341,9 @@ export var verilog = {
     let res = '';
     scope.stack = [];
     scope.verilogWireList = [];
-    for (var i = 0; i <= 32; i++) scope.verilogWireList.push(new Array());
+    for (var i = 0; i <= 32; i++) {
+      scope.verilogWireList.push(new Array());
+    }
 
     const verilogResolvedSet = new Set();
 
@@ -331,10 +356,14 @@ export var verilog = {
 
     // Iterative DFS on circuit graph
     while (scope.stack.length) {
-      if (errorDetectedGet()) return;
+      if (errorDetectedGet()) {
+        return;
+      }
       var elem = scope.stack.pop();
 
-      if (verilogResolvedSet.has(elem)) continue;
+      if (verilogResolvedSet.has(elem)) {
+        continue;
+      }
 
       // Process verilog creates variable names and adds elements to DFS stack
       elem.processVerilog();
@@ -343,7 +372,9 @@ export var verilog = {
       if (elem.objectType != 'Node') {
         if (elementTypesUsed[elem.objectType]) {
           elementTypesUsed[elem.objectType]++;
-        } else elementTypesUsed[elem.objectType] = 1;
+        } else {
+          elementTypesUsed[elem.objectType] = 1;
+        }
       }
 
       if (
@@ -375,8 +406,11 @@ export var verilog = {
      * sanitizeLabel is a helper function to escape white spaces
      */
     for (var i = 0; i < scope.Input.length; i++) {
-      if (scope.Input[i].label == '') scope.Input[i].label = 'inp_' + i;
-      else scope.Input[i].label = sanitizeLabel(scope.Input[i].label);
+      if (scope.Input[i].label == '') {
+        scope.Input[i].label = 'inp_' + i;
+      } else {
+        scope.Input[i].label = sanitizeLabel(scope.Input[i].label);
+      }
       // copy label to node
       scope.Input[i].output1.verilogLabel = scope.Input[i].label;
     }
@@ -395,14 +429,20 @@ export var verilog = {
 
     // copy label to clock
     for (var i = 0; i < scope.Clock.length; i++) {
-      if (scope.Clock[i].label == '') scope.Clock[i].label = 'clk_' + i;
-      else scope.Clock[i].label = sanitizeLabel(scope.Clock[i].label);
+      if (scope.Clock[i].label == '') {
+        scope.Clock[i].label = 'clk_' + i;
+      } else {
+        scope.Clock[i].label = sanitizeLabel(scope.Clock[i].label);
+      }
       scope.Clock[i].output1.verilogLabel = scope.Clock[i].label;
     }
 
     for (var i = 0; i < scope.Output.length; i++) {
-      if (scope.Output[i].label == '') scope.Output[i].label = 'out_' + i;
-      else scope.Output[i].label = sanitizeLabel(scope.Output[i].label);
+      if (scope.Output[i].label == '') {
+        scope.Output[i].label = 'out_' + i;
+      } else {
+        scope.Output[i].label = sanitizeLabel(scope.Output[i].label);
+      }
     }
     for (var i = 0; i < scope.SubCircuit.length; i++) {
       if (scope.SubCircuit[i].label == '') {
@@ -448,7 +488,9 @@ export var verilog = {
   },
   generateInputList: function(scope = globalScope) {
     const inputs = {};
-    for (var i = 1; i <= 32; i++) inputs[i] = [];
+    for (var i = 1; i <= 32; i++) {
+      inputs[i] = [];
+    }
 
     for (var i = 0; i < scope.Input.length; i++) {
       inputs[scope.Input[i].bitWidth].push(scope.Input[i].label);
@@ -460,9 +502,12 @@ export var verilog = {
 
     let res = '';
     for (const bitWidth in inputs) {
-      if (inputs[bitWidth].length == 0) continue;
-      if (bitWidth == 1) res += '  input ' + inputs[1].join(', ') + ';\n';
-      else {
+      if (inputs[bitWidth].length == 0) {
+        continue;
+      }
+      if (bitWidth == 1) {
+        res += '  input ' + inputs[1].join(', ') + ';\n';
+      } else {
         res +=
           '  input [' +
           (bitWidth - 1) +
@@ -480,7 +525,9 @@ export var verilog = {
     for (let i = 0; i < scope.Output.length; i++) {
       if (outputs[scope.Output[i].bitWidth]) {
         outputs[scope.Output[i].bitWidth].push(scope.Output[i].label);
-      } else outputs[scope.Output[i].bitWidth] = [scope.Output[i].label];
+      } else {
+        outputs[scope.Output[i].bitWidth] = [scope.Output[i].label];
+      }
     }
     let res = '';
     for (const bitWidth in outputs) {

@@ -1,6 +1,6 @@
-import CircuitElement from '../circuitElement';
-import Node, {findNode} from '../node';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {Node, findNode} from '../node';
+import {simulationArea} from '../simulationArea';
 import {
   correctWidth,
   lineTo,
@@ -20,7 +20,7 @@ import {colors} from '../themer/themer';
  * @param {Scope} scope - Circuit on which element is drawn.
  * @category modules
  */
-export default class VariableLed extends CircuitElement {
+export class VariableLed extends CircuitElement {
   /**
    * @param {number} x - x coordinate of element.
    * @param {number} y - y coordinate of element.

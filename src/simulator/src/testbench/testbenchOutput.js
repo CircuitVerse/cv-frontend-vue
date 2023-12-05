@@ -1,7 +1,7 @@
-import CircuitElement from '../circuitElement';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {simulationArea} from '../simulationArea';
 import {correctWidth, fillText} from '../canvasApi';
-import Node, {findNode} from '../node';
+import {Node, findNode} from '../node';
 import {converters} from '../utils';
 /**
  * TestBench Output has a node for it's  input which is
@@ -17,7 +17,7 @@ import {converters} from '../utils';
  * @param {string} identifier - id to identify tests.
  * @category testbench
  */
-export default class TB_Output extends CircuitElement {
+export class TB_Output extends CircuitElement {
   /**
    * @param {number} x - the x coord of TB.
    * @param {number} y - the y coord of TB.

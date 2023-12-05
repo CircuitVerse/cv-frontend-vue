@@ -1,8 +1,8 @@
-import CircuitElement from '../circuitElement';
-import Node, { findNode } from '../node';
-import simulationArea from '../simulationArea';
-import { correctWidth, lineTo, moveTo } from '../canvasApi';
-import { colors } from '../themer/themer';
+import {CircuitElement} from '../circuitElement';
+import {Node, findNode} from '../node';
+import {simulationArea} from '../simulationArea';
+import {correctWidth, lineTo, moveTo} from '../canvasApi';
+import {colors} from '../themer/themer';
 /**
  * Clock
  * @extends CircuitElement
@@ -12,7 +12,7 @@ import { colors } from '../themer/themer';
  * @param {string} dir - direction in which element has to drawn
  * @category sequential
  */
-export default class Clock extends CircuitElement {
+export class Clock extends CircuitElement {
   /**
    * @param {number} x - x coord of element
    * @param {number} y - y coord of element
@@ -65,7 +65,7 @@ export default class Clock extends CircuitElement {
 
     ctx.beginPath();
     ctx.strokeStyle = [colors['color_wire_con'], colors['color_wire_pow']][
-      this.state
+        this.state
     ];
     ctx.lineWidth = correctWidth(2);
     if (this.state == 0) {

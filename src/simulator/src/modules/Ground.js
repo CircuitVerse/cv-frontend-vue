@@ -1,6 +1,6 @@
-import CircuitElement from '../circuitElement';
-import Node, {findNode} from '../node';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {Node, findNode} from '../node';
+import {simulationArea} from '../simulationArea';
 import {correctWidth, lineTo, moveTo} from '../canvasApi';
 import {colors} from '../themer/themer';
 /**
@@ -13,7 +13,7 @@ import {colors} from '../themer/themer';
  * @param {number} bitWidth - bit width per node.
  * @category modules
  */
-export default class Ground extends CircuitElement {
+export class Ground extends CircuitElement {
   constructor(x, y, scope = globalScope, bitWidth = 1) {
     super(x, y, scope, 'RIGHT', bitWidth);
     this.rectangleObject = false;

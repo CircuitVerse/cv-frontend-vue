@@ -1,4 +1,4 @@
-import EventQueue from './eventQueue';
+import {EventQueue} from './eventQueue';
 import {clockTick} from './utils_clock';
 
 /**
@@ -37,7 +37,7 @@ import {clockTick} from './utils_clock';
  * @property {function} clear - clear the simulation area
  * @category simulationArea
  */
-const simulationArea = {
+export const simulationArea = {
   canvas: document.getElementById('simulationArea'),
   selected: false,
   hover: false,
@@ -64,7 +64,7 @@ const simulationArea = {
   mouseDownY: 0,
   simulationQueue: undefined,
   multiAddElement: false,
-
+  ClockInterval: undefined,
   clickCount: 0, // double click
   lock: 'unlocked',
   timer() {
@@ -99,4 +99,3 @@ const simulationArea = {
   },
 };
 export const {changeClockTime} = simulationArea;
-export default simulationArea;

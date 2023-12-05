@@ -1,6 +1,6 @@
-import CircuitElement from '../circuitElement';
-import Node, {findNode} from '../node';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {Node, findNode} from '../node';
+import {simulationArea} from '../simulationArea';
 import {correctWidth, lineTo, moveTo, fillText} from '../canvasApi';
 import {colors} from '../themer/themer';
 
@@ -15,7 +15,7 @@ import {colors} from '../themer/themer';
  * @param {string} dir - direction in which element has to drawn
  * @category sequential
  */
-export default class TflipFlop extends CircuitElement {
+export class TflipFlop extends CircuitElement {
   constructor(x, y, scope = globalScope, dir = 'RIGHT') {
     super(x, y, scope, dir, 1);
     this.directionFixed = true;
@@ -41,7 +41,9 @@ export default class TflipFlop extends CircuitElement {
      * @return {boolean} true if clock is defined
      */
   isResolvable() {
-    if (this.reset.value == 1) return true;
+    if (this.reset.value == 1) {
+      return true;
+    }
     if (this.clockInp.value != undefined && this.dInp.value != undefined) {
       return true;
     }

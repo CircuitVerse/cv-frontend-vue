@@ -1,6 +1,6 @@
-import CircuitElement from '../circuitElement';
-import Node, {findNode} from '../node';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {Node, findNode} from '../node';
+import {simulationArea} from '../simulationArea';
 
 /**
  * @class
@@ -13,7 +13,7 @@ import simulationArea from '../simulationArea';
  * @param {number} bitWidth - bit width per node. modules.
  * @category modules
  */
-export default class verilogPower extends CircuitElement {
+export class verilogPower extends CircuitElement {
   /**
    * @param {number} x - x coordinate of element.
    * @param {number} y - y coordinate of element.

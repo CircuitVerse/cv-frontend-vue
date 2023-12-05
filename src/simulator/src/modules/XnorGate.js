@@ -1,6 +1,6 @@
-import CircuitElement from '../circuitElement';
-import Node, {findNode} from '../node';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {Node, findNode} from '../node';
+import {simulationArea} from '../simulationArea';
 import {
   correctWidth,
   bezierCurveTo,
@@ -24,7 +24,7 @@ import {colors} from '../themer/themer';
  * @param {number} bitWidth - bit width per node.
  * @category modules
  */
-export default class XnorGate extends CircuitElement {
+export class XnorGate extends CircuitElement {
   /**
    * @param {number} x - x coordinate of element.
    * @param {number} y - y coordinate of element.

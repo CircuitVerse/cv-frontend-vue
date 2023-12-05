@@ -1,7 +1,7 @@
-import CircuitElement from '../circuitElement';
-import Node, { findNode } from '../node';
-import simulationArea from '../simulationArea';
-import { fillText4 } from '../canvasApi';
+import {CircuitElement} from '../circuitElement';
+import {Node, findNode} from '../node';
+import {simulationArea} from '../simulationArea';
+import {fillText4} from '../canvasApi';
 /**
  * @class
  * ForceGate
@@ -13,7 +13,7 @@ import { fillText4 } from '../canvasApi';
  * @param {number} bitWidth - bit width per node.
  * @category testbench
  */
-export default class ForceGate extends CircuitElement {
+export class ForceGate extends CircuitElement {
   /**
    * @param {number} x - x coordinate of element.
    * @param {number} y - y coordinate of element.

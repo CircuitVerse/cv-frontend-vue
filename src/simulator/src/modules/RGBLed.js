@@ -1,6 +1,6 @@
-import CircuitElement from '../circuitElement';
-import Node, {findNode} from '../node';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {Node, findNode} from '../node';
+import {simulationArea} from '../simulationArea';
 import {correctWidth, lineTo, moveTo, arc, drawCircle2} from '../canvasApi';
 import {colors} from '../themer/themer';
 /**
@@ -12,7 +12,7 @@ import {colors} from '../themer/themer';
  * @param {Scope} scope - Circuit on which element is drawn
  * @category modules
  */
-export default class RGBLed extends CircuitElement {
+export class RGBLed extends CircuitElement {
   /**
    * @param {number} x - x coordinate of element.
    * @param {number} y - y coordinate of element.

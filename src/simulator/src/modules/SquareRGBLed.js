@@ -1,6 +1,6 @@
-import CircuitElement from '../circuitElement';
-import Node, {findNode} from '../node';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {Node, findNode} from '../node';
+import {simulationArea} from '../simulationArea';
 import {correctWidth, lineTo, moveTo, rect2} from '../canvasApi';
 
 /**
@@ -14,7 +14,7 @@ import {correctWidth, lineTo, moveTo, rect2} from '../canvasApi';
  * @param {number} pinLength - pins per node.
  * @category modules
  */
-export default class SquareRGBLed extends CircuitElement {
+export class SquareRGBLed extends CircuitElement {
   /**
    * @param {number} x - x coordinate of element.
    * @param {number} y - y coordinate of element.
@@ -36,9 +36,13 @@ export default class SquareRGBLed extends CircuitElement {
     this.fixedBitWidth = true;
 
     this.changePinLength = function(pinLength) {
-      if (pinLength === undefined) return;
+      if (pinLength === undefined) {
+        return;
+      }
       pinLength = parseInt(pinLength, 10);
-      if (pinLength < 0 || pinLength > 1000) return;
+      if (pinLength < 0 || pinLength > 1000) {
+        return;
+      }
 
       // Calculate the new position of the LED, so the nodes will stay in the same place.
       const diff = 10 * (pinLength - this.pinLength);

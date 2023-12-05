@@ -1,6 +1,6 @@
-import CircuitElement from '../circuitElement';
-import Node, {findNode} from '../node';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {Node, findNode} from '../node';
+import {simulationArea} from '../simulationArea';
 import {correctWidth, fillText} from '../canvasApi';
 import {colors} from '../themer/themer';
 /**
@@ -14,7 +14,7 @@ import {colors} from '../themer/themer';
  * @param {string} dir - direction in which element has to drawn
  * @category sequential
  */
-export default class SRflipFlop extends CircuitElement {
+export class SRflipFlop extends CircuitElement {
   /**
     * @param {number} x - x coord of element
     * @param {number} y - y coord of element

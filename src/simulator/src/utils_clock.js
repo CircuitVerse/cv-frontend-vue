@@ -6,8 +6,8 @@ import {
   errorDetectedGet,
 } from './engine';
 import {layoutModeGet} from './layoutMode';
-import plotArea from './plotArea';
-import simulationArea from './simulationArea';
+import {plotArea} from './plotArea';
+import {simulationArea} from './simulationArea';
 
 let prevErrorMessage; // Global variable for error messages
 let prevShowMessage; // Global variable for error messages

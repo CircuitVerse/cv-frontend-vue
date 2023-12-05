@@ -1,6 +1,6 @@
-import CircuitElement from '../circuitElement';
-import Node, {findNode} from '../node';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {Node, findNode} from '../node';
+import {simulationArea} from '../simulationArea';
 import {correctWidth, lineTo, moveTo, arc} from '../canvasApi';
 import {changeInputSize} from '../modules';
 import {colors} from '../themer/themer';
@@ -18,7 +18,7 @@ import {gateGenerateVerilog} from '../utils';
  * @param {number} bitWidth - bit width per node.
  * @category modules
  */
-export default class AndGate extends CircuitElement {
+export class AndGate extends CircuitElement {
   /**
    * Create an AndGate
    * @param {number} x x coordinate

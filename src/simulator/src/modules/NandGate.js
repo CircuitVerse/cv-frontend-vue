@@ -1,6 +1,6 @@
-import CircuitElement from '../circuitElement';
-import Node, {findNode} from '../node';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {Node, findNode} from '../node';
+import {simulationArea} from '../simulationArea';
 import {correctWidth, lineTo, moveTo, drawCircle2, arc} from '../canvasApi';
 import {changeInputSize} from '../modules';
 import {gateGenerateVerilog} from '../utils';
@@ -17,7 +17,7 @@ import {colors} from '../themer/themer';
  * @param {number} bitWidth - bit width per node.
  * @category modules
  */
-export default class NandGate extends CircuitElement {
+export class NandGate extends CircuitElement {
   /**
    * @param {number} x - x coordinate of nand Gate.
    * @param {number} y - y coordinate of nand Gate.

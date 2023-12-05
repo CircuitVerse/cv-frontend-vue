@@ -1,5 +1,5 @@
-import CircuitElement from '../circuitElement';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {simulationArea} from '../simulationArea';
 import {rect2, fillText} from '../canvasApi';
 import {colors} from '../themer/themer';
 import {copy, paste} from '../events';
@@ -15,7 +15,7 @@ import {copy, paste} from '../events';
  * @param {number} fontSize - font size
  * @category modules
 */
-export default class Text extends CircuitElement {
+export class Text extends CircuitElement {
   /**
    * @param {number} x - x coordinate of element.
    * @param {number} y - y coordinate of element.

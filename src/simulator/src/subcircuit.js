@@ -1,6 +1,6 @@
-import Scope, {scopeList, switchCircuit} from './circuit';
-import CircuitElement from './circuitElement';
-import simulationArea from './simulationArea';
+import {Scope, scopeList, switchCircuit} from './circuit';
+import {CircuitElement} from './circuitElement';
+import {simulationArea} from './simulationArea';
 import {scheduleBackup, checkIfBackup} from './data/backupCircuit';
 import {
   scheduleUpdate,
@@ -12,7 +12,7 @@ import {
 import {loadScope} from './data/load';
 import {showError} from './utils_clock';
 
-import Node, {findNode} from './node';
+import {Node, findNode} from './node';
 import {fillText, correctWidth, rect2} from './canvasApi';
 import {colors} from './themer/themer';
 import {layoutModeGet} from './layoutMode';
@@ -54,7 +54,7 @@ export function createSubCircuitPrompt(scope = globalScope) {
  * @param {JSON} savedData - the saved data.
  * @category subcircuit
  */
-export default class SubCircuit extends CircuitElement {
+export class SubCircuit extends CircuitElement {
   /**
    * @param {number} x - x coord of subcircuit.
    * @param {number} y - y coord of subcircuit.

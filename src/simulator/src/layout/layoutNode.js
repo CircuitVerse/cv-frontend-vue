@@ -1,5 +1,5 @@
 import {drawCircle} from '../canvasApi';
-import simulationArea from '../simulationArea';
+import {simulationArea} from '../simulationArea';
 import {tempBuffer} from '../layoutMode';
 
 /**
@@ -14,7 +14,7 @@ import {tempBuffer} from '../layoutMode';
  * @param {CircuitElement} parent  parent of the node
  * @category layout
  */
-export default class LayoutNode {
+export class LayoutNode {
   /**
    * @param {number} x - x coord of node.
    * @param {number} y - y coord of node.

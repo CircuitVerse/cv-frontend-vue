@@ -4,7 +4,7 @@ import {
   wireToBeCheckedSet,
   updateCanvasSet,
 } from './engine';
-import simulationArea from './simulationArea';
+import {simulationArea} from './simulationArea';
 import logixFunction from './data';
 import {circuitProperty} from './circuit';
 import {updateRestrictedElementsInScope} from './restrictedElementDiv';

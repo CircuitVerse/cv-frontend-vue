@@ -1,5 +1,5 @@
-import CircuitElement from '../circuitElement';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {simulationArea} from '../simulationArea';
 import {correctWidth, lineTo, moveTo} from '../canvasApi';
 import {colors} from '../themer/themer';
 
@@ -13,7 +13,7 @@ import {colors} from '../themer/themer';
  * @param {string} dir - direction of element
  * @category modules
  */
-export default class Arrow extends CircuitElement {
+export class Arrow extends CircuitElement {
   /**
    * Create an Arrow
    * @param {number} x x coordinate

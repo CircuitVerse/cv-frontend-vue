@@ -1,6 +1,6 @@
-import backgroundArea from './backgroundArea';
-import simulationArea from './simulationArea';
-import miniMapArea, {removeMiniMap, updatelastMinimapShown} from './minimap';
+import {backgroundArea} from './backgroundArea';
+import {simulationArea} from './simulationArea';
+import {miniMapArea, removeMiniMap, updatelastMinimapShown} from './minimap';
 import {colors} from './themer/themer';
 
 const unit = 10;

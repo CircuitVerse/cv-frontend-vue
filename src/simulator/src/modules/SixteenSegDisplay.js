@@ -1,6 +1,6 @@
-import CircuitElement from '../circuitElement';
-import Node, {findNode} from '../node';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {Node, findNode} from '../node';
+import {simulationArea} from '../simulationArea';
 import {
   colorToRGBA,
   correctWidth,
@@ -19,7 +19,7 @@ import {
  * @param {Scope} scope - Circuit on which element is drawn.
  * @category modules
  */
-export default class SixteenSegDisplay extends CircuitElement {
+export class SixteenSegDisplay extends CircuitElement {
   /**
      *
      * @param {number} x - x coordinate of element.

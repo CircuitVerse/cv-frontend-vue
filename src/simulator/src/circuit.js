@@ -1,6 +1,6 @@
-import CircuitElement from './circuitElement';
-import plotArea from './plotArea';
-import simulationArea from './simulationArea';
+import {CircuitElement} from './circuitElement';
+import {plotArea} from './plotArea';
+import {simulationArea} from './simulationArea';
 import {
   stripTags,
   uniq,
@@ -245,7 +245,7 @@ export function changeCircuitName(name, id = globalScope.id) {
  * @param {number} id - a random id for the circuit
  * @category circuit
  */
-export default class Scope {
+export class Scope {
   /**
    *
    * @param {string} name

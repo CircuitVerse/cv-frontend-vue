@@ -1,6 +1,6 @@
-import CircuitElement from '../circuitElement';
-import Node, {findNode} from '../node';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {Node, findNode} from '../node';
+import {simulationArea} from '../simulationArea';
 import {correctWidth, lineTo, moveTo, fillText} from '../canvasApi';
 import {colors} from '../themer/themer';
 /**
@@ -10,13 +10,20 @@ import {colors} from '../themer/themer';
  * Difference between this and D - FlipFlop is
  * that Flip flop must have a clock.
  * @extends CircuitElement
- * @param {number} x - x coord of element
- * @param {number} y - y coord of element
- * @param {Scope} scope - the circuit in which we want the Element
- * @param {string} dir - direction in which element has to drawn
+ * @param {number} x - x coord of element.
+ * @param {number} y - y coord of element.
+ * @param {Scope} scope - the circuit in which we want the Element.
+ * @param {string} dir - direction in which element has to drawn.
  * @category sequential
  */
-export default class Dlatch extends CircuitElement {
+export class Dlatch extends CircuitElement {
+  /**
+   * @param {number} x - x coord of element.
+   * @param {number} y - y coord of element.
+   * @param {Scope} scope - the circuit in which we want the Element.
+   * @param {string} dir - direction in which element has to drawn.
+   * @param {number} bitWidth - bitwidth of the latch.
+   */
   constructor(x, y, scope = globalScope, dir = 'RIGHT', bitWidth = 1) {
     super(x, y, scope, dir, bitWidth);
     this.directionFixed = true;
@@ -35,8 +42,8 @@ export default class Dlatch extends CircuitElement {
   }
 
   /**
-     * Idea: shoould be D FF?
-     */
+   * Idea: shoould be D FF?
+   */
   isResolvable() {
     if (this.clockInp.value != undefined && this.dInp.value != undefined) {
       return true;

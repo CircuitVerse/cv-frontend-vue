@@ -1,6 +1,6 @@
-import CircuitElement from '../circuitElement';
-import Node, {findNode} from '../node';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {Node, findNode} from '../node';
+import {simulationArea} from '../simulationArea';
 import {correctWidth, bezierCurveTo, moveTo} from '../canvasApi';
 import {changeInputSize} from '../modules';
 import {gateGenerateVerilog} from '../utils';
@@ -17,7 +17,7 @@ import {colors} from '../themer/themer';
  * @param {number} bitWidth - bit width per node.
  * @category modules
  */
-export default class OrGate extends CircuitElement {
+export class OrGate extends CircuitElement {
   /**
  * @param {number} x - x coordinate of element.
  * @param {number} y - y coordinate of element.

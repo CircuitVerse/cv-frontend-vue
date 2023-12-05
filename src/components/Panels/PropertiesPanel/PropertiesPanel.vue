@@ -12,7 +12,7 @@
 import ModuleProperty from '#/components/Panels/PropertiesPanel/ModuleProperty/ModuleProperty.vue'
 import LayoutProperty from '#/components/Panels/PropertiesPanel/LayoutProperty/LayoutProperty.vue'
 import { ref, toRaw } from '@vue/reactivity'
-import simulationArea from '#/simulator/src/simulationArea'
+import {simulationArea} from '#/simulator/src/simulationArea'
 import { onMounted } from 'vue'
 import { checkPropertiesUpdate, prevPropertyObjSet } from '#/simulator/src/ux'
 import { layoutModeGet } from '#/simulator/src/layoutMode'

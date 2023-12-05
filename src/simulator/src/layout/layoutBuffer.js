@@ -1,11 +1,11 @@
-import LayoutNode from './layoutNode';
+import {LayoutNode} from './layoutNode';
 /**
  * Buffer object to store changes so that you can reset changes
  * @class
  * @param {Scope} scope
  * @category layout
  */
-export default class LayoutBuffer {
+export class LayoutBuffer {
   /**
    * @param {Scope} scope
    */
@@ -91,10 +91,14 @@ export default class LayoutBuffer {
      */
   isNodeAt(x, y) {
     for (let i = 0; i < this.Input.length; i++) {
-      if (this.Input[i].x === x && this.Input[i].y === y) return true;
+      if (this.Input[i].x === x && this.Input[i].y === y) {
+        return true;
+      }
     }
     for (let i = 0; i < this.Output.length; i++) {
-      if (this.Output[i].x === x && this.Output[i].y === y) return true;
+      if (this.Output[i].x === x && this.Output[i].y === y) {
+        return true;
+      }
     }
     return false;
   }

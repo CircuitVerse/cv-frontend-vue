@@ -1,5 +1,9 @@
-export function sanitizeLabel(name) {
-  //        return name.replace(/ Inverse/g, "_inv").replace(/ /g , "_");
+/**
+ * 
+ * @param {string} name - label name to sanitize.
+ * @return {string} sanitized label name.
+ */
+export function sanitizeLabel(name: string) {
   let temp = name;
   // if there is a space anywhere but the last place
   // replace spaces by "_"
@@ -21,8 +25,10 @@ export function sanitizeLabel(name) {
   return temp;
 }
 
-export function generateNodeName(node, currentCount, totalCount) {
-  if (node.verilogLabel) return node.verilogLabel;
+export function generateNodeName(node: Node, currentCount: number, totalCount: number) {
+  if (node.verilogLabel) {
+    return node.verilogLabel;
+  }
   const parentVerilogLabel = node.parent.verilogLabel;
   let nodeName;
   if (node.label) {

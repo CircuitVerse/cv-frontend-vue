@@ -1,6 +1,6 @@
-import CircuitElement from '../circuitElement';
-import Node, {findNode} from '../node';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {Node, findNode} from '../node';
+import {simulationArea} from '../simulationArea';
 import {correctWidth, fillText2, fillText4, drawCircle2} from '../canvasApi';
 import {parseNumber} from '../utils';
 import {showMessage, showError} from '../utils_clock';
@@ -49,7 +49,7 @@ import {showMessage, showError} from '../utils_clock';
  * needed, we can increase the max.
  * @category sequential
  */
-export default class RAM extends CircuitElement {
+export class RAM extends CircuitElement {
   /**
    * @param {number} x - x coord of element
    * @param {number} y - y coord of element

@@ -1,6 +1,6 @@
-import CircuitElement from '../circuitElement';
-import Node, {findNode} from '../node';
-import simulationArea from '../simulationArea';
+import {CircuitElement} from '../circuitElement';
+import {Node, findNode} from '../node';
+import {simulationArea} from '../simulationArea';
 import {correctWidth, lineTo, moveTo, fillText} from '../canvasApi';
 import {colors} from '../themer/themer';
 /**
@@ -15,7 +15,7 @@ import {colors} from '../themer/themer';
  * @param {number} controlSignalSize - 1 by default
  * @category modules
  */
-export default class Multiplexer extends CircuitElement {
+export class Multiplexer extends CircuitElement {
   /**
    * @param {number} x - x coordinate of element.
    * @param {number} y - y coordinate of element.

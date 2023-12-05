@@ -1,5 +1,7 @@
 export function updateRestrictedElementsList() {
-  if (restrictedElements.length === 0) return;
+  if (restrictedElements.length === 0) {
+    return;
+  }
 
   const {restrictedCircuitElementsUsed} = globalScope;
   let restrictedStr = '';
@@ -19,7 +21,9 @@ export function updateRestrictedElementsList() {
 
 export function updateRestrictedElementsInScope(scope = globalScope) {
   // Do nothing if no restricted elements
-  if (restrictedElements.length === 0) return;
+  if (restrictedElements.length === 0) {
+    return;
+  }
 
   const restrictedElementsUsed = [];
   restrictedElements.forEach((element) => {

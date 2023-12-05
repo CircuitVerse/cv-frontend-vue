@@ -23,7 +23,6 @@ import {
   // applyVerilogTheme,
 } from './Verilog2CV';
 import {generateVerilog} from './verilog';
-import {bitConverterDialog} from './utils';
 import {keyBinder} from '#/components/DialogBox/CustomShortcut.vue';
 import {ExportProject} from '#/components/DialogBox/ExportProject.vue';
 import {ImportProject} from '#/components/DialogBox/ImportProject.vue';

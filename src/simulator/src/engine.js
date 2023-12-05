@@ -1,10 +1,10 @@
 import {layoutModeGet, layoutUpdate} from './layoutMode';
-import plotArea from './plotArea';
-import simulationArea from './simulationArea';
+import {plotArea} from './plotArea';
+import {simulationArea} from './simulationArea';
 import {dots, canvasMessage, findDimensions, rect2} from './canvasApi';
 import {showProperties, prevPropertyObjGet} from './ux';
 import {showError} from './utils_clock';
-import miniMapArea from './minimap';
+import {miniMapArea} from './minimap';
 import {resetup} from './setup';
 import {verilogModeGet} from './Verilog2CV';
 
@@ -37,8 +37,7 @@ let willBeUpdated = false;
 
 /**
  * used to set willBeUpdated variable
- * @type {boolean}
- * @category engine
+ * @param {boolean} param - will be updated.
  * @category engine
  */
 export function willBeUpdatedSet(param) {
@@ -415,8 +414,8 @@ export function play(scope = globalScope, resetNodes = false) {
     forceResetNodesSet(false);
   }
 
-  // To store list of circuitselements that have shown contention but kept temporarily
-  // Mainly to resolve tristate bus issues
+  // To store list of circuitselements that have shown contention
+  // but kept temporarily (Mainly to resolve tristate bus issues)
   simulationArea.contentionPending = [];
   // add inputs to the simulation queue
   scope.addInputs();

@@ -4,7 +4,7 @@
  * @category data
  */
 import {layoutModeGet} from '../layoutMode';
-import Scope, {scopeList} from '../circuit';
+import {Scope, scopeList} from '../circuit';
 import {loadScope} from './load';
 import {updateRestrictedElementsInScope} from '../restrictedElementDiv';
 import {forceResetNodesSet} from '../engine';

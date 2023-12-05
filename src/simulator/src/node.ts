@@ -11,7 +11,7 @@ import {
   forceResetNodesSet,
   canvasMessageData,
 } from './engine';
-import Wire from './wire';
+import {Wire} from './wire';
 import {colors} from './themer/themer';
 import {CircuitElement} from './circuitElement';
 
@@ -87,7 +87,7 @@ let uniqueIdCounter = 10;
  * @param {string} label - label for a node.
  * @category node
  */
-export default class Node {
+export class Node {
 	public objectType: string;
 	public subcircuitOverride: any;
 	public id: any;

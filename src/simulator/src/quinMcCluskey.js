@@ -5,7 +5,7 @@
  * @param {*} minTermsArg
  * @param {*} dontCaresArg
  */
-export default function BooleanMinimize(
+export function BooleanMinimize(
     numVarsArg,
     minTermsArg,
     dontCaresArg = [],
@@ -66,7 +66,11 @@ BooleanMinimize.prototype.solve = function() {
 
   function num_set_bits(s) {
     let ans = 0;
-    for (let i = 0; i < s.length; ++i) if (s[i] === '1') ans++;
+    for (let i = 0; i < s.length; ++i) {
+      if (s[i] === '1') {
+        ans++;
+      }
+    }
     return ans;
   }
 
@@ -76,7 +80,9 @@ BooleanMinimize.prototype.solve = function() {
     let reduced;
 
     while (1) {
-      for (let i = 0; i <= this.numVars; ++i) table[i] = new Set();
+      for (let i = 0; i <= this.numVars; ++i) {
+        table[i] = new Set();
+      }
       for (let i = 0; i < allTerms.length; ++i) {
         table[num_set_bits(allTerms[i])].add(allTerms[i]);
       }
@@ -113,11 +119,15 @@ BooleanMinimize.prototype.solve = function() {
 
       for (const t of table) {
         for (const str of t) {
-          if (!reduced.has(str)) primeImplicants.add(str);
+          if (!reduced.has(str)) {
+            primeImplicants.add(str);
+          }
         }
       }
 
-      if (!reduced.size) break;
+      if (!reduced.size) {
+        break;
+      }
     }
 
     return primeImplicants;
@@ -147,7 +157,9 @@ BooleanMinimize.prototype.solve = function() {
         for (let i = 0; i < t.length; ++i) {
           if (t[i] !== '-') {
             complexity++;
-            if (t[i] === '0') complexity++;
+            if (t[i] === '0') {
+              complexity++;
+            }
           }
         }
       }
@@ -157,7 +169,9 @@ BooleanMinimize.prototype.solve = function() {
 
     function isSubset(sub, sup) {
       for (const i of sub) {
-        if (!sup.has(i)) return false;
+        if (!sup.has(i)) {
+          return false;
+        }
       }
 
       return true;

@@ -1,4 +1,4 @@
-import simulationArea from './simulationArea';
+import {simulationArea} from './simulationArea';
 import {colors} from './themer/themer';
 import {layoutModeGet} from './layoutMode';
 
@@ -14,8 +14,7 @@ import {layoutModeGet} from './layoutMode';
  * @property {function} clear - used to clear minimap.
  * @category minimap
  */
-let miniMapArea;
-export default miniMapArea = {
+export const miniMapArea = {
   canvas: document.getElementById('miniMapArea'),
   setup() {
     if (lightMode) {
