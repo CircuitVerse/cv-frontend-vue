@@ -40,18 +40,6 @@
       Delete Circuit
     </button>
   </p>
-  <!-- <MessageBox
-        v-model="SimulatorState.dialogBox.delete_circuit"
-        :circuit-item="circuitToDelete"
-        :button-list="buttonArray"
-        :is-persistent="ifPersistentShow"
-        :message-text="messageValue"
-        @button-click="
-            (selectedOption, circuitItem) =>
-                dialogBoxConformation(selectedOption, circuitItem)
-        "
-    /> -->
-  <!-- <DeleteCircuit /> -->
 </template>
 
 <script lang="ts" setup>

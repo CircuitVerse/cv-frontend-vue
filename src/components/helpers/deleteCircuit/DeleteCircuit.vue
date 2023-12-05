@@ -1,8 +1,8 @@
 <template>
-  <MessageBox v-model="promptStore.DeleteCircuit.activate" :circuit-item="promptStore.DeleteCircuit.circuitItem"
+  <messageBox v-model="promptStore.DeleteCircuit.activate" :circuit-item="promptStore.DeleteCircuit.circuitItem"
     :button-list="promptStore.DeleteCircuit.buttonList" :is-persistent="promptStore.DeleteCircuit.isPersistent"
     :message-text="promptStore.DeleteCircuit.messageText" @button-click="(selectedOption: string, circuitItem: CircuitItem) =>
-        confirmation(selectedOption, circuitItem)
+      confirmation(selectedOption, circuitItem)
       " />
 </template>
 
@@ -12,7 +12,7 @@ import { getDependenciesList, scopeList } from '#/simulator/src/circuit'
 import { switchCircuit } from '#/simulator/src/circuit'
 import { usePromptStore } from '#/store/promptStore'
 import { useState } from '#/store/SimulatorStore/state'
-import MessageBox from '#/components/MessageBox/messageBox.vue'
+import messageBox from '@/MessageBox/messageBox.vue';
 
 type SimulatorStateType = {
   activeCircuit: {

@@ -287,7 +287,10 @@ export class Scope {
       titleEnabled: true,
     };
   }
-
+  /**
+   * Is circuit visible.
+   * @return {boolean} visibility
+   */
   isVisible() {
     if (!this.verilogMetadata.isVerilogCircuit) {
       return true;
@@ -324,8 +327,8 @@ export class Scope {
   }
 
   /**
-     * Adds all inputs to simulationQueue
-     */
+   * Adds all inputs to simulationQueue
+   */
   addInputs() {
     for (let i = 0; i < inputList.length; i++) {
       for (let j = 0; j < this[inputList[i]].length; j++) {
@@ -339,8 +342,9 @@ export class Scope {
   }
 
   /**
-     * Ticks clocks recursively -- needs to be deprecated and synchronize all clocks with a global clock
-     */
+   * Ticks clocks recursively -- needs to be deprecated and
+   * synchronize all clocks with a global clock
+   */
   clockTick() {
     for (let i = 0; i < this.Clock.length; i++) {
       this.Clock[i].toggleState();
@@ -351,9 +355,9 @@ export class Scope {
   }
 
   /**
-     * Checks if this circuit contains directly or indirectly scope with id
-     * Recursive nature
-     */
+   * Checks if this circuit contains directly or indirectly scope with id
+   * Recursive nature
+   */
   checkDependency(id) {
     if (id === this.id) {
       return true;
@@ -372,8 +376,8 @@ export class Scope {
   }
 
   /**
-     * Get dependency list - list of all circuits, this circuit depends on
-     */
+   * Get dependency list - list of all circuits, this circuit depends on
+   */
   getDependencies() {
     const list = [];
     for (let i = 0; i < this.SubCircuit.length; i++) {
@@ -384,8 +388,8 @@ export class Scope {
   }
 
   /**
-     * helper function to reduce layout size
-     */
+   * helper function to reduce layout size
+   */
   fixLayout() {
     let maxY = 20;
     for (let i = 0; i < this.Input.length; i++) {
@@ -400,15 +404,16 @@ export class Scope {
   }
 
   /**
-     * Function which centers the circuit to the correct zoom level
-     */
+   * Function which centers the circuit to the correct zoom level
+   */
   centerFocus(zoomIn = true) {
     if (layoutModeGet()) {
       return;
     }
     findDimensions(this);
 
-    const ytoolbarOffset = embed ? 0 : 60 * DPR; // Some part ofcanvas is hidden behind the toolbar
+    // Some part of the canvas is hidden behind the toolbar
+    const ytoolbarOffset = embed ? 0 : 60 * DPR;
 
     const minX = simulationArea.minWidth || 0;
     const minY = simulationArea.minHeight || 0;
