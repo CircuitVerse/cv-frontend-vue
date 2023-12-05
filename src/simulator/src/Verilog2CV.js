@@ -187,7 +187,7 @@ export function YosysJSON2CV(
   }
 }
 
-export default function generateVerilogCircuit(
+export function generateVerilogCircuit(
     verilogCode,
     scope = globalScope,
 ) {

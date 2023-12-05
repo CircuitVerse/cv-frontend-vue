@@ -3,7 +3,7 @@ import {generateId} from '../utils';
 import {showMessage, showError} from '../utils_clock';
 import {checkIfBackup} from './backupCircuit';
 import {generateSaveData, getProjectName, setProjectName} from './save';
-import load from './load';
+import {load} from './load';
 import {SimulatorStore} from '#/store/SimulatorStore/SimulatorStore';
 import {confirmOption} from '#/components/helpers/confirmComponent/ConfirmComponent.vue';
 

@@ -7,12 +7,12 @@ import {simulationArea} from './simulationArea';
 import {dots} from './canvasApi';
 import {update, updateSimulationSet, updateCanvasSet} from './engine';
 import {setupUI} from './ux';
-import startMainListeners from './listeners';
+import {startMainListeners} from './listeners';
 import {newCircuit} from './circuit';
-import load from './data/load';
-import save from './data/save';
+import {load} from './data/load';
+import {save} from './data/save';
 import {showTourGuide} from './tutorials';
-import setupModules from './moduleSetup';
+import {setupModules} from './moduleSetup';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/addon/hint/show-hint.css';
 // verilog.js from codemirror is not working because array prototype is changed.

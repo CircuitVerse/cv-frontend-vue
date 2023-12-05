@@ -4,13 +4,13 @@
 
 import CodeMirror from 'codemirror';
 import {setup} from '../src/setup';
-import load from '../src/data/load';
+import {load} from '../src/data/load';
 import gatesCircuitData from './circuits/gates-circuitdata.json';
 import decoderCircuitData from './circuits/Decoders-plexers-circuitdata.json';
 import {checkIfBackup, scheduleBackup} from '../src/data/backupCircuit';
-import undo from '../src/data/undo';
-import redo from '../src/data/redo';
-import save from '../src/data/save';
+import {undo} from '../src/data/undo';
+import {redo} from '../src/data/redo';
+import {save} from '../src/data/save';
 import {
   clearProject,
   newProject,
@@ -18,7 +18,7 @@ import {
   saveOffline,
   openOffline,
 } from '../src/data/project';
-import createSaveAsImgPrompt from '../src/data/saveImage';
+import {createSaveAsImgPrompt} from '../src/data/saveImage';
 
 jest.mock('codemirror');
 

@@ -66,7 +66,7 @@
 <script lang="ts">
 import { generateSaveData } from '#/simulator/src/data/save'
 import { escapeHtml } from '#/simulator/src/utils'
-import load from '#/simulator/src/data/load'
+import {load} from '#/simulator/src/data/load'
 import { useState } from '#/store/SimulatorStore/state'
 import { useProjectStore } from '#/store/projectStore'
 import { ref } from 'vue'

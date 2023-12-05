@@ -41,9 +41,9 @@ export const circuitProperty = {
 export var scopeList = {};
 export function resetScopeList() {
   const simulatorStore = SimulatorStore();
-  const {circuit_list} = toRefs(simulatorStore);
+  const {circuitList} = toRefs(simulatorStore);
   scopeList = {};
-  circuit_list.value = [];
+  circuitList.value = [];
 }
 /**
  * Function used to change the current focusedCircuit
@@ -55,7 +55,7 @@ export function resetScopeList() {
  */
 export function switchCircuit(id) {
   const simulatorStore = SimulatorStore();
-  const {circuit_list} = toRefs(simulatorStore);
+  const {circuitList} = toRefs(simulatorStore);
   const {activeCircuit} = toRefs(simulatorStore);
 
   if (layoutModeGet()) {
@@ -68,7 +68,7 @@ export function switchCircuit(id) {
   if (id === globalScope.id) {
     return;
   }
-  circuit_list.value.forEach((circuit) =>
+  circuitList.value.forEach((circuit) =>
         circuit.focussed ? (circuit.focussed = false) : null,
   );
   simulationArea.lastSelected = undefined;
@@ -79,10 +79,10 @@ export function switchCircuit(id) {
     verilogModeSet(true);
   }
   if (globalScope.isVisible()) {
-    const index = circuit_list.value.findIndex(
+    const index = circuitList.value.findIndex(
         (circuit) => circuit.id == id,
     );
-    circuit_list.value[index].focussed = true;
+    circuitList.value[index].focussed = true;
     activeCircuit.value.id = globalScope.id;
     activeCircuit.value.name = globalScope.name;
   }
@@ -163,7 +163,7 @@ export async function createNewCircuitScope(
  */
 export function newCircuit(name, id, isVerilog = false, isVerilogMain = false) {
   const simulatorStore = SimulatorStore();
-  const {circuit_list} = toRefs(simulatorStore);
+  const {circuitList} = toRefs(simulatorStore);
   const {activeCircuit} = toRefs(simulatorStore);
   if (layoutModeGet()) {
     toggleLayoutMode();
@@ -186,17 +186,17 @@ export function newCircuit(name, id, isVerilog = false, isVerilogMain = false) {
     name: scope.name,
   };
 
-  circuit_list.value.push(currCircuit);
+  circuitList.value.push(currCircuit);
   if (isVerilog) {
     scope.verilogMetadata.isVerilogCircuit = true;
-    circuit_list.value.forEach((circuit) => (circuit.isVerilog = false));
-    circuit_list.value[circuit_list.value.length - 1].isVerilog = true;
+    circuitList.value.forEach((circuit) => (circuit.isVerilog = false));
+    circuitList.value[circuitList.value.length - 1].isVerilog = true;
     scope.verilogMetadata.isMainCircuit = isVerilogMain;
   }
   globalScope = scope;
   // $('.circuits').removeClass('current')
-  circuit_list.value.forEach((circuit) => (circuit.focussed = false));
-  circuit_list.value[circuit_list.value.length - 1].focussed = true;
+  circuitList.value.forEach((circuit) => (circuit.focussed = false));
+  circuitList.value[circuitList.value.length - 1].focussed = true;
   activeCircuit.value.id = scope.id;
   activeCircuit.value.name = scope.name;
 
@@ -230,12 +230,12 @@ export function newCircuit(name, id, isVerilog = false, isVerilogMain = false) {
  */
 export function changeCircuitName(name, id = globalScope.id) {
   const simulatorStore = SimulatorStore();
-  const {circuit_list} = toRefs(simulatorStore);
+  const {circuitList} = toRefs(simulatorStore);
   name = name || 'Untitled';
   name = stripTags(name);
   scopeList[id].name = name;
-  const index = circuit_list.value.findIndex((circuit) => circuit.id === id);
-  circuit_list.value[index].name = name;
+  const index = circuitList.value.findIndex((circuit) => circuit.id === id);
+  circuitList.value[index].name = name;
 }
 
 /**
@@ -309,8 +309,8 @@ export class Scope {
   }
 
   /**
-     * Resets all nodes recursively
-     */
+   * Resets all nodes recursively
+   */
   reset() {
     for (let i = 0; i < this.allNodes.length; i++) {
       this.allNodes[i].reset();

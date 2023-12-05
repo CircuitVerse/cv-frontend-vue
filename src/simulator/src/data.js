@@ -1,8 +1,8 @@
 import {fullView} from './ux';
 import {createSubCircuitPrompt} from './subcircuit';
-import save from './data/save';
-import load from './data/load';
-import createSaveAsImgPrompt from './data/saveImage';
+import {save} from './data/save';
+import {load} from './data/load';
+import {createSaveAsImgPrompt} from './data/saveImage';
 import {
   clearProject,
   newProject,
@@ -27,7 +27,7 @@ import {keyBinder} from '#/components/DialogBox/CustomShortcut.vue';
 import {ExportProject} from '#/components/DialogBox/ExportProject.vue';
 import {ImportProject} from '#/components/DialogBox/ImportProject.vue';
 
-const logixFunction = {};
+export const logixFunction = {};
 logixFunction.save = save;
 logixFunction.load = load;
 logixFunction.createSaveAsImgPrompt = createSaveAsImgPrompt;
@@ -56,7 +56,6 @@ logixFunction.createNewCircuitScope = createNewCircuitScope;
 logixFunction.customShortcut = keyBinder;
 logixFunction.ExportProject = ExportProject;
 logixFunction.ImportProject = ImportProject;
-export default logixFunction;
 
 // Hack to restart tour guide
 function showTourGuideHelper() {

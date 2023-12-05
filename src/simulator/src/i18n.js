@@ -1,6 +1,6 @@
 import Banana from 'banana-i18n';
 
-const banana = new Banana();
+export const banana = new Banana();
 banana.setLocale(window.locale);
 const {locale} = banana;
 const finalFallback = 'en';
@@ -14,4 +14,3 @@ try {
   // If Asynchronous loading for current locale failed, load default locale
 }
 banana.load(messages);
-export default banana;

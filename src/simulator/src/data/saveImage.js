@@ -12,7 +12,7 @@ import {SimulatorStore} from '#/store/SimulatorStore/SimulatorStore';
  * @param {Scope} scope - circuit whose image we want
  * @exports createSaveAsImgPrompt
  */
-export default function createSaveAsImgPrompt(scope = globalScope) {
+export function createSaveAsImgPrompt(scope = globalScope) {
   const simulatorStore = SimulatorStore();
   simulatorStore.dialogBox.saveimage_dialog = true;
 }

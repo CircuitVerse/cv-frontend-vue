@@ -5,7 +5,7 @@
 import CodeMirror from 'codemirror';
 import {setup} from '../src/setup';
 
-import load from '../src/data/load';
+import {load} from '../src/data/load';
 import circuitData from './circuits/gates-circuitdata.json';
 import testData from './testData/gates-testdata.json';
 import {runAll} from '../src/testbench';

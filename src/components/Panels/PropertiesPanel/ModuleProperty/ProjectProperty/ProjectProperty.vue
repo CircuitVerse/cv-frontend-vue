@@ -1,80 +1,46 @@
 <template>
-    <p>
-        <span>Project:</span>
-        <!-- class="objectPropertyAttribute" -->
-        <input
-            id="projname"
-            type="text"
-            autocomplete="off"
-            name="setProjectName"
-            v-model="projectStore.project.name"
-            :oninput="projectStore.setProjectNameDefined"
-        />
-    </p>
+  <p>
+    <span>Project:</span>
+    <!-- class="objectPropertyAttribute" -->
+    <input id="projname" type="text" autocomplete="off" name="setProjectName" v-model="projectStore.project.name"
+      :oninput="projectStore.setProjectNameDefined" />
+  </p>
 
-    <p>
-        <span>Circuit:</span>
-        <input
-            id="circname"
-            :key="SimulatorState.activeCircuit.id"
-            class="objectPropertyAttribute"
-            type="text"
-            autocomplete="off"
-            name="changeCircuitName"
-            :value="SimulatorState.activeCircuit.name"
-        />
-    </p>
+  <p>
+    <span>Circuit:</span>
+    <input id="circname" :key="SimulatorState.activeCircuit.id" class="objectPropertyAttribute" type="text"
+      autocomplete="off" name="changeCircuitName" :value="SimulatorState.activeCircuit.name" />
+  </p>
 
-    <InputGroups
-        property-name="Clock Time (ms):"
-        :property-value="(simulationArea as any).timePeriod"
-        property-value-type="number"
-        value-min="50"
-        step-size="10"
-        property-input-name="changeClockTime"
-        property-input-id="clockTime"
-    />
+  <InputGroups property-name="Clock Time (ms):" :property-value="(simulationArea as any).timePeriod"
+    property-value-type="number" value-min="50" step-size="10" property-input-name="changeClockTime"
+    property-input-id="clockTime" />
 
-    <p>
-        <span>Clock Enabled:</span>
-        <label class="switch">
-            <input
-                type="checkbox"
-                class="objectPropertyAttributeChecked"
-                name="changeClockEnable" />
-            <span class="slider"></span
-        ></label>
-    </p>
+  <p>
+    <span>Clock Enabled:</span>
+    <label class="switch">
+      <input type="checkbox" class="objectPropertyAttributeChecked" name="changeClockEnable" />
+      <span class="slider"></span></label>
+  </p>
 
-    <p>
-        <span>Lite Mode:</span>
-        <label class="switch">
-            <input
-                type="checkbox"
-                class="objectPropertyAttributeChecked"
-                name="changeLightMode"
-            />
-            <span class="slider"></span>
-        </label>
-    </p>
+  <p>
+    <span>Lite Mode:</span>
+    <label class="switch">
+      <input type="checkbox" class="objectPropertyAttributeChecked" name="changeLightMode" />
+      <span class="slider"></span>
+    </label>
+  </p>
 
-    <p>
-        <button
-            type="button"
-            class="panelButton btn btn-xs custom-btn--primary"
-            @click="toggleLayoutMode"
-        >
-            Edit Layout
-        </button>
-        <button
-            type="button"
-            class="panelButton btn btn-xs custom-btn--tertiary"
-            @click.stop="closeCircuit(SimulatorState.activeCircuit)"
-        >
-            Delete Circuit
-        </button>
-    </p>
-    <!-- <MessageBox
+  <p>
+    <button type="button" class="panelButton btn btn-xs custom-btn--primary" @click="toggleLayoutMode">
+      Edit Layout
+    </button>
+    <button type="button" class="panelButton btn btn-xs custom-btn--tertiary"
+      @click.stop="closeCircuit(SimulatorState.activeCircuit)">
+      Delete Circuit
+    </button>
+  </p>
+  <!-- <MessageBox
         v-model="SimulatorState.dialogBox.delete_circuit"
         :circuit-item="circuitToDelete"
         :button-list="buttonArray"
@@ -85,12 +51,12 @@
                 dialogBoxConformation(selectedOption, circuitItem)
         "
     /> -->
-    <!-- <DeleteCircuit /> -->
+  <!-- <DeleteCircuit /> -->
 </template>
 
 <script lang="ts" setup>
 import { toggleLayoutMode } from '#/simulator/src/layoutMode'
-import {simulationArea} from '#/simulator/src/simulationArea'
+import { simulationArea } from '#/simulator/src/simulationArea'
 import InputGroups from '#/components/Panels/Shared/InputGroups.vue'
 import { useState } from '#/store/SimulatorStore/state'
 import { useProjectStore } from '#/store/projectStore'
@@ -100,14 +66,14 @@ const projectStore = useProjectStore()
 const SimulatorState = <SimulatorStateType>useState()
 
 type SimulatorStateType = {
-    activeCircuit: {
-        id: string | number
-        name: string
-    }
-    circuit_list: Array<Object>
-    dialogBox: {
-        delete_circuit: boolean
-    }
+  activeCircuit: {
+    id: string | number
+    name: string
+  }
+  circuitList: Array<Object>
+  dialogBox: {
+    delete_circuit: boolean
+  }
 }
 
 // type CircuitItem = {
@@ -149,7 +115,7 @@ type SimulatorStateType = {
 // function closeCircuit(circuitItem: CircuitItem): void {
 //     clearMessageBoxFields()
 //     // check circuit count
-//     if (SimulatorState.circuit_list.length <= 1) {
+//     if (SimulatorState.circuitList.length <= 1) {
 //         SimulatorState.dialogBox.delete_circuit = true
 //         ifPersistentShow.value = false
 //         messageValue.value =
@@ -217,8 +183,8 @@ type SimulatorStateType = {
 
 <style scoped>
 .panelButton {
-    width: 100%;
-    margin-bottom: 5px;
+  width: 100%;
+  margin-bottom: 5px;
 }
 </style>
 

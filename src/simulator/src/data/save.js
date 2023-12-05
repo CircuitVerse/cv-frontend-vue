@@ -19,8 +19,6 @@ import {UpdateProjectDetail} from '#/components/helpers/createNewProject/UpdateP
 import {confirmOption} from '#/components/helpers/confirmComponent/ConfirmComponent.vue';
 import {getToken} from '#/pages/simulatorHandler.vue';
 
-// var projectName = undefined
-
 /**
  * Function to set the name of project.
  * @param {string} name - name for project
@@ -361,7 +359,7 @@ async function generateImageForOnline() {
  * @category data
  * @exports save
  */
-export default async function save() {
+export async function save() {
   if (layoutModeGet()) {
     toggleLayoutMode();
   }

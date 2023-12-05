@@ -139,5 +139,3 @@ export function showTourGuide() {
   animatedTourDriver.start();
   localStorage.setItem('tutorials_tour_done', true);
 }
-
-export default showTourGuide;

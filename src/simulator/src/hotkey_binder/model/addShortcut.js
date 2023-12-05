@@ -8,9 +8,9 @@ import {
   moveElement,
   openDocumentation,
 } from './actions';
-import save from '../../data/save';
+import {save} from '../../data/save';
 import {saveOffline, openOffline} from '../../data/project';
-import createSaveAsImgPrompt from '../../data/saveImage';
+import {createSaveAsImgPrompt} from '../../data/saveImage';
 import {createSubCircuitPrompt} from '../../subcircuit';
 import {createCombinationalAnalysisPrompt} from '../../combinationalAnalysis';
 import {shortcut} from './shortcuts.plugin.js';

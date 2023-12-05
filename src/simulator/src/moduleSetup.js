@@ -64,7 +64,7 @@ import {verilogShiftLeft} from './modules/verilogShiftLeft';
 import {verilogShiftRight} from './modules/verilogShiftRight';
 import {verilogRAM} from './sequential/verilogRAM';
 
-export default function setupModules() {
+export function setupModules() {
   const moduleSet = {
     AndGate,
     Random,

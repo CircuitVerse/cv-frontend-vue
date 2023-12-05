@@ -14,7 +14,7 @@ import {forceResetNodesSet} from '../engine';
  * @category data
  * @exports undo
  */
-export default function undo(scope = globalScope) {
+export function undo(scope = globalScope) {
   if (layoutModeGet()) {
     return;
   }

@@ -17,7 +17,7 @@ import {ZoomIn, ZoomOut} from './listeners';
 
 const unit = 10;
 
-export default function startListeners() {
+export function startListeners() {
   window.addEventListener('keyup', (e) => {
     scheduleUpdate(1);
     if (e.keyCode == 16) {

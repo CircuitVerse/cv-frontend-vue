@@ -193,10 +193,10 @@ export function loadScope(scope, data) {
  * @category data
  * @exports load
  */
-export default function load(data) {
+export function load(data) {
   // If project is new and no data is there, then just set project name
   const simulatorStore = SimulatorStore();
-  const {circuit_list} = toRefs(simulatorStore);
+  const {circuitList} = toRefs(simulatorStore);
 
   if (!data) {
     setProjectName(__projectName);
@@ -257,7 +257,7 @@ export default function load(data) {
 
   // Reorder tabs according to the saved order
   if (data.orderedTabs) {
-    circuit_list.value.sort((a, b) => {
+    circuitList.value.sort((a, b) => {
       return data.orderedTabs.indexOf(String(a.id)) - data.orderedTabs.indexOf(String(b.id));
     });
   }

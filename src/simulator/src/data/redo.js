@@ -14,7 +14,7 @@ import {forceResetNodesSet} from '../engine';
  * @category data
  * @exports redo
  */
-export default function redo(scope = globalScope) {
+export function redo(scope = globalScope) {
   if (layoutModeGet()) {
     return;
   }

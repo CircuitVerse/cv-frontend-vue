@@ -3,7 +3,6 @@ import {
   layoutModeGet,
   tempBuffer,
   layoutUpdate,
-  // setupLayoutModePanelListeners,
 } from './layoutMode';
 import {simulationArea} from './simulationArea';
 import {
@@ -32,8 +31,8 @@ import {
   showRestricted,
 } from './restrictedElementDiv';
 import {removeMiniMap, updatelastMinimapShown} from './minimap';
-import undo from './data/undo';
-import redo from './data/redo';
+import {undo} from './data/undo';
+import {redo} from './data/redo';
 import {copy, paste, selectAll} from './events';
 import {verilogModeGet} from './Verilog2CV';
 import {setupTimingListeners} from './plotArea';
@@ -41,7 +40,7 @@ import {setupTimingListeners} from './plotArea';
 const unit = 10;
 const listenToSimulator = true;
 
-export default function startListeners() {
+export function startMainListeners() {
   $(document).on('keyup', (e) => {
     if (e.key === 'Escape') {
       exitFullView();
