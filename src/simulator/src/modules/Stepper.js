@@ -93,7 +93,8 @@ export class Stepper extends CircuitElement {
  * @category modules
  */
 Stepper.prototype.tooltipText =
-  'Stepper ToolTip: Increase/Decrease value by selecting the stepper and using +/- keys.';
+  'Stepper ToolTip: Increase/Decrease value by ' +
+  'selecting the stepper and using +/- keys.';
 
 /**
  * @memberof Stepper

@@ -593,9 +593,9 @@ export class SubCircuit extends CircuitElement {
   }
 
   /**
-     * Draws the subcircuit (and contained elements) on the screen when the subcircuit is included
-       in another circuit
-    **/
+   * @memberof SubCircuit
+   * Draws the subcircuit (and contained elements)
+   */
   customDraw() {
     const subcircuitScope = scopeList[this.id];
 
@@ -657,11 +657,11 @@ export class SubCircuit extends CircuitElement {
       }
     }
 
-    for (var i = 0; i < subcircuitScope.Input.length; i++) {
+    for (let i = 0; i < subcircuitScope.Input.length; i++) {
       if (!subcircuitScope.Input[i].label) {
         continue;
       }
-      var info = this.determine_label(
+      const info = this.determine_label(
           this.inputNodes[i].x,
           this.inputNodes[i].y,
       );
@@ -675,11 +675,11 @@ export class SubCircuit extends CircuitElement {
       );
     }
 
-    for (var i = 0; i < subcircuitScope.Output.length; i++) {
+    for (let i = 0; i < subcircuitScope.Output.length; i++) {
       if (!subcircuitScope.Output[i].label) {
         continue;
       }
-      var info = this.determine_label(
+      const info = this.determine_label(
           this.outputNodes[i].x,
           this.outputNodes[i].y,
       );

@@ -143,18 +143,18 @@ export class CircuitElement {
   }
 
   /** Methods to be Implemented for derivedClass
-     * saveObject(); //To generate JSON-safe data that can be loaded
-     * customDraw(); //This is to draw the custom design of the circuit(Optional)
+     * saveObject(); // Generates JSON-safe data that can be loaded
+     * customDraw(); // Draws the custom design of the circuit(Optional)
      * resolve(); // To execute digital logic(Optional)
      * override isResolvable(); // custom logic for checking if module is ready
-     * override newDirection(dir) //To implement custom direction logic(Optional)
-     * newOrientation(dir) //To implement custom orientation logic(Optional)
+     * override newDirection(dir) //Implements custom direction logic(Optional)
+     * newOrientation(dir) //Implement custom orientation logic(Optional)
      */
 
   /**
-     * Function to update the scope when a new element is added.
-     * @param {Scope} scope - the circuit in which we add element
-     */
+   * Function to update the scope when a new element is added.
+   * @param {Scope} scope - the circuit in which we add element
+   */
   updateScope(scope) {
     this.scope = scope;
     for (let i = 0; i < this.nodeList.length; i++) {
@@ -286,7 +286,7 @@ export class CircuitElement {
   /**
    * The update method is used to change the parameters of the object on
    * mouse click and hover.
-   * Return Value: true if state has changed else false
+   * @return {boolean} true if state has changed else false
    * NOT OVERRIDABLE
    */
   update() {
@@ -554,6 +554,12 @@ export class CircuitElement {
     return -lX <= mX && mX <= rX && -dY <= mY && mY <= uY;
   }
 
+  /**
+   * Determines if the subcircuit is hovered.
+   * @param {number} xoffset 
+   * @param {number} yoffset 
+   * @return {boolean} is subcircuit hovered
+   */
   isSubcircuitHover(xoffset = 0, yoffset = 0) {
     const mX = simulationArea.mouseXf - this.subcircuitMetadata.x - xoffset;
     const mY = yoffset + this.subcircuitMetadata.y - simulationArea.mouseYf;
@@ -567,10 +573,10 @@ export class CircuitElement {
   }
 
   /**
-     * Helper Function to set label of an element.
-     * @memberof CircuitElement
-     * @param {string} label - the label for element
-     */
+   * Helper Function to set label of an element.
+   * @memberof CircuitElement
+   * @param {string} label - the label for element
+   */
   setLabel(label) {
     this.label = label || '';
   }
@@ -678,13 +684,14 @@ export class CircuitElement {
   }
 
   /**
-        Draws element in layout mode (inside the subcircuit)
-        @param {number} xOffset - x position of the subcircuit
-        @param {number} yOffset - y position of the subcircuit
-
-        Called by subCircuit.js/customDraw() - for drawing as a part of another circuit
-        and layoutMode.js/renderLayout() -  for drawing in layoutMode
-    **/
+   * Draws element in layout mode (inside the subcircuit).
+   * @param {number} xOffset - x position of the subcircuit.
+   * @param {number} yOffset - y position of the subcircuit.
+   *
+   * Called by subCircuit.js/customDraw() - for drawing as
+   * a part of another circuit.
+   * Called by layoutMode.js/renderLayout() - for drawing in layoutMode.
+   **/
   drawLayoutMode(xOffset = 0, yOffset = 0) {
     const ctx = simulationArea.context;
     if (layoutModeGet()) {

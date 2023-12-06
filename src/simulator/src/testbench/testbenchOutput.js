@@ -46,6 +46,9 @@ export class TB_Output extends CircuitElement {
     }
   }
 
+  /**
+   *
+   */
   setup() {
     this.deleteNodes(); // deletes all nodes whenever setup is called.
     this.nodeList = [];
@@ -53,7 +56,7 @@ export class TB_Output extends CircuitElement {
     this.inputs = [];
     this.testBenchInput = undefined;
     // find it's pair input
-    for (var i = 0; i < this.scope.TB_Input.length; i++) {
+    for (let i = 0; i < this.scope.TB_Input.length; i++) {
       if (this.scope.TB_Input[i].identifier == this.identifier) {
         this.testBenchInput = this.scope.TB_Input[i];
         break;
@@ -64,7 +67,7 @@ export class TB_Output extends CircuitElement {
 
     if (this.testBenchInput) {
       for (
-        var i = 0;
+        let i = 0;
         i < this.testBenchInput.testData.outputs.length;
         i++
       ) {
@@ -98,9 +101,9 @@ export class TB_Output extends CircuitElement {
   }
 
   /**
-     * @memberof TB_output
-     * set identifier for this testbench
-     */
+   * @memberof TB_output
+   * set identifier for this testbench
+   */
   setIdentifier(id = '') {
     if (id.length == 0 || id == this.identifier) {
       return;
@@ -110,9 +113,9 @@ export class TB_Output extends CircuitElement {
   }
 
   /**
-     * @memberof TB_output
-     * Function to check if the input for this TB exist
-     */
+   * @memberof TB_output
+   * Function to check if the input for this TB exist
+   */
   checkPairing(id = '') {
     if (this.testBenchInput) {
       if (
@@ -125,6 +128,7 @@ export class TB_Output extends CircuitElement {
       this.setup();
     }
   }
+
   /**
    * Custom draw
    */

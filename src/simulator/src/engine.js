@@ -369,8 +369,8 @@ export function updateSelectionsAndPane(scope = globalScope) {
           if (simulationArea.multipleObjectSelections.contains(obj)) {
             continue;
           }
-          var x;
-          var y;
+          let x;
+          let y;
           if (obj.objectType === 'Node') {
             x = obj.absX();
             y = obj.absY();

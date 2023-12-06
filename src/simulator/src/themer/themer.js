@@ -81,10 +81,13 @@ export let colors = getCanvasColors();
  * Updates theme
  * 1) Sets CSS Variables for UI elements
  * 2) Sets color variable for Canvas elements
+ * @param {string} themeName - name of the theme.
  */
 export function updateThemeForStyle(themeName) {
   const selectedTheme = themeOptions[themeName];
-  if (selectedTheme === undefined) return;
+  if (selectedTheme === undefined) {
+    return;
+  }
   const html = document.getElementsByTagName('html')[0];
   Object.keys(selectedTheme).forEach((property, i) => {
     html.style.setProperty(property, selectedTheme[property]);
@@ -117,7 +120,6 @@ export const getThemeCardSvg = (themeName) => {
   $('.svgChev', svgIcon).attr('stroke', colors['--br-secondary']);
 
   $('.svgHeader', svgIcon).attr('fill', colors['--primary']);
-  const temp = svgIcon.prop('outerHTML');
   return svgIcon.prop('outerHTML');
 };
 
@@ -128,7 +130,9 @@ export const getThemeCardSvg = (themeName) => {
  * @return {string} Theme card html
  */
 export const getThemeCard = (themeName, selected) => {
-  if (themeName === 'Custom Theme') return '<div></div>';
+  if (themeName === 'Custom Theme') {
+    return '<div></div>';
+  }
   const themeId = themeName.replace(' ', '');
   const selectedClass = selected ? 'selected set' : '';
   // themeSel is the hit area
@@ -151,52 +155,6 @@ export const colorThemes = () => {
   const simulatorStore = SimulatorStore();
   simulatorStore.dialogBox.theme_dialog = true;
 
-  // const selectedTheme = localStorage.getItem('theme')
-  // $('#colorThemesDialog').empty()
-  // const themes = Object.keys(themeOptions)
-  // themes.forEach((theme) => {
-  //     if (theme === selectedTheme) {
-  //         $('#colorThemesDialog').append(getThemeCard(theme, true))
-  //     } else {
-  //         $('#colorThemesDialog').append(getThemeCard(theme, false))
-  //     }
-  // })
-
-  // $('.selected label').trigger('click')
-  // $('#colorThemesDialog').dialog({
-  //     resizable: false,
-  //     close() {
-  //         // Rollback to previous theme
-  //         updateThemeForStyle(localStorage.getItem('theme'))
-  //         updateBG()
-  //     },
-  //     buttons: [
-  //         {
-  //             text: 'Apply Theme',
-  //             click() {
-  //                 // check if any theme is selected or not
-  //                 if ($('.selected label').text()) {
-  //                     localStorage.removeItem('Custom Theme')
-  //                     localStorage.setItem(
-  //                         'theme',
-  //                         $('.selected label').text()
-  //                     )
-  //                 }
-  //                 $('.set').removeClass('set')
-  //                 $('.selected').addClass('set')
-  //                 $(this).dialog('close')
-  //             },
-  //         },
-  //         {
-  //             text: 'Custom Theme',
-  //             click() {
-  //                  CustomColorThemes()
-  //                 $(this).dialog('close')
-  //             },
-  //         },
-  //     ],
-  // })
-
   $('#colorThemesDialog').focus();
   $('.ui-dialog[aria-describedby="colorThemesDialog"]').on('click', () =>
     $('#colorThemesDialog').focus(),
@@ -210,7 +168,8 @@ export const colorThemes = () => {
     // Extract radio button
     const radioButton = themeCard.find('input[type=radio]');
     radioButton.trigger('click'); // Mark as selected
-    updateThemeForStyle(themeCard.find('label').text()); // Extract theme name and set
+    // Extract theme name and set
+    updateThemeForStyle(themeCard.find('label').text());
     updateBG();
   });
 };

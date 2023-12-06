@@ -120,7 +120,7 @@ export const miniMapArea = {
     this.ctx.fillStyle = miniFill;
     for (let i = 0; i < lst.length; i++) {
       if (lst[i] === 'wires') {
-        for (var j = 0; j < globalScope[lst[i]].length; j++) {
+        for (let j = 0; j < globalScope[lst[i]].length; j++) {
           this.ctx.beginPath();
           this.ctx.moveTo(
               2.5 +
@@ -151,9 +151,7 @@ export const miniMapArea = {
           ledY = 20;
         }
 
-        for (var j = 0; j < globalScope[lst[i]].length; j++) {
-          const xx = globalScope[lst[i]][j].x - simulationArea.minWidth;
-          const yy = globalScope[lst[i]][j].y - simulationArea.minHeight;
+        for (let j = 0; j < globalScope[lst[i]].length; j++) {
           this.ctx.beginPath();
           const obj = globalScope[lst[i]][j];
           this.ctx.rect(
@@ -182,7 +180,7 @@ let lastMiniMapShown;
 /**
  *
  */
-export function updatelastMinimapShown() {
+export function updateLastMinimapShown() {
   lastMiniMapShown = new Date().getTime();
 }
 

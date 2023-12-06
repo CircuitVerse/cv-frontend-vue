@@ -3,7 +3,11 @@ import {converters} from './utils';
 
 const DPR = window.devicePixelRatio || 1;
 
-// Helper function to scale to display
+/**
+ * Helper function to scale to display
+ * @param {number} x - value to scale.
+ * @return {number} scaled dimension.
+ */
 function sh(x) {
   return x * DPR;
 }
@@ -11,7 +15,7 @@ function sh(x) {
 /**
  * Spec Constants
  * Size Spec Diagram - https://app.diagrams.net/#G1HFoesRvNyDap95sNJswTy3nH09emDriC
- * NOTE: Since DPR is set on page load, changing of screen in runtime will not work well
+ * NOTE: DPR is set on page load, changing screen at runtime will not work well
  * @TODO
  *  - Support for color themes
  *  - Replace constants with functions? - Can support Zoom in/out of canvas then
@@ -263,7 +267,7 @@ export const plotArea = {
       }
       // Small ticks
       for (let j = 1; j < 5; j++) {
-        var x1 = x + Math.round((j * cycleWidth) / 5);
+        const x1 = x + Math.round((j * cycleWidth) / 5);
         if (x1 >= timeLineStartX) {
           ctx.beginPath();
           ctx.moveTo(x1, timeLineHeight - sh(2));
@@ -295,7 +299,7 @@ export const plotArea = {
     // Waveform
     ctx.strokeStyle = waveFormColor;
     ctx.textAlign = 'center';
-    var endX = Math.min(getCycleStartX(endTime), width);
+    let endX = Math.min(getCycleStartX(endTime), width);
 
     for (let i = 0; i < globalScope.Flag.length; i++) {
       const plotValues = globalScope.Flag[i].plotValues;
@@ -334,7 +338,7 @@ export const plotArea = {
         if (x < timeLineStartX) {
           if (j + 1 != plotValues.length) {
             // Next one also is out of bound, so skip this one completely
-            var x1 = getCycleStartX(plotValues[j + 1][0]);
+            const x1 = getCycleStartX(plotValues[j + 1][0]);
             if (x1 < timeLineStartX) {
               continue;
             }
@@ -366,7 +370,6 @@ export const plotArea = {
           }
           prevY = y;
         } else {
-          var endX;
           if (j + 1 == plotValues.length) {
             endX = getCycleStartX(endTime);
           } else {

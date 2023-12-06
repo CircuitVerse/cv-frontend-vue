@@ -85,9 +85,9 @@ export class NandGate extends CircuitElement {
   }
 
   /**
-     * @memberof NandGate
-     * resolve output values based on inputData
-     */
+   * @memberof NandGate
+   * resolve output values based on inputData
+   */
   resolve() {
     let result = this.inp[0].value || 0;
     if (this.isResolvable() === false) {

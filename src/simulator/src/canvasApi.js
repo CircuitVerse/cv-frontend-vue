@@ -1,6 +1,6 @@
 import {backgroundArea} from './backgroundArea';
 import {simulationArea} from './simulationArea';
-import {miniMapArea, removeMiniMap, updatelastMinimapShown} from './minimap';
+import {miniMapArea, removeMiniMap, updateLastMinimapShown} from './minimap';
 import {colors} from './themer/themer';
 
 const unit = 10;
@@ -106,7 +106,7 @@ export function changeScale(delta, xx, yy, method = 1) {
     findDimensions(globalScope);
     miniMapArea.setup();
     $('#miniMap').show();
-    updatelastMinimapShown();
+    updateLastMinimapShown();
     $('#miniMap').show();
     setTimeout(removeMiniMap, 2000);
   }

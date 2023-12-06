@@ -58,7 +58,7 @@ export default {
     '--cus-radio_label': '#0F111A',
     '--primary': '#0F111A', // header bg, panels bg
     '--text-lite': '#FFF', // normal state text
-    '--text-dark': 'white', // text state on hover, on drop down menu , context menu
+    '--text-dark': 'white', // text hover, on drop down menu , context menu
     '--text-panel': 'white',
     '--bg-navbar': '#0F111A',
     '--br-circuit': '#0F111A', // panel border, tabbar circuit border
@@ -111,7 +111,7 @@ export default {
     '--cus-radio_label': '#6B6B6B',
     '--primary': '#EAEAEB', // header bg
     '--text-dark': '#6B6B6B', // normal state text
-    '--text-lite': 'white', // text state on hover, on drop down menu , context menu
+    '--text-lite': 'white', // text hover, on drop down menu , context menu
     '--text-panel': '#6B6B6B',
     '--bg-navbar': '#6b6b6b',
     '--qp-br-tl': '#969696', // more ligthen than qp box shadow 1
@@ -126,8 +126,8 @@ export default {
     '--br-primary': '#42B983', // panel border, tabbar circuit border
     '--context-text-hov': '#6B6B6B',
     '--context-text': 'white',
-    '--bg-primary-moz': 'rgba(107, 107, 107, 0.904)', // dialog bg, navbar dropwdown //.9 opacity of nav
-    '--bg-primary-chr': 'rgba(107, 107, 107, 0.704)', // dialog bg navbar dropwdown // .7 opacity of nav
+    '--bg-primary-moz': 'rgba(107, 107, 107, 0.904)', // dialog bg, navbar dropwdown
+    '--bg-primary-chr': 'rgba(107, 107, 107, 0.704)', // dialog bg navbar dropwdown
     '--bg-icons': '#DDDDDD', // ce icon bg
     '--bg-text': '#ddd', // drop down, content menu, text bg on hover
     '--bg-secondary': '#6B6B6B', // border color input button,
@@ -166,7 +166,7 @@ export default {
     '--cus-radio_label': '#6B6B6B',
     '--primary': '#EAEAEB', // header bg
     '--text-dark': '#6B6B6B', // normal state text
-    '--text-lite': 'white', // text state on hover, on drop down menu , context menu
+    '--text-lite': 'white', // text hover, on drop down menu , context menu
     '--text-panel': '#656565',
     '--bg-navbar': '#6b6b6b',
     '--qp-br-tl': '#969696', // more ligthen than qp box shadow 1
@@ -181,8 +181,8 @@ export default {
     '--br-primary': '#6B6B6B', // panel border, tabbar circuit border
     '--context-text-hov': '#6B6B6B',
     '--context-text': 'white',
-    '--bg-primary-moz': 'rgba(107, 107, 107, 0.904)', // dialog bg, navbar dropwdown //.9 opacity of nav
-    '--bg-primary-chr': 'rgba(107, 107, 107, 0.704)', // dialog bg navbar dropwdown // .7 opacity of nav
+    '--bg-primary-moz': 'rgba(107, 107, 107, 0.904)', // dialog bg, navbar dropwdown
+    '--bg-primary-chr': 'rgba(107, 107, 107, 0.704)', // dialog bg navbar dropwdown
     '--bg-icons': '#DDDDDD', // ce icon bg
     '--bg-text': '#ddd', // drop down, content menu, text bg on hover
     '--bg-secondary': '#6B6B6B', // border color input button,
@@ -221,7 +221,7 @@ export default {
     '--cus-radio_label': 'black',
     '--primary': 'black', // header bg
     '--text-dark': 'black', // normal state text
-    '--text-lite': 'white', // text state on hover, on drop down menu , context menu
+    '--text-lite': 'white', // text hover, on drop down menu , context menu
     '--text-panel': 'white',
     '--bg-navbar': 'black',
     '--qp-br-tl': '#F38518', // more ligthen than qp box shadow 1
@@ -236,8 +236,8 @@ export default {
     '--br-primary': '#F38518', // panel border, tabbar circuit border
     '--context-text-hov': 'black',
     '--context-text': 'white',
-    '--bg-primary-moz': 'rgba(0, 0, 0, 0.904)', // dialog bg, navbar dropwdown //.9 opacity of nav
-    '--bg-primary-chr': 'rgba(0, 0, 0, 0.704)', // dialog bg navbar dropwdown // .7 opacity of nav
+    '--bg-primary-moz': 'rgba(0, 0, 0, 0.904)',
+    '--bg-primary-chr': 'rgba(0, 0, 0, 0.704)',
     '--bg-icons': '#262626', // ce icon bg
     '--bg-text': '#ddd', // drop down, content menu, text bg on hover
     '--bg-secondary': '#6B6B6B', // border color input button,
@@ -276,7 +276,7 @@ export default {
     '--cus-radio_label': '#2e2b21',
     '--primary': '#2e2b21', // header bg
     '--text-dark': 'black', // normal state text
-    '--text-lite': 'white', // text state on hover, on drop down menu , context menu
+    '--text-lite': 'white', // text hover, on dropdown menu, context menu
     '--text-panel': 'white',
     '--bg-navbar': '#2e2b21',
     '--qp-br-tl': '#716950', // more ligthen than qp box shadow 1
@@ -291,8 +291,8 @@ export default {
     '--br-primary': '#e2dad1', // panel border, tabbar circuit border
     '--context-text-hov': 'black',
     '--context-text': 'white',
-    '--bg-primary-moz': 'rgba(46, 43, 33, 1)', // dialog bg, navbar dropwdown //.9 opacity of nav
-    '--bg-primary-chr': 'rgba(46, 43, 33, 1)', // dialog bg navbar dropwdown // .7 opacity of nav
+    '--bg-primary-moz': 'rgba(46, 43, 33, 1)', // dialog bg, navbar dropwdown
+    '--bg-primary-chr': 'rgba(46, 43, 33, 1)', // dialog bg navbar dropwdown
     '--bg-icons': '#9c7762', // ce icon bg
     '--bg-text': '#ddd', // drop down, content menu, text bg on hover
     '--bg-secondary': '#6B6B6B', // border color input button,
@@ -340,7 +340,6 @@ export default {
     '--qp-br-rd': '#535353',
     '--qp-box-shadow-1': '#3b3b3b',
     '--qp-box-shadow-2': '#4f4f4f',
-    '--bg-circuit': '#ddd',
     '--br-circuit': '#454545',
     '--br-primary': '#ffffff',
     '--bg-primary-moz': '#454545e6',

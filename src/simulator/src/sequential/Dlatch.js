@@ -98,6 +98,9 @@ export class Dlatch extends CircuitElement {
     return data;
   }
 
+  /**
+   *
+   */
   customDraw() {
     const ctx = simulationArea.context;
     ctx.strokeStyle = colors['stroke'];
@@ -106,7 +109,6 @@ export class Dlatch extends CircuitElement {
     ctx.lineWidth = correctWidth(3);
     const xx = this.x;
     const yy = this.y;
-    // rect(ctx, xx - 20, yy - 20, 40, 40);
     moveTo(ctx, -20, 5, xx, yy, this.direction);
     lineTo(ctx, -15, 10, xx, yy, this.direction);
     lineTo(ctx, -20, 15, xx, yy, this.direction);

@@ -193,9 +193,9 @@ export class TB_Input extends CircuitElement {
   }
 
   /**
-     * This function is used to set a uniq identifier to every testbench
-     * @memberof TB_Input
-     */
+   * This function is used to set a uniq identifier to every testbench
+   * @memberof TB_Input
+   */
   setIdentifier(id = '') {
     if (id.length == 0 || id == this.identifier) {
       return;
@@ -217,9 +217,9 @@ export class TB_Input extends CircuitElement {
   }
 
   /**
-     * Check if there is a output tester paired with input TB.
-     * @memberof TB_Input
-     */
+   * Check if there is a output tester paired with input TB.
+   * @memberof TB_Input
+   */
   checkPaired() {
     for (let i = 0; i < this.scope.TB_Output.length; i++) {
       if (this.scope.TB_Output[i].identifier == this.identifier) {
@@ -228,19 +228,25 @@ export class TB_Input extends CircuitElement {
     }
   }
 
+  /**
+   * Delete test bench.
+   */
   delete() {
     super.delete();
     this.checkPaired();
   }
 
+  /**
+   *
+   */
   customDraw() {
     const ctx = simulationArea.context;
     ctx.beginPath();
     ctx.strokeStyle = 'grey';
     ctx.fillStyle = '#fcfcfc';
     ctx.lineWidth = correctWidth(1);
-    var xx = this.x;
-    var yy = this.y;
+    let xx = this.x;
+    let yy = this.y;
 
     let xRotate = 0;
     let yRotate = 0;
@@ -283,15 +289,13 @@ export class TB_Input extends CircuitElement {
         yy + 14 + 20 + 20 * this.testData.inputs.length,
         10,
     );
-    // fillText(ctx, "Case: "+this.iteration, xx  , yy + 20+14, 10);
     ctx.fill();
 
     ctx.font = '30px Raleway';
     ctx.textAlign = 'right';
     ctx.fillStyle = 'blue';
     ctx.beginPath();
-    for (var i = 0; i < this.testData.inputs.length; i++) {
-      // ctx.beginPath();
+    for (let i = 0; i < this.testData.inputs.length; i++) {
       fillText(
           ctx,
           this.testData.inputs[i].label,
@@ -307,7 +311,7 @@ export class TB_Input extends CircuitElement {
       ctx.textAlign = 'left';
       ctx.fillStyle = 'blue';
       ctx.beginPath();
-      for (var i = 0; i < this.testData.inputs.length; i++) {
+      for (let i = 0; i < this.testData.inputs.length; i++) {
         fillText(
             ctx,
             this.testData.inputs[i].values[this.iteration - 1],
@@ -323,8 +327,8 @@ export class TB_Input extends CircuitElement {
     ctx.beginPath();
     ctx.strokeStyle = 'rgba(0,0,0,1)';
     ctx.lineWidth = correctWidth(3);
-    var xx = this.x;
-    var yy = this.y;
+    xx = this.x;
+    yy = this.y;
     // rect(ctx, xx - 20, yy - 20, 40, 40);
     moveTo(ctx, 0, 15, xx, yy, this.direction);
     lineTo(ctx, 5, 20, xx, yy, this.direction);

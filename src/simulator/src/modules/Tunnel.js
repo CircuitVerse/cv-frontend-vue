@@ -64,6 +64,10 @@ export class Tunnel extends CircuitElement {
     this.setBounds();
   }
 
+  /**
+   * @memberof Tunnel
+   * Set the bounds.
+   */
   setBounds() {
     let xRotate = 0;
     let yRotate = 0;
@@ -88,9 +92,9 @@ export class Tunnel extends CircuitElement {
   }
 
   /**
-     * @memberof Tunnel
-     * resolve output values based on inputData
-     */
+   * @memberof Tunnel
+   * resolve output values based on inputData
+   */
   resolve() {
     // Don't check for paired tunnels' value if already checked by another
     // paired tunnel (O(n))
@@ -119,10 +123,10 @@ export class Tunnel extends CircuitElement {
   }
 
   /**
-     * @memberof Tunnel
-     * function to set tunnel value
-     * @param {Scope} scope - tunnel value
-     */
+   * @memberof Tunnel
+   * function to set tunnel value
+   * @param {Scope} scope - tunnel value
+   */
   updateScope(scope) {
     this.scope = scope;
     this.inp1.updateScope(scope);
@@ -130,9 +134,9 @@ export class Tunnel extends CircuitElement {
   }
 
   /**
-     * @memberof Tunnel
-     * function to set plot value
-     */
+   * @memberof Tunnel
+   * function to set plot value
+   */
   setPlotValue() {
     return;
     const time = plotArea.stopWatch.ElapsedMilliseconds;
@@ -218,9 +222,9 @@ export class Tunnel extends CircuitElement {
   }
 
   /**
-     * @memberof Tunnel
-     * delete the tunnel element
-     */
+   * @memberof Tunnel
+   * delete the tunnel element
+   */
   delete() {
     this.scope.Tunnel.clean(this);
     this.scope.tunnelList[this.identifier].clean(this);
@@ -228,9 +232,9 @@ export class Tunnel extends CircuitElement {
   }
 
   /**
-     * @memberof Tunnel
-     * function to draw element
-     */
+   * @memberof Tunnel
+   * function to draw element
+   */
   customDraw() {
     const ctx = simulationArea.context;
     ctx.beginPath();
@@ -325,9 +329,11 @@ export class Tunnel extends CircuitElement {
   }
 
   /**
-     * Overridden from CircuitElement. Sets all paired tunnels' bitwidths for syncronization
-     * @param {number} bitWidth - bitwidth to set to
-     */
+   * @memberof Tunnel
+   * Sets all paired tunnels' bitwidths for syncronization
+   * Overridden from CircuitElement.
+   * @param {number} bitWidth - bitwidth to set to
+   */
   newBitWidth(bitWidth) {
     for (const tunnel of this.scope.tunnelList[this.identifier]) {
       if (tunnel.fixedBitWidth) {

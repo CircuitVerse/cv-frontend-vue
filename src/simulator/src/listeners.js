@@ -30,7 +30,7 @@ import {
   hideRestricted,
   showRestricted,
 } from './restrictedElementDiv';
-import {removeMiniMap, updatelastMinimapShown} from './minimap';
+import {removeMiniMap, updateLastMinimapShown} from './minimap';
 import {undo} from './data/undo';
 import {redo} from './data/redo';
 import {copy, paste, selectAll} from './events';
@@ -615,7 +615,7 @@ function onMouseMove(e) {
 function onMouseUp(e) {
   simulationArea.mouseDown = false;
   if (!lightMode) {
-    updatelastMinimapShown();
+    updateLastMinimapShown();
     setTimeout(removeMiniMap, 2000);
   }
 

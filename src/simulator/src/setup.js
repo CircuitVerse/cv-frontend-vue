@@ -1,4 +1,4 @@
-import metadata from './metadata.json';
+import {metadata} from './metadata';
 import {generateId} from './utils';
 import {showMessage} from './utils_clock';
 import {backgroundArea} from './backgroundArea';

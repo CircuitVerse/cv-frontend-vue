@@ -42,9 +42,10 @@ export class DflipFlop extends CircuitElement {
   }
 
   /**
-  * Is resolvable
-  * @return {boolean} is resolvable
-  */
+   * @memberof DflipFlop
+   * Is resolvable
+   * @return {boolean} is resolvable
+   */
   isResolvable() {
     return true;
   }
