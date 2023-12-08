@@ -1,3 +1,4 @@
+import { Node } from './node'
 /**
  * 
  * @param {string} name - label name to sanitize.

@@ -95,9 +95,9 @@ export class Keyboard extends CircuitElement {
   }
 
   /**
-     * @memberof Keyboard
-     * not resolvable if enable = 0 or clock is undefined
-     */
+   * @memberof Keyboard
+   * Not resolvable if enable = 0 or clock is undefined
+   */
   isResolvable() {
     if (this.reset.value == 1) {
       return true;
@@ -185,9 +185,11 @@ export class Keyboard extends CircuitElement {
     return data;
   }
 
+  /**
+   *
+   */
   customDraw() {
     const ctx = simulationArea.context;
-    //
     ctx.strokeStyle = colors['stroke'];
     ctx.fillStyle = colors['fill'];
     ctx.beginPath();

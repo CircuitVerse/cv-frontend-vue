@@ -1,12 +1,13 @@
+import { Node } from './node';
 /**
  * Event Queue is simply a priority Queue, basic implementation O(n^2).
  * @category eventQueue
  */
 export class EventQueue {
-	public size: number;
-	public queue: any[];
-	public frontIndex: number;
-	public time: number;
+  public size: number;
+  public queue: Node[];
+  public frontIndex: number;
+  public time: number;
 
   /**
    * @param {number} size - the size of the queue.
@@ -22,7 +23,7 @@ export class EventQueue {
      * @param {CircuitElement} obj - the element to be added
      * @param {number} delay - the delay in adding an object to queue
      */
-  add(obj: any, delay: number) {
+  add(obj: Node, delay: number) {
     if (obj.queueProperties.inQueue) {
       obj.queueProperties.time =
         this.time + (delay || obj.propagationDelay);
@@ -69,7 +70,7 @@ export class EventQueue {
    * To add without any delay.
    * @param {CircuitElement} obj - the object to be added
    */
-  addImmediate(obj: any) {
+  addImmediate(obj: Node) {
     this.queue[this.frontIndex] = obj;
     obj.queueProperties.time = this.time;
     obj.queueProperties.index = this.frontIndex;
@@ -95,6 +96,7 @@ export class EventQueue {
 
   /**
    * Pop element from queue.
+   * @return {any} popped object.
    */
   pop() {
     if (this.isEmpty()) {
@@ -120,6 +122,7 @@ export class EventQueue {
 
   /**
    * Check if empty queue.
+   * @return {boolean} Is the queue empty.
    */
   isEmpty() {
     return this.frontIndex == 0;

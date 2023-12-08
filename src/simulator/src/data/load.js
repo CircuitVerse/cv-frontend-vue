@@ -150,7 +150,7 @@ export function loadScope(scope, data) {
   if (data.layout) {
     scope.layout = data.layout;
   } else {
-    // Else generate new layout according to how it would have been otherwise (backward compatibility)
+    // generate layout how it would have been (backward compatibility)
     scope.layout = {};
     scope.layout.width = 100;
     scope.layout.height =
@@ -258,7 +258,8 @@ export function load(data) {
   // Reorder tabs according to the saved order
   if (data.orderedTabs) {
     circuitList.value.sort((a, b) => {
-      return data.orderedTabs.indexOf(String(a.id)) - data.orderedTabs.indexOf(String(b.id));
+      return data.orderedTabs.indexOf(String(a.id)) -
+          data.orderedTabs.indexOf(String(b.id));
     });
   }
 

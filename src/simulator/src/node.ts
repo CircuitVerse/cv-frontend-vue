@@ -1,7 +1,7 @@
-import {drawCircle, drawLine, arc} from './canvasApi';
-import {simulationArea} from './simulationArea';
-import {distance} from './utils';
-import {showError} from './utils_clock'
+import { drawCircle, drawLine, arc } from './canvasApi';
+import { simulationArea } from './simulationArea';
+import { distance } from './utils';
+import { showError } from './utils_clock';
 import {
   renderCanvas,
   scheduleUpdate,
@@ -11,11 +11,19 @@ import {
   forceResetNodesSet,
   canvasMessageData,
 } from './engine';
-import {Wire} from './wire';
-import {colors} from './themer/themer';
-import {CircuitElement} from './circuitElement';
+import { Scope } from './circuit';
+import { Wire } from './wire';
+import { colors } from './themer/themer';
+import { CircuitElement } from './circuitElement';
 
-function rotate(x1: number, y1:number, dir: string): number[] {
+/**
+ * Rotate node.
+ * @param x1
+ * @param y1
+ * @param dir
+ * @returns
+ */
+function rotate(x1: number, y1: number, dir: string): number[] {
   if (dir == 'LEFT') {
     return [-x1, y1];
   }
@@ -48,14 +56,14 @@ export function findNode(node: Node): number {
  * @param {Scope} scope - scope to which node has to be loaded
  * @category node
  */
-export function loadNode(data, scope) {
+export function loadNode(data: JSON, scope: Scope) {
   const n = new Node(
-      data.x,
-      data.y,
-      data.type,
-      scope.root,
-      data.bitWidth,
-      data.label,
+    data.x,
+    data.y,
+    data.type,
+    scope.root,
+    data.bitWidth,
+    data.label,
   );
 }
 
@@ -63,10 +71,10 @@ export function loadNode(data, scope) {
 // input node=0
 // intermediate node =2
 export enum NodeType {
-  Input= 0,
-  Output= 1,
-  Intermediate= 2,
-};
+  Input = 0,
+  Output = 1,
+  Intermediate = 2,
+}
 
 /**
  * used to give id to a node.
@@ -74,6 +82,26 @@ export enum NodeType {
  * @category node
  */
 let uniqueIdCounter = 10;
+
+/**
+ *
+ */
+export class QueueProperties {
+  /**
+   * @param {boolean} inQueue Is item in a queue.
+   * @param {number?} time Time it was inserted.
+   * @param {number?} index Index of the item in the queue.
+   */
+  constructor(
+    inQueue: boolean,
+    time?: number,
+    index?: number,
+  ) {
+    this.inQueue = inQueue;
+    this.time = time;
+    this.index = index;
+  }
+}
 
 /**
  * This class is responsible for all the Nodes.Nodes are connected using Wires
@@ -88,35 +116,35 @@ let uniqueIdCounter = 10;
  * @category node
  */
 export class Node {
-	public objectType: string;
-	public subcircuitOverride: any;
-	public id: any;
-	public parent: CircuitElement;
-	public bitWidth: number;
-	public label: string;
-	public prevx: number;
-	public prevy: number;
-	public leftx: number;
-	public lefty: number;
-	public x: number;
-	public y: number;
-	public type: number;
-	public connections: any;
-	public value: any;
-	public radius: number;
-	public clicked: boolean;
-	public hover: boolean;
-	public wasClicked: boolean;
-	public scope: any;
-	public prev: any;
-	public count: number;
-	public highlighted: any;
-	public queueProperties: any;
-	public oldx: number;
-	public oldy: number;
-	public showHover: boolean;
-	public deleted: boolean;
-	public verilogLabel: string;
+  public objectType: string;
+  public subcircuitOverride: boolean;
+  public id: string;
+  public parent: CircuitElement;
+  public bitWidth: number;
+  public label: string;
+  public prevx?: number;
+  public prevy?: number;
+  public leftx: number;
+  public lefty: number;
+  public x: number;
+  public y: number;
+  public type: number;
+  public connections: Node[];
+  public value: number | undefined;
+  public radius: number;
+  public clicked: boolean;
+  public hover: boolean;
+  public wasClicked: boolean;
+  public scope: Scope;
+  public prev: string;
+  public count: number;
+  public highlighted: boolean;
+  public queueProperties: QueueProperties;
+  public oldx: number = 0;
+  public oldy: number = 0;
+  public showHover: boolean = false;
+  public deleted: boolean = false;
+  public verilogLabel: string = '';
 
   /**
    * @param {number} x - x coord of Node.
@@ -180,24 +208,20 @@ export class Node {
 
     this.parent.scope.allNodes.push(this);
 
-    this.queueProperties = {
-      inQueue: false,
-      time: undefined,
-      index: undefined,
-    };
+    this.queueProperties = new QueueProperties(false, undefined, undefined);
   }
 
   /**
-   * @param {string} label - new label
-   * Function to set label
-   */
-  setLabel(label) {
+ * Set label of the Node.
+ * @param {string} label - new label
+ */
+  setLabel(label: string) {
     this.label = label;
   }
 
   /**
-   * function to convert a node to intermediate node
-   */
+ * function to convert a node to intermediate node
+ */
   convertToIntermediate() {
     this.type = 2;
     this.x = this.absX();
@@ -207,26 +231,26 @@ export class Node {
   }
 
   /**
-   * Helper function to move a node.
-   * Sets up some variable which help in changing node.
-   */
+ * Helper function to move a node.
+ * Sets up some variable which help in changing node.
+ */
   startDragging() {
     this.oldx = this.x;
     this.oldy = this.y;
   }
 
   /**
-   * Helper function to move a node.
-   */
+ * Helper function to move a node.
+ */
   drag() {
     this.x = this.oldx + simulationArea.mouseX - simulationArea.mouseDownX;
     this.y = this.oldy + simulationArea.mouseY - simulationArea.mouseDownY;
   }
 
   /**
-   * Function for saving a node
-   * @return {JSON} JSON describing this Node.
-   */
+ * Function for saving a node
+ * @return {JSON} JSON describing this Node.
+ */
   saveObject() {
     if (this.type == 2) {
       this.leftx = this.x;
@@ -247,8 +271,8 @@ export class Node {
   }
 
   /**
-   * helper function to help rotating parent
-   */
+ * helper function to help rotating parent
+ */
   updateRotation() {
     let x;
     let y;
@@ -258,8 +282,8 @@ export class Node {
   }
 
   /**
-   * Refreshes a node after rotation of parent
-   */
+ * Refreshes a node after rotation of parent
+ */
   refresh() {
     this.updateRotation();
     for (let i = 0; i < this.connections.length; i++) {
@@ -269,25 +293,26 @@ export class Node {
   }
 
   /**
-   * Gets the absolute X position of this Node.
-   * @return {number} absolute X position of this Node.
-   */
+ * Gets the absolute X position of this Node.
+ * @return {number} absolute X position of this Node.
+ */
   absX() {
     return this.x + this.parent.x;
   }
 
   /**
-   * Gets the absolute Y position of the node.
-   * @return {number} absolute Y position of this Node.
-   */
+ * Gets the absolute Y position of the node.
+ * @return {number} absolute Y position of this Node.
+ */
   absY() {
     return this.y + this.parent.y;
   }
 
   /**
-   * update the scope of a node
-   */
-  updateScope(scope) {
+ * update the scope of a node
+ * @param {Scope} Circuit to update.
+ */
+  updateScope(scope: Scope) {
     this.scope = scope;
     if (this.type == 2) {
       this.parent = scope.root;
@@ -295,25 +320,26 @@ export class Node {
   }
 
   /**
-   * return true if node is connected or not connected but false if undefined.
-   */
+ * Determine if value is defined.
+ * @return {boolean} true if defined, false if undefined.
+ */
   isResolvable() {
     return this.value != undefined;
   }
 
   /**
-   * function used to reset the nodes
-   */
+ * function used to reset the nodes
+ */
   reset() {
     this.value = undefined;
     this.highlighted = false;
   }
 
   /**
-   * function to connect two nodes.
-   * @param {Node} node - Node to which we are connecting.
-   */
-  connect(node) {
+ * function to connect two nodes.
+ * @param {Node} node - Node to which we are connecting.
+ */
+  connect(node: Node) {
     if (node == this) {
       return;
     }
@@ -330,10 +356,10 @@ export class Node {
   }
 
   /**
-   * connects but doesn't draw the wire between nodes
-   * @param {Node} node - Node to connect to.
-   */
-  connectWireLess(node) {
+ * connects but doesn't draw the wire between nodes
+ * @param {Node} node - Node to connect to.
+ */
+  connectWireLess(node: Node) {
     if (node == this) {
       return;
     }
@@ -349,21 +375,21 @@ export class Node {
   }
 
   /**
-   * disconnecting two nodes connected wirelessly.
-   * @param {Node} node - Node to disconnect.
-   */
-  disconnectWireLess(node) {
+ * disconnecting two nodes connected wirelessly.
+ * @param {Node} node - Node to disconnect.
+ */
+  disconnectWireLess(node: Node) {
     this.connections.clean(node);
     node.connections.clean(this);
   }
 
   /**
-   * function to resolve a node
-   */
+ * function to resolve a node
+ */
   resolve() {
     // Remove propagation of values (TriState)
     if (this.value == undefined) {
-      for (var i = 0; i < this.connections.length; i++) {
+      for (let i = 0; i < this.connections.length; i++) {
         if (this.connections[i].value !== undefined) {
           this.connections[i].value = undefined;
           simulationArea.simulationQueue.add(this.connections[i]);
@@ -403,7 +429,7 @@ export class Node {
       }
     }
 
-    for (var i = 0; i < this.connections.length; i++) {
+    for (let i = 0; i < this.connections.length; i++) {
       const node = this.connections[i];
 
       if (node.value != this.value || node.bitWidth != this.bitWidth) {
@@ -420,8 +446,8 @@ export class Node {
           node.highlighted = true;
           const circuitName = node.scope.name;
           const circuitElementName = node.parent.objectType;
-          showError(
-              `Contention Error: ${this.value} and ${node.value} at ${circuitElementName} in ${circuitName}`,
+          showError(`Contention Error: ${this.value} and ${node.value} at` +
+            ` ${circuitElementName} in ${circuitName}`,
           );
         } else if (node.bitWidth == this.bitWidth || node.type == 2) {
           if (
@@ -440,8 +466,7 @@ export class Node {
         } else {
           this.highlighted = true;
           node.highlighted = true;
-          showError(
-              `BitWidth Error: ${this.bitWidth} and ${node.bitWidth}`,
+          showError(`BitWidth Error: ${this.bitWidth} and ${node.bitWidth}`,
           );
         }
       }
@@ -449,8 +474,8 @@ export class Node {
   }
 
   /**
-   * this function checks if hover over the node
-   */
+ * this function checks if hover over the node
+ */
   checkHover() {
     if (!simulationArea.mouseDown) {
       if (simulationArea.hover == this) {
@@ -474,72 +499,72 @@ export class Node {
   }
 
   /**
-   * this function draw a node
-   */
+ * this function draw a node
+ */
   draw() {
     const ctx = simulationArea.context;
     const color = colors.color_wire_draw;
     if (this.clicked) {
       if (this.prev == 'x') {
         drawLine(
-            ctx,
-            this.absX(),
-            this.absY(),
-            simulationArea.mouseX,
-            this.absY(),
-            color,
-            3,
+          ctx,
+          this.absX(),
+          this.absY(),
+          simulationArea.mouseX,
+          this.absY(),
+          color,
+          3,
         );
         drawLine(
-            ctx,
-            simulationArea.mouseX,
-            this.absY(),
-            simulationArea.mouseX,
-            simulationArea.mouseY,
-            color,
-            3,
+          ctx,
+          simulationArea.mouseX,
+          this.absY(),
+          simulationArea.mouseX,
+          simulationArea.mouseY,
+          color,
+          3,
         );
       } else if (this.prev == 'y') {
         drawLine(
-            ctx,
-            this.absX(),
-            this.absY(),
-            this.absX(),
-            simulationArea.mouseY,
-            color,
-            3,
+          ctx,
+          this.absX(),
+          this.absY(),
+          this.absX(),
+          simulationArea.mouseY,
+          color,
+          3,
         );
         drawLine(
-            ctx,
-            this.absX(),
-            simulationArea.mouseY,
-            simulationArea.mouseX,
-            simulationArea.mouseY,
-            color,
-            3,
+          ctx,
+          this.absX(),
+          simulationArea.mouseY,
+          simulationArea.mouseX,
+          simulationArea.mouseY,
+          color,
+          3,
         );
       } else if (
         Math.abs(this.x + this.parent.x - simulationArea.mouseX) >
         Math.abs(this.y + this.parent.y - simulationArea.mouseY)
       ) {
         drawLine(
-            ctx,
-            this.absX(),
-            this.absY(),
-            simulationArea.mouseX,
-            this.absY(),
-            color,
-            3,
+          ctx,
+          this.absX(),
+          this.absY(),
+          simulationArea.mouseX,
+          this.absY(),
+          color,
+          3,
         );
       } else {
         drawLine(
-            ctx,
-            this.absX(),
-            this.absY(),
-            this.absX(),
-            simulationArea.mouseY,
-            color,
-            3,
+          ctx,
+          this.absX(),
+          this.absY(),
+          this.absX(),
+          simulationArea.mouseY,
+          color,
+          3,
         );
       }
     }
@@ -576,15 +601,15 @@ export class Node {
       ctx.beginPath();
       ctx.lineWidth = 3;
       arc(
-          ctx,
-          this.x,
-          this.y,
-          8,
-          0,
-          Math.PI * 2,
-          this.parent.x,
-          this.parent.y,
-          'RIGHT',
+        ctx,
+        this.x,
+        this.y,
+        8,
+        0,
+        Math.PI * 2,
+        this.parent.x,
+        this.parent.y,
+        'RIGHT',
       );
       ctx.closePath();
       ctx.stroke();
@@ -620,8 +645,8 @@ export class Node {
   }
 
   /**
-   * checks if a node has been deleted
-   */
+ * checks if a node has been deleted
+ */
   checkDeleted() {
     if (this.deleted) {
       this.delete();
@@ -632,9 +657,9 @@ export class Node {
   }
 
   /**
-   * used to update nodes if there is a event like click or hover on the node.
-   * many booleans are used to check if certain properties are to be updated.
-   */
+ * used to update nodes if there is a event like click or hover on the node.
+ * many booleans are used to check if certain properties are to be updated.
+ */
   update() {
     if (embed) {
       return;
@@ -684,7 +709,7 @@ export class Node {
             i++
           ) {
             simulationArea.multipleObjectSelections[
-                i
+              i
             ].startDragging();
           }
         }
@@ -750,10 +775,10 @@ export class Node {
       if (
         this.prev == 'a' &&
         distance(
-            simulationArea.mouseX,
-            simulationArea.mouseY,
-            this.absX(),
-            this.absY(),
+          simulationArea.mouseX,
+          simulationArea.mouseY,
+          this.absX(),
+          this.absY(),
         ) >= 10
       ) {
         if (
@@ -808,15 +833,15 @@ export class Node {
         if (
           this.prev == 'a' &&
           distance(
-              simulationArea.mouseX,
-              simulationArea.mouseY,
-              this.absX(),
-              this.absY(),
+            simulationArea.mouseX,
+            simulationArea.mouseY,
+            this.absX(),
+            this.absY(),
           ) >= 10
         ) {
           if (
             Math.abs(
-                this.x + this.parent.x - simulationArea.mouseX,
+              this.x + this.parent.x - simulationArea.mouseX,
             ) >
             Math.abs(this.y + this.parent.y - simulationArea.mouseY)
           ) {
@@ -904,8 +929,8 @@ export class Node {
   }
 
   /**
-   * function delete a node
-   */
+ * function delete a node
+ */
   delete() {
     updateSimulationSet(true);
     this.deleted = true;
@@ -926,6 +951,10 @@ export class Node {
     scheduleUpdate();
   }
 
+  /**
+ * Is Node clicked.
+ * @return {boolean} if the Node is clicked.
+ */
   isClicked() {
     return (
       this.absX() == simulationArea.mouseX &&
@@ -941,10 +970,10 @@ export class Node {
   }
 
   /**
-   * if input node: it resolves the parent
-   * else: it adds all the nodes onto the stack
-   * and they are processed to generate verilog
-   */
+ * if input node: it resolves the parent
+ * else: it adds all the nodes onto the stack
+ * and they are processed to generate verilog
+ */
   nodeConnect() {
     const x = this.absX();
     const y = this.absY();
@@ -976,10 +1005,10 @@ export class Node {
           let n = this;
           if (this.type != 2) {
             n = new Node(
-                this.absX(),
-                this.absY(),
-                2,
-                this.scope.root,
+              this.absX(),
+              this.absY(),
+              2,
+              this.scope.root,
             );
             this.connect(n);
           }
@@ -1018,7 +1047,7 @@ Node.prototype.propagationDelay = 0;
  */
 Node.prototype.cleanDelete = Node.prototype.delete;
 
-Node.prototype.processVerilog = function() {
+Node.prototype.processVerilog = function () {
   if (this.type == NodeType.Input) {
     this.scope.stack.push(this.parent);
   }
@@ -1057,8 +1086,8 @@ export function replace(node: Node, index: number): Node {
   if (index == -1) {
     return node;
   }
-  const {scope} = node;
-  const {parent} = node;
+  const { scope } = node;
+  const { parent } = node;
   parent.nodeList.clean(node);
   node.delete();
   node = scope.allNodes[index];

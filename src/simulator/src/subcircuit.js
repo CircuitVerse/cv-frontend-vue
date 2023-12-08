@@ -540,19 +540,20 @@ export class SubCircuit extends CircuitElement {
   }
 
   /**
-     * By design, subcircuit element's input and output nodes are wirelessly
-     * connected to the localscope (clone of the scope of the subcircuit's
-     * circuit). So it is almost like the actual circuit is copied in the
-     * location of the subcircuit element. Therefore no resolve needed.
-     */
+   * By design, subcircuit element's input and output nodes are wirelessly
+   * connected to the localscope (clone of the scope of the subcircuit's
+   * circuit). So it is almost like the actual circuit is copied in the
+   * location of the subcircuit element. Therefore no resolve needed.
+   * @return {boolean} always false
+   */
   isResolvable() {
     return false;
   }
 
   /**
-     * If element not resolvable (always in subcircuits), removePropagation
-     * is called on it.
-     */
+   * If element not resolvable (always in subcircuits), removePropagation
+   * is called on it.
+   */
   removePropagation() {
     // Leave this to the scope of the subcircuit. Do nothing.
   }
@@ -560,9 +561,10 @@ export class SubCircuit extends CircuitElement {
   verilogName() {
     return sanitizeLabel(scopeList[this.id].name);
   }
+
   /**
-     * determines where to show label
-     */
+   * determines where to show label
+   */
   determine_label(x, y) {
     if (x == 0) {
       return ['left', 5, 5];

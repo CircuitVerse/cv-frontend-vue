@@ -12,13 +12,22 @@ import {colors} from '../themer/themer';
  * @extends CircuitElement
  * @param {number} x - x coordinate of element.
  * @param {number} y - y coordinate of element.
- * @param {Scope} scope - Circuit on which element is drawn
- * @param {string} dir - direction of element
+ * @param {Scope} scope - Circuit on which element is drawn.
+ * @param {string} dir - direction of element.
  * @param {number} bitWidth - bit width per node.
- * @param {Object=} layoutProperties - x,y and id
+ * @param {Object=} layoutProperties - x,y and id.
  * @category modules
  */
 export class Input extends CircuitElement {
+  /**
+   * @param {number} x - x coordinate of element.
+   * @param {number} y - y coordinate of element.
+   * @param {Scope} scope - Circuit on which element is drawn.
+   * @param {string} dir - direction of element.
+   * @param {number} bitWidth - bit width per node.
+   * @param {Object=} layoutProperties - x,y and id.
+   * @category modules
+   */
   constructor(
       x,
       y,
@@ -69,21 +78,19 @@ export class Input extends CircuitElement {
   }
 
   /**
-     * @memberof Input
-     * resolve output values based on inputData
-     */
+   * @memberof Input
+   * Resolve output values based on inputData
+   */
   resolve() {
     this.output1.value = this.state;
     simulationArea.simulationQueue.add(this.output1);
   }
 
-  // Check if override is necessary!!
-
   /**
-     * @memberof Input
-     * function to change bitwidth of the element
-     * @param {number} bitWidth - new bitwidth
-     */
+   * @memberof Input
+   * function to change bitwidth of the element
+   * @param {number} bitWidth - new bitwidth
+   */
   newBitWidth(bitWidth) {
     if (bitWidth < 1) {
       return;
@@ -105,9 +112,9 @@ export class Input extends CircuitElement {
   }
 
   /**
-     * @memberof Input
-     * listener function to set selected index
-     */
+   * @memberof Input
+   * listener function to set selected index
+   */
   click() {
     // toggle
     let pos = this.findPos();
@@ -121,9 +128,9 @@ export class Input extends CircuitElement {
   }
 
   /**
-     * @memberof Input
-     * function to draw element
-     */
+   * @memberof Input
+   * function to draw element
+   */
   customDraw() {
     const ctx = simulationArea.context;
     ctx.beginPath();
@@ -141,10 +148,10 @@ export class Input extends CircuitElement {
   }
 
   /**
-     * @memberof Input
-     * function to change direction of input
-     * @param {string} dir - new direction
-     */
+   * @memberof Input
+   * function to change direction of input
+   * @param {string} dir - new direction
+   */
   newDirection(dir) {
     if (dir === this.direction) {
       return;

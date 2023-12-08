@@ -493,17 +493,15 @@ export class CircuitElement {
       if (lX <= x && x + rX <= xx && y >= uY && y + dY <= yy) {
         return;
       }
-
       this.subcircuitMetadata.showInSubcircuit = false;
       fillSubcircuitElements();
     }
-
     return update;
   }
 
   /**
-     * Helper Function to correct the direction of element
-     */
+   * Helper Function to correct the direction of element
+   */
   fixDirection() {
     this.direction = fixDirection[this.direction] || this.direction;
     this.labelDirection =
@@ -556,8 +554,8 @@ export class CircuitElement {
 
   /**
    * Determines if the subcircuit is hovered.
-   * @param {number} xoffset 
-   * @param {number} yoffset 
+   * @param {number} xoffset x position relative to subcircuit
+   * @param {number} yoffset y position relative to subcircuit
    * @return {boolean} is subcircuit hovered
    */
   isSubcircuitHover(xoffset = 0, yoffset = 0) {

@@ -60,10 +60,10 @@ export class verilogShiftLeft extends CircuitElement {
   }
 
   /**
-     * @memberof verilogShiftLeft
-     * Checks if the element is resolvable
-     * @return {boolean}
-     */
+   * @memberof verilogShiftLeft
+   * Checks if the element is resolvable
+   * @return {boolean}
+   */
   isResolvable() {
     return (
       this.inp1.value !== undefined && this.shiftInp.value !== undefined
@@ -71,10 +71,10 @@ export class verilogShiftLeft extends CircuitElement {
   }
 
   /**
-     * @memberof verilogShiftLeft
-     * function to change bitwidth of the element
-     * @param {number} bitWidth - new bitwidth
-     */
+   * @memberof verilogShiftLeft
+   * function to change bitwidth of the element
+   * @param {number} bitWidth - new bitwidth
+   */
   newBitWidth(bitWidth) {
     this.bitWidth = bitWidth;
     this.inp1.bitWidth = bitWidth;
@@ -83,9 +83,9 @@ export class verilogShiftLeft extends CircuitElement {
   }
 
   /**
-     * @memberof verilogShiftLeft
-     * resolve output values based on inputData
-     */
+   * @memberof verilogShiftLeft
+   * resolve output values based on inputData
+   */
   resolve() {
     if (this.isResolvable() === false) {
       return;
