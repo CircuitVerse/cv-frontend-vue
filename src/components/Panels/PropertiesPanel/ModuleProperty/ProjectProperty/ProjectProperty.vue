@@ -43,8 +43,8 @@
 </template>
 
 <script lang="ts" setup>
-import { toggleLayoutMode } from '#/simulator/src/layoutMode'
-import { simulationArea } from '#/simulator/src/simulationArea'
+import { toggleLayoutMode } from '#/simulator/src/layout_mode'
+import { simulationArea } from '#/simulator/src/simulation_area'
 import InputGroups from '#/components/Panels/Shared/InputGroups.vue'
 import { useState } from '#/store/SimulatorStore/state'
 import { useProjectStore } from '#/store/projectStore'

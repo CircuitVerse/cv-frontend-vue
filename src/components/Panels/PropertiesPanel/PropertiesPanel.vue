@@ -1,21 +1,17 @@
 <template>
-    <ModuleProperty
-        v-if="!inLayoutMode"
-        :panle-body-data="toRaw(propertiesPanelObj)"
-        :panel-type="panelType"
-        :panel-body-header="panelBodyHeader"
-    />
-    <LayoutProperty v-else />
+  <ModuleProperty v-if="!inLayoutMode" :panle-body-data="toRaw(propertiesPanelObj)" :panel-type="panelType"
+    :panel-body-header="panelBodyHeader" />
+  <LayoutProperty v-else />
 </template>
 
 <script lang="ts" setup>
 import ModuleProperty from '#/components/Panels/PropertiesPanel/ModuleProperty/ModuleProperty.vue'
 import LayoutProperty from '#/components/Panels/PropertiesPanel/LayoutProperty/LayoutProperty.vue'
 import { ref, toRaw } from '@vue/reactivity'
-import {simulationArea} from '#/simulator/src/simulationArea'
+import {simulationArea} from '#/simulator/src/simulation_area'
 import { onMounted } from 'vue'
 import { checkPropertiesUpdate, prevPropertyObjSet } from '#/simulator/src/ux'
-import { layoutModeGet } from '#/simulator/src/layoutMode'
+import { layoutModeGet } from '#/simulator/src/layout_mode'
 
 const inLayoutMode = ref(false)
 const panelBodyHeader = ref('PROJECT PROPERTIES')

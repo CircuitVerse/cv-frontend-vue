@@ -1,5 +1,5 @@
-import {CircuitElement} from '../circuitElement';
-import {simulationArea} from '../simulationArea';
+import {CircuitElement} from '../circuit_element';
+import {simulationArea} from '../simulation_area';
 import {rect2, fillText} from '../canvasApi';
 import {colors} from '../themer/themer';
 import {copy, paste} from '../events';
@@ -135,7 +135,7 @@ export class Text extends CircuitElement {
     if (
       (this.hover && !simulationArea.shiftDown) ||
       simulationArea.lastSelected === this ||
-      simulationArea.multipleObjectSelections.contains(this)
+      simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.beginPath();
       ctx.fillStyle = colors['fill'];

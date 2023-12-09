@@ -1,5 +1,5 @@
 import {drawLine} from './canvasApi';
-import {simulationArea} from './simulationArea';
+import {simulationArea} from './simulation_area';
 import {Node} from './node';
 import {updateSimulationSet, forceResetNodesSet} from './engine';
 import {colors} from './themer/themer';
@@ -62,8 +62,8 @@ export class Wire {
     const check =
       this.node1.deleted ||
       this.node2.deleted ||
-      !this.node1.connections.contains(this.node2) ||
-      !this.node2.connections.contains(this.node1);
+      !this.node1.connections.includes(this.node2) ||
+      !this.node2.connections.includes(this.node1);
     if (check) {
       this.delete();
     }

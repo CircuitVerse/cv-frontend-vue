@@ -1,6 +1,6 @@
-import {CircuitElement} from '../circuitElement';
+import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulationArea';
+import {simulationArea} from '../simulation_area';
 import {correctWidth, lineTo, moveTo, fillText} from '../canvasApi';
 import {colors} from '../themer/themer';
 /**
@@ -134,7 +134,7 @@ export class DflipFlop extends CircuitElement {
     moveTo(ctx, -20, 5, xx, yy, this.direction);
     lineTo(ctx, -15, 10, xx, yy, this.direction);
     lineTo(ctx, -20, 15, xx, yy, this.direction);
-    // if ((this.b.hover&&!simulationArea.shiftDown)|| simulationArea.lastSelected == this || simulationArea.multipleObjectSelections.contains(this)) ctx.fillStyle = "rgba(255, 255, 32,0.8)";ctx.fill();
+    // if ((this.b.hover&&!simulationArea.shiftDown)|| simulationArea.lastSelected == this || simulationArea.multipleObjectSelections.includes(this)) ctx.fillStyle = "rgba(255, 255, 32,0.8)";ctx.fill();
     ctx.stroke();
 
     ctx.beginPath();

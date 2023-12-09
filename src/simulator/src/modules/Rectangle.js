@@ -1,5 +1,5 @@
-import {CircuitElement} from '../circuitElement';
-import {simulationArea} from '../simulationArea';
+import {CircuitElement} from '../circuit_element';
+import {simulationArea} from '../simulation_area';
 import {correctWidth, rect} from '../canvasApi';
 /**
  * @class
@@ -111,7 +111,7 @@ export class Rectangle extends CircuitElement {
 
     if (
       simulationArea.lastSelected === this ||
-      simulationArea.multipleObjectSelections.contains(this)
+      simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = 'rgba(255, 255, 32,0.1)';
       ctx.fill();

@@ -11,7 +11,7 @@ import {
   recoverProject,
 } from './data/project';
 import {createNewCircuitScope} from './circuit';
-import {createCombinationalAnalysisPrompt} from './combinationalAnalysis';
+import {createCombinationalAnalysisPrompt} from './combinational_analysis';
 import {colorThemes} from './themer/themer';
 import {showTourGuide} from './tutorials';
 import {SimulatorStore} from '#/store/SimulatorStore/SimulatorStore';
@@ -21,7 +21,7 @@ import {
   // saveVerilogCode,
   // resetVerilogCode,
   // applyVerilogTheme,
-} from './Verilog2CV';
+} from './verilog_to_cv';
 import {generateVerilog} from './verilog';
 import {keyBinder} from '#/components/DialogBox/CustomShortcut.vue';
 import {ExportProject} from '#/components/DialogBox/ExportProject.vue';

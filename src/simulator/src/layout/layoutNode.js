@@ -1,6 +1,6 @@
 import {drawCircle} from '../canvasApi';
-import {simulationArea} from '../simulationArea';
-import {tempBuffer} from '../layoutMode';
+import {simulationArea} from '../simulation_area';
+import {tempBuffer} from '../layout_mode';
 
 /**
  * @class

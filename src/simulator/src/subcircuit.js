@@ -1,6 +1,6 @@
 import {Scope, scopeList, switchCircuit} from './circuit';
-import {CircuitElement} from './circuitElement';
-import {simulationArea} from './simulationArea';
+import {CircuitElement} from './circuit_element';
+import {simulationArea} from './simulation_area';
 import {scheduleBackup, checkIfBackup} from './data/backupCircuit';
 import {
   scheduleUpdate,
@@ -15,9 +15,9 @@ import {showError} from './utils_clock';
 import {Node, findNode} from './node';
 import {fillText, correctWidth, rect2} from './canvasApi';
 import {colors} from './themer/themer';
-import {layoutModeGet} from './layoutMode';
-import {verilogModeGet} from './Verilog2CV';
-import {sanitizeLabel} from './verilogHelpers';
+import {layoutModeGet} from './layout_mode';
+import {verilogModeGet} from './verilog_to_cv';
+import {sanitizeLabel} from './verilog_helpers';
 import {SimulatorStore} from '#/store/SimulatorStore/SimulatorStore';
 /**
  * Function to load a subcircuit
@@ -627,7 +627,7 @@ export class SubCircuit extends CircuitElement {
       if (
         (this.hover && !simulationArea.shiftDown) ||
         simulationArea.lastSelected === this ||
-        simulationArea.multipleObjectSelections.contains(this)
+        simulationArea.multipleObjectSelections.includes(this)
       ) {
         ctx.fillStyle = colors['hover_select'];
       }

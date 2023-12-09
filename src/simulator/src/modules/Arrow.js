@@ -1,5 +1,5 @@
-import {CircuitElement} from '../circuitElement';
-import {simulationArea} from '../simulationArea';
+import {CircuitElement} from '../circuit_element';
+import {simulationArea} from '../simulation_area';
 import {correctWidth, lineTo, moveTo} from '../canvasApi';
 import {colors} from '../themer/themer';
 
@@ -66,7 +66,7 @@ export class Arrow extends CircuitElement {
     if (
       (this.hover && !simulationArea.shiftDown) ||
       simulationArea.lastSelected === this ||
-      simulationArea.multipleObjectSelections.contains(this)
+      simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }

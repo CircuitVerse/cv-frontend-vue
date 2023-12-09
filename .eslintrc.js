@@ -6,11 +6,18 @@ module.exports = {
     es6: true,
     jquery: true,
   },
-  extends: ['eslint:recommended', 'plugin:vue/vue3-recommended', 'google'],
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:vue/vue3-recommended',
+    'google',
+  ],
   rules: {
     'curly': [2, 'all'],
     'semi': [1, 'always'],
   },
+  parser: '@typescript-eslint/parser',
+  plugins: ['@typescript-eslint'],
   // true -> writable global variables
   // false -> readable global variables
   globals: {

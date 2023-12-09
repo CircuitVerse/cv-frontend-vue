@@ -55,7 +55,7 @@ import {
   saveVerilogCode,
   resetVerilogCode,
   applyVerilogTheme,
-} from '#/simulator/src/Verilog2CV'
+} from '#/simulator/src/verilog_to_cv'
 import PanelHeader from '../Shared/PanelHeader.vue'
 import { ref, Ref, watch, onMounted } from 'vue'
 

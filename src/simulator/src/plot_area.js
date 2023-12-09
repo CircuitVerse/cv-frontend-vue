@@ -1,4 +1,4 @@
-import {simulationArea} from './simulationArea';
+import {simulationArea} from './simulation_area';
 import {converters} from './utils';
 
 const DPR = window.devicePixelRatio || 1;

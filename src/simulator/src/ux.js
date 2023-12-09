@@ -1,13 +1,13 @@
-import {layoutModeGet} from './layoutMode';
+import {layoutModeGet} from './layout_mode';
 import {
   scheduleUpdate,
   wireToBeCheckedSet,
   updateCanvasSet,
 } from './engine';
-import {simulationArea} from './simulationArea';
+import {simulationArea} from './simulation_area';
 import {logixFunction} from './data';
 import {circuitProperty} from './circuit';
-import {updateRestrictedElementsInScope} from './restrictedElementDiv';
+import {updateRestrictedElementsInScope} from './restricted_element_div';
 import {converters, setupBitConvertor} from './utils';
 import {updateTestbenchUI, setupTestbenchUI} from './testbench';
 import {dragging} from './drag';

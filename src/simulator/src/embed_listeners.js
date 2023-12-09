@@ -1,6 +1,6 @@
 // Listeners when circuit is embedded
 // Refer listeners.js
-import {simulationArea} from './simulationArea';
+import {simulationArea} from './simulation_area';
 import {
   scheduleUpdate,
   update,

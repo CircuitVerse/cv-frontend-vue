@@ -1,6 +1,6 @@
-import {CircuitElement} from '../circuitElement';
+import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulationArea';
+import {simulationArea} from '../simulation_area';
 import {correctWidth, bezierCurveTo, moveTo, arc2} from '../canvasApi';
 import {changeInputSize} from '../modules';
 import {gateGenerateVerilog} from '../utils';
@@ -133,7 +133,7 @@ export class XorGate extends CircuitElement {
     if (
       (this.hover && !simulationArea.shiftDown) ||
       simulationArea.lastSelected === this ||
-      simulationArea.multipleObjectSelections.contains(this)
+      simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }

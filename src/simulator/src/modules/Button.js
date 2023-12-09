@@ -1,6 +1,6 @@
-import {CircuitElement} from '../circuitElement';
+import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulationArea';
+import {simulationArea} from '../simulation_area';
 import {correctWidth, lineTo, moveTo, drawCircle2} from '../canvasApi';
 
 /**
@@ -89,7 +89,7 @@ export class Button extends CircuitElement {
     if (
       (this.hover && !simulationArea.shiftDown) ||
       simulationArea.lastSelected === this ||
-      simulationArea.multipleObjectSelections.contains(this)
+      simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = 'rgba(232, 13, 13,0.6)';
     }
@@ -114,7 +114,7 @@ export class Button extends CircuitElement {
     if (
       (this.hover && !simulationArea.shiftDown) ||
       simulationArea.lastSelected == this ||
-      simulationArea.multipleObjectSelections.contains(this)
+      simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = 'rgba(232, 13, 13,0.6)';
     }

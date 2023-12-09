@@ -1,6 +1,6 @@
-import {CircuitElement} from '../circuitElement';
+import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulationArea';
+import {simulationArea} from '../simulation_area';
 import {correctWidth, lineTo, moveTo, fillText3} from '../canvasApi';
 import {colors} from '../themer/themer';
 
@@ -214,7 +214,7 @@ export class TTY extends CircuitElement {
         this.direction,
     );
 
-    // if ((this.b.hover&&!simulationArea.shiftDown)|| simulationArea.lastSelected == this || simulationArea.multipleObjectSelections.contains(this))
+    // if ((this.b.hover&&!simulationArea.shiftDown)|| simulationArea.lastSelected == this || simulationArea.multipleObjectSelections.includes(this))
     //     ctx.fillStyle = "rgba(255, 255, 32,0.8)";
     ctx.stroke();
 

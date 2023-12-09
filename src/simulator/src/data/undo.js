@@ -3,10 +3,10 @@
  * @param {Scope} scope - The circuit on which undo is called
  * @category data
  */
-import {layoutModeGet} from '../layoutMode';
+import {layoutModeGet} from '../layout_mode';
 import {Scope, scopeList} from '../circuit';
 import {loadScope} from './load';
-import {updateRestrictedElementsInScope} from '../restrictedElementDiv';
+import {updateRestrictedElementsInScope} from '../restricted_element_div';
 import {forceResetNodesSet} from '../engine';
 /**
  * Function called to generate a prompt to save an image

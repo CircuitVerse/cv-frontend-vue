@@ -1,6 +1,6 @@
-import {CircuitElement} from '../circuitElement';
+import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulationArea';
+import {simulationArea} from '../simulation_area';
 import {correctWidth, lineTo, moveTo, drawCircle2} from '../canvasApi';
 import {colors} from '../themer/themer';
 /**
@@ -81,7 +81,7 @@ export class NotGate extends CircuitElement {
     if (
       (this.hover && !simulationArea.shiftDown) ||
       simulationArea.lastSelected === this ||
-      simulationArea.multipleObjectSelections.contains(this)
+      simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }

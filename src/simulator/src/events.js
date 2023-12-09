@@ -10,7 +10,7 @@ import {
 import {backUp} from './data/backupCircuit';
 import {getNextPosition} from './modules';
 import {generateId} from './utils';
-import {simulationArea} from './simulationArea';
+import {simulationArea} from './simulation_area';
 import {TestbenchData} from './testbench';
 
 /**
@@ -171,7 +171,7 @@ export function cut(copyList) {
       const obj = globalScope[updateOrder[i]][j];
       if (obj.objectType != 'Wire') {
         // }&&obj.objectType!='CircuitElement'){//}&&(obj.objectType!='Node'||obj.type==2)){
-        if (!copyList.contains(globalScope[updateOrder[i]][j])) {
+        if (!copyList.includes(globalScope[updateOrder[i]][j])) {
           globalScope[updateOrder[i]][j].cleanDelete();
         }
       }
@@ -260,7 +260,7 @@ export function copy(copyList, cutflag = false) {
     for (let j = 0; j < globalScope[updateOrder[i]].length; j++) {
       const obj = globalScope[updateOrder[i]][j];
       if (obj.objectType != 'Wire') {
-        if (!copyList.contains(globalScope[updateOrder[i]][j])) {
+        if (!copyList.includes(globalScope[updateOrder[i]][j])) {
           globalScope[updateOrder[i]][j].cleanDelete();
         }
       }

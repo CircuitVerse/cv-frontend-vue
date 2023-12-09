@@ -5,15 +5,14 @@ import {
   errorDetectedSet,
   errorDetectedGet,
 } from './engine';
-import {layoutModeGet} from './layoutMode';
-import {plotArea} from './plotArea';
-import {simulationArea} from './simulationArea';
+import {layoutModeGet} from './layout_mode';
+import {plotArea} from './plot_area';
+import {simulationArea} from './simulation_area';
 
 let prevErrorMessage; // Global variable for error messages
 let prevShowMessage; // Global variable for error messages
 /**
  * Move the simulation clock forward one tick.
- * @param {SimulationArea} simulationAreaInstance
  */
 export function clockTick() {
   if (!simulationArea.clockEnabled) {

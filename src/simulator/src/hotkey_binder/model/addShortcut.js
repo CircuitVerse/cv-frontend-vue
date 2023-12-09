@@ -12,7 +12,7 @@ import {save} from '../../data/save';
 import {saveOffline, openOffline} from '../../data/project';
 import {createSaveAsImgPrompt} from '../../data/saveImage';
 import {createSubCircuitPrompt} from '../../subcircuit';
-import {createCombinationalAnalysisPrompt} from '../../combinationalAnalysis';
+import {createCombinationalAnalysisPrompt} from '../../combinational_analysis';
 import {shortcut} from './shortcuts.plugin.js';
 
 export const addShortcut = (keys, action) => {

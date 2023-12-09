@@ -1,6 +1,6 @@
 import {dots, correctWidth, fillText, rect2} from './canvasApi';
 import {LayoutBuffer} from './layout/layoutBuffer';
-import {simulationArea} from './simulationArea';
+import {simulationArea} from './simulation_area';
 import {
   fillSubcircuitElements,
   prevPropertyObjGet,
@@ -16,7 +16,7 @@ import {
 } from './engine';
 import {miniMapArea} from './minimap';
 import {showMessage} from './utils_clock';
-import {verilogModeSet} from './Verilog2CV';
+import {verilogModeSet} from './verilog_to_cv';
 
 /**
  * Layout.js - all subcircuit layout related code is here

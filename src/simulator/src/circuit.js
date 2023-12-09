@@ -1,12 +1,12 @@
-import {CircuitElement} from './circuitElement';
-import {plotArea} from './plotArea';
-import {simulationArea} from './simulationArea';
+import {CircuitElement} from './circuit_element';
+import {plotArea} from './plot_area';
+import {simulationArea} from './simulation_area';
 import {
   stripTags,
   uniq,
 } from './utils';
 import {findDimensions, dots} from './canvasApi';
-import {updateRestrictedElementsList} from './restrictedElementDiv';
+import {updateRestrictedElementsList} from './restricted_element_div';
 import {scheduleBackup} from './data/backupCircuit';
 import {showProperties} from './ux';
 import {
@@ -17,11 +17,11 @@ import {
   forceResetNodesSet,
   changeLightMode,
 } from './engine';
-import {toggleLayoutMode, layoutModeGet} from './layoutMode';
+import {toggleLayoutMode, layoutModeGet} from './layout_mode';
 import {setProjectName} from './data/save';
 import {changeClockEnable} from './sequential';
 import {changeInputSize} from './modules';
-import {verilogModeGet, verilogModeSet} from './Verilog2CV';
+import {verilogModeGet, verilogModeSet} from './verilog_to_cv';
 import {updateTestbenchUI} from './testbench';
 import {SimulatorStore} from '#/store/SimulatorStore/SimulatorStore';
 import {toRefs} from 'vue';
@@ -103,6 +103,11 @@ export function switchCircuit(id) {
   updateRestrictedElementsList();
 }
 
+/**
+ * Comma separated list of dependency names
+ * @param {string} scopeId
+ * @returns
+ */
 export function getDependenciesList(scopeId) {
   let scope = scopeList[scopeId];
   if (scope == undefined) {
@@ -121,15 +126,16 @@ export function getDependenciesList(scopeId) {
   return dependencies;
 }
 
-// /**
-//  * Deletes the current circuit
-//  * Ensures that at least one circuit is there
-//  * Ensures that no circuit depends on the current circuit
-//  * Switched to a random circuit
-//  * @category circuit
-//  */
 /**
- * Wrapper function around newCircuit to be called from + button on UI
+ * Deletes the current circuit
+ * Ensures that at least one circuit is there
+ * Ensures that no circuit depends on the current circuit
+ * Switched to a random circuit
+ * @param {string} name
+ * @param {string} id
+ * @param {boolean} isVerilog
+ * @param {boolean} isVerilogMain
+ * @category circuit
  */
 export async function createNewCircuitScope(
     name,
@@ -298,6 +304,9 @@ export class Scope {
     return this.verilogMetadata.isMainCircuit;
   }
 
+  /**
+   *
+   */
   initialize() {
     this.tunnelList = {};
     this.pending = [];
@@ -357,6 +366,7 @@ export class Scope {
   /**
    * Checks if this circuit contains directly or indirectly scope with id
    * Recursive nature
+   * @return {boolean}
    */
   checkDependency(id) {
     if (id === this.id) {
@@ -405,6 +415,7 @@ export class Scope {
 
   /**
    * Function which centers the circuit to the correct zoom level
+   * @param {boolean} zoomIn - Should zoom in.
    */
   centerFocus(zoomIn = true) {
     if (layoutModeGet()) {

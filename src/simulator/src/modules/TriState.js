@@ -1,6 +1,6 @@
-import {CircuitElement} from '../circuitElement';
+import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulationArea';
+import {simulationArea} from '../simulation_area';
 import {correctWidth, lineTo, moveTo} from '../canvasApi';
 import {colors} from '../themer/themer';
 
@@ -77,7 +77,7 @@ export class TriState extends CircuitElement {
       simulationArea.contentionPending.clean(this);
     } else if (
       this.output1.value !== undefined &&
-      !simulationArea.contentionPending.contains(this)
+      !simulationArea.contentionPending.includes(this)
     ) {
       this.output1.value = undefined;
       simulationArea.simulationQueue.add(this.output1);
@@ -104,7 +104,7 @@ export class TriState extends CircuitElement {
     if (
       (this.hover && !simulationArea.shiftDown) ||
       simulationArea.lastSelected === this ||
-      simulationArea.multipleObjectSelections.contains(this)
+      simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }

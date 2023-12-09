@@ -1,6 +1,6 @@
-import {CircuitElement} from '../circuitElement';
+import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulationArea';
+import {simulationArea} from '../simulation_area';
 import {correctWidth, lineTo, moveTo, fillText2} from '../canvasApi';
 import {colors} from '../themer/themer';
 
@@ -242,7 +242,7 @@ export class Splitter extends CircuitElement {
     ctx.strokeStyle = [colors['splitter'], 'brown'][
         ((this.hover && !simulationArea.shiftDown) ||
         simulationArea.lastSelected === this ||
-        simulationArea.multipleObjectSelections.contains(this)) + 0
+        simulationArea.multipleObjectSelections.includes(this)) + 0
     ];
     ctx.lineWidth = correctWidth(3);
     const xx = this.x;
@@ -295,7 +295,7 @@ export class Splitter extends CircuitElement {
       this.isSplitter = false;
       this.inp1.verilogLabel = this.verilogLabel + '_cmb';
       if (
-        !this.scope.verilogWireList[this.bitWidth].contains(
+        !this.scope.verilogWireList[this.bitWidth].includes(
             this.inp1.verilogLabel,
         )
       ) {

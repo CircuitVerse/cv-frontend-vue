@@ -4,13 +4,13 @@ import {update} from '../engine';
 import {stripTags} from '../utils';
 import {showMessage} from '../utils_clock';
 import {backUp} from './backupCircuit';
-import {simulationArea} from '../simulationArea';
-import {backgroundArea} from '../backgroundArea';
+import {simulationArea} from '../simulation_area';
+import {backgroundArea} from '../background_area';
 import {findDimensions} from '../canvasApi';
 import {projectSavedSet} from './project';
 import {colors} from '../themer/themer';
-import {layoutModeGet, toggleLayoutMode} from '../layoutMode';
-import {verilogModeGet} from '../Verilog2CV';
+import {layoutModeGet, toggleLayoutMode} from '../layout_mode';
+import {verilogModeGet} from '../verilog_to_cv';
 import domtoimage from 'dom-to-image';
 import '../../vendor/canvas2svg';
 import {useProjectStore} from '#/store/projectStore';
@@ -323,7 +323,7 @@ async function generateImageForOnline() {
     $(node).css('height', baseHeight);
     $(node).css('width', baseWidth);
 
-    var data = await domtoimage.toJpeg(node);
+    let data = await domtoimage.toJpeg(node);
     $(node).css('width', prevWidth);
     $(node).css('height', prevHeight);
     data = await crop(data, baseWidth, baseHeight);

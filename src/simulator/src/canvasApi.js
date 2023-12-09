@@ -1,10 +1,13 @@
-import {backgroundArea} from './backgroundArea';
-import {simulationArea} from './simulationArea';
+import {backgroundArea} from './background_area';
+import {simulationArea} from './simulation_area';
 import {miniMapArea, removeMiniMap, updateLastMinimapShown} from './minimap';
 import {colors} from './themer/themer';
 
 const unit = 10;
 
+/**
+ *
+ */
 export function findDimensions(scope = globalScope) {
   let totalObjects = 0;
   simulationArea.minWidth = undefined;
@@ -99,7 +102,6 @@ export function changeScale(delta, xx, yy, method = 1) {
   globalScope.scale = Math.round(globalScope.scale * 10) / 10;
   globalScope.ox -= Math.round(xx * (globalScope.scale - oldScale)); // Shift accordingly, so that we zoom wrt to the selected point
   globalScope.oy -= Math.round(yy * (globalScope.scale - oldScale));
-  // dots(true,false);
 
   // MiniMap
   if (!embed && !lightMode) {
@@ -111,10 +113,16 @@ export function changeScale(delta, xx, yy, method = 1) {
     setTimeout(removeMiniMap, 2000);
   }
 }
-// fn to draw Dots on screen
-// the function is called only when the zoom level or size of screen changes.
-// Otherwise for normal panning, the canvas itself is moved to give the illusion of movement
 
+/**
+ * Draw Dots on screen
+ * the function is called only when the zoom level or size of screen changes.
+ * Otherwise for normal panning, the canvas itself is moved to give the illusion of movement
+ * @param {*} dots
+ * @param {*} transparentBackground
+ * @param {*} force
+ * @returns
+ */
 export function dots(
     dots = true,
     transparentBackground = false,
@@ -183,10 +191,21 @@ export function dots(
   }
 }
 
-// Helper canvas API starts here
-// All canvas functions are wrt to a center point (xx,yy),
-// direction is used to abstract rotation of everything by a certain angle
-// Possible values for direction = "RIGHT" (default), "LEFT", "UP", "DOWN"
+/**
+ * Helper canvas API starts here
+ * All canvas functions are wrt to a center point (xx,yy),
+ * direction is used to abstract rotation of everything by a certain angle
+ * Possible values for direction = "RIGHT" (default), "LEFT", "UP", "DOWN"
+ * @param {*} x1
+ * @param {*} y1
+ * @param {*} x2
+ * @param {*} y2
+ * @param {*} x3
+ * @param {*} y3
+ * @param {*} xx
+ * @param {*} yy
+ * @param {*} dir
+ */
 export function bezierCurveTo(x1, y1, x2, y2, x3, y3, xx, yy, dir) {
   [x1, y1] = rotate(x1, y1, dir);
   [x2, y2] = rotate(x2, y2, dir);
@@ -441,7 +460,11 @@ export function validColor(color) {
   return $div.css('border-color') !== '';
 }
 
-// Helper function to color "RED" to RGBA
+/**
+  * Convert color string to RGBA
+  * @param {string} color - Color string like 'red'
+  * @return {Uint8ClampedArray}
+  */
 export function colorToRGBA(color) {
   let cvs;
   let ctx;
@@ -454,6 +477,14 @@ export function colorToRGBA(color) {
   return ctx.getImageData(0, 0, 1, 1).data;
 }
 
+/**
+ * Draw a circle on the canvas.
+ * @param {*} ctx
+ * @param {number} x1 - X position of the center;
+ * @param {number} y1 - Y position of the center;
+ * @param {number} r - radius of the circle.
+ * @param {*} color - color of the circle.
+ */
 export function drawCircle(ctx, x1, y1, r, color) {
   x1 *= globalScope.scale;
   y1 *= globalScope.scale;

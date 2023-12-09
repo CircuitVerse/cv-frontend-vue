@@ -1,4 +1,5 @@
-import {simulationArea} from './simulationArea';
+import {CircuitElement} from './circuit_element';
+import {simulationArea} from './simulation_area';
 
 export function getNextPosition(x = 0, scope = globalScope) {
   let possibleY = 20;
@@ -39,6 +40,11 @@ export function getNextPosition(x = 0, scope = globalScope) {
  */
 export const modules = {};
 
+/**
+ * Change the input size.
+ * @param {number} size Input size.
+ * @return {CircuitElement}
+ */
 export function changeInputSize(size) {
   if (size == undefined || size < 2 || size > 10) {
     return;

@@ -176,11 +176,15 @@ const key_names = {
   91: 'META',
 };
 function fn_name(code) {
-  if (code >= 112 && code <= 123) return 'F' + (code - 111);
+  if (code >= 112 && code <= 123) {
+    return 'F' + (code - 111);
+  }
   return false;
 }
 function num_name(code) {
-  if (code >= 96 && code < 106) return 'Num' + (code - 96);
+  if (code >= 96 && code < 106) {
+    return 'Num' + (code - 96);
+  }
   switch (code) {
     case 106:
       return 'Num*';
@@ -261,7 +265,9 @@ export const KeyCode = {
      */
   key: function(str) {
     const c = str.charCodeAt(0);
-    if (isLower(c)) return c - 32;
+    if (isLower(c)) {
+      return c - 32;
+    }
     return shifted_symbols[c] || c;
   },
 
@@ -318,9 +324,15 @@ export const KeyCode = {
      */
   is_down: function(key) {
     const code = key.code;
-    if (code == KeyCode.CTRL) return current_keys.ctrl;
-    if (code == KeyCode.ALT) return current_keys.alt;
-    if (code == KeyCode.SHIFT) return current_keys.shift;
+    if (code == KeyCode.CTRL) {
+      return current_keys.ctrl;
+    }
+    if (code == KeyCode.ALT) {
+      return current_keys.alt;
+    }
+    if (code == KeyCode.SHIFT) {
+      return current_keys.shift;
+    }
 
     return (
       current_keys.codes[code] !== undefined &&

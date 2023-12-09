@@ -1,4 +1,4 @@
-import {EventQueue} from './eventQueue';
+import {EventQueue} from './event_queue';
 import {clockTick} from './utils_clock';
 
 /**

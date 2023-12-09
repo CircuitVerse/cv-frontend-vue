@@ -7,8 +7,8 @@ import {
   updateCanvasSet,
   gridUpdateSet,
 } from '../engine';
-import {updateRestrictedElementsInScope} from '../restrictedElementDiv';
-import {simulationArea} from '../simulationArea';
+import {updateRestrictedElementsInScope} from '../restricted_element_div';
+import {simulationArea} from '../simulation_area';
 
 import {loadSubCircuit} from '../subcircuit';
 import {scheduleBackup} from './backupCircuit';
@@ -17,7 +17,7 @@ import {constructNodeConnections, loadNode, replace} from '../node';
 import {generateId} from '../utils';
 import {modules} from '../modules';
 import {oppositeDirection} from '../canvasApi';
-import {plotArea} from '../plotArea';
+import {plotArea} from '../plot_area';
 import {updateTestbenchUI, TestbenchData} from '../testbench';
 import {SimulatorStore} from '#/store/SimulatorStore/SimulatorStore';
 import {toRefs} from 'vue';

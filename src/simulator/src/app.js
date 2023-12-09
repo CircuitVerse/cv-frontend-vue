@@ -1,5 +1,5 @@
 import {setup} from './setup';
-import Array from './arrayHelpers';
+import Array from './array_helpers';
 
 document.addEventListener('DOMContentLoaded', () => {
   setup();

@@ -1,12 +1,12 @@
-import {layoutModeGet, layoutUpdate} from './layoutMode';
-import {plotArea} from './plotArea';
-import {simulationArea} from './simulationArea';
+import {layoutModeGet, layoutUpdate} from './layout_mode';
+import {plotArea} from './plot_area';
+import {simulationArea} from './simulation_area';
 import {dots, canvasMessage, findDimensions, rect2} from './canvasApi';
 import {showProperties, prevPropertyObjGet} from './ux';
 import {showError} from './utils_clock';
 import {miniMapArea} from './minimap';
 import {resetup} from './setup';
-import {verilogModeGet} from './Verilog2CV';
+import {verilogModeGet} from './verilog_to_cv';
 
 /**
  * Core of the simulation and rendering algorithm.
@@ -366,7 +366,7 @@ export function updateSelectionsAndPane(scope = globalScope) {
       for (let i = 0; i < updateOrder.length; i++) {
         for (let j = 0; j < scope[updateOrder[i]].length; j++) {
           const obj = scope[updateOrder[i]][j];
-          if (simulationArea.multipleObjectSelections.contains(obj)) {
+          if (simulationArea.multipleObjectSelections.includes(obj)) {
             continue;
           }
           let x;

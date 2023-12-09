@@ -1,8 +1,8 @@
-import {CircuitElement} from '../circuitElement';
-import {simulationArea} from '../simulationArea';
+import {CircuitElement} from '../circuit_element';
+import {simulationArea} from '../simulation_area';
 import {correctWidth, lineTo, moveTo, fillText} from '../canvasApi';
 import {Node, findNode} from '../node';
-import {plotArea} from '../plotArea';
+import {plotArea} from '../plot_area';
 
 /**
  * TestBench Input has a node for it's clock input.

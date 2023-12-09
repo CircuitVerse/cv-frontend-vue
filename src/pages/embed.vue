@@ -94,7 +94,7 @@
 <script lang="ts" setup>
 import { ref, onBeforeMount, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { simulationArea } from '#/simulator/src/simulationArea';
+import { simulationArea } from '#/simulator/src/simulation_area';
 import {
   scheduleUpdate,
   updateCanvasSet,
@@ -105,7 +105,7 @@ import { prevPropertyObjSet, prevPropertyObjGet } from '#/simulator/src/ux';
 import { circuitProperty, scopeList } from '#/simulator/src/circuit';
 import { ZoomIn, ZoomOut } from '#/simulator/src/listeners';
 import { setup } from '#/simulator/src/setup';
-import { startListeners } from '#/simulator/src/embedListeners';
+import { startListeners } from '#/simulator/src/embed_listeners';
 import TabsBar from '#/components/TabsBar/TabsBar.vue';
 // import { time } from 'console'
 // __logix_project_id = "<%= @logix_project_id %>";

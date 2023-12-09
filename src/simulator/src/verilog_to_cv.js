@@ -4,7 +4,7 @@ import {
   changeCircuitName,
 } from './circuit';
 import {SubCircuit} from './subcircuit';
-import {simulationArea} from './simulationArea';
+import {simulationArea} from './simulation_area';
 import CodeMirror from 'codemirror/lib/codemirror.js';
 import 'codemirror/lib/codemirror.css';
 
@@ -96,7 +96,7 @@ export function verilogModeSet(mode) {
   }
 }
 
-import yosysTypeMap from './VerilogClasses';
+import yosysTypeMap from './verilog_classes';
 
 class verilogSubCircuit {
   constructor(circuit) {

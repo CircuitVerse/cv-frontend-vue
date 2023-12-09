@@ -1,5 +1,5 @@
 import {scheduleUpdate} from './engine';
-import {simulationArea} from './simulationArea';
+import {simulationArea} from './simulation_area';
 import {
   fixDirection,
   fillText,
@@ -8,9 +8,9 @@ import {
   oppositeDirection,
 } from './canvasApi';
 import {colors} from './themer/themer';
-import {layoutModeGet, tempBuffer} from './layoutMode';
+import {layoutModeGet, tempBuffer} from './layout_mode';
 import {fillSubcircuitElements} from './ux';
-import {generateNodeName} from './verilogHelpers';
+import {generateNodeName} from './verilog_helpers';
 import {NodeType} from './node';
 
 /**
@@ -353,7 +353,7 @@ export class CircuitElement {
       this.drag();
       if (
         !simulationArea.shiftDown &&
-        simulationArea.multipleObjectSelections.contains(this)
+        simulationArea.multipleObjectSelections.includes(this)
       ) {
         for (
           let i = 0;
@@ -369,7 +369,7 @@ export class CircuitElement {
       this.startDragging();
       if (
         !simulationArea.shiftDown &&
-        simulationArea.multipleObjectSelections.contains(this)
+        simulationArea.multipleObjectSelections.includes(this)
       ) {
         for (
           let i = 0;
@@ -404,7 +404,7 @@ export class CircuitElement {
         if (simulationArea.shiftDown) {
           simulationArea.lastSelected = undefined;
           if (
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
           ) {
             simulationArea.multipleObjectSelections.clean(this);
           } else {
@@ -619,7 +619,7 @@ export class CircuitElement {
       if (
         (this.hover && !simulationArea.shiftDown) ||
         simulationArea.lastSelected === this ||
-        simulationArea.multipleObjectSelections.contains(this)
+        simulationArea.multipleObjectSelections.includes(this)
       ) {
         ctx.fillStyle = colors['hover_select'];
       }
@@ -947,7 +947,7 @@ export class CircuitElement {
           if (
             !this.scope.verilogWireList[
                 this.nodeList[i].bitWidth
-            ].contains(this.nodeList[i].verilogLabel)
+            ].includes(this.nodeList[i].verilogLabel)
           ) {
             this.scope.verilogWireList[
                 this.nodeList[i].bitWidth

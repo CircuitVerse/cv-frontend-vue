@@ -1,5 +1,5 @@
 import { drawCircle, drawLine, arc } from './canvasApi';
-import { simulationArea } from './simulationArea';
+import { simulationArea } from './simulation_area';
 import { distance } from './utils';
 import { showError } from './utils_clock';
 import {
@@ -14,7 +14,7 @@ import {
 import { Scope } from './circuit';
 import { Wire } from './wire';
 import { colors } from './themer/themer';
-import { CircuitElement } from './circuitElement';
+import { CircuitElement } from './circuit_element';
 
 /**
  * Rotate node.
@@ -343,7 +343,7 @@ export class Node {
     if (node == this) {
       return;
     }
-    if (node.connections.contains(this)) {
+    if (node.connections.includes(this)) {
       return;
     }
     const w = new Wire(this, node, this.parent.scope);
@@ -363,7 +363,7 @@ export class Node {
     if (node == this) {
       return;
     }
-    if (node.connections.contains(this)) {
+    if (node.connections.includes(this)) {
       return;
     }
     this.connections.push(node);
@@ -595,7 +595,7 @@ export class Node {
       (this.isHover() &&
         !simulationArea.selected &&
         !simulationArea.shiftDown) ||
-      simulationArea.multipleObjectSelections.contains(this)
+      simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.strokeStyle = colorNodeSelected;
       ctx.beginPath();
@@ -701,7 +701,7 @@ export class Node {
       if (this.type == 2) {
         if (
           !simulationArea.shiftDown &&
-          simulationArea.multipleObjectSelections.contains(this)
+          simulationArea.multipleObjectSelections.includes(this)
         ) {
           for (
             let i = 0;
@@ -717,7 +717,7 @@ export class Node {
         if (simulationArea.shiftDown) {
           simulationArea.lastSelected = undefined;
           if (
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
           ) {
             simulationArea.multipleObjectSelections.clean(this);
           } else {
@@ -730,7 +730,7 @@ export class Node {
     } else if (this.wasClicked && this.clicked) {
       if (
         !simulationArea.shiftDown &&
-        simulationArea.multipleObjectSelections.contains(this)
+        simulationArea.multipleObjectSelections.includes(this)
       ) {
         for (
           let i = 0;
@@ -1019,6 +1019,9 @@ export class Node {
     }
   }
 
+  /**
+   *
+   */
   processVerilog() {
     if (this.type == NodeType.Input) {
       if (this.parent.isVerilogResolvable()) {
@@ -1068,7 +1071,7 @@ Node.prototype.processVerilog = function () {
 export function constructNodeConnections(node: Node, data: any) {
   for (let i = 0; i < data.connections.length; i++) {
     if (
-      !node.connections.contains(node.scope.allNodes[data.connections[i]])
+      !node.connections.includes(node.scope.allNodes[data.connections[i]])
     ) {
       node.connect(node.scope.allNodes[data.connections[i]]);
     }

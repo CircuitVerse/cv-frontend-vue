@@ -20,14 +20,14 @@ import { onMounted, onUpdated } from 'vue';
 
 /* imports from combinationalAnalysis.js */
 import { Node } from '#/simulator/src/node';
-import { BooleanMinimize } from '#/simulator/src/quinMcCluskey';
+import { BooleanMinimize } from '#/simulator/src/quin_mccluskey';
 import { Input } from '#/simulator/src/modules/Input';
 import { ConstantVal } from '#/simulator/src/modules/ConstantVal';
 import { Output } from '#/simulator/src/modules/Output';
 import { AndGate } from '#/simulator/src/modules/AndGate';
 import { OrGate } from '#/simulator/src/modules/OrGate';
 import { NotGate } from '#/simulator/src/modules/NotGate';
-import { simulationArea } from '#/simulator/src/simulationArea';
+import { simulationArea } from '#/simulator/src/simulation_area';
 import { findDimensions } from '#/simulator/src/canvasApi';
 import { confirmSingleOption } from '../helpers/confirmComponent/ConfirmComponent.vue';
 

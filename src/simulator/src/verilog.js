@@ -8,7 +8,7 @@
 import {scopeList} from './circuit';
 import {errorDetectedGet} from './engine';
 import {modules} from './modules';
-import {sanitizeLabel} from './verilogHelpers';
+import {sanitizeLabel} from './verilog_helpers';
 import CodeMirror from 'codemirror/lib/codemirror.js';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/addon/hint/show-hint.css';
@@ -342,7 +342,7 @@ export var verilog = {
     scope.stack = [];
     scope.verilogWireList = [];
     for (var i = 0; i <= 32; i++) {
-      scope.verilogWireList.push(new Array());
+      scope.verilogWireList.push([]);
     }
 
     const verilogResolvedSet = new Set();

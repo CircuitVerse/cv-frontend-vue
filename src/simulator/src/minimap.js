@@ -1,6 +1,6 @@
-import {simulationArea} from './simulationArea';
+import {simulationArea} from './simulation_area';
 import {colors} from './themer/themer';
-import {layoutModeGet} from './layoutMode';
+import {layoutModeGet} from './layout_mode';
 
 /**
  * @type {Object} miniMapArea
@@ -98,13 +98,9 @@ export const miniMapArea = {
     this.ctx.fillStyle = '#ddd';
     this.ctx.beginPath();
     this.ctx.rect(
-        2.5 +
-                ((this.pageX - this.pageWidth) / globalScope.scale -
-                    this.minX) *
+        2.5 + ((this.pageX - this.pageWidth) / globalScope.scale - this.minX) *
                     ratio,
-        2.5 +
-                ((this.pageY - this.pageHeight) / globalScope.scale -
-                    this.minY) *
+        2.5 + ((this.pageY - this.pageHeight) / globalScope.scale - this.minY) *
                     ratio,
         (this.pageWidth * ratio) / globalScope.scale,
         (this.pageHeight * ratio) / globalScope.scale,
@@ -123,20 +119,12 @@ export const miniMapArea = {
         for (let j = 0; j < globalScope[lst[i]].length; j++) {
           this.ctx.beginPath();
           this.ctx.moveTo(
-              2.5 +
-                            (globalScope[lst[i]][j].node1.absX() - this.minX) *
-                                ratio,
-              2.5 +
-                            (globalScope[lst[i]][j].node1.absY() - this.minY) *
-                                ratio,
+              2.5 + (globalScope[lst[i]][j].node1.absX() - this.minX) * ratio,
+              2.5 + (globalScope[lst[i]][j].node1.absY() - this.minY) * ratio,
           );
           this.ctx.lineTo(
-              2.5 +
-                            (globalScope[lst[i]][j].node2.absX() - this.minX) *
-                                ratio,
-              2.5 +
-                            (globalScope[lst[i]][j].node2.absY() - this.minY) *
-                                ratio,
+              2.5 + (globalScope[lst[i]][j].node2.absX() - this.minX) * ratio,
+              2.5 + (globalScope[lst[i]][j].node2.absY() - this.minY) * ratio,
           );
           this.ctx.stroke();
         }

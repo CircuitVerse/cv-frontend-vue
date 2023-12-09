@@ -3,8 +3,8 @@ import {
   layoutModeGet,
   tempBuffer,
   layoutUpdate,
-} from './layoutMode';
-import {simulationArea} from './simulationArea';
+} from './layout_mode';
+import {simulationArea} from './simulation_area';
 import {
   scheduleUpdate,
   update,
@@ -29,13 +29,13 @@ import {
   updateRestrictedElementsInScope,
   hideRestricted,
   showRestricted,
-} from './restrictedElementDiv';
+} from './restricted_element_div';
 import {removeMiniMap, updateLastMinimapShown} from './minimap';
 import {undo} from './data/undo';
 import {redo} from './data/redo';
 import {copy, paste, selectAll} from './events';
-import {verilogModeGet} from './Verilog2CV';
-import {setupTimingListeners} from './plotArea';
+import {verilogModeGet} from './verilog_to_cv';
+import {setupTimingListeners} from './plot_area';
 
 const unit = 10;
 const listenToSimulator = true;
@@ -257,7 +257,7 @@ export function startMainListeners() {
           (e.key == 'C' || e.key == 'c')
           ) {
           //    simulationArea.copyList=simulationArea.multipleObjectSelections.slice();
-          //    if(simulationArea.lastSelected&&simulationArea.lastSelected!==simulationArea.root&&!simulationArea.copyList.contains(simulationArea.lastSelected)){
+          //    if(simulationArea.lastSelected&&simulationArea.lastSelected!==simulationArea.root&&!simulationArea.copyList.includes(simulationArea.lastSelected)){
           //        simulationArea.copyList.push(simulationArea.lastSelected);
           //    }
           //    copy(simulationArea.copyList);
@@ -316,7 +316,7 @@ export function startMainListeners() {
             simulationArea.lastSelected.objectType != 'Wire' &&
             simulationArea.lastSelected.objectType !=
             'CircuitElement' &&
-            !simulationArea.multipleObjectSelections.contains(
+            !simulationArea.multipleObjectSelections.includes(
                 simulationArea.lastSelected,
             )
             ) {
@@ -439,7 +439,7 @@ export function startMainListeners() {
       if (
         simulationArea.lastSelected &&
         simulationArea.lastSelected !== simulationArea.root &&
-        !simulationArea.copyList.contains(simulationArea.lastSelected)
+        !simulationArea.copyList.includes(simulationArea.lastSelected)
       ) {
         simulationArea.copyList.push(simulationArea.lastSelected);
       }
@@ -478,7 +478,7 @@ export function startMainListeners() {
       if (
         simulationArea.lastSelected &&
         simulationArea.lastSelected !== simulationArea.root &&
-        !simulationArea.copyList.contains(simulationArea.lastSelected)
+        !simulationArea.copyList.includes(simulationArea.lastSelected)
       ) {
         simulationArea.copyList.push(simulationArea.lastSelected);
       }
