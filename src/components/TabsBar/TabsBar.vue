@@ -91,7 +91,6 @@ function isEmbed(): boolean {
 #tabsBar.embed-tabbar .current {
   color: var(--text-circuit);
   background-color: var(--bg-circuit) !important;
-  /* border: 1px solid var(--br-circuit-cur); */
 }
 
 #tabsBar.embed-tabbar button {

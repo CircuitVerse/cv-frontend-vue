@@ -138,7 +138,7 @@ export function getDependenciesList(scopeId) {
  * @category circuit
  */
 export async function createNewCircuitScope(
-    name,
+    name = undefined,
     id = undefined,
     isVerilog = false,
     isVerilogMain = false,
