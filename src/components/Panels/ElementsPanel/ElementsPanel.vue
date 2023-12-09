@@ -72,7 +72,7 @@ onBeforeMount(() => {
   }
 });
 
-function getImgUrl(elementName) {
+function getImgUrl(elementName: string) {
   const elementImg = new URL(
     `../../../assets/img/${elementName}.svg`,
     import.meta.url,
@@ -92,18 +92,10 @@ function searchElements() {
   const finalResult = [];
   for (const j in result) {
     if (Object.prototype.hasOwnProperty.call(result, j)) {
-      for (const category in elementHierarchy) {
-        if (
-          Object.prototype.hasOwnProperty.call(
-            elementHierarchy,
-            category,
-          )
-        ) {
-          const categoryData = elementHierarchy[category];
-          for (let i = 0; i < categoryData.length; i++) {
-            if (result[j] == categoryData[i].label) {
-              finalResult.push(categoryData[i]);
-            }
+      for (const [key, value] of elementHierarchy) {
+        for (let i = 0; i < value.length; i++) {
+          if (result[j] == value[i].label) {
+            finalResult.push(value[i]);
           }
         }
       }
@@ -112,7 +104,7 @@ function searchElements() {
   return finalResult;
 }
 
-function createElement(elementName) {
+function createElement(elementName: string) {
   if (simulationArea.lastSelected && simulationArea.lastSelected.newElement) {
     simulationArea.lastSelected.delete();
   }
@@ -126,7 +118,7 @@ function createElement(elementName) {
 }
 
 const tooltipText = ref('null');
-function getTooltipText(elementName) {
+function getTooltipText(elementName: string) {
   tooltipText.value = modules[elementName].prototype.tooltipText;
 }
 </script>

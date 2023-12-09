@@ -402,13 +402,15 @@ export function startMainListeners() {
       .addEventListener('mousewheel', MouseScroll);
   document
       .getElementById('simulationArea')
+      .addEventListener('wheel', MouseScroll);
+  document
+      .getElementById('simulationArea')
       .addEventListener('DOMMouseScroll', MouseScroll);
 
   function MouseScroll(event) {
     updateCanvasSet(true);
     event.preventDefault();
     var deltaY = event.wheelDelta ? event.wheelDelta : -event.detail;
-    event.preventDefault();
     var deltaY = event.wheelDelta ? event.wheelDelta : -event.detail;
     const direction = deltaY > 0 ? 1 : -1;
     handleZoom(direction);
@@ -713,6 +715,8 @@ function zoomSliderListeners() {
     gridUpdateSet(true);
     curLevel = newValue;
   });
+
+
   function zoomSliderScroll(e) {
     let zoomLevel = document.getElementById('customRange1').value;
     const deltaY = e.wheelDelta ? e.wheelDelta : -e.detail;
@@ -733,25 +737,4 @@ function zoomSliderListeners() {
       curLevel = zoomLevel;
     }
   }
-
-  // previously used for the + and - zoom buttons in quickButtons
-
-  // function sliderZoomButton(direction) {
-  //     var zoomSlider = $('#customRange1')
-  //     var currentSliderValue = parseInt(zoomSlider.val(), 10)
-  //     if (direction === -1) {
-  //         currentSliderValue--
-  //     } else {
-  //         currentSliderValue++
-  //     }
-  //     zoomSlider.val(currentSliderValue).change()
-  // }
-
-  // $('#decrement').click(() => {
-  //     sliderZoomButton(-1)
-  // })
-
-  // $('#increment').click(() => {
-  //     sliderZoomButton(1)
-  // })
 }

@@ -117,7 +117,8 @@ export async function newProject(verify) {
     projectSaved ||
     !checkToSave() ||
     (await confirmOption(
-        'What you like to start a new project? Any unsaved changes will be lost.',
+        'Would you like to start a new project? ' +
+        'Any unsaved changes will be lost.',
     ))
   ) {
     clearProject();
