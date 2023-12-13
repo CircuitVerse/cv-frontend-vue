@@ -89,8 +89,6 @@ function increment(): void {
 </script>
 
 <style scoped>
-/* @import url('./QuickButton.css'); */
-
 .panel-drag {
   cursor: move;
   opacity: 0.6;

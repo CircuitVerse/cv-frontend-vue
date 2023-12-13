@@ -1,21 +1,18 @@
 <template>
-    <nav class="navbar navbar-expand-lg navbar-dark header">
-        <Logo :cvlogo="navbarLogo" />
-        <Hamburger v-if="showSidebar" />
+  <nav class="navbar navbar-expand-lg navbar-dark header">
+    <Logo :cvlogo="navbarLogo" />
+    <Hamburger v-if="showSidebar" />
 
-        <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse">
-            <NavbarLinks :navbar-data="navbarData" />
+    <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse">
+      <NavbarLinks :navbar-data="navbarData" />
 
-            <span
-                id="projectName"
-                class="projectName noSelect defaultCursor font-weight-bold"
-            >
-                {{ projectStore.getProjectName }}
-            </span>
-            <User :user-data="userDropdownItems" />
-        </div>
-    </nav>
-    <QuickButton />
+      <span id="projectName" class="projectName noSelect defaultCursor font-weight-bold">
+        {{ projectStore.getProjectName }}
+      </span>
+      <User :user-data="userDropdownItems" />
+    </div>
+  </nav>
+  <QuickButton />
 </template>
 
 <script lang="ts" setup>
@@ -36,13 +33,13 @@ const minWidthToShowSidebar = ref(992)
 const showSidebar = ref(false)
 const projectStore = useProjectStore()
 showSidebar.value =
-    window.innerWidth < minWidthToShowSidebar.value ? true : false
+  window.innerWidth < minWidthToShowSidebar.value ? true : false
 onMounted(() => {
-    window.addEventListener('resize', checkShowSidebar)
+  window.addEventListener('resize', checkShowSidebar)
 })
 function checkShowSidebar() {
-    showSidebar.value =
-        window.innerWidth < minWidthToShowSidebar.value ? true : false
+  showSidebar.value =
+    window.innerWidth < minWidthToShowSidebar.value ? true : false
 }
 </script>
 

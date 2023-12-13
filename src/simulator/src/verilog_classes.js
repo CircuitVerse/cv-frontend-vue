@@ -77,6 +77,9 @@ class verilogOutput extends verilogUnaryGate {
   }
 }
 
+/**
+ * Verilog Clock
+ */
 class verilogClock extends verilogUnaryGate {
   constructor(deviceJSON) {
     super(deviceJSON);
@@ -1114,6 +1117,11 @@ class verilogDff {
     this.qOutput = this.dff.qOutput;
   }
 
+  /**
+   * Mapping the verlog name for a port to the Node representing it.
+   * @param {string} portName - verilog name for the port.
+   * @return {Node} Node representing the port.
+   */
   getPort(portName) {
     if (portName == 'clk') {
       return this.clockInput;

@@ -122,7 +122,7 @@ export class Splitter extends CircuitElement {
 
   /**
      * @memberof Splitter
-     * Checks if the element is resolvable
+     * Checks if the output value can be determined.
      * @return {boolean}
      */
   isResolvable() {

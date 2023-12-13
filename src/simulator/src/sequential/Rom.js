@@ -42,7 +42,7 @@ export class Rom extends CircuitElement {
 
   /**
      * @memberof Rom
-     * Checks if the element is resolvable
+     * Checks if the output value can be determined.
      * @return {boolean}
      */
   isResolvable() {

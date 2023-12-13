@@ -77,7 +77,7 @@ export class verilogDivider extends CircuitElement {
 
   /**
      * @memberof verilogDivider
-     * Checks if the element is resolvable
+     * Checks if the output value can be determined.
      * @return {boolean}
      */
   isResolvable() {

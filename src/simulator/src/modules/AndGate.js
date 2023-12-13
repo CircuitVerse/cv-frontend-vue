@@ -36,9 +36,6 @@ export class AndGate extends CircuitElement {
       inputLength = 2,
       bitWidth = 1,
   ) {
-    /**
-         * super call
-         */
     super(x, y, scope, dir, bitWidth);
     this.rectangleObject = false;
     this.setDimensions(15, 20);

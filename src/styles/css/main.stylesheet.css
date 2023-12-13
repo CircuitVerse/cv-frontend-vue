@@ -395,6 +395,17 @@ input[type='text']:focus {
   padding-top: 10px;
 }
 
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 7px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, .5);
+  box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+}
+
 .draggable-panel-css .panel {
   padding: 0em;
   margin: 0;

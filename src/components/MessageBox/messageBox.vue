@@ -29,7 +29,6 @@
 
 <script lang="ts" setup>
 import BooleanTable from '@/DialogBox/BooleanTable.vue'
-import { defineProps, defineEmits } from 'vue'
 
 defineEmits(['buttonClick'])
 

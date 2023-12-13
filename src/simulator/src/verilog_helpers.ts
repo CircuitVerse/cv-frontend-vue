@@ -1,4 +1,4 @@
-import { Node } from './node'
+import { Node } from './node';
 /**
  * 
  * @param {string} name - label name to sanitize.
@@ -15,7 +15,7 @@ export function sanitizeLabel(name: string) {
   }
   // if first character is not \ already
   if (temp.substring(0, 1).search(/\\/g) < 0) {
-    // if there are non-alphanum_ character, or first character is num, add \
+    // if there are non-alphanumeric character, or first character is num, add \
     if (
       temp.search(/[\W]/g) > -1 ||
       temp.substring(0, 1).search(/[0-9]/g) > -1
@@ -26,7 +26,15 @@ export function sanitizeLabel(name: string) {
   return temp;
 }
 
-export function generateNodeName(node: Node, currentCount: number, totalCount: number) {
+/**
+ * Generate a unique node name.
+ * @param {Node} node - Node for which a name is being generated.
+ * @param {number} currentCount - Index of the Node being generated.
+ * @param {number} totalCount - Count of Nodes being generated.
+ * @return {string} Unique verilog name. 
+ */
+export function generateNodeName(node: Node,
+  currentCount: number, totalCount: number) {
   if (node.verilogLabel) {
     return node.verilogLabel;
   }

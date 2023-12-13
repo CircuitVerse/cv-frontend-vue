@@ -6,6 +6,7 @@
     "serve": "vite preview",
     "build": "vite build",
     "dev": "vite",
+    "test": "jest src",
     "preview": "vite preview",
     "lint": "eslint --ext .js,.ts,.vue --ignore-path .gitignore --fix src",
     "format": "prettier .  --write",
@@ -32,11 +33,11 @@
     "jquery": "^3.6.0",
     "pinia": "^2.0.14",
     "sass": "^1.69.5",
-    "vue": "^3.2.25",
+    "vue": "^3.3.11",
     "vue-i18n": "^9.1.10",
     "vue-router": "^4.0.15",
     "vuedraggable": "^4.1.0",
-    "vuetify": "^3.0.0-beta.0",
+    "vuetify": "^3.4.6",
     "webfontloader": "^1.0.0"
   },
   "devDependencies": {
@@ -44,6 +45,7 @@
     "@commitlint/config-conventional": "^17.0.2",
     "@intlify/vite-plugin-vue-i18n": "^3.4.0",
     "@types/jquery": "^3.5.14",
+    "@types/jsdom": "^21.1.6",
     "@types/webfontloader": "^1.0.0",
     "@typescript-eslint/eslint-plugin": "^6.13.2",
     "@typescript-eslint/parser": "^6.13.2",
@@ -62,6 +64,7 @@
     "typescript": "^5.3.3",
     "vite": "^2.9.13",
     "vite-plugin-vuetify": "^1.0.0-alpha.0",
+    "vitest": "^1.0.4",
     "vue-cli-plugin-vuetify": "~2.5.1",
     "vue-tsc": "^0.34.7"
   }

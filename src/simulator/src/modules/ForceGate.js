@@ -6,11 +6,8 @@ import {fillText4} from '../canvasApi';
  * @class
  * ForceGate
  * @extends CircuitElement
- * @param {number} x - x coordinate of element.
- * @param {number} y - y coordinate of element.
- * @param {Scope} scope - Circuit on which element is drawn
- * @param {string} dir - direction of element
- * @param {number} bitWidth - bit width per node.
+ * @classdesc Output uses the force value unless tri-stated,
+ * in which case the input value is used.
  * @category testbench
  */
 export class ForceGate extends CircuitElement {
@@ -33,7 +30,7 @@ export class ForceGate extends CircuitElement {
 
   /**
      * @memberof ForceGate
-     * Checks if the element is resolvable
+     * Checks if the output value can be determined.
      * @return {boolean}
      */
   isResolvable() {
@@ -58,9 +55,9 @@ export class ForceGate extends CircuitElement {
   }
 
   /**
-     * @memberof ForceGate
-     * resolve output values based on inputData
-     */
+   * @memberof ForceGate
+   * resolve output values based on inputData
+   */
   resolve() {
     if (this.inp2.value !== undefined) {
       this.output1.value = this.inp2.value;

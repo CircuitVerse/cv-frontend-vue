@@ -106,7 +106,7 @@ export function switchCircuit(id) {
 /**
  * Comma separated list of dependency names
  * @param {string} scopeId
- * @returns
+ * @return {string} Comma separated list of dependency names
  */
 export function getDependenciesList(scopeId) {
   let scope = scopeList[scopeId];
@@ -165,6 +165,9 @@ export async function createNewCircuitScope(
  * Function creates button in tab, creates scope and switches to this circuit
  * @param {string} name - name of the new circuit
  * @param {string} id - identifier for circuit
+ * @param {boolean} isVerilog
+ * @param {boolean} isVerilogMain
+ * @return {Scope}
  * @category circuit
  */
 export function newCircuit(name, id, isVerilog = false, isVerilogMain = false) {

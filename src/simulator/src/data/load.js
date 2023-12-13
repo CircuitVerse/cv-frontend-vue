@@ -21,7 +21,7 @@ import {plotArea} from '../plot_area';
 import {updateTestbenchUI, TestbenchData} from '../testbench';
 import {SimulatorStore} from '#/store/SimulatorStore/SimulatorStore';
 import {toRefs} from 'vue';
-
+import {ForceConnection, ForceNode, ForceDirectedGraph} from '../layout/force_directed_graph';
 
 /**
  * Function to load CircuitElements
@@ -184,6 +184,55 @@ export function loadScope(scope, data) {
   if (scope.layout.titleEnabled === undefined) {
     scope.layout.titleEnabled = true;
   }
+}
+
+/**
+ *
+ */
+function automaticLayout(scope) {
+  const ML = moduleList.slice();
+  const links = [];
+  const elements = [];
+  const nodes = [];
+  for (let i = 0; i < ML.length; i++) {
+    if (scope[ML[i]]) {
+      for (let j = 0; j < scope[ML[i]].length; j++) {
+        const element = scope[ML[i]][j];
+        nodes.push(new ForceNode(Math.random() * 1000, Math.random() * 1000,
+            0, 0, element));
+        elements.push(element);
+      }
+    }
+  }
+  for (let i = 0; i < nodes.length; i++) {
+    console.log('HERE');
+    const element = nodes[i].reference;
+    console.log(element);
+    for (let k = 0; k < element.nodeList.length; k++) {
+      console.log(element.nodeList[k]);
+      if (element.nodeList[k].type == 0) {
+        const c = elements.indexOf(element.nodeList[k].connections[0].parent);
+        if (c < 0) {
+          console.log(element.nodeList[k].connections[0]);
+        } else {
+          links.push(new ForceConnection(c, i));
+        }
+        console.log(links);
+      }
+    }
+  }
+
+  console.log(nodes);
+  console.log(links);
+  const graph = new ForceDirectedGraph(nodes, links);
+  graph.simulate(100);
+  for (let i = 0; i < nodes.length; i++) {
+    nodes[i].reference.x = nodes[i].x;
+    nodes[i].reference.y = nodes[i].y;
+    nodes[i].reference.prevx = nodes[i].x;
+    nodes[i].reference.prevy = nodes[i].y;
+  }
+  console.log(graph);
 }
 
 // Function to load project from data

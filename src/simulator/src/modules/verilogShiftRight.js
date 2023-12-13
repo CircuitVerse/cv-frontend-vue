@@ -61,7 +61,7 @@ export class verilogShiftRight extends CircuitElement {
 
   /**
      * @memberof verilogShiftRight
-     * Checks if the element is resolvable
+     * Checks if the output value can be determined.
      * @return {boolean}
      */
   isResolvable() {

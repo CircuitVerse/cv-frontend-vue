@@ -10,8 +10,6 @@ import {errorDetectedGet} from './engine';
 import {modules} from './modules';
 import {sanitizeLabel} from './verilog_helpers';
 import CodeMirror from 'codemirror/lib/codemirror.js';
-import 'codemirror/lib/codemirror.css';
-import 'codemirror/addon/hint/show-hint.css';
 import 'codemirror/mode/verilog/verilog.js';
 import 'codemirror/addon/edit/closebrackets.js';
 import 'codemirror/addon/hint/anyword-hint.js';

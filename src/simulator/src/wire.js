@@ -16,9 +16,9 @@ import {colors} from './themer/themer';
 export class Wire {
   /**
    *
-   * @param {*} node1
-   * @param {*} node2
-   * @param {*} scope
+   * @param {Node} node1
+   * @param {Node} node2
+   * @param {Scope} scope
    */
   constructor(node1, node2, scope) {
     this.objectType = 'Wire';
@@ -47,7 +47,7 @@ export class Wire {
 
   /**
    *
-   * @param {*} scope
+   * @param {Scope} scope
    */
   updateScope(scope) {
     this.scope = scope;
@@ -70,6 +70,9 @@ export class Wire {
     return check;
   }
 
+  /**
+   * On double click select both ends of a wire.
+   */
   dblclick() {
     if (
       this.node1.parent == globalScope.root &&
@@ -196,7 +199,12 @@ export class Wire {
     return this.checkWithin(n.absX(), n.absY());
   }
 
-  // fn checks if coordinate lies on wire
+  /**
+   * Checks if coordinate lies on wire
+   * @param {*} x
+   * @param {*} y
+   * @return {boolean}
+   */
   checkWithin(x, y) {
     if (
       this.type === 'horizontal' &&

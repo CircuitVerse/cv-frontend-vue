@@ -61,7 +61,7 @@ export class verilogPower extends CircuitElement {
 
   /**
      * @memberof verilogPower
-     * Checks if the element is resolvable
+     * Checks if the output value can be determined.
      * @return {boolean}
      */
   isResolvable() {

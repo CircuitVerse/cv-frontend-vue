@@ -315,7 +315,6 @@ async function generateImageForOnline() {
   const ratio = 1.6;
   if (verilogModeGet()) {
     const node = document.getElementsByClassName('CodeMirror')[0];
-    // var node = document.getElementsByClassName('CodeMirror')[0];
     const prevHeight = $(node).css('height');
     const prevWidth = $(node).css('width');
     const baseWidth = 500;

@@ -13,17 +13,15 @@ import {load} from './data/load';
 import {save} from './data/save';
 import {showTourGuide} from './tutorials';
 import {setupModules} from './module_setup';
-import 'codemirror/lib/codemirror.css';
-import 'codemirror/addon/hint/show-hint.css';
 // verilog.js from codemirror is not working because array prototype is changed.
 import 'codemirror/mode/javascript/javascript';
 import 'codemirror/addon/edit/closebrackets';
 import 'codemirror/addon/hint/anyword-hint';
 import 'codemirror/addon/hint/show-hint';
 import {setupCodeMirrorEnvironment} from './verilog_to_cv';
-import '../vendor/jquery-ui.min.css';
 import '../vendor/jquery-ui.min';
-import {confirmSingleOption} from '#/components/helpers/confirmComponent/ConfirmComponent.vue';
+import {confirmSingleOption}
+  from '#/components/helpers/confirmComponent/ConfirmComponent.vue';
 import {getToken} from '#/pages/simulatorHandler.vue';
 
 /**

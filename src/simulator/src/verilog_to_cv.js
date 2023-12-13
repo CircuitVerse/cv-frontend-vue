@@ -6,24 +6,6 @@ import {
 import {SubCircuit} from './subcircuit';
 import {simulationArea} from './simulation_area';
 import CodeMirror from 'codemirror/lib/codemirror.js';
-import 'codemirror/lib/codemirror.css';
-
-// Importing CodeMirror themes
-import 'codemirror/theme/3024-day.css';
-import 'codemirror/theme/solarized.css';
-import 'codemirror/theme/elegant.css';
-import 'codemirror/theme/neat.css';
-import 'codemirror/theme/idea.css';
-import 'codemirror/theme/neo.css';
-import 'codemirror/theme/3024-night.css';
-import 'codemirror/theme/blackboard.css';
-import 'codemirror/theme/cobalt.css';
-import 'codemirror/theme/the-matrix.css';
-import 'codemirror/theme/night.css';
-import 'codemirror/theme/monokai.css';
-import 'codemirror/theme/midnight.css';
-
-import 'codemirror/addon/hint/show-hint.css';
 import 'codemirror/mode/verilog/verilog.js';
 import 'codemirror/addon/edit/closebrackets.js';
 import 'codemirror/addon/hint/anyword-hint.js';
@@ -121,6 +103,15 @@ class verilogSubCircuit {
   }
 }
 
+/**
+ *
+ * @param {*} JSON
+ * @param {Scope} parentScope
+ * @param {string} name
+ * @param {Scope} subCircuitScope
+ * @param {boolean} root
+ * @return {Scope}
+ */
 export function YosysJSON2CV(
     JSON,
     parentScope = globalScope,

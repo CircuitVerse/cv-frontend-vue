@@ -188,13 +188,6 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Dialog Box - Custom Themes -->
-    <!-- <div
-        id="colorThemesDialog"
-        class="customScroll colorThemesDialog"
-        tabindex="0"
-        style="display: none"
-        title="Select Theme"
-    ></div> -->
     <ApplyThemes />
     <div
         id="CustomColorThemesDialog"

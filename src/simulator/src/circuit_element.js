@@ -69,7 +69,7 @@ export class CircuitElement {
     this.labelDirection = oppositeDirection[dir];
     this.orientationFixed = true;
     this.fixedBitWidth = false;
-
+    this.verilogLabel = '';
     scheduleUpdate();
 
     this.queueProperties = {

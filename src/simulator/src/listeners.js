@@ -659,18 +659,6 @@ function onMouseUp(e) {
   }
 }
 
-function resizeTabs() {
-  const $windowsize = $('body').width();
-  const $sideBarsize = $('.side').width();
-  const $maxwidth = $windowsize - $sideBarsize;
-  $('#tabsBar div').each(function(e) {
-    $(this).css({'max-width': $maxwidth - 30});
-  });
-}
-
-window.addEventListener('resize', resizeTabs);
-resizeTabs();
-
 /**
  * direction is only 1 or -1
  * @param {number} direction
