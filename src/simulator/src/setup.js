@@ -96,11 +96,11 @@ function setupEnvironment() {
  * It also draws icons in the sidebar
  * @category setup
  */
-function setupElementLists() {
-  window.circuitElementList = metadata.circuitElementList;
-  window.annotationList = metadata.annotationList;
-  window.inputList = metadata.inputList;
-  window.subCircuitInputList = metadata.subCircuitInputList;
+function setupElementLists(applicationMetadata) {
+  window.circuitElementList = applicationMetadata.circuitElementList;
+  window.annotationList = applicationMetadata.annotationList;
+  window.inputList = applicationMetadata.inputList;
+  window.subCircuitInputList = applicationMetadata.subCircuitInputList;
   window.moduleList = [...circuitElementList, ...annotationList];
   window.updateOrder = [
     'wires',
@@ -190,7 +190,7 @@ function showTour() {
  * @category setup
  */
 export function setup() {
-  setupElementLists();
+  setupElementLists(metadata);
   setupEnvironment();
   if (!embed) {
     setupUI();

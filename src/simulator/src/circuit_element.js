@@ -406,7 +406,11 @@ export class CircuitElement {
           if (
             simulationArea.multipleObjectSelections.includes(this)
           ) {
-            simulationArea.multipleObjectSelections.clean(this);
+            const foundIndex =
+                simulationArea.multipleObjectSelections.indexOf(this);
+            if (foundIndex != -1) {
+              simulationArea.multipleObjectSelections.splice(foundIndex, 1);
+            }
           } else {
             simulationArea.multipleObjectSelections.push(this);
           }
@@ -774,7 +778,10 @@ export class CircuitElement {
    */
   delete() {
     simulationArea.lastSelected = undefined;
-    this.scope[this.objectType].clean(this); // CHECK IF THIS IS VALID
+    const foundIndex = this.scope[this.objectType].indexOf(this);
+    if (foundIndex != -1) {
+      this.scope[this.objectType].splice(foundIndex, 1);
+    }
     if (this.deleteNodesWhenDeleted) {
       this.deleteNodes();
     } else {

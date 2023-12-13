@@ -192,7 +192,10 @@ export class Tunnel extends CircuitElement {
       return;
     }
     if (this.scope.tunnelList[this.identifier]) {
-      this.scope.tunnelList[this.identifier].clean(this);
+      const index = this.scope.tunnelList.indexOf(this);
+      if (index != -1) {
+        this.scope.tunnelList.splice(index, 1);
+      }
     }
     this.identifier = id;
     if (this.scope.tunnelList[this.identifier]) {
@@ -226,8 +229,14 @@ export class Tunnel extends CircuitElement {
    * delete the tunnel element
    */
   delete() {
-    this.scope.Tunnel.clean(this);
-    this.scope.tunnelList[this.identifier].clean(this);
+    let index = this.scope.Tunnel.indexOf(this);
+    if (index != -1) {
+      this.scope.Tunnel.splice(index, 1);
+    }
+    index = this.scope.tunnelList.indexOf(this);
+    if (index != -1) {
+      this.nodeList.splice(index, 1);
+    }
     super.delete();
   }
 

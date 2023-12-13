@@ -71,7 +71,10 @@ export class TB_Input extends CircuitElement {
   setup() {
     this.iteration = 0;
     this.running = false;
-    this.nodeList.clean(this.clockInp);
+    const index = this.nodeList.indexOf(this.clockInp);
+    if (index != -1) {
+      this.nodeList.splice(index, 1);
+    }
     this.deleteNodes();
     this.nodeList = [];
     this.nodeList.push(this.clockInp);

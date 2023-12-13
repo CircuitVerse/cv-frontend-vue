@@ -395,7 +395,7 @@ export class Scope {
     const list = [];
     for (let i = 0; i < this.SubCircuit.length; i++) {
       list.push(this.SubCircuit[i].id);
-      list.extend(scopeList[this.SubCircuit[i].id].getDependencies());
+      list = list.concat(scopeList[this.SubCircuit[i].id].getDependencies());
     }
     return uniq(list);
   }

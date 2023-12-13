@@ -251,13 +251,24 @@ export class Wire {
     this.node2.connect(n);
     this.delete();
   }
-
+  /**
+   * 
+   */
   delete() {
     forceResetNodesSet(true);
     updateSimulationSet(true);
-    this.node1.connections.clean(this.node2);
-    this.node2.connections.clean(this.node1);
-    this.scope.wires.clean(this);
+    let index = this.node1.connections.indexOf(this.node2);
+    if (index != -1) {
+      this.node1.connections.splice(index, 1);
+    }
+    index = this.node2.connections.indexOf(this.node1);
+    if (index != -1) {
+      this.node2.connections.splice(index, 1);
+    }
+    index = this.scope.wires.indexOf(this);
+    if (index != -1) {
+      this.scope.wires.splice(index, 1);
+    }
     this.node1.checkDeleted();
     this.node2.checkDeleted();
   }

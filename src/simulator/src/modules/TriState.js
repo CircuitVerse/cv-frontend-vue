@@ -74,7 +74,10 @@ export class TriState extends CircuitElement {
         this.output1.value = this.inp1.value;
         simulationArea.simulationQueue.add(this.output1);
       }
-      simulationArea.contentionPending.clean(this);
+      const index = simulationArea.contentionPending.indexOf(this);
+      if (index != -1) {
+        simulationArea.contentionPending.splice(index, 1);
+      }
     } else if (
       this.output1.value !== undefined &&
       !simulationArea.contentionPending.includes(this)
@@ -82,7 +85,10 @@ export class TriState extends CircuitElement {
       this.output1.value = undefined;
       simulationArea.simulationQueue.add(this.output1);
     }
-    simulationArea.contentionPending.clean(this);
+    const index = simulationArea.contentionPending.indexOf(this);
+    if (index != -1) {
+      simulationArea.contentionPending.splice(index, 1);
+    }
   }
 
   /**

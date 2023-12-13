@@ -107,7 +107,7 @@ export function paste(copyData) {
       l !== 'objects' &&
       l !== 'CircuitElement'
     ) {
-      globalScope[l].extend(tempScope[l]);
+      globalScope[l] = globalScope[l].concat(tempScope[l]);
     }
   });
   for (let i = 0; i < tempScope.Input.length; i++) {

@@ -287,7 +287,10 @@ export class Node {
   refresh() {
     this.updateRotation();
     for (let i = 0; i < this.connections.length; i++) {
-      this.connections[i].connections.clean(this);
+      const foundIndex = this.connections[i].connections.indexOf(this);
+      if (foundIndex != -1) {
+        this.connections[i].connections.splice(foundIndex, 1);
+      }
     }
     this.connections = [];
   }
@@ -379,8 +382,14 @@ export class Node {
  * @param {Node} node - Node to disconnect.
  */
   disconnectWireLess(node: Node) {
-    this.connections.clean(node);
-    node.connections.clean(this);
+    let foundIndex = this.connections.indexOf(node);
+    if (foundIndex != -1) {
+      this.connections.splice(foundIndex, 1);
+    }
+    foundIndex = node.connections.indexOf(this);
+    if (foundIndex != -1) {
+      node.connections.splice(foundIndex, 1);
+    }
   }
 
   /**
@@ -719,7 +728,10 @@ export class Node {
           if (
             simulationArea.multipleObjectSelections.includes(this)
           ) {
-            simulationArea.multipleObjectSelections.clean(this);
+            const foundIndex = simulationArea.multipleObjectSelections.indexOf(this);
+            if (foundIndex != -1) {
+              simulationArea.multipleObjectSelections.splice(foundIndex, 1);
+            }
           } else {
             simulationArea.multipleObjectSelections.push(this);
           }
@@ -934,16 +946,26 @@ export class Node {
   delete() {
     updateSimulationSet(true);
     this.deleted = true;
-    this.parent.scope.allNodes.clean(this);
-    this.parent.scope.nodes.clean(this);
-
-    this.parent.scope.root.nodeList.clean(this);
-
+    let foundIndex = this.parent.scope.allNodes.indexOf(this);
+    if (foundIndex != -1) {
+      this.parent.scope.allNodes.splice(foundIndex, 1);
+    }
+    foundIndex = this.parent.scope.nodes.indexOf(this);
+    if (foundIndex != -1) {
+      this.parent.scope.nodes.splice(foundIndex, 1);
+    }
+    foundIndex = this.parent.scope.root.nodeList.indexOf(this);
+    if (foundIndex != -1) {
+      this.parent.scope.root.nodeList.splice(foundIndex, 1);
+    }
     if (simulationArea.lastSelected == this) {
       simulationArea.lastSelected = undefined;
     }
     for (let i = 0; i < this.connections.length; i++) {
-      this.connections[i].connections.clean(this);
+      const foundIndex = this.connections[i].connections.indexOf(this);
+      if (foundIndex != -1) {
+        this.connections[i].connections.splice(foundIndex, 1);
+      }
       this.connections[i].checkDeleted();
     }
     wireToBeCheckedSet(1);
@@ -1091,7 +1113,10 @@ export function replace(node: Node, index: number): Node {
   }
   const { scope } = node;
   const { parent } = node;
-  parent.nodeList.clean(node);
+  const foundIndex = parent.nodeList.indexOf(node);
+  if (foundIndex != -1) {
+    parent.nodeList.splice(foundIndex, 1);
+  }
   node.delete();
   node = scope.allNodes[index];
   node.parent = parent;
