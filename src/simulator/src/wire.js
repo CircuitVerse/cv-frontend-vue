@@ -163,7 +163,6 @@ export class Wire {
 
   draw() {
     // for calculating min-max Width,min-max Height
-    //
     const ctx = simulationArea.context;
 
     let color;

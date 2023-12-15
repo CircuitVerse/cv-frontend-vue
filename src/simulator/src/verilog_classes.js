@@ -148,7 +148,7 @@ class verilogReduceAndGate extends verilogUnaryGate {
     super(deviceJSON);
 
     this.bitWidthSplit = [];
-    for (var i = 0; i < this.bitWidth; i++) {
+    for (let i = 0; i < this.bitWidth; i++) {
       this.bitWidthSplit.push(1);
     }
 
@@ -162,7 +162,7 @@ class verilogReduceAndGate extends verilogUnaryGate {
     );
     this.andGate = new AndGate(0, 0, undefined, undefined, this.bitWidth, 1);
 
-    for (var i = 0; i < this.bitWidth; i++) {
+    for (let i = 0; i < this.bitWidth; i++) {
       this.splitter.outputs[i].connect(this.andGate.inp[i]);
     }
 
@@ -176,7 +176,7 @@ class verilogReduceNandGate extends verilogUnaryGate {
     super(deviceJSON);
 
     this.bitWidthSplit = [];
-    for (var i = 0; i < this.bitWidth; i++) {
+    for (let i = 0; i < this.bitWidth; i++) {
       this.bitWidthSplit.push(1);
     }
 
@@ -197,7 +197,7 @@ class verilogReduceNandGate extends verilogUnaryGate {
         1,
     );
 
-    for (var i = 0; i < this.bitWidth; i++) {
+    for (let i = 0; i < this.bitWidth; i++) {
       this.splitter.outputs[i].connect(this.nandGate.inp[i]);
     }
 
@@ -211,7 +211,7 @@ class verilogReduceOrGate extends verilogUnaryGate {
     super(deviceJSON);
 
     this.bitWidthSplit = [];
-    for (var i = 0; i < this.bitWidth; i++) {
+    for (let i = 0; i < this.bitWidth; i++) {
       this.bitWidthSplit.push(1);
     }
 
@@ -225,7 +225,7 @@ class verilogReduceOrGate extends verilogUnaryGate {
     );
     this.orGate = new OrGate(0, 0, undefined, undefined, this.bitWidth, 1);
 
-    for (var i = 0; i < this.bitWidth; i++) {
+    for (let i = 0; i < this.bitWidth; i++) {
       this.splitter.outputs[i].connect(this.orGate.inp[i]);
     }
 
@@ -239,7 +239,7 @@ class verilogReduceNorGate extends verilogUnaryGate {
     super(deviceJSON);
 
     this.bitWidthSplit = [];
-    for (var i = 0; i < this.bitWidth; i++) {
+    for (let i = 0; i < this.bitWidth; i++) {
       this.bitWidthSplit.push(1);
     }
 
@@ -253,7 +253,7 @@ class verilogReduceNorGate extends verilogUnaryGate {
     );
     this.norGate = new NorGate(0, 0, undefined, undefined, this.bitWidth, 1);
 
-    for (var i = 0; i < this.bitWidth; i++) {
+    for (let i = 0; i < this.bitWidth; i++) {
       this.splitter.outputs[i].connect(this.norGate.inp[i]);
     }
 
@@ -267,7 +267,7 @@ class verilogReduceXorGate extends verilogUnaryGate {
     super(deviceJSON);
 
     this.bitWidthSplit = [];
-    for (var i = 0; i < this.bitWidth; i++) {
+    for (let i = 0; i < this.bitWidth; i++) {
       this.bitWidthSplit.push(1);
     }
 
@@ -281,7 +281,7 @@ class verilogReduceXorGate extends verilogUnaryGate {
     );
     this.xorGate = new XorGate(0, 0, undefined, undefined, this.bitWidth, 1);
 
-    for (var i = 0; i < this.bitWidth; i++) {
+    for (let i = 0; i < this.bitWidth; i++) {
       this.splitter.outputs[i].connect(this.xorGate.inp[i]);
     }
 
@@ -295,7 +295,7 @@ class verilogReduceXnorGate extends verilogUnaryGate {
     super(deviceJSON);
 
     this.bitWidthSplit = [];
-    for (var i = 0; i < this.bitWidth; i++) {
+    for (let i = 0; i < this.bitWidth; i++) {
       this.bitWidthSplit.push(1);
     }
 
@@ -316,7 +316,7 @@ class verilogReduceXnorGate extends verilogUnaryGate {
         1,
     );
 
-    for (var i = 0; i < this.bitWidth; i++) {
+    for (let i = 0; i < this.bitWidth; i++) {
       this.splitter.outputs[i].connect(this.xnorGate.inp[i]);
     }
 
@@ -385,7 +385,14 @@ class verilogBusSlice extends verilogUnaryGate {
   }
 }
 
+/**
+ * Extend zero Verilog operation.
+ */
 class verilogZeroExtend extends verilogUnaryGate {
+  /**
+   *
+   * @param {*} deviceJSON
+   */
   constructor(deviceJSON) {
     super(deviceJSON);
 
@@ -443,7 +450,7 @@ class verilogNegationGate extends verilogUnaryGate {
       );
 
       let zeroState = '';
-      for (var i = 0; i < extraBits; i++) {
+      for (let i = 0; i < extraBits; i++) {
         zeroState += '0';
       }
 
@@ -465,7 +472,7 @@ class verilogNegationGate extends verilogUnaryGate {
     }
 
     let oneVal = '';
-    for (var i = 0; i < this.bitWidth - 1; i++) {
+    for (let i = 0; i < this.bitWidth - 1; i++) {
       oneVal += '0';
     }
     oneVal += '1';
@@ -621,7 +628,7 @@ class verilogMathGate extends verilogBinaryGate {
 
     this.input = [];
 
-    var extraBits = this.bitWidth - this.in1BitWidth;
+    let extraBits = this.bitWidth - this.in1BitWidth;
 
     if (extraBits != 0) {
       this.in1Splitter = new Splitter(
@@ -633,8 +640,8 @@ class verilogMathGate extends verilogBinaryGate {
           [this.in1BitWidth, extraBits],
       );
 
-      var zeroState = '';
-      for (var i = 0; i < extraBits; i++) {
+      let zeroState = '';
+      for (let i = 0; i < extraBits; i++) {
         zeroState += '0';
       }
       this.in1ZeroConstant = new ConstantVal(
@@ -657,7 +664,7 @@ class verilogMathGate extends verilogBinaryGate {
       );
     }
 
-    var extraBits = this.bitWidth - this.in2BitWidth;
+    extraBits = this.bitWidth - this.in2BitWidth;
     if (extraBits != 0) {
       this.in2Splitter = new Splitter(
           0,
@@ -667,8 +674,8 @@ class verilogMathGate extends verilogBinaryGate {
           this.bitWidth,
           [this.in2BitWidth, extraBits],
       );
-      var zeroState = '';
-      for (var i = 0; i < extraBits; i++) {
+      let zeroState = '';
+      for (let i = 0; i < extraBits; i++) {
         zeroState += '0';
       }
 
@@ -702,7 +709,7 @@ class verilogEqGate extends verilogMathGate {
 
     const bitWidthSplit = [];
 
-    for (var i = 0; i < this.bitWidth; i++) {
+    for (let i = 0; i < this.bitWidth; i++) {
       bitWidthSplit.push(1);
     }
 
@@ -727,7 +734,7 @@ class verilogEqGate extends verilogMathGate {
     this.in2Splitter.inp1.connect(this.xnorGate.inp[1]);
 
     this.xnorGate.output1.connect(this.splitter.inp1);
-    for (var i = 0; i < this.bitWidth; i++) {
+    for (let i = 0; i < this.bitWidth; i++) {
       this.splitter.outputs[i].connect(this.andGate.inp[i]);
     }
 
@@ -741,7 +748,7 @@ class verilogNeGate extends verilogMathGate {
 
     const bitWidthSplit = [];
 
-    for (var i = 0; i < this.bitWidth; i++) {
+    for (let i = 0; i < this.bitWidth; i++) {
       bitWidthSplit.push(1);
     }
 
@@ -767,7 +774,7 @@ class verilogNeGate extends verilogMathGate {
     this.in2Splitter.inp1.connect(this.xnorGate.inp[1]);
 
     this.xnorGate.output1.connect(this.splitter.inp1);
-    for (var i = 0; i < this.bitWidth; i++) {
+    for (let i = 0; i < this.bitWidth; i++) {
       this.splitter.outputs[i].connect(this.nandGate.inp[i]);
     }
 
@@ -1370,49 +1377,44 @@ class verilogMemory {
     const isPortEn = portName.slice(len - 2, len) == 'en';
     if (portName.startsWith('rd')) {
       if (isPortAddr) {
-        var portNum = portName.slice(2, len - 4);
+        const portNum = portName.slice(2, len - 4);
         portNum = parseInt(portNum);
-
         return this.readAddressInput[portNum];
       }
       if (isPortData) {
-        var portNum = portName.slice(2, len - 4);
+        const portNum = portName.slice(2, len - 4);
         portNum = parseInt(portNum);
         return this.verilogRAM.readDffQOutput[portNum];
       }
       if (isPortClk) {
-        var portNum = portName.slice(2, len - 3);
+        const portNum = portName.slice(2, len - 3);
         portNum = parseInt(portNum);
-
         return this.verilogRAM.readDffClock[portNum];
       }
       if (isPortEn) {
-        var portNum = portName.slice(2, len - 2);
+        const portNum = portName.slice(2, len - 2);
         portNum = parseInt(portNum);
-
         return this.verilogRAM.readDffEn[portNum];
       }
     } else {
       if (isPortAddr) {
-        var portNum = portName.slice(2, len - 4);
+        const portNum = portName.slice(2, len - 4);
         portNum = parseInt(portNum);
         return this.writeAddressInput[portNum];
       }
       if (isPortData) {
-        var portNum = portName.slice(2, len - 4);
+        const portNum = portName.slice(2, len - 4);
         portNum = parseInt(portNum);
         return this.writeDataInput[portNum];
       }
       if (isPortClk) {
-        var portNum = portName.slice(2, len - 3);
+        const portNum = portName.slice(2, len - 3);
         portNum = parseInt(portNum);
-
         return this.verilogRAM.writeDffClock[portNum];
       }
       if (isPortEn) {
-        var portNum = portName.slice(2, len - 2);
+        const portNum = portName.slice(2, len - 2);
         portNum = parseInt(portNum);
-
         return this.verilogRAM.writeDffEn[portNum];
       }
     }

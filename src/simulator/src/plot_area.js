@@ -96,7 +96,7 @@ export const plotArea = {
     this.cycleCount++;
     this.cycleTime = new Date().getTime();
   },
-  // Called everytime play() function is execute in engine.js
+  // Called every time play() function is execute in engine.js
   setExecutionTime() {
     this.executionStartTime = new Date().getTime();
   },

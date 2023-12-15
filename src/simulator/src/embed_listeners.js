@@ -13,7 +13,7 @@ import {
   errorDetectedSet,
 } from './engine';
 import {changeScale} from './canvasApi';
-import {ZoomIn, ZoomOut} from './listeners';
+import {zoomIn, zoomOut} from './listeners';
 
 const unit = 10;
 
@@ -131,7 +131,7 @@ export function startListeners() {
             (e.keyCode == 187 || e.KeyCode == 171)
     ) {
       e.preventDefault();
-      ZoomIn();
+      zoomIn();
     }
 
     // zoom out (-)
@@ -140,7 +140,7 @@ export function startListeners() {
             (e.keyCode == 189 || e.Keycode == 173)
     ) {
       e.preventDefault();
-      ZoomOut();
+      zoomOut();
     }
 
     if (

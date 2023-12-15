@@ -94,10 +94,9 @@ export class Splitter extends CircuitElement {
   }
 
   /**
-     * @memberof Splitter
-     * fn to remove proporgation delay.
-     * @return {JSON}
-     */
+   * Remove propagation delay.
+   * @memberof Splitter
+   */
   removePropagation() {
     if (this.inp1.value === undefined) {
       let i = 0;
@@ -196,44 +195,6 @@ export class Splitter extends CircuitElement {
 
   /**
      * @memberof Splitter
-     * fn to process verilog of the element
-     * @return {JSON}
-     */
-  processVerilog() {
-    if (
-      this.inp1.verilogLabel !== '' &&
-      this.outputs[0].verilogLabel === ''
-    ) {
-      let bitCount = 0;
-      for (let i = 0; i < this.splitCount; i++) {
-        if (this.bitWidthSplit[i] > 1) {
-          const label = `${this.inp1.verilogLabel}[ ${bitCount + this.bitWidthSplit[i] - 1
-          }:${bitCount}]`;
-        } else {
-          const label = `${this.inp1.verilogLabel}[${bitCount}]`;
-        }
-        if (this.outputs[i].verilogLabel !== label) {
-          this.outputs[i].verilogLabel = label;
-          this.scope.stack.push(this.outputs[i]);
-        }
-        bitCount += this.bitWidthSplit[i];
-      }
-    } else if (
-      this.inp1.verilogLabel === '' &&
-      this.outputs[0].verilogLabel !== ''
-    ) {
-      const label = `{${this.outputs
-          .map((x) => x.verilogLabel)
-          .join(',')}}`;
-      if (this.inp1.verilogLabel !== label) {
-        this.inp1.verilogLabel = label;
-        this.scope.stack.push(this.inp1);
-      }
-    }
-  }
-
-  /**
-     * @memberof Splitter
      * function to draw element
      */
   customDraw() {
@@ -267,7 +228,7 @@ export class Splitter extends CircuitElement {
     ctx.beginPath();
     ctx.fillStyle = colors['text'];
     for (let i = this.splitCount - 1; i >= 0; i--) {
-      var splitLabel;
+      let splitLabel = '';
       if (this.bitWidthSplit[this.splitCount - i - 1] == 1) {
         splitLabel = `${bitCount}`;
       } else {
@@ -289,6 +250,10 @@ export class Splitter extends CircuitElement {
     ctx.fill();
   }
 
+  /**
+   * 
+   * @return
+   */
   processVerilog() {
     // Combiner
     if (this.inp1.verilogLabel == '') {
@@ -320,8 +285,9 @@ export class Splitter extends CircuitElement {
         bitCount = parseInt(matches[3]);
       }
       for (let i = 0; i < this.splitCount; i++) {
+        let label = '';
         if (this.bitWidthSplit[i] > 1) {
-          var label =
+          label =
             inpLabel +
             '[' +
             (bitCount + this.bitWidthSplit[i] - 1) +
@@ -329,7 +295,7 @@ export class Splitter extends CircuitElement {
             bitCount +
             ']';
         } else {
-          var label = inpLabel + '[' + bitCount + ']';
+          label = inpLabel + '[' + bitCount + ']';
         }
         if (this.outputs[i].verilogLabel != label) {
           this.outputs[i].verilogLabel = label;
@@ -364,8 +330,8 @@ export class Splitter extends CircuitElement {
  * @type {string}
  * @category modules
  */
-Splitter.prototype.tooltipText =
-  'Splitter ToolTip: Split multiBit Input into smaller bitwidths or vice versa.';
+Splitter.prototype.tooltipText = 'Splitter ToolTip: Split multiBit Input ' + 
+                                  'into smaller bitwidths or vice versa.';
 
 /**
  * @memberof Splitter

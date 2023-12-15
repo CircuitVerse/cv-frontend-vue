@@ -40,6 +40,9 @@ import {setupTimingListeners} from './plot_area';
 const unit = 10;
 const listenToSimulator = true;
 
+/**
+ * Add DOM event listeners.
+ */
 export function startMainListeners() {
   $(document).on('keyup', (e) => {
     if (e.key === 'Escape') {
@@ -190,11 +193,6 @@ export function startMainListeners() {
         }
 
         if (listenToSimulator) {
-        // If mouse is focusing on input element, then override any action
-        // if($(':focus').length){
-        //     return;
-        // }
-
           if (
             document.activeElement.tagName == 'INPUT' ||
           simulationArea.mouseRawX < 0 ||
@@ -226,7 +224,7 @@ export function startMainListeners() {
           e.keyCode == 107
           ) {
             e.preventDefault();
-            ZoomIn();
+            zoomIn();
           }
           // zoom out (-)
           if (
@@ -235,7 +233,7 @@ export function startMainListeners() {
           e.keyCode == 109
           ) {
             e.preventDefault();
-            ZoomOut();
+            zoomOut();
           }
 
           if (
@@ -250,18 +248,6 @@ export function startMainListeners() {
           scheduleUpdate(1);
           updateCanvasSet(true);
           wireToBeCheckedSet(1);
-
-          // Needs to be deprecated, moved to more recent listeners
-          if (
-            simulationArea.controlDown &&
-          (e.key == 'C' || e.key == 'c')
-          ) {
-          //    simulationArea.copyList=simulationArea.multipleObjectSelections.slice();
-          //    if(simulationArea.lastSelected&&simulationArea.lastSelected!==simulationArea.root&&!simulationArea.copyList.includes(simulationArea.lastSelected)){
-          //        simulationArea.copyList.push(simulationArea.lastSelected);
-          //    }
-          //    copy(simulationArea.copyList);
-          }
 
           if (
             simulationArea.lastSelected &&
@@ -407,11 +393,14 @@ export function startMainListeners() {
       .getElementById('simulationArea')
       .addEventListener('DOMMouseScroll', MouseScroll);
 
+  /**
+   * Handle mouse scroll event.
+   * @param {any} event
+   */
   function MouseScroll(event) {
     updateCanvasSet(true);
     event.preventDefault();
-    var deltaY = event.wheelDelta ? event.wheelDelta : -event.detail;
-    var deltaY = event.wheelDelta ? event.wheelDelta : -event.detail;
+    const deltaY = event.wheelDelta ? event.wheelDelta : -event.detail;
     const direction = deltaY > 0 ? 1 : -1;
     handleZoom(direction);
     updateCanvasSet(true);
@@ -542,7 +531,7 @@ export function startMainListeners() {
               this.dataset.elementId
           ];
 
-          // Changing the coordinate doesn't work yet, nodes get far from element
+          // Changing coordinates doesn't work yet, nodes get far from element
           tempElement.x = ui.position.left - sideBarWidth;
           tempElement.y = ui.position.top;
           for (const node of tempElement.nodeList) {
@@ -573,7 +562,7 @@ export function startMainListeners() {
   }
 }
 
-var isIe =
+const isIe =
   navigator.userAgent.toLowerCase().indexOf('msie') != -1 ||
   navigator.userAgent.toLowerCase().indexOf('trident') != -1;
 
@@ -678,11 +667,11 @@ function handleZoom(direction) {
   scheduleUpdate();
 }
 
-export function ZoomIn() {
+export function zoomIn() {
   handleZoom(1);
 }
 
-export function ZoomOut() {
+export function zoomOut() {
   handleZoom(-1);
 }
 

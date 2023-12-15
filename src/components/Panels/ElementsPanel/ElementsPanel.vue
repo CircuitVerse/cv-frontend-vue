@@ -54,11 +54,10 @@ import { uxvar } from '#/simulator/src/ux';
 import { modules } from '#/simulator/src/modules';
 import { onBeforeMount, ref } from 'vue';
 const panelData = [];
-window.elementHierarchy = metadata.elementHierarchy;
 window.elementPanelList = [];
 
 onBeforeMount(() => {
-  for (const [key, value] of elementHierarchy) {
+  for (const [key, value] of metadata.elementHierarchy) {
     const categoryData = [];
     for (let i = 0; i < value.length; i++) {
       const element = value[i];
@@ -92,7 +91,7 @@ function searchElements() {
   const finalResult = [];
   for (const j in result) {
     if (Object.prototype.hasOwnProperty.call(result, j)) {
-      for (const [key, value] of elementHierarchy) {
+      for (const [key, value] of metadata.elementHierarchy) {
         for (let i = 0; i < value.length; i++) {
           if (result[j] == value[i].label) {
             finalResult.push(value[i]);

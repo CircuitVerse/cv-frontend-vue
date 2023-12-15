@@ -79,17 +79,15 @@ window.onbeforeunload = async function() {
   if (projectSaved || embed) {
     return;
   }
-
   if (!checkToSave()) {
     return;
   }
-
-  alert(
-      'You have unsaved changes on this page. Do you want to leave this page and discard your changes or stay on this page?',
-  );
+  alert('You have unsaved changes on this page. Do you want to leave this ' +
+    'page and discard your changes or stay on this page?');
   const data = await generateSaveData('Untitled');
   localStorage.setItem('recover', await data);
-  return 'Are u sure u want to leave? Any unsaved changes may not be recoverable';
+  return 'Are you sure you want to leave? Any unsaved ' +
+    'changes may not be recoverable';
 };
 
 /**
@@ -100,7 +98,6 @@ export async function clearProject() {
   if (await confirmOption('Would you like to clear the project?')) {
     globalScope = undefined;
     resetScopeList();
-    // $('.circuits').remove()
     newCircuit('main');
     showMessage('Your project is as good as new!');
   }

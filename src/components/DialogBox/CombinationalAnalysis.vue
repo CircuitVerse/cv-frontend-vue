@@ -177,7 +177,6 @@ function createLogicTable() {
     outputList.length > 0 &&
     booleanInputVariables.length == 0
   ) {
-    // $(this).dialog('close')
     SimulatorState.dialogBox.combinationalanalysis_dialog = false;
 
     createBooleanPrompt(inputList, outputList, null);
@@ -186,7 +185,6 @@ function createLogicTable() {
     inputList.length == 0 &&
     outputList.length == 0
   ) {
-    // $(this).dialog('close')
     SimulatorState.dialogBox.combinationalanalysis_dialog = false;
     output.value = [];
     solveBooleanFunction(booleanInputVariables, booleanExpression);
@@ -221,7 +219,7 @@ function createBooleanPrompt(inputList, outputList, scope = globalScope) {
   outputListNames.value =
     outputList || prompt('Enter outputs separated by commas').split(',');
   if (output.value == null) {
-    for (var i = 0; i < outputListNames.value.length; i++) {
+    for (let i = 0; i < outputListNames.value.length; i++) {
       outputListNamesInteger.value[i] = 7 * i + 13;
     } // assigning an integer to the value, 7*i + 13 is random
   } else {
@@ -234,22 +232,22 @@ function createBooleanPrompt(inputList, outputList, scope = globalScope) {
     fw = 1;
     tableHeader.value.push('dec');
   }
-  for (var i = 0; i < inputListNames.value.length; i++) {
+  for (let i = 0; i < inputListNames.value.length; i++) {
     tableHeader.value.push(inputListNames.value[i]);
   }
   if (output.value == null) {
-    for (var i = 0; i < outputListNames.value.length; i++) {
+    for (let i = 0; i < outputListNames.value.length; i++) {
       tableHeader.value.push(outputListNames.value[i]);
     }
   } else {
     tableHeader.value.push(outputListNames.value);
   }
 
-  for (var i = 0; i < 1 << inputListNames.value.length; i++) {
+  for (let i = 0; i < 1 << inputListNames.value.length; i++) {
     tableBody.value[i] = new Array(tableHeader.value.length);
   }
-  for (var i = 0; i < inputListNames.value.length; i++) {
-    for (var j = 0; j < 1 << inputListNames.value.length; j++) {
+  for (let i = 0; i < inputListNames.value.length; i++) {
+    for (let j = 0; j < 1 << inputListNames.value.length; j++) {
       tableBody.value[j][i + fw] = +(
         (j & (1 << (inputListNames.value.length - i - 1))) !=
         0
@@ -257,12 +255,12 @@ function createBooleanPrompt(inputList, outputList, scope = globalScope) {
     }
   }
   if (inputArr.value[4].val == true) {
-    for (var j = 0; j < 1 << inputListNames.value.length; j++) {
+    for (let j = 0; j < 1 << inputListNames.value.length; j++) {
       tableBody.value[j][0] = j;
     }
   }
-  for (var j = 0; j < 1 << inputListNames.value.length; j++) {
-    for (var i = 0; i < outputListNamesInteger.value.length; i++) {
+  for (let j = 0; j < 1 << inputListNames.value.length; j++) {
+    for (let i = 0; i < outputListNamesInteger.value.length; i++) {
       if (output.value == null) {
         tableBody.value[j][inputListNames.value.length + fw + i] = 'x';
       }
@@ -320,7 +318,7 @@ function drawCombinationalAnalysis(
   findDimensions(scope);
   const inputCount = inputList.length;
   let maxTerms = 0;
-  for (var i = 0; i < combinationalData.length; i++) {
+  for (let i = 0; i < combinationalData.length; i++) {
     maxTerms = Math.max(maxTerms, combinationalData[i].length);
   }
 
@@ -370,7 +368,7 @@ function drawCombinationalAnalysis(
     inputObjects[i].newLabelDirection('UP');
     const v1 = new Node(startPosX + i * 40, startPosY + 20, 2, scope.root);
     inputObjects[i].output1.connect(v1);
-    var v2 = new Node(
+    let v2 = new Node(
       startPosX + i * 40 + 20,
       startPosY + 20,
       2,
@@ -399,9 +397,9 @@ function drawCombinationalAnalysis(
     return c;
   }
 
-  for (var i = 0; i < combinationalData.length; i++) {
+  for (let i = 0; i < combinationalData.length; i++) {
     const andGateNodes = [];
-    for (var j = 0; j < combinationalData[i].length; j++) {
+    for (let j = 0; j < combinationalData[i].length; j++) {
       const c = countTerm(combinationalData[i][j]);
       if (c > 1) {
         const andGate = new AndGate(
@@ -414,13 +412,13 @@ function drawCombinationalAnalysis(
         );
         andGateNodes.push(andGate.output1);
         let misses = 0;
-        for (var k = 0; k < combinationalData[i][j].length; k++) {
+        for (let k = 0; k < combinationalData[i][j].length; k++) {
           if (combinationalData[i][j][k] == '-') {
             misses++;
             continue;
           }
-          var index = 2 * k + (combinationalData[i][j][k] == 0);
-          var v = new Node(
+          let index = 2 * k + (combinationalData[i][j][k] == 0);
+          let v = new Node(
             logixNodes[index].absX(),
             andGate.inp[k - misses].absY(),
             2,
@@ -431,18 +429,18 @@ function drawCombinationalAnalysis(
           v.connect(andGate.inp[k - misses]);
         }
       } else {
-        for (var k = 0; k < combinationalData[i][j].length; k++) {
+        for (let k = 0; k < combinationalData[i][j].length; k++) {
           if (combinationalData[i][j][k] == '-') {
             continue;
           }
-          var index = 2 * k + (combinationalData[i][j][k] == 0);
+          let index = 2 * k + (combinationalData[i][j][k] == 0);
           const andGateSubstituteNode = new Node(
             andPosX,
             currentPosY,
             2,
             scope.root,
           );
-          var v = new Node(
+          let v = new Node(
             logixNodes[index].absX(),
             andGateSubstituteNode.absY(),
             2,
@@ -478,15 +476,15 @@ function drawCombinationalAnalysis(
       if (andGateCount % 2 == 1) {
         andGateNodes[midWay].connect(o.inp[midWay]);
       }
-      for (var j = 0; j < midWay; j++) {
-        var v = new Node(
+      for (let j = 0; j < midWay; j++) {
+        let v = new Node(
           andPosX + 30 + (midWay - j) * 10,
           andGateNodes[j].absY(),
           2,
           scope.root,
         );
         v.connect(andGateNodes[j]);
-        var v2 = new Node(
+        let v2 = new Node(
           andPosX + 30 + (midWay - j) * 10,
           o.inp[j].absY(),
           2,
@@ -495,14 +493,14 @@ function drawCombinationalAnalysis(
         v2.connect(v);
         o.inp[j].connect(v2);
 
-        var v = new Node(
+        v = new Node(
           andPosX + 30 + (midWay - j) * 10,
           andGateNodes[andGateCount - j - 1].absY(),
           2,
           scope.root,
         );
         v.connect(andGateNodes[andGateCount - j - 1]);
-        var v2 = new Node(
+        v2 = new Node(
           andPosX + 30 + (midWay - j) * 10,
           o.inp[andGateCount - j - 1].absY(),
           2,
@@ -511,10 +509,10 @@ function drawCombinationalAnalysis(
         v2.connect(v);
         o.inp[andGateCount - j - 1].connect(v2);
       }
-      var out = new Output(outputPosX, o.y, scope, 'LEFT', 1);
+      let out = new Output(outputPosX, o.y, scope, 'LEFT', 1);
       out.inp1.connect(o.output1);
     } else {
-      var out = new Output(
+      let out = new Output(
         outputPosX,
         andGateNodes[0].absY(),
         scope,
@@ -526,9 +524,9 @@ function drawCombinationalAnalysis(
     out.setLabel(outputList[i]);
     out.newLabelDirection('RIGHT');
   }
-  for (var i = 0; i < logixNodes.length; i++) {
+  for (let i = 0; i < logixNodes.length; i++) {
     if (logixNodes[i].absY() != currentPosY) {
-      var v = new Node(logixNodes[i].absX(), currentPosY, 2, scope.root);
+      let v = new Node(logixNodes[i].absX(), currentPosY, 2, scope.root);
       logixNodes[i].connect(v);
     }
   }

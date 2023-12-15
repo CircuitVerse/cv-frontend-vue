@@ -45,7 +45,7 @@ import { deleteSelected } from '#/simulator/src/ux'
 import { undo } from '#/simulator/src/data/undo'
 import { redo } from '#/simulator/src/data/redo'
 import { fullView } from '#/simulator/src/ux'
-import { ZoomIn, ZoomOut } from '#/simulator/src/listeners'
+import { zoomIn, zoomOut } from '#/simulator/src/listeners'
 import { logixFunction } from '#/simulator/src/data'
 
 function dragover(): void {
@@ -72,19 +72,19 @@ function zoomToFit(): void {
   globalScope.centerFocus(false)
 }
 function undoit(): void {
-  undo()
+  undo();
 }
 function redoit(): void {
-  redo()
+  redo();
 }
 function view(): void {
-  fullView()
+  fullView();
 }
 function decrement(): void {
-  ZoomOut()
+  zoomOut();
 }
 function increment(): void {
-  ZoomIn()
+  zoomIn();
 }
 </script>
 

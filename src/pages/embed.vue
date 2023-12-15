@@ -103,7 +103,7 @@ import {
 } from '#/simulator/src/engine';
 import { prevPropertyObjSet, prevPropertyObjGet } from '#/simulator/src/ux';
 import { circuitProperty, scopeList } from '#/simulator/src/circuit';
-import { ZoomIn, ZoomOut } from '#/simulator/src/listeners';
+import { zoomIn, zoomOut } from '#/simulator/src/listeners';
 import { setup } from '#/simulator/src/setup';
 import { startListeners } from '#/simulator/src/embed_listeners';
 import TabsBar from '#/components/TabsBar/TabsBar.vue';
@@ -165,11 +165,11 @@ onMounted(() => {
 });
 
 function zoomInEmbed() {
-  ZoomIn();
+  zoomIn();
 }
 
 function zoomOutEmbed() {
-  ZoomOut();
+  zoomOut();
 }
 
 // Center focus accordingly

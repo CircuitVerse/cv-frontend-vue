@@ -293,7 +293,7 @@ export class Multiplexer extends CircuitElement {
     for (const size of Multiplexer.selSizes) {
       const numInput = 1 << size;
       let inpString = '';
-      for (var j = 0; j < numInput; j++) {
+      for (let j = 0; j < numInput; j++) {
         inpString += `in${j}, `;
       }
       output += `\nmodule Multiplexer${numInput}(out, ${inpString}sel);\n`;
@@ -302,7 +302,7 @@ export class Multiplexer extends CircuitElement {
       output += '  output reg [WIDTH-1:0] out;\n';
 
       output += '  input [WIDTH-1:0] ';
-      for (var j = 0; j < numInput - 1; j++) {
+      for (let j = 0; j < numInput - 1; j++) {
         output += `in${j}, `;
       }
       output += 'in' + (numInput - 1) + ';\n';
@@ -312,7 +312,7 @@ export class Multiplexer extends CircuitElement {
 
       output += '  always @ (*)\n';
       output += '    case (sel)\n';
-      for (var j = 0; j < numInput; j++) {
+      for (let j = 0; j < numInput; j++) {
         output += `      ${j} : out = in${j};\n`;
       }
       output += '    endcase\n';

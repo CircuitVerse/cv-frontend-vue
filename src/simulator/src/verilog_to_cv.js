@@ -89,13 +89,13 @@ class verilogSubCircuit {
     const numInputs = this.circuit.inputNodes.length;
     const numOutputs = this.circuit.outputNodes.length;
 
-    for (var i = 0; i < numInputs; i++) {
+    for (let i = 0; i < numInputs; i++) {
       if (this.circuit.data.Input[i].label == portName) {
         return this.circuit.inputNodes[i];
       }
     }
 
-    for (var i = 0; i < numOutputs; i++) {
+    for (let i = 0; i < numOutputs; i++) {
       if (this.circuit.data.Output[i].label == portName) {
         return this.circuit.outputNodes[i];
       }
@@ -128,7 +128,7 @@ export function YosysJSON2CV(
   }
   const circuitDevices = {};
 
-  for (var subCircuitName in JSON.subcircuits) {
+  for (const subCircuitName in JSON.subcircuits) {
     const scope = YosysJSON2CV(
         JSON.subcircuits[subCircuitName],
         subScope,
@@ -141,7 +141,7 @@ export function YosysJSON2CV(
   for (const device in JSON.devices) {
     const deviceType = JSON.devices[device].type;
     if (deviceType == 'Subcircuit') {
-      var subCircuitName = JSON.devices[device].celltype;
+      const subCircuitName = JSON.devices[device].celltype;
       circuitDevices[device] = new verilogSubCircuit(
           new SubCircuit(
               500,

@@ -182,7 +182,7 @@ export class TB_Output extends CircuitElement {
       ctx.textAlign = 'left';
       ctx.fillStyle = 'blue';
       for (
-        var i = 0;
+        let i = 0;
         i < this.testBenchInput.testData.outputs.length;
         i++
       ) {
@@ -204,7 +204,7 @@ export class TB_Output extends CircuitElement {
         ctx.fillStyle = 'blue';
         ctx.beginPath();
         for (
-          var i = 0;
+          let i = 0;
           i < this.testBenchInput.testData.outputs.length;
           i++
         ) {
@@ -229,7 +229,7 @@ export class TB_Output extends CircuitElement {
         ctx.fillStyle = 'blue';
 
         for (
-          var i = 0;
+          let i = 0;
           i < this.testBenchInput.testData.outputs.length;
           i++
         ) {

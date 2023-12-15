@@ -213,6 +213,10 @@ export class Decoder extends CircuitElement {
     return CircuitElement.prototype.generateVerilog.call(this);
   }
 
+  /**
+   * Generate Verilog string for Multiplexer.
+   * @return {string} String describing this element in Verilog.
+   */
   static moduleVerilog() {
     let output = '';
 
@@ -221,13 +225,13 @@ export class Decoder extends CircuitElement {
       output += '\n';
       output += 'module Decoder' + numOutput;
       output += '(';
-      for (var j = 0; j < numOutput; j++) {
+      for (let j = 0; j < numOutput; j++) {
         output += 'out' + j + ', ';
       }
       output += 'sel);\n';
 
       output += '  output reg ';
-      for (var j = 0; j < numOutput - 1; j++) {
+      for (let j = 0; j < numOutput - 1; j++) {
         output += 'out' + j + ', ';
       }
       output += 'out' + (numOutput - 1) + ';\n';
@@ -247,7 +251,6 @@ export class Decoder extends CircuitElement {
       output += '  end\n';
       output += 'endmodule\n';
     }
-
     return output;
   }
 

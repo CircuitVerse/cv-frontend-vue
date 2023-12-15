@@ -86,7 +86,7 @@ export class TB_Input extends CircuitElement {
     this.prevClockState = 0;
     this.outputs = [];
 
-    for (var i = 0; i < this.testData.inputs.length; i++) {
+    for (let i = 0; i < this.testData.inputs.length; i++) {
       this.outputs.push(
           new Node(
               this.rightDimensionX,
@@ -99,7 +99,7 @@ export class TB_Input extends CircuitElement {
       );
     }
 
-    for (var i = 0; i < this.scope.TB_Output.length; i++) {
+    for (let i = 0; i < this.scope.TB_Output.length; i++) {
       if (this.scope.TB_Output[i].identifier == this.identifier) {
         this.scope.TB_Output[i].setup();
       }
@@ -197,6 +197,7 @@ export class TB_Input extends CircuitElement {
 
   /**
    * This function is used to set a uniq identifier to every testbench
+   * @param {string} id - identifier value.
    * @memberof TB_Input
    */
   setIdentifier(id = '') {
@@ -204,18 +205,16 @@ export class TB_Input extends CircuitElement {
       return;
     }
 
-    for (var i = 0; i < this.scope.TB_Output.length; i++) {
+    for (let i = 0; i < this.scope.TB_Output.length; i++) {
       this.scope.TB_Output[i].checkPairing();
     }
 
-    for (var i = 0; i < this.scope.TB_Output.length; i++) {
+    for (let i = 0; i < this.scope.TB_Output.length; i++) {
       if (this.scope.TB_Output[i].identifier == this.identifier) {
         this.scope.TB_Output[i].identifier = id;
       }
     }
-
     this.identifier = id;
-
     this.checkPaired();
   }
 

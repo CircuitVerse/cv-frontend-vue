@@ -27,12 +27,9 @@ import {getToken} from '#/pages/simulatorHandler.vue';
 export function setProjectName(name) {
   const projectStore = useProjectStore();
   if (name == undefined) {
-    // $('#projectName').html('Untitled')
     return;
   }
   name = stripTags(name);
-  // projectName = name
-  // $('#projectName').html(name)
   projectStore.setProjectName(name);
 }
 
@@ -420,43 +417,6 @@ export async function save() {
           console.error('Error:', error);
         });
   } else {
-    // updates project - this part needs to be improved and optimised
-    // $.ajax({
-    // url: '/api/v1/simulator/update',
-    // type: 'PATCH',
-    // contentType: 'application/json',
-    // beforeSend(xhr) {
-    // xhr.setRequestHeader(
-    // 'X-CSRF-Token',
-    // $('meta[name="csrf-token"]').attr('content')
-    // )
-    // },
-    // data: JSON.stringify({
-    // data,
-    // id: logixProjectId,
-    // image: imageData,
-    // name: projectName,
-    // }),
-    // success(response) {
-    // showMessage(
-    // `We have saved your project: ${projectName} in our servers.`
-    // )
-    // $('.loadingIcon').fadeOut()
-    // localStorage.removeItem('recover')
-    // },
-    // failure(err) {
-    // showMessage(
-    // "There was an error, we couldn't save to our servers"
-    // )
-    // $('.loadingIcon').fadeOut()
-    // },
-    // })
-    // function getCookie(name) {
-    // const value = `; ${document.cookie}`;
-    // const parts = value.split(`; ${name}=`);
-    // if (parts.length === 2) return parts.pop().split(';').shift();
-    // }
-
     fetch('/api/v1/projects/update_circuit', {
       method: 'PATCH',
       headers,

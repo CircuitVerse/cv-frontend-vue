@@ -1060,10 +1060,9 @@ function setUICurrentCase(testbenchData) {
 }
 
 /**
- * UI Function
- * Set the current test case result on the UI
- * @param {Object} data - Object containing the test data
- * @param {Map} result - Map containing the output values (returned by getOutputValues())
+ * Set the current test case result on the UI.
+ * @param {Object} testbenchData - Object containing the test data.
+ * @param {Map} result - Map containing the output values.
  */
 function setUIResult(testbenchData, result) {
   const data = testbenchData.testData;
@@ -1090,7 +1089,7 @@ function setUIResult(testbenchData, result) {
 }
 
 /**
- * Use this function to navigate to test creator. This function starts the storage listener
+ * Use this function to navigate to test creator. Starts the storage listener
  * so the test is loaded directly into the simulator
  * @param {string} type - 'create', 'edit' or 'result'
  * @param {String} dataString - data in JSON string to load in case of 'edit' and 'result'

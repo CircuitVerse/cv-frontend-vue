@@ -106,10 +106,10 @@ export class SubCircuit extends CircuitElement {
       subcircuitScope.checkDependency(scope.id)
     ) {
       if (savedData) {
-        for (var i = 0; i < savedData.inputNodes.length; i++) {
+        for (let i = 0; i < savedData.inputNodes.length; i++) {
           scope.allNodes[savedData.inputNodes[i]].deleted = true;
         }
-        for (var i = 0; i < savedData.outputNodes.length; i++) {
+        for (let i = 0; i < savedData.outputNodes.length; i++) {
           scope.allNodes[savedData.outputNodes[i]].deleted = true;
         }
       }
@@ -145,7 +145,7 @@ export class SubCircuit extends CircuitElement {
         this.version = '2.0';
         this.x -= subcircuitScope.layout.width / 2;
         this.y -= subcircuitScope.layout.height / 2;
-        for (var i = 0; i < this.inputNodes.length; i++) {
+        for (let i = 0; i < this.inputNodes.length; i++) {
           this.inputNodes[i].x =
             subcircuitScope.Input[i].layoutProperties.x;
           this.inputNodes[i].y =
@@ -153,7 +153,7 @@ export class SubCircuit extends CircuitElement {
           this.inputNodes[i].leftx = this.inputNodes[i].x;
           this.inputNodes[i].lefty = this.inputNodes[i].y;
         }
-        for (var i = 0; i < this.outputNodes.length; i++) {
+        for (let i = 0; i < this.outputNodes.length; i++) {
           this.outputNodes[i].x =
             subcircuitScope.Output[i].layoutProperties.x;
           this.outputNodes[i].y =
@@ -234,7 +234,7 @@ export class SubCircuit extends CircuitElement {
       this.rightDimensionX = subcircuitScope.layout.width;
       this.downDimensionY = subcircuitScope.layout.height;
       for (let i = 0; i < subcircuitScope.Output.length; i++) {
-        var a = new Node(
+        const a = new Node(
             subcircuitScope.Output[i].layoutProperties.x,
             subcircuitScope.Output[i].layoutProperties.y,
             1,
@@ -245,7 +245,7 @@ export class SubCircuit extends CircuitElement {
         this.outputNodes.push(a);
       }
       for (let i = 0; i < subcircuitScope.Input.length; i++) {
-        var a = new Node(
+        const a = new Node(
             subcircuitScope.Input[i].layoutProperties.x,
             subcircuitScope.Input[i].layoutProperties.y,
             0,
@@ -269,12 +269,15 @@ export class SubCircuit extends CircuitElement {
     this.scope.timeStamp = this.localScope.timeStamp;
   }
 
+  /**
+   * Reset the subcircuit.
+   */
   reset() {
     this.removeConnections();
 
     const subcircuitScope = scopeList[this.id];
 
-    for (var i = 0; i < subcircuitScope.SubCircuit.length; i++) {
+    for (let i = 0; i < subcircuitScope.SubCircuit.length; i++) {
       subcircuitScope.SubCircuit[i].reset();
     }
 
@@ -306,16 +309,16 @@ export class SubCircuit extends CircuitElement {
     this.rightDimensionX = subcircuitScope.layout.width;
     this.downDimensionY = subcircuitScope.layout.height;
 
-    const temp_map_inp = {};
-    for (var i = 0; i < subcircuitScope.Input.length; i++) {
-      temp_map_inp[subcircuitScope.Input[i].layoutProperties.id] = [
+    const tempMapInput = {};
+    for (let i = 0; i < subcircuitScope.Input.length; i++) {
+      tempMapInput[subcircuitScope.Input[i].layoutProperties.id] = [
         subcircuitScope.Input[i],
         undefined,
       ];
     }
-    for (var i = 0; i < this.inputNodes.length; i++) {
-      if (temp_map_inp.hasOwnProperty(this.inputNodes[i].layout_id)) {
-        temp_map_inp[this.inputNodes[i].layout_id][1] =
+    for (let i = 0; i < this.inputNodes.length; i++) {
+      if (tempMapInput.hasOwnProperty(this.inputNodes[i].layout_id)) {
+        tempMapInput[this.inputNodes[i].layout_id][1] =
           this.inputNodes[i];
       } else {
         this.scope.backups = [];
@@ -327,42 +330,42 @@ export class SubCircuit extends CircuitElement {
       }
     }
 
-    for (id in temp_map_inp) {
-      if (temp_map_inp[id][1]) {
+    for (id in tempMapInput) {
+      if (tempMapInput[id][1]) {
         if (
-          temp_map_inp[id][0].layoutProperties.x ==
-          temp_map_inp[id][1].x &&
-          temp_map_inp[id][0].layoutProperties.y ==
-          temp_map_inp[id][1].y
+          tempMapInput[id][0].layoutProperties.x ==
+          tempMapInput[id][1].x &&
+          tempMapInput[id][0].layoutProperties.y ==
+          tempMapInput[id][1].y
         ) {
-          temp_map_inp[id][1].bitWidth = temp_map_inp[id][0].bitWidth;
+          tempMapInput[id][1].bitWidth = tempMapInput[id][0].bitWidth;
         } else {
           this.scope.backups = [];
-          temp_map_inp[id][1].delete();
-          const index = this.nodeList.indexOf(temp_map_inp[id][1]);
+          tempMapInput[id][1].delete();
+          const index = this.nodeList.indexOf(tempMapInput[id][1]);
           if (index != -1) {
             this.nodeList.splice(index, 1);
           }
-          temp_map_inp[id][1] = new Node(
-              temp_map_inp[id][0].layoutProperties.x,
-              temp_map_inp[id][0].layoutProperties.y,
+          tempMapInput[id][1] = new Node(
+              tempMapInput[id][0].layoutProperties.x,
+              tempMapInput[id][0].layoutProperties.y,
               0,
               this,
-              temp_map_inp[id][0].bitWidth,
+              tempMapInput[id][0].bitWidth,
           );
-          temp_map_inp[id][1].layout_id = id;
+          tempMapInput[id][1].layout_id = id;
         }
       }
     }
 
     this.inputNodes = [];
-    for (var i = 0; i < subcircuitScope.Input.length; i++) {
+    for (let i = 0; i < subcircuitScope.Input.length; i++) {
       const input =
-        temp_map_inp[subcircuitScope.Input[i].layoutProperties.id][0];
-      if (temp_map_inp[input.layoutProperties.id][1]) {
-        this.inputNodes.push(temp_map_inp[input.layoutProperties.id][1]);
+        tempMapInput[subcircuitScope.Input[i].layoutProperties.id][0];
+      if (tempMapInput[input.layoutProperties.id][1]) {
+        this.inputNodes.push(tempMapInput[input.layoutProperties.id][1]);
       } else {
-        var a = new Node(
+        const a = new Node(
             input.layoutProperties.x,
             input.layoutProperties.y,
             0,
@@ -375,13 +378,13 @@ export class SubCircuit extends CircuitElement {
     }
 
     const temp_map_out = {};
-    for (var i = 0; i < subcircuitScope.Output.length; i++) {
+    for (let i = 0; i < subcircuitScope.Output.length; i++) {
       temp_map_out[subcircuitScope.Output[i].layoutProperties.id] = [
         subcircuitScope.Output[i],
         undefined,
       ];
     }
-    for (var i = 0; i < this.outputNodes.length; i++) {
+    for (let i = 0; i < this.outputNodes.length; i++) {
       if (temp_map_out.hasOwnProperty(this.outputNodes[i].layout_id)) {
         temp_map_out[this.outputNodes[i].layout_id][1] =
           this.outputNodes[i];
@@ -422,7 +425,7 @@ export class SubCircuit extends CircuitElement {
     }
 
     this.outputNodes = [];
-    for (var i = 0; i < subcircuitScope.Output.length; i++) {
+    for (let i = 0; i < subcircuitScope.Output.length; i++) {
       const output =
         temp_map_out[subcircuitScope.Output[i].layoutProperties.id][0];
       if (temp_map_out[output.layoutProperties.id][1]) {
@@ -430,7 +433,7 @@ export class SubCircuit extends CircuitElement {
             temp_map_out[output.layoutProperties.id][1],
         );
       } else {
-        var a = new Node(
+        const a = new Node(
             output.layoutProperties.x,
             output.layoutProperties.y,
             1,

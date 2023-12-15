@@ -189,7 +189,7 @@ export class verilogRAM extends CircuitElement {
     );
 
     this.readAddress = [];
-    for (var i = 0; i < numRead; i++) {
+    for (let i = 0; i < numRead; i++) {
       this.readAddress.push(
           new Node(
               -this.leftDimensionX,
@@ -203,7 +203,7 @@ export class verilogRAM extends CircuitElement {
     }
 
     this.writeAddress = [];
-    for (var i = 0; i < numWrite; i++) {
+    for (let i = 0; i < numWrite; i++) {
       this.writeAddress.push(
           new Node(
               -this.leftDimensionX,
@@ -229,7 +229,7 @@ export class verilogRAM extends CircuitElement {
     this.writeDffClockPolarity = [];
     this.writeDffEnPolarity = [];
 
-    for (var i = 0; i < numWrite; i++) {
+    for (let i = 0; i < numWrite; i++) {
       const currWriteData = new Node(
           -this.leftDimensionX,
           0,
@@ -239,15 +239,15 @@ export class verilogRAM extends CircuitElement {
           'DATA IN' + i.toString(),
       );
 
-      var clockInp = new Node(-20, +10, 0, this, 1, 'Clock');
-      var dInp = new Node(-20, -10, 0, this, this.bitWidth, 'D');
-      var qOutput = new Node(20, -10, 1, this, this.bitWidth, 'Q');
-      var en = new Node(-10, 20, 0, this, 1, 'Enable');
-      var masterState = 0;
-      var slaveState = 0;
-      var prevClockState = 0;
-      var clockPolarity = wrports[i]['clock_polarity'];
-      var enPolarity = wrports[i]['enable_polarity'];
+      const clockInp = new Node(-20, +10, 0, this, 1, 'Clock');
+      const dInp = new Node(-20, -10, 0, this, this.bitWidth, 'D');
+      const qOutput = new Node(20, -10, 1, this, this.bitWidth, 'Q');
+      const en = new Node(-10, 20, 0, this, 1, 'Enable');
+      const masterState = 0;
+      const slaveState = 0;
+      const prevClockState = 0;
+      const clockPolarity = wrports[i]['clock_polarity'];
+      let enPolarity = wrports[i]['enable_polarity'];
 
       if (enPolarity == undefined) {
         enPolarity = true;
@@ -299,7 +299,7 @@ export class verilogRAM extends CircuitElement {
     this.readDffClockPolarity = [];
     this.readDffEnPolarity = [];
 
-    for (var i = 0; i < numRead; i++) {
+    for (let i = 0; i < numRead; i++) {
       const currReadOut = new Node(
           this.rightDimensionX,
           0,
@@ -309,15 +309,15 @@ export class verilogRAM extends CircuitElement {
           'DATA OUT' + i.toString(),
       );
 
-      var clockInp = new Node(-20, +10, 0, this, 1, 'Clock');
-      var dInp = new Node(-20, -10, 0, this, this.bitWidth, 'D');
-      var qOutput = new Node(20, -10, 1, this, this.bitWidth, 'Q');
-      var en = new Node(-10, 20, 0, this, 1, 'Enable');
-      var masterState = 0;
-      var slaveState = 0;
-      var prevClockState = 0;
-      var clockPolarity = rdports[i]['clock_polarity'];
-      var enPolarity = rdports[i]['enable_polarity'];
+      const clockInp = new Node(-20, +10, 0, this, 1, 'Clock');
+      const dInp = new Node(-20, -10, 0, this, this.bitWidth, 'D');
+      const qOutput = new Node(20, -10, 1, this, this.bitWidth, 'Q');
+      const en = new Node(-10, 20, 0, this, 1, 'Enable');
+      const masterState = 0;
+      const slaveState = 0;
+      const prevClockState = 0;
+      const clockPolarity = rdports[i]['clock_polarity'];
+      const enPolarity = rdports[i]['enable_polarity'];
 
       this.readDffClock.push(clockInp);
       this.readDffDInp.push(dInp);
@@ -345,47 +345,51 @@ export class verilogRAM extends CircuitElement {
     this.fillData(memData);
   }
 
+  /**
+   *
+   * @param {*} memData
+   */
   fillData(memData) {
-    for (var i = 0; i < this.words; i++) {
+    for (let i = 0; i < this.words; i++) {
       this.data[i] = 0;
     }
     const len = memData.length;
     let dataIndex = 0;
-    for (var i = 0; i < len; i++) {
+    for (let i = 0; i < len; i++) {
       if (Number.isInteger(memData[i])) {
-        var data = memData[i + 1];
+        const data = memData[i + 1];
 
         if (data.startsWith('x')) {
           dataIndex += memData[i];
           continue;
         }
 
-        var dataValue = 0;
-        var power2 = 1;
+        let dataValue = 0;
+        let power2 = 1;
 
-        for (var j = this.bitWidth - 1; j >= 0; j--) {
+        for (let j = this.bitWidth - 1; j >= 0; j--) {
           if (data[j] == '1') {
             dataValue += power2;
           }
           power2 *= 2;
         }
 
-        for (var j = 0; j < memData[i]; j++) {
+        for (let j = 0; j < memData[i]; j++) {
           this.data[dataIndex++] = dataValue;
         }
         i++;
       } else {
-        var data = memData[i];
+        const data = memData[i];
 
         if (data.startsWith('x')) {
           dataIndex++;
           continue;
         }
 
-        var dataValue = 0;
-        var power2 = 1;
+        let dataValue = 0;
+        let power2 = 1;
 
-        for (var j = this.bitWidth - 1; j >= 0; j--) {
+        for (let j = this.bitWidth - 1; j >= 0; j--) {
           if (data[j] == '1') {
             dataValue += power2;
           }
@@ -459,6 +463,9 @@ export class verilogRAM extends CircuitElement {
     return this.reset.value != undefined || this.coreDump.value != undefined;
   }
 
+  /**
+   *
+   */
   resolve() {
     customResolve(
         this.writeDffClock,
@@ -473,7 +480,7 @@ export class verilogRAM extends CircuitElement {
         this.numWrite,
     );
 
-    for (var i = 0; i < this.numWrite; i++) {
+    for (let i = 0; i < this.numWrite; i++) {
       if (this.writeEnable[i].value == 1) {
         this.data[this.writeAddress[i].value] =
           this.writeDffQOutput[i].value;
@@ -492,7 +499,7 @@ export class verilogRAM extends CircuitElement {
     }
     this.prevCoreDumpValue = this.coreDump.value;
 
-    for (var i = 0; i < this.numRead; i++) {
+    for (let i = 0; i < this.numRead; i++) {
       this.dataOut[i].value = this.data[this.readAddress[i].value] || 0;
       simulationArea.simulationQueue.add(this.dataOut[i]);
     }

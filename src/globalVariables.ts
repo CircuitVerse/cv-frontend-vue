@@ -6,7 +6,6 @@ declare const window: any;
 import jQuery from 'jquery';
 window.$ = window.jQuery = jQuery;
 
-window.Array = Array;
 window.isUserLoggedIn = false;
 window.logixProjectId = undefined;
 
@@ -24,4 +23,3 @@ window.height = undefined;
 // devicePixelRatio, 2 for retina displays, 1 for low resolution displays
 window.DPR = window.devicePixelRatio || 1;
 
-window.elementHierarchy = [];

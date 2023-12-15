@@ -220,9 +220,9 @@ function same_modifiers(key1, key2) {
         key1.meta === key2.meta
   );
 }
-
+let _KeyCode = '';
 if (typeof window.KeyCode != 'undefined') {
-  var _KeyCode = window.KeyCode;
+  _KeyCode = window.KeyCode;
 }
 
 export const KeyCode = {
@@ -231,7 +231,9 @@ export const KeyCode = {
     return KeyCode;
   },
 
-  /** Generates a function key code from a number between 1 and 12 */
+  /**
+   * Generates a function key code from a number between 1 and 12
+   */
   fkey: function(num) {
     return 111 + num;
   },
@@ -368,34 +370,3 @@ export const KeyCode = {
 for (const code in key_names) {
   KeyCode[key_names[code]] = code;
 }
-
-// var fields = ['charCode', 'keyCode', 'which', 'type', 'timeStamp',
-//               'altKey', 'ctrlKey', 'shiftKey', 'metaKey'];
-// var types = ['keydown', 'keypress', 'keyup'];
-
-// function show_event(type) {
-//     return function(e) {
-//         var lines = [];
-//         for(var i = 0; i < fields.length; ++i) {
-//             lines.push('<b>' + fields[i] + '</b>: ' + e[fields[i]] + '<br />');
-//         }
-//         document.getElementByI(type).innerHTML = lines.join('\n');
-//         return false;
-//     }
-// };
-
-// function show_is_key_down(id, code, ctrl, alt, shift) {
-//     document.getElementById(id + '_down').innerHTML = KeyCode.is_down({
-//         code: code,
-//         ctrl: ctrl,
-//         alt: alt,
-//         shift: shift
-//     });
-// };
-
-// function update_key_downs() {
-//     show_is_key_down('x', KeyCode.key('x'), false, false, false);
-//     show_is_key_down('shift_x', KeyCode.key('x'), false, false, true);
-//     show_is_key_down('shift_c', KeyCode.key('c'), false, false, true);
-//     show_is_key_down('ctrl_a', KeyCode.key('a'), true, false, false);
-// };
