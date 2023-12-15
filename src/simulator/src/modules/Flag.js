@@ -214,7 +214,7 @@ Flag.prototype.helplink =
  * @category modules
  */
 Flag.prototype.helplink =
-    'https://docs.circuitverse.org/#/chapter4/8misc?id=tunnel'
+    'https://docs.circuitverse.org/#/miscellaneous?id=tunnel'
 
 /**
  * @memberof Flag
