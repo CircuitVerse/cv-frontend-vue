@@ -47,7 +47,7 @@ export class Power extends CircuitElement {
       nodes: {
         output1: findNode(this.output1),
       },
-      constructorParamaters: [this.bitWidth],
+      bitWidth: this.bitWidth,
     };
     return data;
   }
@@ -157,3 +157,4 @@ function getNextPosition(x = 0, scope = globalScope) {
   return possibleY;
 }
 Power.prototype.objectType = 'Power';
+Power.prototype.constructorParameters= ['bitWidth'];

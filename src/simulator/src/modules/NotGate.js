@@ -38,7 +38,8 @@ export class NotGate extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [this.direction, this.bitWidth],
+      direction: this.direction,
+      bitWidth: this.bitWidth,
       nodes: {
         output1: findNode(this.output1),
         inp1: findNode(this.inp1),
@@ -119,3 +120,4 @@ NotGate.prototype.tooltipText =
 NotGate.prototype.helplink = 'https://docs.circuitverse.org/#/gates?id=not-gate';
 NotGate.prototype.objectType = 'NotGate';
 NotGate.prototype.verilogType = 'not';
+NotGate.prototype.constructorParameters= ['direction', 'bitWidth'];

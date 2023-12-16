@@ -180,7 +180,7 @@ export class Keyboard extends CircuitElement {
         reset: findNode(this.reset),
         en: findNode(this.en),
       },
-      constructorParamaters: [this.bufferSize],
+      bufferSize: this.bufferSize,
     };
     return data;
   }
@@ -248,3 +248,4 @@ Keyboard.prototype.mutableProperties = {
 };
 
 Keyboard.prototype.objectType = 'Keyboard';
+Keyboard.prototype.constructorParameters= ['bufferSize'];

@@ -223,15 +223,11 @@ export class RGBLedMatrix extends CircuitElement {
     // Unlike a read LED matrix, we also persist the color of each pixel.
     // This allows circuit preview to show the colors at the time the simulation was saved.
     return {
-      constructorParamaters: [
-        {
-          rows: this.rows,
-          columns: this.columns,
-          ledSize: this.ledSize,
-          showGrid: this.showGrid,
-          colors: this.colors,
-        },
-      ],
+      rows: this.rows,
+      columns: this.columns,
+      ledSize: this.ledSize,
+      showGrid: this.showGrid,
+      colors: this.colors,
       nodes: {
         rowEnableNodes: this.rowEnableNodes.map(findNode),
         columnEnableNodes: this.columnEnableNodes.map(findNode),
@@ -394,3 +390,5 @@ RGBLedMatrix.prototype.mutableProperties = {
   },
 };
 RGBLedMatrix.prototype.objectType = 'RGBLedMatrix';
+RGBLedMatrix.prototype.constructorParameters= ['rows', 'columns',
+  'ledSize', 'showGrid', 'colors'];

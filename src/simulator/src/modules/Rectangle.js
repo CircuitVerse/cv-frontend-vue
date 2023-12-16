@@ -89,7 +89,8 @@ export class Rectangle extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [this.rows, this.cols],
+      rows: this.rows,
+      cols: this.cols,
     };
     return data;
   }
@@ -168,3 +169,4 @@ Rectangle.prototype.mutableProperties = {
   },
 };
 Rectangle.prototype.objectType = 'Rectangle';
+Rectangle.prototype.constructorParameters= ['rows', 'cols'];

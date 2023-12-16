@@ -76,11 +76,9 @@ export class BitSelector extends CircuitElement {
         output1: findNode(this.output1),
         bitSelectorInp: findNode(this.bitSelectorInp),
       },
-      constructorParamaters: [
-        this.direction,
-        this.bitWidth,
-        this.selectorBitWidth,
-      ],
+      direction: this.direction,
+      bitWidth: this.bitWidth,
+      selectorBitWidth: this.selectBitWidth,
     };
     return data;
   }
@@ -185,3 +183,8 @@ BitSelector.prototype.mutableProperties = {
   },
 };
 BitSelector.prototype.objectType = 'BitSelector';
+
+BitSelector.prototype.constructorParameters= ['direction',
+  'bitWidth',
+  'selectorBitWidth',
+];

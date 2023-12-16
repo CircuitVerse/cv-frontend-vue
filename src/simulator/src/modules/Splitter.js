@@ -80,11 +80,9 @@ export class Splitter extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [
-        this.direction,
-        this.bitWidth,
-        this.bitWidthSplit,
-      ],
+      direction: this.direction,
+      bitWidth: this.bitWidth,
+      bitWidthSplit: this.bitWidthSplit,
       nodes: {
         outputs: this.outputs.map(findNode),
         inp1: findNode(this.inp1),
@@ -251,7 +249,7 @@ export class Splitter extends CircuitElement {
   }
 
   /**
-   * 
+   *
    * @return
    */
   processVerilog() {
@@ -330,7 +328,7 @@ export class Splitter extends CircuitElement {
  * @type {string}
  * @category modules
  */
-Splitter.prototype.tooltipText = 'Splitter ToolTip: Split multiBit Input ' + 
+Splitter.prototype.tooltipText = 'Splitter ToolTip: Split multiBit Input ' +
                                   'into smaller bitwidths or vice versa.';
 
 /**
@@ -341,3 +339,8 @@ Splitter.prototype.tooltipText = 'Splitter ToolTip: Split multiBit Input ' +
  */
 Splitter.prototype.helplink = 'https://docs.circuitverse.org/#/splitter';
 Splitter.prototype.objectType = 'Splitter';
+Splitter.prototype.constructorParameters= [
+  'direction', 
+  'bitWidth', 
+  'bitWidthSplit'
+];

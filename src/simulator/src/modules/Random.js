@@ -93,7 +93,8 @@ export class Random extends CircuitElement {
         maxValue: findNode(this.maxValue),
         output: findNode(this.output),
       },
-      constructorParamaters: [this.direction, this.bitWidth],
+      direction: this.direction,
+      bitWidth: this.bitWidth,
     };
     return data;
   }
@@ -178,3 +179,4 @@ Random.prototype.layoutProperties = {
   upDimensionY: 0,
   downDimensionY: 20,
 };
+Random.prototype.constructorParameters= ['direction', 'bitWidth'];

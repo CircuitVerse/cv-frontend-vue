@@ -76,7 +76,8 @@ export class Decoder extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [this.direction, this.bitWidth],
+      direction: this.direction,
+      bitWidth: this.bitWidth,
       nodes: {
         output1: this.output1.map(findNode),
         input: findNode(this.input),
@@ -273,3 +274,4 @@ Decoder.prototype.tooltipText =
 Decoder.prototype.helplink =
   'https://docs.circuitverse.org/#/decodersandplexers?id=decoder';
 Decoder.prototype.objectType = 'Decoder';
+Decoder.prototype.constructorParameters= ['direction', 'bitWidth'];

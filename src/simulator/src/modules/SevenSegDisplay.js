@@ -70,7 +70,7 @@ export class SevenSegDisplay extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [this.color],
+      color: this.color,
       nodes: {
         g: findNode(this.g),
         f: findNode(this.f),
@@ -337,3 +337,4 @@ SevenSegDisplay.prototype.mutableProperties = {
     func: 'changeColor',
   },
 };
+SevenSegDisplay.prototype.constructorParameters= ['color'];

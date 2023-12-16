@@ -116,7 +116,8 @@ export class DflipFlop extends CircuitElement {
         preset: findNode(this.preset),
         en: findNode(this.en),
       },
-      constructorParamaters: [this.direction, this.bitWidth],
+      direction: this.direction,
+      bitWidth: this.bitWidth,
     };
     return data;
   }
@@ -173,3 +174,4 @@ DflipFlop.prototype.helplink =
   'https://docs.circuitverse.org/#/Sequential?id=d-flip-flop';
 
 DflipFlop.prototype.objectType = 'DflipFlop';
+DflipFlop.prototype.constructorParameters= ['direction', 'bitWidth'];

@@ -61,7 +61,7 @@ export class EEPROM extends RAM {
     // Normalize this.data to use zeroes instead of null when serialized.
     const {data} = this;
 
-    saveInfo.constructorParamaters.push(data);
+    saveInfo.constructorParameters.push(data);
     return saveInfo;
   }
 

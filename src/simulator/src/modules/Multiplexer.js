@@ -126,11 +126,9 @@ export class Multiplexer extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [
-        this.direction,
-        this.bitWidth,
-        this.controlSignalSize,
-      ],
+      direction: this.direction,
+      bitWidth: this.bitWidth,
+      controlSignalSize: this.controlSignalSize,
       nodes: {
         inp: this.inp.map(findNode),
         output1: findNode(this.output1),
@@ -355,3 +353,8 @@ Multiplexer.prototype.mutableProperties = {
   },
 };
 Multiplexer.prototype.objectType = 'Multiplexer';
+Multiplexer.prototype.constructorParameters= [
+  'direction',
+  'bitWidth',
+  'controlSignalSize',
+];

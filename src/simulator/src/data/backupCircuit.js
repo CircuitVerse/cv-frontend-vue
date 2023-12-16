@@ -18,7 +18,11 @@ export function checkIfBackup(scope) {
   }
   return false;
 }
-
+/**
+ *
+ * @param {Scope} scope
+ * @return {any}
+ */
 export function backUp(scope = globalScope) {
   // Disconnection of subcircuits are needed because these are the
   // connections between nodes in current scope and those in the

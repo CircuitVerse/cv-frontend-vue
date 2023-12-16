@@ -35,7 +35,8 @@ export class Arrow extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [this.direction],
+
+      direction: this.direction,
     };
     return data;
   }
@@ -84,3 +85,4 @@ Arrow.prototype.tooltipText = 'Arrow ToolTip : Arrow Selected.';
 Arrow.prototype.propagationDelayFixed = true;
 Arrow.prototype.helplink = 'https://docs.circuitverse.org/#/annotation?id=arrow';
 Arrow.prototype.objectType = 'Arrow';
+Arrow.prototype.constructorParameters = ['direction'];

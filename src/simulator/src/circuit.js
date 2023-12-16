@@ -392,7 +392,7 @@ export class Scope {
    * Get dependency list - list of all circuits, this circuit depends on
    */
   getDependencies() {
-    const list = [];
+    let list = [];
     for (let i = 0; i < this.SubCircuit.length; i++) {
       list.push(this.SubCircuit[i].id);
       list = list.concat(scopeList[this.SubCircuit[i].id].getDependencies());

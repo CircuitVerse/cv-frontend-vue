@@ -89,11 +89,9 @@ export class Dlatch extends CircuitElement {
         dInp: findNode(this.dInp),
         qOutput: findNode(this.qOutput),
         qInvOutput: findNode(this.qInvOutput),
-        // reset: findNode(this.reset),
-        // preset: findNode(this.preset),
-        // en: findNode(this.en),
       },
-      constructorParamaters: [this.direction, this.bitWidth],
+      direction: this.direction,
+      bitWidth: this.bitWidth,
     };
     return data;
   }
@@ -127,3 +125,4 @@ Dlatch.prototype.helplink =
   'https://docs.circuitverse.org/#/Sequential?id=d-latch';
 
 Dlatch.prototype.objectType = 'Dlatch';
+Dlatch.prototype.constructorParameters= ['direction', 'bitWidth'];

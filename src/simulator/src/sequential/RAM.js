@@ -123,11 +123,9 @@ export class RAM extends CircuitElement {
   customSave() {
     return {
       // NOTE: data is not persisted since RAMs are volatile.
-      constructorParamaters: [
-        this.direction,
-        this.bitWidth,
-        this.addressWidth,
-      ],
+      direction: this.direction,
+      bitWidth: this.bitWidth,
+      addressWidth: this.addressWidth,
       nodes: {
         address: findNode(this.address),
         dataIn: findNode(this.dataIn),
@@ -396,3 +394,8 @@ RAM.prototype.mutableProperties = {
   },
 };
 RAM.prototype.objectType = 'RAM';
+RAM.prototype.constructorParameters= [
+  'direction',
+  'bitWidth',
+  'addressWidth',
+];

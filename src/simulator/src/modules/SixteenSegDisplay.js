@@ -64,7 +64,7 @@ export class SixteenSegDisplay extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [this.color],
+      color: this.color,
       nodes: {
         input1: findNode(this.input1),
         dot: findNode(this.dot),
@@ -513,3 +513,4 @@ SixteenSegDisplay.prototype.mutableProperties = {
     func: 'changeColor',
   },
 };
+SixteenSegDisplay.prototype.constructorParameters= ['color'];

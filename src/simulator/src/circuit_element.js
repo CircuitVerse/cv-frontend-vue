@@ -194,7 +194,6 @@ export class CircuitElement {
     return {
       values: {},
       nodes: {},
-      constructorParamaters: [],
     };
   }
 

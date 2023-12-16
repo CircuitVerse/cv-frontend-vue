@@ -410,18 +410,15 @@ export class verilogRAM extends CircuitElement {
     this.dataOut.map(findNode);
     const data = {
       // NOTE: data is not persisted since verilogRAMs are volatile.
-      constructorParamaters: [
-        this.direction,
-        this.bitWidth,
-        this.addressWidth,
-        this.memData,
-        this.words,
-        this.numRead,
-        this.numWrite,
-        this.rdports,
-        this.wrports,
-      ],
-
+      direction: this.direction,
+      bitWidth: this.bitWidth,
+      addressWidth: this.addressWidth,
+      memData: this.memData,
+      words: this.words,
+      numRead: this.numRead,
+      numWrite: this.numWrite,
+      rdports: this.rdports,
+      wrports: this.wrports,
       nodes: {
         readAddress: this.readAddress.map(findNode),
         writeAddress: this.writeAddress.map(findNode),
@@ -596,3 +593,14 @@ verilogRAM.prototype.mutableProperties = {
   },
 };
 verilogRAM.prototype.objectType = 'verilogRAM';
+verilogRAM.prototype.constructorParameters= [
+  'direction',
+  'bitWidth',
+  'addressWidth',
+  'memData',
+  'words',
+  'numRead',
+  'numWrite',
+  'rdports',
+  'wrports',
+];

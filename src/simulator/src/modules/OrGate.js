@@ -71,12 +71,9 @@ export class OrGate extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [
-        this.direction,
-        this.inputSize,
-        this.bitWidth,
-      ],
-
+      direction: this.direction,
+      inputSize: this.inputSize,
+      bitWidth: this.bitWidth,
       nodes: {
         inp: this.inp.map(findNode),
         output1: findNode(this.output1),
@@ -182,3 +179,4 @@ OrGate.prototype.alwaysResolve = true;
 OrGate.prototype.verilogType = 'or';
 OrGate.prototype.helplink = 'https://docs.circuitverse.org/#/gates?id=or-gate';
 OrGate.prototype.objectType = 'OrGate';
+OrGate.prototype.constructorParameters= ['direction', 'inputSize', 'bitWidth'];

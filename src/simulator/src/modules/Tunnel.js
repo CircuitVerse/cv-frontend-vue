@@ -167,11 +167,9 @@ export class Tunnel extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [
-        this.direction,
-        this.bitWidth,
-        this.identifier,
-      ],
+      direction: this.direction,
+      bitWidth: this.bitWidth,
+      identifier: this.identifier,
       nodes: {
         inp1: findNode(this.inp1),
       },
@@ -389,3 +387,8 @@ Tunnel.prototype.mutableProperties = {
   },
 };
 Tunnel.prototype.objectType = 'Tunnel';
+Tunnel.prototype.constructorParameters= [
+  'direction',
+  'bitWidth',
+  'identifier',
+];

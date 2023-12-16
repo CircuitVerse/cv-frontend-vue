@@ -62,7 +62,7 @@ export class Rom extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [this.data],
+      data: this.data,
       nodes: {
         memAddr: findNode(this.memAddr),
         dataOut: findNode(this.dataOut),
@@ -335,3 +335,4 @@ export class Rom extends CircuitElement {
 Rom.prototype.tooltipText = 'Read-only memory';
 Rom.prototype.helplink = 'https://docs.circuitverse.org/#/memoryElements?id=rom';
 Rom.prototype.objectType = 'Rom';
+Rom.prototype.constructorParameters= ['data'];

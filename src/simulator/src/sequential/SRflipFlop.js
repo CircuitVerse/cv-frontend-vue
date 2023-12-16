@@ -93,7 +93,7 @@ export class SRflipFlop extends CircuitElement {
         preset: findNode(this.preset),
         en: findNode(this.en),
       },
-      constructorParamaters: [this.direction],
+      direction: this.direction,
     };
     return data;
   }
@@ -124,3 +124,4 @@ SRflipFlop.prototype.helplink =
   'https://docs.circuitverse.org/#/Sequential?id=sr-flip-flop';
 
 SRflipFlop.prototype.objectType = 'SRflipFlop';
+SRflipFlop.prototype.constructorParameters= ['direction'];

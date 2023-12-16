@@ -182,11 +182,9 @@ export class TB_Input extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [
-        this.direction,
-        this.identifier,
-        this.testData,
-      ],
+      direction: this.direction,
+      identifier: this.identifier,
+      testData: this.testData,
       nodes: {
         outputs: this.outputs.map(findNode),
         clockInp: findNode(this.clockInp),
@@ -370,3 +368,8 @@ TB_Input.prototype.mutableProperties = {
   },
 };
 TB_Input.prototype.objectType = 'TB_Input';
+TB_Input.prototype.constructorParameters= [
+  'direction',
+  'identifier',
+  'testData',
+];

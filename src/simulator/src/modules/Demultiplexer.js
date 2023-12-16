@@ -114,11 +114,9 @@ export class Demultiplexer extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [
-        this.direction,
-        this.bitWidth,
-        this.controlSignalSize,
-      ],
+      direction: this.direction,
+      bitWidth: this.bitWidth,
+      controlSignalSize: this.controlSignalSize,
       nodes: {
         output1: this.output1.map(findNode),
         input: findNode(this.input),
@@ -334,3 +332,8 @@ Demultiplexer.prototype.tooltipText =
 Demultiplexer.prototype.helplink =
   'https://docs.circuitverse.org/#/decodersandplexers?id=demultiplexer';
 Demultiplexer.prototype.objectType = 'Demultiplexer';
+Demultiplexer.prototype.constructorParameters= [
+  'direction',
+  'bitWidth',
+  'controlSignalSize',
+];

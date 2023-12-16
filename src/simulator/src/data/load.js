@@ -31,16 +31,21 @@ import {ForceConnection, ForceNode, ForceDirectedGraph} from '../layout/force_di
  */
 function loadModule(data, scope) {
   // Create circuit element
+  const params = [];
+  const constructorParams = modules[data.objectType].prototype.constructorParameters;
+  for (let i = 0; i < constructorParams.length; i++) {
+    params.push(data.customData[constructorParams[i]]);
+  }
   const obj = new modules[data.objectType](
       data.x,
       data.y,
       scope,
-      ...(data.customData.constructorParamaters || []),
+      ...params,
   );
   // Sets directions
   obj.label = data.label;
   obj.labelDirection =
-    data.labelDirection || oppositeDirection[fixDirection[obj.direction]];
+    data.labelDirection || oppositeDirection[obj.direction];
 
   // Sets delay
   obj.propagationDelay = data.propagationDelay || obj.propagationDelay;

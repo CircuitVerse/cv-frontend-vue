@@ -39,7 +39,8 @@ export class TriState extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [this.direction, this.bitWidth],
+      direction: this.direction,
+      bitWidth: this.bitWidth,
       nodes: {
         output1: findNode(this.output1),
         inp1: findNode(this.inp1),
@@ -139,3 +140,4 @@ TriState.prototype.tooltipText =
 TriState.prototype.helplink =
   'https://docs.circuitverse.org/#/miscellaneous?id=tri-state-buffer';
 TriState.prototype.objectType = 'TriState';
+TriState.prototype.constructorParameters= ['direction', 'bitWidth'];

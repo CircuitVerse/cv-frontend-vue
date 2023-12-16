@@ -37,7 +37,8 @@ export class TwoComplement extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [this.direction, this.bitWidth],
+      direction: this.direction,
+      bitWidth: this.bitWidth,
       nodes: {
         output1: findNode(this.output1),
         inp1: findNode(this.inp1),
@@ -108,3 +109,4 @@ export class TwoComplement extends CircuitElement {
 TwoComplement.prototype.tooltipText =
   'Two\'s Complement Tooltip : Calculates the two\'s complement';
 TwoComplement.prototype.objectType = 'TwoComplement';
+TwoComplement.prototype.constructorParameters= ['direction', 'bitWidth'];

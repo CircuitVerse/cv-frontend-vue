@@ -50,7 +50,8 @@ export class ALU extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [this.direction, this.bitWidth],
+      direction: this.direction,
+      bitWidth: this.bitWidth,
       nodes: {
         inp1: findNode(this.inp1),
         inp2: findNode(this.inp2),
@@ -194,3 +195,4 @@ ALU.prototype.tooltipText =
  */
 ALU.prototype.helplink = 'https://docs.circuitverse.org/#/miscellaneous?id=alu';
 ALU.prototype.objectType = 'ALU';
+ALU.prototype.constructorParameters= ['direction', 'bitWidth'];

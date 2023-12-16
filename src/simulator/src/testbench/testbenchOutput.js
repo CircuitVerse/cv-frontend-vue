@@ -92,7 +92,8 @@ export class TB_Output extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [this.direction, this.identifier],
+      direction: this.direction,
+      identifier: this.identifier,
       nodes: {
         inputs: this.inputs.map(findNode),
       },
@@ -299,3 +300,4 @@ TB_Output.prototype.mutableProperties = {
   },
 };
 TB_Output.prototype.objectType = 'TB_Output';
+TB_Output.prototype.constructorParameters= ['direction', 'identifier'];

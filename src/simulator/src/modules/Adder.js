@@ -32,7 +32,8 @@ export class Adder extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [this.direction, this.bitWidth],
+      direction: this.direction,
+      bitWidth: this.bitWidth,
       nodes: {
         inpA: findNode(this.inpA),
         inpB: findNode(this.inpB),
@@ -108,3 +109,4 @@ Adder.prototype.tooltipText = 'Adder ToolTip : Performs addition of numbers.';
 Adder.prototype.helplink =
   'https://docs.circuitverse.org/#/miscellaneous?id=adder';
 Adder.prototype.objectType = 'Adder';
+Adder.prototype.constructorParameters= ['direction', 'bitWidth'];

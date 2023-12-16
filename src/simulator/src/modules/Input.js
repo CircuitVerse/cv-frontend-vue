@@ -68,11 +68,9 @@ export class Input extends CircuitElement {
       values: {
         state: this.state,
       },
-      constructorParamaters: [
-        this.direction,
-        this.bitWidth,
-        this.layoutProperties,
-      ],
+      direction: this.direction,
+      bitWidth: this.bitWidth,
+      layoutProperties: this.layoutProperties,
     };
     return data;
   }
@@ -206,3 +204,8 @@ Input.prototype.helplink =
  */
 Input.prototype.propagationDelay = 0;
 Input.prototype.objectType = 'Input';
+Input.prototype.constructorParameters= [
+  'direction',
+  'bitWidth',
+  'layoutProperties',
+];

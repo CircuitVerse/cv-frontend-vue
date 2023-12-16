@@ -83,7 +83,7 @@ export class VariableLed extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [this.color],
+      color: this.color,
       nodes: {
         inp1: findNode(this.inp1),
       },
@@ -211,3 +211,4 @@ VariableLed.prototype.helplink =
   'https://docs.circuitverse.org/#/outputs?id=variable-led';
 VariableLed.prototype.objectType = 'VariableLed';
 VariableLed.prototype.canShowInSubcircuit = true;
+VariableLed.prototype.constructorParameters= ['color'];

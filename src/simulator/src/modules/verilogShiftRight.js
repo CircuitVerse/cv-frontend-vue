@@ -45,11 +45,9 @@ export class verilogShiftRight extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [
-        this.direction,
-        this.bitWidth,
-        this.outputBitWidth,
-      ],
+      direction: this.direction,
+      bitWidth: this.bitWidth,
+      outputBitWidth: this.outputBitWidth,
       nodes: {
         inp1: findNode(this.inp1),
         shiftInp: findNode(this.shiftInp),
@@ -110,3 +108,8 @@ verilogShiftRight.prototype.tooltipText =
 verilogShiftRight.prototype.helplink =
   'https://docs.circuitverse.org/#/miscellaneous?id=verilogShiftRight';
 verilogShiftRight.prototype.objectType = 'verilogShiftRight';
+verilogShiftRight.prototype.constructorParameters= [
+  'direction',
+  'bitWidth',
+  'outputBitWidth',
+];

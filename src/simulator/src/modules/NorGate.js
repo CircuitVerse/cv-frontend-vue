@@ -78,11 +78,9 @@ export class NorGate extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [
-        this.direction,
-        this.inputSize,
-        this.bitWidth,
-      ],
+      direction: this.direction,
+      inputSize: this.inputSize,
+      bitWidth: this.bitWidth,
       nodes: {
         inp: this.inp.map(findNode),
         output1: findNode(this.output1),
@@ -191,3 +189,4 @@ NorGate.prototype.changeInputSize = changeInputSize;
 NorGate.prototype.verilogType = 'nor';
 NorGate.prototype.helplink = 'https://docs.circuitverse.org/#/gates?id=nor-gate';
 NorGate.prototype.objectType = 'NorGate';
+NorGate.prototype.constructorParameters= ['direction', 'inputSize', 'bitWidth'];

@@ -79,11 +79,9 @@ export class XnorGate extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [
-        this.direction,
-        this.inputSize,
-        this.bitWidth,
-      ],
+      direction: this.direction,
+      inputSize: this.inputSize,
+      bitWidth: this.bitWidth,
       nodes: {
         inp: this.inp.map(findNode),
         output1: findNode(this.output1),
@@ -207,3 +205,8 @@ XnorGate.prototype.verilogType = 'xnor';
 XnorGate.prototype.helplink =
   'https://docs.circuitverse.org/#/gates?id=xnor-gate';
 XnorGate.prototype.objectType = 'XnorGate';
+XnorGate.prototype.constructorParameters= [
+  'direction',
+  'inputSize',
+  'bitWidth',
+];

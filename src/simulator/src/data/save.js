@@ -75,6 +75,7 @@ export function getTabsOrder() {
 /**
  * Generates JSON of the entire project
  * @param {string} name - the name of project
+ * @param {bool?} setName - should the project name be set.
  * @return {JSON}
  * @category data
  */
@@ -137,7 +138,11 @@ export async function generateSaveData(name, setName = true) {
   return data;
 }
 
-// Helper function to download text
+/**
+ * Helper function to download text
+ * @param {*} filename
+ * @param {*} text
+ */
 function download(filename, text) {
   const pom = document.createElement('a');
   pom.setAttribute(
@@ -156,12 +161,13 @@ function download(filename, text) {
 }
 
 /**
- * Function to generate image for the circuit
+ * Generate image for the circuit.
  * @param {string} imgType - ex: png,jpg etc.
- * @param {string} view - view type ex: full
- * @param {boolean} transparent - tranparent bg or not
- * @param {number} resolution - resolution of the image
- * @param {boolean=} down - will download if true
+ * @param {string} view - view type ex: full.
+ * @param {boolean} transparent - background is transparent.
+ * @param {number} resolution - resolution of the image.
+ * @param {boolean=} down - will download if true.
+ * @return {string} toDataURL
  * @category data
  */
 export function generateImage(

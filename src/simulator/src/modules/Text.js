@@ -80,7 +80,8 @@ export class Text extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [this.label, this.fontSize],
+      label: this.label,
+      fontSize: this.fontSize,
     };
     return data;
   }
@@ -211,3 +212,4 @@ Text.prototype.mutableProperties = {
 Text.prototype.disableLabel = true;
 Text.prototype.objectType = 'Text';
 Text.prototype.propagationDelayFixed = true;
+Text.prototype.constructorParameters= ['label', 'fontSize'];

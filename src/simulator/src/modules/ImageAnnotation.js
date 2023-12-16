@@ -103,7 +103,9 @@ export class ImageAnnotation extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [this.rows, this.cols, this.imageUrl],
+      rows: this.rows,
+      cols: this.cols,
+      imageUrl: this.imageUrl,
     };
     return data;
   }
@@ -270,3 +272,8 @@ ImageAnnotation.prototype.mutableProperties = {
     func: 'changeRowSize',
   },
 };
+ImageAnnotation.prototype.constructorParameters= [
+  'rows',
+  'cols',
+  'imageUrl',
+];

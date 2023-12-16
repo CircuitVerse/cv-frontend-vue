@@ -56,7 +56,9 @@ export class ConstantVal extends CircuitElement {
       nodes: {
         output1: findNode(this.output1),
       },
-      constructorParamaters: [this.direction, this.bitWidth, this.state],
+      direction: this.direction,
+      bitWidth: this.bitWidth,
+      state: this.state,
     };
     return data;
   }
@@ -203,3 +205,4 @@ ConstantVal.prototype.helplink =
  */
 ConstantVal.prototype.propagationDelay = 0;
 ConstantVal.prototype.objectType = 'ConstantVal';
+ConstantVal.prototype.constructorParameters= ['direction', 'bitWidth', 'state'];

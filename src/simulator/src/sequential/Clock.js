@@ -39,7 +39,7 @@ export class Clock extends CircuitElement {
       nodes: {
         output1: findNode(this.output1),
       },
-      constructorParamaters: [this.direction],
+      direction: this.direction,
     };
     return data;
   }
@@ -97,3 +97,4 @@ Clock.prototype.click = Clock.prototype.toggleState;
 Clock.prototype.objectType = 'Clock';
 Clock.prototype.propagationDelay = 0;
 Clock.prototype.propagationDelayFixed = true;
+Clock.prototype.constructorParameters= ['direction'];

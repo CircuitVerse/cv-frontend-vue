@@ -173,7 +173,8 @@ export class TTY extends CircuitElement {
         reset: findNode(this.reset),
         en: findNode(this.en),
       },
-      constructorParamaters: [this.rows, this.cols],
+      rows: this.rows,
+      cols: this.cols,
     };
     return data;
   }
@@ -262,3 +263,4 @@ TTY.prototype.mutableProperties = {
 };
 
 TTY.prototype.objectType = 'TTY';
+TTY.prototype.constructorParameters= ['rows', 'cols'];

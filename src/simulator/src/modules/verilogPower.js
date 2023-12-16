@@ -45,11 +45,9 @@ export class verilogPower extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [
-        this.direction,
-        this.bitWidth,
-        this.outputBitWidth,
-      ],
+      direction: this.direction,
+      bitWidth: this.bitWidth,
+      outputBitWidth: this.outputBitWidth,
       nodes: {
         inpA: findNode(this.inpA),
         inpB: findNode(this.inpB),
@@ -108,3 +106,8 @@ verilogPower.prototype.tooltipText =
 verilogPower.prototype.helplink =
   'https://docs.circuitverse.org/#/miscellaneous?id=verilogPower';
 verilogPower.prototype.objectType = 'verilogPower';
+verilogPower.prototype.constructorParameters= [
+  'direction',
+  'bitWidth',
+  'outputBitWidth',
+];

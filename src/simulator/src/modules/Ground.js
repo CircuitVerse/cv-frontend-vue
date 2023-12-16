@@ -35,7 +35,8 @@ export class Ground extends CircuitElement {
       values: {
         state: this.state,
       },
-      constructorParamaters: [this.direction, this.bitWidth],
+      direction: this.direction,
+      bitWidth: this.bitWidth,
     };
     return data;
   }
@@ -112,3 +113,4 @@ Ground.prototype.helplink =
  */
 Ground.prototype.propagationDelay = 0;
 Ground.prototype.objectType = 'Ground';
+Ground.prototype.constructorParameters= ['direction', 'bitWidth'];

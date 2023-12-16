@@ -50,7 +50,8 @@ export class LSB extends CircuitElement {
         output1: findNode(this.output1),
         enable: findNode(this.enable),
       },
-      constructorParamaters: [this.direction, this.bitWidth],
+      direction: this.direction,
+      bitWidth: this.bitWidth,
     };
     return data;
   }
@@ -152,3 +153,4 @@ LSB.prototype.tooltipText =
 LSB.prototype.helplink =
   'https://docs.circuitverse.org/#/decodersandplexers?id=least-significant-bit-lsb-detector';
 LSB.prototype.objectType = 'LSB';
+LSB.prototype.constructorParameters= ['direction', 'bitWidth'];

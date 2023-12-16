@@ -50,7 +50,8 @@ export class MSB extends CircuitElement {
         output1: findNode(this.output1),
         enable: findNode(this.enable),
       },
-      constructorParamaters: [this.direction, this.bitWidth],
+      direction: this.direction,
+      bitWidth: this.bitWidth,
     };
     return data;
   }
@@ -146,3 +147,4 @@ MSB.prototype.tooltipText =
 MSB.prototype.helplink =
   'https://docs.circuitverse.org/#/decodersandplexers?id=most-significant-bit-msb-detector';
 MSB.prototype.objectType = 'MSB';
+MSB.prototype.constructorParameters= ['direction', 'bitWidth'];

@@ -72,7 +72,8 @@ export class Flag extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [this.direction, this.bitWidth],
+      direction: this.direction,
+      bitWidth: this.bitWidth,
       nodes: {
         inp1: findNode(this.inp1),
       },
@@ -234,3 +235,4 @@ Flag.prototype.mutableProperties = {
 };
 Flag.prototype.objectType = 'Flag';
 Flag.prototype.propagationDelay = 0;
+Flag.prototype.constructorParameters= ['direction', 'bitWidth'];

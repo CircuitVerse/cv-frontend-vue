@@ -18,9 +18,6 @@ import {SimulatorStore} from '#/store/SimulatorStore/SimulatorStore';
 
 import {
   createVerilogCircuit,
-  // saveVerilogCode,
-  // resetVerilogCode,
-  // applyVerilogTheme,
 } from './verilog_to_cv';
 import {generateVerilog} from './verilog';
 import {keyBinder} from '#/components/DialogBox/CustomShortcut.vue';

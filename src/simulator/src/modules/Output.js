@@ -62,11 +62,9 @@ export class Output extends CircuitElement {
       nodes: {
         inp1: findNode(this.inp1),
       },
-      constructorParamaters: [
-        this.direction,
-        this.bitWidth,
-        this.layoutProperties,
-      ],
+      direction: this.direction,
+      bitWidth: this.bitWidth,
+      layoutProperties: this.layoutProperties,
     };
     return data;
   }
@@ -210,3 +208,8 @@ Output.prototype.helplink = 'https://docs.circuitverse.org/#/outputs?id=output';
  */
 Output.prototype.propagationDelay = 0;
 Output.prototype.objectType = 'Output';
+Output.prototype.constructorParameters= [
+  'direction',
+  'bitWidth',
+  'layoutProperties',
+];

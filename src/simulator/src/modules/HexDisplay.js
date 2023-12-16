@@ -56,7 +56,7 @@ export class HexDisplay extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [this.color],
+      color: this.color,
       nodes: {
         inp: findNode(this.inp),
       },
@@ -422,3 +422,4 @@ HexDisplay.prototype.mutableProperties = {
     func: 'changeColor',
   },
 };
+HexDisplay.prototype.constructorParameters= ['color'];

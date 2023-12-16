@@ -45,11 +45,9 @@ export class verilogMultiplier extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [
-        this.direction,
-        this.bitWidth,
-        this.outputBitWidth,
-      ],
+      direction: this.direction,
+      bitWidth: this.bitWidth,
+      outputBitWidth: this.outputBitWidth,
       nodes: {
         inpA: findNode(this.inpA),
         inpB: findNode(this.inpB),
@@ -108,3 +106,8 @@ verilogMultiplier.prototype.tooltipText =
 verilogMultiplier.prototype.helplink =
   'https://docs.circuitverse.org/#/miscellaneous?id=verilogMultiplier';
 verilogMultiplier.prototype.objectType = 'verilogMultiplier';
+verilogMultiplier.prototype.constructorParameters= [
+  'direction',
+  'bitWidth',
+  'outputBitWidth',
+];

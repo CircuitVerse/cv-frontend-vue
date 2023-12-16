@@ -56,7 +56,7 @@ export class Counter extends CircuitElement {
         output: findNode(this.output),
         zero: findNode(this.zero),
       },
-      constructorParamaters: [this.bitWidth],
+      bitWidth: this.bitWidth,
     };
   }
 
@@ -198,3 +198,4 @@ Counter.prototype.layoutProperties = {
   upDimensionY: 0,
   downDimensionY: 20,
 };
+Counter.prototype.constructorParameters= ['bitWidth'];

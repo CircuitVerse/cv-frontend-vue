@@ -75,11 +75,9 @@ export class AndGate extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [
-        this.direction,
-        this.inputSize,
-        this.bitWidth,
-      ],
+      inputSize: this.inputSize,
+      direction: this.direction,
+      bitWidth: this.bitWidth,
       nodes: {
         inp: this.inp.map(findNode),
         output1: findNode(this.output1),
@@ -176,3 +174,4 @@ AndGate.prototype.verilogType = 'and';
 AndGate.prototype.changeInputSize = changeInputSize;
 AndGate.prototype.helplink = 'https://docs.circuitverse.org/#/gates?id=and-gate';
 AndGate.prototype.objectType = 'AndGate';
+AndGate.prototype.constructorParameters= ['direction', 'inputSize', 'bitWidth'];

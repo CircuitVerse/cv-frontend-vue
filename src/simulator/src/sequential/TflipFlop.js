@@ -125,7 +125,8 @@ export class TflipFlop extends CircuitElement {
         preset: findNode(this.preset),
         en: findNode(this.en),
       },
-      constructorParamaters: [this.direction, this.bitWidth],
+      direction: this.direction,
+      bitWidth: this.bitWidth,
     };
     return data;
   }
@@ -182,3 +183,4 @@ TflipFlop.prototype.helplink =
   'https://docs.circuitverse.org/#/Sequential?id=t-flip-flop';
 
 TflipFlop.prototype.objectType = 'TflipFlop';
+TflipFlop.prototype.constructorParameters= ['direction', 'bitWidth'];

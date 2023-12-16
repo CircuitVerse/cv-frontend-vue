@@ -71,11 +71,9 @@ export class NandGate extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [
-        this.direction,
-        this.inputSize,
-        this.bitWidth,
-      ],
+      direction: this.direction,
+      inputSize: this.inputSize,
+      bitWidth: this.bitWidth,
       nodes: {
         inp: this.inp.map(findNode),
         output1: findNode(this.output1),
@@ -176,3 +174,8 @@ NandGate.prototype.verilogType = 'nand';
 NandGate.prototype.helplink =
   'https://docs.circuitverse.org/#/gates?id=nand-gate';
 NandGate.prototype.objectType = 'NandGate';
+NandGate.prototype.constructorParameters= [
+  'direction',
+  'inputSize',
+  'bitWidth',
+];

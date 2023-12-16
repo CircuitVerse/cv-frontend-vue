@@ -42,7 +42,8 @@ export class Button extends CircuitElement {
       values: {
         state: this.state,
       },
-      constructorParamaters: [this.direction, this.bitWidth],
+      direction: this.direction,
+      bitWidth: this.bitWidth,
     };
     return data;
   }
@@ -192,3 +193,4 @@ Button.prototype.helplink =
 Button.prototype.propagationDelay = 0;
 Button.prototype.objectType = 'Button';
 Button.prototype.canShowInSubcircuit = true;
+Button.prototype.constructorParameters= ['direction', 'bitWidth'];

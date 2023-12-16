@@ -72,11 +72,9 @@ export class XorGate extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [
-        this.direction,
-        this.inputSize,
-        this.bitWidth,
-      ],
+      direction: this.direction,
+      inputSize: this.inputSize,
+      bitWidth: this.bitWidth,
       nodes: {
         inp: this.inp.map(findNode),
         output1: findNode(this.output1),
@@ -194,3 +192,4 @@ XorGate.prototype.changeInputSize = changeInputSize;
 XorGate.prototype.verilogType = 'xor';
 XorGate.prototype.helplink = 'https://docs.circuitverse.org/#/gates?id=xor-gate';
 XorGate.prototype.objectType = 'XorGate';
+XorGate.prototype.constructorParameters= ['direction', 'inputSize', 'bitWidth'];

@@ -81,7 +81,8 @@ export class PriorityEncoder extends CircuitElement {
         output1: this.output1.map(findNode),
         enable: findNode(this.enable),
       },
-      constructorParamaters: [this.direction, this.bitWidth],
+      direction: this.direction,
+      bitWidth: this.bitWidth,
     };
     return data;
   }
@@ -286,3 +287,4 @@ PriorityEncoder.prototype.tooltipText =
 PriorityEncoder.prototype.helplink =
   'https://docs.circuitverse.org/#/decodersandplexers?id=priority-encoder';
 PriorityEncoder.prototype.objectType = 'PriorityEncoder';
+PriorityEncoder.prototype.constructorParameters= ['direction', 'bitWidth'];

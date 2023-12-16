@@ -48,7 +48,7 @@ export class DigitalLed extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [this.color],
+      color: this.color,
       nodes: {
         inp1: findNode(this.inp1),
       },
@@ -194,3 +194,4 @@ DigitalLed.prototype.mutableProperties = {
 };
 DigitalLed.prototype.objectType = 'DigitalLed';
 DigitalLed.prototype.canShowInSubcircuit = true;
+DigitalLed.prototype.constructorParameters= ['color'];

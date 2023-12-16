@@ -41,7 +41,8 @@ export class Buffer extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [this.direction, this.bitWidth],
+      direction: this.direction,
+      bitWidth: this.bitWidth,
       nodes: {
         output1: findNode(this.output1),
         inp1: findNode(this.inp1),
@@ -141,3 +142,4 @@ Buffer.prototype.tooltipText =
 Buffer.prototype.helplink =
   'https://docs.circuitverse.org/#/miscellaneous?id=buffer';
 Buffer.prototype.objectType = 'Buffer';
+Buffer.prototype.constructorParameters= ['direction', 'bitWidth'];

@@ -44,7 +44,8 @@ export class ForceGate extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [this.direction, this.bitWidth],
+      direction: this.direction,
+      bitWidth: this.bitWidth,
       nodes: {
         output1: findNode(this.output1),
         inp1: findNode(this.inp1),
@@ -94,3 +95,4 @@ export class ForceGate extends CircuitElement {
  */
 ForceGate.prototype.tooltipText = 'Force Gate ToolTip : ForceGate Selected.';
 ForceGate.prototype.objectType = 'ForceGate';
+ForceGate.prototype.constructorParameters= ['direction', 'bitWidth'];

@@ -36,7 +36,8 @@ export class Stepper extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [this.direction, this.bitWidth],
+      direction: this.direction,
+      bitWidth: this.bitWidth,
       nodes: {
         output1: findNode(this.output1),
       },
@@ -105,3 +106,4 @@ Stepper.prototype.tooltipText =
 Stepper.prototype.helplink =
   'https://docs.circuitverse.org/#/inputElements?id=stepper';
 Stepper.prototype.objectType = 'Stepper';
+Stepper.prototype.constructorParameters= ['direction', 'bitWidth'];

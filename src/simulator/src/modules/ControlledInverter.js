@@ -39,7 +39,8 @@ export class ControlledInverter extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [this.direction, this.bitWidth],
+      direction: this.direction,
+      bitWidth: this.bitWidth,
       nodes: {
         output1: findNode(this.output1),
         inp1: findNode(this.inp1),
@@ -128,3 +129,4 @@ export class ControlledInverter extends CircuitElement {
 ControlledInverter.prototype.tooltipText =
   'Controlled Inverter ToolTip : Controlled buffer and NOT gate.';
 ControlledInverter.prototype.objectType = 'ControlledInverter';
+ControlledInverter.prototype.constructorParameters= ['direction', 'bitWidth'];

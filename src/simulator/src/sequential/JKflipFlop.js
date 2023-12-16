@@ -129,7 +129,7 @@ export class JKflipFlop extends CircuitElement {
         preset: findNode(this.preset),
         en: findNode(this.en),
       },
-      constructorParamaters: [this.direction],
+      direction: this.direction,
     };
     return data;
   }
@@ -165,3 +165,4 @@ JKflipFlop.prototype.helplink =
   'https://docs.circuitverse.org/#/Sequential?id=jk-flip-flop';
 
 JKflipFlop.prototype.objectType = 'JKflipFlop';
+JKflipFlop.prototype.constructorParameters= ['direction'];

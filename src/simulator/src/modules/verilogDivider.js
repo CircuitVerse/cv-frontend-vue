@@ -60,11 +60,9 @@ export class verilogDivider extends CircuitElement {
    */
   customSave() {
     const data = {
-      constructorParamaters: [
-        this.direction,
-        this.bitWidth,
-        this.outputBitWidth,
-      ],
+      direction: this.direction,
+      bitWidth: this.bitWidth,
+      outputBitWidth: this.outputBitWidth,
       nodes: {
         inpA: findNode(this.inpA),
         inpB: findNode(this.inpB),
@@ -129,3 +127,8 @@ verilogDivider.prototype.tooltipText =
 verilogDivider.prototype.helplink =
   'https://docs.circuitverse.org/#/miscellaneous?id=verilogDivider';
 verilogDivider.prototype.objectType = 'verilogDivider';
+verilogDivider.prototype.constructorParameters= [
+  'direction',
+  'bitWidth',
+  'outputBitWidth',
+];
