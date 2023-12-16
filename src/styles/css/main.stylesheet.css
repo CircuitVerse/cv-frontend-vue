@@ -1973,4 +1973,33 @@ canvas {
     width: 5px;
     height: 5px;
 }
+@media screen and (max-width: 823px) {
+    #radio-current {
+        width: 6vw;
+        font-size: 9px;
+        padding: 0;
+        height: 5vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    div.option {
+        width: 27vw;
+        height: 5vh;
+    }
+    #radio-full {
+        width: 11vw;
+        height: 5vh;
+        font-size: 9px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .btn-group>.btn:not(:first-child),
+    .btn-group>.btn-group:not(:first-child)>.btn {
+        border-top-left-radius: 0;
+    }
+}
+
 /* STYLE ENDS */
