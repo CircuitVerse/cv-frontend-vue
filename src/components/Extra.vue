@@ -13,6 +13,7 @@
     <!-- Circuit Elements Panel -->
     <ElementsPanel />
     <!-- --------------------------------------------------------------------------------------------- -->
+    <!-- Lock of Portait Mode -->
     <div id="potraidLockBg"></div>
     <div id="lockPortaidMode">
         <span class="portaidIcon"> </span>
