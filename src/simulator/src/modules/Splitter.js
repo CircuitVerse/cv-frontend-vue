@@ -80,9 +80,11 @@ export class Splitter extends CircuitElement {
    */
   customSave() {
     const data = {
-      direction: this.direction,
-      bitWidth: this.bitWidth,
-      bitWidthSplit: this.bitWidthSplit,
+      customData: {
+        direction: this.direction,
+        bitWidth: this.bitWidth,
+        bitWidthSplit: this.bitWidthSplit,
+      },
       nodes: {
         outputs: this.outputs.map(findNode),
         inp1: findNode(this.inp1),
@@ -340,7 +342,7 @@ Splitter.prototype.tooltipText = 'Splitter ToolTip: Split multiBit Input ' +
 Splitter.prototype.helplink = 'https://docs.circuitverse.org/#/splitter';
 Splitter.prototype.objectType = 'Splitter';
 Splitter.prototype.constructorParameters= [
-  'direction', 
-  'bitWidth', 
-  'bitWidthSplit'
+  'direction',
+  'bitWidth',
+  'bitWidthSplit',
 ];

@@ -134,6 +134,7 @@ export function paste(copyData) {
 /**
  * Helper function for cut
  * @param {JSON} copyList - The selected elements
+ * @return {any} data that was cut.
  * @category events
  */
 export function cut(copyList) {
@@ -166,11 +167,10 @@ export function cut(copyList) {
   }
   tempScope.backups = globalScope.backups;
   for (let i = 0; i < updateOrder.length; i++) {
-    let prevLength = globalScope[updateOrder[i]].length; // LOL length of list will reduce automatically when deletion starts
+    let prevLength = globalScope[updateOrder[i]].length;
     for (let j = 0; j < globalScope[updateOrder[i]].length; j++) {
       const obj = globalScope[updateOrder[i]][j];
       if (obj.objectType != 'Wire') {
-        // }&&obj.objectType!='CircuitElement'){//}&&(obj.objectType!='Node'||obj.type==2)){
         if (!copyList.includes(globalScope[updateOrder[i]][j])) {
           globalScope[updateOrder[i]][j].cleanDelete();
         }
@@ -219,12 +219,13 @@ export function cut(copyList) {
 /**
  * Helper function for copy
  * @param {JSON} copyList - The data to copied
- * @param {boolean} cutflag - false if we want to copy
+ * @param {boolean} cutFlag - false if we want to copy
+ * @return {any} copied data.
  * @category events
  */
-export function copy(copyList, cutflag = false) {
+export function copy(copyList, cutFlag = false) {
   if (copyList.length === 0) {
-    return;
+    return null;
   }
   const tempScope = new Scope(globalScope.name, globalScope.id);
   const oldOx = globalScope.ox;
@@ -236,7 +237,7 @@ export function copy(copyList, cutflag = false) {
   loadScope(tempScope, d);
   scopeList[tempScope.id] = tempScope;
 
-  if (cutflag) {
+  if (cutFlag) {
     for (let i = 0; i < copyList.length; i++) {
       const obj = copyList[i];
       if (obj.objectType === 'Node') {
@@ -256,7 +257,7 @@ export function copy(copyList, cutflag = false) {
   }
   tempScope.backups = globalScope.backups;
   for (let i = 0; i < updateOrder.length; i++) {
-    let prevLength = globalScope[updateOrder[i]].length; // LOL length of list will reduce automatically when deletion starts
+    let prevLength = globalScope[updateOrder[i]].length;
     for (let j = 0; j < globalScope[updateOrder[i]].length; j++) {
       const obj = globalScope[updateOrder[i]][j];
       if (obj.objectType != 'Wire') {
@@ -331,6 +332,7 @@ export function copy(copyList, cutflag = false) {
 
 /**
  * Function selects all the elements from the scope
+ * @param {Scope} scope - Scope from which to select all.
  * @category events
  */
 export function selectAll(scope = globalScope) {

@@ -75,9 +75,11 @@ export class AndGate extends CircuitElement {
    */
   customSave() {
     const data = {
-      inputSize: this.inputSize,
-      direction: this.direction,
-      bitWidth: this.bitWidth,
+      customData: {
+        inputSize: this.inputSize,
+        direction: this.direction,
+        bitWidth: this.bitWidth,
+      },
       nodes: {
         inp: this.inp.map(findNode),
         output1: findNode(this.output1),

@@ -38,8 +38,10 @@ export class NotGate extends CircuitElement {
    */
   customSave() {
     const data = {
-      direction: this.direction,
-      bitWidth: this.bitWidth,
+      customData: {
+        direction: this.direction,
+        bitWidth: this.bitWidth,
+      },
       nodes: {
         output1: findNode(this.output1),
         inp1: findNode(this.inp1),

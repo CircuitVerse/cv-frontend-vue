@@ -50,8 +50,10 @@ export class LSB extends CircuitElement {
         output1: findNode(this.output1),
         enable: findNode(this.enable),
       },
-      direction: this.direction,
-      bitWidth: this.bitWidth,
+      customData: {
+        direction: this.direction,
+        bitWidth: this.bitWidth,
+      },
     };
     return data;
   }

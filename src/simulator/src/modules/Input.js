@@ -26,6 +26,7 @@ export class Input extends CircuitElement {
    * @param {string} dir - direction of element.
    * @param {number} bitWidth - bit width per node.
    * @param {Object=} layoutProperties - x,y and id.
+   * @param {number} state - state of input.
    * @category modules
    */
   constructor(
@@ -35,6 +36,7 @@ export class Input extends CircuitElement {
       dir = 'RIGHT',
       bitWidth = 1,
       layoutProperties,
+      state = 0,
   ) {
     super(x, y, scope, dir, bitWidth);
     if (layoutProperties) {
@@ -45,9 +47,8 @@ export class Input extends CircuitElement {
       this.layoutProperties.y = getNextPosition(0, scope);
       this.layoutProperties.id = generateId();
     }
-    this.state = 0;
+    this.state = state;
     this.orientationFixed = false;
-    this.state = converters.bin2dec(this.state); // in integer format
     this.output1 = new Node(this.bitWidth * 10, 0, 1, this);
     this.wasClicked = false;
     this.directionFixed = true;
@@ -65,12 +66,12 @@ export class Input extends CircuitElement {
       nodes: {
         output1: findNode(this.output1),
       },
-      values: {
+      customData: {
         state: this.state,
+        direction: this.direction,
+        bitWidth: this.bitWidth,
+        layoutProperties: this.layoutProperties,
       },
-      direction: this.direction,
-      bitWidth: this.bitWidth,
-      layoutProperties: this.layoutProperties,
     };
     return data;
   }
@@ -169,9 +170,9 @@ export class Input extends CircuitElement {
   }
 
   /**
-     * @memberof Input
-     * function to find position of mouse click
-     */
+   * @memberof Input
+   * function to find position of mouse click
+   */
   findPos() {
     return Math.round(
         (simulationArea.mouseX - this.x + 10 * this.bitWidth) / 20.0,
@@ -208,4 +209,5 @@ Input.prototype.constructorParameters= [
   'direction',
   'bitWidth',
   'layoutProperties',
+  'state',
 ];

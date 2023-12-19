@@ -39,7 +39,9 @@ export class Clock extends CircuitElement {
       nodes: {
         output1: findNode(this.output1),
       },
-      direction: this.direction,
+      customData: {
+        direction: this.direction,
+      },
     };
     return data;
   }

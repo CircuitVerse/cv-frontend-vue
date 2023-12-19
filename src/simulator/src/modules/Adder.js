@@ -32,8 +32,10 @@ export class Adder extends CircuitElement {
    */
   customSave() {
     const data = {
-      direction: this.direction,
-      bitWidth: this.bitWidth,
+      customData: {
+        direction: this.direction,
+        bitWidth: this.bitWidth,
+      },
       nodes: {
         inpA: findNode(this.inpA),
         inpB: findNode(this.inpB),

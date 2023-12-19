@@ -123,9 +123,11 @@ export class RAM extends CircuitElement {
   customSave() {
     return {
       // NOTE: data is not persisted since RAMs are volatile.
-      direction: this.direction,
-      bitWidth: this.bitWidth,
-      addressWidth: this.addressWidth,
+      customData: {
+        direction: this.direction,
+        bitWidth: this.bitWidth,
+        addressWidth: this.addressWidth,
+      },
       nodes: {
         address: findNode(this.address),
         dataIn: findNode(this.dataIn),

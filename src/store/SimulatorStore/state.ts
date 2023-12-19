@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia'
+import { defineStore } from 'pinia';
 
 // use camel case variable names
 export interface State {
@@ -38,8 +38,6 @@ export const useState = defineStore({
       activeCircuit: {},
       circuitList: [],
       dialogBox: {
-        // create_circuit: false,
-        // delete_circuit: false,
         combinationalanalysis_dialog: false,
         hex_bin_dec_converter_dialog: false,
         saveimage_dialog: false,
@@ -52,15 +50,12 @@ export const useState = defineStore({
         export_project_dialog: false,
         import_project_dialog: false,
       },
-      // createCircuit: {
-      //     circuitName: 'Untitled Circuit',
-      // },
       combinationalAnalysis: {
         inputNameList: 'eg. In A, In B',
         outputNameList: 'eg. Out X, Out Y',
         booleanExpression: 'Example: (AB)',
         decimalColumnBox: false,
       },
-    }
+    };
   },
-})
+});

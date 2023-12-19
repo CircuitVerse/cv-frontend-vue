@@ -36,12 +36,12 @@ export class Stepper extends CircuitElement {
    */
   customSave() {
     const data = {
-      direction: this.direction,
-      bitWidth: this.bitWidth,
       nodes: {
         output1: findNode(this.output1),
       },
-      values: {
+      customData: {
+        direction: this.direction,
+        bitWidth: this.bitWidth,
         state: this.state,
       },
     };

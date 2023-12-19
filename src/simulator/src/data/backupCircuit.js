@@ -49,13 +49,17 @@ export function backUp(scope = globalScope) {
   data.id = scope.id;
   data.name = scope.name;
 
+  const allModules = [];
   // Storing details of all module objects
   for (let i = 0; i < moduleList.length; i++) {
     if (scope[moduleList[i]].length) {
-      data[moduleList[i]] = scope[moduleList[i]].map(extract);
+      const moduleElements = scope[moduleList[i]].map(extract);
+      for (let j = 0; j < moduleElements.length; j++) {
+        allModules.push(moduleElements[j]);
+      }
     }
   }
-
+  data.elements = allModules;
   // Adding restricted circuit elements used in the save data
   data.restrictedCircuitElementsUsed = scope.restrictedCircuitElementsUsed;
 

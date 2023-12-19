@@ -56,7 +56,9 @@ export class Counter extends CircuitElement {
         output: findNode(this.output),
         zero: findNode(this.zero),
       },
-      bitWidth: this.bitWidth,
+      customData: {
+        bitWidth: this.bitWidth,
+      },
     };
   }
 

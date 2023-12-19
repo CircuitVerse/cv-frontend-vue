@@ -62,7 +62,9 @@ export class Rom extends CircuitElement {
    */
   customSave() {
     const data = {
-      data: this.data,
+      customData: {
+        data: this.data,
+      },
       nodes: {
         memAddr: findNode(this.memAddr),
         dataOut: findNode(this.dataOut),

@@ -90,8 +90,10 @@ export class Dlatch extends CircuitElement {
         qOutput: findNode(this.qOutput),
         qInvOutput: findNode(this.qInvOutput),
       },
-      direction: this.direction,
-      bitWidth: this.bitWidth,
+      customData: {
+        direction: this.direction,
+        bitWidth: this.bitWidth,
+      },
     };
     return data;
   }

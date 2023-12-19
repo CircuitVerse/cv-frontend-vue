@@ -70,7 +70,9 @@ export class SevenSegDisplay extends CircuitElement {
    */
   customSave() {
     const data = {
-      color: this.color,
+      customData: {
+        color: this.color,
+      },
       nodes: {
         g: findNode(this.g),
         f: findNode(this.f),

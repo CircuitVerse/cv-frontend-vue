@@ -56,9 +56,11 @@ export class ConstantVal extends CircuitElement {
       nodes: {
         output1: findNode(this.output1),
       },
-      direction: this.direction,
-      bitWidth: this.bitWidth,
-      state: this.state,
+      customData: {
+        direction: this.direction,
+        bitWidth: this.bitWidth,
+        state: this.state,
+      },
     };
     return data;
   }

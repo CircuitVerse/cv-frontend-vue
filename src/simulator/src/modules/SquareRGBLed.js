@@ -93,8 +93,10 @@ export class SquareRGBLed extends CircuitElement {
    */
   customSave() {
     const data = {
-      direction: this.direction,
-      pinLength: this.pinLength,
+      customData: {
+        direction: this.direction,
+        pinLength: this.pinLength,
+      },
       nodes: {
         inp1: findNode(this.inp1),
         inp2: findNode(this.inp2),

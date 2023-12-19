@@ -35,8 +35,9 @@ export class Arrow extends CircuitElement {
    */
   customSave() {
     const data = {
-
-      direction: this.direction,
+      customData: {
+        direction: this.direction,
+      },
     };
     return data;
   }

@@ -116,8 +116,10 @@ export class DflipFlop extends CircuitElement {
         preset: findNode(this.preset),
         en: findNode(this.en),
       },
-      direction: this.direction,
-      bitWidth: this.bitWidth,
+      customData: {
+        direction: this.direction,
+        bitWidth: this.bitWidth,
+      },
     };
     return data;
   }

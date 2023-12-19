@@ -80,8 +80,10 @@ export class Text extends CircuitElement {
    */
   customSave() {
     const data = {
-      label: this.label,
-      fontSize: this.fontSize,
+      customData: {
+        label: this.label,
+        fontSize: this.fontSize,
+      },
     };
     return data;
   }

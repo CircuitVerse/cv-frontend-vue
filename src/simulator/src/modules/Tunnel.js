@@ -167,14 +167,13 @@ export class Tunnel extends CircuitElement {
    */
   customSave() {
     const data = {
-      direction: this.direction,
-      bitWidth: this.bitWidth,
-      identifier: this.identifier,
+      customData: {
+        direction: this.direction,
+        bitWidth: this.bitWidth,
+        identifier: this.identifier,
+      },
       nodes: {
         inp1: findNode(this.inp1),
-      },
-      values: {
-        identifier: this.identifier,
       },
     };
     return data;

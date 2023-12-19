@@ -76,8 +76,10 @@ export class Decoder extends CircuitElement {
    */
   customSave() {
     const data = {
-      direction: this.direction,
-      bitWidth: this.bitWidth,
+      customData: {
+        direction: this.direction,
+        bitWidth: this.bitWidth,
+      },
       nodes: {
         output1: this.output1.map(findNode),
         input: findNode(this.input),

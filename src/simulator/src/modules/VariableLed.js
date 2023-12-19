@@ -83,7 +83,9 @@ export class VariableLed extends CircuitElement {
    */
   customSave() {
     const data = {
-      color: this.color,
+      customData: {
+        color: this.color,
+      },
       nodes: {
         inp1: findNode(this.inp1),
       },

@@ -76,9 +76,11 @@ export class BitSelector extends CircuitElement {
         output1: findNode(this.output1),
         bitSelectorInp: findNode(this.bitSelectorInp),
       },
-      direction: this.direction,
-      bitWidth: this.bitWidth,
-      selectorBitWidth: this.selectBitWidth,
+      customData: {
+        direction: this.direction,
+        bitWidth: this.bitWidth,
+        selectorBitWidth: this.selectBitWidth,
+      },
     };
     return data;
   }

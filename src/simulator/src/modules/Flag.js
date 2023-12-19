@@ -72,13 +72,13 @@ export class Flag extends CircuitElement {
    */
   customSave() {
     const data = {
-      direction: this.direction,
-      bitWidth: this.bitWidth,
+      customData: {
+        direction: this.direction,
+        bitWidth: this.bitWidth,
+        identifier: this.identifier,
+      },
       nodes: {
         inp1: findNode(this.inp1),
-      },
-      values: {
-        identifier: this.identifier,
       },
     };
     return data;
@@ -206,7 +206,7 @@ export class Flag extends CircuitElement {
  * @category modules
  */
 Flag.prototype.tooltipText =
-  'FLag ToolTip: Use this for debugging and plotting.';
+  'Flag ToolTip: Use this for debugging and plotting.';
 Flag.prototype.helplink =
   'https://docs.circuitverse.org/#/timing_diagrams?id=using-flags';
 

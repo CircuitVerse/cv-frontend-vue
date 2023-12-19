@@ -78,9 +78,11 @@ export class NorGate extends CircuitElement {
    */
   customSave() {
     const data = {
-      direction: this.direction,
-      inputSize: this.inputSize,
-      bitWidth: this.bitWidth,
+      customData: {
+        direction: this.direction,
+        inputSize: this.inputSize,
+        bitWidth: this.bitWidth,
+      },
       nodes: {
         inp: this.inp.map(findNode),
         output1: findNode(this.output1),

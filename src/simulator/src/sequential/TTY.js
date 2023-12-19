@@ -173,8 +173,10 @@ export class TTY extends CircuitElement {
         reset: findNode(this.reset),
         en: findNode(this.en),
       },
-      rows: this.rows,
-      cols: this.cols,
+      customData: {
+        rows: this.rows,
+        cols: this.cols,
+      },
     };
     return data;
   }

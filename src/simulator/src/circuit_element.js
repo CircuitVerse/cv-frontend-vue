@@ -1,7 +1,6 @@
 import {scheduleUpdate} from './engine';
 import {simulationArea} from './simulation_area';
 import {
-  fixDirection,
   fillText,
   correctWidth,
   rect2,
@@ -176,7 +175,7 @@ export class CircuitElement {
       direction: this.direction,
       labelDirection: this.labelDirection,
       propagationDelay: this.propagationDelay,
-      customData: this.customSave(),
+      ...this.customSave(),
     };
 
     if (this.canShowInSubcircuit) {
@@ -192,7 +191,6 @@ export class CircuitElement {
    */
   customSave() {
     return {
-      values: {},
       nodes: {},
     };
   }
@@ -500,15 +498,6 @@ export class CircuitElement {
       fillSubcircuitElements();
     }
     return update;
-  }
-
-  /**
-   * Helper Function to correct the direction of element
-   */
-  fixDirection() {
-    this.direction = fixDirection[this.direction] || this.direction;
-    this.labelDirection =
-      fixDirection[this.labelDirection] || this.labelDirection;
   }
 
   /**

@@ -93,7 +93,9 @@ export class SRflipFlop extends CircuitElement {
         preset: findNode(this.preset),
         en: findNode(this.en),
       },
-      direction: this.direction,
+      customData: {
+        direction: this.direction,
+      },
     };
     return data;
   }

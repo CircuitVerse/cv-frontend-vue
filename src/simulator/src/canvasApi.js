@@ -644,13 +644,3 @@ export const oppositeDirection = {
   DOWN: 'UP',
   UP: 'DOWN',
 };
-export const fixDirection = {
-  right: 'LEFT',
-  left: 'RIGHT',
-  down: 'UP',
-  up: 'DOWN',
-  LEFT: 'LEFT',
-  RIGHT: 'RIGHT',
-  UP: 'UP',
-  DOWN: 'DOWN',
-};

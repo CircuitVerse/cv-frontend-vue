@@ -47,7 +47,9 @@ export class Power extends CircuitElement {
       nodes: {
         output1: findNode(this.output1),
       },
-      bitWidth: this.bitWidth,
+      customData: {
+        bitWidth: this.bitWidth,
+      },
     };
     return data;
   }

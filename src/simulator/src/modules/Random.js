@@ -93,8 +93,10 @@ export class Random extends CircuitElement {
         maxValue: findNode(this.maxValue),
         output: findNode(this.output),
       },
-      direction: this.direction,
-      bitWidth: this.bitWidth,
+      customData: {
+        direction: this.direction,
+        bitWidth: this.bitWidth,
+      },
     };
     return data;
   }

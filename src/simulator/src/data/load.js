@@ -43,25 +43,17 @@ function loadModule(data, scope) {
       ...params,
   );
   // Sets directions
-  obj.label = data.label;
+  obj.label = data.label || '';
   obj.labelDirection =
     data.labelDirection || oppositeDirection[obj.direction];
 
   // Sets delay
   obj.propagationDelay = data.propagationDelay || obj.propagationDelay;
-  obj.fixDirection();
-
-  // Restore other values
-  if (data.customData.values) {
-    for (const prop in data.customData.values) {
-      obj[prop] = data.customData.values[prop];
-    }
-  }
 
   // Replace new nodes with the correct old nodes (with connections)
-  if (data.customData.nodes) {
-    for (const node in data.customData.nodes) {
-      const n = data.customData.nodes[node];
+  if (data.nodes) {
+    for (const node in data.nodes) {
+      const n = data.nodes[node];
       if (n instanceof Array) {
         for (let i = 0; i < n.length; i++) {
           obj[node][i] = replace(obj[node][i], n[i]);
@@ -106,8 +98,9 @@ function removeBugNodes(scope = globalScope) {
  */
 export function loadScope(scope, data) {
   const ML = moduleList.slice(); // Module List copy
+  data.restrictedCircuitElementsUsed = data.restrictedCircuitElementsUsed || [];
   scope.restrictedCircuitElementsUsed = data.restrictedCircuitElementsUsed;
-
+  data.nodes = data.nodes || [];
   // Load all nodes
   data.allNodes.map((x) => loadNode(x, scope));
 
@@ -116,19 +109,13 @@ export function loadScope(scope, data) {
     constructNodeConnections(scope.allNodes[i], data.allNodes[i]);
   }
   // Load all modules
-  for (let i = 0; i < ML.length; i++) {
-    if (data[ML[i]]) {
-      if (ML[i] === 'SubCircuit') {
-        // Load subcircuits differently
-        for (let j = 0; j < data[ML[i]].length; j++) {
-          loadSubCircuit(data[ML[i]][j], scope);
-        }
-      } else {
-        // Load everything else similarly
-        for (let j = 0; j < data[ML[i]].length; j++) {
-          loadModule(data[ML[i]][j], scope);
-        }
-      }
+  for (let i = 0; i < data.elements.length; i++) {
+    const el = data.elements[i];
+    if (el.objectType === 'SubCircuit') {
+      // Load subcircuits differently
+      loadSubCircuit(el, scope);
+    } else {
+      loadModule(el, scope);
     }
   }
   // Update wires according

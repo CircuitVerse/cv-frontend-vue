@@ -103,9 +103,11 @@ export class ImageAnnotation extends CircuitElement {
    */
   customSave() {
     const data = {
-      rows: this.rows,
-      cols: this.cols,
-      imageUrl: this.imageUrl,
+      customData: {
+        rows: this.rows,
+        cols: this.cols,
+        imageUrl: this.imageUrl,
+      },
     };
     return data;
   }

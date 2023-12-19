@@ -61,7 +61,7 @@ export class EEPROM extends RAM {
     // Normalize this.data to use zeroes instead of null when serialized.
     const {data} = this;
 
-    saveInfo.constructorParameters.push(data);
+    saveInfo.customData.push({'data': data});
     return saveInfo;
   }
 
@@ -114,3 +114,4 @@ EEPROM.prototype.mutableProperties = {
   reset: RAM.prototype.mutableProperties.reset,
 };
 EEPROM.prototype.objectType = 'EEPROM';
+EEPROM.prototype.constructorParameters=['data'];

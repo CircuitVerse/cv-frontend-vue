@@ -92,8 +92,10 @@ export class TB_Output extends CircuitElement {
    */
   customSave() {
     const data = {
-      direction: this.direction,
-      identifier: this.identifier,
+      customData: {
+        direction: this.direction,
+        identifier: this.identifier,
+      },
       nodes: {
         inputs: this.inputs.map(findNode),
       },

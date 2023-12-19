@@ -89,8 +89,10 @@ export class Rectangle extends CircuitElement {
    */
   customSave() {
     const data = {
-      rows: this.rows,
-      cols: this.cols,
+      customData: {
+        rows: this.rows,
+        cols: this.cols,
+      },
     };
     return data;
   }

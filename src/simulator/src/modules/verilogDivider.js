@@ -60,9 +60,11 @@ export class verilogDivider extends CircuitElement {
    */
   customSave() {
     const data = {
-      direction: this.direction,
-      bitWidth: this.bitWidth,
-      outputBitWidth: this.outputBitWidth,
+      customData: {
+        direction: this.direction,
+        bitWidth: this.bitWidth,
+        outputBitWidth: this.outputBitWidth,
+      },
       nodes: {
         inpA: findNode(this.inpA),
         inpB: findNode(this.inpB),

@@ -56,7 +56,9 @@ export class HexDisplay extends CircuitElement {
    */
   customSave() {
     const data = {
-      color: this.color,
+      customData: {
+        color: this.color,
+      },
       nodes: {
         inp: findNode(this.inp),
       },

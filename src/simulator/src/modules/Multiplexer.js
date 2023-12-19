@@ -126,9 +126,11 @@ export class Multiplexer extends CircuitElement {
    */
   customSave() {
     const data = {
-      direction: this.direction,
-      bitWidth: this.bitWidth,
-      controlSignalSize: this.controlSignalSize,
+      customData: {
+        direction: this.direction,
+        bitWidth: this.bitWidth,
+        controlSignalSize: this.controlSignalSize,
+      },
       nodes: {
         inp: this.inp.map(findNode),
         output1: findNode(this.output1),

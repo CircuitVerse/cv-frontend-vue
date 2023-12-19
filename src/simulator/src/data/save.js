@@ -388,8 +388,8 @@ export async function save() {
     localStorage.setItem('recover_login', data);
     // Asking user whether they want to login.
     if (
-      await confirmOption(
-          'You have to login to save the project, you will be redirected to the login page.',
+      await confirmOption('You have to login to save the project, ' + 
+       'you will be redirected to the login page.',
       )
     ) {
       window.location.href = '/users/sign_in';

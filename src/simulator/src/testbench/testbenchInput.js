@@ -182,9 +182,11 @@ export class TB_Input extends CircuitElement {
    */
   customSave() {
     const data = {
-      direction: this.direction,
-      identifier: this.identifier,
-      testData: this.testData,
+      customData: {
+        direction: this.direction,
+        identifier: this.identifier,
+        testData: this.testData,
+      },
       nodes: {
         outputs: this.outputs.map(findNode),
         clockInp: findNode(this.clockInp),

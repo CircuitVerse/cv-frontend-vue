@@ -64,7 +64,9 @@ export class SixteenSegDisplay extends CircuitElement {
    */
   customSave() {
     const data = {
-      color: this.color,
+      customData: {
+        color: this.color,
+      },
       nodes: {
         input1: findNode(this.input1),
         dot: findNode(this.dot),

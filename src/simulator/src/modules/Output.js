@@ -62,9 +62,11 @@ export class Output extends CircuitElement {
       nodes: {
         inp1: findNode(this.inp1),
       },
-      direction: this.direction,
-      bitWidth: this.bitWidth,
-      layoutProperties: this.layoutProperties,
+      customData: {
+        direction: this.direction,
+        bitWidth: this.bitWidth,
+        layoutProperties: this.layoutProperties,
+      },
     };
     return data;
   }

@@ -114,9 +114,11 @@ export class Demultiplexer extends CircuitElement {
    */
   customSave() {
     const data = {
-      direction: this.direction,
-      bitWidth: this.bitWidth,
-      controlSignalSize: this.controlSignalSize,
+      customData: {
+        direction: this.direction,
+        bitWidth: this.bitWidth,
+        controlSignalSize: this.controlSignalSize,
+      },
       nodes: {
         output1: this.output1.map(findNode),
         input: findNode(this.input),

@@ -180,7 +180,9 @@ export class Keyboard extends CircuitElement {
         reset: findNode(this.reset),
         en: findNode(this.en),
       },
-      bufferSize: this.bufferSize,
+      customData: {
+        bufferSize: this.bufferSize,
+      },
     };
     return data;
   }

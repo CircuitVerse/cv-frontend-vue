@@ -32,11 +32,11 @@ export class Ground extends CircuitElement {
       nodes: {
         output1: findNode(this.output1),
       },
-      values: {
+      customData: {
         state: this.state,
+        direction: this.direction,
+        bitWidth: this.bitWidth,
       },
-      direction: this.direction,
-      bitWidth: this.bitWidth,
     };
     return data;
   }
