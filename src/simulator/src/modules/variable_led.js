@@ -176,7 +176,8 @@ export class VariableLed extends CircuitElement {
   generateVerilog() {
     return `
       always @ (*)
-        $display("VeriableLed:${this.inp1.verilogLabel}=%d", ${this.inp1.verilogLabel});`;
+        $display("VeriableLed:${this.inp1.verilogLabel}=%d", `+
+        `${this.inp1.verilogLabel});`;
   }
 }
 
@@ -186,8 +187,8 @@ export class VariableLed extends CircuitElement {
  * @type {string}
  * @category modules
  */
-VariableLed.prototype.tooltipText =
-  'Variable Led ToolTip: Variable LED inputs an 8 bit value and glows with a proportional intensity.';
+VariableLed.prototype.tooltipText = 'Variable Led ToolTip: Variable LED ' +
+        'inputs an 8 bit value and glows with a proportional intensity.';
 
 /**
  * @memberof VariableLed

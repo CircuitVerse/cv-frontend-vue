@@ -1,6 +1,11 @@
-import {CircuitElement} from './circuit_element';
 import {simulationArea} from './simulation_area';
 
+/**
+ *
+ * @param {*} x
+ * @param {*} scope
+ * @returns
+ */
 export function getNextPosition(x = 0, scope = globalScope) {
   let possibleY = 20;
   const done = {};

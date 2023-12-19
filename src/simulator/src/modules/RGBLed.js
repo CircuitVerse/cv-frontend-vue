@@ -120,7 +120,11 @@ export class RGBLed extends CircuitElement {
     ctx.fill();
   }
 
-  // Draws the element in the subcircuit. Used in layout mode
+  /**
+   * Draws the element in the subcircuit. Used in layout mode
+   * @param {number} xOffset - x coordinate of the offset.
+   * @param {number} yOffset - y coordinate of the offset.
+   */
   subcircuitDraw(xOffset = 0, yOffset = 0) {
     const ctx = simulationArea.context;
 
@@ -159,7 +163,9 @@ export class RGBLed extends CircuitElement {
   generateVerilog() {
     return `
       always @ (*)
-        $display("RGBLed:{${this.inp1.verilogLabel},${this.inp2.verilogLabel},${this.inp3.verilogLabel}} = {%d,%d,%d}", ${this.inp1.verilogLabel}, ${this.inp2.verilogLabel}, ${this.inp3.verilogLabel});`;
+        $display("RGBLed:{${this.inp1.verilogLabel},${this.inp2.verilogLabel}` +
+        `,${this.inp3.verilogLabel}} = {%d,%d,%d}", ${this.inp1.verilogLabel}` +
+        `, ${this.inp2.verilogLabel}, ${this.inp3.verilogLabel});`;
   }
 }
 
@@ -169,8 +175,8 @@ export class RGBLed extends CircuitElement {
  * @type {string}
  * @category modules
  */
-RGBLed.prototype.tooltipText =
-  'RGB Led ToolTip: RGB Led inputs 8 bit values for the colors RED, GREEN and BLUE.';
+RGBLed.prototype.tooltipText = 'RGB Led ToolTip: RGB Led inputs 8 bit values ' +
+    'for the colors RED, GREEN and BLUE.';
 
 /**
  * @memberof RGBLed

@@ -127,7 +127,9 @@ export class TriState extends CircuitElement {
    * @return {string} String representing the Verilog.
    */
   generateVerilog() {
-    return `assign ${this.output1.verilogLabel} = (${this.state.verilogLabel}!=0) ? ${this.inp1.verilogLabel} : ${this.inp1.bitWidth}'b?;`;
+    return `assign ${this.output1.verilogLabel} = ` +
+    `(${this.state.verilogLabel}!=0) ? ${this.inp1.verilogLabel} : ` +
+    `${this.inp1.bitWidth}'b?;`;
   }
 }
 

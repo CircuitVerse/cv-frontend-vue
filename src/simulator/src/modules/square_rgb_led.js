@@ -44,7 +44,8 @@ export class SquareRGBLed extends CircuitElement {
         return;
       }
 
-      // Calculate the new position of the LED, so the nodes will stay in the same place.
+      // Calculate the new position of the LED,
+      // so the nodes will stay in the same place.
       const diff = 10 * (pinLength - this.pinLength);
       const diffX = 0;
       if (this.direction === 'LEFT') {
@@ -124,7 +125,7 @@ export class SquareRGBLed extends CircuitElement {
       const y = i * 10 - 10;
       ctx.lineWidth = correctWidth(3);
 
-      // A gray line, which makes it easy on the eyes when the pin length is large
+      // Gray line, which makes it easy on the eyes when the pin length is large
       ctx.beginPath();
       ctx.lineCap = 'butt';
       ctx.strokeStyle = 'rgb(227, 228, 229)';
@@ -161,7 +162,12 @@ export class SquareRGBLed extends CircuitElement {
 
     ctx.fill();
   }
-  // Draws the element in the subcircuit. Used in layout mode
+
+  /**
+   * Draws the element in the subcircuit. Used in layout mode
+   * @param {number} xOffset - x coordinate of the offset.
+   * @param {number} yOffset - y coordinate of the offset.
+   */
   subcircuitDraw(xOffset = 0, yOffset = 0) {
     const ctx = simulationArea.context;
     const xx = this.subcircuitMetadata.x + xOffset;
@@ -207,8 +213,8 @@ export class SquareRGBLed extends CircuitElement {
  * @type {string}
  * @category modules
  */
-SquareRGBLed.prototype.tooltipText =
-  'Square RGB Led ToolTip: RGB Led inputs 8 bit values for the colors RED, GREEN and BLUE.';
+SquareRGBLed.prototype.tooltipText = 'Square RGB Led ToolTip: ' +
+    'RGB Led inputs 8 bit values for the colors RED, GREEN and BLUE.';
 
 /**
  * @memberof SquareRGBLed

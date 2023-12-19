@@ -62,6 +62,7 @@ function downloadAsImg(name, imgType) {
 
 /**
  * Returns the order of tabs in the project
+ * @return {number[]} IDs in order.
  */
 export function getTabsOrder() {
   const tabs = document.getElementById('tabsBar').firstChild.children;
@@ -111,11 +112,14 @@ export async function generateSaveData(name, setName = true) {
     dependencyList[id] = scopeList[id].getDependencies();
   }
 
-  // Helper function to save Scope
-  // Recursively saves inner subcircuits first, before saving parent circuits
+  /**
+   * Recursively saves inner subcircuits first, before saving parent circuits
+   * @param {*} id
+   * @return {string} JSON representation of scope.
+   */
   function saveScope(id) {
     if (completed[id]) {
-      return;
+      return '';
     }
 
     for (let i = 0; i < dependencyList[id].length; i++) {
@@ -124,7 +128,8 @@ export async function generateSaveData(name, setName = true) {
     }
 
     completed[id] = true;
-    update(scopeList[id], true); // For any pending integrity checks on subcircuits
+    // For any pending integrity checks on subcircuits
+    update(scopeList[id], true);
     data.scopes.push(backUp(scopeList[id]));
   }
 
@@ -285,6 +290,13 @@ export function generateImage(
   }
 }
 
+/**
+ * Crop an image supplied in dataURL format.
+ * @param {*} dataURL - image in data URL format.
+ * @param {*} w - width/
+ * @param {*} h - height.
+ * @return {string} cropped image in dataURL format.
+ */
 async function crop(dataURL, w, h) {
   // get empty second canvas
   const myCanvas = document.createElement('CANVAS');
@@ -357,7 +369,7 @@ async function generateImageForOnline() {
   return data;
 }
 /**
- * Function called when you save acircuit online
+ * Function called when you save a circuit online
  * @category data
  * @exports save
  */
@@ -388,7 +400,7 @@ export async function save() {
     localStorage.setItem('recover_login', data);
     // Asking user whether they want to login.
     if (
-      await confirmOption('You have to login to save the project, ' + 
+      await confirmOption('You have to login to save the project, ' +
        'you will be redirected to the login page.',
       )
     ) {

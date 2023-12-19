@@ -31,6 +31,7 @@ export class Rectangle extends CircuitElement {
   }
 
   /**
+   * Change the row size.
    * @memberof Rectangle
    * @param {number} size - new size of rows
    */
@@ -43,13 +44,13 @@ export class Rectangle extends CircuitElement {
     }
     this.rows = parseInt(size, 10);
     this.setSize();
-    return this;
   }
 
   /**
-     * @memberof Rectangle
-     * @param {number} size - new size of columns
-     */
+   * Change the column size.
+   * @memberof Rectangle
+   * @param {number} size - new size of columns
+   */
   changeColSize(size) {
     if (size === undefined || size < 5 || size > 1000) {
       return;
@@ -59,7 +60,6 @@ export class Rectangle extends CircuitElement {
     }
     this.cols = parseInt(size, 10);
     this.setSize();
-    return this;
   }
 
   /**

@@ -52,6 +52,10 @@ export class Random extends CircuitElement {
     return false;
   }
 
+  /**
+   * Set new bit width.
+   * @param {number} bitWidth
+   */
   newBitWidth(bitWidth) {
     this.bitWidth = bitWidth;
     this.maxValue.bitWidth = bitWidth;
@@ -101,9 +105,11 @@ export class Random extends CircuitElement {
     return data;
   }
 
+  /**
+   * Custom draw
+   */
   customDraw() {
     const ctx = simulationArea.context;
-    //
     ctx.fillStyle = colors['fill'];
     ctx.strokeStyle = colors['stroke'];
     ctx.beginPath();
@@ -121,7 +127,11 @@ export class Random extends CircuitElement {
     ctx.stroke();
   }
 
-  // Draws the element in the subcircuit. Used in layout mode
+  /**
+   * Draws the element in the subcircuit. Used in layout mode
+   * @param {number} xOffset
+   * @param {number} yOffset
+   */
   subcircuitDraw(xOffset = 0, yOffset = 0) {
     const ctx = simulationArea.context;
     const xx = this.subcircuitMetadata.x + xOffset;
@@ -149,6 +159,10 @@ export class Random extends CircuitElement {
     }
   }
 
+  /**
+   * Generate Verilog for the Random module
+   * @return {string} Verilog for the Random module
+   */
   static moduleVerilog() {
     return `
       module Random(val, clk, max);

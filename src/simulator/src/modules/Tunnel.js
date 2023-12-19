@@ -139,25 +139,25 @@ export class Tunnel extends CircuitElement {
    */
   setPlotValue() {
     return;
-    const time = plotArea.stopWatch.ElapsedMilliseconds;
-    if (
-      this.plotValues.length &&
-      this.plotValues[this.plotValues.length - 1][0] === time
-    ) {
-      this.plotValues.pop();
-    }
+    // const time = plotArea.stopWatch.ElapsedMilliseconds;
+    // if (
+    //   this.plotValues.length &&
+    //   this.plotValues[this.plotValues.length - 1][0] === time
+    // ) {
+    //   this.plotValues.pop();
+    // }
 
-    if (this.plotValues.length === 0) {
-      this.plotValues.push([time, this.inp1.value]);
-      return;
-    }
+    // if (this.plotValues.length === 0) {
+    //   this.plotValues.push([time, this.inp1.value]);
+    //   return;
+    // }
 
-    if (
-      this.plotValues[this.plotValues.length - 1][1] === this.inp1.value
-    ) {
-      return;
-    }
-    this.plotValues.push([time, this.inp1.value]);
+    // if (
+    //   this.plotValues[this.plotValues.length - 1][1] === this.inp1.value
+    // ) {
+    //   return;
+    // }
+    // this.plotValues.push([time, this.inp1.value]);
   }
 
   /**

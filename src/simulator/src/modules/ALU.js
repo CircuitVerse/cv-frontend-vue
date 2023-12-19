@@ -8,14 +8,16 @@ import {colors} from '../themer/themer';
  * @class
  * ALU
  * @extends CircuitElement
- * @param {number} x - x coordinate of element.
- * @param {number} y - y coordinate of element.
- * @param {Scope} scope - Circuit on which element is drawn
- * @param {string} dir - direction of element
- * @param {number} bitWidth - bit width per node.
  * @category modules
  */
 export class ALU extends CircuitElement {
+  /**
+   * @param {number} x - x coordinate of element.
+   * @param {number} y - y coordinate of element.
+   * @param {Scope} scope - Circuit on which element is drawn
+   * @param {string} dir - direction of element
+   * @param {number} bitWidth - bit width per node.
+   */
   constructor(x, y, scope = globalScope, dir = 'RIGHT', bitWidth = 1) {
     super(x, y, scope, dir, bitWidth);
     this.message = 'ALU';

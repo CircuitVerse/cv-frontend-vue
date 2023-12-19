@@ -61,7 +61,9 @@ window.onload = () => {
 
 /* Change UI testMode between Combinational(comb) and Sequential(seq) */
 function changeTestMode(m) {
-  if (testMode === m) return false;
+  if (testMode === m) {
+    return false;
+  }
   dataReset();
   testMode = m;
   $('#combSelect').removeClass('tab-selected');
@@ -288,7 +290,9 @@ function addOutput(
 
 /* Deletes input unless there's only one input */
 function deleteInput(element) {
-  if (inputCount === 1) return;
+  if (inputCount === 1) {
+    return;
+  }
   const columnIndex = element.parent().eq(0).index();
 
   $('#testBenchTable tr, .data-group tr')
@@ -303,7 +307,9 @@ function deleteInput(element) {
 
 /* Deletes output unless there's only one output */
 function deleteOutput(element) {
-  if (outputCount === 1) return;
+  if (outputCount === 1) {
+    return;
+  }
   const columnIndex = element.parent().eq(0).index();
 
   $('#testBenchTable tr, .data-group tr')
@@ -583,7 +589,9 @@ function saveData() {
 /* Loads data from JSON string into the table */
 function loadData(dataJSON) {
   const data = JSON.parse(dataJSON);
-  if (data.title) $('#test-title-label').text(data.title);
+  if (data.title) {
+    $('#test-title-label').text(data.title);
+  }
   changeTestMode();
   changeTestMode(data.type);
   for (let group_i = 0; group_i < data.groups.length; group_i++) {
@@ -622,7 +630,9 @@ function loadData(dataJSON) {
  */
 function loadResult(dataJSON) {
   const data = JSON.parse(dataJSON);
-  if (data.title) $('#test-title-label').text(data.title);
+  if (data.title) {
+    $('#test-title-label').text(data.title);
+  }
   changeTestMode();
   changeTestMode(data.type);
   for (let group_i = 0; group_i < data.groups.length; group_i++) {

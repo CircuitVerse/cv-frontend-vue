@@ -90,10 +90,10 @@ export class PriorityEncoder extends CircuitElement {
   }
 
   /**
-     * @memberof PriorityEncoder
-     * function to change bitwidth of the element
-     * @param {number} bitWidth - new bitwidth
-     */
+   * @memberof PriorityEncoder
+   * function to change bitwidth of the element
+   * @param {number} bitWidth - new bitwidth
+   */
   newBitWidth(bitWidth) {
     if (bitWidth === undefined || bitWidth < 1 || bitWidth > 32) {
       return;
@@ -233,7 +233,6 @@ export class PriorityEncoder extends CircuitElement {
 
   static moduleVerilog() {
     let output = '';
-
     for (const size of PriorityEncoder.selSizes) {
       const numInput = 1 << size;
       output += '\n';

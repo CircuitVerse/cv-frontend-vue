@@ -1,4 +1,4 @@
-import { Node } from './node';
+import {Node} from './node';
 /**
  * Event Queue is simply a priority Queue, basic implementation O(n^2).
  * @category eventQueue

@@ -98,7 +98,8 @@ export class TwoComplement extends CircuitElement {
    * @return {string} String representing the Verilog.
    */
   generateVerilog() {
-    return `assign ${this.output1.verilogLabel} = ~${this.inp1.verilogLabel} + 1;`;
+    return `assign ${this.output1.verilogLabel} = ` +
+        `~${this.inp1.verilogLabel} + 1;`;
   }
 }
 

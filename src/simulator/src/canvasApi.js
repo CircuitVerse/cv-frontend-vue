@@ -6,7 +6,8 @@ import {colors} from './themer/themer';
 const unit = 10;
 
 /**
- *
+ * Determine bounding box.
+ * @param {Scope} scope
  */
 export function findDimensions(scope = globalScope) {
   let totalObjects = 0;
@@ -117,11 +118,11 @@ export function changeScale(delta, xx, yy, method = 1) {
 /**
  * Draw Dots on screen
  * the function is called only when the zoom level or size of screen changes.
- * Otherwise for normal panning, the canvas itself is moved to give the illusion of movement
+ * Otherwise for normal panning, the canvas itself is moved to give
+ * the illusion of movement
  * @param {*} dots
  * @param {*} transparentBackground
  * @param {*} force
- * @returns
  */
 export function dots(
     dots = true,
@@ -231,6 +232,16 @@ export function bezierCurveTo(x1, y1, x2, y2, x3, y3, xx, yy, dir) {
   );
 }
 
+/**
+ *
+ * @param {*} ctx
+ * @param {*} x1
+ * @param {*} y1
+ * @param {*} xx
+ * @param {*} yy
+ * @param {*} dir
+ * @param {*} bypass
+ */
 export function moveTo(ctx, x1, y1, xx, yy, dir, bypass = false) {
   const correction = 0.5 * (ctx.lineWidth % 2);
   let newX;
@@ -250,6 +261,15 @@ export function moveTo(ctx, x1, y1, xx, yy, dir, bypass = false) {
   }
 }
 
+/**
+ *
+ * @param {*} ctx
+ * @param {*} x1
+ * @param {*} y1
+ * @param {*} xx
+ * @param {*} yy
+ * @param {*} dir
+ */
 export function lineTo(ctx, x1, y1, xx, yy, dir) {
   let newX;
   let newY;
@@ -548,6 +568,16 @@ export function fillText(ctx, str, x1, y1, fontSize = 20) {
   );
 }
 
+/**
+ *
+ * @param {*} ctx
+ * @param {*} str
+ * @param {*} x1
+ * @param {*} y1
+ * @param {*} xx
+ * @param {*} yy
+ * @param {*} dir
+ */
 export function fillText2(ctx, str, x1, y1, xx, yy, dir) {
   const angle = {
     RIGHT: 0,
@@ -577,6 +607,18 @@ export function fillText2(ctx, str, x1, y1, xx, yy, dir) {
   ctx.restore();
 }
 
+/**
+ *
+ * @param {*} ctx
+ * @param {*} str
+ * @param {*} x1
+ * @param {*} y1
+ * @param {*} xx
+ * @param {*} yy
+ * @param {*} dir
+ * @param {*} fontSize
+ * @param {*} textAlign
+ */
 export function fillText4(
     ctx,
     str,
@@ -613,6 +655,18 @@ export function fillText4(
   );
 }
 
+/**
+ *
+ * @param {*} ctx
+ * @param {*} str
+ * @param {*} x1
+ * @param {*} y1
+ * @param {*} xx
+ * @param {*} yy
+ * @param {*} fontSize
+ * @param {*} font
+ * @param {*} textAlign
+ */
 export function fillText3(
     ctx,
     str,

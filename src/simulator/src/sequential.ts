@@ -1,4 +1,4 @@
-import { simulationArea } from './simulation_area';
+import {simulationArea} from './simulation_area';
 
 /**
  * a global function as a helper for simulationArea.changeClockEnable

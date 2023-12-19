@@ -1,29 +1,29 @@
-import {AndGate} from './modules/AndGate';
-import {NandGate} from './modules/NandGate';
-import {Multiplexer} from './modules/Multiplexer';
-import {XorGate} from './modules/XorGate';
-import {XnorGate} from './modules/XnorGate';
-import {OrGate} from './modules/OrGate';
-import {NotGate} from './modules/NotGate';
-import {Buffer} from './modules/Buffer';
-import {Adder} from './modules/Adder';
-import {verilogMultiplier} from './modules/verilogMultiplier';
-import {verilogDivider} from './modules/verilogDivider';
-import {verilogPower} from './modules/verilogPower';
-import {verilogShiftLeft} from './modules/verilogShiftLeft';
-import {verilogShiftRight} from './modules/verilogShiftRight';
-import {Splitter} from './modules/Splitter';
-import {Input} from './modules/Input';
-import {Output} from './modules/Output';
-import {ConstantVal} from './modules/ConstantVal';
-import {NorGate} from './modules/NorGate';
-import {DigitalLed} from './modules/DigitalLed';
-import {Button} from './modules/Button';
-import {LSB} from './modules/LSB';
-import {ALU} from './modules/ALU';
-import {DflipFlop} from './sequential/DflipFlop';
-import {Clock} from './sequential/Clock';
-import {verilogRAM} from './sequential/verilogRAM';
+import {AndGate} from './modules/and_gate';
+import {NandGate} from './modules/nand_gate';
+import {Multiplexer} from './modules/multiplexer';
+import {XorGate} from './modules/xor_gate';
+import {XnorGate} from './modules/xnor_gate';
+import {OrGate} from './modules/or_gate';
+import {NotGate} from './modules/not_gate';
+import {Buffer} from './modules/buffer';
+import {Adder} from './modules/adder';
+import {verilogMultiplier} from './modules/verilog_multiplier';
+import {verilogDivider} from './modules/verilog_divider';
+import {verilogPower} from './modules/verilog_power';
+import {verilogShiftLeft} from './modules/verilog_shift_left';
+import {verilogShiftRight} from './modules/verilog_shift_right';
+import {Splitter} from './modules/splitter';
+import {Input} from './modules/input';
+import {Output} from './modules/output';
+import {ConstantVal} from './modules/constant_val';
+import {NorGate} from './modules/nor_gate';
+import {DigitalLed} from './modules/digital_led';
+import {Button} from './modules/button';
+import {LSB} from './modules/lsb';
+import {ALU} from './modules/alu';
+import {DflipFlop} from './sequential/d_flip_flop';
+import {Clock} from './sequential/clock';
+import {verilogRAM} from './sequential/verilog_ram';
 
 function getBitWidth(bitsJSON) {
   if (Number.isInteger(bitsJSON)) {
@@ -1323,7 +1323,14 @@ class verilogBusUngroup {
   }
 }
 
+/**
+ * Verilog memory
+ */
 class verilogMemory {
+  /**
+   *
+   * @param {*} deviceJSON
+   */
   constructor(deviceJSON) {
     this.memData = deviceJSON['memdata'];
     this.dataBitWidth = deviceJSON['bits'];
@@ -1369,6 +1376,11 @@ class verilogMemory {
     }
   }
 
+  /**
+   *
+   * @param {*} portName
+   * @return {number}
+   */
   getPort(portName) {
     const len = portName.length;
     const isPortAddr = portName.slice(len - 4, len) == 'addr';
@@ -1377,43 +1389,43 @@ class verilogMemory {
     const isPortEn = portName.slice(len - 2, len) == 'en';
     if (portName.startsWith('rd')) {
       if (isPortAddr) {
-        const portNum = portName.slice(2, len - 4);
+        let portNum = portName.slice(2, len - 4);
         portNum = parseInt(portNum);
         return this.readAddressInput[portNum];
       }
       if (isPortData) {
-        const portNum = portName.slice(2, len - 4);
+        let portNum = portName.slice(2, len - 4);
         portNum = parseInt(portNum);
         return this.verilogRAM.readDffQOutput[portNum];
       }
       if (isPortClk) {
-        const portNum = portName.slice(2, len - 3);
+        let portNum = portName.slice(2, len - 3);
         portNum = parseInt(portNum);
         return this.verilogRAM.readDffClock[portNum];
       }
       if (isPortEn) {
-        const portNum = portName.slice(2, len - 2);
+        let portNum = portName.slice(2, len - 2);
         portNum = parseInt(portNum);
         return this.verilogRAM.readDffEn[portNum];
       }
     } else {
       if (isPortAddr) {
-        const portNum = portName.slice(2, len - 4);
+        let portNum = portName.slice(2, len - 4);
         portNum = parseInt(portNum);
         return this.writeAddressInput[portNum];
       }
       if (isPortData) {
-        const portNum = portName.slice(2, len - 4);
+        let portNum = portName.slice(2, len - 4);
         portNum = parseInt(portNum);
         return this.writeDataInput[portNum];
       }
       if (isPortClk) {
-        const portNum = portName.slice(2, len - 3);
+        let portNum = portName.slice(2, len - 3);
         portNum = parseInt(portNum);
         return this.verilogRAM.writeDffClock[portNum];
       }
       if (isPortEn) {
-        const portNum = portName.slice(2, len - 2);
+        let portNum = portName.slice(2, len - 2);
         portNum = parseInt(portNum);
         return this.verilogRAM.writeDffEn[portNum];
       }

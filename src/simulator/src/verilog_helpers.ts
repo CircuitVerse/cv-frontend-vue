@@ -1,6 +1,6 @@
-import { Node } from './node';
+import {Node} from './node';
 /**
- * 
+ *
  * @param {string} name - label name to sanitize.
  * @return {string} sanitized label name.
  */
@@ -31,10 +31,10 @@ export function sanitizeLabel(name: string) {
  * @param {Node} node - Node for which a name is being generated.
  * @param {number} currentCount - Index of the Node being generated.
  * @param {number} totalCount - Count of Nodes being generated.
- * @return {string} Unique verilog name. 
+ * @return {string} Unique verilog name.
  */
 export function generateNodeName(node: Node,
-  currentCount: number, totalCount: number) {
+    currentCount: number, totalCount: number) {
   if (node.verilogLabel) {
     return node.verilogLabel;
   }

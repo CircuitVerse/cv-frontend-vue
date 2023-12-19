@@ -46,17 +46,26 @@ export class Clock extends CircuitElement {
     return data;
   }
 
+  /**
+   *
+   */
   resolve() {
     this.output1.value = this.state;
     simulationArea.simulationQueue.add(this.output1);
   }
 
+  /**
+   *
+   */
   toggleState() {
     // toggleState
     this.state = (this.state + 1) % 2;
     this.output1.value = this.state;
   }
 
+  /**
+   * Custom draw.
+   */
   customDraw() {
     const ctx = simulationArea.context;
     ctx.strokeStyle = colors['stroke'];

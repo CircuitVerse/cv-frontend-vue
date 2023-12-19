@@ -251,7 +251,7 @@ export class Wire {
     this.delete();
   }
   /**
-   * 
+   *
    */
   delete() {
     forceResetNodesSet(true);

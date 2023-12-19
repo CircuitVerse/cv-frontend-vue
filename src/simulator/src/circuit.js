@@ -340,6 +340,7 @@ export class Scope {
 
   /**
    * Adds all inputs to simulationQueue
+   * @param {any[]} inputs
    */
   addInputs() {
     for (let i = 0; i < inputList.length; i++) {
@@ -347,7 +348,6 @@ export class Scope {
         simulationArea.simulationQueue.add(this[inputList[i]][j], 0);
       }
     }
-
     for (let i = 0; i < this.SubCircuit.length; i++) {
       this.SubCircuit[i].addInputs();
     }
@@ -369,6 +369,7 @@ export class Scope {
   /**
    * Checks if this circuit contains directly or indirectly scope with id
    * Recursive nature
+   * @param {number} id - ID of element to check.
    * @return {boolean}
    */
   checkDependency(id) {
@@ -390,6 +391,7 @@ export class Scope {
 
   /**
    * Get dependency list - list of all circuits, this circuit depends on
+   * @return {any[]} unique list of dependencies.
    */
   getDependencies() {
     let list = [];

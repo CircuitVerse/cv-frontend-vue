@@ -1,7 +1,7 @@
-import { drawCircle, drawLine, arc } from './canvasApi';
-import { simulationArea } from './simulation_area';
-import { distance } from './utils';
-import { showError } from './utils_clock';
+import {drawCircle, drawLine, arc} from './canvasApi';
+import {simulationArea} from './simulation_area';
+import {distance} from './utils';
+import {showError} from './utils_clock';
 import {
   renderCanvas,
   scheduleUpdate,
@@ -11,10 +11,10 @@ import {
   forceResetNodesSet,
   canvasMessageData,
 } from './engine';
-import { Scope } from './circuit';
-import { Wire } from './wire';
-import { colors } from './themer/themer';
-import { CircuitElement } from './circuit_element';
+import {Scope} from './circuit';
+import {Wire} from './wire';
+import {colors} from './themer/themer';
+import {CircuitElement} from './circuit_element';
 
 /**
  * Rotate node.
@@ -58,12 +58,12 @@ export function findNode(node: Node): number {
  */
 export function loadNode(data: JSON, scope: Scope) {
   const n = new Node(
-    data.x,
-    data.y,
-    data.type,
-    scope.root,
-    data.bitWidth,
-    data.label,
+      data.x,
+      data.y,
+      data.type,
+      scope.root,
+      data.bitWidth,
+      data.label,
   );
 }
 
@@ -93,9 +93,9 @@ export class QueueProperties {
    * @param {number?} index Index of the item in the queue.
    */
   constructor(
-    inQueue: boolean,
-    time?: number,
-    index?: number,
+      inQueue: boolean,
+      time?: number,
+      index?: number,
   ) {
     this.inQueue = inQueue;
     this.time = time;
@@ -155,7 +155,7 @@ export class Node {
    * @param {string} label - label for a node.
    */
   constructor(x: number, y: number, type: number, parent: CircuitElement,
-    bitWidth: number | undefined = undefined, label: string = '') {
+      bitWidth: number | undefined = undefined, label: string = '') {
     forceResetNodesSet(true);
 
     this.objectType = 'Node';
@@ -516,64 +516,64 @@ export class Node {
     if (this.clicked) {
       if (this.prev == 'x') {
         drawLine(
-          ctx,
-          this.absX(),
-          this.absY(),
-          simulationArea.mouseX,
-          this.absY(),
-          color,
-          3,
+            ctx,
+            this.absX(),
+            this.absY(),
+            simulationArea.mouseX,
+            this.absY(),
+            color,
+            3,
         );
         drawLine(
-          ctx,
-          simulationArea.mouseX,
-          this.absY(),
-          simulationArea.mouseX,
-          simulationArea.mouseY,
-          color,
-          3,
+            ctx,
+            simulationArea.mouseX,
+            this.absY(),
+            simulationArea.mouseX,
+            simulationArea.mouseY,
+            color,
+            3,
         );
       } else if (this.prev == 'y') {
         drawLine(
-          ctx,
-          this.absX(),
-          this.absY(),
-          this.absX(),
-          simulationArea.mouseY,
-          color,
-          3,
+            ctx,
+            this.absX(),
+            this.absY(),
+            this.absX(),
+            simulationArea.mouseY,
+            color,
+            3,
         );
         drawLine(
-          ctx,
-          this.absX(),
-          simulationArea.mouseY,
-          simulationArea.mouseX,
-          simulationArea.mouseY,
-          color,
-          3,
+            ctx,
+            this.absX(),
+            simulationArea.mouseY,
+            simulationArea.mouseX,
+            simulationArea.mouseY,
+            color,
+            3,
         );
       } else if (
         Math.abs(this.x + this.parent.x - simulationArea.mouseX) >
         Math.abs(this.y + this.parent.y - simulationArea.mouseY)
       ) {
         drawLine(
-          ctx,
-          this.absX(),
-          this.absY(),
-          simulationArea.mouseX,
-          this.absY(),
-          color,
-          3,
+            ctx,
+            this.absX(),
+            this.absY(),
+            simulationArea.mouseX,
+            this.absY(),
+            color,
+            3,
         );
       } else {
         drawLine(
-          ctx,
-          this.absX(),
-          this.absY(),
-          this.absX(),
-          simulationArea.mouseY,
-          color,
-          3,
+            ctx,
+            this.absX(),
+            this.absY(),
+            this.absX(),
+            simulationArea.mouseY,
+            color,
+            3,
         );
       }
     }
@@ -610,15 +610,15 @@ export class Node {
       ctx.beginPath();
       ctx.lineWidth = 3;
       arc(
-        ctx,
-        this.x,
-        this.y,
-        8,
-        0,
-        Math.PI * 2,
-        this.parent.x,
-        this.parent.y,
-        'RIGHT',
+          ctx,
+          this.x,
+          this.y,
+          8,
+          0,
+          Math.PI * 2,
+          this.parent.x,
+          this.parent.y,
+          'RIGHT',
       );
       ctx.closePath();
       ctx.stroke();
@@ -718,7 +718,7 @@ export class Node {
             i++
           ) {
             simulationArea.multipleObjectSelections[
-              i
+                i
             ].startDragging();
           }
         }
@@ -787,10 +787,10 @@ export class Node {
       if (
         this.prev == 'a' &&
         distance(
-          simulationArea.mouseX,
-          simulationArea.mouseY,
-          this.absX(),
-          this.absY(),
+            simulationArea.mouseX,
+            simulationArea.mouseY,
+            this.absX(),
+            this.absY(),
         ) >= 10
       ) {
         if (
@@ -845,15 +845,15 @@ export class Node {
         if (
           this.prev == 'a' &&
           distance(
-            simulationArea.mouseX,
-            simulationArea.mouseY,
-            this.absX(),
-            this.absY(),
+              simulationArea.mouseX,
+              simulationArea.mouseY,
+              this.absX(),
+              this.absY(),
           ) >= 10
         ) {
           if (
             Math.abs(
-              this.x + this.parent.x - simulationArea.mouseX,
+                this.x + this.parent.x - simulationArea.mouseX,
             ) >
             Math.abs(this.y + this.parent.y - simulationArea.mouseY)
           ) {
@@ -1027,10 +1027,10 @@ export class Node {
           let n = this;
           if (this.type != 2) {
             n = new Node(
-              this.absX(),
-              this.absY(),
-              2,
-              this.scope.root,
+                this.absX(),
+                this.absY(),
+                2,
+                this.scope.root,
             );
             this.connect(n);
           }
@@ -1072,7 +1072,7 @@ Node.prototype.propagationDelay = 0;
  */
 Node.prototype.cleanDelete = Node.prototype.delete;
 
-Node.prototype.processVerilog = function () {
+Node.prototype.processVerilog = function() {
   if (this.type == NodeType.Input) {
     this.scope.stack.push(this.parent);
   }
@@ -1111,8 +1111,8 @@ export function replace(node: Node, index: number): Node {
   if (index == -1) {
     return node;
   }
-  const { scope } = node;
-  const { parent } = node;
+  const {scope} = node;
+  const {parent} = node;
   const foundIndex = parent.nodeList.indexOf(node);
   if (foundIndex != -1) {
     parent.nodeList.splice(foundIndex, 1);

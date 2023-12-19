@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import {createRouter, createWebHistory} from 'vue-router';
 import simulatorHandler from '../pages/simulatorHandler.vue';
 import Embed from '../pages/embed.vue';
 

@@ -8,12 +8,6 @@ import {colors} from '../themer/themer';
  * @class
  * BitSelector
  * @extends CircuitElement
- * @param {number} x - x coordinate of element.
- * @param {number} y - y coordinate of element.
- * @param {Scope} scope - Circuit on which element is drawn
- * @param {string} dir - direction of element
- * @param {number} bitWidth - bit width per node.
- * @param {number} selectorBitWidth - 1 by default
  * @category modules
  */
 export class BitSelector extends CircuitElement {
@@ -154,7 +148,8 @@ export class BitSelector extends CircuitElement {
    * @return {string} String representing the Verilog.
    */
   generateVerilog() {
-    return `assign ${this.output1.verilogLabel} = ${this.inp1.verilogLabel} >> ${this.bitSelectorInp.verilogLabel};`;
+    return `assign ${this.output1.verilogLabel} = ${this.inp1.verilogLabel} ` +
+          `>> ${this.bitSelectorInp.verilogLabel};`;
   }
 }
 

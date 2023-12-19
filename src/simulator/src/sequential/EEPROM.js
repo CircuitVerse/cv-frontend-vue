@@ -1,4 +1,4 @@
-import {RAM} from './RAM';
+import {RAM} from './ram';
 /**
  * EEPROM Component.
  * @extends CircuitElement

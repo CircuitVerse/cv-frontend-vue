@@ -28,8 +28,9 @@ export const shortcut = {
       keycode: false,
     };
 
-    if (!opt) opt = default_options;
-    else {
+    if (!opt) {
+      opt = default_options;
+    } else {
       for (const dfo in default_options) {
         if (typeof opt[dfo] == 'undefined') {
           opt[dfo] = default_options[dfo];
@@ -49,9 +50,14 @@ export const shortcut = {
       if (opt['disable_in_input']) {
         // Don't enable shortcut keys in Input, Textarea fields
         let element;
-        if (e.target) element = e.target;
-        else if (e.srcElement) element = e.srcElement;
-        if (element.nodeType == 3) element = element.parentNode;
+        if (e.target) {
+          element = e.target;
+        } else if (e.srcElement) {
+          element = e.srcElement;
+        }
+        if (element.nodeType == 3) {
+          element = element.parentNode;
+        }
 
         if (element.tagName == 'INPUT' || element.tagName == 'TEXTAREA') {
           return;
@@ -60,13 +66,20 @@ export const shortcut = {
 
       let code = '';
       // Find Which key is pressed
-      if (e.keyCode) code = e.keyCode;
-      else if (e.which) code = e.which;
+      if (e.keyCode) {
+        code = e.keyCode;
+      } else if (e.which) {
+        code = e.which;
+      }
       let character = String.fromCharCode(code).toLowerCase();
       // e.preventDefault();
 
-      if (code == 188) character = ','; // If the user presses , when the type is onkeydown
-      if (code == 190) character = '.'; // If the user presses , when the type is onkeydown
+      if (code == 188) {
+        character = ',';
+      } // If the user presses , when the type is onkeydown
+      if (code == 190) {
+        character = '.';
+      } // If the user presses , when the type is onkeydown
 
       const keys = shortcut_combination.split('+');
       // Key Pressed - counts the number of valid keypresses - if it is same as the number of keys, the shortcut function is invoked
@@ -156,10 +169,18 @@ export const shortcut = {
         meta: {wanted: false, pressed: false}, // Meta is Mac specific
       };
 
-      if (e.ctrlKey) modifiers.ctrl.pressed = true;
-      if (e.shiftKey) modifiers.shift.pressed = true;
-      if (e.altKey) modifiers.alt.pressed = true;
-      if (e.metaKey) modifiers.meta.pressed = true;
+      if (e.ctrlKey) {
+        modifiers.ctrl.pressed = true;
+      }
+      if (e.shiftKey) {
+        modifiers.shift.pressed = true;
+      }
+      if (e.altKey) {
+        modifiers.alt.pressed = true;
+      }
+      if (e.metaKey) {
+        modifiers.meta.pressed = true;
+      }
 
       let k;
       for (let i = 0; (k = keys[i]), i < keys.length; i++) {
@@ -178,17 +199,24 @@ export const shortcut = {
           modifiers.meta.wanted = true;
         } else if (k.length > 1) {
           // If it is a special key
-          if (special_keys[k] == code) kp++;
+          if (special_keys[k] == code) {
+            kp++;
+          }
         } else if (opt['keycode']) {
-          if (opt['keycode'] == code) kp++;
+          if (opt['keycode'] == code) {
+            kp++;
+          }
         } else {
           // The special keys did not match
-          if (character == k) kp++;
-          else {
+          if (character == k) {
+            kp++;
+          } else {
             if (shift_nums[character] && e.shiftKey) {
               // Stupid Shift key bug created by using lowercase
               character = shift_nums[character];
-              if (character == k) kp++;
+              if (character == k) {
+                kp++;
+              }
             }
           }
         }
@@ -224,9 +252,13 @@ export const shortcut = {
       event: opt['type'],
     };
     // Attach the function with the event
-    if (ele.addEventListener) ele.addEventListener(opt['type'], func, false);
-    else if (ele.attachEvent) ele.attachEvent('on' + opt['type'], func);
-    else ele['on' + opt['type']] = func;
+    if (ele.addEventListener) {
+      ele.addEventListener(opt['type'], func, false);
+    } else if (ele.attachEvent) {
+      ele.attachEvent('on' + opt['type'], func);
+    } else {
+      ele['on' + opt['type']] = func;
+    }
   },
 
   // Remove the shortcut - just specify the shortcut and I will remove the binding
@@ -241,10 +273,13 @@ export const shortcut = {
     const ele = binding['target'];
     const callback = binding['callback'];
 
-    if (ele.detachEvent) ele.detachEvent('on' + type, callback);
-    else if (ele.removeEventListener) {
+    if (ele.detachEvent) {
+      ele.detachEvent('on' + type, callback);
+    } else if (ele.removeEventListener) {
       ele.removeEventListener(type, callback, false);
-    } else ele['on' + type] = false;
+    } else {
+      ele['on' + type] = false;
+    }
   },
   removeAll: function() {
     for (const x in this.all_shortcuts) {

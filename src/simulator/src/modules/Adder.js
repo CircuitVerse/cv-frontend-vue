@@ -6,14 +6,16 @@ import {simulationArea} from '../simulation_area';
  * @class
  * Adder
  * @extends CircuitElement
- * @param {number} x - x coordinate of element.
- * @param {number} y - y coordinate of element.
- * @param {Scope} scope - Circuit on which element is drawn
- * @param {string} dir - direction of element
- * @param {number} bitWidth - bit width per node. modules
  * @category modules
  */
 export class Adder extends CircuitElement {
+  /**
+   * @param {number} x - x coordinate of element.
+   * @param {number} y - y coordinate of element.
+   * @param {Scope} scope - Circuit on which element is drawn
+   * @param {string} dir - direction of element
+   * @param {number} bitWidth - bit width per node. modules
+   */
   constructor(x, y, scope = globalScope, dir = 'RIGHT', bitWidth = 1) {
     super(x, y, scope, dir, bitWidth);
     this.setDimensions(20, 20);
@@ -95,9 +97,11 @@ export class Adder extends CircuitElement {
    */
   generateVerilog() {
     if (this.carryIn.verilogLabel) {
-      return `assign ${this.sum.verilogLabel} = ${this.inpA.verilogLabel} + ${this.inpB.verilogLabel} + ${this.carryIn.verilogLabel};`;
+      return `assign ${this.sum.verilogLabel} = ${this.inpA.verilogLabel} + ` +
+              `${this.inpB.verilogLabel} + ${this.carryIn.verilogLabel};`;
     }
-    return `assign ${this.sum.verilogLabel} = ${this.inpA.verilogLabel} + ${this.inpB.verilogLabel};`;
+    return `assign ${this.sum.verilogLabel} = ${this.inpA.verilogLabel} + ` +
+            `${this.inpB.verilogLabel};`;
   }
 }
 

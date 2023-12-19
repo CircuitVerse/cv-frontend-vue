@@ -168,7 +168,8 @@ export class XorGate extends CircuitElement {
  * @type {string}
  * @category modules
  */
-XorGate.prototype.tooltipText = 'Xor Gate Tooltip : Implements an exclusive OR.';
+XorGate.prototype.tooltipText = 'Xor Gate Tooltip : ' +
+        'Implements an exclusive OR.';
 
 /**
  * @memberof XorGate

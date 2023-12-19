@@ -4,6 +4,13 @@ import {simulationArea} from '../simulation_area';
 import {correctWidth, lineTo, moveTo, fillText2} from '../canvasApi';
 import {colors} from '../themer/themer';
 
+/**
+ *
+ * @param {number} num - number to extract bits from.
+ * @param {number} start - starting bit to extract.
+ * @param {number} end - ending bit to extract.
+ * @return {number} - extracted bits
+ */
 function extractBits(num, start, end) {
   return (num << (32 - end)) >>> (32 - (end - start + 1));
 }
@@ -232,8 +239,8 @@ export class Splitter extends CircuitElement {
       if (this.bitWidthSplit[this.splitCount - i - 1] == 1) {
         splitLabel = `${bitCount}`;
       } else {
-        splitLabel = `${bitCount}:${bitCount + this.bitWidthSplit[this.splitCount - i - 1] - 1
-        }`;
+        splitLabel = `${bitCount}:` +
+            `${bitCount + this.bitWidthSplit[this.splitCount - i - 1] - 1}`;
       }
 
       fillText2(
@@ -251,8 +258,7 @@ export class Splitter extends CircuitElement {
   }
 
   /**
-   *
-   * @return
+   * Process Verilog
    */
   processVerilog() {
     // Combiner
