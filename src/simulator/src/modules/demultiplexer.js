@@ -145,15 +145,13 @@ export class Demultiplexer extends CircuitElement {
   }
 
   /**
-     * @memberof Demultiplexer
-     * function to draw element
-     */
-  customDraw() {
-    const ctx = simulationArea.context;
-
+   * @memberof Demultiplexer
+   * function to draw element
+   * @param {CanvasRenderingContext2D} ctx
+   */
+  customDraw(ctx) {
     const xx = this.x;
     const yy = this.y;
-
     ctx.beginPath();
     moveTo(
         ctx,

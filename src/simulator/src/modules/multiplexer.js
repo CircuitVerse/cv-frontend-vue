@@ -155,10 +155,9 @@ export class Multiplexer extends CircuitElement {
   /**
      * @memberof Multiplexer
      * function to draw element
-     */
-  customDraw() {
-    const ctx = simulationArea.context;
-
+     * @param {CanvasRenderingContext2D} ctx
+   */
+  customDraw(ctx) {
     const xx = this.x;
     const yy = this.y;
 

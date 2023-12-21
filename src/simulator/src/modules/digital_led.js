@@ -73,13 +73,11 @@ export class DigitalLed extends CircuitElement {
   /**
      * @memberof DigitalLed
      * function to draw element
-     */
-  customDraw() {
-    const ctx = simulationArea.context;
-
+     * @param {CanvasRenderingContext2D} ctx
+   */
+  customDraw(ctx) {
     const xx = this.x;
     const yy = this.y;
-
     ctx.strokeStyle = '#e3e4e5';
     ctx.lineWidth = correctWidth(3);
     ctx.beginPath();
@@ -123,10 +121,13 @@ export class DigitalLed extends CircuitElement {
     ctx.fill();
   }
 
-  // Draws the element in the subcircuit. Used in layout mode
-  subcircuitDraw(xOffset = 0, yOffset = 0) {
-    const ctx = simulationArea.context;
-
+  /**
+   * Draws the element in the subcircuit. Used in layout mode
+   * @param {CanvasRenderingContext2D} ctx
+   * @param {*} xOffset
+   * @param {*} yOffset
+   */
+  subcircuitDraw(ctx, xOffset = 0, yOffset = 0) {
     const xx = this.subcircuitMetadata.x + xOffset;
     const yy = this.subcircuitMetadata.y + yOffset;
 

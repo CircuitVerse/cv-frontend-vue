@@ -108,9 +108,11 @@ export class Counter extends CircuitElement {
       simulationArea.simulationQueue.add(this.zero);
     }
   }
-
-  customDraw() {
-    const ctx = simulationArea.context;
+  /**
+   * Custom draw.
+  * @param {CanvasRenderingContext2D} ctx
+  */
+  customDraw(ctx) {
     const xx = this.x;
     const yy = this.y;
 
@@ -131,11 +133,11 @@ export class Counter extends CircuitElement {
 
   /**
    * Draws the element in the subcircuit. Used in layout mode
+   * @param {CanvasRenderingContext2D} ctx
    * @param {*} xOffset
    * @param {*} yOffset
    */
-  subcircuitDraw(xOffset = 0, yOffset = 0) {
-    const ctx = simulationArea.context;
+  subcircuitDraw(ctx, xOffset = 0, yOffset = 0) {
     const xx = this.subcircuitMetadata.x + xOffset;
     const yy = this.subcircuitMetadata.y + yOffset;
 

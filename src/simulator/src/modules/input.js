@@ -129,9 +129,9 @@ export class Input extends CircuitElement {
   /**
    * @memberof Input
    * function to draw element
+   * @param {CanvasRenderingContext2D} ctx
    */
-  customDraw() {
-    const ctx = simulationArea.context;
+  customDraw(ctx) {
     ctx.beginPath();
     ctx.lineWidth = correctWidth(3);
     const xx = this.x;

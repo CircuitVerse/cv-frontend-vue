@@ -285,8 +285,11 @@ export class RGBLedMatrix extends CircuitElement {
     }
   }
 
-  customDraw() {
-    const ctx = simulationArea.context;
+  /**
+   * Custom draw.
+     * @param {CanvasRenderingContext2D} ctx
+   */
+  customDraw(ctx) {
     const rows = this.rows;
     const columns = this.columns;
     const colors = this.colors;

@@ -133,15 +133,17 @@ export class TflipFlop extends CircuitElement {
     return data;
   }
 
-  customDraw() {
-    const ctx = simulationArea.context;
+  /**
+   * 
+   * @param {CanvasRenderingContext2D} ctx
+   */
+  customDraw(ctx) {
     ctx.strokeStyle = colors['stroke'];
     ctx.fillStyle = colors['fill'];
     ctx.beginPath();
     ctx.lineWidth = correctWidth(3);
     const xx = this.x;
     const yy = this.y;
-    // rect(ctx, xx - 20, yy - 20, 40, 40);
     moveTo(ctx, -20, 5, xx, yy, this.direction);
     lineTo(ctx, -15, 10, xx, yy, this.direction);
     lineTo(ctx, -20, 15, xx, yy, this.direction);

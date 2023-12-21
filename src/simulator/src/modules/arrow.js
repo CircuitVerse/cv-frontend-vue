@@ -43,11 +43,11 @@ export class Arrow extends CircuitElement {
   }
 
   /**
-     * @memberof Arrow
-     * function to draw element
-     */
-  customDraw() {
-    const ctx = simulationArea.context;
+   * @memberof Arrow
+   * function to draw element
+   * @param {CanvasRenderingContext2D} ctx
+   */
+  customDraw(ctx) {
     ctx.lineWidth = correctWidth(3);
     const xx = this.x;
     const yy = this.y;

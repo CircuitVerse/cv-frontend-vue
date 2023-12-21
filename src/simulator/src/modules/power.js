@@ -57,9 +57,9 @@ export class Power extends CircuitElement {
   /**
      * @memberof Power
      * function to draw element
-     */
-  customDraw() {
-    const ctx = simulationArea.context;
+     * @param {CanvasRenderingContext2D} ctx
+   */
+  customDraw(ctx) {
     const xx = this.x;
     const yy = this.y;
     ctx.beginPath();

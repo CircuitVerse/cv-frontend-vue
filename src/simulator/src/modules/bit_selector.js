@@ -105,9 +105,9 @@ export class BitSelector extends CircuitElement {
   /**
    * @memberof BitSelector
    * function to draw element
+   * @param {CanvasRenderingContext2D} ctx
    */
-  customDraw() {
-    const ctx = simulationArea.context;
+  customDraw(ctx) {
     ctx.beginPath();
     ctx.strokeStyle = ['blue', colors['stroke_alt']][
         (this.state === undefined) + 0

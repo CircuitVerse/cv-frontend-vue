@@ -99,10 +99,10 @@ export class Dlatch extends CircuitElement {
   }
 
   /**
-   *
+   * Custom draw.
+   * @param {CanvasRenderingContext2D} ctx
    */
-  customDraw() {
-    const ctx = simulationArea.context;
+  customDraw(ctx) {
     ctx.strokeStyle = colors['stroke'];
     ctx.fillStyle = colors['fill'];
     ctx.beginPath();

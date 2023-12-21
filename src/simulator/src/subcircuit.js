@@ -593,6 +593,9 @@ export class SubCircuit extends CircuitElement {
     return ['center', 0, -6];
   }
 
+  /**
+   *
+   */
   checkHover() {
     super.checkHover();
     if (this.elementHover) {
@@ -612,14 +615,12 @@ export class SubCircuit extends CircuitElement {
   /**
    * @memberof SubCircuit
    * Draws the subcircuit (and contained elements)
+   * @param {CanvasRenderingContext2D} ctx
    */
-  customDraw() {
+  customDraw(ctx) {
     const subcircuitScope = scopeList[this.id];
-
-    const ctx = simulationArea.context;
-
     ctx.lineWidth = globalScope.scale * 3;
-    ctx.strokeStyle = colors['stroke']; // ("rgba(0,0,0,1)");
+    ctx.strokeStyle = colors['stroke'];
     ctx.fillStyle = colors['fill'];
     const xx = this.x;
     const yy = this.y;

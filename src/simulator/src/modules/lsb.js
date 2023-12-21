@@ -97,9 +97,9 @@ export class LSB extends CircuitElement {
   /**
      * @memberof LSB
      * function to draw element
-     */
-  customDraw() {
-    const ctx = simulationArea.context;
+     * @param {CanvasRenderingContext2D} ctx
+   */
+  customDraw(ctx) {
     ctx.beginPath();
     ctx.strokeStyle = colors['stroke'];
     ctx.fillStyle = colors['fill'];

@@ -135,9 +135,9 @@ export class TB_Output extends CircuitElement {
 
   /**
    * Custom draw
+   * @param {CanvasRenderingContext2D} ctx
    */
-  customDraw() {
-    const ctx = simulationArea.context;
+  customDraw(ctx) {
     ctx.beginPath();
     ctx.strokeStyle = 'grey';
     ctx.fillStyle = '#fcfcfc';

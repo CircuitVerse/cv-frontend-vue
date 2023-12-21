@@ -107,10 +107,9 @@ export class Decoder extends CircuitElement {
   /**
      * @memberof Decoder
      * function to draw element
-     */
-  customDraw() {
-    const ctx = simulationArea.context;
-
+      * @param {CanvasRenderingContext2D} ctx
+   */
+  customDraw(ctx) {
     const xx = this.x;
     const yy = this.y;
     ctx.beginPath();

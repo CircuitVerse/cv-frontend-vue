@@ -105,11 +105,11 @@ export class AndGate extends CircuitElement {
   }
 
   /**
-     * @memberof AndGate
-     * function to draw And Gate
-     */
-  customDraw() {
-    const ctx = simulationArea.context;
+   * @memberof AndGate
+   * Draw And Gate
+   * @param {CanvasRenderingContext2D} ctx
+   */
+  customDraw(ctx) {
     ctx.beginPath();
     ctx.lineWidth = correctWidth(3);
     ctx.strokeStyle = colors['stroke']; // ("rgba(0,0,0,1)");

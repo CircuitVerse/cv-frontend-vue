@@ -53,10 +53,9 @@ export class Ground extends CircuitElement {
   /**
    * @memberof Ground
    * function to draw element
+   * @param {CanvasRenderingContext2D} ctx
    */
-  customDraw() {
-    const ctx = simulationArea.context;
-    //
+  customDraw(ctx) {
     ctx.beginPath();
     ctx.strokeStyle = [colors['stroke'], 'brown'][
         ((this.hover && !simulationArea.shiftDown) ||

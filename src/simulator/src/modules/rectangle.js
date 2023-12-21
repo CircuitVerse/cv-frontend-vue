@@ -100,9 +100,9 @@ export class Rectangle extends CircuitElement {
   /**
      * @memberof Rectangle
      * function to draw element
-     */
-  customDraw() {
-    const ctx = simulationArea.context;
+     * @param {CanvasRenderingContext2D} ctx
+   */
+  customDraw(ctx) {
     ctx.beginPath();
     ctx.strokeStyle = 'rgba(0,0,0,1)';
     ctx.setLineDash([5 * globalScope.scale, 5 * globalScope.scale]);

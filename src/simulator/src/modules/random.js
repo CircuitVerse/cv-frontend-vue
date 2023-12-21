@@ -107,9 +107,9 @@ export class Random extends CircuitElement {
 
   /**
    * Custom draw
+     * @param {CanvasRenderingContext2D} ctx
    */
-  customDraw() {
-    const ctx = simulationArea.context;
+  customDraw(ctx) {
     ctx.fillStyle = colors['fill'];
     ctx.strokeStyle = colors['stroke'];
     ctx.beginPath();
@@ -129,11 +129,11 @@ export class Random extends CircuitElement {
 
   /**
    * Draws the element in the subcircuit. Used in layout mode
+   * @param {CanvasRenderingContext2D} ctx
    * @param {number} xOffset
    * @param {number} yOffset
    */
-  subcircuitDraw(xOffset = 0, yOffset = 0) {
-    const ctx = simulationArea.context;
+  subcircuitDraw(ctx, xOffset = 0, yOffset = 0) {
     const xx = this.subcircuitMetadata.x + xOffset;
     const yy = this.subcircuitMetadata.y + yOffset;
 

@@ -66,9 +66,9 @@ export class Button extends CircuitElement {
   /**
      * @memberof Button
      * function to draw element
-     */
-  customDraw() {
-    const ctx = simulationArea.context;
+     * @param {CanvasRenderingContext2D} ctx
+   */
+  customDraw(ctx) {
     const xx = this.x;
     const yy = this.y;
     ctx.fillStyle = '#ddd';
@@ -103,11 +103,11 @@ export class Button extends CircuitElement {
 
   /**
    * Draw subcircuit
-   * @param {*} xOffset 
-   * @param {*} yOffset 
+   * @param {CanvasRenderingContext2D} ctx
+   * @param {*} xOffset
+   * @param {*} yOffset
    */
-  subcircuitDraw(xOffset = 0, yOffset = 0) {
-    const ctx = simulationArea.context;
+  subcircuitDraw(ctx, xOffset = 0, yOffset = 0) {
     const xx = this.subcircuitMetadata.x + xOffset;
     const yy = this.subcircuitMetadata.y + yOffset;
     ctx.fillStyle = '#ddd';

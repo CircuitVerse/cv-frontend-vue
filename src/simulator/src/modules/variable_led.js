@@ -96,10 +96,9 @@ export class VariableLed extends CircuitElement {
   /**
      * @memberof VariableLed
      * function to draw element
-     */
-  customDraw() {
-    const ctx = simulationArea.context;
-
+     * @param {CanvasRenderingContext2D} ctx
+   */
+  customDraw(ctx) {
     const xx = this.x;
     const yy = this.y;
 
@@ -137,12 +136,11 @@ export class VariableLed extends CircuitElement {
 
   /**
    * Draws the element in the subcircuit. Used in layout mode
+   * @param {CanvasRenderingContext2D} ctx
    * @param {*} xOffset x position to draw the subcircuit.
    * @param {*} yOffset y position to draw the subcircuit.
    */
-  subcircuitDraw(xOffset = 0, yOffset = 0) {
-    const ctx = simulationArea.context;
-
+  subcircuitDraw(ctx, xOffset = 0, yOffset = 0) {
     const xx = this.subcircuitMetadata.x + xOffset;
     const yy = this.subcircuitMetadata.y + yOffset;
 

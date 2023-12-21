@@ -110,9 +110,9 @@ export class SquareRGBLed extends CircuitElement {
   /**
      * @memberof SquareRGBLed
      * function to draw element
-     */
-  customDraw() {
-    const ctx = simulationArea.context;
+     * @param {CanvasRenderingContext2D} ctx
+   */
+  customDraw(ctx) {
     const xx = this.x;
     const yy = this.y;
     const r = this.inp1.value;
@@ -165,11 +165,11 @@ export class SquareRGBLed extends CircuitElement {
 
   /**
    * Draws the element in the subcircuit. Used in layout mode
+   * @param {CanvasRenderingContext2D} ctx
    * @param {number} xOffset - x coordinate of the offset.
    * @param {number} yOffset - y coordinate of the offset.
    */
-  subcircuitDraw(xOffset = 0, yOffset = 0) {
-    const ctx = simulationArea.context;
+  subcircuitDraw(ctx, xOffset = 0, yOffset = 0) {
     const xx = this.subcircuitMetadata.x + xOffset;
     const yy = this.subcircuitMetadata.y + yOffset;
     const r = this.inp1.value;

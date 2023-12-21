@@ -197,10 +197,9 @@ export class Splitter extends CircuitElement {
   /**
    * @memberof Splitter
    * function to draw element
+   * @param {CanvasRenderingContext2D} ctx
    */
-  customDraw() {
-    const ctx = simulationArea.context;
-    //
+  customDraw(ctx) {
     ctx.strokeStyle = [colors['splitter'], 'brown'][
         ((this.hover && !simulationArea.shiftDown) ||
         simulationArea.lastSelected === this ||

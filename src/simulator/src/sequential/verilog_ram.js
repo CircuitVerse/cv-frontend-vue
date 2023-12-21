@@ -519,9 +519,9 @@ export class verilogRAM extends CircuitElement {
 
   /**
    * Custom draw
+   * @param {CanvasRenderingContext2D} ctx
    */
-  customDraw() {
-    const ctx = simulationArea.context;
+  customDraw(ctx) {
     const xx = this.x;
     const yy = this.y;
     ctx.beginPath();

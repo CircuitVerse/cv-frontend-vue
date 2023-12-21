@@ -103,9 +103,9 @@ export class OrGate extends CircuitElement {
   /**
      * @memberof OrGate
      * function to draw element
-     */
-  customDraw() {
-    const ctx = simulationArea.context;
+     * @param {CanvasRenderingContext2D} ctx
+   */
+  customDraw(ctx) {
     ctx.strokeStyle = colors['stroke'];
     ctx.lineWidth = correctWidth(3);
 

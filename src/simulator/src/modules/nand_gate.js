@@ -105,9 +105,9 @@ export class NandGate extends CircuitElement {
   /**
      * @memberof NandGate
      * function to draw nand Gate
-     */
-  customDraw() {
-    const ctx = simulationArea.context;
+     * @param {CanvasRenderingContext2D} ctx
+   */
+  customDraw(ctx) {
     ctx.beginPath();
     ctx.lineWidth = correctWidth(3);
     ctx.strokeStyle = colors['stroke'];

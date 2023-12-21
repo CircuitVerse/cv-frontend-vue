@@ -143,7 +143,7 @@ export class CircuitElement {
 
   /** Methods to be Implemented for derivedClass
      * saveObject(); // Generates JSON-safe data that can be loaded
-     * customDraw(); // Draws the custom design of the circuit(Optional)
+     * customDraw(ctx); // Draws the custom design of the circuit(Optional)
      * resolve(); // To execute digital logic(Optional)
      * override isResolvable(); // custom logic for checking if module is ready
      * override newDirection(dir) //Implements custom direction logic(Optional)
@@ -669,7 +669,7 @@ export class CircuitElement {
 
     // calls the custom circuit design
     if (this.customDraw) {
-      this.customDraw();
+      this.customDraw(ctx);
     }
   }
 
@@ -757,7 +757,7 @@ export class CircuitElement {
       }
     }
     // calls the subcircuitDraw function in the element to draw it to canvas
-    this.subcircuitDraw(xOffset, yOffset);
+    this.subcircuitDraw(ctx, xOffset, yOffset);
   }
 
   /**

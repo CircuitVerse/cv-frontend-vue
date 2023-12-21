@@ -100,9 +100,11 @@ export class SRflipFlop extends CircuitElement {
     return data;
   }
 
-  customDraw() {
-    const ctx = simulationArea.context;
-    //
+  /**
+   * Custom draw.
+   * @param {CanvasRenderingContext2D} ctx
+   */
+  customDraw(ctx) {
     ctx.strokeStyle = colors['stroke'];
     ctx.fillStyle = colors['fill'];
     ctx.beginPath();

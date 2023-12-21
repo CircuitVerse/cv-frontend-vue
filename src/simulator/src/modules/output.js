@@ -100,10 +100,10 @@ export class Output extends CircuitElement {
   /**
      * @memberof Output
      * function to draw element
-     */
-  customDraw() {
-    this.state = this.inp1.value;
-    const ctx = simulationArea.context;
+     * @param {CanvasRenderingContext2D} ctx
+   */
+  customDraw(ctx) {
+    this.state = this.inp1.value; // TODO: Why is this being set?
     ctx.beginPath();
     ctx.strokeStyle = [colors['out_rect'], colors['stroke_alt']][
         +(this.inp1.value === undefined)

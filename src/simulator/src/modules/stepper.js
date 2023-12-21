@@ -51,9 +51,9 @@ export class Stepper extends CircuitElement {
   /**
      * @memberof Stepper
      * function to draw element
-     */
-  customDraw() {
-    const ctx = simulationArea.context;
+     * @param {CanvasRenderingContext2D} ctx
+   */
+  customDraw(ctx) {
     ctx.beginPath();
     ctx.font = '20px Raleway';
     ctx.fillStyle = colors['input_text'];

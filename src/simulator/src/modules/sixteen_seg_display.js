@@ -125,9 +125,9 @@ export class SixteenSegDisplay extends CircuitElement {
   /**
    * @memberof SixteenSegDisplay
    * function to draw element
+   * @param {CanvasRenderingContext2D} ctx
    */
-  customDraw() {
-    const ctx = simulationArea.context;
+  customDraw(ctx) {
     const xx = this.x;
     const yy = this.y;
     const color = ['lightgrey', this.actualColor];
@@ -321,12 +321,11 @@ export class SixteenSegDisplay extends CircuitElement {
 
   /**
    * Draws the element in the subcircuit. Used in layout mode
+   * @param {CanvasRenderingContext2D} ctx
    * @param {number} xOffset
    * @param {number} yOffset
    */
-  subcircuitDraw(xOffset = 0, yOffset = 0) {
-    const ctx = simulationArea.context;
-
+  subcircuitDraw(ctx, xOffset = 0, yOffset = 0) {
     const xx = this.subcircuitMetadata.x + xOffset;
     const yy = this.subcircuitMetadata.y + yOffset;
 

@@ -97,9 +97,9 @@ export class TriState extends CircuitElement {
   /**
      * @memberof TriState
      * function to draw element
-     */
-  customDraw() {
-    const ctx = simulationArea.context;
+     * @param {CanvasRenderingContext2D} ctx
+   */
+  customDraw(ctx) {
     ctx.strokeStyle = colors['stroke'];
     ctx.lineWidth = correctWidth(3);
     const xx = this.x;

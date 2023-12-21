@@ -98,9 +98,9 @@ export class HexDisplay extends CircuitElement {
   /**
      * @memberof HexDisplay
      * function to draw element
-     */
-  customDraw() {
-    const ctx = simulationArea.context;
+     * @param {CanvasRenderingContext2D} ctx
+   */
+  customDraw(ctx) {
     ctx.strokeStyle = colors['stroke'];
     ctx.lineWidth = correctWidth(3);
 
@@ -250,12 +250,11 @@ export class HexDisplay extends CircuitElement {
 
   /**
    * Draws the element in the subcircuit. Used in layout mode
+   * @param {CanvasRenderingContext2D} ctx
    * @param {*} xOffset
    * @param {*} yOffset
    */
-  subcircuitDraw(xOffset = 0, yOffset = 0) {
-    const ctx = simulationArea.context;
-
+  subcircuitDraw(ctx, xOffset = 0, yOffset = 0) {
     const xx = this.subcircuitMetadata.x + xOffset;
     const yy = this.subcircuitMetadata.y + yOffset;
 

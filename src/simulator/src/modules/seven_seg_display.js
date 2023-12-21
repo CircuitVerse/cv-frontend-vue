@@ -112,9 +112,9 @@ export class SevenSegDisplay extends CircuitElement {
   /**
      * @memberof SevenSegDisplay
      * function to draw element
-     */
-  customDraw() {
-    const ctx = simulationArea.context;
+     * @param {CanvasRenderingContext2D} ctx
+   */
+  customDraw(ctx) {
     const xx = this.x;
     const yy = this.y;
     const col = ['lightgrey', this.actualColor];
@@ -209,12 +209,11 @@ export class SevenSegDisplay extends CircuitElement {
 
   /**
    * Draws the element in the subcircuit. Used in layout mode
+   * @param {CanvasRenderingContext2D} ctx
    * @param {*} xOffset
    * @param {*} yOffset
    */
-  subcircuitDraw(xOffset = 0, yOffset = 0) {
-    const ctx = simulationArea.context;
-
+  subcircuitDraw(ctx, xOffset = 0, yOffset = 0) {
     const xx = this.subcircuitMetadata.x + xOffset;
     const yy = this.subcircuitMetadata.y + yOffset;
     const col = ['lightgrey', this.actualColor];

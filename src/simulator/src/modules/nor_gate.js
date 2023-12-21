@@ -109,9 +109,9 @@ export class NorGate extends CircuitElement {
   /**
      * @memberof NorGate
      * function to draw element
-     */
-  customDraw() {
-    const ctx = simulationArea.context;
+     * @param {CanvasRenderingContext2D} ctx
+   */
+  customDraw(ctx) {
     ctx.strokeStyle = colors['stroke'];
     ctx.lineWidth = correctWidth(3);
 

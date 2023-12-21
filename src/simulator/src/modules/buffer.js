@@ -91,11 +91,11 @@ export class Buffer extends CircuitElement {
   }
 
   /**
-     * @memberof Buffer
-     * function to draw element
-     */
-  customDraw() {
-    const ctx = simulationArea.context;
+   * @memberof Buffer
+   * function to draw element
+   * @param {CanvasRenderingContext2D} ctx
+   */
+  customDraw(ctx) {
     ctx.strokeStyle = colors['stroke_alt'];
     ctx.lineWidth = correctWidth(3);
     const xx = this.x;

@@ -68,11 +68,11 @@ export class ALU extends CircuitElement {
   }
 
   /**
-     * @memberof ALU
-     * function to draw element
-     */
-  customDraw() {
-    const ctx = simulationArea.context;
+   * @memberof ALU
+   * function to draw element
+   * @param {CanvasRenderingContext2D} ctx
+   */
+  customDraw(ctx) {
     const xx = this.x;
     const yy = this.y;
     ctx.strokeStyle = colors['stroke'];

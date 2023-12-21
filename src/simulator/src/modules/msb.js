@@ -90,9 +90,9 @@ export class MSB extends CircuitElement {
   /**
      * @memberof MSB
      * function to draw element
-     */
-  customDraw() {
-    const ctx = simulationArea.context;
+     * @param {CanvasRenderingContext2D} ctx
+   */
+  customDraw(ctx) {
     ctx.beginPath();
     ctx.strokeStyle = colors['stroke'];
     ctx.fillStyle = colors['fill'];
