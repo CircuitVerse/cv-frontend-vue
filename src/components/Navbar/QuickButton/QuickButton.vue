@@ -293,4 +293,10 @@ input[type='range']::-webkit-slider-thumb {
     border-radius: 50%;
     cursor: pointer;
 }
+
+@media (max-device-width: 1000px) {
+    .quick-btn {
+        display: none;
+    }
+}
 </style>

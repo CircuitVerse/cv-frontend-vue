@@ -321,3 +321,75 @@ import InsertSubcircuit from './DialogBox/InsertSubcircuit.vue'
 import OpenOffline from './DialogBox/OpenOffline.vue'
 import ReportIssue from './ReportIssue/ReportIssue.vue'
 </script>
+
+<style scoped>
+#touchMenu {
+    display: none;
+}
+@media screen and (max-device-width: 1000px) {
+    .report-sidebar {
+        display: none;
+    }
+
+    .testbench-manual-panel {
+        display: none;
+    }
+
+    .ce-panel {
+        display: none;
+    }
+
+    .timing-diagram-panel {
+        display: none;
+    }
+
+    .properties-panel {
+        visibility: hidden;
+    }
+
+    #miniMapArea {
+        display: none;
+    }
+
+    .quick-btn {
+        visibility: hidden;
+    }
+
+    #touchMenu {
+        display: flex;
+        flex-direction: column;
+        z-index: 100;
+        position: fixed;
+        top: 80px;
+        right: 10px;
+    }
+
+    .touchMenuIcon {
+        font-size: 20px;
+        text-align: center;
+        padding: 10px;
+        height: 45px;
+        width: 45px;
+        border-radius: 10px;
+    }
+
+    @media screen and (max-device-width: 823px) {
+        #touchMenu {
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 15%;
+            right: 10px;
+        }
+    }
+
+    .touchMenuIcon {
+        font-size: 19px;
+        text-align: center;
+        padding: 10px;
+        height: 45px;
+        width: 45px;
+        border-radius: 10px;
+    }
+}
+</style>
