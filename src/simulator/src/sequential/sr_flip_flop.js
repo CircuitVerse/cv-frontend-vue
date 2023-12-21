@@ -1,7 +1,7 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
 import {simulationArea} from '../simulation_area';
-import {correctWidth, fillText} from '../canvasApi';
+import {correctWidth, fillText} from '../canvas_api';
 import {colors} from '../themer/themer';
 /**
  * SRflipFlop

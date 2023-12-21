@@ -7,7 +7,7 @@ import {
   moveTo,
   arc2,
   drawCircle2,
-} from '../canvasApi';
+} from '../canvas_api';
 import {gateGenerateVerilog} from '../utils';
 import {changeInputSize} from '../modules';
 import {colors} from '../themer/themer';

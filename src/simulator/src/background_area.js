@@ -1,4 +1,4 @@
-import {dots} from './canvasApi';
+import {dots} from './canvas_api';
 
 export const backgroundArea = {
   canvas: document.getElementById('backgroundArea'),

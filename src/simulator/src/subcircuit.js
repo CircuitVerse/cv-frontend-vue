@@ -13,7 +13,7 @@ import {loadScope} from './data/load';
 import {showError} from './utils_clock';
 
 import {Node, findNode} from './node';
-import {fillText, correctWidth, rect2} from './canvasApi';
+import {fillText, correctWidth, rect2} from './canvas_api';
 import {colors} from './themer/themer';
 import {layoutModeGet} from './layout_mode';
 import {verilogModeGet} from './verilog_to_cv';

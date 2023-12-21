@@ -28,7 +28,7 @@ import { AndGate } from '#/simulator/src/modules/and_gate';
 import { OrGate } from '#/simulator/src/modules/or_gate';
 import { NotGate } from '#/simulator/src/modules/not_gate';
 import { simulationArea } from '#/simulator/src/simulation_area';
-import { findDimensions } from '#/simulator/src/canvasApi';
+import { findDimensions } from '#/simulator/src/canvas_api';
 import { confirmSingleOption } from '../helpers/confirmComponent/ConfirmComponent.vue';
 
 const SimulatorState = useState();

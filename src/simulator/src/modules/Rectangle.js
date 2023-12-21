@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {simulationArea} from '../simulation_area';
-import {correctWidth, rect} from '../canvasApi';
+import {correctWidth, rect} from '../canvas_api';
 /**
  * @class
  * Rectangle

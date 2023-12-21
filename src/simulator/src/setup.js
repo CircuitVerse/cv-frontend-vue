@@ -4,7 +4,7 @@ import {showMessage} from './utils_clock';
 import {backgroundArea} from './background_area';
 import {plotArea} from './plot_area';
 import {simulationArea} from './simulation_area';
-import {dots} from './canvasApi';
+import {dots} from './canvas_api';
 import {update, updateSimulationSet, updateCanvasSet} from './engine';
 import {setupUI} from './ux';
 import {startMainListeners} from './listeners';

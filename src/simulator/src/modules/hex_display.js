@@ -8,7 +8,7 @@ import {
   rect2,
   validColor,
   colorToRGBA,
-} from '../canvasApi';
+} from '../canvas_api';
 import {colors} from '../themer/themer';
 /**
  * @class

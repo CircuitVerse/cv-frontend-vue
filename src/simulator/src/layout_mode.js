@@ -1,4 +1,4 @@
-import {dots, correctWidth, fillText, rect2} from './canvasApi';
+import {dots, correctWidth, fillText, rect2} from './canvas_api';
 import {LayoutBuffer} from './layout/layoutBuffer';
 import {simulationArea} from './simulation_area';
 import {

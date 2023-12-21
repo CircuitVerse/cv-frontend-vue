@@ -1,7 +1,7 @@
 import {layoutModeGet, layoutUpdate} from './layout_mode';
 import {plotArea} from './plot_area';
 import {simulationArea} from './simulation_area';
-import {dots, canvasMessage, findDimensions, rect2} from './canvasApi';
+import {dots, canvasMessage, findDimensions, rect2} from './canvas_api';
 import {showProperties, prevPropertyObjGet} from './ux';
 import {showError} from './utils_clock';
 import {miniMapArea} from './minimap';

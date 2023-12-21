@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {simulationArea} from '../simulation_area';
-import {correctWidth, lineTo, moveTo, fillText} from '../canvasApi';
+import {correctWidth, lineTo, moveTo, fillText} from '../canvas_api';
 import {Node, findNode} from '../node';
 import {plotArea} from '../plot_area';
 

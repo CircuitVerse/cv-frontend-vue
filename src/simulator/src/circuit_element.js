@@ -5,7 +5,7 @@ import {
   correctWidth,
   rect2,
   oppositeDirection,
-} from './canvasApi';
+} from './canvas_api';
 import {colors} from './themer/themer';
 import {layoutModeGet, tempBuffer} from './layout_mode';
 import {fillSubcircuitElements} from './ux';

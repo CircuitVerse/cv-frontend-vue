@@ -8,7 +8,7 @@ import {
   bezierCurveTo,
   moveTo,
   drawCircle2,
-} from '../canvasApi';
+} from '../canvas_api';
 import {changeInputSize} from '../modules';
 import {colors} from '../themer/themer';
 /**

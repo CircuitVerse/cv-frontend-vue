@@ -1,7 +1,7 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
 import {simulationArea} from '../simulation_area';
-import {correctWidth, bezierCurveTo, moveTo} from '../canvasApi';
+import {correctWidth, bezierCurveTo, moveTo} from '../canvas_api';
 import {changeInputSize} from '../modules';
 import {gateGenerateVerilog} from '../utils';
 import {colors} from '../themer/themer';

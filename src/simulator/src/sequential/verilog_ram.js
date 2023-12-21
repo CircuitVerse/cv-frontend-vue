@@ -1,7 +1,7 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
 import {simulationArea} from '../simulation_area';
-import {correctWidth, fillText2, fillText4, drawCircle2} from '../canvasApi';
+import {correctWidth, fillText2, fillText4, drawCircle2} from '../canvas_api';
 
 function customResolve(
     clockInp,

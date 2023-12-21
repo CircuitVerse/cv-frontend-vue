@@ -1,7 +1,7 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
 import {simulationArea} from '../simulation_area';
-import {correctWidth, lineTo, moveTo, rect2} from '../canvasApi';
+import {correctWidth, lineTo, moveTo, rect2} from '../canvas_api';
 
 /**
  * @class

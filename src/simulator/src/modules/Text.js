@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {simulationArea} from '../simulation_area';
-import {rect2, fillText} from '../canvasApi';
+import {rect2, fillText} from '../canvas_api';
 import {colors} from '../themer/themer';
 import {copy, paste} from '../events';
 

@@ -1,7 +1,7 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
 import {simulationArea} from '../simulation_area';
-import {fillText4} from '../canvasApi';
+import {fillText4} from '../canvas_api';
 /**
  * @class
  * ForceGate

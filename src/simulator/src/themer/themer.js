@@ -1,4 +1,4 @@
-import {dots} from '../canvasApi';
+import {dots} from '../canvas_api';
 import themeOptions from './themes';
 import themeCardSvg from './themeCardSvg';
 import {SimulatorStore} from '#/store/SimulatorStore/SimulatorStore';

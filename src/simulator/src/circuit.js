@@ -5,7 +5,7 @@ import {
   stripTags,
   uniq,
 } from './utils';
-import {findDimensions, dots} from './canvasApi';
+import {findDimensions, dots} from './canvas_api';
 import {updateRestrictedElementsList} from './restricted_element_div';
 import {scheduleBackup} from './data/backupCircuit';
 import {showProperties} from './ux';

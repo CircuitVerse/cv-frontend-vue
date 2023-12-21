@@ -9,7 +9,7 @@ import {
   drawCircle2,
   colorToRGBA,
   validColor,
-} from '../canvasApi';
+} from '../canvas_api';
 import {colors} from '../themer/themer';
 /**
  * @class

@@ -1,4 +1,4 @@
-import {drawLine} from './canvasApi';
+import {drawLine} from './canvas_api';
 import {simulationArea} from './simulation_area';
 import {Node} from './node';
 import {updateSimulationSet, forceResetNodesSet} from './engine';

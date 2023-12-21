@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {simulationArea} from '../simulation_area';
-import {correctWidth, rect, fillText, drawImage} from '../canvasApi';
+import {correctWidth, rect, fillText, drawImage} from '../canvas_api';
 import {colors} from '../themer/themer';
 import {promptFile} from '../utils';
 import {showMessage} from '../utils_clock';

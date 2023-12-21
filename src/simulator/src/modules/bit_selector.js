@@ -1,7 +1,7 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode, extractBits} from '../node';
 import {simulationArea} from '../simulation_area';
-import {correctWidth, rect, fillText} from '../canvasApi';
+import {correctWidth, rect, fillText} from '../canvas_api';
 import {colors} from '../themer/themer';
 
 /**

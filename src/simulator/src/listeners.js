@@ -16,7 +16,7 @@ import {
   gridUpdateSet,
   errorDetectedSet,
 } from './engine';
-import {changeScale} from './canvasApi';
+import {changeScale} from './canvas_api';
 import {scheduleBackup} from './data/backupCircuit';
 import {
   hideProperties,

@@ -12,7 +12,7 @@ import {
   gridUpdateSet,
   errorDetectedSet,
 } from './engine';
-import {changeScale} from './canvasApi';
+import {changeScale} from './canvas_api';
 import {zoomIn, zoomOut} from './listeners';
 
 const unit = 10;

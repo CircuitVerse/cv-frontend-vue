@@ -6,7 +6,7 @@ import {showMessage} from '../utils_clock';
 import {backUp} from './backupCircuit';
 import {simulationArea} from '../simulation_area';
 import {backgroundArea} from '../background_area';
-import {findDimensions} from '../canvasApi';
+import {findDimensions} from '../canvas_api';
 import {projectSavedSet} from './project';
 import {colors} from '../themer/themer';
 import {layoutModeGet, toggleLayoutMode} from '../layout_mode';

@@ -16,7 +16,7 @@ import {showProperties} from '../ux';
 import {constructNodeConnections, loadNode, replace} from '../node';
 import {generateId} from '../utils';
 import {modules} from '../modules';
-import {oppositeDirection} from '../canvasApi';
+import {oppositeDirection} from '../canvas_api';
 import {plotArea} from '../plot_area';
 import {updateTestbenchUI, TestbenchData} from '../testbench';
 import {SimulatorStore} from '#/store/SimulatorStore/SimulatorStore';

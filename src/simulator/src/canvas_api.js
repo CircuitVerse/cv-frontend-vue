@@ -59,9 +59,15 @@ export function findDimensions(scope = globalScope) {
   simulationArea.objectList = updateOrder;
 }
 
-// Function used to change the zoom level wrt to a point
-// fn to change scale (zoom) - It also shifts origin so that the position
-// of the object in focus doesn't change
+/**
+ * Change the zoom level wrt to a point
+ * Change scale (zoom) - It also shifts origin so that the position
+ * of the object in focus doesn't change
+ * @param {*} delta
+ * @param {*} xx
+ * @param {*} yy
+ * @param {*} method
+ */
 export function changeScale(delta, xx, yy, method = 1) {
   // method = 3/2 - Zoom wrt center of screen
   // method = 1 - Zoom wrt position of mouse
@@ -101,7 +107,8 @@ export function changeScale(delta, xx, yy, method = 1) {
       Math.min(4 * DPR, globalScope.scale + delta),
   );
   globalScope.scale = Math.round(globalScope.scale * 10) / 10;
-  globalScope.ox -= Math.round(xx * (globalScope.scale - oldScale)); // Shift accordingly, so that we zoom wrt to the selected point
+  // Shift accordingly, so that we zoom wrt to the selected point
+  globalScope.ox -= Math.round(xx * (globalScope.scale - oldScale));
   globalScope.oy -= Math.round(yy * (globalScope.scale - oldScale));
 
   // MiniMap
@@ -141,14 +148,17 @@ export function dots(
   const canvasWidth = backgroundArea.canvas.width; // max X distance
   const canvasHeight = backgroundArea.canvas.height; // max Y distance
 
-  backgroundArea.canvas.style.left = `${(ox - scale) / DPR}px`; // adjust left position of canvas
-  backgroundArea.canvas.style.top = `${(oy - scale) / DPR}px`; // adjust top position of canvas
+  // adjust left position of canvas
+  backgroundArea.canvas.style.left = `${(ox - scale) / DPR}px`;
+  // adjust top position of canvas
+  backgroundArea.canvas.style.top = `${(oy - scale) / DPR}px`;
 
   if (globalScope.scale === simulationArea.prevScale && !force) {
     return;
   }
 
-  simulationArea.prevScale = globalScope.scale; // set the previous scale to current scale
+  // set the previous scale to current scale
+  simulationArea.prevScale = globalScope.scale;
 
   backgroundCtx.beginPath();
   backgroundArea.clear();
@@ -286,6 +296,18 @@ export function lineTo(ctx, x1, y1, xx, yy, dir) {
   );
 }
 
+/**
+ * Draw an arc.
+ * @param {*} ctx
+ * @param {*} sx
+ * @param {*} sy
+ * @param {*} radius
+ * @param {*} start
+ * @param {*} stop
+ * @param {*} xx
+ * @param {*} yy
+ * @param {*} dir
+ */
 export function arc(ctx, sx, sy, radius, start, stop, xx, yy, dir) {
   // ox-x of origin, xx- x of element , sx - shift in x from element
   let Sx;
@@ -311,6 +333,18 @@ export function arc(ctx, sx, sy, radius, start, stop, xx, yy, dir) {
   );
 }
 
+/**
+ * Draw an arc.
+ * @param {*} ctx
+ * @param {*} sx
+ * @param {*} sy
+ * @param {*} radius
+ * @param {*} start
+ * @param {*} stop
+ * @param {*} xx
+ * @param {*} yy
+ * @param {*} dir
+ */
 export function arc2(ctx, sx, sy, radius, start, stop, xx, yy, dir) {
   // ox-x of origin, xx- x of element , sx - shift in x from element
   let Sx;
@@ -339,6 +373,16 @@ export function arc2(ctx, sx, sy, radius, start, stop, xx, yy, dir) {
   );
 }
 
+/**
+ * Draw a circle.
+ * @param {*} ctx
+ * @param {*} sx
+ * @param {*} sy
+ * @param {*} radius
+ * @param {*} xx
+ * @param {*} yy
+ * @param {*} dir
+ */
 export function drawCircle2(ctx, sx, sy, radius, xx, yy, dir) {
   // ox-x of origin, xx- x of element , sx - shift in x from element
   let Sx;
@@ -392,6 +436,17 @@ export function drawImage(ctx, img, x1, y1, canvasWidth, canvasHeight) {
   ctx.drawImage(img, x1, y1, canvasWidth, canvasHeight);
 }
 
+/**
+ * Draw a rectangle.
+ * @param {*} ctx
+ * @param {*} x1
+ * @param {*} y1
+ * @param {*} x2
+ * @param {*} y2
+ * @param {*} xx
+ * @param {*} yy
+ * @param {*} dir
+ */
 export function rect2(ctx, x1, y1, x2, y2, xx, yy, dir = 'RIGHT') {
   const correction = 0.5 * (ctx.lineWidth % 2)
     ;[x1, y1] = rotate(x1, y1, dir)
@@ -440,6 +495,16 @@ function rotateAngle(start, stop, dir) {
   return [start, stop, false];
 }
 
+/**
+ * Draw a line.
+ * @param {*} ctx
+ * @param {*} x1
+ * @param {*} y1
+ * @param {*} x2
+ * @param {*} y2
+ * @param {*} color
+ * @param {*} width
+ */
 export function drawLine(ctx, x1, y1, x2, y2, color, width) {
   x1 *= globalScope.scale;
   y1 *= globalScope.scale;
@@ -522,7 +587,14 @@ export function drawCircle(ctx, x1, y1, r, color) {
   ctx.fill();
 }
 
-// To show message like values, node name etc
+/**
+ * Show message like values, node name etc
+ * @param {*} ctx
+ * @param {*} str
+ * @param {*} x1
+ * @param {*} y1
+ * @param {*} fontSize
+ */
 export function canvasMessage(ctx, str, x1, y1, fontSize = 10) {
   if (!str || !str.length) {
     return;

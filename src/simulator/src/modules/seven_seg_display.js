@@ -9,7 +9,7 @@ import {
   rect,
   rect2,
   validColor,
-} from '../canvasApi';
+} from '../canvas_api';
 
 /**
  * @class
