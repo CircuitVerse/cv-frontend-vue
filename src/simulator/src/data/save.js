@@ -5,7 +5,6 @@ import {stripTags} from '../utils';
 import {showMessage} from '../utils_clock';
 import {backUp} from './backup_circuit';
 import {simulationArea} from '../simulation_area';
-import {backgroundArea} from '../background_area';
 import {findDimensions} from '../canvas_api';
 import {projectSavedSet} from './project';
 import {colors} from '../themer/themer';
@@ -188,10 +187,8 @@ export function generateImage(
   const backUpWidth = width;
   const backUpHeight = height;
   const backUpScale = globalScope.scale;
-  const backUpContextBackground = backgroundArea.context;
   const backUpContextSimulation = simulationArea.context;
 
-  backgroundArea.context = simulationArea.context;
 
   globalScope.ox *= 1 / backUpScale;
   globalScope.oy *= 1 / backUpScale;
@@ -235,10 +232,6 @@ export function generateImage(
 
   simulationArea.canvas.width = width;
   simulationArea.canvas.height = height;
-  backgroundArea.canvas.width = width;
-  backgroundArea.canvas.height = height;
-
-  backgroundArea.context = simulationArea.context;
 
   simulationArea.clear();
 
@@ -275,10 +268,7 @@ export function generateImage(
   height = backUpHeight;
   simulationArea.canvas.width = width;
   simulationArea.canvas.height = height;
-  backgroundArea.canvas.width = width;
-  backgroundArea.canvas.height = height;
   globalScope.scale = backUpScale;
-  backgroundArea.context = backUpContextBackground;
   simulationArea.context = backUpContextSimulation;
   globalScope.ox = backUpOx;
   globalScope.oy = backUpOy;

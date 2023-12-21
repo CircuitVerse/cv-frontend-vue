@@ -1,7 +1,6 @@
 import {metadata} from './metadata';
 import {generateId} from './utils';
 import {showMessage} from './utils_clock';
-import {backgroundArea} from './background_area';
 import {plotArea} from './plot_area';
 import {simulationArea} from './simulation_area';
 import {dots} from './canvas_api';
@@ -45,20 +44,18 @@ export function resetup() {
     height = document.getElementById('simulation').clientHeight * DPR;
   }
   // setup simulationArea and backgroundArea to make changes to canvas.
-  const backgroundAreaCanvas = document.getElementById('backgroundArea');
-  backgroundArea.setup(backgroundAreaCanvas);
   simulationArea.setup();
   // redraw grid
   dots();
-  document.getElementById('backgroundArea').style.height =
+  globalScope.backgroundArea.canvas.style.height =
     height / DPR + 100 + 'px';
-  document.getElementById('backgroundArea').style.width =
+  globalScope.backgroundArea.canvas.style.width =
     width / DPR + 100 + 'px';
   document.getElementById('canvasArea').style.height = height / DPR + 'px';
   simulationArea.canvas.width = width;
   simulationArea.canvas.height = height;
-  backgroundArea.canvas.width = width + 100 * DPR;
-  backgroundArea.canvas.height = height + 100 * DPR;
+  globalScope.backgroundArea.canvas.width = width + 100 * DPR;
+  globalScope.backgroundArea.canvas.height = height + 100 * DPR;
   if (!embed) {
     plotArea.setup();
   }
@@ -83,7 +80,6 @@ function setupEnvironment() {
   const projectId = generateId();
   window.projectId = projectId;
   updateSimulationSet(true);
-  // const DPR = window.devicePixelRatio || 1 // unused variable
   newCircuit('Main');
   window.data = {};
   resetup();

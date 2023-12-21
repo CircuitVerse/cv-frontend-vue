@@ -1,9 +1,4 @@
-import {ApplicationMetadata} from './metadata';
-import {setup} from './setup';
-
-document.addEventListener('DOMContentLoaded', () => {
-  setup();
-});
+import { ApplicationMetadata } from './metadata';
 
 /**
  *

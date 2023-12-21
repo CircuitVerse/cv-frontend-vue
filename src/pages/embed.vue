@@ -10,7 +10,6 @@
       <div id="MessageDiv" />
 
       <div id="canvasArea" class="canvasArea" style="height: 100%; width: 100%">
-        <canvas id="backgroundArea" style="position: absolute; left: 0; top: 0; z-index: 0" />
         <canvas id="simulationArea" style="
                         position: absolute;
                         left: 0;

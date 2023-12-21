@@ -1,4 +1,3 @@
-import {backgroundArea} from './background_area';
 import {simulationArea} from './simulation_area';
 import {miniMapArea, removeMiniMap, updateLastMinimapShown} from './minimap';
 import {colors} from './themer/themer';
@@ -140,18 +139,18 @@ export function dots(
   const ox = globalScope.ox % scale; // offset
   const oy = globalScope.oy % scale; // offset
 
-  const backgroundCtx = backgroundArea.context;
+  const backgroundCtx = globalScope.backgroundArea.context;
   if (!backgroundCtx) {
     return;
   }
 
-  const canvasWidth = backgroundArea.canvas.width; // max X distance
-  const canvasHeight = backgroundArea.canvas.height; // max Y distance
+  const canvasWidth = globalScope.backgroundArea.canvas.width;
+  const canvasHeight = globalScope.backgroundArea.canvas.height;
 
   // adjust left position of canvas
-  backgroundArea.canvas.style.left = `${(ox - scale) / DPR}px`;
+  globalScope.backgroundArea.canvas.style.left = `${(ox - scale) / DPR}px`;
   // adjust top position of canvas
-  backgroundArea.canvas.style.top = `${(oy - scale) / DPR}px`;
+  globalScope.backgroundArea.canvas.style.top = `${(oy - scale) / DPR}px`;
 
   if (globalScope.scale === simulationArea.prevScale && !force) {
     return;
@@ -161,7 +160,7 @@ export function dots(
   simulationArea.prevScale = globalScope.scale;
 
   backgroundCtx.beginPath();
-  backgroundArea.clear();
+  globalScope.backgroundArea.clear();
 
   if (!transparentBackground) {
     backgroundCtx.fillStyle = colors['canvas_fill'];

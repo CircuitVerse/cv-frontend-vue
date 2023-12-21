@@ -1,6 +1,7 @@
 import {CircuitElement} from './circuit_element';
 import {plotArea} from './plot_area';
 import {simulationArea} from './simulation_area';
+import {BackgroundArea} from './background_area';
 import {
   stripTags,
   uniq,
@@ -261,6 +262,8 @@ export class Scope {
    * @param {number} id
    */
   constructor(name = 'localScope', id = undefined) {
+    const backgroundAreaCanvas = document.getElementById('canvasArea');
+    this.backgroundArea = new BackgroundArea(backgroundAreaCanvas);
     this.restrictedCircuitElementsUsed = [];
     this.id = id || Math.floor(Math.random() * 100000000000 + 1);
     this.CircuitElement = [];
