@@ -3,7 +3,7 @@
  * Contains the the testbench engine and UI modules
  */
 
-import {scheduleBackup} from './data/backupCircuit';
+import {scheduleBackup} from './data/backup_circuit';
 import {changeClockEnable} from './sequential';
 import {play} from './engine';
 import {converters, escapeHtml} from './utils';

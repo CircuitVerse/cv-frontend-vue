@@ -17,7 +17,7 @@ import {
   errorDetectedSet,
 } from './engine';
 import {changeScale} from './canvas_api';
-import {scheduleBackup} from './data/backupCircuit';
+import {scheduleBackup} from './data/backup_circuit';
 import {
   hideProperties,
   deleteSelected,

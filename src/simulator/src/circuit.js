@@ -7,7 +7,7 @@ import {
 } from './utils';
 import {findDimensions, dots} from './canvas_api';
 import {updateRestrictedElementsList} from './restricted_element_div';
-import {scheduleBackup} from './data/backupCircuit';
+import {scheduleBackup} from './data/backup_circuit';
 import {showProperties} from './ux';
 import {
   scheduleUpdate,

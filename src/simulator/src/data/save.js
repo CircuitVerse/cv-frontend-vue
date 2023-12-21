@@ -3,7 +3,7 @@ import {resetup} from '../setup';
 import {update} from '../engine';
 import {stripTags} from '../utils';
 import {showMessage} from '../utils_clock';
-import {backUp} from './backupCircuit';
+import {backUp} from './backup_circuit';
 import {simulationArea} from '../simulation_area';
 import {backgroundArea} from '../background_area';
 import {findDimensions} from '../canvas_api';

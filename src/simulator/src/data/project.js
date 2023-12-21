@@ -1,7 +1,7 @@
 import {resetScopeList, scopeList, newCircuit} from '../circuit';
 import {generateId} from '../utils';
 import {showMessage, showError} from '../utils_clock';
-import {checkIfBackup} from './backupCircuit';
+import {checkIfBackup} from './backup_circuit';
 import {generateSaveData, getProjectName, setProjectName} from './save';
 import {load} from './load';
 import {SimulatorStore} from '#/store/SimulatorStore/SimulatorStore';

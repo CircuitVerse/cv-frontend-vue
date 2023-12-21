@@ -29,7 +29,7 @@ import {Power} from './modules/power';
 import {PriorityEncoder} from './modules/priority_encoder';
 import {Random} from './modules/random';
 import {Rectangle} from './modules/rectangle';
-import {RGBLed} from './modules/RGBLed';
+import {RGBLed} from './modules/rgb_led';
 import {RGBLedMatrix} from './modules/rgb_led_matrix';
 import {SevenSegDisplay} from './modules/seven_seg_display';
 import {SixteenSegDisplay} from './modules/sixteen_seg_display';

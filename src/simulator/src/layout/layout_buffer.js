@@ -1,4 +1,4 @@
-import {LayoutNode} from './layoutNode';
+import {LayoutNode} from './layout_node';
 /**
  * Buffer object to store changes so that you can reset changes
  * @class

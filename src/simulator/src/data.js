@@ -2,7 +2,7 @@ import {fullView} from './ux';
 import {createSubCircuitPrompt} from './subcircuit';
 import {save} from './data/save';
 import {load} from './data/load';
-import {createSaveAsImgPrompt} from './data/saveImage';
+import {createSaveAsImgPrompt} from './data/save_image';
 import {
   clearProject,
   newProject,

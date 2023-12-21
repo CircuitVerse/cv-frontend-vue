@@ -1,7 +1,7 @@
 import {Scope, scopeList, switchCircuit} from './circuit';
 import {CircuitElement} from './circuit_element';
 import {simulationArea} from './simulation_area';
-import {scheduleBackup, checkIfBackup} from './data/backupCircuit';
+import {scheduleBackup, checkIfBackup} from './data/backup_circuit';
 import {
   scheduleUpdate,
   updateSimulationSet,

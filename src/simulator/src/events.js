@@ -7,7 +7,7 @@ import {
   updateSubcircuitSet,
   forceResetNodesSet,
 } from './engine';
-import {backUp} from './data/backupCircuit';
+import {backUp} from './data/backup_circuit';
 import {getNextPosition} from './modules';
 import {generateId} from './utils';
 import {simulationArea} from './simulation_area';

@@ -11,7 +11,7 @@ import {updateRestrictedElementsInScope} from '../restricted_element_div';
 import {simulationArea} from '../simulation_area';
 
 import {loadSubCircuit} from '../subcircuit';
-import {scheduleBackup} from './backupCircuit';
+import {scheduleBackup} from './backup_circuit';
 import {showProperties} from '../ux';
 import {constructNodeConnections, loadNode, replace} from '../node';
 import {generateId} from '../utils';

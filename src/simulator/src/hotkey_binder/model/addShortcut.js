@@ -10,7 +10,7 @@ import {
 } from './actions';
 import {save} from '../../data/save';
 import {saveOffline, openOffline} from '../../data/project';
-import {createSaveAsImgPrompt} from '../../data/saveImage';
+import {createSaveAsImgPrompt} from '../../data/save_image';
 import {createSubCircuitPrompt} from '../../subcircuit';
 import {createCombinationalAnalysisPrompt} from '../../combinational_analysis';
 import {shortcut} from './shortcuts.plugin.js';

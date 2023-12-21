@@ -1,5 +1,5 @@
 import {dots, correctWidth, fillText, rect2} from './canvas_api';
-import {LayoutBuffer} from './layout/layoutBuffer';
+import {LayoutBuffer} from './layout/layout_buffer';
 import {simulationArea} from './simulation_area';
 import {
   fillSubcircuitElements,

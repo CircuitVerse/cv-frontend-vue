@@ -7,7 +7,7 @@ import {setup} from '../src/setup';
 import {load} from '../src/data/load';
 import gatesCircuitData from './circuits/gates-circuitdata.json';
 import decoderCircuitData from './circuits/Decoders-plexers-circuitdata.json';
-import {checkIfBackup, scheduleBackup} from '../src/data/backupCircuit';
+import {checkIfBackup, scheduleBackup} from '../src/data/backup_circuit';
 import {undo} from '../src/data/undo';
 import {redo} from '../src/data/redo';
 import {save} from '../src/data/save';
@@ -18,7 +18,7 @@ import {
   saveOffline,
   openOffline,
 } from '../src/data/project';
-import {createSaveAsImgPrompt} from '../src/data/saveImage';
+import {createSaveAsImgPrompt} from '../src/data/save_image';
 
 jest.mock('codemirror');
 

@@ -1,4 +1,4 @@
-import {scheduleBackup} from './data/backupCircuit';
+import {scheduleBackup} from './data/backup_circuit';
 import {SimulatorStore} from '#/store/SimulatorStore/SimulatorStore';
 
 // var inputSample = 5
