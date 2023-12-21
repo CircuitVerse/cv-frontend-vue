@@ -1,10 +1,10 @@
 import {simulationArea} from './simulation_area';
 
 /**
- *
- * @param {*} x
- * @param {*} scope
- * @returns
+ * Determine the next available Y position.
+ * @param {number} x
+ * @param {Scope} scope
+ * @return {number} possible next Y position.
  */
 export function getNextPosition(x = 0, scope = globalScope) {
   let possibleY = 20;

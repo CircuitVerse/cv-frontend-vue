@@ -118,6 +118,7 @@ export class TB_Output extends CircuitElement {
   /**
    * @memberof TB_output
    * Function to check if the input for this TB exist
+   * @param {string} id
    */
   checkPairing(id = '') {
     if (this.testBenchInput) {
@@ -143,22 +144,6 @@ export class TB_Output extends CircuitElement {
     ctx.lineWidth = correctWidth(1);
     const xx = this.x;
     const yy = this.y;
-
-    let xRotate = 0;
-    let yRotate = 0;
-    if (this.direction == 'LEFT') {
-      xRotate = 0;
-      yRotate = 0;
-    } else if (this.direction == 'RIGHT') {
-      xRotate = 120 - this.xSize;
-      yRotate = 0;
-    } else if (this.direction == 'UP') {
-      xRotate = 60 - this.xSize / 2;
-      yRotate = -20;
-    } else {
-      xRotate = 60 - this.xSize / 2;
-      yRotate = 20;
-    }
 
     ctx.beginPath();
     ctx.textAlign = 'center';

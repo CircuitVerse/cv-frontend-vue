@@ -126,18 +126,15 @@ export class DflipFlop extends CircuitElement {
 
   customDraw() {
     const ctx = simulationArea.context;
-    //
     ctx.strokeStyle = colors['stroke'];
     ctx.fillStyle = colors['fill'];
     ctx.beginPath();
     ctx.lineWidth = correctWidth(3);
     const xx = this.x;
     const yy = this.y;
-    // rect(ctx, xx - 20, yy - 20, 40, 40);
     moveTo(ctx, -20, 5, xx, yy, this.direction);
     lineTo(ctx, -15, 10, xx, yy, this.direction);
     lineTo(ctx, -20, 15, xx, yy, this.direction);
-    // if ((this.b.hover&&!simulationArea.shiftDown)|| simulationArea.lastSelected == this || simulationArea.multipleObjectSelections.includes(this)) ctx.fillStyle = "rgba(255, 255, 32,0.8)";ctx.fill();
     ctx.stroke();
 
     ctx.beginPath();

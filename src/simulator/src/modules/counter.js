@@ -129,7 +129,11 @@ export class Counter extends CircuitElement {
     ctx.stroke();
   }
 
-  // Draws the element in the subcircuit. Used in layout mode
+  /**
+   * Draws the element in the subcircuit. Used in layout mode
+   * @param {*} xOffset
+   * @param {*} yOffset
+   */
   subcircuitDraw(xOffset = 0, yOffset = 0) {
     const ctx = simulationArea.context;
     const xx = this.subcircuitMetadata.x + xOffset;

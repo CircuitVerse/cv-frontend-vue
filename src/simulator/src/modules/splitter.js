@@ -19,12 +19,6 @@ function extractBits(num, start, end) {
  * @class
  * Splitter
  * @extends CircuitElement
- * @param {number} x - x coordinate of element.
- * @param {number} y - y coordinate of element.
- * @param {Scope} scope - Circuit on which element is drawn
- * @param {string} dir - direction of element
- * @param {number} bitWidth - bit width per node.
- * @param {number} bitWidthSplit - number of input nodes
  * @category modules
  */
 export class Splitter extends CircuitElement {
@@ -201,9 +195,9 @@ export class Splitter extends CircuitElement {
   }
 
   /**
-     * @memberof Splitter
-     * function to draw element
-     */
+   * @memberof Splitter
+   * function to draw element
+   */
   customDraw() {
     const ctx = simulationArea.context;
     //

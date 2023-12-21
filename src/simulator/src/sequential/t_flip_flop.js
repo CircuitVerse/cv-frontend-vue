@@ -135,7 +135,6 @@ export class TflipFlop extends CircuitElement {
 
   customDraw() {
     const ctx = simulationArea.context;
-    //
     ctx.strokeStyle = colors['stroke'];
     ctx.fillStyle = colors['fill'];
     ctx.beginPath();
@@ -178,8 +177,8 @@ export class TflipFlop extends CircuitElement {
   }
 }
 
-TflipFlop.prototype.tooltipText =
-  'T FlipFlop ToolTip :  Changes state / Toggles whenever the clock input is strobed.';
+TflipFlop.prototype.tooltipText = 'T FlipFlop ToolTip : ' +
+  'Changes state / Toggles whenever the clock input is strobed.';
 
 TflipFlop.prototype.helplink =
   'https://docs.circuitverse.org/#/Sequential?id=t-flip-flop';

@@ -101,6 +101,11 @@ export class Button extends CircuitElement {
     ctx.fill();
   }
 
+  /**
+   * Draw subcircuit
+   * @param {*} xOffset 
+   * @param {*} yOffset 
+   */
   subcircuitDraw(xOffset = 0, yOffset = 0) {
     const ctx = simulationArea.context;
     const xx = this.subcircuitMetadata.x + xOffset;

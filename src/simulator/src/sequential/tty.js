@@ -11,13 +11,16 @@ import {colors} from '../themer/themer';
  * on the edge change the data is added onto the display
  * screen of the typewriter
  * @extends CircuitElement
- * @param {number} x - x coord of element
- * @param {number} y - y coord of element
- * @param {Scope} scope - the circuit in which we want the Element
- * @param {string} dir - direction in which element has to drawn
  * @category sequential
  */
 export class TTY extends CircuitElement {
+  /**
+   * @param {number} x - x coord of element
+   * @param {number} y - y coord of element
+   * @param {Scope} scope - the circuit in which we want the Element
+   * @param {number} rows
+   * @param {number} cols
+   */
   constructor(x, y, scope = globalScope, rows = 3, cols = 32) {
     super(x, y, scope, 'RIGHT', 1);
     this.directionFixed = true;
@@ -29,7 +32,6 @@ export class TTY extends CircuitElement {
     this.elementHeight = Math.max(40, Math.ceil((this.rows * 15) / 20) * 20);
     this.setWidth(this.elementWidth / 2);
     this.setHeight(this.elementHeight / 2);
-    // this.element = new Element(x, y, "TTY",this.elementWidth/2, this,this.elementHeight/2);
 
     this.clockInp = new Node(
         -this.elementWidth / 2,
@@ -73,9 +75,9 @@ export class TTY extends CircuitElement {
   }
 
   /**
-     * @memberof TTY
-     * this funciton is used to change the size of the screen
-     */
+   * @memberof TTY
+   * this funciton is used to change the size of the screen
+   */
   changeRowSize(size) {
     if (size == undefined || size < 1 || size > 10) {
       return;
@@ -90,9 +92,10 @@ export class TTY extends CircuitElement {
   }
 
   /**
-     * @memberof TTY
-     * this funciton is used to change the size of the screen
-     */
+   * @memberof TTY
+   * Change the size of the screen
+   * @param {number} size
+   */
   changeColSize(size) {
     if (size == undefined || size < 20 || size > 100) {
       return;
@@ -183,14 +186,12 @@ export class TTY extends CircuitElement {
 
   customDraw() {
     const ctx = simulationArea.context;
-    //
     ctx.strokeStyle = colors['stroke'];
     ctx.fillStyle = colors['fill'];
     ctx.beginPath();
     ctx.lineWidth = correctWidth(3);
     const xx = this.x;
     const yy = this.y;
-    // rect(ctx, xx - this.elementWidth/2, yy - this.elementHeight/2, this.elementWidth, this.elementHeight);
 
     moveTo(
         ctx,
@@ -217,8 +218,6 @@ export class TTY extends CircuitElement {
         this.direction,
     );
 
-    // if ((this.b.hover&&!simulationArea.shiftDown)|| simulationArea.lastSelected == this || simulationArea.multipleObjectSelections.includes(this))
-    //     ctx.fillStyle = "rgba(255, 255, 32,0.8)";
     ctx.stroke();
 
     ctx.beginPath();

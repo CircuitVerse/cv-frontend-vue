@@ -15,9 +15,6 @@ import {
  * @class
  * SevenSegDisplay
  * @extends CircuitElement
- * @param {number} x - x coordinate of element.
- * @param {number} y - y coordinate of element.
- * @param {Scope} scope - Circuit on which element is drawn
  * @category modules
  */
 export class SevenSegDisplay extends CircuitElement {
@@ -47,10 +44,10 @@ export class SevenSegDisplay extends CircuitElement {
   }
 
   /**
-     * @memberof SevenSegDisplay
-     * fn to change the color of SevenSegDisplay
-     * @param {string} value - color name
-     */
+   * @memberof SevenSegDisplay
+   * Change the color of SevenSegDisplay
+   * @param {string} value - color name
+   */
   changeColor(value) {
     if (validColor(value)) {
       if (value.trim() === '') {
@@ -90,17 +87,17 @@ export class SevenSegDisplay extends CircuitElement {
   /**
    * @memberof SevenSegDisplay
    * helper function to create save Json Data of object
+   * @param {*} ctx
    * @param {*} x1
    * @param {*} y1
    * @param {*} x2
    * @param {*} y2
    * @param {*} color
    */
-  customDrawSegment(x1, y1, x2, y2, color) {
+  customDrawSegment(ctx, x1, y1, x2, y2, color) {
     if (color === undefined) {
       color = 'lightgrey';
     }
-    const ctx = simulationArea.context;
     ctx.beginPath();
     ctx.strokeStyle = color;
     ctx.lineWidth = correctWidth(5);
@@ -120,68 +117,85 @@ export class SevenSegDisplay extends CircuitElement {
     const ctx = simulationArea.context;
     const xx = this.x;
     const yy = this.y;
+    const col = ['lightgrey', this.actualColor];
     this.customDrawSegment(
+        ctx,
         18,
         -3,
         18,
         -38,
-        ['lightgrey', this.actualColor][this.b.value],
+        col[this.b.value],
     );
     this.customDrawSegment(
+        ctx,
         18,
         3,
         18,
         38,
-        ['lightgrey', this.actualColor][this.c.value],
+        col[this.c.value],
     );
     this.customDrawSegment(
+        ctx,
         -18,
         -3,
         -18,
         -38,
-        ['lightgrey', this.actualColor][this.f.value],
+        col[this.f.value],
     );
     this.customDrawSegment(
+        ctx,
         -18,
         3,
         -18,
         38,
-        ['lightgrey', this.actualColor][this.e.value],
+        col[this.e.value],
     );
     this.customDrawSegment(
+        ctx,
         -17,
         -38,
         17,
         -38,
-        ['lightgrey', this.actualColor][this.a.value],
+        col[this.a.value],
     );
     this.customDrawSegment(
+        ctx,
         -17,
         0,
         17,
         0,
-        ['lightgrey', this.actualColor][this.g.value],
+        col[this.g.value],
     );
     this.customDrawSegment(
+        ctx,
         -15,
         38,
         17,
         38,
-        ['lightgrey', this.actualColor][this.d.value],
+        col[this.d.value],
     );
     ctx.beginPath();
-    const dotColor =
-      ['lightgrey', this.actualColor][this.dot.value] || 'lightgrey';
+    const dotColor = col[this.dot.value] || 'lightgrey';
     ctx.strokeStyle = dotColor;
     rect(ctx, xx + 22, yy + 42, 2, 2);
     ctx.stroke();
   }
 
-  subcircuitDrawSegment(x1, y1, x2, y2, color, xxSegment, yySegment) {
+  /**
+   * Subcircuit draw segment.
+   * @param {*} ctx
+   * @param {*} x1
+   * @param {*} y1
+   * @param {*} x2
+   * @param {*} y2
+   * @param {*} color
+   * @param {*} xxSegment
+   * @param {*} yySegment
+   */
+  subcircuitDrawSegment(ctx, x1, y1, x2, y2, color, xxSegment, yySegment) {
     if (color == undefined) {
       color = 'lightgrey';
     }
-    const ctx = simulationArea.context;
     ctx.beginPath();
     ctx.strokeStyle = color;
     ctx.lineWidth = correctWidth(3);
@@ -193,80 +207,90 @@ export class SevenSegDisplay extends CircuitElement {
     ctx.stroke();
   }
 
-  // Draws the element in the subcircuit. Used in layout mode
+  /**
+   * Draws the element in the subcircuit. Used in layout mode
+   * @param {*} xOffset
+   * @param {*} yOffset
+   */
   subcircuitDraw(xOffset = 0, yOffset = 0) {
     const ctx = simulationArea.context;
 
     const xx = this.subcircuitMetadata.x + xOffset;
     const yy = this.subcircuitMetadata.y + yOffset;
-
+    const col = ['lightgrey', this.actualColor];
     this.subcircuitDrawSegment(
+        ctx,
         10,
         -20,
         10,
         -38,
-        ['lightgrey', this.actualColor][this.b.value],
+        col[this.b.value],
         xx,
         yy,
     );
     this.subcircuitDrawSegment(
+        ctx,
         10,
         -17,
         10,
         1,
-        ['lightgrey', this.actualColor][this.c.value],
+        col[this.c.value],
         xx,
         yy,
     );
     this.subcircuitDrawSegment(
+        ctx,
         -10,
         -20,
         -10,
         -38,
-        ['lightgrey', this.actualColor][this.f.value],
+        col[this.f.value],
         xx,
         yy,
     );
     this.subcircuitDrawSegment(
+        ctx,
         -10,
         -17,
         -10,
         1,
-        ['lightgrey', this.actualColor][this.e.value],
+        col[this.e.value],
         xx,
         yy,
     );
     this.subcircuitDrawSegment(
+        ctx,
         -8,
         -38,
         8,
         -38,
-        ['lightgrey', this.actualColor][this.a.value],
+        col[this.a.value],
         xx,
         yy,
     );
     this.subcircuitDrawSegment(
+        ctx,
         -8,
         -18,
         8,
         -18,
-        ['lightgrey', this.actualColor][this.g.value],
+        col[this.g.value],
         xx,
         yy,
     );
     this.subcircuitDrawSegment(
+        ctx,
         -8,
         1,
         8,
         1,
-        ['lightgrey', this.actualColor][this.d.value],
+        col[this.d.value],
         xx,
         yy,
     );
 
     ctx.beginPath();
-    const dotColor =
-      ['lightgrey', this.actualColor][this.dot.value] || 'lightgrey';
+    const dotColor = col[this.dot.value] || 'lightgrey';
     ctx.strokeStyle = dotColor;
     rect(ctx, xx + 13, yy + 5, 1, 1);
     ctx.stroke();
@@ -295,8 +319,12 @@ export class SevenSegDisplay extends CircuitElement {
   generateVerilog() {
     return `
       always @ (*)
-        $display("SevenSegDisplay:${this.verilogLabel}.abcdefg. = %b%b%b%b%b%b%b%b}",
-                 ${this.a.verilogLabel}, ${this.b.verilogLabel}, ${this.c.verilogLabel}, ${this.d.verilogLabel}, ${this.e.verilogLabel}, ${this.f.verilogLabel}, ${this.g.verilogLabel}, ${this.dot.verilogLabel});`;
+        $display("SevenSegDisplay:${this.verilogLabel}.abcdefg. = ` +
+        `%b%b%b%b%b%b%b%b}",
+            ${this.a.verilogLabel}, ${this.b.verilogLabel}, ` +
+            `${this.c.verilogLabel}, ${this.d.verilogLabel}, ` +
+            `${this.e.verilogLabel}, ${this.f.verilogLabel}, ` +
+            `${this.g.verilogLabel}, ${this.dot.verilogLabel});`;
   }
 }
 

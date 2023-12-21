@@ -14,12 +14,15 @@ import {colors} from '../themer/themer';
  * @class
  * HexDisplay
  * @extends CircuitElement
- * @param {number} x - x coordinate of element.
- * @param {number} y - y coordinate of element.
- * @param {Scope} scope - Circuit on which element is drawn
  * @category modules
  */
 export class HexDisplay extends CircuitElement {
+  /**
+   * @param {number} x - x coordinate of element.
+   * @param {number} y - y coordinate of element.
+   * @param {Scope} scope - Circuit on which element is drawn
+   * @param {*} color
+   */
   constructor(x, y, scope = globalScope, color = 'Red') {
     super(x, y, scope, 'RIGHT', 4);
     this.directionFixed = true;
@@ -68,13 +71,18 @@ export class HexDisplay extends CircuitElement {
 
   /**
    * @memberof HexDisplay
-   * function to draw element
+   * Draw element
+   * @param {*} ctx
+   * @param {*} x1
+   * @param {*} y1
+   * @param {*} x2
+   * @param {*} y2
+   * @param {*} color
    */
-  customDrawSegment(x1, y1, x2, y2, color) {
+  customDrawSegment(ctx, x1, y1, x2, y2, color) {
     if (color === undefined) {
       color = 'lightgrey';
     }
-    const ctx = simulationArea.context;
     ctx.beginPath();
     ctx.strokeStyle = color;
     ctx.lineWidth = correctWidth(5);
@@ -93,10 +101,6 @@ export class HexDisplay extends CircuitElement {
      */
   customDraw() {
     const ctx = simulationArea.context;
-
-    const xx = this.x;
-    const yy = this.y;
-
     ctx.strokeStyle = colors['stroke'];
     ctx.lineWidth = correctWidth(3);
 
@@ -158,62 +162,80 @@ export class HexDisplay extends CircuitElement {
         break;
       default:
     }
+    const col = ['lightgrey', this.actualColor];
     this.customDrawSegment(
+        ctx,
         18,
         -3,
         18,
         -38,
-        ['lightgrey', this.actualColor][b],
+        col[b],
     );
     this.customDrawSegment(
+        ctx,
         18,
         3,
         18,
         38,
-        ['lightgrey', this.actualColor][c],
+        col[c],
     );
     this.customDrawSegment(
+        ctx,
         -18,
         -3,
         -18,
         -38,
-        ['lightgrey', this.actualColor][f],
+        col[f],
     );
     this.customDrawSegment(
+        ctx,
         -18,
         3,
         -18,
         38,
-        ['lightgrey', this.actualColor][e],
+        col[e],
     );
     this.customDrawSegment(
+        ctx,
         -17,
         -38,
         17,
         -38,
-        ['lightgrey', this.actualColor][a],
+        col[a],
     );
     this.customDrawSegment(
+        ctx,
         -17,
         0,
         17,
         0,
-        ['lightgrey', this.actualColor][g],
+        col[g],
     );
     this.customDrawSegment(
+        ctx,
         -15,
         38,
         17,
         38,
-        ['lightgrey', this.actualColor][d],
+        col[d],
     );
   }
 
-  subcircuitDrawSegment(x1, y1, x2, y2, color, xxSegment, yySegment) {
+  /**
+   *
+   * @param {*} ctx
+   * @param {*} x1
+   * @param {*} y1
+   * @param {*} x2
+   * @param {*} y2
+   * @param {*} color
+   * @param {*} xxSegment
+   * @param {*} yySegment
+   */
+  subcircuitDrawSegment(ctx, x1, y1, x2, y2, color, xxSegment, yySegment) {
     if (color == undefined) {
       color = 'lightgrey';
     }
-    const ctx = simulationArea.context;
     ctx.beginPath();
     ctx.strokeStyle = color;
     ctx.lineWidth = correctWidth(3);
@@ -225,7 +247,12 @@ export class HexDisplay extends CircuitElement {
     ctx.closePath();
     ctx.stroke();
   }
-  // Draws the element in the subcircuit. Used in layout mode
+
+  /**
+   * Draws the element in the subcircuit. Used in layout mode
+   * @param {*} xOffset
+   * @param {*} yOffset
+   */
   subcircuitDraw(xOffset = 0, yOffset = 0) {
     const ctx = simulationArea.context;
 
@@ -293,66 +320,73 @@ export class HexDisplay extends CircuitElement {
         break;
       default:
     }
-    this.subcircuitDrawSegment(
+    const col = ['lightgrey', this.actualColor];
+    this.subcircuitDrawSegment(ctx,
         10,
         -20,
         10,
         -38,
-        ['lightgrey', this.actualColor][b],
+        col[b],
         xx,
         yy,
     );
     this.subcircuitDrawSegment(
+        ctx,
         10,
         -17,
         10,
         1,
-        ['lightgrey', this.actualColor][c],
+        col[c],
         xx,
         yy,
     );
     this.subcircuitDrawSegment(
+        ctx,
         -10,
         -20,
         -10,
         -38,
-        ['lightgrey', this.actualColor][f],
+        col[f],
         xx,
         yy,
     );
     this.subcircuitDrawSegment(
+        ctx,
         -10,
         -17,
         -10,
         1,
-        ['lightgrey', this.actualColor][e],
+        col[e],
         xx,
         yy,
     );
     this.subcircuitDrawSegment(
+        ctx,
         -8,
         -38,
         8,
         -38,
-        ['lightgrey', this.actualColor][a],
+        col[a],
         xx,
         yy,
     );
     this.subcircuitDrawSegment(
+        ctx,
         -8,
         -18,
         8,
         -18,
-        ['lightgrey', this.actualColor][g],
+        col[g],
         xx,
         yy,
     );
     this.subcircuitDrawSegment(
+        ctx,
         -8,
         1,
         8,
         1,
-        ['lightgrey', this.actualColor][d],
+        col[d],
         xx,
         yy,
     );
@@ -381,7 +415,8 @@ export class HexDisplay extends CircuitElement {
   generateVerilog() {
     return `
       always @ (*)
-        $display("HexDisplay:${this.verilogLabel}=%d", ${this.inp.verilogLabel});`;
+        $display("HexDisplay:${this.verilogLabel}=%d", ` +
+        `${this.inp.verilogLabel});`;
   }
 }
 

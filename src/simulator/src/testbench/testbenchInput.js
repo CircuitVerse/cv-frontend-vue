@@ -151,9 +151,9 @@ export class TB_Input extends CircuitElement {
   }
 
   /**
-     * @memberof TB_Input
-     * was a function to plot values incase any flag used as output to this element
-     */
+   * @memberof TB_Input
+   * Plot values incase any flag used as output to this element
+   */
   setPlotValue() {
     return;
     const time = plotArea.stopWatch.ElapsedMilliseconds;
@@ -249,22 +249,6 @@ export class TB_Input extends CircuitElement {
     ctx.lineWidth = correctWidth(1);
     let xx = this.x;
     let yy = this.y;
-
-    let xRotate = 0;
-    let yRotate = 0;
-    if (this.direction == 'LEFT') {
-      xRotate = 0;
-      yRotate = 0;
-    } else if (this.direction == 'RIGHT') {
-      xRotate = 120 - this.xSize;
-      yRotate = 0;
-    } else if (this.direction == 'UP') {
-      xRotate = 60 - this.xSize / 2;
-      yRotate = -20;
-    } else {
-      xRotate = 60 - this.xSize / 2;
-      yRotate = 20;
-    }
 
     ctx.beginPath();
     ctx.textAlign = 'center';

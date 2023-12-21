@@ -1,15 +1,22 @@
 import interact from 'interactjs';
 
 interface Position {
-    x: number
-    y: number
+  x: number
+  y: number
 }
 
+/**
+ *
+ * @param {HTMLElement} element
+ * @param {number} dx
+ * @param {number} dy
+ * @param {WeakMap<HTMLElement, Position>} positions
+ */
 function updatePosition(
-    element: HTMLElement,
-    dx: number,
-    dy: number,
-    positions: WeakMap<HTMLElement, Position>,
+  element: HTMLElement,
+  dx: number,
+  dy: number,
+  positions: WeakMap<HTMLElement, Position>,
 ): void {
   if (!element) {
     return;
@@ -17,7 +24,7 @@ function updatePosition(
 
   // If the element does not exist in the positions WeakMap, create it
   if (!positions.has(element)) {
-    positions.set(element, {x: 0, y: 0});
+    positions.set(element, { x: 0, y: 0 });
   }
 
   // Update the element's x and y position
@@ -29,9 +36,14 @@ function updatePosition(
   currentPosition.y += dy;
 
   // Apply the new position to the element using the CSS transform property
-  element.style.transform = `translate(${currentPosition.x}px, ${currentPosition.y}px)`;
+  element.style.transform =
+    `translate(${currentPosition.x}px, ${currentPosition.y}px)`;
 }
 
+/**
+ * Disable the section of an element.
+ * @param {HTMLElement} element - element to disable section on.
+ */
 function disableSelection(element: HTMLElement): void {
   element.setAttribute('unselectable', 'on');
   element.style.userSelect = 'none';
@@ -60,10 +72,10 @@ export function dragging(targetEl: HTMLElement, DragEl: HTMLElement): void {
       // Update the element's position when the move event is triggered
       move(event) {
         updatePosition(
-                    event.target as HTMLElement,
-                    event.dx,
-                    event.dy,
-                    positions,
+          event.target as HTMLElement,
+          event.dx,
+          event.dy,
+          positions,
         );
       },
     },
@@ -77,12 +89,14 @@ export function dragging(targetEl: HTMLElement, DragEl: HTMLElement): void {
   });
 
   $(DragEl).on('mousedown', () => {
-    $(`.draggable-panel:not(${DragEl})`).css('z-index', '100');
-    $(DragEl).css('z-index', '101');
+    $(`.draggable-panel:not(${DragEl})`).css('z-index', '99');
+    $(DragEl).css('z-index', '99');
   });
 
-  const panelElements = document.querySelectorAll(
-      '.elementPanel, .layoutElementPanel, #moduleProperty, #layoutDialog, #verilogEditorPanel, .timing-diagram-panel, .testbench-manual-panel, .quick-btn',
+  const panelElements = document.querySelectorAll('.elementPanel, ' +
+    '.layoutElementPanel, #moduleProperty, #layoutDialog, ' +
+    '#verilogEditorPanel, .timing-diagram-panel, ' +
+    '.testbench-manual-panel, .quick-btn',
   );
 
   panelElements.forEach((element) => {

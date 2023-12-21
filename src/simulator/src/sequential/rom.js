@@ -91,7 +91,6 @@ export class Rom extends CircuitElement {
   /**
      * @memberof Rom
      * listener function to set selected index
-     * @return {number}
      */
   click() {
     // toggle
