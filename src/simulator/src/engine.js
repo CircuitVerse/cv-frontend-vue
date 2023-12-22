@@ -321,11 +321,11 @@ export function updateSelectionsAndPane(scope = globalScope) {
       globalScope.ox =
         simulationArea.mouseRawX -
         simulationArea.mouseDownRawX +
-        simulationArea.oldx;
+        simulationArea.oldX;
       globalScope.oy =
         simulationArea.mouseRawY -
         simulationArea.mouseDownRawY +
-        simulationArea.oldy;
+        simulationArea.oldY;
       globalScope.ox = Math.round(globalScope.ox);
       globalScope.oy = Math.round(globalScope.oy);
       gridUpdateSet(true);

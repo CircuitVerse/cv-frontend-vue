@@ -1,4 +1,4 @@
-import {Node} from './node';
+import { Node } from './node';
 /**
  * Event Queue is simply a priority Queue, basic implementation O(n^2).
  * @category eventQueue
@@ -27,20 +27,20 @@ export class EventQueue {
     if (obj.queueProperties.inQueue) {
       obj.queueProperties.time =
         this.time + (delay || obj.propagationDelay);
-      let i = obj.queueProperties.index;
+      let i = obj.queueProperties.index!;
       while (
         i > 0 &&
         obj.queueProperties.time >
-        this.queue[i - 1].queueProperties.time
+        this.queue[i - 1].queueProperties.time!
       ) {
         this.swap(i, i - 1);
         i--;
       }
-      i = obj.queueProperties.index;
+      i = obj.queueProperties.index!;
       while (
         i < this.frontIndex - 1 &&
         obj.queueProperties.time <
-        this.queue[i + 1].queueProperties.time
+        this.queue[i + 1].queueProperties.time!
       ) {
         this.swap(i, i + 1);
         i++;
@@ -59,7 +59,7 @@ export class EventQueue {
     let i = obj.queueProperties.index;
     while (
       i > 0 &&
-      obj.queueProperties.time > this.queue[i - 1].queueProperties.time
+      obj.queueProperties.time > this.queue[i - 1].queueProperties.time!
     ) {
       this.swap(i, i - 1);
       i--;
@@ -104,7 +104,7 @@ export class EventQueue {
     }
     this.frontIndex--;
     const obj = this.queue[this.frontIndex];
-    this.time = obj.queueProperties.time;
+    this.time = obj.queueProperties.time!;
     obj.queueProperties.inQueue = false;
     return obj;
   }

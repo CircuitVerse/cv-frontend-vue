@@ -18,10 +18,10 @@ import { CircuitElement } from './circuit_element';
 
 /**
  * Rotate node.
- * @param x1
- * @param y1
- * @param dir
- * @returns
+ * @param {number} x1
+ * @param {number} y1
+ * @param {string} dir
+ * @return {number[]}
  */
 function rotate(x1: number, y1: number, dir: string): number[] {
   if (dir == 'LEFT') {
@@ -36,6 +36,13 @@ function rotate(x1: number, y1: number, dir: string): number[] {
   return [x1, y1];
 }
 
+/**
+ * Extract bits.
+ * @param {number} num
+ * @param {number} start
+ * @param {number} end
+ * @return {number}
+ */
 export function extractBits(num: number, start: number, end: number): number {
   return (num << (32 - end)) >>> (32 - (end - start + 1));
 }
@@ -87,6 +94,10 @@ let uniqueIdCounter = 10;
  *
  */
 export class QueueProperties {
+  public inQueue: boolean;
+  public time?: number;
+  public index?: number;
+
   /**
    * @param {boolean} inQueue Is item in a queue.
    * @param {number?} time Time it was inserted.
@@ -140,11 +151,12 @@ export class Node {
   public count: number;
   public highlighted: boolean;
   public queueProperties: QueueProperties;
-  public oldx: number = 0;
-  public oldy: number = 0;
+  public oldX: number = 0;
+  public oldY: number = 0;
   public showHover: boolean = false;
   public deleted: boolean = false;
   public verilogLabel: string = '';
+  public propagationDelay: number = 10;
 
   /**
    * @param {number} x - x coord of Node.
@@ -230,16 +242,16 @@ export class Node {
  * Sets up some variable which help in changing node.
  */
   startDragging() {
-    this.oldx = this.x;
-    this.oldy = this.y;
+    this.oldX = this.x;
+    this.oldY = this.y;
   }
 
   /**
  * Helper function to move a node.
  */
   drag() {
-    this.x = this.oldx + simulationArea.mouseX - simulationArea.mouseDownX;
-    this.y = this.oldy + simulationArea.mouseY - simulationArea.mouseDownY;
+    this.x = this.oldX + simulationArea.mouseX - simulationArea.mouseDownX;
+    this.y = this.oldY + simulationArea.mouseY - simulationArea.mouseDownY;
   }
 
   /**

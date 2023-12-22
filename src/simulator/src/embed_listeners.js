@@ -55,8 +55,8 @@ export function startListeners() {
                         unit,
                 ) * unit;
         simulationArea.mouseDown = true;
-        simulationArea.oldx = globalScope.ox;
-        simulationArea.oldy = globalScope.oy;
+        simulationArea.oldX = globalScope.ox;
+        simulationArea.oldY = globalScope.oy;
 
         e.preventDefault();
         scheduleUpdate(1);

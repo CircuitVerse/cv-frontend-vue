@@ -10,7 +10,7 @@ import {colors} from './themer/themer';
 import {layoutModeGet, tempBuffer} from './layout_mode';
 import {fillSubcircuitElements} from './ux';
 import {generateNodeName} from './verilog_helpers';
-import {NodeType} from './node';
+import {NodeType, QueueProperties} from './node';
 
 /**
  * Base class for circuit elements.
@@ -43,8 +43,8 @@ export class CircuitElement {
     this.nodeList = [];
     this.clicked = false;
 
-    this.oldx = x;
-    this.oldy = y;
+    this.oldX = x;
+    this.oldY = y;
 
     // The following attributes help in setting the touch area bound.
     // They are the distances from the center.
@@ -71,11 +71,7 @@ export class CircuitElement {
     this.verilogLabel = '';
     scheduleUpdate();
 
-    this.queueProperties = {
-      inQueue: false,
-      time: undefined,
-      index: undefined,
-    };
+    this.queueProperties = new QueueProperties(false, undefined, undefined);
 
     if (this.canShowInSubcircuit) {
       this.subcircuitMetadata = {
@@ -256,11 +252,11 @@ export class CircuitElement {
    */
   startDragging() {
     if (!layoutModeGet()) {
-      this.oldx = this.x;
-      this.oldy = this.y;
+      this.oldX = this.x;
+      this.oldY = this.y;
     } else {
-      this.oldx = this.subcircuitMetadata.x;
-      this.oldy = this.subcircuitMetadata.y;
+      this.oldX = this.subcircuitMetadata.x;
+      this.oldY = this.subcircuitMetadata.y;
     }
   }
 
@@ -270,13 +266,13 @@ export class CircuitElement {
    */
   drag() {
     if (!layoutModeGet()) {
-      this.x = this.oldx + simulationArea.mouseX - simulationArea.mouseDownX;
-      this.y = this.oldy + simulationArea.mouseY - simulationArea.mouseDownY;
+      this.x = this.oldX + simulationArea.mouseX - simulationArea.mouseDownX;
+      this.y = this.oldY + simulationArea.mouseY - simulationArea.mouseDownY;
     } else {
       this.subcircuitMetadata.x =
-        this.oldx + simulationArea.mouseX - simulationArea.mouseDownX;
+        this.oldX + simulationArea.mouseX - simulationArea.mouseDownX;
       this.subcircuitMetadata.y =
-        this.oldy + simulationArea.mouseY - simulationArea.mouseDownY;
+        this.oldY + simulationArea.mouseY - simulationArea.mouseDownY;
     }
   }
 

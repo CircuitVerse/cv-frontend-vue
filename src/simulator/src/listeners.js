@@ -90,8 +90,8 @@ export function startMainListeners() {
           globalScope.scale /
           unit,
         ) * unit;
-        simulationArea.oldx = globalScope.ox;
-        simulationArea.oldy = globalScope.oy;
+        simulationArea.oldX = globalScope.ox;
+        simulationArea.oldY = globalScope.oy;
 
         e.preventDefault();
         scheduleBackup();

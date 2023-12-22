@@ -1,8 +1,20 @@
+/**
+ *
+ */
 export class NameLabel {
+  /**
+   *
+   * @param {string} name
+   * @param {string} label
+   */
   constructor(
     public name: string,
     public label: string) { }
 }
+
+/**
+ * Application metadata.
+ */
 export class ApplicationMetadata {
   circuitElementList: string[] = [
     'Input',

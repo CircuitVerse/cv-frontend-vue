@@ -12,8 +12,8 @@ import {clockTick} from './utils_clock';
  * @property {undefined} lastSelected
  * @property {Array} stack
  * @property {number} prevScale
- * @property {number} oldx
- * @property {number} oldy
+ * @property {number} oldX
+ * @property {number} oldY
  * @property {Array} objectList
  * @property {number} maxHeight
  * @property {number} maxWidth
@@ -37,41 +37,44 @@ import {clockTick} from './utils_clock';
  * @property {function} clear - clear the simulation area
  * @category simulationArea
  */
-export const simulationArea = {
-  canvas: document.getElementById('simulationArea'),
-  selected: false,
-  hover: false,
-  clockState: 0,
-  clockEnabled: true,
-  lastSelected: undefined,
-  stack: [],
-  prevScale: 0,
-  oldx: 0,
-  oldy: 0,
-  objectList: [],
-  maxHeight: 0,
-  maxWidth: 0,
-  minHeight: 0,
-  minWidth: 0,
-  multipleObjectSelections: [],
-  copyList: [],
-  shiftDown: false,
-  controlDown: false,
-  timePeriod: 500,
-  mouseX: 0,
-  mouseY: 0,
-  mouseDownX: 0,
-  mouseDownY: 0,
-  simulationQueue: undefined,
-  multiAddElement: false,
-  ClockInterval: undefined,
-  clickCount: 0, // double click
-  lock: 'unlocked',
+export class SimulationArea {
+  constructor() {
+    this.canvas= document.getElementById('simulationArea');
+    this.selected= false;
+    this.hover= false;
+    this.clockState= 0;
+    this.clockEnabled= true;
+    this.lastSelected= undefined;
+    this.stack= [];
+    this.prevScale= 0;
+    this.oldX= 0;
+    this.oldY= 0;
+    this.objectList= [];
+    this.maxHeight= 0;
+    this.maxWidth= 0;
+    this.minHeight= 0;
+    this.minWidth= 0;
+    this.multipleObjectSelections= [];
+    this.copyList= [];
+    this.shiftDown= false;
+    this.controlDown= false;
+    this.timePeriod= 500;
+    this.mouseX= 0;
+    this.mouseY= 0;
+    this.mouseDownX= 0;
+    this.mouseDownY= 0;
+    this.simulationQueue= undefined;
+    this.multiAddElement= false;
+    this.ClockInterval= undefined;
+    this.clickCount= 0;// double click
+    this.lock= 'unlocked';
+  }
+
   timer() {
     setTimeout(() => {
       simulationArea.clickCount = 0;
     }, 600);
-  },
+  }
 
   setup() {
     this.canvas = document.getElementById('simulationArea');
@@ -81,7 +84,12 @@ export const simulationArea = {
     this.context = this.canvas.getContext('2d');
     simulationArea.changeClockTime(simulationArea.timePeriod);
     this.mouseDown = false;
-  },
+  }
+  /**
+   *
+   * @param {*} t
+   * @returns
+   */
   changeClockTime(t) {
     if (t < 50) {
       return;
@@ -90,12 +98,18 @@ export const simulationArea = {
     t = t || prompt('Enter Time Period:');
     simulationArea.timePeriod = t;
     simulationArea.ClockInterval = setInterval(clockTick, t);
-  },
+  }
+
+  /**
+   * Clears the simulation area canvas.
+   */
   clear() {
     if (!this.context) {
       return;
     }
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-  },
-};
+  }
+}
+
+export const simulationArea = new SimulationArea();
 export const {changeClockTime} = simulationArea;
