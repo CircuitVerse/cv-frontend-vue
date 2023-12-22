@@ -189,6 +189,11 @@ $output-rect: blue;
     background: var(--bg-text);
 }
 
+.liveMenuIcon {
+    background-color: var(--primary);
+    border: 1px solid var(--br-secondary);
+    color: var(--text-panel);
+}
 @supports (backdrop-filter: blur()) {
     #contextMenu {
         background-color: var(--bg-primary-chr);
@@ -631,7 +636,7 @@ select {
 }
 
 .touchMenuIcon {
-  background-color: var(--primary);
-  border: 2px solid var(--br-secondary);
-  color: var(--text-panel);
+    background-color: var(--primary);
+    border: 2px solid var(--br-secondary);
+    color: var(--text-panel);
 }

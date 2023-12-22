@@ -38,13 +38,37 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
 
-     <!-- Touchmenu  Responsive Versions -->
-  <div id='touchMenu'>
-    <ul><i class="fas fa-bezier-curve touchMenuIcon"></i></ul>
-    <ul><i class="fas fa-cogs touchMenuIcon"></i></ul>
-    <ul><i class="fas fa-wave-square touchMenuIcon"></i></ul>
-    <ul><i class="fas fa-ellipsis-h touchMenuIcon"></i></ul>
-  </div>
+    <!-- Touchmenu  Responsive Versions -->
+    <div id="touchMenu">
+        <ul>
+            <i class="fas fa-bezier-curve touchMenuIcon"></i>
+        </ul>
+        <ul>
+            <i class="fas fa-cogs touchMenuIcon"></i>
+        </ul>
+        <ul>
+            <i class="fas fa-wave-square touchMenuIcon"></i>
+        </ul>
+        <ul>
+            <i class="fas fa-ellipsis-h touchMenuIcon"></i>
+        </ul>
+    </div>
+
+    <!-- Live Menu button  -->
+    <div id="liveMenu">
+        <ul>
+            <i class="fas fa-compress-arrows-alt liveMenuIcon"></i>
+        </ul>
+        <ul>
+            <i class="fas fa-trash-alt liveMenuIcon"></i>
+        </ul>
+        <ul>
+            <i class="fas fa-undo liveMenuIcon"></i>
+        </ul>
+        <ul>
+            <i class="fas fa-redo liveMenuIcon"></i>
+        </ul>
+    </div>
 
     <!-- Testbench Panel -->
     <div class="testbench-manual-panel draggable-panel noSelect defaultCursor">
@@ -335,6 +359,10 @@ import ReportIssue from './ReportIssue/ReportIssue.vue'
 #touchMenu {
     display: none;
 }
+
+#liveMenu {
+    display: none;
+}
 @media screen and (max-device-width: 1000px) {
     .report-sidebar {
         display: none;
@@ -382,6 +410,24 @@ import ReportIssue from './ReportIssue/ReportIssue.vue'
         border-radius: 10px;
     }
 
+    #liveMenu {
+        display: flex;
+        z-index: 99;
+        position: fixed;
+        top: 90%;
+        right: 40px;
+    }
+    .liveMenuIcon {
+        font-size: 18px;
+        text-align: center;
+        padding: 10px;
+        height: 40px;
+        width: 40px;
+        border-radius: 10px;
+        margin: 0px;
+        position: relative;
+    }
+
     @media screen and (max-device-width: 823px) {
         #touchMenu {
             display: flex;
@@ -390,6 +436,19 @@ import ReportIssue from './ReportIssue/ReportIssue.vue'
             top: 15%;
             right: 10px;
         }
+
+        #liveMenu {
+            top: 85%;
+            right: 70px;
+        }
+
+        .liveMenuIcon {
+        font-size: 15px;
+        text-align: center;
+        padding: 10px;
+        height: 40px;
+        width: 40px;
+    }
     }
 
     .touchMenuIcon {
