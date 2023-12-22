@@ -37,6 +37,15 @@
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
+
+     <!-- Touchmenu  Responsive Versions -->
+  <div id='touchMenu'>
+    <ul><i class="fas fa-bezier-curve touchMenuIcon"></i></ul>
+    <ul><i class="fas fa-cogs touchMenuIcon"></i></ul>
+    <ul><i class="fas fa-wave-square touchMenuIcon"></i></ul>
+    <ul><i class="fas fa-ellipsis-h touchMenuIcon"></i></ul>
+  </div>
+
     <!-- Testbench Panel -->
     <div class="testbench-manual-panel draggable-panel noSelect defaultCursor">
         <div class="panel-header">
