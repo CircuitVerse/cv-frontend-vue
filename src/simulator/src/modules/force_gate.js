@@ -59,7 +59,7 @@ export class ForceGate extends CircuitElement {
 
   /**
    * @memberof ForceGate
-   * resolve output values based on inputData
+   * Determine output values and add to simulation queue.
    */
   resolve() {
     if (this.inp2.value !== undefined) {

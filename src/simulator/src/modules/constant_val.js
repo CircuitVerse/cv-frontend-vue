@@ -66,9 +66,9 @@ export class ConstantVal extends CircuitElement {
   }
 
   /**
-     * @memberof ConstantVal
-     * resolve output values based on inputData
-     */
+   * @memberof ConstantVal
+   * Determine output values and add to simulation queue.
+   */
   resolve() {
     this.output1.value = converters.bin2dec(this.state);
     simulationArea.simulationQueue.add(this.output1);
@@ -99,10 +99,10 @@ export class ConstantVal extends CircuitElement {
     this.setDimensions(10 * this.bitWidth, 10);
     if (this.direction === 'RIGHT') {
       this.output1.x = 10 * this.bitWidth;
-      this.output1.leftx = 10 * this.bitWidth;
+      this.output1.leftX = 10 * this.bitWidth;
     } else if (this.direction === 'LEFT') {
       this.output1.x = -10 * this.bitWidth;
-      this.output1.leftx = 10 * this.bitWidth;
+      this.output1.leftX = 10 * this.bitWidth;
     }
   }
 
@@ -161,11 +161,11 @@ export class ConstantVal extends CircuitElement {
     this.direction = dir;
     this.output1.refresh();
     if (dir === 'RIGHT' || dir === 'LEFT') {
-      this.output1.leftx = 10 * this.bitWidth;
-      this.output1.lefty = 0;
+      this.output1.leftX = 10 * this.bitWidth;
+      this.output1.leftY = 0;
     } else {
-      this.output1.leftx = 10; // 10*this.bitWidth;
-      this.output1.lefty = 0;
+      this.output1.leftX = 10; // 10*this.bitWidth;
+      this.output1.leftY = 0;
     }
 
     this.output1.refresh();
@@ -178,7 +178,8 @@ export class ConstantVal extends CircuitElement {
    * @return {string} String representing the Verilog.
    */
   generateVerilog() {
-    return `assign ${this.output1.verilogLabel} = ${this.bitWidth}'b${this.state};`;
+    return `assign ${this.output1.verilogLabel} = ` +
+         `${this.bitWidth}'b${this.state};`;
   }
 }
 

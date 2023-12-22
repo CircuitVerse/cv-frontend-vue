@@ -42,9 +42,9 @@ export class Ground extends CircuitElement {
   }
 
   /**
-     * @memberof Ground
-     * resolve output values based on inputData
-     */
+   * @memberof Ground
+   * Determine output values and add to simulation queue.
+   */
   resolve() {
     this.output1.value = 0;
     simulationArea.simulationQueue.add(this.output1);

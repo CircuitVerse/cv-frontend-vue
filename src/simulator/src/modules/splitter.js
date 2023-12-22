@@ -121,10 +121,10 @@ export class Splitter extends CircuitElement {
   }
 
   /**
-     * @memberof Splitter
-     * Checks if the output value can be determined.
-     * @return {boolean}
-     */
+   * @memberof Splitter
+   * Checks if the output value can be determined.
+   * @return {boolean}
+   */
   isResolvable() {
     let resolvable = false;
     if (this.inp1.value !== this.prevInpValue) {
@@ -146,9 +146,9 @@ export class Splitter extends CircuitElement {
   }
 
   /**
-     * @memberof Splitter
-     * resolve output values based on inputData
-     */
+   * @memberof Splitter
+   * Determine output values and add to simulation queue.
+   */
   resolve() {
     if (this.isResolvable() === false) {
       return;

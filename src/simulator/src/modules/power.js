@@ -29,9 +29,9 @@ export class Power extends CircuitElement {
   }
 
   /**
-     * @memberof Power
-     * resolve output values based on inputData
-     */
+   * @memberof Power
+   * Determine output values and add to simulation queue.
+   */
   resolve() {
     this.output1.value = ~0 >>> (32 - this.bitWidth);
     simulationArea.simulationQueue.add(this.output1);

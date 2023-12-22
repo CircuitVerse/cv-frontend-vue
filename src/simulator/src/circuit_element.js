@@ -1002,6 +1002,10 @@ export class CircuitElement {
     return this.verilogType || this.objectType;
   }
 
+  /**
+   * Verilog base type.
+   * @return {string} Unique Verilog type name.
+   */
   verilogBaseType() {
     return this.verilogName();
   }

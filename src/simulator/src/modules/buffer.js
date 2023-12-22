@@ -75,9 +75,9 @@ export class Buffer extends CircuitElement {
   }
 
   /**
-     * @memberof Buffer
-     * resolve output values based on inputData
-     */
+   * @memberof Buffer
+   * Determine output values and add to simulation queue.
+   */
   resolve() {
     if (this.reset.value === 1) {
       this.state = this.preState;
@@ -124,9 +124,7 @@ export class Buffer extends CircuitElement {
    */
   generateVerilog() {
     return (
-      'assign ' +
-      this.output1.verilogLabel +
-      ' = ' +
+      'assign ' + this.output1.verilogLabel + ' = ' +
       this.inp1.verilogLabel +
       ';'
     );

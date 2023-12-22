@@ -84,7 +84,7 @@ export class verilogShiftLeft extends CircuitElement {
 
   /**
    * @memberof verilogShiftLeft
-   * resolve output values based on inputData
+   * Determine output values and add to simulation queue.
    */
   resolve() {
     if (this.isResolvable() === false) {

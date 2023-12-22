@@ -127,8 +127,8 @@ export class RGBLedMatrix extends CircuitElement {
         .splice(resetAllNodes ? 0 : rows)
         .forEach((node) => node.delete());
     this.rowEnableNodes.forEach((node, i) => {
-      node.x = node.leftx = -halfWidth;
-      node.y = node.lefty = i * ledHeight + nodeOffsetY;
+      node.x = node.leftX = -halfWidth;
+      node.y = node.leftY = i * ledHeight + nodeOffsetY;
     });
     while (this.rowEnableNodes.length < rows) {
       this.rowEnableNodes.push(
@@ -148,8 +148,8 @@ export class RGBLedMatrix extends CircuitElement {
         .splice(resetAllNodes ? 0 : columns)
         .forEach((node) => node.delete());
     this.columnEnableNodes.forEach((node, i) => {
-      node.x = node.leftx = i * ledWidth + nodeOffsetX;
-      node.y = node.lefty = halfHeight;
+      node.x = node.leftX = i * ledWidth + nodeOffsetX;
+      node.y = node.leftY = halfHeight;
     });
     while (this.columnEnableNodes.length < columns) {
       this.columnEnableNodes.push(
@@ -169,8 +169,8 @@ export class RGBLedMatrix extends CircuitElement {
         .splice(resetAllNodes ? 0 : columns)
         .forEach((node) => node.delete());
     this.columnColorNodes.forEach((node, i) => {
-      node.x = node.leftx = i * ledWidth + nodeOffsetX;
-      node.y = node.lefty = -halfHeight;
+      node.x = node.leftX = i * ledWidth + nodeOffsetX;
+      node.y = node.leftY = -halfHeight;
     });
     while (this.columnColorNodes.length < columns) {
       this.columnColorNodes.push(
@@ -200,8 +200,8 @@ export class RGBLedMatrix extends CircuitElement {
     const singlePixelNodePadding = rows > 1 ? nodeOffsetY : nodeOffsetY - 10;
     const singlePixelNodeDistance = rows <= 2 ? 10 : ledHeight
       ;[this.colorNode, this.rowNode, this.columnNode].forEach((node, i) => {
-      node.x = node.leftx = halfWidth;
-      node.y = node.lefty =
+      node.x = node.leftX = halfWidth;
+      node.y = node.leftY =
           i * singlePixelNodeDistance + singlePixelNodePadding;
     });
 
@@ -241,6 +241,10 @@ export class RGBLedMatrix extends CircuitElement {
     };
   }
 
+  /**
+   * @memberof RGBLedMatrix
+   * Determine output values and add to simulation queue.
+   */
   resolve() {
     const colorValue = this.colorNode.value;
     const hasColorValue = colorValue != undefined;

@@ -110,10 +110,10 @@ export class TTY extends CircuitElement {
   }
 
   /**
-     * @memberof TTY
-     * if no input or enable key is set to 0 returns false
-     * @return {boolean} is resolvable
-     */
+   * @memberof TTY
+   * if no input or enable key is set to 0 returns false
+   * @return {boolean} is resolvable
+   */
   isResolvable() {
     if (this.reset.value == 1) {
       return true;

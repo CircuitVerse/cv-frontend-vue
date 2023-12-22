@@ -129,9 +129,9 @@ export class Demultiplexer extends CircuitElement {
   }
 
   /**
-     * @memberof Demultiplexer
-     * resolve output values based on inputData
-     */
+   * @memberof Demultiplexer
+   * Determine output values and add to simulation queue.
+   */
   resolve() {
     for (let i = 0; i < this.output1.length; i++) {
       this.output1[i].value = 0;
@@ -221,7 +221,6 @@ export class Demultiplexer extends CircuitElement {
     ctx.beginPath();
     ctx.fillStyle = 'black';
     ctx.textAlign = 'center';
-    // [xFill,yFill] = rotate(xx + this.output1[i].x - 7, yy + this.output1[i].y + 2);
     for (let i = 0; i < this.outputsize; i++) {
       if (this.direction === 'LEFT') {
         fillText(
@@ -260,6 +259,10 @@ export class Demultiplexer extends CircuitElement {
     ctx.fill();
   }
 
+  /**
+   * Verilog base type.
+   * @return {string} Unique Verilog type name.
+   */
   verilogBaseType() {
     return this.verilogName() + this.output1.length;
   }
@@ -274,7 +277,11 @@ export class Demultiplexer extends CircuitElement {
     return CircuitElement.prototype.generateVerilog.call(this);
   }
 
-  // generate the needed modules
+  /**
+   * @memberof Demultiplexer
+   * Generate Verilog string for this CircuitClement.
+   * @return {string} String describing this element in Verilog.
+   */
   static moduleVerilog() {
     let output = '';
 
@@ -315,7 +322,9 @@ export class Demultiplexer extends CircuitElement {
     return output;
   }
 
-  // reset the sized before Verilog generation
+  /**
+   * Reset the sized before Verilog generation
+   */
   static resetVerilog() {
     Demultiplexer.selSizes = new Set();
   }

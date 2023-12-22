@@ -141,9 +141,9 @@ export class Multiplexer extends CircuitElement {
   }
 
   /**
-     * @memberof Multiplexer
-     * resolve output values based on inputData
-     */
+   * @memberof Multiplexer
+   * Determine output values and add to simulation queue.
+   */
   resolve() {
     if (this.isResolvable() === false) {
       return;
@@ -271,6 +271,10 @@ export class Multiplexer extends CircuitElement {
     ctx.fill();
   }
 
+  /**
+   * Verilog base type.
+   * @return {string} Unique Verilog type name.
+   */
   verilogBaseType() {
     return this.verilogName() + this.inp.length;
   }
@@ -285,10 +289,13 @@ export class Multiplexer extends CircuitElement {
     return CircuitElement.prototype.generateVerilog.call(this);
   }
 
-  // generate the needed modules
+  /**
+   * @memberof Multiplexer
+   * Generate Verilog string for this CircuitClement.
+   * @return {string} String describing this element in Verilog.
+   */
   static moduleVerilog() {
     let output = '';
-
     for (const size of Multiplexer.selSizes) {
       const numInput = 1 << size;
       let inpString = '';
@@ -321,7 +328,10 @@ export class Multiplexer extends CircuitElement {
 
     return output;
   }
-  // reset the sized before Verilog generation
+
+  /**
+   * Reset the sized before Verilog generation
+   */
   static resetVerilog() {
     Multiplexer.selSizes = new Set();
   }

@@ -221,8 +221,8 @@ function automaticLayout(scope) {
   for (let i = 0; i < nodes.length; i++) {
     nodes[i].reference.x = nodes[i].x;
     nodes[i].reference.y = nodes[i].y;
-    nodes[i].reference.prevx = nodes[i].x;
-    nodes[i].reference.prevy = nodes[i].y;
+    nodes[i].reference.prevX = nodes[i].x;
+    nodes[i].reference.prevY = nodes[i].y;
   }
   console.log(graph);
 }

@@ -78,7 +78,7 @@ export class Input extends CircuitElement {
 
   /**
    * @memberof Input
-   * Resolve output values based on inputData
+   * Determine output values and add to simulation queue.
    */
   resolve() {
     this.output1.value = this.state;
@@ -87,7 +87,7 @@ export class Input extends CircuitElement {
 
   /**
    * @memberof Input
-   * function to change bitwidth of the element
+   * Change bitwidth of the element
    * @param {number} bitWidth - new bitwidth
    */
   newBitWidth(bitWidth) {
@@ -102,11 +102,11 @@ export class Input extends CircuitElement {
     if (this.direction === 'RIGHT') {
       this.x -= 10 * diffBitWidth;
       this.output1.x = 10 * this.bitWidth;
-      this.output1.leftx = 10 * this.bitWidth;
+      this.output1.leftX = 10 * this.bitWidth;
     } else if (this.direction === 'LEFT') {
       this.x += 10 * diffBitWidth;
       this.output1.x = -10 * this.bitWidth;
-      this.output1.leftx = 10 * this.bitWidth;
+      this.output1.leftX = 10 * this.bitWidth;
     }
   }
 
@@ -158,11 +158,11 @@ export class Input extends CircuitElement {
     this.direction = dir;
     this.output1.refresh();
     if (dir === 'RIGHT' || dir === 'LEFT') {
-      this.output1.leftx = 10 * this.bitWidth;
-      this.output1.lefty = 0;
+      this.output1.leftX = 10 * this.bitWidth;
+      this.output1.leftY = 0;
     } else {
-      this.output1.leftx = 10; // 10*this.bitWidth;
-      this.output1.lefty = 0;
+      this.output1.leftX = 10; // 10*this.bitWidth;
+      this.output1.leftY = 0;
     }
 
     this.output1.refresh();

@@ -89,11 +89,11 @@ export class Output extends CircuitElement {
     if (this.direction === 'RIGHT') {
       this.x -= 10 * diffBitWidth;
       this.inp1.x = 10 * this.bitWidth;
-      this.inp1.leftx = 10 * this.bitWidth;
+      this.inp1.leftX = 10 * this.bitWidth;
     } else if (this.direction === 'LEFT') {
       this.x += 10 * diffBitWidth;
       this.inp1.x = -10 * this.bitWidth;
-      this.inp1.leftx = 10 * this.bitWidth;
+      this.inp1.leftX = 10 * this.bitWidth;
     }
   }
 
@@ -163,11 +163,11 @@ export class Output extends CircuitElement {
     this.direction = dir;
     this.inp1.refresh();
     if (dir === 'RIGHT' || dir === 'LEFT') {
-      this.inp1.leftx = 10 * this.bitWidth;
-      this.inp1.lefty = 0;
+      this.inp1.leftX = 10 * this.bitWidth;
+      this.inp1.leftY = 0;
     } else {
-      this.inp1.leftx = 10; // 10*this.bitWidth;
-      this.inp1.lefty = 0;
+      this.inp1.leftX = 10; // 10*this.bitWidth;
+      this.inp1.leftY = 0;
     }
 
     this.inp1.refresh();

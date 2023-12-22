@@ -63,10 +63,10 @@ export class Random extends CircuitElement {
   }
 
   /**
-     * @memberof Random
-     * Edge triggered when the clock state changes a
-     * Random number is generated less then the maxValue.
-     */
+   * @memberof Random
+   * Edge triggered when the clock state changes a
+   * Random number is generated less then the maxValue.
+   */
   resolve() {
     const maxValue = this.maxValue.connections.length ?
       this.maxValue.value + 1 :
@@ -160,8 +160,9 @@ export class Random extends CircuitElement {
   }
 
   /**
-   * Generate Verilog for the Random module
-   * @return {string} Verilog for the Random module
+   * @memberof Random
+   * Generate Verilog string for this CircuitClement.
+   * @return {string} String describing this element in Verilog.
    */
   static moduleVerilog() {
     return `

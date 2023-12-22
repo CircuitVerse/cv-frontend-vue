@@ -62,6 +62,10 @@ export class Counter extends CircuitElement {
     };
   }
 
+  /**
+   * Update the bitwidth of all nodes.
+   * @param {number} bitWidth
+   */
   newBitWidth(bitWidth) {
     this.bitWidth = bitWidth;
     this.maxValue.bitWidth = bitWidth;
@@ -72,6 +76,10 @@ export class Counter extends CircuitElement {
     return true;
   }
 
+  /**
+   * @memberof Counter
+   * Determine output values and add to simulation queue.
+   */
   resolve() {
     // Either the value in the input pin or the max allowed by the bitWidth.
     const maxValue =
@@ -162,6 +170,12 @@ export class Counter extends CircuitElement {
       ctx.fill();
     }
   }
+
+  /**
+   * @memberof Counter
+   * Generate Verilog string for this CircuitClement.
+   * @return {string} String describing this element in Verilog.
+   */
   static moduleVerilog() {
     return `
     module Counter(val, zero, max, clk, rst);

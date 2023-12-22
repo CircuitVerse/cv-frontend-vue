@@ -2,7 +2,6 @@ import {CircuitElement} from '../circuit_element';
 import {simulationArea} from '../simulation_area';
 import {correctWidth, lineTo, moveTo, fillText} from '../canvas_api';
 import {Node, findNode} from '../node';
-import {plotArea} from '../plot_area';
 
 /**
  * TestBench Input has a node for it's clock input.
@@ -49,13 +48,17 @@ export class TB_Input extends CircuitElement {
 
   /**
      * @memberof TB_Input
-     * Takes iput when double clicked. For help on generation of input refer to TB_Input.helplink
+     * Takes input when double clicked.
+     * For help on generation of input refer to TB_Input.helplink
      */
   dblclick() {
     this.testData = JSON.parse(prompt('Enter TestBench Json'));
     this.setup();
   }
 
+  /**
+   * Set dimensions.
+   */
   setDimensions() {
     this.leftDimensionX = 0;
     this.rightDimensionX = 120;
@@ -65,9 +68,9 @@ export class TB_Input extends CircuitElement {
   }
 
   /**
-     * @memberof TB_Input
-     * setups the Test by parsing through the testbench data.
-     */
+   * @memberof TB_Input
+   * setups the Test by parsing through the testbench data.
+   */
   setup() {
     this.iteration = 0;
     this.running = false;
@@ -107,27 +110,27 @@ export class TB_Input extends CircuitElement {
   }
 
   /**
-     * @memberof TB_Input
-     * toggles state by simply negating this.running so that test cases stop
-     */
+   * @memberof TB_Input
+   * toggles state by simply negating this.running so that test cases stop
+   */
   toggleState() {
     this.running = !this.running;
     this.prevClockState = 0;
   }
 
   /**
-     * @memberof TB_Input
-     * function to run from test case 0 again
-     */
+   * @memberof TB_Input
+   * function to run from test case 0 again
+   */
   resetIterations() {
     this.iteration = 0;
     this.prevClockState = 0;
   }
 
   /**
-     * @memberof TB_Input
-     * function to resolve the testbench input adds
-     */
+   * @memberof TB_Input
+   * Determine output values and add to simulation queue.
+   */
   resolve() {
     if (this.clockInp.value != this.prevClockState) {
       this.prevClockState = this.clockInp.value;
@@ -156,23 +159,6 @@ export class TB_Input extends CircuitElement {
    */
   setPlotValue() {
     return;
-    const time = plotArea.stopWatch.ElapsedMilliseconds;
-    if (
-      this.plotValues.length &&
-      this.plotValues[this.plotValues.length - 1][0] == time
-    ) {
-      this.plotValues.pop();
-    }
-
-    if (this.plotValues.length == 0) {
-      this.plotValues.push([time, this.inp1.value]);
-      return;
-    }
-
-    if (this.plotValues[this.plotValues.length - 1][1] == this.inp1.value) {
-      return;
-    }
-    this.plotValues.push([time, this.inp1.value]);
   }
 
   /**

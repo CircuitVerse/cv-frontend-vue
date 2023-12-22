@@ -64,9 +64,9 @@ export class ControlledInverter extends CircuitElement {
   }
 
   /**
-     * @memberof ControlledInverter
-     * resolve output values based on inputData
-     */
+   * @memberof ControlledInverter
+   * Determine output values and add to simulation queue.
+   */
   resolve() {
     if (this.isResolvable() === false) {
       return;
@@ -118,7 +118,9 @@ export class ControlledInverter extends CircuitElement {
    * @return {string} String representing the Verilog.
    */
   generateVerilog() {
-    return `assign ${this.output1.verilogLabel} = (${this.state.verilogLabel}!=0) ? ~${this.inp1.verilogLabel} : ${this.inp1.verilogLabel};`;
+    return `assign ${this.output1.verilogLabel} = (` +
+    `${this.state.verilogLabel}!=0) ? ~${this.inp1.verilogLabel}` +
+    ` : ${this.inp1.verilogLabel};`;
   }
 }
 

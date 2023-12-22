@@ -84,9 +84,9 @@ export class XorGate extends CircuitElement {
   }
 
   /**
-     * @memberof XorGate
-     * resolve output values based on inputData
-     */
+   * @memberof XorGate
+   * Determine output values and add to simulation queue.
+   */
   resolve() {
     let result = this.inp[0].value || 0;
     if (this.isResolvable() === false) {

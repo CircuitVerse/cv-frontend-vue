@@ -93,9 +93,9 @@ export class XnorGate extends CircuitElement {
   }
 
   /**
-     * @memberof XnorGate
-     * resolve output values based on inputData
-     */
+   * @memberof XnorGate
+   * Determine output values and add to simulation queue.
+   */
   resolve() {
     let result = this.inp[0].value || 0;
     if (this.isResolvable() === false) {

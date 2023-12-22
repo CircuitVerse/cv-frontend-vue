@@ -89,9 +89,9 @@ export class Decoder extends CircuitElement {
   }
 
   /**
-     * @memberof Decoder
-     * resolve output values based on inputData
-     */
+   * @memberof Decoder
+   * Determine output values and add to simulation queue.
+   */
   resolve() {
     for (let i = 0; i < this.output1.length; i++) {
       this.output1[i].value = 0;
@@ -201,6 +201,10 @@ export class Decoder extends CircuitElement {
     ctx.fill();
   }
 
+  /**
+   * Verilog base type.
+   * @return {string} Unique Verilog type name.
+   */
   verilogBaseType() {
     return this.verilogName() + this.output1.length;
   }
@@ -216,7 +220,8 @@ export class Decoder extends CircuitElement {
   }
 
   /**
-   * Generate Verilog string for Multiplexer.
+   * @memberof Decoder
+   * Generate Verilog string for this CircuitClement.
    * @return {string} String describing this element in Verilog.
    */
   static moduleVerilog() {

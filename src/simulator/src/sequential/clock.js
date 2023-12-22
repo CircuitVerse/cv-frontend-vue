@@ -47,7 +47,8 @@ export class Clock extends CircuitElement {
   }
 
   /**
-   *
+   * @memberof Clock
+   * Determine output values and add to simulation queue.
    */
   resolve() {
     this.output1.value = this.state;

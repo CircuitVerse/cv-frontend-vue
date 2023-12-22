@@ -8,13 +8,15 @@ import {colors} from '../themer/themer';
  * JK flip flop has 6 input nodes:
  * clock, J input, K input, preset, reset ,enable.
  * @extends CircuitElement
- * @param {number} x - x coord of element
- * @param {number} y - y coord of element
- * @param {Scope} scope - the circuit in which we want the Element
- * @param {string} dir - direction in which element has to drawn
  * @category sequential
  */
 export class JKflipFlop extends CircuitElement {
+  /**
+   * @param {number} x - x coord of element
+   * @param {number} y - y coord of element
+   * @param {Scope} scope - the circuit in which we want the Element
+   * @param {string} dir - direction in which element has to drawn
+   */
   constructor(x, y, scope = globalScope, dir = 'RIGHT') {
     super(x, y, scope, dir, 1);
     this.directionFixed = true;
@@ -36,10 +38,10 @@ export class JKflipFlop extends CircuitElement {
   }
 
   /**
-     * @memberof JKflipFlop
-     * if none of the predefined nodes have been deleted it is resolvable.
-     * @return {boolean} Is resolvable.
-     */
+   * @memberof JKflipFlop
+   * if none of the predefined nodes have been deleted it is resolvable.
+   * @return {boolean} Is resolvable.
+   */
   isResolvable() {
     if (this.reset.value == 1) {
       return true;
@@ -54,6 +56,10 @@ export class JKflipFlop extends CircuitElement {
     return false;
   }
 
+  /**
+   * Change bitwidth.
+   * @param {number} bitWidth
+   */
   newBitWidth(bitWidth) {
     this.bitWidth = bitWidth;
     this.dInp.bitWidth = bitWidth;

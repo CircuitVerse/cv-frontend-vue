@@ -43,6 +43,9 @@ export class EEPROM extends RAM {
     this.data = data || this.data;
   }
 
+  /**
+   * Clear all data.
+   */
   clearData() {
     super.clearData();
     for (let i = 0; i < this.data.length; i++) {
@@ -65,8 +68,11 @@ export class EEPROM extends RAM {
     return saveInfo;
   }
 
-  // This is a EERAM without a clock - not normal
-  // reset is supported
+  /**
+   * @memberof EEPROM
+   * Generate Verilog string for this CircuitClement.
+   * @return {string} String describing this element in Verilog.
+   */
   static moduleVerilog() {
     return `
     module EEPROM(dout, addr, din, we, dmp, rst);

@@ -93,6 +93,7 @@ export class PriorityEncoder extends CircuitElement {
    * @memberof PriorityEncoder
    * function to change bitwidth of the element
    * @param {number} bitWidth - new bitwidth
+   * @return {PriorityEncoder}
    */
   newBitWidth(bitWidth) {
     if (bitWidth === undefined || bitWidth < 1 || bitWidth > 32) {
@@ -117,9 +118,9 @@ export class PriorityEncoder extends CircuitElement {
   }
 
   /**
-     * @memberof PriorityEncoder
-     * resolve output values based on inputData
-     */
+   * @memberof PriorityEncoder
+   * Determine output values and add to simulation queue.
+   */
   resolve() {
     let out = 0;
     let temp = 0;
@@ -217,6 +218,10 @@ export class PriorityEncoder extends CircuitElement {
     ctx.fill();
   }
 
+  /**
+   * Verilog base type.
+   * @return {string} Unique Verilog type name.
+   */
   verilogBaseType() {
     return this.verilogName() + this.inp1.length;
   }
@@ -231,6 +236,11 @@ export class PriorityEncoder extends CircuitElement {
     return CircuitElement.prototype.generateVerilog.call(this);
   }
 
+  /**
+   * @memberof PriorityEncoder
+   * Generate Verilog string for this CircuitClement.
+   * @return {string} String describing this element in Verilog.
+   */
   static moduleVerilog() {
     let output = '';
     for (const size of PriorityEncoder.selSizes) {
@@ -271,7 +281,9 @@ export class PriorityEncoder extends CircuitElement {
     return output;
   }
 
-  // reset the sized before Verilog generation
+  /**
+   * Reset the sized before Verilog generation
+   */
   static resetVerilog() {
     PriorityEncoder.selSizes = new Set();
   }
@@ -283,8 +295,8 @@ export class PriorityEncoder extends CircuitElement {
  * @type {string}
  * @category modules
  */
-PriorityEncoder.prototype.tooltipText =
-  'Priority Encoder ToolTip : Compresses binary inputs into a smaller number of outputs.';
+PriorityEncoder.prototype.tooltipText = 'Priority Encoder ToolTip : ' +
+          'Compresses binary inputs into a smaller number of outputs.';
 PriorityEncoder.prototype.helplink =
   'https://docs.circuitverse.org/#/decodersandplexers?id=priority-encoder';
 PriorityEncoder.prototype.objectType = 'PriorityEncoder';

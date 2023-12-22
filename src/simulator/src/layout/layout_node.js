@@ -29,8 +29,8 @@ export class LayoutNode {
 
     this.label = label;
 
-    this.prevx = undefined;
-    this.prevy = undefined;
+    this.prevX = undefined;
+    this.prevY = undefined;
     this.x = x; // Position of node wrt to parent
     this.y = y; // Position of node wrt to parent
 
@@ -61,10 +61,10 @@ export class LayoutNode {
     this.hover = this.isHover();
 
     if (!simulationArea.mouseDown) {
-      if (this.absX() !== this.prevx || this.absY() !== this.prevy) {
+      if (this.absX() !== this.prevX || this.absY() !== this.prevY) {
         // Store position before clicked
-        this.prevx = this.absX();
-        this.prevy = this.absY();
+        this.prevX = this.absX();
+        this.prevY = this.absY();
       }
     }
 

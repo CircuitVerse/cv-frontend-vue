@@ -72,9 +72,9 @@ export class MSB extends CircuitElement {
   }
 
   /**
-     * @memberof MSB
-     * resolve output values based on inputData
-     */
+   * @memberof MSB
+   * Determine output values and add to simulation queue.
+   */
   resolve() {
     const inp = this.inp1.value;
     this.output1.value = converters.dec2bin(inp).length - 1;

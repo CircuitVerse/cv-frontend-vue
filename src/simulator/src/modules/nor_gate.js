@@ -92,9 +92,9 @@ export class NorGate extends CircuitElement {
   }
 
   /**
-     * @memberof NorGate
-     * resolve output values based on inputData
-     */
+   * @memberof NorGate
+   * Determine output values and add to simulation queue.
+   */
   resolve() {
     let result = this.inp[0].value || 0;
     for (let i = 1; i < this.inputSize; i++) {

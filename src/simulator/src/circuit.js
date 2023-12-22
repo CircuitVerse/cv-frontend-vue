@@ -40,6 +40,7 @@ export const circuitProperty = {
 };
 
 export var scopeList = {};
+
 export function resetScopeList() {
   const simulatorStore = SimulatorStore();
   const {circuitList} = toRefs(simulatorStore);

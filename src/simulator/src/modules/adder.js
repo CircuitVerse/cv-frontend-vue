@@ -50,19 +50,19 @@ export class Adder extends CircuitElement {
   }
 
   /**
-     * @memberof Adder
-     * Checks if the output value can be determined.
-     * @return {boolean}
-     */
+   * @memberof Adder
+   * Checks if the output value can be determined.
+   * @return {boolean}
+   */
   isResolvable() {
     return this.inpA.value !== undefined && this.inpB.value !== undefined;
   }
 
   /**
-     * @memberof Adder
-     * function to change bitwidth of the element
-     * @param {number} bitWidth - new bitwidth
-     */
+   * @memberof Adder
+   * function to change bitwidth of the element
+   * @param {number} bitWidth - new bitwidth
+   */
   newBitWidth(bitWidth) {
     this.bitWidth = bitWidth;
     this.inpA.bitWidth = bitWidth;
@@ -71,9 +71,9 @@ export class Adder extends CircuitElement {
   }
 
   /**
-     * @memberof Adder
-     * resolve output values based on inputData
-     */
+   * @memberof Adder
+   * Determine output values and add to simulation queue.
+   */
   resolve() {
     if (this.isResolvable() === false) {
       return;

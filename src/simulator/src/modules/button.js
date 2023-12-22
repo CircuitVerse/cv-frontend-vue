@@ -49,9 +49,9 @@ export class Button extends CircuitElement {
   }
 
   /**
-     * @memberof Button
-     * resolve output values based on inputData
-     */
+   * @memberof Button
+   * Determine output values and add to simulation queue.
+   */
   resolve() {
     if (this.wasClicked) {
       this.state = 1;
@@ -129,9 +129,19 @@ export class Button extends CircuitElement {
     }
     ctx.fill();
   }
+  /**
+   * Verilog instructions for unsupported elements.
+   * @return {string} Verilog instructions for unsupported elements.
+   */
   static verilogInstructions() {
-    return `Button - Buttons are not natively supported in verilog, consider using Inputs instead\n`;
+    return `Button - Buttons are not natively supported in verilog, ` +
+      `consider using Inputs instead\n`;
   }
+
+  /**
+   * Verilog base type.
+   * @return {string} Unique Verilog type name.
+   */
   verilogBaseType() {
     return this.verilogName() + (Button.selSizes.length - 1);
   }
@@ -146,6 +156,11 @@ export class Button extends CircuitElement {
     return CircuitElement.prototype.generateVerilog.call(this);
   }
 
+  /**
+   * @memberof Button
+   * Generate Verilog string for this CircuitClement.
+   * @return {string} String describing this element in Verilog.
+   */
   static moduleVerilog() {
     let output = '';
 

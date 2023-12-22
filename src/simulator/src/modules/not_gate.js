@@ -51,9 +51,9 @@ export class NotGate extends CircuitElement {
   }
 
   /**
-     * @memberof NotGate
-     * resolve output values based on inputData
-     */
+   * @memberof NotGate
+   * Determine output values and add to simulation queue.
+   */
   resolve() {
     if (this.isResolvable() === false) {
       return;

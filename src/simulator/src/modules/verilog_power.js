@@ -60,10 +60,10 @@ export class verilogPower extends CircuitElement {
   }
 
   /**
-     * @memberof verilogPower
-     * Checks if the output value can be determined.
-     * @return {boolean}
-     */
+   * @memberof verilogPower
+   * Checks if the output value can be determined.
+   * @return {boolean}
+   */
   isResolvable() {
     return this.inpA.value !== undefined && this.inpB.value !== undefined;
   }
@@ -81,9 +81,9 @@ export class verilogPower extends CircuitElement {
   }
 
   /**
-     * @memberof verilogPower
-     * resolve output values based on inputData
-     */
+   * @memberof verilogPower
+   * Determine output values and add to simulation queue.
+   */
   resolve() {
     if (this.isResolvable() === false) {
       return;

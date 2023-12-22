@@ -93,7 +93,7 @@ export class Tunnel extends CircuitElement {
 
   /**
    * @memberof Tunnel
-   * resolve output values based on inputData
+   * Determine output values and add to simulation queue.
    */
   resolve() {
     // Don't check for paired tunnels' value if already checked by another

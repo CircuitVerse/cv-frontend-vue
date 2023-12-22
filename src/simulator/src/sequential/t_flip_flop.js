@@ -9,13 +9,15 @@ import {colors} from '../themer/themer';
  * T flip flop has 5 input nodes:
  * clock, data input, preset, reset ,enable.
  * @extends CircuitElement
- * @param {number} x - x coord of element
- * @param {number} y - y coord of element
- * @param {Scope} scope - the circuit in which we want the Element
- * @param {string} dir - direction in which element has to drawn
  * @category sequential
  */
 export class TflipFlop extends CircuitElement {
+  /**
+   * @param {number} x - x coord of element.
+   * @param {number} y - y coord of element.
+   * @param {Scope} scope - the circuit in which we want the Element.
+   * @param {string} dir - direction in which element has to drawn.
+   */
   constructor(x, y, scope = globalScope, dir = 'RIGHT') {
     super(x, y, scope, dir, 1);
     this.directionFixed = true;
@@ -37,9 +39,9 @@ export class TflipFlop extends CircuitElement {
   }
 
   /**
-     * @memberof TflipFlop
-     * @return {boolean} true if clock is defined
-     */
+   * @memberof TflipFlop
+   * @return {boolean} true if clock is defined
+   */
   isResolvable() {
     if (this.reset.value == 1) {
       return true;
@@ -134,7 +136,7 @@ export class TflipFlop extends CircuitElement {
   }
 
   /**
-   * 
+   *
    * @param {CanvasRenderingContext2D} ctx
    */
   customDraw(ctx) {
@@ -157,6 +159,11 @@ export class TflipFlop extends CircuitElement {
     ctx.fill();
   }
 
+  /**
+   * @memberof TflipFlop
+   * Generate Verilog string for this CircuitClement.
+   * @return {string} String describing this element in Verilog.
+   */
   static moduleVerilog() {
     return `
         module TflipFlop(q, q_inv, clk, t, a_rst, pre, en);

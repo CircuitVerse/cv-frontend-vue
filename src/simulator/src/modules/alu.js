@@ -120,9 +120,9 @@ export class ALU extends CircuitElement {
   }
 
   /**
-     * @memberof ALU
-     * resolve output values based on inputData
-     */
+   * @memberof ALU
+   * Determine output values and add to simulation queue.
+   */
   resolve() {
     if (this.controlSignalInput.value === 0) {
       this.output.value = this.inp1.value & this.inp2.value;

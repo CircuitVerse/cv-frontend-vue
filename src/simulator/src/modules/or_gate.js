@@ -9,23 +9,17 @@ import {colors} from '../themer/themer';
  * @class
  * OrGate
  * @extends CircuitElement
- * @param {number} x - x coordinate of element.
- * @param {number} y - y coordinate of element.
- * @param {Scope} scope - Circuit on which element is drawn
- * @param {string} dir - direction of element
- * @param {number} inputs - number of input nodes
- * @param {number} bitWidth - bit width per node.
  * @category modules
  */
 export class OrGate extends CircuitElement {
   /**
- * @param {number} x - x coordinate of element.
- * @param {number} y - y coordinate of element.
- * @param {Scope} scope - Circuit on which element is drawn
- * @param {string} dir - direction of element
- * @param {number} inputs - number of input nodes
- * @param {number} bitWidth - bit width per node.
-     */
+   * @param {number} x - x coordinate of element.
+   * @param {number} y - y coordinate of element.
+   * @param {Scope} scope - Circuit on which element is drawn
+   * @param {string} dir - direction of element
+   * @param {number} inputs - number of input nodes
+   * @param {number} bitWidth - bit width per node.
+  */
   constructor(
       x,
       y,
@@ -85,9 +79,9 @@ export class OrGate extends CircuitElement {
   }
 
   /**
-     * @memberof OrGate
-     * resolve output values based on inputData
-     */
+   * @memberof OrGate
+   * Determine output values and add to simulation queue.
+   */
   resolve() {
     let result = this.inp[0].value || 0;
     if (this.isResolvable() === false) {
@@ -101,9 +95,9 @@ export class OrGate extends CircuitElement {
   }
 
   /**
-     * @memberof OrGate
-     * function to draw element
-     * @param {CanvasRenderingContext2D} ctx
+   * @memberof OrGate
+   * function to draw element
+   * @param {CanvasRenderingContext2D} ctx
    */
   customDraw(ctx) {
     ctx.strokeStyle = colors['stroke'];

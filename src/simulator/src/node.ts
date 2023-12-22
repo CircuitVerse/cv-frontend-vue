@@ -122,10 +122,10 @@ export class Node {
   public parent: CircuitElement;
   public bitWidth: number;
   public label: string;
-  public prevx?: number;
-  public prevy?: number;
-  public leftx: number;
-  public lefty: number;
+  public prevX?: number;
+  public prevY?: number;
+  public leftX: number;
+  public leftY: number;
   public x: number;
   public y: number;
   public type: number;
@@ -155,7 +155,7 @@ export class Node {
    * @param {string} label - label for a node.
    */
   constructor(x: number, y: number, type: number, parent: CircuitElement,
-    bitWidth: number | undefined = undefined, label: string = '') {
+    bitWidth: number = parent.bitWidth, label: string = '') {
     forceResetNodesSet(true);
 
     this.objectType = 'Node';
@@ -166,17 +166,12 @@ export class Node {
     if (type != 2 && this.parent.nodeList !== undefined) {
       this.parent.nodeList.push(this);
     }
-
-    if (bitWidth == undefined) {
-      this.bitWidth = parent.bitWidth;
-    } else {
-      this.bitWidth = bitWidth;
-    }
+    this.bitWidth = bitWidth;
     this.label = label;
-    this.prevx = undefined;
-    this.prevy = undefined;
-    this.leftx = x;
-    this.lefty = y;
+    this.prevX = undefined;
+    this.prevY = undefined;
+    this.leftX = x;
+    this.leftY = y;
     this.x = x;
     this.y = y;
 
@@ -253,12 +248,12 @@ export class Node {
  */
   saveObject() {
     if (this.type == 2) {
-      this.leftx = this.x;
-      this.lefty = this.y;
+      this.leftX = this.x;
+      this.leftY = this.y;
     }
     const data = {
-      x: this.leftx,
-      y: this.lefty,
+      x: this.leftX,
+      y: this.leftY,
       type: this.type,
       bitWidth: this.bitWidth,
       label: this.label,
@@ -276,7 +271,7 @@ export class Node {
   updateRotation() {
     let x;
     let y;
-    [x, y] = rotate(this.leftx, this.lefty, this.parent.direction);
+    [x, y] = rotate(this.leftX, this.leftY, this.parent.direction);
     this.x = x;
     this.y = y;
   }
@@ -393,8 +388,8 @@ export class Node {
   }
 
   /**
- * function to resolve a node
- */
+   * Determine output values and add to simulation queue.
+   */
   resolve() {
     // Remove propagation of values (TriState)
     if (this.value == undefined) {
@@ -680,10 +675,10 @@ export class Node {
     this.hover = this.isHover();
 
     if (!simulationArea.mouseDown) {
-      if (this.absX() != this.prevx || this.absY() != this.prevy) {
+      if (this.absX() != this.prevX || this.absY() != this.prevY) {
         // Connect to any node
-        this.prevx = this.absX();
-        this.prevy = this.absY();
+        this.prevX = this.absX();
+        this.prevY = this.absY();
         this.nodeConnect();
       }
     }

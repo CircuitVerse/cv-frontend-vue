@@ -139,6 +139,10 @@ export class RAM extends CircuitElement {
     };
   }
 
+  /**
+   * Change bitwidth.
+   * @param {number} value 
+   */
   newBitWidth(value) {
     value = parseInt(value);
     if (
@@ -171,11 +175,20 @@ export class RAM extends CircuitElement {
     }
   }
 
+  /**
+   * @memberof RAM
+   * Clear all data.
+   */
   clearData() {
     this.data = new Array(Math.pow(2, this.addressWidth));
     this.tooltipText = `${this.memSizeString()} ${this.shortName}`;
   }
 
+  /**
+   * @memberof RAM
+   * Checks if the output value can be determined.
+   * @return {boolean}
+   */
   isResolvable() {
     return (
       this.address.value !== undefined ||
@@ -184,6 +197,10 @@ export class RAM extends CircuitElement {
     );
   }
 
+  /**
+   * @memberof RAM
+   * Determine output values and add to simulation queue.
+   */
   resolve() {
     if (this.write.value == 1) {
       this.data[this.address.value] = this.dataIn.value;
@@ -265,6 +282,10 @@ export class RAM extends CircuitElement {
     ctx.fill();
   }
 
+  /**
+   * Size of memory
+   * @return {string} String representation of memory size. 
+   */
   memSizeString() {
     const mag = ['', 'K', 'M'];
     const unit =
@@ -338,10 +359,13 @@ export class RAM extends CircuitElement {
     }
   }
 
+
   /**
+   * @memberof RAM
+   * Generate Verilog string for this CircuitClement.
    * This is a RAM without a clock - not normal
    * reset is not supported
-   * @return {string} representing the Verilog.
+   * @return {string} String describing this element in Verilog.
    */
   static moduleVerilog() {
     return `

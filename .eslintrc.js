@@ -22,7 +22,6 @@ module.exports = {
   // false -> readable global variables
   globals: {
     lightMode: true,
-    Array: true,
     restrictedElements: true,
     globalScope: true,
     projectId: true,

@@ -96,7 +96,9 @@ export class Keyboard extends CircuitElement {
 
   /**
    * @memberof Keyboard
-   * Not resolvable if enable = 0 or clock is undefined
+   * Checks if the output value can be determined.
+   * Not resolvable if enable = 0 or clock is undefined.
+   * @return {boolean}
    */
   isResolvable() {
     if (this.reset.value == 1) {
@@ -115,7 +117,7 @@ export class Keyboard extends CircuitElement {
 
   /**
      * @memberof Keyboard
-     * Whenever clock is enabled (1) then one charecter
+     * Whenever clock is enabled (1) then one character
      * from the buffer is converted to ascii and transmitted
      * through the output nodes.
      */

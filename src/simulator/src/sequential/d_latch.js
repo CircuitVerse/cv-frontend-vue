@@ -42,7 +42,9 @@ export class Dlatch extends CircuitElement {
   }
 
   /**
-   * Idea: shoould be D FF?
+   * @memberof Dlatch
+   * Checks if the output value can be determined.
+   * @return {boolean}
    */
   isResolvable() {
     if (this.clockInp.value != undefined && this.dInp.value != undefined) {

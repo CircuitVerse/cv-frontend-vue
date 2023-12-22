@@ -31,7 +31,7 @@ export function layoutModeSet(param) {
   layoutMode = param;
 }
 
-export function layoutModeGet(param) {
+export function layoutModeGet() {
   return layoutMode;
 }
 
@@ -45,6 +45,7 @@ export var tempBuffer;
  * Helper function to determine alignment and position of nodes for rendering
  * @param {number} x - width of label
  * @param {number} y - height of label
+ * @return {any[]}
  * @category layoutMode
  */
 export function determineLabel(x, y) {

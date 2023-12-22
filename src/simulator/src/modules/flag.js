@@ -41,6 +41,10 @@ export class Flag extends CircuitElement {
     this.inp1 = new Node(40, 0, 0, this);
   }
 
+  /**
+   * @memberof Flag
+   * Determine output values and add to simulation queue.
+   */
   resolve() {
     this.flagTimeUnit = simulationArea.simulationQueue.time;
     const time = plotArea.getPlotTime(this.flagTimeUnit);
@@ -189,11 +193,11 @@ export class Flag extends CircuitElement {
     this.direction = dir;
     this.inp1.refresh();
     if (dir === 'RIGHT' || dir === 'LEFT') {
-      this.inp1.leftx = 50 - this.xSize;
+      this.inp1.leftX = 50 - this.xSize;
     } else if (dir === 'UP') {
-      this.inp1.leftx = 20;
+      this.inp1.leftX = 20;
     } else {
-      this.inp1.leftx = 20;
+      this.inp1.leftX = 20;
     }
     this.inp1.refresh();
   }

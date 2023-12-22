@@ -60,10 +60,10 @@ export class verilogShiftRight extends CircuitElement {
   }
 
   /**
-     * @memberof verilogShiftRight
-     * Checks if the output value can be determined.
-     * @return {boolean}
-     */
+   * @memberof verilogShiftRight
+   * Checks if the output value can be determined.
+   * @return {boolean}
+   */
   isResolvable() {
     return (
       this.inp1.value !== undefined && this.shiftInp.value !== undefined
@@ -71,10 +71,10 @@ export class verilogShiftRight extends CircuitElement {
   }
 
   /**
-     * @memberof verilogShiftRight
-     * function to change bitwidth of the element
-     * @param {number} bitWidth - new bitwidth
-     */
+   * @memberof verilogShiftRight
+   * function to change bitwidth of the element
+   * @param {number} bitWidth - new bitwidth
+   */
   newBitWidth(bitWidth) {
     this.bitWidth = bitWidth;
     this.inp1.bitWidth = bitWidth;
@@ -83,9 +83,9 @@ export class verilogShiftRight extends CircuitElement {
   }
 
   /**
-     * @memberof verilogShiftRight
-     * resolve output values based on inputData
-     */
+   * @memberof verilogShiftRight
+   * Determine output values and add to simulation queue.
+   */
   resolve() {
     if (this.isResolvable() === false) {
       return;

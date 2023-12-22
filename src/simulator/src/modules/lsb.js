@@ -59,10 +59,10 @@ export class LSB extends CircuitElement {
   }
 
   /**
-     * @memberof LSB
-     * function to change bitwidth of the element
-     * @param {number} bitWidth - new bitwidth
-     */
+   * @memberof LSB
+   * function to change bitwidth of the element
+   * @param {number} bitWidth - new bitwidth
+   */
   newBitWidth(bitWidth) {
     // this.inputSize = 1 << bitWidth
     this.inputSize = bitWidth;
@@ -72,9 +72,9 @@ export class LSB extends CircuitElement {
   }
 
   /**
-     * @memberof LSB
-     * resolve output values based on inputData
-     */
+   * @memberof LSB
+   * Determine output values and add to simulation queue.
+   */
   resolve() {
     const inp = converters.dec2bin(this.inp1.value);
     let out = 0;
@@ -95,9 +95,9 @@ export class LSB extends CircuitElement {
   }
 
   /**
-     * @memberof LSB
-     * function to draw element
-     * @param {CanvasRenderingContext2D} ctx
+   * @memberof LSB
+   * function to draw element
+   * @param {CanvasRenderingContext2D} ctx
    */
   customDraw(ctx) {
     ctx.beginPath();
@@ -140,7 +140,8 @@ export class LSB extends CircuitElement {
    * @return {string} String representing the Verilog.
    */
   generateVerilog() {
-    return `assign ${this.output1.verilogLabel} = (${this.enable.verilogLabel}!=0) ? ${this.inp1.verilogLabel}[0] : 0;`;
+    return `assign ${this.output1.verilogLabel} = (` +
+    `${this.enable.verilogLabel}!=0) ? ${this.inp1.verilogLabel}[0] : 0;`;
   }
 }
 

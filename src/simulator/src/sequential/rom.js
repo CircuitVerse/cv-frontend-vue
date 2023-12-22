@@ -41,10 +41,10 @@ export class Rom extends CircuitElement {
   }
 
   /**
-     * @memberof Rom
-     * Checks if the output value can be determined.
-     * @return {boolean}
-     */
+   * @memberof Rom
+   * Checks if the output value can be determined.
+   * @return {boolean}
+   */
   isResolvable() {
     if (
       (this.en.value === 1 || this.en.connections.length === 0) &&
@@ -260,9 +260,9 @@ export class Rom extends CircuitElement {
   }
 
   /**
-     * @memberof Rom
-     * resolve output values based on inputData
-     */
+   * @memberof Rom
+   * Determine output values and add to simulation queue.
+   */
   resolve() {
     if (this.isResolvable() === false) {
       return;
@@ -271,6 +271,10 @@ export class Rom extends CircuitElement {
     simulationArea.simulationQueue.add(this.dataOut);
   }
 
+  /**
+   * Verilog base type.
+   * @return {string} Unique Verilog type name.
+   */
   verilogBaseType() {
     return this.verilogName() + (Rom.selSizes.length - 1);
   }
@@ -285,8 +289,11 @@ export class Rom extends CircuitElement {
     return CircuitElement.prototype.generateVerilog.call(this);
   }
 
-  // This code to determine what sizes are used to generate the needed modules
-  // generate the needed modules
+  /**
+   * @memberof Rom
+   * Generate Verilog string for this CircuitClement.
+   * @return {string} String describing this element in Verilog.
+   */
   static moduleVerilog() {
     let output = '';
 

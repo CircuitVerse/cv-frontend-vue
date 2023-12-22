@@ -89,9 +89,9 @@ export class AndGate extends CircuitElement {
   }
 
   /**
-     * @memberof AndGate
-     * resolve output values based on inputData
-     */
+   * @memberof AndGate
+   * Determine output values and add to simulation queue.
+   */
   resolve() {
     let result = this.inp[0].value || 0;
     if (this.isResolvable() === false) {

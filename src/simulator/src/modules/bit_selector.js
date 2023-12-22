@@ -91,7 +91,7 @@ export class BitSelector extends CircuitElement {
 
   /**
    * @memberof BitSelector
-   * resolve output values based on inputData
+   * Determine output values and add to simulation queue.
    */
   resolve() {
     this.output1.value = extractBits(

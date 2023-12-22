@@ -43,13 +43,17 @@ export class DflipFlop extends CircuitElement {
 
   /**
    * @memberof DflipFlop
-   * Is resolvable
-   * @return {boolean} is resolvable
+   * Checks if the output value can be determined.
+   * @return {boolean}
    */
   isResolvable() {
     return true;
   }
 
+  /**
+   * Update the bit width of all nodes.
+   * @param {number} bitWidth
+   */
   newBitWidth(bitWidth) {
     this.bitWidth = bitWidth;
     this.dInp.bitWidth = bitWidth;
@@ -59,15 +63,18 @@ export class DflipFlop extends CircuitElement {
   }
 
   /**
-     * @memberof DflipFlop
-     * On the leading edge of the clock signal (LOW-to-HIGH) the first stage,
-     * the “master” latches the input condition at D, while the output stage is deactivated.
-     * On the trailing edge of the clock signal (HIGH-to-LOW) the second “slave” stage is
-     * now activated, latching on to the output from the first master circuit.
-     * Then the output stage appears to be triggered on the negative edge of the clock pulse.
-     * This fuction sets the value for the node qOutput based on the previous state
-     * and input of the clock. We flip the bits to find qInvOutput
-     */
+   * @memberof DflipFlop
+   * On the leading edge of the clock signal (LOW-to-HIGH) the first stage,
+   * the “master” latches the input condition at D, while the output stage
+   * is deactivated.
+   * On the trailing edge of the clock signal (HIGH-to-LOW) the second “slave”
+   * stage is now activated, latching on to the output from the first master
+   * circuit.
+   * Then the output stage appears to be triggered on the negative edge of the
+   * clock pulse.
+   * This function sets the value for the node qOutput based on the previous
+   * state and input of the clock. We flip the bits to find qInvOutput
+   */
   resolve() {
     if (this.reset.value == 1) {
       this.masterState = this.slaveState = this.preset.value || 0;
@@ -148,6 +155,11 @@ export class DflipFlop extends CircuitElement {
     ctx.fill();
   }
 
+  /**
+   * @memberof DflipFlop
+   * Generate Verilog string for this CircuitClement.
+   * @return {string} String describing this element in Verilog.
+   */
   static moduleVerilog() {
     return `
 module DflipFlop(q, q_inv, clk, d, a_rst, pre, en);

@@ -46,19 +46,19 @@ export class SRflipFlop extends CircuitElement {
   }
 
   /**
-     * @memberof SRflipFlop
-     * always resolvable
-     * @return {boolean} is resolvable.
-     */
+   * @memberof SRflipFlop
+   * always resolvable
+   * @return {boolean} is resolvable.
+   */
   isResolvable() {
     return true;
   }
 
   /**
-     * @memberof SRflipFlop
-     * function to resolve SR flip flop if S != R we can
-     * set this.state to value S.
-     */
+   * @memberof SRflipFlop
+   * function to resolve SR flip flop if S != R we can
+   * set this.state to value S.
+   */
   resolve() {
     if (this.reset.value == 1) {
       this.state = this.preset.value || 0;

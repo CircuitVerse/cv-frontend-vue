@@ -86,7 +86,7 @@ export class NandGate extends CircuitElement {
 
   /**
    * @memberof NandGate
-   * resolve output values based on inputData
+   * Determine output values and add to simulation queue.
    */
   resolve() {
     let result = this.inp[0].value || 0;

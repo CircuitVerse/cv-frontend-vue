@@ -64,9 +64,9 @@ export class TriState extends CircuitElement {
   }
 
   /**
-     * @memberof TriState
-     * resolve output values based on inputData
-     */
+   * @memberof TriState
+   * Determine output values and add to simulation queue.
+   */
   resolve() {
     if (this.isResolvable() === false) {
       return;

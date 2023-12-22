@@ -50,9 +50,9 @@ export class TwoComplement extends CircuitElement {
   }
 
   /**
-     * @memberof TwoComplement
-     * resolve output values based on inputData
-     */
+   * @memberof TwoComplement
+   * Determine output values and add to simulation queue.
+   */
   resolve() {
     if (this.isResolvable() === false) {
       return;

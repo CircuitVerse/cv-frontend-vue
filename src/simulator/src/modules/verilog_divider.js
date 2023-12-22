@@ -76,10 +76,10 @@ export class verilogDivider extends CircuitElement {
   }
 
   /**
-     * @memberof verilogDivider
-     * Checks if the output value can be determined.
-     * @return {boolean}
-     */
+   * @memberof verilogDivider
+   * Checks if the output value can be determined.
+   * @return {boolean}
+   */
   isResolvable() {
     return this.inpA.value !== undefined && this.inpB.value !== undefined;
   }
@@ -98,9 +98,9 @@ export class verilogDivider extends CircuitElement {
   }
 
   /**
-     * @memberof verilogDivider
-     * resolve output values based on inputData
-     */
+   * @memberof verilogDivider
+   * Determine output values and add to simulation queue.
+   */
   resolve() {
     if (this.isResolvable() === false) {
       return;

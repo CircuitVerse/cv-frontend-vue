@@ -150,16 +150,16 @@ export class SubCircuit extends CircuitElement {
             subcircuitScope.Input[i].layoutProperties.x;
           this.inputNodes[i].y =
             subcircuitScope.Input[i].layoutProperties.y;
-          this.inputNodes[i].leftx = this.inputNodes[i].x;
-          this.inputNodes[i].lefty = this.inputNodes[i].y;
+          this.inputNodes[i].leftX = this.inputNodes[i].x;
+          this.inputNodes[i].leftY = this.inputNodes[i].y;
         }
         for (let i = 0; i < this.outputNodes.length; i++) {
           this.outputNodes[i].x =
             subcircuitScope.Output[i].layoutProperties.x;
           this.outputNodes[i].y =
             subcircuitScope.Output[i].layoutProperties.y;
-          this.outputNodes[i].leftx = this.outputNodes[i].x;
-          this.outputNodes[i].lefty = this.outputNodes[i].y;
+          this.outputNodes[i].leftX = this.outputNodes[i].x;
+          this.outputNodes[i].leftY = this.outputNodes[i].y;
         }
       }
 

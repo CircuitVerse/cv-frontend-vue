@@ -3,6 +3,19 @@ import {Node, findNode} from '../node';
 import {simulationArea} from '../simulation_area';
 import {correctWidth, fillText2, fillText4, drawCircle2} from '../canvas_api';
 
+/**
+ * Resolve output values.
+ * @param {*} clockInp
+ * @param {*} dInp
+ * @param {*} qOutput
+ * @param {*} en
+ * @param {*} masterState
+ * @param {*} slaveState
+ * @param {*} prevClockState
+ * @param {*} clockPolarity
+ * @param {*} enablePolarity
+ * @param {*} numIterations
+ */
 function customResolve(
     clockInp,
     dInp,
@@ -11,39 +24,39 @@ function customResolve(
     masterState,
     slaveState,
     prevClockState,
-    clock_polarity,
-    enable_polarity,
+    clockPolarity,
+    enablePolarity,
     numIterations,
 ) {
   for (let i = 0; i < numIterations; i++) {
-    if (clock_polarity[i] != undefined) {
-      clock_polarity[i] == true ? 1 : 0;
+    if (clockPolarity[i] != undefined) {
+      clockPolarity[i] == true ? 1 : 0;
     }
 
-    if (enable_polarity[i] != undefined) {
-      enable_polarity[i] == true ? 1 : 0;
+    if (enablePolarity[i] != undefined) {
+      enablePolarity[i] == true ? 1 : 0;
     }
 
-    if (clock_polarity[i] == undefined && enable_polarity[i] == undefined) {
+    if (clockPolarity[i] == undefined && enablePolarity[i] == undefined) {
       if (dInp[i].value != undefined) {
         qOutput[i].value = dInp[i].value;
         simulationArea.simulationQueue.add(qOutput[i]);
       }
     } else if (
-      clock_polarity[i] == undefined &&
-      enable_polarity[i] != undefined
+      clockPolarity[i] == undefined &&
+      enablePolarity[i] != undefined
     ) {
       if (
-        (en_value[i] == undefined ||
-          en[i].value == enable_polarity[i]) &&
+        (en[i].value == undefined ||
+          en[i].value == enablePolarity[i]) &&
         dInp[i].value != undefined
       ) {
         qOutput[i].value = dInp[i].value;
         simulationArea.simulationQueue.add(qOutput[i]);
       }
     } else if (
-      clock_polarity[i] != undefined &&
-      enable_polarity[i] == undefined
+      clockPolarity[i] != undefined &&
+      enablePolarity[i] == undefined
     ) {
       if (clockInp[i].value == prevClockState[i]) {
         if (clockInp[i].value == 0 && dInp[i].value != undefined) {
@@ -105,8 +118,8 @@ function customResolve(
  * @param {*} masterState
  * @param {*} slaveState
  * @param {*} prevClockState
- * @param {*} clock_polarity
- * @param {*} enable_polarity
+ * @param {*} clockPolarity
+ * @param {*} enablePolarity
  * @param {*} numIterations
  *
  * Two settings are available:
@@ -246,8 +259,8 @@ export class verilogRAM extends CircuitElement {
       const masterState = 0;
       const slaveState = 0;
       const prevClockState = 0;
-      const clockPolarity = wrports[i]['clock_polarity'];
-      let enPolarity = wrports[i]['enable_polarity'];
+      const clockPolarity = wrports[i]['clockPolarity'];
+      let enPolarity = wrports[i]['enablePolarity'];
 
       if (enPolarity == undefined) {
         enPolarity = true;
@@ -316,8 +329,8 @@ export class verilogRAM extends CircuitElement {
       const masterState = 0;
       const slaveState = 0;
       const prevClockState = 0;
-      const clockPolarity = rdports[i]['clock_polarity'];
-      const enPolarity = rdports[i]['enable_polarity'];
+      const clockPolarity = rdports[i]['clockPolarity'];
+      const enPolarity = rdports[i]['enablePolarity'];
 
       this.readDffClock.push(clockInp);
       this.readDffDInp.push(dInp);
@@ -448,11 +461,19 @@ export class verilogRAM extends CircuitElement {
   changeAddressWidth(value) {
   }
 
+  /**
+   * Clear all data.
+   */
   clearData() {
     this.data = new Array(this.words);
     this.tooltipText = `${this.memSizeString()} ${this.shortName}`;
   }
 
+  /**
+   * @memberof verilogRAM
+   * Checks if the output value can be determined.
+   * @return {boolean}
+   */
   isResolvable() {
     for (let i = 0; i < this.numRead; i++) {
       if (this.readAddress[i] != undefined) {
@@ -463,7 +484,8 @@ export class verilogRAM extends CircuitElement {
   }
 
   /**
-   *
+   * @memberof verilogRAM
+   * Determine output values and add to simulation queue.
    */
   resolve() {
     customResolve(
@@ -536,13 +558,21 @@ export class verilogRAM extends CircuitElement {
     ctx.fillStyle = 'black';
     fillText4(ctx, this.memSizeString(), 0, -10, xx, yy, this.direction, 12);
     fillText4(ctx, this.shortName, 0, 10, xx, yy, this.direction, 12);
-    fillText2(ctx, 'A', this.address.x + 12, this.address.y, xx, yy, this.direction);
-    fillText2(ctx, 'DI', this.dataIn.x + 12, this.dataIn.y, xx, yy, this.direction);
-    fillText2(ctx, 'W', this.write.x + 12, this.write.y, xx, yy, this.direction);
-    fillText2(ctx, 'DO', this.dataOut.x - 15, this.dataOut.y, xx, yy, this.direction);
+    fillText2(ctx, 'A', this.address.x + 12, this.address.y,
+        xx, yy, this.direction);
+    fillText2(ctx, 'DI', this.dataIn.x + 12, this.dataIn.y,
+        xx, yy, this.direction);
+    fillText2(ctx, 'W', this.write.x + 12, this.write.y,
+        xx, yy, this.direction);
+    fillText2(ctx, 'DO', this.dataOut.x - 15, this.dataOut.y,
+        xx, yy, this.direction);
     ctx.fill();
   }
 
+  /**
+   * String representation of the memory size.
+   * @return {string}
+   */
   memSizeString() {
     const mag = ['', 'K', 'M'];
     const unit =
