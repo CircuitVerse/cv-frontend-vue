@@ -6,7 +6,14 @@ import vueI18n from '@intlify/vite-plugin-vue-i18n'
 // https://github.com/vuetifyjs/vuetify-loader/tree/next/packages/vite-plugin
 import vuetify from 'vite-plugin-vuetify'
 
-const proxyUrl: string = 'http://localhost:3000'
+
+function proxyUrl() {
+	let url: string = 'http://localhost:3000'
+	if(process.env.VITE_PROXY_URL !== undefined) {
+		url = process.env.VITE_PROXY_URL
+	}
+	return url
+}
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -40,10 +47,10 @@ export default defineConfig({
         proxy: {
             // ...(process.env.NODE_ENV === 'development' && {
             '^/(?!(simulatorvue)).*': {
-                target: proxyUrl,
+                target: proxyUrl(),
                 changeOrigin: true,
                 headers: {
-                    origin: proxyUrl,
+                    origin: proxyUrl(),
                 },
             },
             // }),
