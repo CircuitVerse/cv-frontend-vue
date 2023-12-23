@@ -1,5 +1,5 @@
 import {drawLine} from './canvas_api';
-import {simulationArea} from './simulation_area';
+
 import {Node} from './node';
 import {updateSimulationSet, forceResetNodesSet} from './engine';
 import {colors} from './themer/themer';
@@ -78,8 +78,8 @@ export class Wire {
       this.node1.parent == globalScope.root &&
       this.node2.parent == globalScope.root
     ) {
-      simulationArea.multipleObjectSelections = [this.node1, this.node2];
-      simulationArea.lastSelected = undefined;
+      globalScope.simulationArea.multipleObjectSelections = [this.node1, this.node2];
+      globalScope.simulationArea.lastSelected = undefined;
     }
   }
 
@@ -102,31 +102,31 @@ export class Wire {
     }
     let n;
     if (
-      simulationArea.shiftDown === false &&
-      simulationArea.mouseDown === true &&
-      simulationArea.selected === false &&
+      globalScope.simulationArea.shiftDown === false &&
+      globalScope.simulationArea.mouseDown === true &&
+      globalScope.simulationArea.selected === false &&
       this.checkWithin(
-          simulationArea.mouseDownX,
-          simulationArea.mouseDownY,
+          globalScope.simulationArea.mouseDownX,
+          globalScope.simulationArea.mouseDownY,
       )
     ) {
-      simulationArea.selected = true;
-      simulationArea.lastSelected = this;
+      globalScope.simulationArea.selected = true;
+      globalScope.simulationArea.lastSelected = this;
       updated = true;
     } else if (
-      simulationArea.mouseDown &&
-      simulationArea.lastSelected === this &&
-      !this.checkWithin(simulationArea.mouseX, simulationArea.mouseY)
+      globalScope.simulationArea.mouseDown &&
+      globalScope.simulationArea.lastSelected === this &&
+      !this.checkWithin(globalScope.simulationArea.mouseX, globalScope.simulationArea.mouseY)
     ) {
       n = new Node(
-          simulationArea.mouseDownX,
-          simulationArea.mouseDownY,
+          globalScope.simulationArea.mouseDownX,
+          globalScope.simulationArea.mouseDownY,
           2,
           this.scope.root,
       );
       n.clicked = true;
       n.wasClicked = true;
-      simulationArea.lastSelected = n;
+      globalScope.simulationArea.lastSelected = n;
       this.converge(n);
     }
 
@@ -135,7 +135,7 @@ export class Wire {
       return updated;
     } // if either of the nodes are deleted
 
-    if (simulationArea.mouseDown === false) {
+    if (globalScope.simulationArea.mouseDown === false) {
       if (this.type === 'horizontal') {
         if (this.node1.absY() !== this.y1) {
           n = new Node(this.node1.absX(), this.y1, 2, this.scope.root);
@@ -163,10 +163,10 @@ export class Wire {
 
   draw() {
     // for calculating min-max Width,min-max Height
-    const ctx = simulationArea.context;
+    const ctx = globalScope.simulationArea.context;
 
     let color;
-    if (simulationArea.lastSelected == this) {
+    if (globalScope.simulationArea.lastSelected == this) {
       color = colors['color_wire_sel'];
     } else if (
       this.node1.value == undefined ||

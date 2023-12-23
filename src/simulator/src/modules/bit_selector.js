@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode, extractBits} from '../node';
-import {simulationArea} from '../simulation_area';
+
 import {correctWidth, rect, fillText} from '../canvas_api';
 import {colors} from '../themer/themer';
 
@@ -99,7 +99,7 @@ export class BitSelector extends CircuitElement {
         this.bitSelectorInp.value + 1,
         this.bitSelectorInp.value + 1,
     );
-    simulationArea.simulationQueue.add(this.output1);
+    globalScope.simulationArea.simulationQueue.add(this.output1);
   }
 
   /**
@@ -118,9 +118,9 @@ export class BitSelector extends CircuitElement {
     const yy = this.y;
     rect(ctx, xx - 20, yy - 20, 40, 40);
     if (
-      (this.hover && !simulationArea.shiftDown) ||
-      simulationArea.lastSelected === this ||
-      simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !globalScope.simulationArea.shiftDown) ||
+      globalScope.simulationArea.lastSelected === this ||
+      globalScope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }

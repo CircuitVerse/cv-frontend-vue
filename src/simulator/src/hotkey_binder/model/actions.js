@@ -1,7 +1,7 @@
 import {defaultKeys} from '../defaultKeys';
 import {addShortcut} from './addShortcut';
 import {updateHTML} from '../view/panel.ui';
-import {simulationArea} from '../../simulation_area';
+
 import {
   scheduleUpdate,
   wireToBeCheckedSet,
@@ -134,8 +134,8 @@ export const warnOverride = (combo, target, warning) => {
 };
 
 export const elementDirection = (direct) => () => {
-  if (simulationArea.lastSelected) {
-    simulationArea.lastSelected.newDirection(direct.toUpperCase());
+  if (globalScope.simulationArea.lastSelected) {
+    globalScope.simulationArea.lastSelected.newDirection(direct.toUpperCase());
     $('select[name |= \'newDirection\']').val(direct.toUpperCase());
     updateSystem();
   }
@@ -143,17 +143,17 @@ export const elementDirection = (direct) => () => {
 
 export const labelDirection = (direct) => () => {
   if (
-    simulationArea.lastSelected &&
-        !simulationArea.lastSelected.labelDirectionFixed
+    globalScope.simulationArea.lastSelected &&
+        !globalScope.simulationArea.lastSelected.labelDirectionFixed
   ) {
-    simulationArea.lastSelected.labelDirection = direct.toUpperCase();
+    globalScope.simulationArea.lastSelected.labelDirection = direct.toUpperCase();
     $('select[name |= \'newLabelDirection\']').val(direct.toUpperCase());
     updateSystem();
   }
 };
 
 export const insertLabel = () => {
-  if (simulationArea.lastSelected) {
+  if (globalScope.simulationArea.lastSelected) {
     $('input[name |= \'setLabel\']').focus();
         $('input[name |= \'setLabel\']').val().length ?
             null :
@@ -164,19 +164,19 @@ export const insertLabel = () => {
 };
 
 export const moveElement = (direct) => () => {
-  if (simulationArea.lastSelected) {
+  if (globalScope.simulationArea.lastSelected) {
     switch (direct) {
       case 'up':
-        simulationArea.lastSelected.y -= 10;
+        globalScope.simulationArea.lastSelected.y -= 10;
         break;
       case 'down':
-        simulationArea.lastSelected.y += 10;
+        globalScope.simulationArea.lastSelected.y += 10;
         break;
       case 'left':
-        simulationArea.lastSelected.x -= 10;
+        globalScope.simulationArea.lastSelected.x -= 10;
         break;
       case 'right':
-        simulationArea.lastSelected.x += 10;
+        globalScope.simulationArea.lastSelected.x += 10;
         break;
     }
     updateSystem();
@@ -190,13 +190,13 @@ export const createNewCircuitScopeCall = () =>
 
 export const openDocumentation = () => {
   if (
-    simulationArea.lastSelected == undefined ||
-        simulationArea.lastSelected.helplink == undefined
+    globalScope.simulationArea.lastSelected == undefined ||
+        globalScope.simulationArea.lastSelected.helplink == undefined
   ) {
     // didn't select any element or documentation not found
     window.open('https://docs.circuitverse.org/', '_blank');
   } else {
-    window.open(simulationArea.lastSelected.helplink, '_blank');
+    window.open(globalScope.simulationArea.lastSelected.helplink, '_blank');
   }
 };
 

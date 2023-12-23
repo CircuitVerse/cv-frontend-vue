@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulation_area';
+
 import {correctWidth, lineTo, moveTo, drawCircle2} from '../canvas_api';
 import {colors} from '../themer/themer';
 /**
@@ -61,7 +61,7 @@ export class NotGate extends CircuitElement {
     this.output1.value =
       ((~this.inp1.value >>> 0) << (32 - this.bitWidth)) >>>
       (32 - this.bitWidth);
-    simulationArea.simulationQueue.add(this.output1);
+    globalScope.simulationArea.simulationQueue.add(this.output1);
   }
 
   /**
@@ -82,9 +82,9 @@ export class NotGate extends CircuitElement {
     lineTo(ctx, -10, 10, xx, yy, this.direction);
     ctx.closePath();
     if (
-      (this.hover && !simulationArea.shiftDown) ||
-      simulationArea.lastSelected === this ||
-      simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !globalScope.simulationArea.shiftDown) ||
+      globalScope.simulationArea.lastSelected === this ||
+      globalScope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }

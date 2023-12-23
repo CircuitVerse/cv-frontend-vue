@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulation_area';
+
 import {correctWidth, lineTo, moveTo, fillText3} from '../canvas_api';
 import {colors} from '../themer/themer';
 /**
@@ -76,7 +76,7 @@ export class Keyboard extends CircuitElement {
     }
     const obj = new Keyboard(this.x, this.y, this.scope, size);
     this.delete();
-    simulationArea.lastSelected = obj;
+    globalScope.simulationArea.lastSelected = obj;
     return obj;
   }
 
@@ -132,7 +132,7 @@ export class Keyboard extends CircuitElement {
 
     if (this.available.value != 0) {
       this.available.value = 0; // this.bufferOutValue;
-      simulationArea.simulationQueue.add(this.available);
+      globalScope.simulationArea.simulationQueue.add(this.available);
     }
 
     if (this.clockInp.value == this.prevClockState) {
@@ -159,12 +159,12 @@ export class Keyboard extends CircuitElement {
 
     if (this.asciiOutput.value != this.bufferOutValue) {
       this.asciiOutput.value = this.bufferOutValue;
-      simulationArea.simulationQueue.add(this.asciiOutput);
+      globalScope.simulationArea.simulationQueue.add(this.asciiOutput);
     }
 
     if (this.bufferOutValue !== undefined && this.available.value != 1) {
       this.available.value = 1; // this.bufferOutValue;
-      simulationArea.simulationQueue.add(this.available);
+      globalScope.simulationArea.simulationQueue.add(this.available);
     }
   }
 

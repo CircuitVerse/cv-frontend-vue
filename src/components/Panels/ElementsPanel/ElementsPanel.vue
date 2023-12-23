@@ -49,7 +49,7 @@
 <script lang="ts" setup>
 import PanelHeader from '../Shared/PanelHeader.vue';
 import { metadata } from '#/simulator/src/metadata';
-import { simulationArea } from '#/simulator/src/simulation_area';
+
 import { uxvar } from '#/simulator/src/ux';
 import { modules } from '#/simulator/src/modules';
 import { onBeforeMount, ref } from 'vue';
@@ -104,11 +104,11 @@ function searchElements() {
 }
 
 function createElement(elementName: string) {
-  if (simulationArea.lastSelected && simulationArea.lastSelected.newElement) {
-    simulationArea.lastSelected.delete();
+  if (globalScope.simulationArea.lastSelected && globalScope.simulationArea.lastSelected.newElement) {
+    globalScope.simulationArea.lastSelected.delete();
   }
   const obj = new modules[elementName]();
-  simulationArea.lastSelected = obj;
+  globalScope.simulationArea.lastSelected = obj;
   uxvar.smartDropXX += 70;
   if (uxvar.smartDropXX / globalScope.scale > width) {
     uxvar.smartDropXX = 50;

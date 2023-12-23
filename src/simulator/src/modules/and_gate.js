@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulation_area';
+
 import {correctWidth, lineTo, moveTo, arc} from '../canvas_api';
 import {changeInputSize} from '../modules';
 import {colors} from '../themer/themer';
@@ -101,7 +101,7 @@ export class AndGate extends CircuitElement {
       result &= this.inp[i].value || 0;
     }
     this.output1.value = result >>> 0;
-    simulationArea.simulationQueue.add(this.output1);
+    globalScope.simulationArea.simulationQueue.add(this.output1);
   }
 
   /**
@@ -125,9 +125,9 @@ export class AndGate extends CircuitElement {
     ctx.closePath();
 
     if (
-      (this.hover && !simulationArea.shiftDown) ||
-      simulationArea.lastSelected === this ||
-      simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !globalScope.simulationArea.shiftDown) ||
+      globalScope.simulationArea.lastSelected === this ||
+      globalScope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }

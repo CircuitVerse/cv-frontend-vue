@@ -1,6 +1,6 @@
 import {Scope, scopeList, switchCircuit} from './circuit';
 import {CircuitElement} from './circuit_element';
-import {simulationArea} from './simulation_area';
+
 import {scheduleBackup, checkIfBackup} from './data/backup_circuit';
 import {
   scheduleUpdate,
@@ -515,7 +515,7 @@ export class SubCircuit extends CircuitElement {
         j < this.localScope[subCircuitInputList[i]].length;
         j++
       ) {
-        simulationArea.simulationQueue.add(
+        globalScope.simulationArea.simulationQueue.add(
             this.localScope[subCircuitInputList[i]][j],
             0,
         );
@@ -601,14 +601,14 @@ export class SubCircuit extends CircuitElement {
     if (this.elementHover) {
       this.elementHover.hover = false;
       this.elementHover = undefined;
-      simulationArea.hover = undefined;
+      globalScope.simulationArea.hover = undefined;
     }
     const elementHover = this.getElementHover();
     if (elementHover) {
       elementHover.hover = true;
       this.elementHover = elementHover;
       this.hover = false;
-      simulationArea.hover = elementHover;
+      globalScope.simulationArea.hover = elementHover;
     }
   }
 
@@ -641,9 +641,9 @@ export class SubCircuit extends CircuitElement {
     );
     if (!this.elementHover) {
       if (
-        (this.hover && !simulationArea.shiftDown) ||
-        simulationArea.lastSelected === this ||
-        simulationArea.multipleObjectSelections.includes(this)
+        (this.hover && !globalScope.simulationArea.shiftDown) ||
+        globalScope.simulationArea.lastSelected === this ||
+        globalScope.simulationArea.multipleObjectSelections.includes(this)
       ) {
         ctx.fillStyle = colors['hover_select'];
       }

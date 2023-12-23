@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulation_area';
+
 import {correctWidth, oppositeDirection, fillText} from '../canvas_api';
 import {getNextPosition} from '../modules';
 import {converters, generateId} from '../utils';
@@ -82,7 +82,7 @@ export class Input extends CircuitElement {
    */
   resolve() {
     this.output1.value = this.state;
-    simulationArea.simulationQueue.add(this.output1);
+    globalScope.simulationArea.simulationQueue.add(this.output1);
   }
 
   /**
@@ -175,7 +175,7 @@ export class Input extends CircuitElement {
    */
   findPos() {
     return Math.round(
-        (simulationArea.mouseX - this.x + 10 * this.bitWidth) / 20.0,
+        (globalScope.simulationArea.mouseX - this.x + 10 * this.bitWidth) / 20.0,
     );
   }
 }

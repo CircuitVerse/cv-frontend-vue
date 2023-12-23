@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulation_area';
+
 
 /**
  * @class
@@ -93,7 +93,7 @@ export class verilogMultiplier extends CircuitElement {
     this.product.value =
       (product << (32 - this.outputBitWidth)) >>>
       (32 - this.outputBitWidth);
-    simulationArea.simulationQueue.add(this.product);
+    globalScope.simulationArea.simulationQueue.add(this.product);
   }
 }
 

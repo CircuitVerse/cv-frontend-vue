@@ -1,4 +1,4 @@
-import {defineStore} from 'pinia';
+import { defineStore } from 'pinia';
 
 // use camel case variable names
 export interface State {
@@ -10,6 +10,7 @@ export interface State {
     name: string
   }
   circuitList: Array<Object>
+  timePeriod: number
   dialogBox: {
     // create_circuit: boolean
     // delete_circuit: boolean
@@ -37,6 +38,7 @@ export const useState = defineStore({
       title: 'Welcome to CircuitVerse Simulator',
       activeCircuit: {},
       circuitList: [],
+      timePeriod: 500,
       dialogBox: {
         combinationalanalysis_dialog: false,
         hex_bin_dec_converter_dialog: false,

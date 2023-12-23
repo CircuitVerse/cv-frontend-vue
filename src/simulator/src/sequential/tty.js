@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulation_area';
+
 import {correctWidth, lineTo, moveTo, fillText3} from '../canvas_api';
 import {colors} from '../themer/themer';
 
@@ -87,7 +87,7 @@ export class TTY extends CircuitElement {
     }
     const obj = new TTY(this.x, this.y, this.scope, size, this.cols);
     this.delete();
-    simulationArea.lastSelected = obj;
+    globalScope.simulationArea.lastSelected = obj;
     return obj;
   }
 
@@ -105,7 +105,7 @@ export class TTY extends CircuitElement {
     }
     const obj = new TTY(this.x, this.y, this.scope, this.rows, size);
     this.delete();
-    simulationArea.lastSelected = obj;
+    globalScope.simulationArea.lastSelected = obj;
     return obj;
   }
 

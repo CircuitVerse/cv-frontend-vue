@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulation_area';
+
 import {correctWidth, lineTo, moveTo} from '../canvas_api';
 import {colors} from '../themer/themer';
 
@@ -75,22 +75,22 @@ export class TriState extends CircuitElement {
     if (this.state.value === 1) {
       if (this.output1.value !== this.inp1.value) {
         this.output1.value = this.inp1.value;
-        simulationArea.simulationQueue.add(this.output1);
+        globalScope.simulationArea.simulationQueue.add(this.output1);
       }
-      const index = simulationArea.contentionPending.indexOf(this);
+      const index = globalScope.simulationArea.contentionPending.indexOf(this);
       if (index != -1) {
-        simulationArea.contentionPending.splice(index, 1);
+        globalScope.simulationArea.contentionPending.splice(index, 1);
       }
     } else if (
       this.output1.value !== undefined &&
-      !simulationArea.contentionPending.includes(this)
+      !globalScope.simulationArea.contentionPending.includes(this)
     ) {
       this.output1.value = undefined;
-      simulationArea.simulationQueue.add(this.output1);
+      globalScope.simulationArea.simulationQueue.add(this.output1);
     }
-    const index = simulationArea.contentionPending.indexOf(this);
+    const index = globalScope.simulationArea.contentionPending.indexOf(this);
     if (index != -1) {
-      simulationArea.contentionPending.splice(index, 1);
+      globalScope.simulationArea.contentionPending.splice(index, 1);
     }
   }
 
@@ -111,9 +111,9 @@ export class TriState extends CircuitElement {
     lineTo(ctx, -10, 15, xx, yy, this.direction);
     ctx.closePath();
     if (
-      (this.hover && !simulationArea.shiftDown) ||
-      simulationArea.lastSelected === this ||
-      simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !globalScope.simulationArea.shiftDown) ||
+      globalScope.simulationArea.lastSelected === this ||
+      globalScope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }

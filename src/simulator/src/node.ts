@@ -1,5 +1,5 @@
 import { drawCircle, drawLine, arc } from './canvas_api';
-import { simulationArea } from './simulation_area';
+
 import { distance } from './utils';
 import { showError } from './utils_clock';
 import {
@@ -250,8 +250,8 @@ export class Node {
  * Helper function to move a node.
  */
   drag() {
-    this.x = this.oldX + simulationArea.mouseX - simulationArea.mouseDownX;
-    this.y = this.oldY + simulationArea.mouseY - simulationArea.mouseDownY;
+    this.x = this.oldX + globalScope.simulationArea.mouseX - globalScope.simulationArea.mouseDownX;
+    this.y = this.oldY + globalScope.simulationArea.mouseY - globalScope.simulationArea.mouseDownY;
   }
 
   /**
@@ -408,7 +408,7 @@ export class Node {
       for (let i = 0; i < this.connections.length; i++) {
         if (this.connections[i].value !== undefined) {
           this.connections[i].value = undefined;
-          simulationArea.simulationQueue.add(this.connections[i]);
+          globalScope.simulationArea.simulationQueue.add(this.connections[i]);
         }
       }
 
@@ -416,7 +416,7 @@ export class Node {
         if (this.parent.objectType == 'Splitter') {
           this.parent.removePropagation();
         } else if (this.parent.isResolvable()) {
-          simulationArea.simulationQueue.add(this.parent);
+          globalScope.simulationArea.simulationQueue.add(this.parent);
         } else {
           this.parent.removePropagation();
         }
@@ -429,10 +429,10 @@ export class Node {
         ) {
           if (this.parent.objectType == 'TriState') {
             if (this.parent.state.value) {
-              simulationArea.simulationQueue.add(this.parent);
+              globalScope.simulationArea.simulationQueue.add(this.parent);
             }
           } else {
-            simulationArea.simulationQueue.add(this.parent);
+            globalScope.simulationArea.simulationQueue.add(this.parent);
           }
         }
       }
@@ -441,7 +441,7 @@ export class Node {
 
     if (this.type == 0) {
       if (this.parent.isResolvable()) {
-        simulationArea.simulationQueue.add(this.parent);
+        globalScope.simulationArea.simulationQueue.add(this.parent);
       }
     }
 
@@ -472,13 +472,13 @@ export class Node {
             node.type == 1
           ) {
             if (node.parent.state.value) {
-              simulationArea.contentionPending.push(node.parent);
+              globalScope.simulationArea.contentionPending.push(node.parent);
             }
           }
 
           node.bitWidth = this.bitWidth;
           node.value = this.value;
-          simulationArea.simulationQueue.add(node);
+          globalScope.simulationArea.simulationQueue.add(node);
         } else {
           this.highlighted = true;
           node.highlighted = true;
@@ -493,17 +493,17 @@ export class Node {
  * this function checks if hover over the node
  */
   checkHover() {
-    if (!simulationArea.mouseDown) {
-      if (simulationArea.hover == this) {
+    if (!globalScope.simulationArea.mouseDown) {
+      if (globalScope.simulationArea.hover == this) {
         this.hover = this.isHover();
         if (!this.hover) {
-          simulationArea.hover = undefined;
+          globalScope.simulationArea.hover = undefined;
           this.showHover = false;
         }
-      } else if (!simulationArea.hover) {
+      } else if (!globalScope.simulationArea.hover) {
         this.hover = this.isHover();
         if (this.hover) {
-          simulationArea.hover = this;
+          globalScope.simulationArea.hover = this;
         } else {
           this.showHover = false;
         }
@@ -518,7 +518,7 @@ export class Node {
  * this function draw a node
  */
   draw() {
-    const ctx = simulationArea.context;
+    const ctx = globalScope.simulationArea.context;
     const color = colors.color_wire_draw;
     if (this.clicked) {
       if (this.prev == 'x') {
@@ -526,17 +526,17 @@ export class Node {
           ctx,
           this.absX(),
           this.absY(),
-          simulationArea.mouseX,
+          globalScope.simulationArea.mouseX,
           this.absY(),
           color,
           3,
         );
         drawLine(
           ctx,
-          simulationArea.mouseX,
+          globalScope.simulationArea.mouseX,
           this.absY(),
-          simulationArea.mouseX,
-          simulationArea.mouseY,
+          globalScope.simulationArea.mouseX,
+          globalScope.simulationArea.mouseY,
           color,
           3,
         );
@@ -546,28 +546,28 @@ export class Node {
           this.absX(),
           this.absY(),
           this.absX(),
-          simulationArea.mouseY,
+          globalScope.simulationArea.mouseY,
           color,
           3,
         );
         drawLine(
           ctx,
           this.absX(),
-          simulationArea.mouseY,
-          simulationArea.mouseX,
-          simulationArea.mouseY,
+          globalScope.simulationArea.mouseY,
+          globalScope.simulationArea.mouseX,
+          globalScope.simulationArea.mouseY,
           color,
           3,
         );
       } else if (
-        Math.abs(this.x + this.parent.x - simulationArea.mouseX) >
-        Math.abs(this.y + this.parent.y - simulationArea.mouseY)
+        Math.abs(this.x + this.parent.x - globalScope.simulationArea.mouseX) >
+        Math.abs(this.y + this.parent.y - globalScope.simulationArea.mouseY)
       ) {
         drawLine(
           ctx,
           this.absX(),
           this.absY(),
-          simulationArea.mouseX,
+          globalScope.simulationArea.mouseX,
           this.absY(),
           color,
           3,
@@ -578,7 +578,7 @@ export class Node {
           this.absX(),
           this.absY(),
           this.absX(),
-          simulationArea.mouseY,
+          globalScope.simulationArea.mouseY,
           color,
           3,
         );
@@ -607,11 +607,11 @@ export class Node {
 
     if (
       this.highlighted ||
-      simulationArea.lastSelected == this ||
+      globalScope.simulationArea.lastSelected == this ||
       (this.isHover() &&
-        !simulationArea.selected &&
-        !simulationArea.shiftDown) ||
-      simulationArea.multipleObjectSelections.includes(this)
+        !globalScope.simulationArea.selected &&
+        !globalScope.simulationArea.shiftDown) ||
+      globalScope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.strokeStyle = colorNodeSelected;
       ctx.beginPath();
@@ -631,8 +631,8 @@ export class Node {
       ctx.stroke();
     }
 
-    if (this.hover || simulationArea.lastSelected == this) {
-      if (this.showHover || simulationArea.lastSelected == this) {
+    if (this.hover || globalScope.simulationArea.lastSelected == this) {
+      if (this.showHover || globalScope.simulationArea.lastSelected == this) {
         canvasMessageData.x = this.absX();
         canvasMessageData.y = this.absY() - 15;
         if (this.type == 2) {
@@ -650,8 +650,8 @@ export class Node {
         }
       } else {
         setTimeout(() => {
-          if (simulationArea.hover) {
-            simulationArea.hover.showHover = true;
+          if (globalScope.simulationArea.hover) {
+            globalScope.simulationArea.hover.showHover = true;
           }
           updateCanvasSet(true);
           renderCanvas(globalScope);
@@ -681,12 +681,12 @@ export class Node {
       return;
     }
 
-    if (this == simulationArea.hover) {
-      simulationArea.hover = undefined;
+    if (this == globalScope.simulationArea.hover) {
+      globalScope.simulationArea.hover = undefined;
     }
     this.hover = this.isHover();
 
-    if (!simulationArea.mouseDown) {
+    if (!globalScope.simulationArea.mouseDown) {
       if (this.absX() != this.prevX || this.absY() != this.prevY) {
         // Connect to any node
         this.prevX = this.absX();
@@ -696,16 +696,16 @@ export class Node {
     }
 
     if (this.hover) {
-      simulationArea.hover = this;
+      globalScope.simulationArea.hover = this;
     }
 
     if (
-      simulationArea.mouseDown &&
-      ((this.hover && !simulationArea.selected) ||
-        simulationArea.lastSelected == this)
+      globalScope.simulationArea.mouseDown &&
+      ((this.hover && !globalScope.simulationArea.selected) ||
+        globalScope.simulationArea.lastSelected == this)
     ) {
-      simulationArea.selected = true;
-      simulationArea.lastSelected = this;
+      globalScope.simulationArea.selected = true;
+      globalScope.simulationArea.lastSelected = this;
       this.clicked = true;
     } else {
       this.clicked = false;
@@ -716,65 +716,65 @@ export class Node {
       this.prev = 'a';
       if (this.type == 2) {
         if (
-          !simulationArea.shiftDown &&
-          simulationArea.multipleObjectSelections.includes(this)
+          !globalScope.simulationArea.shiftDown &&
+          globalScope.simulationArea.multipleObjectSelections.includes(this)
         ) {
           for (
             let i = 0;
-            i < simulationArea.multipleObjectSelections.length;
+            i < globalScope.simulationArea.multipleObjectSelections.length;
             i++
           ) {
-            simulationArea.multipleObjectSelections[
+            globalScope.simulationArea.multipleObjectSelections[
               i
             ].startDragging();
           }
         }
 
-        if (simulationArea.shiftDown) {
-          simulationArea.lastSelected = undefined;
+        if (globalScope.simulationArea.shiftDown) {
+          globalScope.simulationArea.lastSelected = undefined;
           if (
-            simulationArea.multipleObjectSelections.includes(this)
+            globalScope.simulationArea.multipleObjectSelections.includes(this)
           ) {
-            const foundIndex = simulationArea.multipleObjectSelections.indexOf(this);
+            const foundIndex = globalScope.simulationArea.multipleObjectSelections.indexOf(this);
             if (foundIndex != -1) {
-              simulationArea.multipleObjectSelections.splice(foundIndex, 1);
+              globalScope.simulationArea.multipleObjectSelections.splice(foundIndex, 1);
             }
           } else {
-            simulationArea.multipleObjectSelections.push(this);
+            globalScope.simulationArea.multipleObjectSelections.push(this);
           }
         } else {
-          simulationArea.lastSelected = this;
+          globalScope.simulationArea.lastSelected = this;
         }
       }
     } else if (this.wasClicked && this.clicked) {
       if (
-        !simulationArea.shiftDown &&
-        simulationArea.multipleObjectSelections.includes(this)
+        !globalScope.simulationArea.shiftDown &&
+        globalScope.simulationArea.multipleObjectSelections.includes(this)
       ) {
         for (
           let i = 0;
-          i < simulationArea.multipleObjectSelections.length;
+          i < globalScope.simulationArea.multipleObjectSelections.length;
           i++
         ) {
-          simulationArea.multipleObjectSelections[i].drag();
+          globalScope.simulationArea.multipleObjectSelections[i].drag();
         }
       }
       if (this.type == 2) {
         if (
           this.connections.length == 1 &&
-          this.connections[0].absX() == simulationArea.mouseX &&
-          this.absX() == simulationArea.mouseX
+          this.connections[0].absX() == globalScope.simulationArea.mouseX &&
+          this.absX() == globalScope.simulationArea.mouseX
         ) {
-          this.y = simulationArea.mouseY - this.parent.y;
+          this.y = globalScope.simulationArea.mouseY - this.parent.y;
           this.prev = 'a';
           return;
         }
         if (
           this.connections.length == 1 &&
-          this.connections[0].absY() == simulationArea.mouseY &&
-          this.absY() == simulationArea.mouseY
+          this.connections[0].absY() == globalScope.simulationArea.mouseY &&
+          this.absY() == globalScope.simulationArea.mouseY
         ) {
-          this.x = simulationArea.mouseX - this.parent.x;
+          this.x = globalScope.simulationArea.mouseX - this.parent.x;
           this.prev = 'a';
           return;
         }
@@ -785,7 +785,7 @@ export class Node {
         ) {
           this.connections[0].clicked = true;
           this.connections[0].wasClicked = true;
-          simulationArea.lastSelected = this.connections[0];
+          globalScope.simulationArea.lastSelected = this.connections[0];
           this.delete();
           return;
         }
@@ -794,15 +794,15 @@ export class Node {
       if (
         this.prev == 'a' &&
         distance(
-          simulationArea.mouseX,
-          simulationArea.mouseY,
+          globalScope.simulationArea.mouseX,
+          globalScope.simulationArea.mouseY,
           this.absX(),
           this.absY(),
         ) >= 10
       ) {
         if (
-          Math.abs(this.x + this.parent.x - simulationArea.mouseX) >
-          Math.abs(this.y + this.parent.y - simulationArea.mouseY)
+          Math.abs(this.x + this.parent.x - globalScope.simulationArea.mouseX) >
+          Math.abs(this.y + this.parent.y - globalScope.simulationArea.mouseY)
         ) {
           this.prev = 'x';
         } else {
@@ -810,12 +810,12 @@ export class Node {
         }
       } else if (
         this.prev == 'x' &&
-        this.absY() == simulationArea.mouseY
+        this.absY() == globalScope.simulationArea.mouseY
       ) {
         this.prev = 'a';
       } else if (
         this.prev == 'y' &&
-        this.absX() == simulationArea.mouseX
+        this.absX() == globalScope.simulationArea.mouseX
       ) {
         this.prev = 'a';
       }
@@ -823,8 +823,8 @@ export class Node {
       this.wasClicked = false;
 
       if (
-        simulationArea.mouseX == this.absX() &&
-        simulationArea.mouseY == this.absY()
+        globalScope.simulationArea.mouseX == this.absX() &&
+        globalScope.simulationArea.mouseY == this.absY()
       ) {
         return; // no new node situation
       }
@@ -842,8 +842,8 @@ export class Node {
       // node 1 may or may not be there
       // flag = 0  - node 2 only
       // flag = 1  - node 1 and node 2
-      x2 = simulationArea.mouseX;
-      y2 = simulationArea.mouseY;
+      x2 = globalScope.simulationArea.mouseX;
+      y2 = globalScope.simulationArea.mouseY;
       const x = this.absX();
       const y = this.absY();
 
@@ -852,17 +852,17 @@ export class Node {
         if (
           this.prev == 'a' &&
           distance(
-            simulationArea.mouseX,
-            simulationArea.mouseY,
+            globalScope.simulationArea.mouseX,
+            globalScope.simulationArea.mouseY,
             this.absX(),
             this.absY(),
           ) >= 10
         ) {
           if (
             Math.abs(
-              this.x + this.parent.x - simulationArea.mouseX,
+              this.x + this.parent.x - globalScope.simulationArea.mouseX,
             ) >
-            Math.abs(this.y + this.parent.y - simulationArea.mouseY)
+            Math.abs(this.y + this.parent.y - globalScope.simulationArea.mouseY)
           ) {
             this.prev = 'x';
           } else {
@@ -927,12 +927,12 @@ export class Node {
       } else {
         n1.connect(n2);
       }
-      if (simulationArea.lastSelected == this) {
-        simulationArea.lastSelected = n2;
+      if (globalScope.simulationArea.lastSelected == this) {
+        globalScope.simulationArea.lastSelected = n2;
       }
     }
 
-    if (this.type == 2 && simulationArea.mouseDown == false) {
+    if (this.type == 2 && globalScope.simulationArea.mouseDown == false) {
       if (this.connections.length == 2) {
         if (
           this.connections[0].absX() == this.connections[1].absX() ||
@@ -965,8 +965,8 @@ export class Node {
     if (foundIndex != -1) {
       this.parent.scope.root.nodeList.splice(foundIndex, 1);
     }
-    if (simulationArea.lastSelected == this) {
-      simulationArea.lastSelected = undefined;
+    if (globalScope.simulationArea.lastSelected == this) {
+      globalScope.simulationArea.lastSelected = undefined;
     }
     for (let i = 0; i < this.connections.length; i++) {
       const foundIndex = this.connections[i].connections.indexOf(this);
@@ -986,15 +986,15 @@ export class Node {
  */
   isClicked() {
     return (
-      this.absX() == simulationArea.mouseX &&
-      this.absY() == simulationArea.mouseY
+      this.absX() == globalScope.simulationArea.mouseX &&
+      this.absY() == globalScope.simulationArea.mouseY
     );
   }
 
   isHover() {
     return (
-      this.absX() == simulationArea.mouseX &&
-      this.absY() == simulationArea.mouseY
+      this.absX() == globalScope.simulationArea.mouseX &&
+      this.absY() == globalScope.simulationArea.mouseY
     );
   }
 

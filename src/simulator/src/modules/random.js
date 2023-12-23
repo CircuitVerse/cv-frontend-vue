@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulation_area';
+
 import {fillText, lineTo, moveTo, correctWidth, rect2} from '../canvas_api';
 import {colors} from '../themer/themer';
 /**
@@ -81,7 +81,7 @@ export class Random extends CircuitElement {
     }
     if (this.output.value != this.currentRandomNo) {
       this.output.value = this.currentRandomNo;
-      simulationArea.simulationQueue.add(this.output);
+      globalScope.simulationArea.simulationQueue.add(this.output);
     }
   }
 
@@ -150,9 +150,9 @@ export class Random extends CircuitElement {
     ctx.stroke();
 
     if (
-      (this.hover && !simulationArea.shiftDown) ||
-      simulationArea.lastSelected == this ||
-      simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !globalScope.simulationArea.shiftDown) ||
+      globalScope.simulationArea.lastSelected == this ||
+      globalScope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = 'rgba(255, 255, 32,0.6)';
       ctx.fill();

@@ -1,5 +1,5 @@
 import {CircuitElement} from '../circuit_element';
-import {simulationArea} from '../simulation_area';
+
 import {correctWidth, lineTo, moveTo, fillText} from '../canvas_api';
 import {Node, findNode} from '../node';
 
@@ -148,7 +148,7 @@ export class TB_Input extends CircuitElement {
             this.testData.inputs[i].values[this.iteration - 1],
             2,
         );
-        simulationArea.simulationQueue.add(this.outputs[i]);
+        globalScope.simulationArea.simulationQueue.add(this.outputs[i]);
       }
     }
   }

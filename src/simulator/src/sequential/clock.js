@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulation_area';
+
 import {correctWidth, lineTo, moveTo} from '../canvas_api';
 import {colors} from '../themer/themer';
 /**
@@ -52,7 +52,7 @@ export class Clock extends CircuitElement {
    */
   resolve() {
     this.output1.value = this.state;
-    simulationArea.simulationQueue.add(this.output1);
+    globalScope.simulationArea.simulationQueue.add(this.output1);
   }
 
   /**

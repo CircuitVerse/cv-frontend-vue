@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulation_area';
+
 import {correctWidth, fillText2, fillText4, drawCircle2} from '../canvas_api';
 import {parseNumber} from '../utils';
 import {showMessage, showError} from '../utils_clock';
@@ -141,7 +141,7 @@ export class RAM extends CircuitElement {
 
   /**
    * Change bitwidth.
-   * @param {number} value 
+   * @param {number} value
    */
   newBitWidth(value) {
     value = parseInt(value);
@@ -219,7 +219,7 @@ export class RAM extends CircuitElement {
     this.prevCoreDumpValue = this.coreDump.value;
 
     this.dataOut.value = this.data[this.address.value] || 0;
-    simulationArea.simulationQueue.add(this.dataOut);
+    globalScope.simulationArea.simulationQueue.add(this.dataOut);
   }
 
   /**
@@ -284,7 +284,7 @@ export class RAM extends CircuitElement {
 
   /**
    * Size of memory
-   * @return {string} String representation of memory size. 
+   * @return {string} String representation of memory size.
    */
   memSizeString() {
     const mag = ['', 'K', 'M'];

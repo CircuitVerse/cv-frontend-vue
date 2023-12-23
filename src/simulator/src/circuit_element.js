@@ -1,5 +1,5 @@
 import {scheduleUpdate} from './engine';
-import {simulationArea} from './simulation_area';
+
 import {
   fillText,
   correctWidth,
@@ -34,8 +34,8 @@ export class CircuitElement {
     this.y = y;
     this.hover = false;
     if (this.x === undefined || this.y === undefined) {
-      this.x = simulationArea.mouseX;
-      this.y = simulationArea.mouseY;
+      this.x = globalScope.simulationArea.mouseX;
+      this.y = globalScope.simulationArea.mouseY;
       this.newElement = true;
       this.hover = true;
     }
@@ -195,22 +195,22 @@ export class CircuitElement {
    * check hover over the element and set hovered if so.
    */
   checkHover() {
-    if (simulationArea.mouseDown) {
+    if (globalScope.simulationArea.mouseDown) {
       return;
     }
     for (let i = 0; i < this.nodeList.length; i++) {
       this.nodeList[i].checkHover();
     }
-    if (!simulationArea.mouseDown) {
-      if (simulationArea.hover === this) {
+    if (!globalScope.simulationArea.mouseDown) {
+      if (globalScope.simulationArea.hover === this) {
         this.hover = this.isHover();
         if (!this.hover) {
-          simulationArea.hover = undefined;
+          globalScope.simulationArea.hover = undefined;
         }
-      } else if (!simulationArea.hover) {
+      } else if (!globalScope.simulationArea.hover) {
         this.hover = this.isHover();
         if (this.hover) {
-          simulationArea.hover = this;
+          globalScope.simulationArea.hover = this;
         }
       } else {
         this.hover = false;
@@ -266,13 +266,13 @@ export class CircuitElement {
    */
   drag() {
     if (!layoutModeGet()) {
-      this.x = this.oldX + simulationArea.mouseX - simulationArea.mouseDownX;
-      this.y = this.oldY + simulationArea.mouseY - simulationArea.mouseDownY;
+      this.x = this.oldX + globalScope.simulationArea.mouseX - globalScope.simulationArea.mouseDownX;
+      this.y = this.oldY + globalScope.simulationArea.mouseY - globalScope.simulationArea.mouseDownY;
     } else {
       this.subcircuitMetadata.x =
-        this.oldX + simulationArea.mouseX - simulationArea.mouseDownX;
+        this.oldX + globalScope.simulationArea.mouseX - globalScope.simulationArea.mouseDownX;
       this.subcircuitMetadata.y =
-        this.oldY + simulationArea.mouseY - simulationArea.mouseDownY;
+        this.oldY + globalScope.simulationArea.mouseY - globalScope.simulationArea.mouseDownY;
     }
   }
 
@@ -293,24 +293,24 @@ export class CircuitElement {
       if (this.centerElement) {
         this.x =
           Math.round(
-              (simulationArea.mouseX -
+              (globalScope.simulationArea.mouseX -
               (this.rightDimensionX - this.leftDimensionX) / 2) /
             10,
           ) * 10;
         this.y =
           Math.round(
-              (simulationArea.mouseY -
+              (globalScope.simulationArea.mouseY -
               (this.downDimensionY - this.upDimensionY) / 2) /
             10,
           ) * 10;
       } else {
-        this.x = simulationArea.mouseX;
-        this.y = simulationArea.mouseY;
+        this.x = globalScope.simulationArea.mouseX;
+        this.y = globalScope.simulationArea.mouseY;
       }
 
-      if (simulationArea.mouseDown) {
+      if (globalScope.simulationArea.mouseDown) {
         this.newElement = false;
-        simulationArea.lastSelected = this;
+        globalScope.simulationArea.lastSelected = this;
       } else {
         return update;
       }
@@ -320,64 +320,64 @@ export class CircuitElement {
       update |= this.nodeList[i].update();
     }
 
-    if (!simulationArea.hover || simulationArea.hover === this) {
+    if (!globalScope.simulationArea.hover || globalScope.simulationArea.hover === this) {
       this.hover = this.isHover();
     }
 
-    if (!simulationArea.mouseDown) {
+    if (!globalScope.simulationArea.mouseDown) {
       this.hover = false;
     }
 
-    if ((this.clicked || !simulationArea.hover) && this.isHover()) {
+    if ((this.clicked || !globalScope.simulationArea.hover) && this.isHover()) {
       this.hover = true;
-      simulationArea.hover = this;
+      globalScope.simulationArea.hover = this;
     } else if (
-      !simulationArea.mouseDown &&
+      !globalScope.simulationArea.mouseDown &&
       this.hover &&
       this.isHover() === false
     ) {
       if (this.hover) {
-        simulationArea.hover = undefined;
+        globalScope.simulationArea.hover = undefined;
       }
       this.hover = false;
     }
 
-    if (simulationArea.mouseDown && this.clicked) {
+    if (globalScope.simulationArea.mouseDown && this.clicked) {
       this.drag();
       if (
-        !simulationArea.shiftDown &&
-        simulationArea.multipleObjectSelections.includes(this)
+        !globalScope.simulationArea.shiftDown &&
+        globalScope.simulationArea.multipleObjectSelections.includes(this)
       ) {
         for (
           let i = 0;
-          i < simulationArea.multipleObjectSelections.length;
+          i < globalScope.simulationArea.multipleObjectSelections.length;
           i++
         ) {
-          simulationArea.multipleObjectSelections[i].drag();
+          globalScope.simulationArea.multipleObjectSelections[i].drag();
         }
       }
 
       update |= true;
-    } else if (simulationArea.mouseDown && !simulationArea.selected) {
+    } else if (globalScope.simulationArea.mouseDown && !globalScope.simulationArea.selected) {
       this.startDragging();
       if (
-        !simulationArea.shiftDown &&
-        simulationArea.multipleObjectSelections.includes(this)
+        !globalScope.simulationArea.shiftDown &&
+        globalScope.simulationArea.multipleObjectSelections.includes(this)
       ) {
         for (
           let i = 0;
-          i < simulationArea.multipleObjectSelections.length;
+          i < globalScope.simulationArea.multipleObjectSelections.length;
           i++
         ) {
-          simulationArea.multipleObjectSelections[i].startDragging();
+          globalScope.simulationArea.multipleObjectSelections[i].startDragging();
         }
       }
-      simulationArea.selected = this.clicked = this.hover;
+      globalScope.simulationArea.selected = this.clicked = this.hover;
 
       update |= this.clicked;
     } else {
       if (this.clicked) {
-        simulationArea.selected = false;
+        globalScope.simulationArea.selected = false;
       }
       this.clicked = false;
       this.wasClicked = false;
@@ -388,27 +388,27 @@ export class CircuitElement {
       }
     }
 
-    if (simulationArea.mouseDown && !this.wasClicked) {
+    if (globalScope.simulationArea.mouseDown && !this.wasClicked) {
       if (this.clicked) {
         this.wasClicked = true;
         if (this.click) {
           this.click();
         }
-        if (simulationArea.shiftDown) {
-          simulationArea.lastSelected = undefined;
+        if (globalScope.simulationArea.shiftDown) {
+          globalScope.simulationArea.lastSelected = undefined;
           if (
-            simulationArea.multipleObjectSelections.includes(this)
+            globalScope.simulationArea.multipleObjectSelections.includes(this)
           ) {
             const foundIndex =
-                simulationArea.multipleObjectSelections.indexOf(this);
+                globalScope.simulationArea.multipleObjectSelections.indexOf(this);
             if (foundIndex != -1) {
-              simulationArea.multipleObjectSelections.splice(foundIndex, 1);
+              globalScope.simulationArea.multipleObjectSelections.splice(foundIndex, 1);
             }
           } else {
-            simulationArea.multipleObjectSelections.push(this);
+            globalScope.simulationArea.multipleObjectSelections.push(this);
           }
         } else {
-          simulationArea.lastSelected = this;
+          globalScope.simulationArea.lastSelected = this;
         }
       }
     }
@@ -425,54 +425,54 @@ export class CircuitElement {
     let update = false;
     update |= this.newElement;
     if (this.newElement) {
-      this.subcircuitMetadata.x = simulationArea.mouseX;
-      this.subcircuitMetadata.y = simulationArea.mouseY;
+      this.subcircuitMetadata.x = globalScope.simulationArea.mouseX;
+      this.subcircuitMetadata.y = globalScope.simulationArea.mouseY;
 
-      if (simulationArea.mouseDown) {
+      if (globalScope.simulationArea.mouseDown) {
         this.newElement = false;
-        simulationArea.lastSelected = this;
+        globalScope.simulationArea.lastSelected = this;
       } else {
         return update;
       }
     }
 
-    if (!simulationArea.hover || simulationArea.hover == this) {
+    if (!globalScope.simulationArea.hover || globalScope.simulationArea.hover == this) {
       this.hover = this.isHover();
     }
 
-    if ((this.clicked || !simulationArea.hover) && this.isHover()) {
+    if ((this.clicked || !globalScope.simulationArea.hover) && this.isHover()) {
       this.hover = true;
-      simulationArea.hover = this;
+      globalScope.simulationArea.hover = this;
     } else if (
-      !simulationArea.mouseDown &&
+      !globalScope.simulationArea.mouseDown &&
       this.hover &&
       this.isHover() == false
     ) {
       if (this.hover) {
-        simulationArea.hover = undefined;
+        globalScope.simulationArea.hover = undefined;
       }
       this.hover = false;
     }
 
-    if (simulationArea.mouseDown && this.clicked) {
+    if (globalScope.simulationArea.mouseDown && this.clicked) {
       this.drag();
       update |= true;
-    } else if (simulationArea.mouseDown && !simulationArea.selected) {
+    } else if (globalScope.simulationArea.mouseDown && !globalScope.simulationArea.selected) {
       this.startDragging();
-      simulationArea.selected = this.clicked = this.hover;
+      globalScope.simulationArea.selected = this.clicked = this.hover;
       update |= this.clicked;
     } else {
       if (this.clicked) {
-        simulationArea.selected = false;
+        globalScope.simulationArea.selected = false;
       }
       this.clicked = false;
       this.wasClicked = false;
     }
 
-    if (simulationArea.mouseDown && !this.wasClicked) {
+    if (globalScope.simulationArea.mouseDown && !this.wasClicked) {
       if (this.clicked) {
         this.wasClicked = true;
-        simulationArea.lastSelected = this;
+        globalScope.simulationArea.lastSelected = this;
       }
     }
 
@@ -503,8 +503,8 @@ export class CircuitElement {
      * @return {boolean} is hovered over.
      */
   isHover() {
-    let mX = simulationArea.mouseXf - this.x;
-    let mY = this.y - simulationArea.mouseYf;
+    let mX = globalScope.simulationArea.mouseXf - this.x;
+    let mY = this.y - globalScope.simulationArea.mouseYf;
 
     let rX = this.rightDimensionX;
     let lX = this.leftDimensionX;
@@ -512,8 +512,8 @@ export class CircuitElement {
     let dY = this.downDimensionY;
 
     if (layoutModeGet()) {
-      mX = simulationArea.mouseXf - this.subcircuitMetadata.x;
-      mY = this.subcircuitMetadata.y - simulationArea.mouseYf;
+      mX = globalScope.simulationArea.mouseXf - this.subcircuitMetadata.x;
+      mY = this.subcircuitMetadata.y - globalScope.simulationArea.mouseYf;
 
       rX = this.layoutProperties.rightDimensionX;
       lX = this.layoutProperties.leftDimensionX;
@@ -547,8 +547,8 @@ export class CircuitElement {
    * @return {boolean} is subcircuit hovered
    */
   isSubcircuitHover(xoffset = 0, yoffset = 0) {
-    const mX = simulationArea.mouseXf - this.subcircuitMetadata.x - xoffset;
-    const mY = yoffset + this.subcircuitMetadata.y - simulationArea.mouseYf;
+    const mX = globalScope.simulationArea.mouseXf - this.subcircuitMetadata.x - xoffset;
+    const mY = yoffset + this.subcircuitMetadata.y - globalScope.simulationArea.mouseYf;
 
     const rX = this.layoutProperties.rightDimensionX;
     const lX = this.layoutProperties.leftDimensionX;
@@ -573,7 +573,7 @@ export class CircuitElement {
    * NOT OVERRIDABLE
    */
   draw() {
-    const ctx = simulationArea.context;
+    const ctx = globalScope.simulationArea.context;
     this.checkHover();
 
     if (
@@ -605,9 +605,9 @@ export class CircuitElement {
           [this.direction, 'RIGHT'][+this.directionFixed],
       );
       if (
-        (this.hover && !simulationArea.shiftDown) ||
-        simulationArea.lastSelected === this ||
-        simulationArea.multipleObjectSelections.includes(this)
+        (this.hover && !globalScope.simulationArea.shiftDown) ||
+        globalScope.simulationArea.lastSelected === this ||
+        globalScope.simulationArea.multipleObjectSelections.includes(this)
       ) {
         ctx.fillStyle = colors['hover_select'];
       }
@@ -679,7 +679,7 @@ export class CircuitElement {
    * Called by layoutMode.js/renderLayout() - for drawing in layoutMode.
    **/
   drawLayoutMode(xOffset = 0, yOffset = 0) {
-    const ctx = simulationArea.context;
+    const ctx = globalScope.simulationArea.context;
     if (layoutModeGet()) {
       this.checkHover();
     }
@@ -761,7 +761,7 @@ export class CircuitElement {
    * OVERRIDE WITH CAUTION
    */
   delete() {
-    simulationArea.lastSelected = undefined;
+    globalScope.simulationArea.lastSelected = undefined;
     const foundIndex = this.scope[this.objectType].indexOf(this);
     if (foundIndex != -1) {
       this.scope[this.objectType].splice(foundIndex, 1);
@@ -984,7 +984,7 @@ export class CircuitElement {
       if (this.nodeList[i].type === NodeType.Output) {
         if (this.nodeList[i].value !== undefined) {
           this.nodeList[i].value = undefined;
-          simulationArea.simulationQueue.add(this.nodeList[i]);
+          globalScope.simulationArea.simulationQueue.add(this.nodeList[i]);
         }
       }
     }

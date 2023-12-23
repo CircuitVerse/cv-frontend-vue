@@ -157,14 +157,7 @@
   <div id="simulation" class="simulation">
     <!-- <div id="restrictedDiv" class="alert alert-danger display--none"></div> -->
     <div id="canvasArea" class="canvasArea">
-      <canvas id="simulationArea" style="
-                    position: absolute;
-                    left: 0;
-                    top: 0;
-                    z-index: 1;
-                    width: 100%;
-                    height: 100%;
-                "></canvas>
+
       <div id="miniMap">
         <canvas id="miniMapArea" style="position: absolute; left: 0; top: 0; z-index: 3"></canvas>
       </div>

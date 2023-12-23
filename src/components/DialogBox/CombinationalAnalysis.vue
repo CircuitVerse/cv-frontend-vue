@@ -27,7 +27,7 @@ import { Output } from '#/simulator/src/modules/output';
 import { AndGate } from '#/simulator/src/modules/and_gate';
 import { OrGate } from '#/simulator/src/modules/or_gate';
 import { NotGate } from '#/simulator/src/modules/not_gate';
-import { simulationArea } from '#/simulator/src/simulation_area';
+
 import { findDimensions } from '#/simulator/src/canvas_api';
 import { confirmSingleOption } from '../helpers/confirmComponent/ConfirmComponent.vue';
 
@@ -327,12 +327,12 @@ function drawCombinationalAnalysis(
 
   let currentPosY = 300;
 
-  if (simulationArea.maxWidth && simulationArea.maxHeight) {
-    if (simulationArea.maxHeight + currentPosY > simulationArea.maxWidth) {
-      startPosX += simulationArea.maxWidth;
+  if (globalScope.simulationArea.maxWidth && globalScope.simulationArea.maxHeight) {
+    if (globalScope.simulationArea.maxHeight + currentPosY > globalScope.simulationArea.maxWidth) {
+      startPosX += globalScope.simulationArea.maxWidth;
     } else {
-      startPosY += simulationArea.maxHeight;
-      currentPosY += simulationArea.maxHeight;
+      startPosY += globalScope.simulationArea.maxHeight;
+      currentPosY += globalScope.simulationArea.maxHeight;
     }
   }
   const andPosX = startPosX + inputCount * 40 + 40 + 40;

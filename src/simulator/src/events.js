@@ -10,7 +10,7 @@ import {
 import {backUp} from './data/backup_circuit';
 import {getNextPosition} from './modules';
 import {generateId} from './utils';
-import {simulationArea} from './simulation_area';
+
 import {TestbenchData} from './testbench';
 
 /**
@@ -95,8 +95,8 @@ export function paste(copyData) {
     for (let j = 0; j < tempScope[updateOrder[i]].length; j++) {
       const obj = tempScope[updateOrder[i]][j];
       if (obj.objectType !== 'Wire') {
-        obj.x += simulationArea.mouseX - approxX;
-        obj.y += simulationArea.mouseY - approxY;
+        obj.x += globalScope.simulationArea.mouseX - approxX;
+        obj.y += globalScope.simulationArea.mouseY - approxY;
       }
     }
   }
@@ -204,8 +204,8 @@ export function cut(copyList) {
   data.logixClipBoardData = true;
   data = JSON.stringify(data);
 
-  simulationArea.multipleObjectSelections = [];
-  simulationArea.copyList = [];
+  globalScope.simulationArea.multipleObjectSelections = [];
+  globalScope.simulationArea.copyList = [];
   updateSimulationSet(true);
   globalScope = tempScope;
   scheduleUpdate();
@@ -308,8 +308,8 @@ export function copy(copyList, cutFlag = false) {
   data.logixClipBoardData = true;
   data.testbenchData = undefined; // Don't copy testbench data
   data = JSON.stringify(data);
-  simulationArea.multipleObjectSelections = [];
-  simulationArea.copyList = [];
+  globalScope.simulationArea.multipleObjectSelections = [];
+  globalScope.simulationArea.copyList = [];
   updateSimulationSet(true);
   globalScope = tempScope;
   scheduleUpdate();
@@ -338,11 +338,11 @@ export function copy(copyList, cutFlag = false) {
 export function selectAll(scope = globalScope) {
   moduleList.forEach((val, _, __) => {
     if (scope.hasOwnProperty(val)) {
-      simulationArea.multipleObjectSelections.push(...scope[val]);
+      globalScope.simulationArea.multipleObjectSelections.push(...scope[val]);
     }
   });
 
   if (scope.nodes) {
-    simulationArea.multipleObjectSelections.push(...scope.nodes);
+    globalScope.simulationArea.multipleObjectSelections.push(...scope.nodes);
   }
 }

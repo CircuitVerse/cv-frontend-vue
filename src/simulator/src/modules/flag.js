@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulation_area';
+
 import {correctWidth, rect2, fillText} from '../canvas_api';
 import {plotArea} from '../plot_area';
 import {colors} from '../themer/themer';
@@ -46,7 +46,7 @@ export class Flag extends CircuitElement {
    * Determine output values and add to simulation queue.
    */
   resolve() {
-    this.flagTimeUnit = simulationArea.simulationQueue.time;
+    this.flagTimeUnit = globalScope.simulationArea.simulationQueue.time;
     const time = plotArea.getPlotTime(this.flagTimeUnit);
 
     if (
@@ -132,9 +132,9 @@ export class Flag extends CircuitElement {
         'RIGHT',
     );
     if (
-      (this.hover && !simulationArea.shiftDown) ||
-      simulationArea.lastSelected === this ||
-      simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !globalScope.simulationArea.shiftDown) ||
+      globalScope.simulationArea.lastSelected === this ||
+      globalScope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }

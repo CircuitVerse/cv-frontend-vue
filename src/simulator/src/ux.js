@@ -4,7 +4,7 @@ import {
   wireToBeCheckedSet,
   updateCanvasSet,
 } from './engine';
-import {simulationArea} from './simulation_area';
+
 import {logixFunction} from './data';
 import {circuitProperty} from './circuit';
 import {updateRestrictedElementsInScope} from './restricted_element_div';
@@ -66,9 +66,9 @@ function showContextMenu() {
   });
 
   const windowHeight =
-    $('#simulationArea').height() - $('#contextMenu').height() - 10;
+    $('.simulationArea').height() - $('#contextMenu').height() - 10;
   const windowWidth =
-    $('#simulationArea').width() - $('#contextMenu').width() - 10;
+    $('.simulationArea').width() - $('#contextMenu').width() - 10;
   // for top, left, right, bottom
   let topPosition;
   let leftPosition;
@@ -183,7 +183,8 @@ function checkValidBitWidth() {
   }
 }
 
-export function objectPropertyAttributeUpdate() {
+export function objectPropertyAttributeUpdate(e) {
+  e.preventDefault();
   checkValidBitWidth();
   scheduleUpdate();
   updateCanvasSet(true);
@@ -192,8 +193,8 @@ export function objectPropertyAttributeUpdate() {
   if (this.type === 'number') {
     value = parseFloat(value);
   }
-  if (simulationArea.lastSelected && simulationArea.lastSelected[this.name]) {
-    simulationArea.lastSelected[this.name](value);
+  if (globalScope.simulationArea.lastSelected && globalScope.simulationArea.lastSelected[this.name]) {
+    globalScope.simulationArea.lastSelected[this.name](value);
   } else {
     circuitProperty[this.name](value);
   }
@@ -206,22 +207,37 @@ export function objectPropertyAttributeCheckedUpdate() {
   scheduleUpdate();
   updateCanvasSet(true);
   wireToBeCheckedSet(1);
-  if (simulationArea.lastSelected && simulationArea.lastSelected[this.name]) {
-    simulationArea.lastSelected[this.name](this.value);
+  if (globalScope.simulationArea.lastSelected && globalScope.simulationArea.lastSelected[this.name]) {
+    globalScope.simulationArea.lastSelected[this.name](this.value);
   } else {
     circuitProperty[this.name](this.checked);
   }
 }
 
+/**
+ *
+ * @param {*} value
+ */
 export function checkPropertiesUpdate(value = 0) {
-  $('.objectPropertyAttribute').on(
-      'change keyup paste click',
-      objectPropertyAttributeUpdate,
-  );
-  $('.objectPropertyAttributeChecked').on(
-      'change keyup paste click',
-      objectPropertyAttributeCheckedUpdate,
-  );
+  const elements = document.getElementsByClassName('objectPropertyAttribute');
+  Array.from(elements).forEach(function(element) {
+    element.removeEventListener('change', objectPropertyAttributeUpdate);
+    element.removeEventListener('change', objectPropertyAttributeCheckedUpdate);
+    element.removeEventListener('keyup', objectPropertyAttributeUpdate);
+    element.removeEventListener('keyup', objectPropertyAttributeCheckedUpdate);
+    element.removeEventListener('paste', objectPropertyAttributeUpdate);
+    element.removeEventListener('paste', objectPropertyAttributeCheckedUpdate);
+    element.removeEventListener('click', objectPropertyAttributeUpdate);
+    element.removeEventListener('click', objectPropertyAttributeCheckedUpdate);
+    element.addEventListener('change', objectPropertyAttributeUpdate);
+    element.addEventListener('change', objectPropertyAttributeCheckedUpdate);
+    element.addEventListener('keyup', objectPropertyAttributeUpdate);
+    element.addEventListener('keyup', objectPropertyAttributeCheckedUpdate);
+    element.addEventListener('paste', objectPropertyAttributeUpdate);
+    element.addEventListener('paste', objectPropertyAttributeCheckedUpdate);
+    element.addEventListener('click', objectPropertyAttributeUpdate);
+    element.addEventListener('click', objectPropertyAttributeCheckedUpdate);
+  });
 }
 
 /**
@@ -262,30 +278,30 @@ function escapeHtml(unsafe) {
 
 export function deleteSelected() {
   if (
-    simulationArea.lastSelected &&
+    globalScope.simulationArea.lastSelected &&
     !(
-      simulationArea.lastSelected.objectType === 'Node' &&
-      simulationArea.lastSelected.type !== 2
+      globalScope.simulationArea.lastSelected.objectType === 'Node' &&
+      globalScope.simulationArea.lastSelected.type !== 2
     )
   ) {
-    simulationArea.lastSelected.delete();
+    globalScope.simulationArea.lastSelected.delete();
   }
 
-  for (let i = 0; i < simulationArea.multipleObjectSelections.length; i++) {
+  for (let i = 0; i < globalScope.simulationArea.multipleObjectSelections.length; i++) {
     if (
       !(
-        simulationArea.multipleObjectSelections[i].objectType ===
+        globalScope.simulationArea.multipleObjectSelections[i].objectType ===
         'Node' &&
-        simulationArea.multipleObjectSelections[i].type !== 2
+        globalScope.simulationArea.multipleObjectSelections[i].type !== 2
       )
     ) {
-      simulationArea.multipleObjectSelections[i].cleanDelete();
+      globalScope.simulationArea.multipleObjectSelections[i].cleanDelete();
     }
   }
 
-  simulationArea.multipleObjectSelections = [];
-  simulationArea.lastSelected = undefined;
-  showProperties(simulationArea.lastSelected);
+  globalScope.simulationArea.multipleObjectSelections = [];
+  globalScope.simulationArea.lastSelected = undefined;
+  showProperties(globalScope.simulationArea.lastSelected);
   // Updated restricted elements
   updateCanvasSet(true);
   scheduleUpdate();
@@ -492,7 +508,7 @@ export function fillSubcircuitElements() {
 
     element.subcircuitMetadata.showInSubcircuit = true;
     element.newElement = true;
-    simulationArea.lastSelected = element;
+    globalScope.simulationArea.lastSelected = element;
     this.parentElement.removeChild(this);
   });
 }

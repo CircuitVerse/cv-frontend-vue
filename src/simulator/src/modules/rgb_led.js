@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulation_area';
+
 import {correctWidth, lineTo, moveTo, arc, drawCircle2} from '../canvas_api';
 import {colors} from '../themer/themer';
 /**
@@ -110,9 +110,9 @@ export class RGBLed extends CircuitElement {
     lineTo(ctx, -18, -11, xx, yy, this.direction);
     ctx.stroke();
     if (
-      (this.hover && !simulationArea.shiftDown) ||
-      simulationArea.lastSelected === this ||
-      simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !globalScope.simulationArea.shiftDown) ||
+      globalScope.simulationArea.lastSelected === this ||
+      globalScope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }
@@ -144,9 +144,9 @@ export class RGBLed extends CircuitElement {
     drawCircle2(ctx, 0, 0, dimensionSize, xx, yy, this.direction);
     ctx.stroke();
     if (
-      (this.hover && !simulationArea.shiftDown) ||
-      simulationArea.lastSelected == this ||
-      simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !globalScope.simulationArea.shiftDown) ||
+      globalScope.simulationArea.lastSelected == this ||
+      globalScope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = 'rgba(255, 255, 32,0.8)';
     }

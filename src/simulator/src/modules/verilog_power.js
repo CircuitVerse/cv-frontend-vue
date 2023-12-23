@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulation_area';
+
 
 /**
  * @class
@@ -93,7 +93,7 @@ export class verilogPower extends CircuitElement {
     this.answer.value =
       (answer << (32 - this.outputBitWidth)) >>>
       (32 - this.outputBitWidth);
-    simulationArea.simulationQueue.add(this.answer);
+    globalScope.simulationArea.simulationQueue.add(this.answer);
   }
 }
 

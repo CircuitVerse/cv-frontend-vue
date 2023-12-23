@@ -1,6 +1,6 @@
 // Listeners when circuit is embedded
 // Refer listeners.js
-import {simulationArea} from './simulation_area';
+
 import {
   scheduleUpdate,
   update,
@@ -17,57 +17,59 @@ import {zoomIn, zoomOut} from './listeners';
 
 const unit = 10;
 
+/**
+ *
+ */
 export function startListeners() {
+  const simulation = document.getElementsByClassName('simulationArea')[0];
   window.addEventListener('keyup', (e) => {
     scheduleUpdate(1);
     if (e.keyCode == 16) {
-      simulationArea.shiftDown = false;
+      globalScope.simulationArea.shiftDown = false;
     }
     if (e.key == 'Meta' || e.key == 'Control') {
-      simulationArea.controlDown = false;
+      globalScope.simulationArea.controlDown = false;
     }
   });
 
-  document
-      .getElementById('simulationArea')
+  simulation
       .addEventListener('mousedown', (e) => {
         errorDetectedSet(false);
         updateSimulationSet(true);
         updatePositionSet(true);
         updateCanvasSet(true);
 
-        simulationArea.lastSelected = undefined;
-        simulationArea.selected = false;
-        simulationArea.hover = undefined;
-        const rect = simulationArea.canvas.getBoundingClientRect();
-        simulationArea.mouseDownRawX = (e.clientX - rect.left) * DPR;
-        simulationArea.mouseDownRawY = (e.clientY - rect.top) * DPR;
-        simulationArea.mouseDownX =
+        globalScope.simulationArea.lastSelected = undefined;
+        globalScope.simulationArea.selected = false;
+        globalScope.simulationArea.hover = undefined;
+        const rect = globalScope.simulationArea.canvas.getBoundingClientRect();
+        globalScope.simulationArea.mouseDownRawX = (e.clientX - rect.left) * DPR;
+        globalScope.simulationArea.mouseDownRawY = (e.clientY - rect.top) * DPR;
+        globalScope.simulationArea.mouseDownX =
                 Math.round(
-                    (simulationArea.mouseDownRawX - globalScope.ox) /
+                    (globalScope.simulationArea.mouseDownRawX - globalScope.ox) /
                         globalScope.scale /
                         unit,
                 ) * unit;
-        simulationArea.mouseDownY =
+        globalScope.simulationArea.mouseDownY =
                 Math.round(
-                    (simulationArea.mouseDownRawY - globalScope.oy) /
+                    (globalScope.simulationArea.mouseDownRawY - globalScope.oy) /
                         globalScope.scale /
                         unit,
                 ) * unit;
-        simulationArea.mouseDown = true;
-        simulationArea.oldX = globalScope.ox;
-        simulationArea.oldY = globalScope.oy;
+        globalScope.simulationArea.mouseDown = true;
+        globalScope.simulationArea.oldX = globalScope.ox;
+        globalScope.simulationArea.oldY = globalScope.oy;
 
         e.preventDefault();
         scheduleUpdate(1);
       });
 
-  document
-      .getElementById('simulationArea')
+  simulation
       .addEventListener('mousemove', () => {
         const ele = document.getElementById('elementName');
-        if (globalScope && simulationArea && simulationArea.objectList) {
-          let {objectList} = simulationArea;
+        if (globalScope && globalScope.simulationArea && globalScope.simulationArea.objectList) {
+          let {objectList} = globalScope.simulationArea;
           objectList = objectList.filter((val) => val !== 'wires');
 
           for (let i = 0; i < objectList.length; i++) {
@@ -94,18 +96,18 @@ export function startListeners() {
       });
 
   window.addEventListener('mousemove', (e) => {
-    const rect = simulationArea.canvas.getBoundingClientRect();
-    simulationArea.mouseRawX = (e.clientX - rect.left) * DPR;
-    simulationArea.mouseRawY = (e.clientY - rect.top) * DPR;
-    simulationArea.mouseXf =
-            (simulationArea.mouseRawX - globalScope.ox) / globalScope.scale;
-    simulationArea.mouseYf =
-            (simulationArea.mouseRawY - globalScope.oy) / globalScope.scale;
-    simulationArea.mouseX = Math.round(simulationArea.mouseXf / unit) * unit;
-    simulationArea.mouseY = Math.round(simulationArea.mouseYf / unit) * unit;
+    const rect = globalScope.simulationArea.canvas.getBoundingClientRect();
+    globalScope.simulationArea.mouseRawX = (e.clientX - rect.left) * DPR;
+    globalScope.simulationArea.mouseRawY = (e.clientY - rect.top) * DPR;
+    globalScope.simulationArea.mouseXf =
+            (globalScope.simulationArea.mouseRawX - globalScope.ox) / globalScope.scale;
+    globalScope.simulationArea.mouseYf =
+            (globalScope.simulationArea.mouseRawY - globalScope.oy) / globalScope.scale;
+    globalScope.simulationArea.mouseX = Math.round(globalScope.simulationArea.mouseXf / unit) * unit;
+    globalScope.simulationArea.mouseY = Math.round(globalScope.simulationArea.mouseYf / unit) * unit;
 
     updateCanvasSet(true);
-    if (simulationArea.lastSelected == globalScope.root) {
+    if (globalScope.simulationArea.lastSelected == globalScope.root) {
       updateCanvasSet(true);
       let fn;
       fn = function() {
@@ -123,11 +125,11 @@ export function startListeners() {
 
     // zoom in (+)
     if (e.key == 'Meta' || e.key == 'Control') {
-      simulationArea.controlDown = true;
+      globalScope.simulationArea.controlDown = true;
     }
 
     if (
-      simulationArea.controlDown &&
+      globalScope.simulationArea.controlDown &&
             (e.keyCode == 187 || e.KeyCode == 171)
     ) {
       e.preventDefault();
@@ -136,7 +138,7 @@ export function startListeners() {
 
     // zoom out (-)
     if (
-      simulationArea.controlDown &&
+      globalScope.simulationArea.controlDown &&
             (e.keyCode == 189 || e.Keycode == 173)
     ) {
       e.preventDefault();
@@ -144,10 +146,10 @@ export function startListeners() {
     }
 
     if (
-      simulationArea.mouseRawX < 0 ||
-            simulationArea.mouseRawY < 0 ||
-            simulationArea.mouseRawX > width ||
-            simulationArea.mouseRawY > height
+      globalScope.simulationArea.mouseRawX < 0 ||
+            globalScope.simulationArea.mouseRawY < 0 ||
+            globalScope.simulationArea.mouseRawX > width ||
+            globalScope.simulationArea.mouseRawY > height
     ) {
       return;
     }
@@ -156,53 +158,44 @@ export function startListeners() {
     updateCanvasSet(true);
 
     if (
-      simulationArea.lastSelected &&
-            simulationArea.lastSelected.keyDown
+      globalScope.simulationArea.lastSelected &&
+            globalScope.simulationArea.lastSelected.keyDown
     ) {
       if (
         e.key.toString().length == 1 ||
                 e.key.toString() == 'Backspace'
       ) {
-        simulationArea.lastSelected.keyDown(e.key.toString());
+        globalScope.simulationArea.lastSelected.keyDown(e.key.toString());
         return;
       }
     }
     if (
-      simulationArea.lastSelected &&
-            simulationArea.lastSelected.keyDown2
+      globalScope.simulationArea.lastSelected &&
+            globalScope.simulationArea.lastSelected.keyDown2
     ) {
       if (e.key.toString().length == 1) {
-        simulationArea.lastSelected.keyDown2(e.key.toString());
+        globalScope.simulationArea.lastSelected.keyDown2(e.key.toString());
         return;
       }
     }
 
-    // if (simulationArea.lastSelected && simulationArea.lastSelected.keyDown3) {
-    //     if (e.key.toString() != "Backspace" && e.key.toString() != "Delete") {
-    //         simulationArea.lastSelected.keyDown3(e.key.toString());
-    //         return;
-    //     }
-
-    // }
-
     if (e.key == 'T' || e.key == 't') {
-      simulationArea.changeClockTime(prompt('Enter Time:'));
+      globalScope.simulationArea.changeClockTime(prompt('Enter Time:'));
     }
   });
-  document
-      .getElementById('simulationArea')
+  simulation
       .addEventListener('dblclick', (e) => {
         scheduleUpdate(2);
         if (
-          simulationArea.lastSelected &&
-                simulationArea.lastSelected.dblclick !== undefined
+          globalScope.simulationArea.lastSelected &&
+                globalScope.simulationArea.lastSelected.dblclick !== undefined
         ) {
-          simulationArea.lastSelected.dblclick();
+          globalScope.simulationArea.lastSelected.dblclick();
         }
       });
 
   window.addEventListener('mouseup', (e) => {
-    simulationArea.mouseDown = false;
+    globalScope.simulationArea.mouseDown = false;
     errorDetectedSet(false);
     updateSimulationSet(true);
     updatePositionSet(true);
@@ -216,11 +209,9 @@ export function startListeners() {
     this.focus();
   });
 
-  document
-      .getElementById('simulationArea')
+  simulation
       .addEventListener('mousewheel', MouseScroll);
-  document
-      .getElementById('simulationArea')
+  simulation
       .addEventListener('DOMMouseScroll', MouseScroll);
 
   function MouseScroll(event) {

@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulation_area';
+
 
 /**
  * @class
@@ -95,7 +95,7 @@ export class verilogShiftRight extends CircuitElement {
     this.output1.value =
       (output1 << (32 - this.outputBitWidth)) >>>
       (32 - this.outputBitWidth);
-    simulationArea.simulationQueue.add(this.output1);
+    globalScope.simulationArea.simulationQueue.add(this.output1);
   }
 }
 

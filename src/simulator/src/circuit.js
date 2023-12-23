@@ -1,7 +1,8 @@
 import {CircuitElement} from './circuit_element';
 import {plotArea} from './plot_area';
-import {simulationArea} from './simulation_area';
+
 import {BackgroundArea} from './background_area';
+import {SimulationArea} from './simulation_area';
 import {
   stripTags,
   uniq,
@@ -37,7 +38,16 @@ export const circuitProperty = {
   changeClockEnable,
   changeInputSize,
   changeLightMode,
+  changeClockTime,
 };
+
+/**
+ * Used in Vue bindings.
+ * @param {number} t
+ */
+export function changeClockTime(t) {
+  globalScope.simulationArea.changeClockTime(t);
+}
 
 export var scopeList = {};
 
@@ -73,9 +83,9 @@ export function switchCircuit(id) {
   circuitList.value.forEach((circuit) =>
         circuit.focussed ? (circuit.focussed = false) : null,
   );
-  simulationArea.lastSelected = undefined;
-  simulationArea.multipleObjectSelections = [];
-  simulationArea.copyList = [];
+  globalScope.simulationArea.lastSelected = undefined;
+  globalScope.simulationArea.multipleObjectSelections = [];
+  globalScope.simulationArea.copyList = [];
   globalScope = scopeList[id];
   if (globalScope.verilogMetadata.isVerilogCircuit) {
     verilogModeSet(true);
@@ -92,9 +102,9 @@ export function switchCircuit(id) {
   updateSubcircuitSet(true);
   forceResetNodesSet(true);
   dots(false);
-  simulationArea.lastSelected = globalScope.root;
+  globalScope.simulationArea.lastSelected = globalScope.root;
   if (!embed) {
-    showProperties(simulationArea.lastSelected);
+    showProperties(globalScope.simulationArea.lastSelected);
     updateTestbenchUI();
     plotArea.reset();
   }
@@ -152,10 +162,10 @@ export async function createNewCircuitScope(
   if (name.trim() == '') {
     name = 'Untitled-Circuit';
   }
-  simulationArea.lastSelected = undefined;
+  globalScope.simulationArea.lastSelected = undefined;
   newCircuit(name, id, isVerilog, isVerilogMain);
   if (!embed) {
-    showProperties(simulationArea.lastSelected);
+    showProperties(globalScope.simulationArea.lastSelected);
     updateTestbenchUI();
     plotArea.reset();
   }
@@ -218,7 +228,7 @@ export function newCircuit(name, id, isVerilog = false, isVerilogMain = false) {
 
     if (!embed) {
       $('.circuitName').on('click', () => {
-        simulationArea.lastSelected = globalScope.root;
+        globalScope.simulationArea.lastSelected = globalScope.root;
         setTimeout(() => {
           // here link with the properties panel
           document.getElementById('circname').select();
@@ -263,8 +273,9 @@ export class Scope {
    * @param {number} id
    */
   constructor(name = 'localScope', id = undefined) {
-    const backgroundAreaCanvas = document.getElementById('canvasArea');
-    this.backgroundArea = new BackgroundArea(backgroundAreaCanvas);
+    const canvasArea = document.getElementById('canvasArea');
+    this.backgroundArea = new BackgroundArea(canvasArea);
+    this.simulationArea = new SimulationArea(canvasArea);
     this.restrictedCircuitElementsUsed = [];
     this.id = id || Math.floor(Math.random() * 100000000000 + 1);
     this.CircuitElement = [];
@@ -349,7 +360,7 @@ export class Scope {
   addInputs() {
     for (let i = 0; i < inputList.length; i++) {
       for (let j = 0; j < this[inputList[i]].length; j++) {
-        simulationArea.simulationQueue.add(this[inputList[i]][j], 0);
+        globalScope.simulationArea.simulationQueue.add(this[inputList[i]][j], 0);
       }
     }
     for (let i = 0; i < this.SubCircuit.length; i++) {
@@ -435,10 +446,10 @@ export class Scope {
     // Some part of the canvas is hidden behind the toolbar
     const ytoolbarOffset = embed ? 0 : 60 * DPR;
 
-    const minX = simulationArea.minWidth || 0;
-    const minY = simulationArea.minHeight || 0;
-    const maxX = simulationArea.maxWidth || 0;
-    const maxY = simulationArea.maxHeight || 0;
+    const minX = globalScope.simulationArea.minWidth || 0;
+    const minY = globalScope.simulationArea.minHeight || 0;
+    const maxX = globalScope.simulationArea.maxWidth || 0;
+    const maxY = globalScope.simulationArea.maxHeight || 0;
 
     const reqWidth = maxX - minX + 75 * DPR;
     const reqHeight = maxY - minY + 75 * DPR;

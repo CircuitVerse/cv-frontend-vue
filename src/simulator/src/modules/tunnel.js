@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulation_area';
+
 import {correctWidth, rect2, fillText} from '../canvas_api';
 import {plotArea} from '../plot_area';
 import {showError} from '../utils_clock';
@@ -114,7 +114,7 @@ export class Tunnel extends CircuitElement {
       }
       if (tunnel.inp1.value !== this.inp1.value) {
         tunnel.inp1.value = this.inp1.value;
-        simulationArea.simulationQueue.add(tunnel.inp1);
+        globalScope.simulationArea.simulationQueue.add(tunnel.inp1);
       }
       if (tunnel !== this) {
         tunnel.checked = true;
@@ -277,9 +277,9 @@ export class Tunnel extends CircuitElement {
         'RIGHT',
     );
     if (
-      (this.hover && !simulationArea.shiftDown) ||
-      simulationArea.lastSelected === this ||
-      simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !globalScope.simulationArea.shiftDown) ||
+      globalScope.simulationArea.lastSelected === this ||
+      globalScope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }

@@ -1,4 +1,4 @@
-import {simulationArea} from './simulation_area';
+
 import {colors} from './themer/themer';
 import {layoutModeGet} from './layout_mode';
 
@@ -26,33 +26,33 @@ export const miniMapArea = {
     this.pageY = this.pageHeight - globalScope.oy;
     this.pageX = this.pageWidth - globalScope.ox;
 
-    if (simulationArea.minHeight != undefined) {
+    if (globalScope.simulationArea.minHeight != undefined) {
       this.minY = Math.min(
-          simulationArea.minHeight,
+          globalScope.simulationArea.minHeight,
           -globalScope.oy / globalScope.scale,
       );
     } else {
       this.minY = -globalScope.oy / globalScope.scale;
     }
-    if (simulationArea.maxHeight != undefined) {
+    if (globalScope.simulationArea.maxHeight != undefined) {
       this.maxY = Math.max(
-          simulationArea.maxHeight,
+          globalScope.simulationArea.maxHeight,
           this.pageY / globalScope.scale,
       );
     } else {
       this.maxY = this.pageY / globalScope.scale;
     }
-    if (simulationArea.minWidth != undefined) {
+    if (globalScope.simulationArea.minWidth != undefined) {
       this.minX = Math.min(
-          simulationArea.minWidth,
+          globalScope.simulationArea.minWidth,
           -globalScope.ox / globalScope.scale,
       );
     } else {
       this.minX = -globalScope.ox / globalScope.scale;
     }
-    if (simulationArea.maxWidth != undefined) {
+    if (globalScope.simulationArea.maxWidth != undefined) {
       this.maxX = Math.max(
-          simulationArea.maxWidth,
+          globalScope.simulationArea.maxWidth,
           this.pageX / globalScope.scale,
       );
     } else {
@@ -181,8 +181,8 @@ export function removeMiniMap() {
   }
 
   if (
-    simulationArea.lastSelected == globalScope.root &&
-        simulationArea.mouseDown
+    globalScope.simulationArea.lastSelected == globalScope.root &&
+        globalScope.simulationArea.mouseDown
   ) {
     return;
   }

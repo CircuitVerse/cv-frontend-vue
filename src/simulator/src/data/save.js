@@ -4,7 +4,7 @@ import {update} from '../engine';
 import {stripTags} from '../utils';
 import {showMessage} from '../utils_clock';
 import {backUp} from './backup_circuit';
-import {simulationArea} from '../simulation_area';
+
 import {findDimensions} from '../canvas_api';
 import {projectSavedSet} from './project';
 import {colors} from '../themer/themer';
@@ -52,7 +52,7 @@ export function getProjectName() {
  * @category data
  */
 function downloadAsImg(name, imgType) {
-  const gh = simulationArea.canvas.toDataURL(`image/${imgType}`);
+  const gh = globalScope.simulationArea.canvas.toDataURL(`image/${imgType}`);
   const anchor = document.createElement('a');
   anchor.href = gh;
   anchor.download = `${name}.${imgType}`;
@@ -96,8 +96,8 @@ export async function generateSaveData(name, setName = true) {
   }
 
   // Save project details
-  data.timePeriod = simulationArea.timePeriod;
-  data.clockEnabled = simulationArea.clockEnabled;
+  data.timePeriod = globalScope.simulationArea.timePeriod;
+  data.clockEnabled = globalScope.simulationArea.clockEnabled;
   data.projectId = projectId;
   data.focussedCircuit = globalScope.id;
   data.orderedTabs = getTabsOrder();
@@ -187,7 +187,7 @@ export function generateImage(
   const backUpWidth = width;
   const backUpHeight = height;
   const backUpScale = globalScope.scale;
-  const backUpContextSimulation = simulationArea.context;
+  const backUpContextSimulation = globalScope.simulationArea.context;
 
 
   globalScope.ox *= 1 / backUpScale;
@@ -195,7 +195,7 @@ export function generateImage(
 
   // If SVG, create SVG context - using canvas2svg here
   if (imgType === 'svg') {
-    simulationArea.context = new C2S(width, height);
+    globalScope.simulationArea.context = new C2S(width, height);
     resolution = 1;
   } else if (imgType !== 'png') {
     transparent = false;
@@ -210,10 +210,10 @@ export function generateImage(
   if (flag) {
     if (view === 'full') {
       findDimensions();
-      const minX = simulationArea.minWidth;
-      const minY = simulationArea.minHeight;
-      const maxX = simulationArea.maxWidth;
-      const maxY = simulationArea.maxHeight;
+      const minX = globalScope.simulationArea.minWidth;
+      const minY = globalScope.simulationArea.minHeight;
+      const maxX = globalScope.simulationArea.maxWidth;
+      const maxY = globalScope.simulationArea.maxHeight;
       width = (maxX - minX + 100) * resolution;
       height = (maxY - minY + 100) * resolution;
 
@@ -230,16 +230,16 @@ export function generateImage(
   globalScope.ox = Math.round(globalScope.ox);
   globalScope.oy = Math.round(globalScope.oy);
 
-  simulationArea.canvas.width = width;
-  simulationArea.canvas.height = height;
+  globalScope.simulationArea.canvas.width = width;
+  globalScope.simulationArea.canvas.height = height;
 
-  simulationArea.clear();
+  globalScope.simulationArea.clear();
 
   // Background
   if (!transparent) {
-    simulationArea.context.fillStyle = colors['canvas_fill'];
-    simulationArea.context.rect(0, 0, width, height);
-    simulationArea.context.fill();
+    globalScope.simulationArea.context.fillStyle = colors['canvas_fill'];
+    globalScope.simulationArea.context.rect(0, 0, width, height);
+    globalScope.simulationArea.context.fill();
   }
 
   // Draw circuits, why is it updateOrder and not renderOrder?
@@ -254,22 +254,22 @@ export function generateImage(
   if (down) {
     if (imgType === 'svg') {
       // true here, if you need to convert named to numbered entities.
-      const mySerializedSVG = simulationArea.context.getSerializedSvg();
+      const mySerializedSVG = globalScope.simulationArea.context.getSerializedSvg();
       download(`${globalScope.name}.svg`, mySerializedSVG);
     } else {
       downloadAsImg(globalScope.name, imgType);
     }
   } else {
-    returnData = simulationArea.canvas.toDataURL(`image/${imgType}`);
+    returnData = globalScope.simulationArea.canvas.toDataURL(`image/${imgType}`);
   }
 
   // Restore everything
   width = backUpWidth;
   height = backUpHeight;
-  simulationArea.canvas.width = width;
-  simulationArea.canvas.height = height;
+  globalScope.simulationArea.canvas.width = width;
+  globalScope.simulationArea.canvas.height = height;
   globalScope.scale = backUpScale;
-  simulationArea.context = backUpContextSimulation;
+  globalScope.simulationArea.context = backUpContextSimulation;
   globalScope.ox = backUpOx;
   globalScope.oy = backUpOy;
 
@@ -334,7 +334,7 @@ async function generateImageForOnline() {
     return data;
   }
 
-  simulationArea.lastSelected = undefined; // Unselect any selections
+  globalScope.simulationArea.lastSelected = undefined; // Unselect any selections
 
   // Fix aspect ratio to 1.6
   if (width > height * ratio) {
@@ -348,8 +348,8 @@ async function generateImageForOnline() {
 
   // Ensure image is approximately 700 x 440
   const resolution = Math.min(
-      700 / (simulationArea.maxWidth - simulationArea.minWidth),
-      440 / (simulationArea.maxHeight - simulationArea.minHeight),
+      700 / (globalScope.simulationArea.maxWidth - globalScope.simulationArea.minWidth),
+      440 / (globalScope.simulationArea.maxHeight - globalScope.simulationArea.minHeight),
   );
 
   data = generateImage('jpeg', 'current', false, resolution, false);

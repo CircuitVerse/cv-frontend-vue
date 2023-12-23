@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulation_area';
+
 import {correctWidth, lineTo, moveTo, fillText} from '../canvas_api';
 import {colors} from '../themer/themer';
 /**
@@ -48,7 +48,7 @@ export class Decoder extends CircuitElement {
           bitWidth,
       );
       this.cleanDelete();
-      simulationArea.lastSelected = obj;
+      globalScope.simulationArea.lastSelected = obj;
       return obj;
     };
 
@@ -100,7 +100,7 @@ export class Decoder extends CircuitElement {
       this.output1[this.input.value].value = 1;
     } // if input is undefined, don't change output
     for (let i = 0; i < this.output1.length; i++) {
-      simulationArea.simulationQueue.add(this.output1[i]);
+      globalScope.simulationArea.simulationQueue.add(this.output1[i]);
     }
   }
 
@@ -151,9 +151,9 @@ export class Decoder extends CircuitElement {
 
     ctx.closePath();
     if (
-      (this.hover && !simulationArea.shiftDown) ||
-      simulationArea.lastSelected === this ||
-      simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !globalScope.simulationArea.shiftDown) ||
+      globalScope.simulationArea.lastSelected === this ||
+      globalScope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }

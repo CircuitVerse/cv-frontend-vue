@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulation_area';
+
 import {correctWidth, lineTo, moveTo, rect2} from '../canvas_api';
 
 /**
@@ -72,7 +72,7 @@ export class SquareRGBLed extends CircuitElement {
       obj.labelDirection = this.labelDirection;
 
       this.cleanDelete();
-      simulationArea.lastSelected = obj;
+      globalScope.simulationArea.lastSelected = obj;
       return obj;
     };
 
@@ -153,9 +153,9 @@ export class SquareRGBLed extends CircuitElement {
     ctx.stroke();
 
     if (
-      (this.hover && !simulationArea.shiftDown) ||
-      simulationArea.lastSelected === this ||
-      simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !globalScope.simulationArea.shiftDown) ||
+      globalScope.simulationArea.lastSelected === this ||
+      globalScope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = 'rgba(255, 255, 32)';
     }
@@ -187,9 +187,9 @@ export class SquareRGBLed extends CircuitElement {
     ctx.stroke();
 
     if (
-      (this.hover && !simulationArea.shiftDown) ||
-      simulationArea.lastSelected == this ||
-      simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !globalScope.simulationArea.shiftDown) ||
+      globalScope.simulationArea.lastSelected == this ||
+      globalScope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = 'rgba(255, 255, 32)';
     }

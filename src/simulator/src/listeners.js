@@ -4,7 +4,7 @@ import {
   tempBuffer,
   layoutUpdate,
 } from './layout_mode';
-import {simulationArea} from './simulation_area';
+
 import {
   scheduleUpdate,
   update,
@@ -44,6 +44,7 @@ const listenToSimulator = true;
  * Add DOM event listeners.
  */
 export function startMainListeners() {
+  const simulation = document.getElementsByClassName('simulationArea')[0];
   $(document).on('keyup', (e) => {
     if (e.key === 'Escape') {
       exitFullView();
@@ -51,16 +52,15 @@ export function startMainListeners() {
   });
 
   $('#projectName').on('click', () => {
-    simulationArea.lastSelected = globalScope.root;
+    globalScope.simulationArea.lastSelected = globalScope.root;
     setTimeout(() => {
       document.getElementById('projname').select();
     }, 100);
   });
 
-  document
-      .getElementById('simulationArea')
+  simulation
       .addEventListener('mousedown', (e) => {
-        simulationArea.mouseDown = true;
+        globalScope.simulationArea.mouseDown = true;
 
         // Deselect Input
         if (document.activeElement instanceof HTMLElement) {
@@ -72,83 +72,81 @@ export function startMainListeners() {
         updatePositionSet(true);
         updateCanvasSet(true);
 
-        simulationArea.lastSelected = undefined;
-        simulationArea.selected = false;
-        simulationArea.hover = undefined;
-        const rect = simulationArea.canvas.getBoundingClientRect();
-        simulationArea.mouseDownRawX = (e.clientX - rect.left) * DPR;
-        simulationArea.mouseDownRawY = (e.clientY - rect.top) * DPR;
-        simulationArea.mouseDownX =
+        globalScope.simulationArea.lastSelected = undefined;
+        globalScope.simulationArea.selected = false;
+        globalScope.simulationArea.hover = undefined;
+        const rect = globalScope.simulationArea.canvas.getBoundingClientRect();
+        globalScope.simulationArea.mouseDownRawX = (e.clientX - rect.left) * DPR;
+        globalScope.simulationArea.mouseDownRawY = (e.clientY - rect.top) * DPR;
+        globalScope.simulationArea.mouseDownX =
         Math.round(
-            (simulationArea.mouseDownRawX - globalScope.ox) /
+            (globalScope.simulationArea.mouseDownRawX - globalScope.ox) /
           globalScope.scale /
           unit,
         ) * unit;
-        simulationArea.mouseDownY =
+        globalScope.simulationArea.mouseDownY =
         Math.round(
-            (simulationArea.mouseDownRawY - globalScope.oy) /
+            (globalScope.simulationArea.mouseDownRawY - globalScope.oy) /
           globalScope.scale /
           unit,
         ) * unit;
-        simulationArea.oldX = globalScope.ox;
-        simulationArea.oldY = globalScope.oy;
+        globalScope.simulationArea.oldX = globalScope.ox;
+        globalScope.simulationArea.oldY = globalScope.oy;
 
         e.preventDefault();
         scheduleBackup();
         scheduleUpdate(1);
         $('.dropdown.open').removeClass('open');
       });
-  document
-      .getElementById('simulationArea')
+      simulation
       .addEventListener('mouseup', (e) => {
-        if (simulationArea.lastSelected) {
-          simulationArea.lastSelected.newElement = false;
+        if (globalScope.simulationArea.lastSelected) {
+          globalScope.simulationArea.lastSelected.newElement = false;
         }
         /*
   handling restricted circuit elements
   */
 
         if (
-          simulationArea.lastSelected &&
+          globalScope.simulationArea.lastSelected &&
         restrictedElements.includes(
-            simulationArea.lastSelected.objectType,
+            globalScope.simulationArea.lastSelected.objectType,
         ) &&
         !globalScope.restrictedCircuitElementsUsed.includes(
-            simulationArea.lastSelected.objectType,
+            globalScope.simulationArea.lastSelected.objectType,
         )
         ) {
           globalScope.restrictedCircuitElementsUsed.push(
-              simulationArea.lastSelected.objectType,
+              globalScope.simulationArea.lastSelected.objectType,
           );
           updateRestrictedElementsList();
         }
 
         // deselect multiple elements with click
         if (
-          !simulationArea.shiftDown &&
-        simulationArea.multipleObjectSelections.length > 0
+          !globalScope.simulationArea.shiftDown &&
+        globalScope.simulationArea.multipleObjectSelections.length > 0
         ) {
           if (
-            !simulationArea.multipleObjectSelections.includes(
-                simulationArea.lastSelected,
+            !globalScope.simulationArea.multipleObjectSelections.includes(
+                globalScope.simulationArea.lastSelected,
             )
           ) {
-            simulationArea.multipleObjectSelections = [];
+            globalScope.simulationArea.multipleObjectSelections = [];
           }
         }
       });
-  document
-      .getElementById('simulationArea')
+      simulation
       .addEventListener('mousemove', onMouseMove);
 
   window.addEventListener('keyup', (e) => {
     scheduleUpdate(1);
-    simulationArea.shiftDown = e.shiftKey;
+    globalScope.simulationArea.shiftDown = e.shiftKey;
     if (e.keyCode == 16) {
-      simulationArea.shiftDown = false;
+      globalScope.simulationArea.shiftDown = false;
     }
     if (e.key == 'Meta' || e.key == 'Control') {
-      simulationArea.controlDown = false;
+      globalScope.simulationArea.controlDown = false;
     }
   });
 
@@ -162,31 +160,31 @@ export function startMainListeners() {
           return;
         }
 
-        simulationArea.shiftDown = e.shiftKey;
+        globalScope.simulationArea.shiftDown = e.shiftKey;
         if (e.key == 'Meta' || e.key == 'Control') {
-          simulationArea.controlDown = true;
+          globalScope.simulationArea.controlDown = true;
         }
 
         if (
-          simulationArea.controlDown &&
+          globalScope.simulationArea.controlDown &&
         e.key.charCodeAt(0) == 122 &&
-        !simulationArea.shiftDown
+        !globalScope.simulationArea.shiftDown
         ) {
         // detect the special CTRL-Z code
           undo();
         }
         if (
-          simulationArea.controlDown &&
+          globalScope.simulationArea.controlDown &&
         e.key.charCodeAt(0) == 122 &&
-        simulationArea.shiftDown
+        globalScope.simulationArea.shiftDown
         ) {
         // detect the special Cmd + shift + z code (macOs)
           redo();
         }
         if (
-          simulationArea.controlDown &&
+          globalScope.simulationArea.controlDown &&
         e.key.charCodeAt(0) == 121 &&
-        !simulationArea.shiftDown
+        !globalScope.simulationArea.shiftDown
         ) {
         // detect the special ctrl + Y code (windows)
           redo();
@@ -195,31 +193,31 @@ export function startMainListeners() {
         if (listenToSimulator) {
           if (
             document.activeElement.tagName == 'INPUT' ||
-          simulationArea.mouseRawX < 0 ||
-          simulationArea.mouseRawY < 0 ||
-          simulationArea.mouseRawX > width ||
-          simulationArea.mouseRawY > height
+          globalScope.simulationArea.mouseRawX < 0 ||
+          globalScope.simulationArea.mouseRawY < 0 ||
+          globalScope.simulationArea.mouseRawX > width ||
+          globalScope.simulationArea.mouseRawY > height
           ) {
             return;
           }
           // HACK TO REMOVE FOCUS ON PROPERTIES
           if (document.activeElement.type == 'number') {
             hideProperties();
-            showProperties(simulationArea.lastSelected);
+            showProperties(globalScope.simulationArea.lastSelected);
           }
 
           errorDetectedSet(false);
           updateSimulationSet(true);
           updatePositionSet(true);
-          simulationArea.shiftDown = e.shiftKey;
+          globalScope.simulationArea.shiftDown = e.shiftKey;
 
           if (e.key == 'Meta' || e.key == 'Control') {
-            simulationArea.controlDown = true;
+            globalScope.simulationArea.controlDown = true;
           }
 
           // zoom in (+)
           if (
-            (simulationArea.controlDown &&
+            (globalScope.simulationArea.controlDown &&
             (e.keyCode == 187 || e.keyCode == 171)) ||
           e.keyCode == 107
           ) {
@@ -228,7 +226,7 @@ export function startMainListeners() {
           }
           // zoom out (-)
           if (
-            (simulationArea.controlDown &&
+            (globalScope.simulationArea.controlDown &&
             (e.keyCode == 189 || e.keyCode == 173)) ||
           e.keyCode == 109
           ) {
@@ -237,10 +235,10 @@ export function startMainListeners() {
           }
 
           if (
-            simulationArea.mouseRawX < 0 ||
-          simulationArea.mouseRawY < 0 ||
-          simulationArea.mouseRawX > width ||
-          simulationArea.mouseRawY > height
+            globalScope.simulationArea.mouseRawX < 0 ||
+          globalScope.simulationArea.mouseRawY < 0 ||
+          globalScope.simulationArea.mouseRawX > width ||
+          globalScope.simulationArea.mouseRawY > height
           ) {
             return;
           }
@@ -250,15 +248,15 @@ export function startMainListeners() {
           wireToBeCheckedSet(1);
 
           if (
-            simulationArea.lastSelected &&
-          simulationArea.lastSelected.keyDown
+            globalScope.simulationArea.lastSelected &&
+          globalScope.simulationArea.lastSelected.keyDown
           ) {
             if (
               e.key.toString().length == 1 ||
             e.key.toString() == 'Backspace' ||
             e.key.toString() == 'Enter'
             ) {
-              simulationArea.lastSelected.keyDown(e.key.toString());
+              globalScope.simulationArea.lastSelected.keyDown(e.key.toString());
               e.cancelBubble = true;
               e.returnValue = false;
 
@@ -272,51 +270,51 @@ export function startMainListeners() {
           }
 
           if (
-            simulationArea.lastSelected &&
-          simulationArea.lastSelected.keyDown2
+            globalScope.simulationArea.lastSelected &&
+          globalScope.simulationArea.lastSelected.keyDown2
           ) {
             if (e.key.toString().length == 1) {
-              simulationArea.lastSelected.keyDown2(e.key.toString());
+              globalScope.simulationArea.lastSelected.keyDown2(e.key.toString());
               return;
             }
           }
 
           if (
-            simulationArea.lastSelected &&
-          simulationArea.lastSelected.keyDown3
+            globalScope.simulationArea.lastSelected &&
+          globalScope.simulationArea.lastSelected.keyDown3
           ) {
             if (
               e.key.toString() != 'Backspace' &&
             e.key.toString() != 'Delete'
             ) {
-              simulationArea.lastSelected.keyDown3(e.key.toString());
+              globalScope.simulationArea.lastSelected.keyDown3(e.key.toString());
               return;
             }
           }
 
           if (e.keyCode == 16) {
-            simulationArea.shiftDown = true;
+            globalScope.simulationArea.shiftDown = true;
             if (
-              simulationArea.lastSelected &&
-            !simulationArea.lastSelected.keyDown &&
-            simulationArea.lastSelected.objectType != 'Wire' &&
-            simulationArea.lastSelected.objectType !=
+              globalScope.simulationArea.lastSelected &&
+            !globalScope.simulationArea.lastSelected.keyDown &&
+            globalScope.simulationArea.lastSelected.objectType != 'Wire' &&
+            globalScope.simulationArea.lastSelected.objectType !=
             'CircuitElement' &&
-            !simulationArea.multipleObjectSelections.includes(
-                simulationArea.lastSelected,
+            !globalScope.simulationArea.multipleObjectSelections.includes(
+                globalScope.simulationArea.lastSelected,
             )
             ) {
-              simulationArea.multipleObjectSelections.push(
-                  simulationArea.lastSelected,
+              globalScope.simulationArea.multipleObjectSelections.push(
+                  globalScope.simulationArea.lastSelected,
               );
             }
           }
 
           // Detect offline save shortcut (CTRL+SHIFT+S)
           if (
-            simulationArea.controlDown &&
+            globalScope.simulationArea.controlDown &&
           e.keyCode == 83 &&
-          simulationArea.shiftDown
+          globalScope.simulationArea.shiftDown
           ) {
             saveOffline();
             e.preventDefault();
@@ -324,7 +322,7 @@ export function startMainListeners() {
 
           // Detect Select all Shortcut
           if (
-            simulationArea.controlDown &&
+            globalScope.simulationArea.controlDown &&
           (e.keyCode == 65 || e.keyCode == 97)
           ) {
             selectAll();
@@ -333,27 +331,27 @@ export function startMainListeners() {
 
           // deselect all Shortcut
           if (e.keyCode == 27) {
-            simulationArea.multipleObjectSelections = [];
-            simulationArea.lastSelected = undefined;
+            globalScope.simulationArea.multipleObjectSelections = [];
+            globalScope.simulationArea.lastSelected = undefined;
             e.preventDefault();
           }
 
           if (
             (e.keyCode == 113 || e.keyCode == 81) &&
-          simulationArea.lastSelected != undefined
+          globalScope.simulationArea.lastSelected != undefined
           ) {
-            if (simulationArea.lastSelected.bitWidth !== undefined) {
-              simulationArea.lastSelected.newBitWidth(
+            if (globalScope.simulationArea.lastSelected.bitWidth !== undefined) {
+              globalScope.simulationArea.lastSelected.newBitWidth(
                   parseInt(prompt('Enter new bitWidth'), 10),
               );
             }
           }
 
           if (
-            simulationArea.controlDown &&
+            globalScope.simulationArea.controlDown &&
           (e.key == 'T' || e.key == 't')
           ) {
-            simulationArea.changeClockTime(prompt('Enter Time:'));
+            globalScope.simulationArea.changeClockTime(prompt('Enter Time:'));
           }
         }
 
@@ -364,33 +362,28 @@ export function startMainListeners() {
       true,
   );
 
-  document
-      .getElementById('simulationArea')
+  simulation
       .addEventListener('dblclick', (e) => {
         updateCanvasSet(true);
         if (
-          simulationArea.lastSelected &&
-        simulationArea.lastSelected.dblclick !== undefined
+          globalScope.simulationArea.lastSelected &&
+        globalScope.simulationArea.lastSelected.dblclick !== undefined
         ) {
-          simulationArea.lastSelected.dblclick();
-        } else if (!simulationArea.shiftDown) {
-          simulationArea.multipleObjectSelections = [];
+          globalScope.simulationArea.lastSelected.dblclick();
+        } else if (!globalScope.simulationArea.shiftDown) {
+          globalScope.simulationArea.multipleObjectSelections = [];
         }
         scheduleUpdate(2);
       });
 
-  document
-      .getElementById('simulationArea')
+      simulation
       .addEventListener('mouseup', onMouseUp);
 
-  document
-      .getElementById('simulationArea')
+      simulation
       .addEventListener('mousewheel', MouseScroll);
-  document
-      .getElementById('simulationArea')
+      simulation
       .addEventListener('wheel', MouseScroll);
-  document
-      .getElementById('simulationArea')
+      simulation
       .addEventListener('DOMMouseScroll', MouseScroll);
 
   /**
@@ -425,17 +418,17 @@ export function startMainListeners() {
     }
 
     if (listenToSimulator) {
-      simulationArea.copyList =
-        simulationArea.multipleObjectSelections.slice();
+      globalScope.simulationArea.copyList =
+        globalScope.simulationArea.multipleObjectSelections.slice();
       if (
-        simulationArea.lastSelected &&
-        simulationArea.lastSelected !== simulationArea.root &&
-        !simulationArea.copyList.includes(simulationArea.lastSelected)
+        globalScope.simulationArea.lastSelected &&
+        globalScope.simulationArea.lastSelected !== globalScope.simulationArea.root &&
+        !globalScope.simulationArea.copyList.includes(globalScope.simulationArea.lastSelected)
       ) {
-        simulationArea.copyList.push(simulationArea.lastSelected);
+        globalScope.simulationArea.copyList.push(globalScope.simulationArea.lastSelected);
       }
 
-      const textToPutOnClipboard = copy(simulationArea.copyList, true);
+      const textToPutOnClipboard = copy(globalScope.simulationArea.copyList, true);
 
       // Updated restricted elements
       updateRestrictedElementsInScope();
@@ -464,17 +457,17 @@ export function startMainListeners() {
     }
 
     if (listenToSimulator) {
-      simulationArea.copyList =
-        simulationArea.multipleObjectSelections.slice();
+      globalScope.simulationArea.copyList =
+        globalScope.simulationArea.multipleObjectSelections.slice();
       if (
-        simulationArea.lastSelected &&
-        simulationArea.lastSelected !== simulationArea.root &&
-        !simulationArea.copyList.includes(simulationArea.lastSelected)
+        globalScope.simulationArea.lastSelected &&
+        globalScope.simulationArea.lastSelected !== globalScope.simulationArea.root &&
+        !globalScope.simulationArea.copyList.includes(globalScope.simulationArea.lastSelected)
       ) {
-        simulationArea.copyList.push(simulationArea.lastSelected);
+        globalScope.simulationArea.copyList.push(globalScope.simulationArea.lastSelected);
       }
 
-      const textToPutOnClipboard = copy(simulationArea.copyList);
+      const textToPutOnClipboard = copy(globalScope.simulationArea.copyList);
 
       // Updated restricted elements
       updateRestrictedElementsInScope();
@@ -567,33 +560,33 @@ const isIe =
   navigator.userAgent.toLowerCase().indexOf('trident') != -1;
 
 function onMouseMove(e) {
-  const rect = simulationArea.canvas.getBoundingClientRect();
-  simulationArea.mouseRawX = (e.clientX - rect.left) * DPR;
-  simulationArea.mouseRawY = (e.clientY - rect.top) * DPR;
-  simulationArea.mouseXf =
-    (simulationArea.mouseRawX - globalScope.ox) / globalScope.scale;
-  simulationArea.mouseYf =
-    (simulationArea.mouseRawY - globalScope.oy) / globalScope.scale;
-  simulationArea.mouseX = Math.round(simulationArea.mouseXf / unit) * unit;
-  simulationArea.mouseY = Math.round(simulationArea.mouseYf / unit) * unit;
+  const rect = globalScope.simulationArea.canvas.getBoundingClientRect();
+  globalScope.simulationArea.mouseRawX = (e.clientX - rect.left) * DPR;
+  globalScope.simulationArea.mouseRawY = (e.clientY - rect.top) * DPR;
+  globalScope.simulationArea.mouseXf =
+    (globalScope.simulationArea.mouseRawX - globalScope.ox) / globalScope.scale;
+  globalScope.simulationArea.mouseYf =
+    (globalScope.simulationArea.mouseRawY - globalScope.oy) / globalScope.scale;
+  globalScope.simulationArea.mouseX = Math.round(globalScope.simulationArea.mouseXf / unit) * unit;
+  globalScope.simulationArea.mouseY = Math.round(globalScope.simulationArea.mouseYf / unit) * unit;
 
   updateCanvasSet(true);
 
   if (
-    simulationArea.lastSelected &&
-    (simulationArea.mouseDown || simulationArea.lastSelected.newElement)
+    globalScope.simulationArea.lastSelected &&
+    (globalScope.simulationArea.mouseDown || globalScope.simulationArea.lastSelected.newElement)
   ) {
     updateCanvasSet(true);
     let fn;
 
-    if (simulationArea.lastSelected == globalScope.root) {
+    if (globalScope.simulationArea.lastSelected == globalScope.root) {
       fn = function() {
         updateSelectionsAndPane();
       };
     } else {
       fn = function() {
-        if (simulationArea.lastSelected) {
-          simulationArea.lastSelected.update();
+        if (globalScope.simulationArea.lastSelected) {
+          globalScope.simulationArea.lastSelected.update();
         }
       };
     }
@@ -604,7 +597,7 @@ function onMouseMove(e) {
 }
 
 function onMouseUp(e) {
-  simulationArea.mouseDown = false;
+  globalScope.simulationArea.mouseDown = false;
   if (!lightMode) {
     updateLastMinimapShown();
     setTimeout(removeMiniMap, 2000);
@@ -618,7 +611,7 @@ function onMouseUp(e) {
   wireToBeCheckedSet(1);
 
   scheduleUpdate(1);
-  simulationArea.mouseDown = false;
+  globalScope.simulationArea.mouseDown = false;
 
   for (let i = 0; i < 2; i++) {
     updatePositionSet(true);
@@ -633,18 +626,18 @@ function onMouseUp(e) {
   wireToBeCheckedSet(1);
 
   scheduleUpdate(1);
-  const rect = simulationArea.canvas.getBoundingClientRect();
+  const rect = globalScope.simulationArea.canvas.getBoundingClientRect();
 
   if (
     !(
-      simulationArea.mouseRawX < 0 ||
-      simulationArea.mouseRawY < 0 ||
-      simulationArea.mouseRawX > width ||
-      simulationArea.mouseRawY > height
+      globalScope.simulationArea.mouseRawX < 0 ||
+      globalScope.simulationArea.mouseRawY < 0 ||
+      globalScope.simulationArea.mouseRawX > width ||
+      globalScope.simulationArea.mouseRawY > height
     )
   ) {
-    uxvar.smartDropXX = simulationArea.mouseX + 100;
-    uxvar.smartDropYY = simulationArea.mouseY - 50;
+    uxvar.smartDropXX = globalScope.simulationArea.mouseX + 100;
+    uxvar.smartDropYY = globalScope.simulationArea.mouseY - 50;
   }
 }
 
@@ -677,11 +670,9 @@ export function zoomOut() {
 
 function zoomSliderListeners() {
   document.getElementById('customRange1').value = 5;
-  document
-      .getElementById('simulationArea')
+  simulation
       .addEventListener('DOMMouseScroll', zoomSliderScroll);
-  document
-      .getElementById('simulationArea')
+      simulation
       .addEventListener('mousewheel', zoomSliderScroll);
   let curLevel = document.getElementById('customRange1').value;
   $(document).on('input change', '#customRange1', function(e) {

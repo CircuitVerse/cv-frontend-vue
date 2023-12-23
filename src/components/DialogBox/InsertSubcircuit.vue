@@ -38,45 +38,45 @@
 import { onMounted, onUpdated, ref } from '@vue/runtime-core'
 import { useState } from '#/store/SimulatorStore/state'
 import { createNewCircuitScope, scopeList } from '#/simulator/src/circuit'
-import {SubCircuit} from '#/simulator/src/subcircuit'
-import {simulationArea} from '#/simulator/src/simulation_area'
+import { SubCircuit } from '#/simulator/src/subcircuit'
+
 const SimulatorState = useState()
 const flag = ref(true)
 onMounted(() => {
-    SimulatorState.dialogBox.insertsubcircuit_dialog = false
+  SimulatorState.dialogBox.insertsubcircuit_dialog = false
 })
 
 function insertSubcircuit() {
-    const checkedSubCircuit = document.querySelector(
-        'input[name=subCircuitId]:checked'
-    ) as HTMLInputElement
-    if (!checkedSubCircuit?.value) return
-    simulationArea.lastSelected = new SubCircuit(
-        undefined,
-        undefined,
-        globalScope,
-        checkedSubCircuit?.value
-    )
-    flag.value = true
-    SimulatorState.dialogBox.insertsubcircuit_dialog = false
+  const checkedSubCircuit = document.querySelector(
+    'input[name=subCircuitId]:checked'
+  ) as HTMLInputElement
+  if (!checkedSubCircuit?.value) return
+  globalScope.simulationArea.lastSelected = new SubCircuit(
+    undefined,
+    undefined,
+    globalScope,
+    checkedSubCircuit?.value
+  )
+  flag.value = true
+  SimulatorState.dialogBox.insertsubcircuit_dialog = false
 }
 
 function getName(x) {
-    flag.value = false
-    return x.name
+  flag.value = false
+  return x.name
 }
 
 function availableSubCircuits(value, scopeId) {
-    return (
-        !value.checkDependency(scopeId) &&
-        value.isVisible() &&
-        value !== globalScope
-    )
+  return (
+    !value.checkDependency(scopeId) &&
+    value.isVisible() &&
+    value !== globalScope
+  )
 }
 
 function newCircuit() {
-    createNewCircuitScope()
-    SimulatorState.dialogBox.insertsubcircuit_dialog = false
+  createNewCircuitScope()
+  SimulatorState.dialogBox.insertsubcircuit_dialog = false
 }
 </script>
 

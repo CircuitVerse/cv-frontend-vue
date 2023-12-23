@@ -2,7 +2,7 @@ import {metadata} from './metadata';
 import {generateId} from './utils';
 import {showMessage} from './utils_clock';
 import {plotArea} from './plot_area';
-import {simulationArea} from './simulation_area';
+
 import {dots} from './canvas_api';
 import {update, updateSimulationSet, updateCanvasSet} from './engine';
 import {setupUI} from './ux';
@@ -22,6 +22,7 @@ import '../vendor/jquery-ui.min';
 import {confirmSingleOption}
   from '#/components/helpers/confirmComponent/ConfirmComponent.vue';
 import {getToken} from '#/pages/simulatorHandler.vue';
+import {SimulationArea} from './simulation_area';
 
 /**
  * to resize window and setup things it
@@ -34,17 +35,16 @@ export function resetup() {
   if (lightMode) {
     DPR = 1;
   }
-  width = document.getElementById('simulationArea').clientWidth * DPR;
+  const canvasArea = document.getElementById('canvasArea');
+  width = canvasArea.clientWidth * DPR;
   if (!embed) {
     height =
       (document.body.clientHeight -
         document.getElementById('toolbar').clientHeight) *
       DPR;
   } else {
-    height = document.getElementById('simulation').clientHeight * DPR;
+    height = canvasArea.clientHeight * DPR;
   }
-  // setup simulationArea and backgroundArea to make changes to canvas.
-  simulationArea.setup();
   // redraw grid
   dots();
   globalScope.backgroundArea.canvas.style.height =
@@ -52,8 +52,8 @@ export function resetup() {
   globalScope.backgroundArea.canvas.style.width =
     width / DPR + 100 + 'px';
   document.getElementById('canvasArea').style.height = height / DPR + 'px';
-  simulationArea.canvas.width = width;
-  simulationArea.canvas.height = height;
+  globalScope.simulationArea.canvas.width = width;
+  globalScope.simulationArea.canvas.height = height;
   globalScope.backgroundArea.canvas.width = width + 100 * DPR;
   globalScope.backgroundArea.canvas.height = height + 100 * DPR;
   if (!embed) {
@@ -61,7 +61,7 @@ export function resetup() {
   }
   updateCanvasSet(true);
   update(); // INEFFICIENT, needs to be deprecated
-  simulationArea.prevScale = 0;
+  globalScope.simulationArea.prevScale = 0;
   dots();
 }
 
@@ -127,7 +127,7 @@ async function fetchProjectData(projectId) {
     if (response.ok) {
       const data = await response.json();
       await load(data);
-      await simulationArea.changeClockTime(data.timePeriod || 500);
+      await globalScope.simulationArea.changeClockTime(data.timePeriod || 500);
       $('.loadingIcon').fadeOut();
     } else {
       throw new Error('API call failed');
@@ -141,8 +141,6 @@ async function fetchProjectData(projectId) {
 
 /**
  * Load project data immediately when available.
- * Improvement to eliminate delay caused by setTimeout
- * in previous implementation revert if issues arise.
  * @category setup
  */
 async function loadProjectData() {

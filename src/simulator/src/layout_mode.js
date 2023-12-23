@@ -1,6 +1,6 @@
 import {dots, correctWidth, fillText, rect2} from './canvas_api';
 import {LayoutBuffer} from './layout/layout_buffer';
-import {simulationArea} from './simulation_area';
+
 import {
   fillSubcircuitElements,
   prevPropertyObjGet,
@@ -67,35 +67,35 @@ export function determineLabel(x, y) {
  * @category layoutMode
  */
 export function paneLayout(scope = globalScope) {
-  if (!simulationArea.selected && simulationArea.mouseDown) {
-    simulationArea.selected = true;
-    simulationArea.lastSelected = scope.root;
-    simulationArea.hover = scope.root;
+  if (!globalScope.simulationArea.selected && globalScope.simulationArea.mouseDown) {
+    globalScope.simulationArea.selected = true;
+    globalScope.simulationArea.lastSelected = scope.root;
+    globalScope.simulationArea.hover = scope.root;
   } else if (
-    simulationArea.lastSelected === scope.root &&
-    simulationArea.mouseDown
+    globalScope.simulationArea.lastSelected === scope.root &&
+    globalScope.simulationArea.mouseDown
   ) {
     // pane canvas
     globalScope.ox =
-        simulationArea.mouseRawX -
-        simulationArea.mouseDownRawX +
-        simulationArea.oldX;
+        globalScope.simulationArea.mouseRawX -
+        globalScope.simulationArea.mouseDownRawX +
+        globalScope.simulationArea.oldX;
     globalScope.oy =
-        simulationArea.mouseRawY -
-        simulationArea.mouseDownRawY +
-        simulationArea.oldY;
+        globalScope.simulationArea.mouseRawY -
+        globalScope.simulationArea.mouseDownRawY +
+        globalScope.simulationArea.oldY;
     globalScope.ox = Math.round(globalScope.ox);
     globalScope.oy = Math.round(globalScope.oy);
     gridUpdateSet(true);
     if (!embed && !lightMode) {
       miniMapArea.setup();
     }
-  } else if (simulationArea.lastSelected === scope.root) {
+  } else if (globalScope.simulationArea.lastSelected === scope.root) {
     // Select multiple objects
 
-    simulationArea.lastSelected = undefined;
-    simulationArea.selected = false;
-    simulationArea.hover = undefined;
+    globalScope.simulationArea.lastSelected = undefined;
+    globalScope.simulationArea.selected = false;
+    globalScope.simulationArea.hover = undefined;
   }
 }
 
@@ -108,8 +108,8 @@ export function renderLayout(scope = globalScope) {
   if (!layoutModeGet()) {
     return;
   }
-  const ctx = simulationArea.context;
-  simulationArea.clear();
+  const ctx = globalScope.simulationArea.context;
+  globalScope.simulationArea.clear();
   ctx.strokeStyle = 'black';
   ctx.fillStyle = 'white';
   ctx.lineWidth = correctWidth(3);
@@ -203,9 +203,9 @@ export function renderLayout(scope = globalScope) {
   }
 
   // Show properties of selected element
-  if (!embed && prevPropertyObjGet() != simulationArea.lastSelected) {
-    if (simulationArea.lastSelected) {
-      showProperties(simulationArea.lastSelected);
+  if (!embed && prevPropertyObjGet() != globalScope.simulationArea.lastSelected) {
+    if (globalScope.simulationArea.lastSelected) {
+      showProperties(globalScope.simulationArea.lastSelected);
     }
   }
   // Render objects

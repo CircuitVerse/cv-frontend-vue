@@ -1,4 +1,4 @@
-import {simulationArea} from './simulation_area';
+
 
 /**
  * Determine the next available Y position.
@@ -67,6 +67,6 @@ export function changeInputSize(size) {
       this.bitWidth,
   );
   this.delete();
-  simulationArea.lastSelected = obj;
+  globalScope.simulationArea.lastSelected = obj;
   return obj;
 }

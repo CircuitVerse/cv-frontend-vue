@@ -8,16 +8,7 @@
         <textarea id="codeTextArea" />
       </div>
       <div id="MessageDiv" />
-
       <div id="canvasArea" class="canvasArea" style="height: 100%; width: 100%">
-        <canvas id="simulationArea" style="
-                        position: absolute;
-                        left: 0;
-                        top: 0;
-                        z-index: 1;
-                        width: 100%;
-                        height: 100%;
-                    " />
       </div>
       <div id="elementName" />
       <div id="zoom-in-out-embed" class="zoom-wrapper">
@@ -93,7 +84,7 @@
 <script lang="ts" setup>
 import { ref, onBeforeMount, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { simulationArea } from '#/simulator/src/simulation_area';
+
 import {
   scheduleUpdate,
   updateCanvasSet,
@@ -115,11 +106,11 @@ import TabsBar from '#/components/TabsBar/TabsBar.vue';
 // restrictedElements = [];
 // <% end %>
 const route = useRoute();
-const timePeriod = ref(simulationArea.timePeriod);
-const clockEnabled = ref(simulationArea.clockEnabled);
+const timePeriod = ref(globalScope.simulationArea.timePeriod);
+const clockEnabled = ref(globalScope.simulationArea.clockEnabled);
 
 // watch(timePeriod, function (val) {
-//     simulationArea.timePeriod = val
+//     globalScope.simulationArea.timePeriod = val
 // })
 
 watch(timePeriod, (val) => {
@@ -127,15 +118,15 @@ watch(timePeriod, (val) => {
   updateCanvasSet(true);
   wireToBeCheckedSet(1);
   if (
-    simulationArea.lastSelected &&
-    simulationArea.lastSelected['changeClockTime']
+    globalScope.simulationArea.lastSelected &&
+    globalScope.simulationArea.lastSelected['changeClockTime']
   ) {
     prevPropertyObjSet('changeClockTime') || prevPropertyObjGet();
   } else {
     if (val < 50) {
       val = 50;
     }
-    simulationArea.changeClockTime(val);
+    globalScope.simulationArea.changeClockTime(val);
   }
 });
 
@@ -144,8 +135,8 @@ watch(clockEnabled, (val) => {
   updateCanvasSet(true);
   wireToBeCheckedSet(1);
   if (
-    simulationArea.lastSelected &&
-    simulationArea.lastSelected['changeClockEnable']
+    globalScope.simulationArea.lastSelected &&
+    globalScope.simulationArea.lastSelected['changeClockEnable']
   ) {
     prevPropertyObjSet('changeClockEnable') || prevPropertyObjGet();
   } else {

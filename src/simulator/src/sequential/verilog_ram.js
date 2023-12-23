@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulation_area';
+
 import {correctWidth, fillText2, fillText4, drawCircle2} from '../canvas_api';
 
 /**
@@ -40,7 +40,7 @@ function customResolve(
     if (clockPolarity[i] == undefined && enablePolarity[i] == undefined) {
       if (dInp[i].value != undefined) {
         qOutput[i].value = dInp[i].value;
-        simulationArea.simulationQueue.add(qOutput[i]);
+        globalScope.simulationArea.simulationQueue.add(qOutput[i]);
       }
     } else if (
       clockPolarity[i] == undefined &&
@@ -52,7 +52,7 @@ function customResolve(
         dInp[i].value != undefined
       ) {
         qOutput[i].value = dInp[i].value;
-        simulationArea.simulationQueue.add(qOutput[i]);
+        globalScope.simulationArea.simulationQueue.add(qOutput[i]);
       }
     } else if (
       clockPolarity[i] != undefined &&
@@ -76,7 +76,7 @@ function customResolve(
 
       if (qOutput[i].value != slaveState[i]) {
         qOutput[i].value = slaveState[i];
-        simulationArea.simulationQueue.add(qOutput[i]);
+        globalScope.simulationArea.simulationQueue.add(qOutput[i]);
       }
     } else {
       if (en[i].value == 0) {
@@ -102,7 +102,7 @@ function customResolve(
 
       if (qOutput[i].value != slaveState[i]) {
         qOutput[i].value = slaveState[i];
-        simulationArea.simulationQueue.add(qOutput[i]);
+        globalScope.simulationArea.simulationQueue.add(qOutput[i]);
       }
     }
   }
@@ -522,7 +522,7 @@ export class verilogRAM extends CircuitElement {
 
     for (let i = 0; i < this.numRead; i++) {
       this.dataOut[i].value = this.data[this.readAddress[i].value] || 0;
-      simulationArea.simulationQueue.add(this.dataOut[i]);
+      globalScope.simulationArea.simulationQueue.add(this.dataOut[i]);
     }
 
     customResolve(

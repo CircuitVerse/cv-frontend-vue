@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulation_area';
+
 import {lineTo, moveTo, fillText, correctWidth, rect2} from '../canvas_api';
 import {colors} from '../themer/themer';
 
@@ -106,14 +106,14 @@ export class Counter extends CircuitElement {
     this.value = outputValue;
     if (this.output.value != outputValue) {
       this.output.value = outputValue;
-      simulationArea.simulationQueue.add(this.output);
+      globalScope.simulationArea.simulationQueue.add(this.output);
     }
 
     // Output the zero signal
     const zeroValue = this.clock.value == 1 && outputValue == 0 ? 1 : 0;
     if (this.zero.value != zeroValue) {
       this.zero.value = zeroValue;
-      simulationArea.simulationQueue.add(this.zero);
+      globalScope.simulationArea.simulationQueue.add(this.zero);
     }
   }
   /**
@@ -162,9 +162,9 @@ export class Counter extends CircuitElement {
     ctx.stroke();
 
     if (
-      (this.hover && !simulationArea.shiftDown) ||
-      simulationArea.lastSelected == this ||
-      simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !globalScope.simulationArea.shiftDown) ||
+      globalScope.simulationArea.lastSelected == this ||
+      globalScope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = 'rgba(255, 255, 32,0.6)';
       ctx.fill();

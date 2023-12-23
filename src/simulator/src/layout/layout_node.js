@@ -1,5 +1,5 @@
 import {drawCircle} from '../canvas_api';
-import {simulationArea} from '../simulation_area';
+
 import {tempBuffer} from '../layout_mode';
 
 /**
@@ -55,12 +55,12 @@ export class LayoutNode {
   update() {
     // Code copied from node.update() - Some code is redundant - needs to be removed
 
-    if (this === simulationArea.hover) {
-      simulationArea.hover = undefined;
+    if (this === globalScope.simulationArea.hover) {
+      globalScope.simulationArea.hover = undefined;
     }
     this.hover = this.isHover();
 
-    if (!simulationArea.mouseDown) {
+    if (!globalScope.simulationArea.mouseDown) {
       if (this.absX() !== this.prevX || this.absY() !== this.prevY) {
         // Store position before clicked
         this.prevX = this.absX();
@@ -69,16 +69,16 @@ export class LayoutNode {
     }
 
     if (this.hover) {
-      simulationArea.hover = this;
+      globalScope.simulationArea.hover = this;
     }
 
     if (
-      simulationArea.mouseDown &&
-      ((this.hover && !simulationArea.selected) ||
-        simulationArea.lastSelected === this)
+      globalScope.simulationArea.mouseDown &&
+      ((this.hover && !globalScope.simulationArea.selected) ||
+        globalScope.simulationArea.lastSelected === this)
     ) {
-      simulationArea.selected = true;
-      simulationArea.lastSelected = this;
+      globalScope.simulationArea.selected = true;
+      globalScope.simulationArea.lastSelected = this;
       this.clicked = true;
     } else {
       this.clicked = false;
@@ -87,21 +87,21 @@ export class LayoutNode {
     if (!this.wasClicked && this.clicked) {
       this.wasClicked = true;
       this.prev = 'a';
-      simulationArea.lastSelected = this;
+      globalScope.simulationArea.lastSelected = this;
     } else if (this.wasClicked && this.clicked) {
       // Check if valid position and update accordingly
       if (
         tempBuffer.isAllowed(
-            simulationArea.mouseX,
-            simulationArea.mouseY,
+            globalScope.simulationArea.mouseX,
+            globalScope.simulationArea.mouseY,
         ) &&
         !tempBuffer.isNodeAt(
-            simulationArea.mouseX,
-            simulationArea.mouseY,
+            globalScope.simulationArea.mouseX,
+            globalScope.simulationArea.mouseY,
         )
       ) {
-        this.x = simulationArea.mouseX;
-        this.y = simulationArea.mouseY;
+        this.x = globalScope.simulationArea.mouseX;
+        this.y = globalScope.simulationArea.mouseY;
       }
     }
   }
@@ -111,13 +111,13 @@ export class LayoutNode {
    * this function is used to draw the nodes
    */
   draw() {
-    const ctx = simulationArea.context;
+    const ctx = globalScope.simulationArea.context;
     drawCircle(
         ctx,
         this.absX(),
         this.absY(),
         3,
-        ['green', 'red'][+(simulationArea.lastSelected === this)],
+        ['green', 'red'][+(globalScope.simulationArea.lastSelected === this)],
     );
   }
 
@@ -127,8 +127,8 @@ export class LayoutNode {
    */
   isHover() {
     return (
-      this.absX() === simulationArea.mouseX &&
-      this.absY() === simulationArea.mouseY
+      this.absX() === globalScope.simulationArea.mouseX &&
+      this.absY() === globalScope.simulationArea.mouseY
     );
   }
 }

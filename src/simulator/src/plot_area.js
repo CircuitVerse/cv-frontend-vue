@@ -1,4 +1,4 @@
-import {simulationArea} from './simulation_area';
+
 import {converters} from './utils';
 
 const DPR = window.devicePixelRatio || 1;
@@ -145,7 +145,7 @@ export const plotArea = {
     let time = this.cycleCount; // Current cycle count
     time += timeUnit / this.cycleUnit; // Add propagation delay
     // For user interactions like buttons - calculate time since clock tick
-    const timePeriod = simulationArea.timePeriod;
+    const timePeriod = globalScope.simulationArea.timePeriod;
     const executionDelay = this.executionStartTime - this.cycleTime;
     const delayFraction = executionDelay / timePeriod;
     // Add time since clock tick
@@ -162,7 +162,7 @@ export const plotArea = {
   // Get current time in clock cycles
   getCurrentTime() {
     let time = this.cycleCount;
-    const timePeriod = simulationArea.timePeriod;
+    const timePeriod = globalScope.simulationArea.timePeriod;
     const delay = new Date().getTime() - this.cycleTime;
     const delayFraction = delay / timePeriod;
     time += delayFraction;
@@ -174,7 +174,7 @@ export const plotArea = {
     const normalColor = '#42b983';
     this.unitUsed = Math.max(
         this.unitUsed,
-        simulationArea.simulationQueue.time,
+        globalScope.simulationArea.simulationQueue.time,
     );
     const unitUsed = this.unitUsed;
     const units = this.cycleUnit;

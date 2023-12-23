@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulation_area';
+
 import {correctWidth, rect2, fillText3} from '../canvas_api';
 import {colors} from '../themer/themer';
 /**
@@ -80,8 +80,8 @@ export class Rom extends CircuitElement {
      * @return {number}
      */
   findPos() {
-    const i = Math.floor((simulationArea.mouseX - this.x + 35) / 20);
-    const j = Math.floor((simulationArea.mouseY - this.y + 35) / 16);
+    const i = Math.floor((globalScope.simulationArea.mouseX - this.x + 35) / 20);
+    const j = Math.floor((globalScope.simulationArea.mouseY - this.y + 35) / 16);
     if (i < 0 || j < 0 || i > 3 || j > 3) {
       return undefined;
     }
@@ -142,9 +142,9 @@ export class Rom extends CircuitElement {
     );
     if (
       hoverIndex === undefined &&
-      ((!simulationArea.shiftDown && this.hover) ||
-        simulationArea.lastSelected === this ||
-        simulationArea.multipleObjectSelections.includes(this))
+      ((!globalScope.simulationArea.shiftDown && this.hover) ||
+        globalScope.simulationArea.lastSelected === this ||
+        globalScope.simulationArea.multipleObjectSelections.includes(this))
     ) {
       ctx.fillStyle = colors['hover_select'];
     }
@@ -268,7 +268,7 @@ export class Rom extends CircuitElement {
       return;
     }
     this.dataOut.value = this.data[this.memAddr.value];
-    simulationArea.simulationQueue.add(this.dataOut);
+    globalScope.simulationArea.simulationQueue.add(this.dataOut);
   }
 
   /**

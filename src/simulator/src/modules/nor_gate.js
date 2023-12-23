@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulation_area';
+
 import {gateGenerateVerilog} from '../utils';
 
 import {
@@ -103,7 +103,7 @@ export class NorGate extends CircuitElement {
     result =
       ((~result >>> 0) << (32 - this.bitWidth)) >>> (32 - this.bitWidth);
     this.output1.value = result;
-    simulationArea.simulationQueue.add(this.output1);
+    globalScope.simulationArea.simulationQueue.add(this.output1);
   }
 
   /**
@@ -136,9 +136,9 @@ export class NorGate extends CircuitElement {
     bezierCurveTo(0, 0, 0, 0, -10, -20, xx, yy, this.direction);
     ctx.closePath();
     if (
-      (this.hover && !simulationArea.shiftDown) ||
-      simulationArea.lastSelected === this ||
-      simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !globalScope.simulationArea.shiftDown) ||
+      globalScope.simulationArea.lastSelected === this ||
+      globalScope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }

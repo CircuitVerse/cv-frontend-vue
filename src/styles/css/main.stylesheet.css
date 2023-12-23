@@ -1685,7 +1685,7 @@ input:checked+.slider:before {
 
 #canvasArea,
 #backgroundArea,
-#simulationArea,
+#globalScope.simulationArea,
 canvas {
   /* cursor: wait !important; */
 }

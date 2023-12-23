@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulation_area';
+
 
 /**
  * @class
@@ -113,8 +113,8 @@ export class verilogDivider extends CircuitElement {
     this.quotient.value =
       (quotient << (32 - this.outputBitWidth)) >>>
       (32 - this.outputBitWidth);
-    simulationArea.simulationQueue.add(this.quotient);
-    simulationArea.simulationQueue.add(this.remainder);
+    globalScope.simulationArea.simulationQueue.add(this.quotient);
+    globalScope.simulationArea.simulationQueue.add(this.remainder);
   }
 }
 

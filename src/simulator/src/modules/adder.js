@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulation_area';
+
 
 /**
  * @class
@@ -86,8 +86,8 @@ export class Adder extends CircuitElement {
 
     this.sum.value = (sum << (32 - this.bitWidth)) >>> (32 - this.bitWidth);
     this.carryOut.value = +(sum >>> this.bitWidth !== 0);
-    simulationArea.simulationQueue.add(this.carryOut);
-    simulationArea.simulationQueue.add(this.sum);
+    globalScope.simulationArea.simulationQueue.add(this.carryOut);
+    globalScope.simulationArea.simulationQueue.add(this.sum);
   }
 
   /**

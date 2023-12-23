@@ -1,6 +1,6 @@
 import {layoutModeGet, layoutUpdate} from './layout_mode';
 import {plotArea} from './plot_area';
-import {simulationArea} from './simulation_area';
+
 import {dots, canvasMessage, findDimensions, rect2} from './canvas_api';
 import {showProperties, prevPropertyObjGet} from './ux';
 import {showError} from './utils_clock';
@@ -228,7 +228,7 @@ export function changeLightMode(val) {
 }
 
 /**
- * Function to render Canvas according th renderupdate order
+ * Function to render Canvas according the renderupdate order
  * @param {Scope} scope - The circuit whose canvas we want to render
  * @category engine
  */
@@ -237,9 +237,9 @@ export function renderCanvas(scope) {
     // Different Algorithm
     return;
   }
-  const ctx = simulationArea.context;
+  const ctx = globalScope.simulationArea.context;
   // Reset canvas
-  simulationArea.clear();
+  globalScope.simulationArea.clear();
   // Update Grid
   if (gridUpdate) {
     gridUpdateSet(false);
@@ -273,10 +273,10 @@ export function renderCanvas(scope) {
     ctx.fillStyle = 'rgba(0,0,0,0.1)';
     rect2(
         ctx,
-        simulationArea.mouseDownX,
-        simulationArea.mouseDownY,
-        simulationArea.mouseX - simulationArea.mouseDownX,
-        simulationArea.mouseY - simulationArea.mouseDownY,
+        globalScope.simulationArea.mouseDownX,
+        globalScope.simulationArea.mouseDownY,
+        globalScope.simulationArea.mouseX - globalScope.simulationArea.mouseDownX,
+        globalScope.simulationArea.mouseY - globalScope.simulationArea.mouseDownY,
         0,
         0,
         'RIGHT',
@@ -284,12 +284,12 @@ export function renderCanvas(scope) {
     ctx.stroke();
     ctx.fill();
   }
-  if (simulationArea.hover !== undefined) {
-    simulationArea.canvas.style.cursor = 'pointer';
-  } else if (simulationArea.mouseDown) {
-    simulationArea.canvas.style.cursor = 'grabbing';
+  if (globalScope.simulationArea.hover !== undefined) {
+    globalScope.simulationArea.canvas.style.cursor = 'pointer';
+  } else if (globalScope.simulationArea.mouseDown) {
+    globalScope.simulationArea.canvas.style.cursor = 'grabbing';
   } else {
-    simulationArea.canvas.style.cursor = 'default';
+    globalScope.simulationArea.canvas.style.cursor = 'default';
   }
 }
 
@@ -300,12 +300,12 @@ export function renderCanvas(scope) {
  * @category engine
  */
 export function updateSelectionsAndPane(scope = globalScope) {
-  if (!simulationArea.selected && simulationArea.mouseDown) {
-    simulationArea.selected = true;
-    simulationArea.lastSelected = scope.root;
-    simulationArea.hover = scope.root;
+  if (!globalScope.simulationArea.selected && globalScope.simulationArea.mouseDown) {
+    globalScope.simulationArea.selected = true;
+    globalScope.simulationArea.lastSelected = scope.root;
+    globalScope.simulationArea.hover = scope.root;
     // Selecting multiple objects
-    if (simulationArea.shiftDown) {
+    if (globalScope.simulationArea.shiftDown) {
       objectSelectionSet(true);
     } else if (!embed) {
       findDimensions(scope);
@@ -313,19 +313,19 @@ export function updateSelectionsAndPane(scope = globalScope) {
       $('#miniMap').show();
     }
   } else if (
-    simulationArea.lastSelected === scope.root &&
-    simulationArea.mouseDown
+    globalScope.simulationArea.lastSelected === scope.root &&
+    globalScope.simulationArea.mouseDown
   ) {
     // pane canvas to give an idea of grid moving
     if (!objectSelection) {
       globalScope.ox =
-        simulationArea.mouseRawX -
-        simulationArea.mouseDownRawX +
-        simulationArea.oldX;
+        globalScope.simulationArea.mouseRawX -
+        globalScope.simulationArea.mouseDownRawX +
+        globalScope.simulationArea.oldX;
       globalScope.oy =
-        simulationArea.mouseRawY -
-        simulationArea.mouseDownRawY +
-        simulationArea.oldY;
+        globalScope.simulationArea.mouseRawY -
+        globalScope.simulationArea.mouseDownRawY +
+        globalScope.simulationArea.oldY;
       globalScope.ox = Math.round(globalScope.ox);
       globalScope.oy = Math.round(globalScope.oy);
       gridUpdateSet(true);
@@ -335,22 +335,22 @@ export function updateSelectionsAndPane(scope = globalScope) {
     } else {
       // idea: kind of empty
     }
-  } else if (simulationArea.lastSelected === scope.root) {
+  } else if (globalScope.simulationArea.lastSelected === scope.root) {
     /*
         Select multiple objects by adding them to the array
-        simulationArea.multipleObjectSelections when we select
+        globalScope.simulationArea.multipleObjectSelections when we select
         using shift + mouse movement to select an area but
         not shift + click
         */
-    simulationArea.lastSelected = undefined;
-    simulationArea.selected = false;
-    simulationArea.hover = undefined;
+    globalScope.simulationArea.lastSelected = undefined;
+    globalScope.simulationArea.selected = false;
+    globalScope.simulationArea.hover = undefined;
     if (objectSelection) {
       objectSelectionSet(false);
-      let x1 = simulationArea.mouseDownX;
-      let x2 = simulationArea.mouseX;
-      let y1 = simulationArea.mouseDownY;
-      let y2 = simulationArea.mouseY;
+      let x1 = globalScope.simulationArea.mouseDownX;
+      let x2 = globalScope.simulationArea.mouseX;
+      let y1 = globalScope.simulationArea.mouseDownY;
+      let y2 = globalScope.simulationArea.mouseY;
       // Sort those four points to make a selection pane
       if (x1 > x2) {
         const temp = x1;
@@ -366,7 +366,7 @@ export function updateSelectionsAndPane(scope = globalScope) {
       for (let i = 0; i < updateOrder.length; i++) {
         for (let j = 0; j < scope[updateOrder[i]].length; j++) {
           const obj = scope[updateOrder[i]][j];
-          if (simulationArea.multipleObjectSelections.includes(obj)) {
+          if (globalScope.simulationArea.multipleObjectSelections.includes(obj)) {
             continue;
           }
           let x;
@@ -381,7 +381,7 @@ export function updateSelectionsAndPane(scope = globalScope) {
             continue;
           }
           if (x > x1 && x < x2 && y > y1 && y < y2) {
-            simulationArea.multipleObjectSelections.push(obj);
+            globalScope.simulationArea.multipleObjectSelections.push(obj);
           }
         }
       }
@@ -405,29 +405,29 @@ export function play(scope = globalScope, resetNodes = false) {
     return;
   } // Don't simulate until loaded
 
-  simulationArea.simulationQueue.reset();
+  globalScope.simulationArea.simulationQueue.reset();
   plotArea.setExecutionTime(); // Waveform thing
   // Reset Nodes if required
   if (resetNodes || forceResetNodes) {
     scope.reset();
-    simulationArea.simulationQueue.reset();
+    globalScope.simulationArea.simulationQueue.reset();
     forceResetNodesSet(false);
   }
 
   // To store list of circuitselements that have shown contention
   // but kept temporarily (Mainly to resolve tristate bus issues)
-  simulationArea.contentionPending = [];
+  globalScope.simulationArea.contentionPending = [];
   // add inputs to the simulation queue
   scope.addInputs();
   // to check if we have infinite loop in circuit
   let stepCount = 0;
   let elem;
-  while (!simulationArea.simulationQueue.isEmpty()) {
+  while (!globalScope.simulationArea.simulationQueue.isEmpty()) {
     if (errorDetected) {
-      simulationArea.simulationQueue.reset();
+      globalScope.simulationArea.simulationQueue.reset();
       return;
     }
-    elem = simulationArea.simulationQueue.pop();
+    elem = globalScope.simulationArea.simulationQueue.pop();
     elem.resolve();
     stepCount++;
     if (stepCount > 1000000) {
@@ -439,7 +439,7 @@ export function play(scope = globalScope, resetNodes = false) {
     }
   }
   // Check for TriState Contentions
-  if (simulationArea.contentionPending.length) {
+  if (globalScope.simulationArea.contentionPending.length) {
     showError('Contention at TriState');
     forceResetNodesSet(true);
     errorDetectedSet(true);
@@ -496,7 +496,7 @@ export function update(scope = globalScope, updateEverything = false) {
     return;
   }
   let updated = false;
-  simulationArea.hover = undefined;
+  globalScope.simulationArea.hover = undefined;
   // Update wires
   if (wireToBeChecked || updateEverything) {
     if (wireToBeChecked === 2) {
@@ -538,9 +538,9 @@ export function update(scope = globalScope, updateEverything = false) {
   // Update MiniMap
   if (
     !embed &&
-    simulationArea.mouseDown &&
-    simulationArea.lastSelected &&
-    simulationArea.lastSelected !== globalScope.root
+    globalScope.simulationArea.mouseDown &&
+    globalScope.simulationArea.lastSelected &&
+    globalScope.simulationArea.lastSelected !== globalScope.root
   ) {
     if (!lightMode) {
       $('#miniMap').fadeOut('fast');
@@ -551,13 +551,13 @@ export function update(scope = globalScope, updateEverything = false) {
     play();
   }
   // Show properties of selected element
-  if (!embed && prevPropertyObjGet() !== simulationArea.lastSelected) {
+  if (!embed && prevPropertyObjGet() !== globalScope.simulationArea.lastSelected) {
     if (
-      simulationArea.lastSelected &&
-      simulationArea.lastSelected.objectType !== 'Wire'
+      globalScope.simulationArea.lastSelected &&
+      globalScope.simulationArea.lastSelected.objectType !== 'Wire'
     ) {
       // ideas: why show properties of project in Nodes but not wires?
-      showProperties(simulationArea.lastSelected);
+      showProperties(globalScope.simulationArea.lastSelected);
     } else {
       // hideProperties();
     }

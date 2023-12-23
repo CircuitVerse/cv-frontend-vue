@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulation_area';
+
 import {correctWidth, rect, fillText} from '../canvas_api';
 import {colors} from '../themer/themer';
 import {converters} from '../utils';
@@ -85,13 +85,13 @@ export class LSB extends CircuitElement {
       }
     }
     this.output1.value = out;
-    simulationArea.simulationQueue.add(this.output1);
+    globalScope.simulationArea.simulationQueue.add(this.output1);
     if (inp != 0) {
       this.enable.value = 1;
     } else {
       this.enable.value = 0;
     }
-    simulationArea.simulationQueue.add(this.enable);
+    globalScope.simulationArea.simulationQueue.add(this.enable);
   }
 
   /**
@@ -108,9 +108,9 @@ export class LSB extends CircuitElement {
     const yy = this.y;
     rect(ctx, xx - 10, yy - 30, 30, 60);
     if (
-      (this.hover && !simulationArea.shiftDown) ||
-      simulationArea.lastSelected === this ||
-      simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !globalScope.simulationArea.shiftDown) ||
+      globalScope.simulationArea.lastSelected === this ||
+      globalScope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }

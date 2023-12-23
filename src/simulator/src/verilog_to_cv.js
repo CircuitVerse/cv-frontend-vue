@@ -4,7 +4,7 @@ import {
   changeCircuitName,
 } from './circuit';
 import {SubCircuit} from './subcircuit';
-import {simulationArea} from './simulation_area';
+
 import CodeMirror from 'codemirror/lib/codemirror.js';
 import 'codemirror/mode/verilog/verilog.js';
 import 'codemirror/addon/edit/closebrackets.js';
@@ -64,9 +64,9 @@ export function verilogModeSet(mode) {
     document.querySelector('.quick-btn').style.display = 'none';
     document.getElementById('verilogEditorPanel').style.display = 'block';
     if (!embed) {
-      simulationArea.lastSelected = globalScope.root;
+      globalScope.simulationArea.lastSelected = globalScope.root;
       showProperties(undefined);
-      showProperties(simulationArea.lastSelected);
+      showProperties(globalScope.simulationArea.lastSelected);
     }
     resetVerilogCode();
   } else {

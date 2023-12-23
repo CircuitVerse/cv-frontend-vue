@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulation_area';
+
 import {correctWidth, rect2, fillText, oppositeDirection} from '../canvas_api';
 import {colors} from '../themer/themer';
 import {converters} from '../utils';
@@ -71,7 +71,7 @@ export class ConstantVal extends CircuitElement {
    */
   resolve() {
     this.output1.value = converters.bin2dec(this.state);
-    simulationArea.simulationQueue.add(this.output1);
+    globalScope.simulationArea.simulationQueue.add(this.output1);
   }
 
   /**
@@ -130,9 +130,9 @@ export class ConstantVal extends CircuitElement {
         'RIGHT',
     );
     if (
-      (this.hover && !simulationArea.shiftDown) ||
-      simulationArea.lastSelected === this ||
-      simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !globalScope.simulationArea.shiftDown) ||
+      globalScope.simulationArea.lastSelected === this ||
+      globalScope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }

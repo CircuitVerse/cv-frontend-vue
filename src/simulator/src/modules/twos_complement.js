@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulation_area';
+
 import {correctWidth, fillText, drawCircle2} from '../canvas_api';
 import {colors} from '../themer/themer';
 /**
@@ -63,7 +63,7 @@ export class TwoComplement extends CircuitElement {
     output += 1;
     this.output1.value =
       (output << (32 - this.bitWidth)) >>> (32 - this.bitWidth);
-    simulationArea.simulationQueue.add(this.output1);
+    globalScope.simulationArea.simulationQueue.add(this.output1);
   }
 
   /**
@@ -80,9 +80,9 @@ export class TwoComplement extends CircuitElement {
     ctx.fillStyle = 'black';
     fillText(ctx, '2\'', xx, yy, 10);
     if (
-      (this.hover && !simulationArea.shiftDown) ||
-      simulationArea.lastSelected === this ||
-      simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !globalScope.simulationArea.shiftDown) ||
+      globalScope.simulationArea.lastSelected === this ||
+      globalScope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }

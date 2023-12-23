@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulation_area';
+
 import {correctWidth, rect, fillText} from '../canvas_api';
 import {colors} from '../themer/themer';
 import {converters} from '../utils';
@@ -113,7 +113,7 @@ export class PriorityEncoder extends CircuitElement {
     this.inputSize = 1 << bitWidth;
 
     this.cleanDelete();
-    simulationArea.lastSelected = obj;
+    globalScope.simulationArea.lastSelected = obj;
     return obj;
   }
 
@@ -137,7 +137,7 @@ export class PriorityEncoder extends CircuitElement {
     } else {
       this.enable.value = 0;
     }
-    simulationArea.simulationQueue.add(this.enable);
+    globalScope.simulationArea.simulationQueue.add(this.enable);
 
     if (temp.length === undefined) {
       temp = '0';
@@ -154,7 +154,7 @@ export class PriorityEncoder extends CircuitElement {
 
     for (let i = this.bitWidth - 1; i >= 0; i--) {
       this.output1[this.bitWidth - 1 - i].value = Number(temp[i]);
-      simulationArea.simulationQueue.add(
+      globalScope.simulationArea.simulationQueue.add(
           this.output1[this.bitWidth - 1 - i],
       );
     }
@@ -190,9 +190,9 @@ export class PriorityEncoder extends CircuitElement {
       );
     }
     if (
-      (this.hover && !simulationArea.shiftDown) ||
-      simulationArea.lastSelected === this ||
-      simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !globalScope.simulationArea.shiftDown) ||
+      globalScope.simulationArea.lastSelected === this ||
+      globalScope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }

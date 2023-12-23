@@ -8,7 +8,7 @@ import {
   gridUpdateSet,
 } from '../engine';
 import {updateRestrictedElementsInScope} from '../restricted_element_div';
-import {simulationArea} from '../simulation_area';
+
 
 import {loadSubCircuit} from '../subcircuit';
 import {scheduleBackup} from './backup_circuit';
@@ -288,12 +288,12 @@ export function load(data) {
   }
 
   // Restore clock
-  simulationArea.changeClockTime(data.timePeriod || 500);
-  simulationArea.clockEnabled =
+  globalScope.simulationArea.changeClockTime(data.timePeriod || 500);
+  globalScope.simulationArea.clockEnabled =
     data.clockEnabled === undefined ? true : data.clockEnabled;
 
   if (!embed) {
-    showProperties(simulationArea.lastSelected);
+    showProperties(globalScope.simulationArea.lastSelected);
   }
 
   // Reorder tabs according to the saved order

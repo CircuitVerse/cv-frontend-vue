@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulation_area';
+
 import {fillText4} from '../canvas_api';
 /**
  * @class
@@ -67,7 +67,7 @@ export class ForceGate extends CircuitElement {
     } else {
       this.output1.value = this.inp1.value;
     }
-    simulationArea.simulationQueue.add(this.output1);
+    globalScope.simulationArea.simulationQueue.add(this.output1);
   }
 
   /**

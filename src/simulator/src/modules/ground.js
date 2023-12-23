@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulation_area';
+
 import {correctWidth, lineTo, moveTo} from '../canvas_api';
 import {colors} from '../themer/themer';
 /**
@@ -47,7 +47,7 @@ export class Ground extends CircuitElement {
    */
   resolve() {
     this.output1.value = 0;
-    simulationArea.simulationQueue.add(this.output1);
+    globalScope.simulationArea.simulationQueue.add(this.output1);
   }
 
   /**
@@ -58,9 +58,9 @@ export class Ground extends CircuitElement {
   customDraw(ctx) {
     ctx.beginPath();
     ctx.strokeStyle = [colors['stroke'], 'brown'][
-        ((this.hover && !simulationArea.shiftDown) ||
-        simulationArea.lastSelected === this ||
-        simulationArea.multipleObjectSelections.includes(this)) + 0
+        ((this.hover && !globalScope.simulationArea.shiftDown) ||
+        globalScope.simulationArea.lastSelected === this ||
+        globalScope.simulationArea.multipleObjectSelections.includes(this)) + 0
     ];
     ctx.lineWidth = correctWidth(3);
 

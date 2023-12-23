@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulation_area';
+
 import {correctWidth, lineTo, moveTo, fillText} from '../canvas_api';
 import {colors} from '../themer/themer';
 /**
@@ -102,8 +102,8 @@ export class DflipFlop extends CircuitElement {
     if (this.qOutput.value != this.slaveState) {
       this.qOutput.value = this.slaveState;
       this.qInvOutput.value = this.flipBits(this.slaveState);
-      simulationArea.simulationQueue.add(this.qOutput);
-      simulationArea.simulationQueue.add(this.qInvOutput);
+      globalScope.simulationArea.simulationQueue.add(this.qOutput);
+      globalScope.simulationArea.simulationQueue.add(this.qInvOutput);
     }
   }
 

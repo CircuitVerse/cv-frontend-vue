@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulation_area';
+
 import {correctWidth, lineTo, moveTo, drawCircle2} from '../canvas_api';
 
 /**
@@ -60,7 +60,7 @@ export class Button extends CircuitElement {
       this.state = 0;
       this.output1.value = this.state;
     }
-    simulationArea.simulationQueue.add(this.output1);
+    globalScope.simulationArea.simulationQueue.add(this.output1);
   }
 
   /**
@@ -88,9 +88,9 @@ export class Button extends CircuitElement {
     ctx.stroke();
 
     if (
-      (this.hover && !simulationArea.shiftDown) ||
-      simulationArea.lastSelected === this ||
-      simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !globalScope.simulationArea.shiftDown) ||
+      globalScope.simulationArea.lastSelected === this ||
+      globalScope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = 'rgba(232, 13, 13,0.6)';
     }
@@ -118,9 +118,9 @@ export class Button extends CircuitElement {
     drawCircle2(ctx, 0, 0, 6, xx, yy, this.direction);
     ctx.stroke();
     if (
-      (this.hover && !simulationArea.shiftDown) ||
-      simulationArea.lastSelected == this ||
-      simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !globalScope.simulationArea.shiftDown) ||
+      globalScope.simulationArea.lastSelected == this ||
+      globalScope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = 'rgba(232, 13, 13,0.6)';
     }

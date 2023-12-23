@@ -1,4 +1,4 @@
-import {simulationArea} from './simulation_area';
+
 import {miniMapArea, removeMiniMap, updateLastMinimapShown} from './minimap';
 import {colors} from './themer/themer';
 
@@ -10,52 +10,52 @@ const unit = 10;
  */
 export function findDimensions(scope = globalScope) {
   let totalObjects = 0;
-  simulationArea.minWidth = undefined;
-  simulationArea.maxWidth = undefined;
-  simulationArea.minHeight = undefined;
-  simulationArea.maxHeight = undefined;
+  globalScope.simulationArea.minWidth = undefined;
+  globalScope.simulationArea.maxWidth = undefined;
+  globalScope.simulationArea.minHeight = undefined;
+  globalScope.simulationArea.maxHeight = undefined;
   for (let i = 0; i < updateOrder.length; i++) {
     if (updateOrder[i] !== 'wires') {
       for (let j = 0; j < scope[updateOrder[i]].length; j++) {
         totalObjects += 1;
         const obj = scope[updateOrder[i]][j];
         if (totalObjects === 1) {
-          simulationArea.minWidth = obj.absX();
-          simulationArea.minHeight = obj.absY();
-          simulationArea.maxWidth = obj.absX();
-          simulationArea.maxHeight = obj.absY();
+          globalScope.simulationArea.minWidth = obj.absX();
+          globalScope.simulationArea.minHeight = obj.absY();
+          globalScope.simulationArea.maxWidth = obj.absX();
+          globalScope.simulationArea.maxHeight = obj.absY();
         }
         if (obj.objectType !== 'Node') {
-          if (obj.y - obj.upDimensionY < simulationArea.minHeight) {
-            simulationArea.minHeight = obj.y - obj.upDimensionY;
+          if (obj.y - obj.upDimensionY < globalScope.simulationArea.minHeight) {
+            globalScope.simulationArea.minHeight = obj.y - obj.upDimensionY;
           }
-          if (obj.y + obj.downDimensionY > simulationArea.maxHeight) {
-            simulationArea.maxHeight = obj.y + obj.downDimensionY;
+          if (obj.y + obj.downDimensionY > globalScope.simulationArea.maxHeight) {
+            globalScope.simulationArea.maxHeight = obj.y + obj.downDimensionY;
           }
-          if (obj.x - obj.leftDimensionX < simulationArea.minWidth) {
-            simulationArea.minWidth = obj.x - obj.leftDimensionX;
+          if (obj.x - obj.leftDimensionX < globalScope.simulationArea.minWidth) {
+            globalScope.simulationArea.minWidth = obj.x - obj.leftDimensionX;
           }
-          if (obj.x + obj.rightDimensionX > simulationArea.maxWidth) {
-            simulationArea.maxWidth = obj.x + obj.rightDimensionX;
+          if (obj.x + obj.rightDimensionX > globalScope.simulationArea.maxWidth) {
+            globalScope.simulationArea.maxWidth = obj.x + obj.rightDimensionX;
           }
         } else {
-          if (obj.absY() < simulationArea.minHeight) {
-            simulationArea.minHeight = obj.absY();
+          if (obj.absY() < globalScope.simulationArea.minHeight) {
+            globalScope.simulationArea.minHeight = obj.absY();
           }
-          if (obj.absY() > simulationArea.maxHeight) {
-            simulationArea.maxHeight = obj.absY();
+          if (obj.absY() > globalScope.simulationArea.maxHeight) {
+            globalScope.simulationArea.maxHeight = obj.absY();
           }
-          if (obj.absX() < simulationArea.minWidth) {
-            simulationArea.minWidth = obj.absX();
+          if (obj.absX() < globalScope.simulationArea.minWidth) {
+            globalScope.simulationArea.minWidth = obj.absX();
           }
-          if (obj.absX() > simulationArea.maxWidth) {
-            simulationArea.maxWidth = obj.absX();
+          if (obj.absX() > globalScope.simulationArea.maxWidth) {
+            globalScope.simulationArea.maxWidth = obj.absX();
           }
         }
       }
     }
   }
-  simulationArea.objectList = updateOrder;
+  globalScope.simulationArea.objectList = updateOrder;
 }
 
 /**
@@ -82,17 +82,17 @@ export function changeScale(delta, xx, yy, method = 1) {
     yy === 'zoomButton'
   ) {
     if (
-      simulationArea.lastSelected &&
-      simulationArea.lastSelected.objectType !== 'Wire'
+      globalScope.simulationArea.lastSelected &&
+      globalScope.simulationArea.lastSelected.objectType !== 'Wire'
     ) {
       // selected object
-      xx = simulationArea.lastSelected.x;
-      yy = simulationArea.lastSelected.y;
+      xx = globalScope.simulationArea.lastSelected.x;
+      yy = globalScope.simulationArea.lastSelected.y;
     } else {
       // mouse location
       if (method === 1) {
-        xx = simulationArea.mouseX;
-        yy = simulationArea.mouseY;
+        xx = globalScope.simulationArea.mouseX;
+        yy = globalScope.simulationArea.mouseY;
       } else if (method === 2) {
         xx = (width / 2 - globalScope.ox) / globalScope.scale;
         yy = (height / 2 - globalScope.oy) / globalScope.scale;
@@ -152,12 +152,12 @@ export function dots(
   // adjust top position of canvas
   globalScope.backgroundArea.canvas.style.top = `${(oy - scale) / DPR}px`;
 
-  if (globalScope.scale === simulationArea.prevScale && !force) {
+  if (globalScope.scale === globalScope.simulationArea.prevScale && !force) {
     return;
   }
 
   // set the previous scale to current scale
-  simulationArea.prevScale = globalScope.scale;
+  globalScope.simulationArea.prevScale = globalScope.scale;
 
   backgroundCtx.beginPath();
   globalScope.backgroundArea.clear();
@@ -230,7 +230,7 @@ export function bezierCurveTo(x1, y1, x2, y2, x3, y3, xx, yy, dir) {
   y3 *= globalScope.scale;
   xx *= globalScope.scale;
   yy *= globalScope.scale;
-  const ctx = simulationArea.context;
+  const ctx = globalScope.simulationArea.context;
   ctx.bezierCurveTo(
       Math.round(xx + ox + x1),
       Math.round(yy + oy + y1),

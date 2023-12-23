@@ -1,6 +1,6 @@
 import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
-import {simulationArea} from '../simulation_area';
+
 import {correctWidth, lineTo, moveTo, fillText} from '../canvas_api';
 import {colors} from '../themer/themer';
 /**
@@ -88,7 +88,7 @@ export class Multiplexer extends CircuitElement {
         size,
     );
     this.cleanDelete();
-    simulationArea.lastSelected = obj;
+    globalScope.simulationArea.lastSelected = obj;
     return obj;
   }
 
@@ -149,7 +149,7 @@ export class Multiplexer extends CircuitElement {
       return;
     }
     this.output1.value = this.inp[this.controlSignalInput.value].value;
-    simulationArea.simulationQueue.add(this.output1);
+    globalScope.simulationArea.simulationQueue.add(this.output1);
   }
 
   /**
@@ -220,9 +220,9 @@ export class Multiplexer extends CircuitElement {
 
     ctx.closePath();
     if (
-      (this.hover && !simulationArea.shiftDown) ||
-      simulationArea.lastSelected === this ||
-      simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !globalScope.simulationArea.shiftDown) ||
+      globalScope.simulationArea.lastSelected === this ||
+      globalScope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }
