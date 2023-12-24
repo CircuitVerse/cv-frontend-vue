@@ -57,28 +57,39 @@ export function showError(error) {
     if (error === prevErrorMessage) return
     prevErrorMessage = error
     var id = Math.floor(Math.random() * 10000)
-    $('#MessageDiv').append(
-        `<div class='alert alert-danger' role='alert' id='${id}'> ${error}</div>`
-    )
+    var div = document.createElement("div");
+    div.classList.add('alert', 'alert-danger');
+    div.setAttribute("role", "alert");
+    div.setAttribute("id", id);
+    div.innerHTML = error;
+    document.getElementById("MessageDiv").appendChild(div);
+
     setTimeout(() => {
         prevErrorMessage = undefined
-        $(`#${id}`).fadeOut()
-    }, 1500)
+        let elem = document.getElementById(id);
+        elem.parentNode.removeChild(elem);
+    }, 1500);
 }
+
 
 // Helper function to show message
 export function showMessage(mes) {
     if (mes === prevShowMessage) return
     prevShowMessage = mes
     var id = Math.floor(Math.random() * 10000)
-    $('#MessageDiv').append(
-        `<div class='alert alert-success' role='alert' id='${id}'> ${mes}</div>`
-    )
+    let div = document.createElement('div');
+    div.setAttribute('class', 'alert alert-success');
+    div.setAttribute('role', 'alert');
+    div.setAttribute('id', id);
+    div.innerHTML = mes;
+    document.getElementById('MessageDiv').appendChild(div);
     setTimeout(() => {
         prevShowMessage = undefined
-        $(`#${id}`).fadeOut()
+        let errorDiv = document.getElementById(id);
+        errorDiv.parentNode.removeChild(errorDiv);
     }, 2500)
 }
+
 
 export function distance(x1, y1, x2, y2) {
     return Math.sqrt((x2 - x1) ** 2) + (y2 - y1) ** 2
@@ -251,13 +262,21 @@ export var convertors = {
 }
 
 export function setBaseValues(x) {
-    if (isNaN(x)) return
-    $('#binaryInput').val(convertors.dec2bin(x))
-    $('#bcdInput').val(convertors.dec2bcd(x))
-    $('#octalInput').val(convertors.dec2octal(x))
-    $('#hexInput').val(convertors.dec2hex(x))
-    $('#decimalInput').val(x)
+    if (isNaN(x)) return;
+
+    var binaryInput = document.getElementById("binaryInput");
+    var bcdInput = document.getElementById("bcdInput");
+    var octalInput = document.getElementById("octalInput");
+    var hexInput = document.getElementById("hexInput");
+    var decimalInput = document.getElementById("decimalInput");
+
+    binaryInput.value = convertors.dec2bin(x);
+    bcdInput.value = convertors.dec2bcd(x);
+    octalInput.value = convertors.dec2octal(x);
+    hexInput.value = convertors.dec2hex(x);
+    decimalInput.value = x;
 }
+
 
 export function parseNumber(num) {
     if (num instanceof Number) return num
@@ -270,47 +289,54 @@ export function parseNumber(num) {
 }
 
 export function setupBitConvertor() {
-    console.log('check bit convertor')
-    $('#decimalInput').on('keyup', function () {
-        var x = parseInt($('#decimalInput').val(), 10)
-        setBaseValues(x)
-    })
+    console.log('check bit convertor');
+    document.addEventListener("DOMContentLoaded", function() {
+        const decimalInput = document.getElementById('decimalInput');
+        decimalInput.addEventListener('keyup', function () {
+            var x = parseInt(decimalInput.value, 10);
+            setBaseValues(x);
+        });
 
-    $('#binaryInput').on('keyup', function () {
-        var inp = $('#binaryInput').val()
-        var x
-        if (inp.slice(0, 2) == '0b') x = parseInt(inp.slice(2), 2)
-        else x = parseInt(inp, 2)
-        setBaseValues(x)
-    })
-    $('#bcdInput').on('keyup', function () {
-        var input = $('#bcdInput').val()
-        var num = 0
-        while (input.length % 4 !== 0) {
-            input = '0' + input
-        }
-        if (input !== 0) {
-            var i = 0
-            while (i < input.length / 4) {
-                if (parseInt(input.slice(4 * i, 4 * (i + 1)), 2) < 10)
-                    num =
-                        num * 10 + parseInt(input.slice(4 * i, 4 * (i + 1)), 2)
-                else return setBaseValues(NaN)
-                i++
+        const binaryInput = document.getElementById('binaryInput');
+        binaryInput.addEventListener('keyup', function () {
+            var inp = binaryInput.value;
+            var x;
+            if (inp.slice(0, 2) === '0b') x = parseInt(inp.slice(2), 2);
+            else x = parseInt(inp, 2);
+            setBaseValues(x);
+        });
+
+        const bcdInput = document.getElementById('bcdInput');
+        bcdInput.addEventListener('keyup', function () {
+            var input = bcdInput.value;
+            var num = 0;
+            while (input.length % 4 !== 0) {
+                input = '0' + input;
             }
-        }
-        return setBaseValues(x)
-    })
+            if (input !== 0) {
+                var i = 0;
+                while (i < input.length / 4) {
+                    if (parseInt(input.slice(4 * i, 4 * (i + 1)), 2) < 10)
+                        num = num * 10 + parseInt(input.slice(4 * i, 4 * (i + 1)), 2);
+                    else return setBaseValues(NaN);
+                    i++;
+                }
+            }
+            return setBaseValues(num);
+        });
 
-    $('#hexInput').on('keyup', function () {
-        var x = parseInt($('#hexInput').val(), 16)
-        setBaseValues(x)
-    })
+        const hexInput = document.getElementById('hexInput');
+        hexInput.addEventListener('keyup', function () {
+            var x = parseInt(hexInput.value, 16);
+            setBaseValues(x);
+        });
 
-    $('#octalInput').on('keyup', function () {
-        var x = parseInt($('#octalInput').val(), 8)
-        setBaseValues(x)
-    })
+        const octalInput = document.getElementById('octalInput');
+        octalInput.addEventListener('keyup', function () {
+            var x = parseInt(octalInput.value, 8);
+            setBaseValues(x);
+        });
+    });
 }
 
 export function promptFile(contentType, multiple) {
