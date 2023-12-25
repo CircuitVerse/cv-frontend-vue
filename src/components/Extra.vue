@@ -1,7 +1,7 @@
 <template>
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- TabsBar -->
-    <TabsBar />
+    <TabsBar :isSimulationAreaClicked="isSimulationAreaClicked" @changeState="handleStateChange"/>
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
@@ -214,7 +214,7 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Simulation Area - Canvas (3) + Help Section-->
-    <div id="simulation" class="simulation">
+    <div id="simulation" class="simulation" @mousedown="handleSimulationAreaClick">
         <!-- <div id="restrictedDiv" class="alert alert-danger display--none"></div> -->
         <div id="canvasArea" class="canvasArea">
             <canvas
@@ -320,4 +320,26 @@ import CustomShortcut from './DialogBox/CustomShortcut.vue'
 import InsertSubcircuit from './DialogBox/InsertSubcircuit.vue'
 import OpenOffline from './DialogBox/OpenOffline.vue'
 import ReportIssue from './ReportIssue/ReportIssue.vue'
+
+import { ref, defineProps, defineEmits } from 'vue';
+
+const props = defineProps(['isSimulationAreaClicked']);
+const { emit } = defineEmits();
+
+const handleTabsBarClick = () => {
+  emit('tabsBarClick');
+};
+
+function handleStateChange(dataFromChild) {
+    // console.log('Received data from TabsBar:', dataFromChild);
+    isSimulationAreaClicked.value = dataFromChild.isSimulationAreaClicked;
+  }
+
+const isSimulationAreaClicked = ref(false);
+
+function handleSimulationAreaClick() {
+  isSimulationAreaClicked.value = true;
+}
+
+
 </script>
