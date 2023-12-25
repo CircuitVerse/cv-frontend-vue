@@ -1658,10 +1658,10 @@ input:checked + .slider:before {
 #backgroundArea,
 #simulationArea,
 canvas {
-    /* cursor: wait !important; */
+     /* cursor: wait !important;  */
 }
 
-/** Color them dialog styles starts here*/
+/* * Color them dialog styles starts here */
 
 .ui-dialog[aria-describedby='colorThemesDialog'] {
     min-width: 760px;
