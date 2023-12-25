@@ -546,6 +546,7 @@ export class SubCircuit extends CircuitElement {
       y: this.y,
       id: this.id,
       label: this.label,
+      objectType: this.objectType,
       labelDirection: this.labelDirection,
       inputNodes: this.inputNodes.map(findNode),
       outputNodes: this.outputNodes.map(findNode),
@@ -736,5 +737,6 @@ export class SubCircuit extends CircuitElement {
     }
   }
 }
-SubCircuit.prototype.centerElement = true; // To center subcircuit when new
+SubCircuit.prototype.centerElement = true;
 SubCircuit.prototype.propagationDelayFixed = true;
+SubCircuit.prototype.constructorParameters = [];

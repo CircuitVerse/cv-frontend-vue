@@ -21,7 +21,11 @@ import {plotArea} from '../plot_area';
 import {updateTestbenchUI, TestbenchData} from '../testbench';
 import {SimulatorStore} from '#/store/SimulatorStore/SimulatorStore';
 import {toRefs} from 'vue';
-import {ForceConnection, ForceNode, ForceDirectedGraph} from '../layout/force_directed_graph';
+import {
+  ForceConnection,
+  ForceNode,
+  ForceDirectedGraph,
+} from '../layout/force_directed_graph';
 
 /**
  * Function to load CircuitElements
@@ -32,7 +36,8 @@ import {ForceConnection, ForceNode, ForceDirectedGraph} from '../layout/force_di
 function loadModule(data, scope) {
   // Create circuit element
   const params = [];
-  const constructorParams = modules[data.objectType].prototype.constructorParameters;
+  const constructorParams = modules[data.objectType]
+      .prototype.constructorParameters;
   for (let i = 0; i < constructorParams.length; i++) {
     params.push(data.customData[constructorParams[i]]);
   }
@@ -53,13 +58,15 @@ function loadModule(data, scope) {
   // Replace new nodes with the correct old nodes (with connections)
   if (data.nodes) {
     for (const node in data.nodes) {
-      const n = data.nodes[node];
-      if (n instanceof Array) {
-        for (let i = 0; i < n.length; i++) {
-          obj[node][i] = replace(obj[node][i], n[i]);
+      if (Object.hasOwn(data.nodes, node)) {
+        const n = data.nodes[node];
+        if (n instanceof Array) {
+          for (let i = 0; i < n.length; i++) {
+            obj[node][i] = replace(obj[node][i], n[i]);
+          }
+        } else {
+          obj[node] = replace(obj[node], n);
         }
-      } else {
-        obj[node] = replace(obj[node], n);
       }
     }
   }
@@ -97,7 +104,6 @@ function removeBugNodes(scope = globalScope) {
  * @category data
  */
 export function loadScope(scope, data) {
-  const ML = moduleList.slice(); // Module List copy
   data.restrictedCircuitElementsUsed = data.restrictedCircuitElementsUsed || [];
   scope.restrictedCircuitElementsUsed = data.restrictedCircuitElementsUsed;
   data.nodes = data.nodes || [];
@@ -180,6 +186,7 @@ export function loadScope(scope, data) {
 
 /**
  *
+ * @param {Scope} scope
  */
 function automaticLayout(scope) {
   const ML = moduleList.slice();
@@ -300,7 +307,7 @@ export function load(data) {
   if (data.orderedTabs) {
     circuitList.value.sort((a, b) => {
       return data.orderedTabs.indexOf(String(a.id)) -
-          data.orderedTabs.indexOf(String(b.id));
+        data.orderedTabs.indexOf(String(b.id));
     });
   }
 

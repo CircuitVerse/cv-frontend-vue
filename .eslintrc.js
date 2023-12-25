@@ -15,6 +15,7 @@ module.exports = {
   rules: {
     'curly': [2, 'all'],
     'semi': [1, 'always'],
+    'object-curly-spacing': ['error', 'never'],
   },
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint'],
