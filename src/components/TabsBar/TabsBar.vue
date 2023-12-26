@@ -86,33 +86,29 @@ import {
 // import MessageBox from '#/components/MessageBox/messageBox.vue'
 import { useState } from '#/store/SimulatorStore/state'
 import { closeCircuit } from '../helpers/deleteCircuit/DeleteCircuit.vue'
-
 const SimulatorState = <SimulatorStateType>useState()
 const drag: Ref<boolean> = ref(false)
 const updateCount: Ref<number> = ref(0);
 
-
-const props = defineProps(['isSimulationAreaClicked']);
+import { useActions } from '../../store/SimulatorStore/actions';
 
 const showMaxHeight = ref(true);
+const actions = useActions();
+const state = useState();
+
+const callSimulatorAction = (value: boolean) => {
+    actions.setSimulatorClicked(value);
+};
 
 watch(() => {
-    console.log('isSimulationAreaClicked:', props.isSimulationAreaClicked);
-    if (props.isSimulationAreaClicked === true && showMaxHeight.value === false) {
-        // If isSimulationAreaClicked is true and showMaxHeight is false, set showMaxHeight to true
+    console.log('state.dialogBox.SimulatorWasClicked:', state.dialogBox.SimulatorWasClicked);
+    if (state.dialogBox.SimulatorWasClicked === true && showMaxHeight.value === false) {
         showMaxHeight.value = true;
     }
 });
 
-const emit = defineEmits(['changeState']);
-
-function handleClick() {
-    // Emit the event with necessary data
-    emit('changeState', { data: 'some value to pass to parent' });
-}
-
 function handleTabsBarClick() {
-  emit('changeState', { isSimulationAreaClicked: false });
+  state.dialogBox.SimulatorWasClicked = false;
 }
 
 function toggleHeight() {

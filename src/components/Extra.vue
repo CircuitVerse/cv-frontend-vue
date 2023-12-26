@@ -1,7 +1,7 @@
 <template>
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- TabsBar -->
-    <TabsBar :isSimulationAreaClicked="isSimulationAreaClicked" @changeState="handleStateChange"/>
+    <TabsBar />
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
@@ -214,7 +214,7 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Simulation Area - Canvas (3) + Help Section-->
-    <div id="simulation" class="simulation" @mousedown="handleSimulationAreaClick">
+    <div id="simulation" class="simulation" @click="callSimulatorAction(true)">
         <!-- <div id="restrictedDiv" class="alert alert-danger display--none"></div> -->
         <div id="canvasArea" class="canvasArea">
             <canvas
@@ -321,25 +321,16 @@ import InsertSubcircuit from './DialogBox/InsertSubcircuit.vue'
 import OpenOffline from './DialogBox/OpenOffline.vue'
 import ReportIssue from './ReportIssue/ReportIssue.vue'
 
-import { ref, defineProps, defineEmits } from 'vue';
+// ------------- Code for id="simulation" `obj : Toggling Tabsbar Effect` -------------
 
-const props = defineProps(['isSimulationAreaClicked']);
-const { emit } = defineEmits();
+import { useActions } from '../store/SimulatorStore/actions';
+const actions = useActions();
 
-const handleTabsBarClick = () => {
-  emit('tabsBarClick');
+const callSimulatorAction = (value: boolean) => {
+    actions.setSimulatorClicked(value);
 };
 
-function handleStateChange(dataFromChild) {
-    // console.log('Received data from TabsBar:', dataFromChild);
-    isSimulationAreaClicked.value = dataFromChild.isSimulationAreaClicked;
-  }
-
-const isSimulationAreaClicked = ref(false);
-
-function handleSimulationAreaClick() {
-  isSimulationAreaClicked.value = true;
-}
+// -------------------------------------------------------
 
 
 </script>
