@@ -24,7 +24,7 @@ export class Dlatch extends CircuitElement {
    * @param {string} dir - direction in which element has to drawn.
    * @param {number} bitWidth - bitwidth of the latch.
    */
-  constructor(x, y, scope = globalScope, dir = 'RIGHT', bitWidth = 1) {
+  constructor(x, y, scope, dir = 'RIGHT', bitWidth = 1) {
     super(x, y, scope, dir, bitWidth);
     this.directionFixed = true;
     this.setDimensions(20, 20);
@@ -74,8 +74,8 @@ export class Dlatch extends CircuitElement {
     if (this.qOutput.value != this.state) {
       this.qOutput.value = this.state;
       this.qInvOutput.value = this.flipBits(this.state);
-      globalScope.simulationArea.simulationQueue.add(this.qOutput);
-      globalScope.simulationArea.simulationQueue.add(this.qInvOutput);
+      this.scope.simulationArea.simulationQueue.add(this.qOutput);
+      this.scope.simulationArea.simulationQueue.add(this.qInvOutput);
     }
   }
 

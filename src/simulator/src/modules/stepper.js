@@ -22,7 +22,7 @@ export class Stepper extends CircuitElement {
    * @param {string} dir - direction of element
    * @param {number} bitWidth - bitwidth of element
    */
-  constructor(x, y, scope = globalScope, dir = 'RIGHT', bitWidth = 8) {
+  constructor(x, y, scope, dir = 'RIGHT', bitWidth = 8) {
     super(x, y, scope, dir, bitWidth);
     this.setDimensions(20, 20);
     this.output1 = new Node(20, 0, 1, this, bitWidth);
@@ -69,7 +69,7 @@ export class Stepper extends CircuitElement {
   resolve() {
     this.state = Math.min(this.state, (1 << this.bitWidth) - 1);
     this.output1.value = this.state;
-    globalScope.simulationArea.simulationQueue.add(this.output1);
+    this.scope.simulationArea.simulationQueue.add(this.output1);
   }
 
   /**

@@ -22,7 +22,7 @@ export class NotGate extends CircuitElement {
    * @param {string} dir - direction of element
    * @param {number} bitWidth - bit width per node.
    */
-  constructor(x, y, scope = globalScope, dir = 'RIGHT', bitWidth = 1) {
+  constructor(x, y, scope, dir = 'RIGHT', bitWidth = 1) {
     super(x, y, scope, dir, bitWidth);
     this.rectangleObject = false;
     this.setDimensions(15, 15);
@@ -82,9 +82,9 @@ export class NotGate extends CircuitElement {
     lineTo(ctx, -10, 10, xx, yy, this.direction);
     ctx.closePath();
     if (
-      (this.hover && !globalScope.simulationArea.shiftDown) ||
-      globalScope.simulationArea.lastSelected === this ||
-      globalScope.simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !this.scope.simulationArea.shiftDown) ||
+      this.scope.simulationArea.lastSelected === this ||
+      this.scope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }

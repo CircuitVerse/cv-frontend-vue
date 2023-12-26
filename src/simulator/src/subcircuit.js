@@ -30,12 +30,12 @@ export function loadSubCircuit(savedData, scope) {
 }
 
 /**
- * Prompt to create subcircuit, shows list of circuits which dont depend on
+ * Prompt to create subcircuit, shows list of circuits which don't depend on
  * the current circuit.
  * @param {Scope} scope
  * @category subcircuit
  */
-export function createSubCircuitPrompt(scope = globalScope) {
+export function createSubCircuitPrompt() {
   if (verilogModeGet() || layoutModeGet()) {
     showError('Subcircuit cannot be inserted in this mode');
     return;
@@ -713,10 +713,10 @@ export class SubCircuit extends CircuitElement {
     }
     ctx.fill();
     for (let i = 0; i < this.outputNodes.length; i++) {
-      this.outputNodes[i].draw();
+      this.outputNodes[i].draw(globalScope.simulationArea);
     }
     for (let i = 0; i < this.inputNodes.length; i++) {
-      this.inputNodes[i].draw();
+      this.inputNodes[i].draw(globalScope.simulationArea);
     }
 
     // draw subcircuitElements

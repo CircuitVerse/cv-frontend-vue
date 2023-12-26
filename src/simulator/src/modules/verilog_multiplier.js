@@ -25,7 +25,7 @@ export class verilogMultiplier extends CircuitElement {
   constructor(
       x,
       y,
-      scope = globalScope,
+      scope,
       dir = 'RIGHT',
       bitWidth = 1,
       outputBitWidth = 1,
@@ -93,7 +93,7 @@ export class verilogMultiplier extends CircuitElement {
     this.product.value =
       (product << (32 - this.outputBitWidth)) >>>
       (32 - this.outputBitWidth);
-    globalScope.simulationArea.simulationQueue.add(this.product);
+    this.scope.simulationArea.simulationQueue.add(this.product);
   }
 }
 

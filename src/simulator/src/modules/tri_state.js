@@ -23,7 +23,7 @@ export class TriState extends CircuitElement {
    * @param {string} dir - direction of element.
    * @param {number} bitWidth - bit width per node.
    */
-  constructor(x, y, scope = globalScope, dir = 'RIGHT', bitWidth = 1) {
+  constructor(x, y, scope, dir = 'RIGHT', bitWidth = 1) {
     super(x, y, scope, dir, bitWidth);
     this.rectangleObject = false;
     this.setDimensions(15, 15);
@@ -75,22 +75,22 @@ export class TriState extends CircuitElement {
     if (this.state.value === 1) {
       if (this.output1.value !== this.inp1.value) {
         this.output1.value = this.inp1.value;
-        globalScope.simulationArea.simulationQueue.add(this.output1);
+        this.scope.simulationArea.simulationQueue.add(this.output1);
       }
-      const index = globalScope.simulationArea.contentionPending.indexOf(this);
+      const index = this.scope.simulationArea.contentionPending.indexOf(this);
       if (index != -1) {
-        globalScope.simulationArea.contentionPending.splice(index, 1);
+        this.scope.simulationArea.contentionPending.splice(index, 1);
       }
     } else if (
       this.output1.value !== undefined &&
-      !globalScope.simulationArea.contentionPending.includes(this)
+      !this.scope.simulationArea.contentionPending.includes(this)
     ) {
       this.output1.value = undefined;
-      globalScope.simulationArea.simulationQueue.add(this.output1);
+      this.scope.simulationArea.simulationQueue.add(this.output1);
     }
-    const index = globalScope.simulationArea.contentionPending.indexOf(this);
+    const index = this.scope.simulationArea.contentionPending.indexOf(this);
     if (index != -1) {
-      globalScope.simulationArea.contentionPending.splice(index, 1);
+      this.scope.simulationArea.contentionPending.splice(index, 1);
     }
   }
 
@@ -111,9 +111,9 @@ export class TriState extends CircuitElement {
     lineTo(ctx, -10, 15, xx, yy, this.direction);
     ctx.closePath();
     if (
-      (this.hover && !globalScope.simulationArea.shiftDown) ||
-      globalScope.simulationArea.lastSelected === this ||
-      globalScope.simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !this.scope.simulationArea.shiftDown) ||
+      this.scope.simulationArea.lastSelected === this ||
+      this.scope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }

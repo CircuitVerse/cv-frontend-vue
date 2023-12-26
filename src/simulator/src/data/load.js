@@ -204,7 +204,6 @@ function automaticLayout(scope) {
     }
   }
   for (let i = 0; i < nodes.length; i++) {
-    console.log('HERE');
     const element = nodes[i].reference;
     console.log(element);
     for (let k = 0; k < element.nodeList.length; k++) {
@@ -253,10 +252,8 @@ export function load(data) {
   setProjectName(data.name);
 
   globalScope = undefined;
-  resetScopeList(); // Remove default scope
-  // $('.circuits').remove() // Delete default scope
-
-  // Load all  according to the dependency order
+  resetScopeList();
+  // Load all according to the dependency order
   for (let i = 0; i < data.scopes.length; i++) {
     let isVerilogCircuit = false;
     let isMainCircuit = false;

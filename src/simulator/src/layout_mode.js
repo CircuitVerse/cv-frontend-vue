@@ -189,7 +189,7 @@ export function renderLayout(scope = globalScope) {
   }
 
   if (gridUpdateGet()) {
-    dots();
+    dots(globalScope);
   }
 
   // Update UI position
@@ -484,7 +484,7 @@ export function toggleLayoutMode() {
     if (globalScope.verilogMetadata.isVerilogCircuit) {
       verilogModeSet(true);
     }
-    dots();
+    dots(globalScope);
   } else {
     layoutModeSet(true);
     verilogModeSet(false);
@@ -498,7 +498,7 @@ export function toggleLayoutMode() {
     globalScope.ox = 0;
     globalScope.oy = 0;
     globalScope.scale = DPR * 1.3;
-    dots();
+    dots(globalScope);
     tempBuffer = new LayoutBuffer();
     // $('#toggleLayoutTitle')[0].checked = tempBuffer.layout.titleEnabled
   }

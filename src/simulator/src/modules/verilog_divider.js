@@ -25,7 +25,7 @@ export class verilogDivider extends CircuitElement {
   constructor(
       x,
       y,
-      scope = globalScope,
+      scope,
       dir = 'RIGHT',
       bitWidth = 1,
       outputBitWidth = 1,
@@ -113,8 +113,8 @@ export class verilogDivider extends CircuitElement {
     this.quotient.value =
       (quotient << (32 - this.outputBitWidth)) >>>
       (32 - this.outputBitWidth);
-    globalScope.simulationArea.simulationQueue.add(this.quotient);
-    globalScope.simulationArea.simulationQueue.add(this.remainder);
+    this.scope.simulationArea.simulationQueue.add(this.quotient);
+    this.scope.simulationArea.simulationQueue.add(this.remainder);
   }
 }
 

@@ -20,7 +20,7 @@ export class Keyboard extends CircuitElement {
    * @param {Scope} scope - the circuit in which we want the Element.
    * @param {*} bufferSize - buffer size.
    */
-  constructor(x, y, scope = globalScope, bufferSize = 32) {
+  constructor(x, y, scope, bufferSize = 32) {
     super(x, y, scope, 'RIGHT', 1);
     this.directionFixed = true;
     this.fixedBitWidth = true;
@@ -76,14 +76,15 @@ export class Keyboard extends CircuitElement {
     }
     const obj = new Keyboard(this.x, this.y, this.scope, size);
     this.delete();
-    globalScope.simulationArea.lastSelected = obj;
+    this.scope.simulationArea.lastSelected = obj;
     return obj;
   }
 
   /**
-     * @memberof Keyboard
-     * Adds the keyy pressed to the buffer
-     */
+   * @memberof Keyboard
+   * Adds the key pressed to the buffer
+   * @param {number[]} key
+   */
   keyDown(key) {
     if (key.length != 1) {
       return;
@@ -132,7 +133,7 @@ export class Keyboard extends CircuitElement {
 
     if (this.available.value != 0) {
       this.available.value = 0; // this.bufferOutValue;
-      globalScope.simulationArea.simulationQueue.add(this.available);
+      this.scope.simulationArea.simulationQueue.add(this.available);
     }
 
     if (this.clockInp.value == this.prevClockState) {
@@ -159,12 +160,12 @@ export class Keyboard extends CircuitElement {
 
     if (this.asciiOutput.value != this.bufferOutValue) {
       this.asciiOutput.value = this.bufferOutValue;
-      globalScope.simulationArea.simulationQueue.add(this.asciiOutput);
+      this.scope.simulationArea.simulationQueue.add(this.asciiOutput);
     }
 
     if (this.bufferOutValue !== undefined && this.available.value != 1) {
       this.available.value = 1; // this.bufferOutValue;
-      globalScope.simulationArea.simulationQueue.add(this.available);
+      this.scope.simulationArea.simulationQueue.add(this.available);
     }
   }
 

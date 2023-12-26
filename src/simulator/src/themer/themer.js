@@ -174,7 +174,7 @@ export const colorThemes = () => {
   });
 };
 
-export const updateBG = () => dots(true, false, true)
+export const updateBG = () => dots(globalScope, true, false, true)
 ;(() => {
   if (!localStorage.getItem('theme')) {
     localStorage.setItem('theme', 'Default Theme');

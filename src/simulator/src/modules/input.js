@@ -32,7 +32,7 @@ export class Input extends CircuitElement {
   constructor(
       x,
       y,
-      scope = globalScope,
+      scope,
       dir = 'RIGHT',
       bitWidth = 1,
       layoutProperties,
@@ -82,7 +82,7 @@ export class Input extends CircuitElement {
    */
   resolve() {
     this.output1.value = this.state;
-    globalScope.simulationArea.simulationQueue.add(this.output1);
+    this.scope.simulationArea.simulationQueue.add(this.output1);
   }
 
   /**
@@ -172,10 +172,11 @@ export class Input extends CircuitElement {
   /**
    * @memberof Input
    * function to find position of mouse click
+   * @return {number}
    */
   findPos() {
     return Math.round(
-        (globalScope.simulationArea.mouseX - this.x + 10 * this.bitWidth) / 20.0,
+        (this.scope.simulationArea.mouseX - this.x + 10 * this.bitWidth) / 20.0,
     );
   }
 }

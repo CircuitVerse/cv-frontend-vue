@@ -18,7 +18,7 @@ export class RGBLed extends CircuitElement {
    * @param {number} y - y coordinate of element.
    * @param {Scope} scope - Circuit on which element is drawn
    */
-  constructor(x, y, scope = globalScope) {
+  constructor(x, y, scope) {
     super(x, y, scope, 'UP', 8);
     this.rectangleObject = false;
     this.inp = [];
@@ -110,9 +110,9 @@ export class RGBLed extends CircuitElement {
     lineTo(ctx, -18, -11, xx, yy, this.direction);
     ctx.stroke();
     if (
-      (this.hover && !globalScope.simulationArea.shiftDown) ||
-      globalScope.simulationArea.lastSelected === this ||
-      globalScope.simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !this.scope.simulationArea.shiftDown) ||
+      this.scope.simulationArea.lastSelected === this ||
+      this.scope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }
@@ -144,9 +144,9 @@ export class RGBLed extends CircuitElement {
     drawCircle2(ctx, 0, 0, dimensionSize, xx, yy, this.direction);
     ctx.stroke();
     if (
-      (this.hover && !globalScope.simulationArea.shiftDown) ||
-      globalScope.simulationArea.lastSelected == this ||
-      globalScope.simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !this.scope.simulationArea.shiftDown) ||
+      this.scope.simulationArea.lastSelected == this ||
+      this.scope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = 'rgba(255, 255, 32,0.8)';
     }

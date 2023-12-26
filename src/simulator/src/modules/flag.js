@@ -9,19 +9,21 @@ import {colors} from '../themer/themer';
  * @class
  * Flag
  * @extends CircuitElement
- * @param {number} x - x coordinate of element.
- * @param {number} y - y coordinate of element.
- * @param {Scope} scope - Circuit on which element is drawn
- * @param {string} dir - direction of element
- * @param {number} bitWidth - bit width per node.
- * @param {string} identifier - id
  * @category modules
  */
 export class Flag extends CircuitElement {
+  /**
+   * @param {number} x - x coordinate of element.
+   * @param {number} y - y coordinate of element.
+   * @param {Scope} scope - Circuit on which element is drawn
+   * @param {string} dir - direction of element
+   * @param {number} bitWidth - bit width per node.
+   * @param {string} identifier - id
+   */
   constructor(
       x,
       y,
-      scope = globalScope,
+      scope,
       dir = 'RIGHT',
       bitWidth = 1,
       identifier,
@@ -46,7 +48,7 @@ export class Flag extends CircuitElement {
    * Determine output values and add to simulation queue.
    */
   resolve() {
-    this.flagTimeUnit = globalScope.simulationArea.simulationQueue.time;
+    this.flagTimeUnit = this.scope.simulationArea.simulationQueue.time;
     const time = plotArea.getPlotTime(this.flagTimeUnit);
 
     if (
@@ -132,9 +134,9 @@ export class Flag extends CircuitElement {
         'RIGHT',
     );
     if (
-      (this.hover && !globalScope.simulationArea.shiftDown) ||
-      globalScope.simulationArea.lastSelected === this ||
-      globalScope.simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !this.scope.simulationArea.shiftDown) ||
+      this.scope.simulationArea.lastSelected === this ||
+      this.scope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }

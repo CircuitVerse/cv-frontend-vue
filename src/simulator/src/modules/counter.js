@@ -25,7 +25,7 @@ export class Counter extends CircuitElement {
    * @param {Scope} scope - Circuit on which element is drawn.
    * @param {number} bitWidth - bit width.
    */
-  constructor(x, y, scope = globalScope, bitWidth = 8) {
+  constructor(x, y, scope, bitWidth = 8) {
     super(x, y, scope, 'RIGHT', bitWidth);
     this.directionFixed = true;
     this.rectangleObject = true;
@@ -106,14 +106,14 @@ export class Counter extends CircuitElement {
     this.value = outputValue;
     if (this.output.value != outputValue) {
       this.output.value = outputValue;
-      globalScope.simulationArea.simulationQueue.add(this.output);
+      this.scope.simulationArea.simulationQueue.add(this.output);
     }
 
     // Output the zero signal
     const zeroValue = this.clock.value == 1 && outputValue == 0 ? 1 : 0;
     if (this.zero.value != zeroValue) {
       this.zero.value = zeroValue;
-      globalScope.simulationArea.simulationQueue.add(this.zero);
+      this.scope.simulationArea.simulationQueue.add(this.zero);
     }
   }
   /**
@@ -162,9 +162,9 @@ export class Counter extends CircuitElement {
     ctx.stroke();
 
     if (
-      (this.hover && !globalScope.simulationArea.shiftDown) ||
-      globalScope.simulationArea.lastSelected == this ||
-      globalScope.simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !this.scope.simulationArea.shiftDown) ||
+      this.scope.simulationArea.lastSelected == this ||
+      this.scope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = 'rgba(255, 255, 32,0.6)';
       ctx.fill();

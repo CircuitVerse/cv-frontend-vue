@@ -27,7 +27,7 @@ export class Demultiplexer extends CircuitElement {
   constructor(
       x,
       y,
-      scope = globalScope,
+      scope,
       dir = 'LEFT',
       bitWidth = 1,
       controlSignalSize = 1,
@@ -62,7 +62,7 @@ export class Demultiplexer extends CircuitElement {
           size,
       );
       this.cleanDelete();
-      globalScope.simulationArea.lastSelected = obj;
+      this.scope.simulationArea.lastSelected = obj;
       return obj;
     };
     this.mutableProperties = {
@@ -140,7 +140,7 @@ export class Demultiplexer extends CircuitElement {
     this.output1[this.controlSignalInput.value].value = this.input.value;
 
     for (let i = 0; i < this.output1.length; i++) {
-      globalScope.simulationArea.simulationQueue.add(this.output1[i]);
+      this.scope.simulationArea.simulationQueue.add(this.output1[i]);
     }
   }
 
@@ -209,9 +209,9 @@ export class Demultiplexer extends CircuitElement {
     );
     ctx.closePath();
     if (
-      (this.hover && !globalScope.simulationArea.shiftDown) ||
-      globalScope.simulationArea.lastSelected === this ||
-      globalScope.simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !this.scope.simulationArea.shiftDown) ||
+      this.scope.simulationArea.lastSelected === this ||
+      this.scope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }

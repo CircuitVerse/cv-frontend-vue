@@ -30,7 +30,7 @@ export class Output extends CircuitElement {
   constructor(
       x,
       y,
-      scope = globalScope,
+      scope,
       dir = 'LEFT',
       bitWidth = 1,
       layoutProperties,
@@ -124,9 +124,9 @@ export class Output extends CircuitElement {
         'RIGHT',
     );
     if (
-      (this.hover && !globalScope.simulationArea.shiftDown) ||
-      globalScope.simulationArea.lastSelected === this ||
-      globalScope.simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !this.scope.simulationArea.shiftDown) ||
+      this.scope.simulationArea.lastSelected === this ||
+      this.scope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }

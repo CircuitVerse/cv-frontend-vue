@@ -22,7 +22,7 @@ export class Decoder extends CircuitElement {
    * @param {string} dir - direction of element.
    * @param {number} bitWidth - bit width per node.
    */
-  constructor(x, y, scope = globalScope, dir = 'LEFT', bitWidth = 1) {
+  constructor(x, y, scope, dir = 'LEFT', bitWidth = 1) {
     super(x, y, scope, dir, bitWidth);
     this.outputsize = 1 << this.bitWidth;
     this.xOff = 0;
@@ -48,7 +48,7 @@ export class Decoder extends CircuitElement {
           bitWidth,
       );
       this.cleanDelete();
-      globalScope.simulationArea.lastSelected = obj;
+      this.scope.simulationArea.lastSelected = obj;
       return obj;
     };
 
@@ -100,7 +100,7 @@ export class Decoder extends CircuitElement {
       this.output1[this.input.value].value = 1;
     } // if input is undefined, don't change output
     for (let i = 0; i < this.output1.length; i++) {
-      globalScope.simulationArea.simulationQueue.add(this.output1[i]);
+      this.scope.simulationArea.simulationQueue.add(this.output1[i]);
     }
   }
 
@@ -151,9 +151,9 @@ export class Decoder extends CircuitElement {
 
     ctx.closePath();
     if (
-      (this.hover && !globalScope.simulationArea.shiftDown) ||
-      globalScope.simulationArea.lastSelected === this ||
-      globalScope.simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !this.scope.simulationArea.shiftDown) ||
+      this.scope.simulationArea.lastSelected === this ||
+      this.scope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }

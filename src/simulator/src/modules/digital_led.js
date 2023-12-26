@@ -29,7 +29,7 @@ export class DigitalLed extends CircuitElement {
    * @param {Scope} scope - Circuit on which element is drawn.
    * @param {string} color - color of the LED.
    */
-  constructor(x, y, scope = globalScope, color = 'Red') {
+  constructor(x, y, scope, color = 'Red') {
     super(x, y, scope, 'UP', 1);
     this.rectangleObject = false;
     this.setDimensions(10, 20);
@@ -112,9 +112,9 @@ export class DigitalLed extends CircuitElement {
     lineTo(ctx, -15, -9, xx, yy, this.direction);
     ctx.stroke();
     if (
-      (this.hover && !globalScope.simulationArea.shiftDown) ||
-      globalScope.simulationArea.lastSelected === this ||
-      globalScope.simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !this.scope.simulationArea.shiftDown) ||
+      this.scope.simulationArea.lastSelected === this ||
+      this.scope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }
@@ -142,9 +142,9 @@ export class DigitalLed extends CircuitElement {
     ctx.stroke();
 
     if (
-      (this.hover && !globalScope.simulationArea.shiftDown) ||
-      globalScope.simulationArea.lastSelected == this ||
-      globalScope.simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !this.scope.simulationArea.shiftDown) ||
+      this.scope.simulationArea.lastSelected == this ||
+      this.scope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = 'rgba(255, 255, 32,0.8)';
     }

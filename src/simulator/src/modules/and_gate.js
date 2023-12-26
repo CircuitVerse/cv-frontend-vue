@@ -31,7 +31,7 @@ export class AndGate extends CircuitElement {
   constructor(
       x,
       y,
-      scope = globalScope,
+      scope,
       dir = 'RIGHT',
       inputLength = 2,
       bitWidth = 1,
@@ -101,7 +101,7 @@ export class AndGate extends CircuitElement {
       result &= this.inp[i].value || 0;
     }
     this.output1.value = result >>> 0;
-    globalScope.simulationArea.simulationQueue.add(this.output1);
+    this.scope.simulationArea.simulationQueue.add(this.output1);
   }
 
   /**
@@ -125,9 +125,9 @@ export class AndGate extends CircuitElement {
     ctx.closePath();
 
     if (
-      (this.hover && !globalScope.simulationArea.shiftDown) ||
-      globalScope.simulationArea.lastSelected === this ||
-      globalScope.simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !this.scope.simulationArea.shiftDown) ||
+      this.scope.simulationArea.lastSelected === this ||
+      this.scope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }

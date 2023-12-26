@@ -22,7 +22,7 @@ export class TwoComplement extends CircuitElement {
      * @param {string} dir - direction of element.
      * @param {number} bitWidth - bit width per node.
      */
-  constructor(x, y, scope = globalScope, dir = 'RIGHT', bitWidth = 1) {
+  constructor(x, y, scope, dir = 'RIGHT', bitWidth = 1) {
     super(x, y, scope, dir, bitWidth);
     this.rectangleObject = false;
     this.setDimensions(15, 15);
@@ -63,7 +63,7 @@ export class TwoComplement extends CircuitElement {
     output += 1;
     this.output1.value =
       (output << (32 - this.bitWidth)) >>> (32 - this.bitWidth);
-    globalScope.simulationArea.simulationQueue.add(this.output1);
+    this.scope.simulationArea.simulationQueue.add(this.output1);
   }
 
   /**
@@ -80,9 +80,9 @@ export class TwoComplement extends CircuitElement {
     ctx.fillStyle = 'black';
     fillText(ctx, '2\'', xx, yy, 10);
     if (
-      (this.hover && !globalScope.simulationArea.shiftDown) ||
-      globalScope.simulationArea.lastSelected === this ||
-      globalScope.simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !this.scope.simulationArea.shiftDown) ||
+      this.scope.simulationArea.lastSelected === this ||
+      this.scope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }

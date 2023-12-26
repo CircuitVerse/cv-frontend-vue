@@ -23,9 +23,9 @@ export class PriorityEncoder extends CircuitElement {
    * @param {string} dir - direction of element
    * @param {number} bitWidth - bit width per node.
    */
-  constructor(x, y, scope = globalScope, dir = 'RIGHT', bitWidth = 1) {
+  constructor(x, y, scope, dir = 'RIGHT', bitWidth = 1) {
     super(x, y, scope, dir, bitWidth);
-    this.bitWidth = bitWidth || parseInt(prompt('Enter bitWidth'), 10);
+    this.bitWidth = bitWidth;
     this.inputSize = 1 << this.bitWidth;
     this.yOff = 1;
     if (this.bitWidth <= 3) {
@@ -113,7 +113,7 @@ export class PriorityEncoder extends CircuitElement {
     this.inputSize = 1 << bitWidth;
 
     this.cleanDelete();
-    globalScope.simulationArea.lastSelected = obj;
+    this.scope.simulationArea.lastSelected = obj;
     return obj;
   }
 
@@ -137,7 +137,7 @@ export class PriorityEncoder extends CircuitElement {
     } else {
       this.enable.value = 0;
     }
-    globalScope.simulationArea.simulationQueue.add(this.enable);
+    this.scope.simulationArea.simulationQueue.add(this.enable);
 
     if (temp.length === undefined) {
       temp = '0';
@@ -154,7 +154,7 @@ export class PriorityEncoder extends CircuitElement {
 
     for (let i = this.bitWidth - 1; i >= 0; i--) {
       this.output1[this.bitWidth - 1 - i].value = Number(temp[i]);
-      globalScope.simulationArea.simulationQueue.add(
+      this.scope.simulationArea.simulationQueue.add(
           this.output1[this.bitWidth - 1 - i],
       );
     }
@@ -190,9 +190,9 @@ export class PriorityEncoder extends CircuitElement {
       );
     }
     if (
-      (this.hover && !globalScope.simulationArea.shiftDown) ||
-      globalScope.simulationArea.lastSelected === this ||
-      globalScope.simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !this.scope.simulationArea.shiftDown) ||
+      this.scope.simulationArea.lastSelected === this ||
+      this.scope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }

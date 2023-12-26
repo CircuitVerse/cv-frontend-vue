@@ -25,7 +25,7 @@ export class verilogPower extends CircuitElement {
   constructor(
       x,
       y,
-      scope = globalScope,
+      scope,
       dir = 'RIGHT',
       bitWidth = 1,
       outputBitWidth = 1,
@@ -93,7 +93,7 @@ export class verilogPower extends CircuitElement {
     this.answer.value =
       (answer << (32 - this.outputBitWidth)) >>>
       (32 - this.outputBitWidth);
-    globalScope.simulationArea.simulationQueue.add(this.answer);
+    this.scope.simulationArea.simulationQueue.add(this.answer);
   }
 }
 

@@ -23,7 +23,7 @@ export class Text extends CircuitElement {
    * @param {string} label - label of element
    * @param {number} fontSize - font size
    */
-  constructor(x, y, scope = globalScope, label = '', fontSize = 14) {
+  constructor(x, y, scope, label = '', fontSize = 14) {
     super(x, y, scope, 'RIGHT', 1);
     this.fixedBitWidth = true;
     this.directionFixed = true;
@@ -39,7 +39,7 @@ export class Text extends CircuitElement {
      */
   setLabel(str = '') {
     this.label = str;
-    const ctx = globalScope.simulationArea.context;
+    const ctx = this.scope.simulationArea.context;
     ctx.font = `${this.fontSize}px Raleway`;
     this.leftDimensionX = 10;
     this.rightDimensionX = ctx.measureText(this.label).width + 10;
@@ -53,7 +53,7 @@ export class Text extends CircuitElement {
      */
   setFontSize(fontSize = 14) {
     this.fontSize = fontSize;
-    const ctx = globalScope.simulationArea.context;
+    const ctx = this.scope.simulationArea.context;
     ctx.font = `${this.fontSize}px Raleway`;
     this.setTextboxSize();
   }
@@ -65,7 +65,7 @@ export class Text extends CircuitElement {
     this.leftDimensionX = 10;
     let maxWidth = 0;
     const labels = this.label.split('\n');
-    const ctx = globalScope.simulationArea.context;
+    const ctx = this.scope.simulationArea.context;
     labels.forEach(
         (l) => (maxWidth = Math.max(maxWidth, ctx.measureText(l).width)),
     );
@@ -94,11 +94,11 @@ export class Text extends CircuitElement {
      * @param {string} key - the label
      */
   keyDown(key) {
-    if (globalScope.simulationArea.controlDown && (key === 'c' || key === 'C')) {
+    if (this.scope.simulationArea.controlDown && (key === 'c' || key === 'C')) {
       const textToPutOnClipboard = copy([this]);
       navigator.clipboard.writeText(textToPutOnClipboard);
       localStorage.setItem('clipboardData', textToPutOnClipboard);
-    } else if (globalScope.simulationArea.controlDown && (key === 'v' || key === 'V')) {
+    } else if (this.scope.simulationArea.controlDown && (key === 'v' || key === 'V')) {
       paste(localStorage.getItem('clipboardData'));
     } else if (key.length === 1) {
       if (this.label === 'Enter Text Here') {
@@ -127,18 +127,19 @@ export class Text extends CircuitElement {
      * Function for drawing text box
      */
   draw() {
-    if (this.label.length === 0 && globalScope.simulationArea.lastSelected !== this) {
+    if (this.label.length === 0 &&
+        this.scope.simulationArea.lastSelected !== this) {
       this.delete();
     }
-    const ctx = globalScope.simulationArea.context;
+    const ctx = this.scope.simulationArea.context;
     ctx.strokeStyle = colors['stroke'];
     ctx.lineWidth = 1;
     const xx = this.x;
     const yy = this.y;
     if (
-      (this.hover && !globalScope.simulationArea.shiftDown) ||
-      globalScope.simulationArea.lastSelected === this ||
-      globalScope.simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !this.scope.simulationArea.shiftDown) ||
+      this.scope.simulationArea.lastSelected === this ||
+      this.scope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.beginPath();
       ctx.fillStyle = colors['fill'];

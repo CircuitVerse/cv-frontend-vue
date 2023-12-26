@@ -46,7 +46,7 @@ export function resetup() {
     height = canvasArea.clientHeight * DPR;
   }
   // redraw grid
-  dots();
+  dots(globalScope);
   globalScope.backgroundArea.canvas.style.height =
     height / DPR + 100 + 'px';
   globalScope.backgroundArea.canvas.style.width =
@@ -62,7 +62,7 @@ export function resetup() {
   updateCanvasSet(true);
   update(); // INEFFICIENT, needs to be deprecated
   globalScope.simulationArea.prevScale = 0;
-  dots();
+  dots(globalScope);
 }
 
 window.onresize = resetup; // listener

@@ -27,7 +27,7 @@ export class VariableLed extends CircuitElement {
    * @param {Scope} scope - Circuit on which element is drawn.
    * @param {string} color - color
    */
-  constructor(x, y, scope = globalScope, color = 'Red') {
+  constructor(x, y, scope, color = 'Red') {
     super(x, y, scope, 'UP', 8);
     this.rectangleObject = false;
     this.setDimensions(10, 20);
@@ -125,9 +125,9 @@ export class VariableLed extends CircuitElement {
     lineTo(ctx, -20, -9, xx, yy, this.direction);
     ctx.stroke();
     if (
-      (this.hover && !globalScope.simulationArea.shiftDown) ||
-      globalScope.simulationArea.lastSelected === this ||
-      globalScope.simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !this.scope.simulationArea.shiftDown) ||
+      this.scope.simulationArea.lastSelected === this ||
+      this.scope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }
@@ -157,9 +157,9 @@ export class VariableLed extends CircuitElement {
     ctx.stroke();
 
     if (
-      (this.hover && !globalScope.simulationArea.shiftDown) ||
-      globalScope.simulationArea.lastSelected == this ||
-      globalScope.simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !this.scope.simulationArea.shiftDown) ||
+      this.scope.simulationArea.lastSelected == this ||
+      this.scope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = 'rgba(255, 255, 32,0.8)';
     }

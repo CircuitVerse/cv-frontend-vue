@@ -21,7 +21,7 @@ export class TTY extends CircuitElement {
    * @param {number} rows
    * @param {number} cols
    */
-  constructor(x, y, scope = globalScope, rows = 3, cols = 32) {
+  constructor(x, y, scope, rows = 3, cols = 32) {
     super(x, y, scope, 'RIGHT', 1);
     this.directionFixed = true;
     this.fixedBitWidth = true;
@@ -77,6 +77,7 @@ export class TTY extends CircuitElement {
   /**
    * @memberof TTY
    * this funciton is used to change the size of the screen
+   * @param {number} size
    */
   changeRowSize(size) {
     if (size == undefined || size < 1 || size > 10) {
@@ -87,7 +88,7 @@ export class TTY extends CircuitElement {
     }
     const obj = new TTY(this.x, this.y, this.scope, size, this.cols);
     this.delete();
-    globalScope.simulationArea.lastSelected = obj;
+    this.scope.simulationArea.lastSelected = obj;
     return obj;
   }
 
@@ -105,7 +106,7 @@ export class TTY extends CircuitElement {
     }
     const obj = new TTY(this.x, this.y, this.scope, this.rows, size);
     this.delete();
-    globalScope.simulationArea.lastSelected = obj;
+    this.scope.simulationArea.lastSelected = obj;
     return obj;
   }
 

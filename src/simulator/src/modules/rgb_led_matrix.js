@@ -23,7 +23,7 @@ export class RGBLedMatrix extends CircuitElement {
   constructor(
       x,
       y,
-      scope = globalScope,
+      scope,
       {
         rows = 8,
         columns = 8,
@@ -72,6 +72,14 @@ export class RGBLedMatrix extends CircuitElement {
     this.changeSize(this.rows, this.columns, ledSize, true);
   }
 
+  /**
+   *
+   * @param {*} rows
+   * @param {*} columns
+   * @param {*} ledSize
+   * @param {*} move
+   * @returns
+   */
   changeSize(rows, columns, ledSize, move) {
     rows = parseInt(rows, 10);
     if (isNaN(rows) || rows < 0 || rows > this.maxRows) {
@@ -310,12 +318,12 @@ export class RGBLedMatrix extends CircuitElement {
     const right = left + width;
 
     const [w, h] = rotate(
-        ledWidth * globalScope.scale,
-        ledHeight * globalScope.scale,
+        ledWidth * this.scope.scale,
+        ledHeight * this.scope.scale,
         dir,
     );
-    const xoffset = Math.round(globalScope.ox + xx * globalScope.scale);
-    const yoffset = Math.round(globalScope.oy + yy * globalScope.scale);
+    const xoffset = Math.round(this.scope.ox + xx * this.scope.scale);
+    const yoffset = Math.round(this.scope.oy + yy * this.scope.scale);
     for (let row = 0; row < rows; row++) {
       for (let column = 0; column < columns; column++) {
         const color = colors[row][column] || 0;
@@ -334,8 +342,8 @@ export class RGBLedMatrix extends CircuitElement {
             top + row * ledHeight,
             dir,
         );
-        x1 = x1 * globalScope.scale;
-        y1 = y1 * globalScope.scale;
+        x1 = x1 * this.scope.scale;
+        y1 = y1 * this.scope.scale;
         ctx.rect(xoffset + x1, yoffset + y1, w, h);
         ctx.fill();
       }

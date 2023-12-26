@@ -18,7 +18,7 @@ export class ForceGate extends CircuitElement {
    * @param {string} dir - direction of element
    * @param {number} bitWidth - bit width per node.
    */
-  constructor(x, y, scope = globalScope, dir = 'RIGHT', bitWidth = 1) {
+  constructor(x, y, scope, dir = 'RIGHT', bitWidth = 1) {
     super(x, y, scope, dir, bitWidth);
     this.setDimensions(20, 10);
     this.objectType = 'ForceGate';
@@ -67,7 +67,7 @@ export class ForceGate extends CircuitElement {
     } else {
       this.output1.value = this.inp1.value;
     }
-    globalScope.simulationArea.simulationQueue.add(this.output1);
+    this.scope.simulationArea.simulationQueue.add(this.output1);
   }
 
   /**

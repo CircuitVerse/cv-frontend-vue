@@ -23,7 +23,7 @@ export class LSB extends CircuitElement {
    * @param {string} dir - direction of element.
    * @param {number} bitWidth - bit width per node.
    */
-  constructor(x, y, scope = globalScope, dir = 'RIGHT', bitWidth = 1) {
+  constructor(x, y, scope, dir = 'RIGHT', bitWidth = 1) {
     super(x, y, scope, dir, bitWidth);
     this.leftDimensionX = 10;
     this.rightDimensionX = 20;
@@ -85,13 +85,13 @@ export class LSB extends CircuitElement {
       }
     }
     this.output1.value = out;
-    globalScope.simulationArea.simulationQueue.add(this.output1);
+    this.scope.simulationArea.simulationQueue.add(this.output1);
     if (inp != 0) {
       this.enable.value = 1;
     } else {
       this.enable.value = 0;
     }
-    globalScope.simulationArea.simulationQueue.add(this.enable);
+    this.scope.simulationArea.simulationQueue.add(this.enable);
   }
 
   /**
@@ -108,9 +108,9 @@ export class LSB extends CircuitElement {
     const yy = this.y;
     rect(ctx, xx - 10, yy - 30, 30, 60);
     if (
-      (this.hover && !globalScope.simulationArea.shiftDown) ||
-      globalScope.simulationArea.lastSelected === this ||
-      globalScope.simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !this.scope.simulationArea.shiftDown) ||
+      this.scope.simulationArea.lastSelected === this ||
+      this.scope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }

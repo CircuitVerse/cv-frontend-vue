@@ -175,15 +175,15 @@ export function errorDetectedGet() {
 /**
  * details of where and what canvas message has to be shown.
  * @type {Object}
- * @property {number} x - x cordinate of message
- * @property {number} y - x cordinate of message
+ * @property {number} x - x coordinate of message
+ * @property {number} y - x coordinate of message
  * @property {number} string - the message
  * @category engine
  */
 export var canvasMessageData = {
   x: undefined,
   y: undefined,
-  string: undefined,
+  content: undefined,
 };
 
 /**
@@ -243,7 +243,7 @@ export function renderCanvas(scope) {
   // Update Grid
   if (gridUpdate) {
     gridUpdateSet(false);
-    dots();
+    dots(globalScope);
   }
   canvasMessageData = {
     x: undefined,
@@ -253,14 +253,14 @@ export function renderCanvas(scope) {
   // Render objects
   for (let i = 0; i < renderOrder.length; i++) {
     for (let j = 0; j < scope[renderOrder[i]].length; j++) {
-      scope[renderOrder[i]][j].draw();
+      scope[renderOrder[i]][j].draw(globalScope.simulationArea);
     }
   }
   // Show any message
-  if (canvasMessageData.string !== undefined) {
+  if (canvasMessageData.content !== undefined) {
     canvasMessage(
         ctx,
-        canvasMessageData.string,
+        canvasMessageData.content,
         canvasMessageData.x,
         canvasMessageData.y,
     );

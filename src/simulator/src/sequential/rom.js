@@ -22,7 +22,7 @@ export class Rom extends CircuitElement {
   constructor(
       x,
       y,
-      scope = globalScope,
+      scope,
       data = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   ) {
     super(x, y, scope, 'RIGHT', 1);
@@ -80,8 +80,8 @@ export class Rom extends CircuitElement {
      * @return {number}
      */
   findPos() {
-    const i = Math.floor((globalScope.simulationArea.mouseX - this.x + 35) / 20);
-    const j = Math.floor((globalScope.simulationArea.mouseY - this.y + 35) / 16);
+    const i = Math.floor((this.scope.simulationArea.mouseX - this.x + 35) / 20);
+    const j = Math.floor((this.scope.simulationArea.mouseY - this.y + 35) / 16);
     if (i < 0 || j < 0 || i > 3 || j > 3) {
       return undefined;
     }
@@ -142,9 +142,9 @@ export class Rom extends CircuitElement {
     );
     if (
       hoverIndex === undefined &&
-      ((!globalScope.simulationArea.shiftDown && this.hover) ||
-        globalScope.simulationArea.lastSelected === this ||
-        globalScope.simulationArea.multipleObjectSelections.includes(this))
+      ((!this.scope.simulationArea.shiftDown && this.hover) ||
+      this.scope.simulationArea.lastSelected === this ||
+      this.scope.simulationArea.multipleObjectSelections.includes(this))
     ) {
       ctx.fillStyle = colors['hover_select'];
     }

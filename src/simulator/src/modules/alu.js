@@ -18,7 +18,7 @@ export class ALU extends CircuitElement {
    * @param {string} dir - direction of element
    * @param {number} bitWidth - bit width per node.
    */
-  constructor(x, y, scope = globalScope, dir = 'RIGHT', bitWidth = 1) {
+  constructor(x, y, scope, dir = 'RIGHT', bitWidth = 1) {
     super(x, y, scope, dir, bitWidth);
     this.message = 'ALU';
 

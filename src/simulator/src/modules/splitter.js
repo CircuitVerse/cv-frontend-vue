@@ -33,7 +33,7 @@ export class Splitter extends CircuitElement {
   constructor(
       x,
       y,
-      scope = globalScope,
+      scope,
       dir = 'RIGHT',
       bitWidth = undefined,
       bitWidthSplit = undefined,
@@ -110,12 +110,12 @@ export class Splitter extends CircuitElement {
       for (i = 0; i < this.outputs.length; i++) {
         if (this.outputs[i].value !== undefined) {
           this.outputs[i].value = undefined;
-          globalScope.simulationArea.simulationQueue.add(this.outputs[i]);
+          this.scope.simulationArea.simulationQueue.add(this.outputs[i]);
         }
       }
     } else if (this.inp1.value !== undefined) {
       this.inp1.value = undefined;
-      globalScope.simulationArea.simulationQueue.add(this.inp1);
+      this.scope.simulationArea.simulationQueue.add(this.inp1);
     }
     this.prevInpValue = undefined;
   }
@@ -167,7 +167,7 @@ export class Splitter extends CircuitElement {
         if (this.outputs[i].value !== bitSplitValue) {
           if (this.outputs[i].value !== bitSplitValue) {
             this.outputs[i].value = bitSplitValue;
-            globalScope.simulationArea.simulationQueue.add(this.outputs[i]);
+            this.scope.simulationArea.simulationQueue.add(this.outputs[i]);
           }
         }
         bitCount += this.bitWidthSplit[i];
@@ -180,7 +180,7 @@ export class Splitter extends CircuitElement {
       }
       if (this.inp1.value !== n >>> 0) {
         this.inp1.value = n >>> 0;
-        globalScope.simulationArea.simulationQueue.add(this.inp1);
+        this.scope.simulationArea.simulationQueue.add(this.inp1);
       }
     }
     this.prevInpValue = this.inp1.value;
@@ -201,9 +201,9 @@ export class Splitter extends CircuitElement {
    */
   customDraw(ctx) {
     ctx.strokeStyle = [colors['splitter'], 'brown'][
-        ((this.hover && !globalScope.simulationArea.shiftDown) ||
-        globalScope.simulationArea.lastSelected === this ||
-        globalScope.simulationArea.multipleObjectSelections.includes(this)) + 0
+        ((this.hover && !this.scope.simulationArea.shiftDown) ||
+        this.scope.simulationArea.lastSelected === this ||
+        this.scope.simulationArea.multipleObjectSelections.includes(this)) + 0
     ];
     ctx.lineWidth = correctWidth(3);
     const xx = this.x;

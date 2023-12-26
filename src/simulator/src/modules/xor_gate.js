@@ -29,7 +29,7 @@ export class XorGate extends CircuitElement {
   constructor(
       x,
       y,
-      scope = globalScope,
+      scope,
       dir = 'RIGHT',
       inputs = 2,
       bitWidth = 1,
@@ -97,7 +97,7 @@ export class XorGate extends CircuitElement {
     }
 
     this.output1.value = result;
-    globalScope.simulationArea.simulationQueue.add(this.output1);
+    this.scope.simulationArea.simulationQueue.add(this.output1);
   }
 
   /**
@@ -129,9 +129,9 @@ export class XorGate extends CircuitElement {
     bezierCurveTo(0, 0, 0, 0, -10, -20, xx, yy, this.direction);
     ctx.closePath();
     if (
-      (this.hover && !globalScope.simulationArea.shiftDown) ||
-      globalScope.simulationArea.lastSelected === this ||
-      globalScope.simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !this.scope.simulationArea.shiftDown) ||
+      this.scope.simulationArea.lastSelected === this ||
+      this.scope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }

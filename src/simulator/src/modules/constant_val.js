@@ -28,7 +28,7 @@ export class ConstantVal extends CircuitElement {
   constructor(
       x,
       y,
-      scope = globalScope,
+      scope,
       dir = 'RIGHT',
       bitWidth = 1,
       state = '0',
@@ -71,7 +71,7 @@ export class ConstantVal extends CircuitElement {
    */
   resolve() {
     this.output1.value = converters.bin2dec(this.state);
-    globalScope.simulationArea.simulationQueue.add(this.output1);
+    this.scope.simulationArea.simulationQueue.add(this.output1);
   }
 
   /**
@@ -130,9 +130,9 @@ export class ConstantVal extends CircuitElement {
         'RIGHT',
     );
     if (
-      (this.hover && !globalScope.simulationArea.shiftDown) ||
-      globalScope.simulationArea.lastSelected === this ||
-      globalScope.simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !this.scope.simulationArea.shiftDown) ||
+      this.scope.simulationArea.lastSelected === this ||
+      this.scope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }

@@ -22,7 +22,7 @@ export class SquareRGBLed extends CircuitElement {
    * @param {string} dir - direction of element
    * @param {number} pinLength - pins per node.
    */
-  constructor(x, y, scope = globalScope, dir = 'UP', pinLength = 1) {
+  constructor(x, y, scope, dir = 'UP', pinLength = 1) {
     super(x, y, scope, dir, 8);
     this.rectangleObject = false;
     this.setDimensions(15, 15);
@@ -72,7 +72,7 @@ export class SquareRGBLed extends CircuitElement {
       obj.labelDirection = this.labelDirection;
 
       this.cleanDelete();
-      globalScope.simulationArea.lastSelected = obj;
+      this.scope.simulationArea.lastSelected = obj;
       return obj;
     };
 
@@ -153,9 +153,9 @@ export class SquareRGBLed extends CircuitElement {
     ctx.stroke();
 
     if (
-      (this.hover && !globalScope.simulationArea.shiftDown) ||
-      globalScope.simulationArea.lastSelected === this ||
-      globalScope.simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !this.scope.simulationArea.shiftDown) ||
+      this.scope.simulationArea.lastSelected === this ||
+      this.scope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = 'rgba(255, 255, 32)';
     }
@@ -187,9 +187,9 @@ export class SquareRGBLed extends CircuitElement {
     ctx.stroke();
 
     if (
-      (this.hover && !globalScope.simulationArea.shiftDown) ||
-      globalScope.simulationArea.lastSelected == this ||
-      globalScope.simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !this.scope.simulationArea.shiftDown) ||
+      this.scope.simulationArea.lastSelected == this ||
+      this.scope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = 'rgba(255, 255, 32)';
     }

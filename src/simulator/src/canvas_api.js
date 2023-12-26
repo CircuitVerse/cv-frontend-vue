@@ -126,41 +126,43 @@ export function changeScale(delta, xx, yy, method = 1) {
  * the function is called only when the zoom level or size of screen changes.
  * Otherwise for normal panning, the canvas itself is moved to give
  * the illusion of movement
- * @param {*} dots
- * @param {*} transparentBackground
- * @param {*} force
+ * @param {Scope} scope
+ * @param {boolean} dots
+ * @param {boolean} transparentBackground
+ * @param {boolean} force
  */
 export function dots(
+    scope,
     dots = true,
     transparentBackground = false,
     force = false,
 ) {
-  const scale = unit * globalScope.scale;
-  const ox = globalScope.ox % scale; // offset
-  const oy = globalScope.oy % scale; // offset
+  const scale = unit * scope.scale;
+  const ox = scope.ox % scale; // offset
+  const oy = scope.oy % scale; // offset
 
-  const backgroundCtx = globalScope.backgroundArea.context;
+  const backgroundCtx = scope.backgroundArea.context;
   if (!backgroundCtx) {
     return;
   }
 
-  const canvasWidth = globalScope.backgroundArea.canvas.width;
-  const canvasHeight = globalScope.backgroundArea.canvas.height;
+  const canvasWidth = scope.backgroundArea.canvas.width;
+  const canvasHeight = scope.backgroundArea.canvas.height;
 
   // adjust left position of canvas
-  globalScope.backgroundArea.canvas.style.left = `${(ox - scale) / DPR}px`;
+  scope.backgroundArea.canvas.style.left = `${(ox - scale) / DPR}px`;
   // adjust top position of canvas
-  globalScope.backgroundArea.canvas.style.top = `${(oy - scale) / DPR}px`;
+  scope.backgroundArea.canvas.style.top = `${(oy - scale) / DPR}px`;
 
-  if (globalScope.scale === globalScope.simulationArea.prevScale && !force) {
+  if (scope.scale === scope.simulationArea.prevScale && !force) {
     return;
   }
 
   // set the previous scale to current scale
-  globalScope.simulationArea.prevScale = globalScope.scale;
+  scope.simulationArea.prevScale = scope.scale;
 
   backgroundCtx.beginPath();
-  globalScope.backgroundArea.clear();
+  scope.backgroundArea.clear();
 
   if (!transparentBackground) {
     backgroundCtx.fillStyle = colors['canvas_fill'];

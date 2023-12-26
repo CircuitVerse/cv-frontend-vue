@@ -63,8 +63,8 @@ export function findNode(node: Node): number {
  * @param {Scope} scope - scope to which node has to be loaded
  * @category node
  */
-export function loadNode(data: JSON, scope: Scope) {
-  const n = new Node(
+export function loadNode(data: Node, scope: Scope) {
+  new Node(
     data.x,
     data.y,
     data.type,
@@ -517,8 +517,8 @@ export class Node {
   /**
  * this function draw a node
  */
-  draw() {
-    const ctx = globalScope.simulationArea.context;
+  draw(simArea: SimulationArea) {
+    const ctx = simArea.context;
     const color = colors.color_wire_draw;
     if (this.clicked) {
       if (this.prev == 'x') {
@@ -526,17 +526,17 @@ export class Node {
           ctx,
           this.absX(),
           this.absY(),
-          globalScope.simulationArea.mouseX,
+          simArea.mouseX,
           this.absY(),
           color,
           3,
         );
         drawLine(
           ctx,
-          globalScope.simulationArea.mouseX,
+          simArea.mouseX,
           this.absY(),
-          globalScope.simulationArea.mouseX,
-          globalScope.simulationArea.mouseY,
+          simArea.mouseX,
+          simArea.mouseY,
           color,
           3,
         );
@@ -546,28 +546,28 @@ export class Node {
           this.absX(),
           this.absY(),
           this.absX(),
-          globalScope.simulationArea.mouseY,
+          simArea.mouseY,
           color,
           3,
         );
         drawLine(
           ctx,
           this.absX(),
-          globalScope.simulationArea.mouseY,
-          globalScope.simulationArea.mouseX,
-          globalScope.simulationArea.mouseY,
+          simArea.mouseY,
+          simArea.mouseX,
+          simArea.mouseY,
           color,
           3,
         );
       } else if (
-        Math.abs(this.x + this.parent.x - globalScope.simulationArea.mouseX) >
-        Math.abs(this.y + this.parent.y - globalScope.simulationArea.mouseY)
+        Math.abs(this.x + this.parent.x - simArea.mouseX) >
+        Math.abs(this.y + this.parent.y - simArea.mouseY)
       ) {
         drawLine(
           ctx,
           this.absX(),
           this.absY(),
-          globalScope.simulationArea.mouseX,
+          simArea.mouseX,
           this.absY(),
           color,
           3,
@@ -578,7 +578,7 @@ export class Node {
           this.absX(),
           this.absY(),
           this.absX(),
-          globalScope.simulationArea.mouseY,
+          simArea.mouseY,
           color,
           3,
         );
@@ -607,11 +607,11 @@ export class Node {
 
     if (
       this.highlighted ||
-      globalScope.simulationArea.lastSelected == this ||
+      simArea.lastSelected == this ||
       (this.isHover() &&
-        !globalScope.simulationArea.selected &&
-        !globalScope.simulationArea.shiftDown) ||
-      globalScope.simulationArea.multipleObjectSelections.includes(this)
+        !simArea.selected &&
+        !simArea.shiftDown) ||
+      simArea.multipleObjectSelections.includes(this)
     ) {
       ctx.strokeStyle = colorNodeSelected;
       ctx.beginPath();
@@ -631,8 +631,8 @@ export class Node {
       ctx.stroke();
     }
 
-    if (this.hover || globalScope.simulationArea.lastSelected == this) {
-      if (this.showHover || globalScope.simulationArea.lastSelected == this) {
+    if (this.hover || simArea.lastSelected == this) {
+      if (this.showHover || simArea.lastSelected == this) {
         canvasMessageData.x = this.absX();
         canvasMessageData.y = this.absY() - 15;
         if (this.type == 2) {
@@ -641,17 +641,17 @@ export class Node {
             v = this.value.toString(16);
           }
           if (this.label.length) {
-            canvasMessageData.string = `${this.label} : ${v}`;
+            canvasMessageData.content = `${this.label} : ${v}`;
           } else {
-            canvasMessageData.string = v;
+            canvasMessageData.content = v;
           }
         } else if (this.label.length) {
-          canvasMessageData.string = this.label;
+          canvasMessageData.content = this.label;
         }
       } else {
         setTimeout(() => {
-          if (globalScope.simulationArea.hover) {
-            globalScope.simulationArea.hover.showHover = true;
+          if (simArea.hover) {
+            simArea.hover.showHover = true;
           }
           updateCanvasSet(true);
           renderCanvas(globalScope);
@@ -677,16 +677,17 @@ export class Node {
  * many booleans are used to check if certain properties are to be updated.
  */
   update() {
+    const simArea = globalScope.simulationArea;
     if (embed) {
       return;
     }
 
-    if (this == globalScope.simulationArea.hover) {
-      globalScope.simulationArea.hover = undefined;
+    if (this == simArea.hover) {
+      simArea.hover = undefined;
     }
     this.hover = this.isHover();
 
-    if (!globalScope.simulationArea.mouseDown) {
+    if (!simArea.mouseDown) {
       if (this.absX() != this.prevX || this.absY() != this.prevY) {
         // Connect to any node
         this.prevX = this.absX();
@@ -696,16 +697,16 @@ export class Node {
     }
 
     if (this.hover) {
-      globalScope.simulationArea.hover = this;
+      simArea.hover = this;
     }
 
     if (
-      globalScope.simulationArea.mouseDown &&
-      ((this.hover && !globalScope.simulationArea.selected) ||
-        globalScope.simulationArea.lastSelected == this)
+      simArea.mouseDown &&
+      ((this.hover && !simArea.selected) ||
+        simArea.lastSelected == this)
     ) {
-      globalScope.simulationArea.selected = true;
-      globalScope.simulationArea.lastSelected = this;
+      simArea.selected = true;
+      simArea.lastSelected = this;
       this.clicked = true;
     } else {
       this.clicked = false;
@@ -716,65 +717,65 @@ export class Node {
       this.prev = 'a';
       if (this.type == 2) {
         if (
-          !globalScope.simulationArea.shiftDown &&
-          globalScope.simulationArea.multipleObjectSelections.includes(this)
+          !simArea.shiftDown &&
+          simArea.multipleObjectSelections.includes(this)
         ) {
           for (
             let i = 0;
-            i < globalScope.simulationArea.multipleObjectSelections.length;
+            i < simArea.multipleObjectSelections.length;
             i++
           ) {
-            globalScope.simulationArea.multipleObjectSelections[
+            simArea.multipleObjectSelections[
               i
             ].startDragging();
           }
         }
 
-        if (globalScope.simulationArea.shiftDown) {
-          globalScope.simulationArea.lastSelected = undefined;
+        if (simArea.shiftDown) {
+          simArea.lastSelected = undefined;
           if (
-            globalScope.simulationArea.multipleObjectSelections.includes(this)
+            simArea.multipleObjectSelections.includes(this)
           ) {
-            const foundIndex = globalScope.simulationArea.multipleObjectSelections.indexOf(this);
+            const foundIndex = simArea.multipleObjectSelections.indexOf(this);
             if (foundIndex != -1) {
-              globalScope.simulationArea.multipleObjectSelections.splice(foundIndex, 1);
+              simArea.multipleObjectSelections.splice(foundIndex, 1);
             }
           } else {
-            globalScope.simulationArea.multipleObjectSelections.push(this);
+            simArea.multipleObjectSelections.push(this);
           }
         } else {
-          globalScope.simulationArea.lastSelected = this;
+          simArea.lastSelected = this;
         }
       }
     } else if (this.wasClicked && this.clicked) {
       if (
-        !globalScope.simulationArea.shiftDown &&
-        globalScope.simulationArea.multipleObjectSelections.includes(this)
+        !simArea.shiftDown &&
+        simArea.multipleObjectSelections.includes(this)
       ) {
         for (
           let i = 0;
-          i < globalScope.simulationArea.multipleObjectSelections.length;
+          i < simArea.multipleObjectSelections.length;
           i++
         ) {
-          globalScope.simulationArea.multipleObjectSelections[i].drag();
+          simArea.multipleObjectSelections[i].drag();
         }
       }
       if (this.type == 2) {
         if (
           this.connections.length == 1 &&
-          this.connections[0].absX() == globalScope.simulationArea.mouseX &&
-          this.absX() == globalScope.simulationArea.mouseX
+          this.connections[0].absX() == simArea.mouseX &&
+          this.absX() == simArea.mouseX
         ) {
-          this.y = globalScope.simulationArea.mouseY - this.parent.y;
+          this.y = simArea.mouseY - this.parent.y;
           this.prev = 'a';
           return;
         }
         if (
           this.connections.length == 1 &&
-          this.connections[0].absY() == globalScope.simulationArea.mouseY &&
-          this.absY() == globalScope.simulationArea.mouseY
+          this.connections[0].absY() == simArea.mouseY &&
+          this.absY() == simArea.mouseY
         ) {
-          this.x = globalScope.simulationArea.mouseX - this.parent.x;
+          this.x = simArea.mouseX - this.parent.x;
           this.prev = 'a';
           return;
         }
@@ -785,7 +786,7 @@ export class Node {
         ) {
           this.connections[0].clicked = true;
           this.connections[0].wasClicked = true;
-          globalScope.simulationArea.lastSelected = this.connections[0];
+          simArea.lastSelected = this.connections[0];
           this.delete();
           return;
         }
@@ -794,15 +795,15 @@ export class Node {
       if (
         this.prev == 'a' &&
         distance(
-          globalScope.simulationArea.mouseX,
-          globalScope.simulationArea.mouseY,
+          simArea.mouseX,
+          simArea.mouseY,
           this.absX(),
           this.absY(),
         ) >= 10
       ) {
         if (
-          Math.abs(this.x + this.parent.x - globalScope.simulationArea.mouseX) >
-          Math.abs(this.y + this.parent.y - globalScope.simulationArea.mouseY)
+          Math.abs(this.x + this.parent.x - simArea.mouseX) >
+          Math.abs(this.y + this.parent.y - simArea.mouseY)
         ) {
           this.prev = 'x';
         } else {
@@ -810,12 +811,12 @@ export class Node {
         }
       } else if (
         this.prev == 'x' &&
-        this.absY() == globalScope.simulationArea.mouseY
+        this.absY() == simArea.mouseY
       ) {
         this.prev = 'a';
       } else if (
         this.prev == 'y' &&
-        this.absX() == globalScope.simulationArea.mouseX
+        this.absX() == simArea.mouseX
       ) {
         this.prev = 'a';
       }
@@ -823,8 +824,8 @@ export class Node {
       this.wasClicked = false;
 
       if (
-        globalScope.simulationArea.mouseX == this.absX() &&
-        globalScope.simulationArea.mouseY == this.absY()
+        simArea.mouseX == this.absX() &&
+        simArea.mouseY == this.absY()
       ) {
         return; // no new node situation
       }
@@ -842,8 +843,8 @@ export class Node {
       // node 1 may or may not be there
       // flag = 0  - node 2 only
       // flag = 1  - node 1 and node 2
-      x2 = globalScope.simulationArea.mouseX;
-      y2 = globalScope.simulationArea.mouseY;
+      x2 = simArea.mouseX;
+      y2 = simArea.mouseY;
       const x = this.absX();
       const y = this.absY();
 
@@ -852,17 +853,17 @@ export class Node {
         if (
           this.prev == 'a' &&
           distance(
-            globalScope.simulationArea.mouseX,
-            globalScope.simulationArea.mouseY,
+            simArea.mouseX,
+            simArea.mouseY,
             this.absX(),
             this.absY(),
           ) >= 10
         ) {
           if (
             Math.abs(
-              this.x + this.parent.x - globalScope.simulationArea.mouseX,
+              this.x + this.parent.x - simArea.mouseX,
             ) >
-            Math.abs(this.y + this.parent.y - globalScope.simulationArea.mouseY)
+            Math.abs(this.y + this.parent.y - simArea.mouseY)
           ) {
             this.prev = 'x';
           } else {
@@ -927,12 +928,12 @@ export class Node {
       } else {
         n1.connect(n2);
       }
-      if (globalScope.simulationArea.lastSelected == this) {
-        globalScope.simulationArea.lastSelected = n2;
+      if (simArea.lastSelected == this) {
+        simArea.lastSelected = n2;
       }
     }
 
-    if (this.type == 2 && globalScope.simulationArea.mouseDown == false) {
+    if (this.type == 2 && simArea.mouseDown == false) {
       if (this.connections.length == 2) {
         if (
           this.connections[0].absX() == this.connections[1].absX() ||

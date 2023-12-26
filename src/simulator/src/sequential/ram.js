@@ -61,7 +61,7 @@ export class RAM extends CircuitElement {
   constructor(
       x,
       y,
-      scope = globalScope,
+      scope,
       dir = 'RIGHT',
       bitWidth = 8,
       addressWidth = 10,

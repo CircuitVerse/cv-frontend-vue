@@ -2,7 +2,6 @@ import {CircuitElement} from '../circuit_element';
 import {Node, findNode} from '../node';
 
 import {correctWidth, rect2, fillText} from '../canvas_api';
-import {plotArea} from '../plot_area';
 import {showError} from '../utils_clock';
 import {colors} from '../themer/themer';
 /**
@@ -29,7 +28,7 @@ export class Tunnel extends CircuitElement {
   constructor(
       x,
       y,
-      scope = globalScope,
+      scope,
       dir = 'LEFT',
       bitWidth = 1,
       identifier,
@@ -277,9 +276,9 @@ export class Tunnel extends CircuitElement {
         'RIGHT',
     );
     if (
-      (this.hover && !globalScope.simulationArea.shiftDown) ||
-      globalScope.simulationArea.lastSelected === this ||
-      globalScope.simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !this.scope.simulationArea.shiftDown) ||
+      this.scope.simulationArea.lastSelected === this ||
+      this.scope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }

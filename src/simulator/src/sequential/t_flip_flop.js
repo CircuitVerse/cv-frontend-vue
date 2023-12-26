@@ -18,7 +18,7 @@ export class TflipFlop extends CircuitElement {
    * @param {Scope} scope - the circuit in which we want the Element.
    * @param {string} dir - direction in which element has to drawn.
    */
-  constructor(x, y, scope = globalScope, dir = 'RIGHT') {
+  constructor(x, y, scope, dir = 'RIGHT') {
     super(x, y, scope, dir, 1);
     this.directionFixed = true;
     this.fixedBitWidth = true;
@@ -106,8 +106,8 @@ export class TflipFlop extends CircuitElement {
     if (this.qOutput.value != this.slaveState) {
       this.qOutput.value = this.slaveState;
       this.qInvOutput.value = this.flipBits(this.slaveState);
-      globalScope.simulationArea.simulationQueue.add(this.qOutput);
-      globalScope.simulationArea.simulationQueue.add(this.qInvOutput);
+      this.scope.simulationArea.simulationQueue.add(this.qOutput);
+      this.scope.simulationArea.simulationQueue.add(this.qInvOutput);
     }
   }
 

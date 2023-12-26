@@ -55,23 +55,39 @@ class verilogUnaryGate {
   }
 }
 
+/**
+ *
+ */
 class verilogInput extends verilogUnaryGate {
-  constructor(deviceJSON) {
+  /**
+   *
+   * @param {*} deviceJSON
+   * @param {*} scope
+   */
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON);
     if (deviceJSON['net'] == 'clk' || deviceJSON['net'] == 'clock') {
-      this.element = new Clock(0, 0);
+      this.element = new Clock(0, 0, scope);
     } else {
-      this.element = new Input(0, 0, undefined, undefined, this.bitWidth);
+      this.element = new Input(0, 0, scope, undefined, this.bitWidth);
     }
     this.output = this.element.output1;
     this.element.label = deviceJSON['net'];
   }
 }
 
+/**
+ *
+ */
 class verilogOutput extends verilogUnaryGate {
-  constructor(deviceJSON) {
+  /**
+   *
+   * @param {*} deviceJSON
+   * @param {*} scope
+   */
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON);
-    this.element = new Output(0, 0, undefined, undefined, this.bitWidth);
+    this.element = new Output(0, 0, scope, undefined, this.bitWidth);
     this.input = this.element.inp1;
     this.element.label = deviceJSON['net'];
   }
@@ -81,49 +97,49 @@ class verilogOutput extends verilogUnaryGate {
  * Verilog Clock
  */
 class verilogClock extends verilogUnaryGate {
-  constructor(deviceJSON) {
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON);
-    this.element = new Clock(0, 0);
+    this.element = new Clock(0, 0, scope);
     this.output = this.element.output1;
   }
 }
 
 class verilogButton extends verilogUnaryGate {
-  constructor(deviceJSON) {
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON);
-    this.element = new Button(0, 0);
+    this.element = new Button(0, 0, scope);
     this.output = this.element.output1;
   }
 }
 
 class verilogLamp extends verilogUnaryGate {
-  constructor(deviceJSON) {
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON);
-    this.element = new DigitalLed(0, 0);
+    this.element = new DigitalLed(0, 0, scope);
     this.input = this.element.inp1;
   }
 }
 
 class verilogNotGate extends verilogUnaryGate {
-  constructor(deviceJSON) {
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON);
-    this.element = new NotGate(0, 0, undefined, undefined, this.bitWidth);
+    this.element = new NotGate(0, 0, scope, undefined, this.bitWidth);
     this.input = this.element.inp1;
     this.output = this.element.output1;
   }
 }
 
 class verilogRepeaterGate extends verilogUnaryGate {
-  constructor(deviceJSON) {
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON);
-    this.element = new Buffer(0, 0, undefined, undefined, this.bitWidth);
+    this.element = new Buffer(0, 0, scope, undefined, this.bitWidth);
     this.input = this.element.inp1;
     this.output = this.element.output1;
   }
 }
 
 class verilogConstantVal extends verilogUnaryGate {
-  constructor(deviceJSON) {
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON);
     this.bitWidth = deviceJSON['constant'].length;
     this.state = deviceJSON['constant'];
@@ -133,7 +149,7 @@ class verilogConstantVal extends verilogUnaryGate {
     this.element = new ConstantVal(
         0,
         0,
-        undefined,
+        scope,
         undefined,
         this.bitWidth,
         this.state,
@@ -144,7 +160,7 @@ class verilogConstantVal extends verilogUnaryGate {
 }
 
 class verilogReduceAndGate extends verilogUnaryGate {
-  constructor(deviceJSON) {
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON);
 
     this.bitWidthSplit = [];
@@ -155,12 +171,12 @@ class verilogReduceAndGate extends verilogUnaryGate {
     this.splitter = new Splitter(
         0,
         0,
-        undefined,
+        scope,
         undefined,
         this.bitWidth,
         this.bitWidthSplit,
     );
-    this.andGate = new AndGate(0, 0, undefined, undefined, this.bitWidth, 1);
+    this.andGate = new AndGate(0, 0, scope, undefined, this.bitWidth, 1);
 
     for (let i = 0; i < this.bitWidth; i++) {
       this.splitter.outputs[i].connect(this.andGate.inp[i]);
@@ -172,7 +188,7 @@ class verilogReduceAndGate extends verilogUnaryGate {
 }
 
 class verilogReduceNandGate extends verilogUnaryGate {
-  constructor(deviceJSON) {
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON);
 
     this.bitWidthSplit = [];
@@ -183,7 +199,7 @@ class verilogReduceNandGate extends verilogUnaryGate {
     this.splitter = new Splitter(
         0,
         0,
-        undefined,
+        scope,
         undefined,
         this.bitWidth,
         this.bitWidthSplit,
@@ -191,7 +207,7 @@ class verilogReduceNandGate extends verilogUnaryGate {
     this.nandGate = new NandGate(
         0,
         0,
-        undefined,
+        scope,
         undefined,
         this.bitWidth,
         1,
@@ -207,7 +223,7 @@ class verilogReduceNandGate extends verilogUnaryGate {
 }
 
 class verilogReduceOrGate extends verilogUnaryGate {
-  constructor(deviceJSON) {
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON);
 
     this.bitWidthSplit = [];
@@ -218,12 +234,12 @@ class verilogReduceOrGate extends verilogUnaryGate {
     this.splitter = new Splitter(
         0,
         0,
-        undefined,
+        scope,
         undefined,
         this.bitWidth,
         this.bitWidthSplit,
     );
-    this.orGate = new OrGate(0, 0, undefined, undefined, this.bitWidth, 1);
+    this.orGate = new OrGate(0, 0, scope, undefined, this.bitWidth, 1);
 
     for (let i = 0; i < this.bitWidth; i++) {
       this.splitter.outputs[i].connect(this.orGate.inp[i]);
@@ -234,8 +250,16 @@ class verilogReduceOrGate extends verilogUnaryGate {
   }
 }
 
+/**
+ *
+ */
 class verilogReduceNorGate extends verilogUnaryGate {
-  constructor(deviceJSON) {
+  /**
+   *
+   * @param {*} deviceJSON
+   * @param {*} scope
+   */
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON);
 
     this.bitWidthSplit = [];
@@ -246,12 +270,12 @@ class verilogReduceNorGate extends verilogUnaryGate {
     this.splitter = new Splitter(
         0,
         0,
-        undefined,
+        scope,
         undefined,
         this.bitWidth,
         this.bitWidthSplit,
     );
-    this.norGate = new NorGate(0, 0, undefined, undefined, this.bitWidth, 1);
+    this.norGate = new NorGate(0, 0, scope, undefined, this.bitWidth, 1);
 
     for (let i = 0; i < this.bitWidth; i++) {
       this.splitter.outputs[i].connect(this.norGate.inp[i]);
@@ -262,8 +286,11 @@ class verilogReduceNorGate extends verilogUnaryGate {
   }
 }
 
+/**
+ *
+ */
 class verilogReduceXorGate extends verilogUnaryGate {
-  constructor(deviceJSON) {
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON);
 
     this.bitWidthSplit = [];
@@ -274,12 +301,12 @@ class verilogReduceXorGate extends verilogUnaryGate {
     this.splitter = new Splitter(
         0,
         0,
-        undefined,
+        scope,
         undefined,
         this.bitWidth,
         this.bitWidthSplit,
     );
-    this.xorGate = new XorGate(0, 0, undefined, undefined, this.bitWidth, 1);
+    this.xorGate = new XorGate(0, 0, scope, undefined, this.bitWidth, 1);
 
     for (let i = 0; i < this.bitWidth; i++) {
       this.splitter.outputs[i].connect(this.xorGate.inp[i]);
@@ -290,8 +317,16 @@ class verilogReduceXorGate extends verilogUnaryGate {
   }
 }
 
+/**
+ *
+ */
 class verilogReduceXnorGate extends verilogUnaryGate {
-  constructor(deviceJSON) {
+  /**
+   *
+   * @param {*} deviceJSON
+   * @param {*} scope
+   */
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON);
 
     this.bitWidthSplit = [];
@@ -302,7 +337,7 @@ class verilogReduceXnorGate extends verilogUnaryGate {
     this.splitter = new Splitter(
         0,
         0,
-        undefined,
+        scope,
         undefined,
         this.bitWidth,
         this.bitWidthSplit,
@@ -310,7 +345,7 @@ class verilogReduceXnorGate extends verilogUnaryGate {
     this.xnorGate = new XnorGate(
         0,
         0,
-        undefined,
+        scope,
         undefined,
         this.bitWidth,
         1,
@@ -325,8 +360,16 @@ class verilogReduceXnorGate extends verilogUnaryGate {
   }
 }
 
+/**
+ *
+ */
 class verilogBusSlice extends verilogUnaryGate {
-  constructor(deviceJSON) {
+  /**
+   *
+   * @param {*} deviceJSON
+   * @param {*} scope
+   */
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON);
     this.bitWidth = deviceJSON['slice']['total'];
 
@@ -337,7 +380,7 @@ class verilogBusSlice extends verilogUnaryGate {
         this.splitter = new Splitter(
             0,
             0,
-            undefined,
+            scope,
             undefined,
             this.bitWidth,
             [this.bitWidth],
@@ -346,7 +389,7 @@ class verilogBusSlice extends verilogUnaryGate {
         this.splitter = new Splitter(
             0,
             0,
-            undefined,
+            scope,
             undefined,
             this.bitWidth,
             [this.count, this.bitWidth - this.count],
@@ -360,7 +403,7 @@ class verilogBusSlice extends verilogUnaryGate {
         this.splitter = new Splitter(
             0,
             0,
-            undefined,
+            scope,
             undefined,
             this.bitWidth,
             [this.start, this.count],
@@ -369,7 +412,7 @@ class verilogBusSlice extends verilogUnaryGate {
         this.splitter = new Splitter(
             0,
             0,
-            undefined,
+            scope,
             undefined,
             this.bitWidth,
             [
@@ -392,8 +435,9 @@ class verilogZeroExtend extends verilogUnaryGate {
   /**
    *
    * @param {*} deviceJSON
+   * @param {*} scope
    */
-  constructor(deviceJSON) {
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON);
 
     this.inputBitWidth = deviceJSON['extend']['input'];
@@ -409,7 +453,7 @@ class verilogZeroExtend extends verilogUnaryGate {
     this.zeroConstant = new ConstantVal(
         0,
         0,
-        undefined,
+        scope,
         undefined,
         extraBits,
         zeroState,
@@ -418,7 +462,7 @@ class verilogZeroExtend extends verilogUnaryGate {
     this.splitter = new Splitter(
         0,
         0,
-        undefined,
+        scope,
         undefined,
         this.outputBitWidth,
         [this.inputBitWidth, extraBits],
@@ -430,20 +474,28 @@ class verilogZeroExtend extends verilogUnaryGate {
   }
 }
 
+/**
+ *
+ */
 class verilogNegationGate extends verilogUnaryGate {
-  constructor(deviceJSON) {
+  /**
+   *
+   * @param {*} deviceJSON
+   * @param {*} scope
+   */
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON);
     this.inputBitWidth = deviceJSON['bits']['in'];
 
-    this.notGate = new NotGate(400, 0, undefined, undefined, this.bitWidth);
-    this.adder = new Adder(300, 0, undefined, undefined, this.bitWidth);
+    this.notGate = new NotGate(400, 0, scope, undefined, this.bitWidth);
+    this.adder = new Adder(300, 0, scope, undefined, this.bitWidth);
 
     if (this.inputBitWidth != this.bitWidth) {
       const extraBits = this.bitWidth - this.inputBitWidth;
       this.splitter = new Splitter(
           600,
           600,
-          undefined,
+          scope,
           undefined,
           this.bitWidth,
           [this.inputBitWidth, extraBits],
@@ -457,7 +509,7 @@ class verilogNegationGate extends verilogUnaryGate {
       this.zeroConstant = new ConstantVal(
           550,
           550,
-          undefined,
+          scope,
           undefined,
           extraBits,
           zeroState,
@@ -480,7 +532,7 @@ class verilogNegationGate extends verilogUnaryGate {
     this.oneConstant = new ConstantVal(
         0,
         0,
-        undefined,
+        scope,
         undefined,
         this.bitWidth,
         oneVal,
@@ -493,7 +545,14 @@ class verilogNegationGate extends verilogUnaryGate {
   }
 }
 
+/**
+ *
+ */
 class verilogBinaryGate {
+  /**
+   *
+   * @param {*} deviceJSON
+   */
   constructor(deviceJSON) {
     this.bitWidth = 1;
     if (deviceJSON['bits']) {
@@ -501,6 +560,11 @@ class verilogBinaryGate {
     }
   }
 
+  /**
+   *
+   * @param {*} portName
+   * @returns
+   */
   getPort(portName) {
     if (portName == 'in1') {
       return this.input[0];
@@ -512,13 +576,21 @@ class verilogBinaryGate {
   }
 }
 
+/**
+ *
+ */
 class verilogAndGate extends verilogBinaryGate {
-  constructor(deviceJSON) {
+  /**
+   *
+   * @param {*} deviceJSON
+   * @param {*} scope
+   */
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON);
     this.element = new AndGate(
         0,
         0,
-        undefined,
+        scope,
         undefined,
         undefined,
         this.bitWidth,
@@ -528,13 +600,21 @@ class verilogAndGate extends verilogBinaryGate {
   }
 }
 
+/**
+ *
+ */
 class verilogNandGate extends verilogBinaryGate {
-  constructor(deviceJSON) {
+  /**
+   *
+   * @param {*} deviceJSON
+   * @param {*} scope
+   */
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON);
     this.element = new NandGate(
         0,
         0,
-        undefined,
+        scope,
         undefined,
         undefined,
         this.bitWidth,
@@ -544,13 +624,21 @@ class verilogNandGate extends verilogBinaryGate {
   }
 }
 
+/**
+ *
+ */
 class verilogOrGate extends verilogBinaryGate {
-  constructor(deviceJSON) {
+  /**
+   *
+   * @param {*} deviceJSON
+   * @param {*} scope
+   */
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON);
     this.element = new OrGate(
         0,
         0,
-        undefined,
+        scope,
         undefined,
         undefined,
         this.bitWidth,
@@ -560,13 +648,21 @@ class verilogOrGate extends verilogBinaryGate {
   }
 }
 
+/**
+ *
+ */
 class verilogNorGate extends verilogBinaryGate {
-  constructor(deviceJSON) {
+  /**
+   *
+   * @param {*} deviceJSON
+   * @param {*} scope
+   */
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON);
     this.element = new NorGate(
         0,
         0,
-        undefined,
+        scope,
         undefined,
         undefined,
         this.bitWidth,
@@ -576,13 +672,21 @@ class verilogNorGate extends verilogBinaryGate {
   }
 }
 
+/**
+ *
+ */
 class verilogXorGate extends verilogBinaryGate {
-  constructor(deviceJSON) {
+  /**
+   *
+   * @param {*} deviceJSON
+   * @param {*} scope
+   */
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON);
     this.element = new XorGate(
         0,
         0,
-        undefined,
+        scope,
         undefined,
         undefined,
         this.bitWidth,
@@ -592,13 +696,21 @@ class verilogXorGate extends verilogBinaryGate {
   }
 }
 
+/**
+ *
+ */
 class verilogXnorGate extends verilogBinaryGate {
-  constructor(deviceJSON) {
+  /**
+   *
+   * @param {*} deviceJSON
+   * @param {*} scope
+   */
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON);
     this.element = new XnorGate(
         0,
         0,
-        undefined,
+        scope,
         undefined,
         undefined,
         this.bitWidth,
@@ -608,8 +720,17 @@ class verilogXnorGate extends verilogBinaryGate {
   }
 }
 
+/**
+ *
+ */
 class verilogMathGate extends verilogBinaryGate {
-  constructor(deviceJSON, includeOutBitWidth) {
+  /**
+   *
+   * @param {*} deviceJSON
+   * @param {*} includeOutBitWidth
+   * @param {*} scope
+   */
+  constructor(deviceJSON, includeOutBitWidth, scope = globalScope) {
     super(deviceJSON);
 
     this.bitWidth = Math.max(
@@ -634,7 +755,7 @@ class verilogMathGate extends verilogBinaryGate {
       this.in1Splitter = new Splitter(
           0,
           0,
-          undefined,
+          scope,
           undefined,
           this.bitWidth,
           [this.in1BitWidth, extraBits],
@@ -647,7 +768,7 @@ class verilogMathGate extends verilogBinaryGate {
       this.in1ZeroConstant = new ConstantVal(
           0,
           0,
-          undefined,
+          scope,
           undefined,
           extraBits,
           zeroState,
@@ -657,7 +778,7 @@ class verilogMathGate extends verilogBinaryGate {
       this.in1Splitter = new Splitter(
           0,
           0,
-          undefined,
+          scope,
           undefined,
           this.bitWidth,
           [this.bitWidth],
@@ -669,7 +790,7 @@ class verilogMathGate extends verilogBinaryGate {
       this.in2Splitter = new Splitter(
           0,
           0,
-          undefined,
+          scope,
           undefined,
           this.bitWidth,
           [this.in2BitWidth, extraBits],
@@ -682,7 +803,7 @@ class verilogMathGate extends verilogBinaryGate {
       this.in2ZeroConstant = new ConstantVal(
           0,
           0,
-          undefined,
+          scope,
           undefined,
           extraBits,
           zeroState,
@@ -692,7 +813,7 @@ class verilogMathGate extends verilogBinaryGate {
       this.in2Splitter = new Splitter(
           0,
           0,
-          undefined,
+          scope,
           undefined,
           this.bitWidth,
           [this.bitWidth],
@@ -703,8 +824,16 @@ class verilogMathGate extends verilogBinaryGate {
   }
 }
 
+/**
+ *
+ */
 class verilogEqGate extends verilogMathGate {
-  constructor(deviceJSON) {
+  /**
+   *
+   * @param {*} deviceJSON
+   * @param {*} scope
+   */
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON, false);
 
     const bitWidthSplit = [];
@@ -716,7 +845,7 @@ class verilogEqGate extends verilogMathGate {
     this.xnorGate = new XnorGate(
         0,
         0,
-        undefined,
+        scope,
         undefined,
         undefined,
         this.bitWidth,
@@ -724,12 +853,12 @@ class verilogEqGate extends verilogMathGate {
     this.splitter = new Splitter(
         0,
         0,
-        undefined,
+        scope,
         undefined,
         this.bitWidth,
         bitWidthSplit,
     );
-    this.andGate = new AndGate(0, 0, undefined, undefined, this.bitWidth);
+    this.andGate = new AndGate(0, 0, scope, undefined, this.bitWidth);
     this.in1Splitter.inp1.connect(this.xnorGate.inp[0]);
     this.in2Splitter.inp1.connect(this.xnorGate.inp[1]);
 
@@ -742,8 +871,16 @@ class verilogEqGate extends verilogMathGate {
   }
 }
 
+/**
+ *
+ */
 class verilogNeGate extends verilogMathGate {
-  constructor(deviceJSON) {
+  /**
+   *
+   * @param {*} deviceJSON
+   * @param {*} scope
+   */
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON, false);
 
     const bitWidthSplit = [];
@@ -755,7 +892,7 @@ class verilogNeGate extends verilogMathGate {
     this.xnorGate = new XnorGate(
         0,
         0,
-        undefined,
+        scope,
         undefined,
         undefined,
         this.bitWidth,
@@ -763,12 +900,12 @@ class verilogNeGate extends verilogMathGate {
     this.splitter = new Splitter(
         0,
         0,
-        undefined,
+        scope,
         undefined,
         this.bitWidth,
         bitWidthSplit,
     );
-    this.nandGate = new NandGate(0, 0, undefined, undefined, this.bitWidth);
+    this.nandGate = new NandGate(0, 0, scope, undefined, this.bitWidth);
 
     this.in1Splitter.inp1.connect(this.xnorGate.inp[0]);
     this.in2Splitter.inp1.connect(this.xnorGate.inp[1]);
@@ -782,15 +919,23 @@ class verilogNeGate extends verilogMathGate {
   }
 }
 
+/**
+ *
+ */
 class verilogLtGate extends verilogMathGate {
-  constructor(deviceJSON) {
+  /**
+   *
+   * @param {*} deviceJSON
+   * @param {*} scope
+   */
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON, false);
-    this.constant7 = new ConstantVal(0, 0, undefined, undefined, 3, '111');
-    this.alu = new ALU(0, 0, undefined, undefined, this.bitWidth);
+    this.constant7 = new ConstantVal(0, 0, scope, undefined, 3, '111');
+    this.alu = new ALU(0, 0, scope, undefined, this.bitWidth);
     this.splitter = new Splitter(
         0,
         0,
-        undefined,
+        scope,
         undefined,
         this.bitWidth,
         [1],
@@ -806,15 +951,23 @@ class verilogLtGate extends verilogMathGate {
   }
 }
 
+/**
+ *
+ */
 class verilogGtGate extends verilogMathGate {
-  constructor(deviceJSON) {
+  /**
+   *
+   * @param {*} deviceJSON
+   * @param {*} scope
+   */
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON, false);
-    this.constant7 = new ConstantVal(0, 0, undefined, undefined, 3, '111');
-    this.alu = new ALU(0, 0, undefined, undefined, this.bitWidth);
+    this.constant7 = new ConstantVal(0, 0, scope, undefined, 3, '111');
+    this.alu = new ALU(0, 0, scope, undefined, this.bitWidth);
     this.splitter = new Splitter(
         0,
         0,
-        undefined,
+        scope,
         undefined,
         this.bitWidth,
         [1],
@@ -830,20 +983,28 @@ class verilogGtGate extends verilogMathGate {
   }
 }
 
+/**
+ *
+ */
 class verilogGeGate extends verilogMathGate {
-  constructor(deviceJSON) {
+  /**
+   *
+   * @param {*} deviceJSON
+   * @param {*} scope
+   */
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON, false);
-    this.constant7 = new ConstantVal(0, 0, undefined, undefined, 3, '111');
-    this.alu = new ALU(0, 0, undefined, undefined, this.bitWidth);
+    this.constant7 = new ConstantVal(0, 0, scope, undefined, 3, '111');
+    this.alu = new ALU(0, 0, scope, undefined, this.bitWidth);
     this.splitter = new Splitter(
         0,
         0,
-        undefined,
+        scope,
         undefined,
         this.bitWidth,
         [1],
     );
-    this.notGate = new NotGate(0, 0);
+    this.notGate = new NotGate(0, 0, scope);
 
     this.in1Splitter.inp1.connect(this.alu.inp1);
     this.in2Splitter.inp1.connect(this.alu.inp2);
@@ -856,20 +1017,28 @@ class verilogGeGate extends verilogMathGate {
   }
 }
 
+/**
+ *
+ */
 class verilogLeGate extends verilogMathGate {
-  constructor(deviceJSON) {
+  /**
+   *
+   * @param {*} deviceJSON
+   * @param {*} scope
+   */
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON, false);
-    this.constant7 = new ConstantVal(0, 0, undefined, undefined, 3, '111');
-    this.alu = new ALU(0, 0, undefined, undefined, this.bitWidth);
+    this.constant7 = new ConstantVal(0, 0, scope, undefined, 3, '111');
+    this.alu = new ALU(0, 0, scope, undefined, this.bitWidth);
     this.splitter = new Splitter(
         0,
         0,
-        undefined,
+        scope,
         undefined,
         this.bitWidth,
         [1],
     );
-    this.notGate = new NotGate(0, 0);
+    this.notGate = new NotGate(0, 0, scope);
 
     this.in1Splitter.inp1.connect(this.alu.inp1);
     this.in2Splitter.inp1.connect(this.alu.inp2);
@@ -882,13 +1051,21 @@ class verilogLeGate extends verilogMathGate {
   }
 }
 
+/**
+ *
+ */
 class verilogAdditionGate extends verilogMathGate {
-  constructor(deviceJSON) {
+  /**
+   *
+   * @param {*} deviceJSON
+   * @param {*} scope
+   */
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON, false);
 
     this.outBitWidth = deviceJSON['bits']['out'];
 
-    this.adder = new Adder(0, 0, undefined, undefined, this.bitWidth);
+    this.adder = new Adder(0, 0, scope, undefined, this.bitWidth);
 
     this.in1Splitter.inp1.connect(this.adder.inpA);
     this.in2Splitter.inp1.connect(this.adder.inpB);
@@ -899,7 +1076,7 @@ class verilogAdditionGate extends verilogMathGate {
       this.outputSplitter = new Splitter(
           0,
           0,
-          undefined,
+          scope,
           undefined,
           this.outBitWidth,
           [this.bitWidth, 1],
@@ -911,8 +1088,16 @@ class verilogAdditionGate extends verilogMathGate {
   }
 }
 
+/**
+ *
+ */
 class verilogMultiplicationGate extends verilogMathGate {
-  constructor(deviceJSON) {
+  /**
+   *
+   * @param {*} deviceJSON
+   * @param {*} scope
+   */
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON);
 
     this.outBitWidth = deviceJSON['bits']['out'];
@@ -920,7 +1105,7 @@ class verilogMultiplicationGate extends verilogMathGate {
     this.verilogMultiplier = new verilogMultiplier(
         300,
         300,
-        undefined,
+        scope,
         undefined,
         this.bitWidth,
         this.outBitWidth,
@@ -933,8 +1118,16 @@ class verilogMultiplicationGate extends verilogMathGate {
   }
 }
 
+/**
+ *
+ */
 class verilogDivisionGate extends verilogMathGate {
-  constructor(deviceJSON) {
+  /**
+   *
+   * @param {*} deviceJSON
+   * @param {*} scope
+   */
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON);
 
     this.outBitWidth = deviceJSON['bits']['out'];
@@ -942,7 +1135,7 @@ class verilogDivisionGate extends verilogMathGate {
     this.verilogDivider = new verilogDivider(
         300,
         300,
-        undefined,
+        scope,
         undefined,
         this.bitWidth,
         this.outBitWidth,
@@ -955,8 +1148,16 @@ class verilogDivisionGate extends verilogMathGate {
   }
 }
 
+/**
+ *
+ */
 class verilogPowerGate extends verilogMathGate {
-  constructor(deviceJSON) {
+  /**
+   *
+   * @param {*} deviceJSON
+   * @param {*} scope
+   */
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON);
 
     this.outBitWidth = deviceJSON['bits']['out'];
@@ -964,7 +1165,7 @@ class verilogPowerGate extends verilogMathGate {
     this.verilogPower = new verilogPower(
         300,
         300,
-        undefined,
+        scope,
         undefined,
         this.bitWidth,
         this.outBitWidth,
@@ -977,8 +1178,16 @@ class verilogPowerGate extends verilogMathGate {
   }
 }
 
+/**
+ *
+ */
 class verilogModuloGate extends verilogMathGate {
-  constructor(deviceJSON) {
+  /**
+   *
+   * @param {*} deviceJSON
+   * @param {*} scope
+   */
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON);
 
     this.outBitWidth = deviceJSON['bits']['out'];
@@ -986,7 +1195,7 @@ class verilogModuloGate extends verilogMathGate {
     this.verilogDivider = new verilogDivider(
         300,
         300,
-        undefined,
+        scope,
         undefined,
         this.bitWidth,
         this.outBitWidth,
@@ -999,8 +1208,16 @@ class verilogModuloGate extends verilogMathGate {
   }
 }
 
+/**
+ *
+ */
 class verilogShiftLeftGate extends verilogMathGate {
-  constructor(deviceJSON) {
+  /**
+   *
+   * @param {*} deviceJSON
+   * @param {*} scope
+   */
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON);
 
     this.outBitWidth = deviceJSON['bits']['out'];
@@ -1008,7 +1225,7 @@ class verilogShiftLeftGate extends verilogMathGate {
     this.verilogShiftLeft = new verilogShiftLeft(
         300,
         300,
-        undefined,
+        scope,
         undefined,
         this.bitWidth,
         this.outBitWidth,
@@ -1021,8 +1238,16 @@ class verilogShiftLeftGate extends verilogMathGate {
   }
 }
 
+/**
+ *
+ */
 class verilogShiftRightGate extends verilogMathGate {
-  constructor(deviceJSON) {
+  /**
+   *
+   * @param {*} deviceJSON
+   * @param {*} scope
+   */
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON);
 
     this.outBitWidth = deviceJSON['bits']['out'];
@@ -1030,7 +1255,7 @@ class verilogShiftRightGate extends verilogMathGate {
     this.verilogShiftRight = new verilogShiftRight(
         300,
         300,
-        undefined,
+        scope,
         undefined,
         this.bitWidth,
         this.outBitWidth,
@@ -1043,16 +1268,24 @@ class verilogShiftRightGate extends verilogMathGate {
   }
 }
 
+/**
+ *
+ */
 class verilogSubtractionGate extends verilogMathGate {
-  constructor(deviceJSON) {
+  /**
+   *
+   * @param {*} deviceJSON
+   * @param {*} scope
+   */
+  constructor(deviceJSON, scope = globalScope) {
     super(deviceJSON, true);
 
-    this.alu = new ALU(0, 0, undefined, undefined, this.bitWidth);
+    this.alu = new ALU(0, 0, scope, undefined, this.bitWidth);
 
     this.controlConstant = new ConstantVal(
         0,
         0,
-        undefined,
+        scope,
         undefined,
         3,
         '110',
@@ -1066,14 +1299,22 @@ class verilogSubtractionGate extends verilogMathGate {
   }
 }
 
+/**
+ *
+ */
 class verilogDff {
-  constructor(deviceJSON) {
+  /**
+   *
+   * @param {*} deviceJSON
+   * @param {*} scope
+   */
+  constructor(deviceJSON, scope = globalScope) {
     this.bitWidth = 1;
     if (deviceJSON['bits']) {
       this.bitWidth = getBitWidth(deviceJSON['bits']);
     }
 
-    this.dff = new DflipFlop(0, 0, undefined, undefined, this.bitWidth);
+    this.dff = new DflipFlop(0, 0, scope, undefined, this.bitWidth);
     this.clockInput = this.dff.clockInp;
     this.arstInput = this.dff.reset;
     this.enableInput = this.dff.en;
@@ -1086,7 +1327,7 @@ class verilogDff {
       this.clockPolarity = deviceJSON['polarity']['clock'];
     }
     if (this.clockPolarity == false) {
-      this.notGateClock = new NotGate(0, 0);
+      this.notGateClock = new NotGate(0, 0, scope);
       this.notGateClock.output1.connect(this.dff.clockInp);
       this.clockInput = this.notGateClock.inp1;
     }
@@ -1095,7 +1336,7 @@ class verilogDff {
       this.enablePolarity = deviceJSON['polarity']['enable'];
     }
     if (this.enablePolarity == false) {
-      this.notGateEnable = new NotGate(0, 0);
+      this.notGateEnable = new NotGate(0, 0, scope);
       this.notGateEnable.output1.connect(this.dff.en);
       this.enableInput = this.notGateEnable.inp1;
     }
@@ -1104,7 +1345,7 @@ class verilogDff {
       this.arstPolarity = deviceJSON['polarity']['arst'];
     }
     if (this.arstPolarity == false) {
-      this.notGateArst = new NotGate(0, 0);
+      this.notGateArst = new NotGate(0, 0, scope);
       this.notGateArst.output1.connect(this.dff.reset);
       this.arstInput = this.notGateArst.inp1;
     }
@@ -1112,7 +1353,7 @@ class verilogDff {
       this.arst_value_constant = new ConstantVal(
           0,
           0,
-          undefined,
+          scope,
           undefined,
           this.bitWidth,
           deviceJSON['arst_value'],
@@ -1125,7 +1366,7 @@ class verilogDff {
   }
 
   /**
-   * Mapping the verlog name for a port to the Node representing it.
+   * Mapping the Verilog name for a port to the Node representing it.
    * @param {string} portName - verilog name for the port.
    * @return {Node} Node representing the port.
    */
@@ -1144,8 +1385,16 @@ class verilogDff {
   }
 }
 
+/**
+ *
+ */
 class verilogMultiplexer {
-  constructor(deviceJSON) {
+  /**
+   *
+   * @param {*} deviceJSON
+   * @param {*} scope
+   */
+  constructor(deviceJSON, scope = globalScope) {
     this.bitWidth = 1;
     this.selectBitWidth = undefined;
     if (deviceJSON['bits']['in'] != undefined) {
@@ -1159,7 +1408,7 @@ class verilogMultiplexer {
     this.multiplexer = new Multiplexer(
         0,
         0,
-        undefined,
+        scope,
         undefined,
         this.bitWidth,
         this.selectBitWidth,
@@ -1170,6 +1419,11 @@ class verilogMultiplexer {
     this.output = this.multiplexer.output1;
   }
 
+  /**
+   *
+   * @param {*} portName
+   * @returns
+   */
   getPort(portName) {
     if (portName == 'sel') {
       return this.selectInput;
@@ -1184,8 +1438,16 @@ class verilogMultiplexer {
   }
 }
 
+/**
+ *
+ */
 class verilogMultiplexer1Hot {
-  constructor(deviceJSON) {
+  /**
+   *
+   * @param {*} deviceJSON
+   * @param {*} scope
+   */
+  constructor(deviceJSON, scope = globalScope) {
     this.bitWidth = 1;
     this.selectBitWidth = undefined;
     if (deviceJSON['bits']['in'] != undefined) {
@@ -1199,13 +1461,13 @@ class verilogMultiplexer1Hot {
     this.multiplexer = new Multiplexer(
         0,
         0,
-        undefined,
+        scope,
         undefined,
         this.bitWidth,
         this.selectBitWidth,
     );
-    this.lsb = new LSB(0, 0, undefined, undefined, this.selectBitWidth);
-    this.adder = new Adder(0, 0, undefined, undefined, this.selectBitWidth);
+    this.lsb = new LSB(0, 0, scope, undefined, this.selectBitWidth);
+    this.adder = new Adder(0, 0, scope, undefined, this.selectBitWidth);
 
     let zeroState = '';
     for (let i = 0; i < this.selectBitWidth - 1; i++) {
@@ -1214,7 +1476,7 @@ class verilogMultiplexer1Hot {
     this.zeroPadEnable = new ConstantVal(
         0,
         0,
-        undefined,
+        scope,
         undefined,
         this.selectBitWidth - 1,
         zeroState,
@@ -1223,7 +1485,7 @@ class verilogMultiplexer1Hot {
     this.enbaleSplitter = new Splitter(
         0,
         0,
-        undefined,
+        scope,
         undefined,
         this.selectBitWidth,
         [1, this.selectBitWidth - 1],
@@ -1241,6 +1503,11 @@ class verilogMultiplexer1Hot {
     this.output = this.multiplexer.output1;
   }
 
+  /**
+   *
+   * @param {*} portName
+   * @return {Node}
+   */
   getPort(portName) {
     if (portName == 'sel') {
       return this.selectInput;
@@ -1255,8 +1522,16 @@ class verilogMultiplexer1Hot {
   }
 }
 
+/**
+ *
+ */
 class verilogBusGroup {
-  constructor(deviceJSON) {
+  /**
+   *
+   * @param {*} deviceJSON
+   * @param {*} scope
+   */
+  constructor(deviceJSON, scope = globalScope) {
     this.bitWidth = 0;
     this.bitWidthSplit = deviceJSON['groups'];
 
@@ -1267,7 +1542,7 @@ class verilogBusGroup {
     this.splitter = new Splitter(
         0,
         0,
-        undefined,
+        scope,
         undefined,
         this.bitWidth,
         this.bitWidthSplit,
@@ -1277,6 +1552,11 @@ class verilogBusGroup {
     this.output = this.splitter.inp1;
   }
 
+  /**
+   *
+   * @param {*} portName
+   * @return {Node}
+   */
   getPort(portName) {
     if (portName == 'out') {
       return this.output;
@@ -1289,8 +1569,16 @@ class verilogBusGroup {
   }
 }
 
+/**
+ *
+ */
 class verilogBusUngroup {
-  constructor(deviceJSON) {
+  /**
+   *
+   * @param {*} deviceJSON
+   * @param {*} scope
+   */
+  constructor(deviceJSON, scope = globalScope) {
     this.bitWidth = 0;
     this.bitWidthSplit = deviceJSON['groups'];
 
@@ -1301,7 +1589,7 @@ class verilogBusUngroup {
     this.splitter = new Splitter(
         0,
         0,
-        undefined,
+        scope,
         undefined,
         this.bitWidth,
         this.bitWidthSplit,
@@ -1311,6 +1599,11 @@ class verilogBusUngroup {
     this.output = this.splitter.outputs;
   }
 
+  /**
+   *
+   * @param {string} portName
+   * @return {Node}
+   */
   getPort(portName) {
     if (portName == 'in') {
       return this.input;
@@ -1330,8 +1623,9 @@ class verilogMemory {
   /**
    *
    * @param {*} deviceJSON
+   * @param {*} scope
    */
-  constructor(deviceJSON) {
+  constructor(deviceJSON, scope = globalScope) {
     this.memData = deviceJSON['memdata'];
     this.dataBitWidth = deviceJSON['bits'];
     this.addressBitWidth = deviceJSON['abits'];
@@ -1343,7 +1637,7 @@ class verilogMemory {
     this.verilogRAM = new verilogRAM(
         0,
         0,
-        undefined,
+        scope,
         undefined,
         this.dataBitWidth,
         this.addressBitWidth,
@@ -1366,7 +1660,7 @@ class verilogMemory {
       const writeEnInput = new Input(
           0,
           0,
-          undefined,
+          scope,
           undefined,
           1,
           undefined,

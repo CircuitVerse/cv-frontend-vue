@@ -20,13 +20,13 @@ export class Rectangle extends CircuitElement {
    * @param {number} rows - number of rows.
    * @param {number} cols - number of columns.
    */
-  constructor(x, y, scope = globalScope, rows = 15, cols = 20) {
+  constructor(x, y, scope, rows = 15, cols = 20) {
     super(x, y, scope, 'RIGHT', 1);
     this.directionFixed = true;
     this.fixedBitWidth = true;
     this.rectangleObject = false;
-    this.cols = cols || parseInt(prompt('Enter cols:'), 10);
-    this.rows = rows || parseInt(prompt('Enter rows:'), 10);
+    this.cols = cols;
+    this.rows = rows;
     this.setSize();
   }
 
@@ -105,7 +105,7 @@ export class Rectangle extends CircuitElement {
   customDraw(ctx) {
     ctx.beginPath();
     ctx.strokeStyle = 'rgba(0,0,0,1)';
-    ctx.setLineDash([5 * globalScope.scale, 5 * globalScope.scale]);
+    ctx.setLineDash([5 * this.scope.scale, 5 * this.scope.scale]);
     ctx.lineWidth = correctWidth(1.5);
     const xx = this.x;
     const yy = this.y;
@@ -113,8 +113,8 @@ export class Rectangle extends CircuitElement {
     ctx.stroke();
 
     if (
-      globalScope.simulationArea.lastSelected === this ||
-      globalScope.simulationArea.multipleObjectSelections.includes(this)
+      this.scope.simulationArea.lastSelected === this ||
+      this.scope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = 'rgba(255, 255, 32,0.1)';
       ctx.fill();

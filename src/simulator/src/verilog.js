@@ -43,7 +43,6 @@ export var verilog = {
     const dependencyList = {};
     // Reset Verilog Element State
     for (const elem in modules) {
-      // Not sure if globalScope here is correct.
       if (modules[elem].resetVerilog) {
         modules[elem].resetVerilog();
       }

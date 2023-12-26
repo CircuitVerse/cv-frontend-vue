@@ -107,7 +107,7 @@ function createElement(elementName: string) {
   if (globalScope.simulationArea.lastSelected && globalScope.simulationArea.lastSelected.newElement) {
     globalScope.simulationArea.lastSelected.delete();
   }
-  const obj = new modules[elementName]();
+  const obj = new modules[elementName](uxvar.smartDropXX, uxvar.smartDropYY, globalScope);
   globalScope.simulationArea.lastSelected = obj;
   uxvar.smartDropXX += 70;
   if (uxvar.smartDropXX / globalScope.scale > width) {

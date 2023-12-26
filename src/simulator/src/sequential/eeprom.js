@@ -33,7 +33,7 @@ export class EEPROM extends RAM {
   constructor(
       x,
       y,
-      scope = globalScope,
+      scope,
       dir = 'RIGHT',
       bitWidth = 8,
       addressWidth = 8,

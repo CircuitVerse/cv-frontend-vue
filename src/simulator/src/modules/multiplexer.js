@@ -27,7 +27,7 @@ export class Multiplexer extends CircuitElement {
   constructor(
       x,
       y,
-      scope = globalScope,
+      scope,
       dir = 'RIGHT',
       bitWidth = 1,
       controlSignalSize = 1,
@@ -69,9 +69,11 @@ export class Multiplexer extends CircuitElement {
   }
 
   /**
-     * @memberof Multiplexer
-     * function to change control signal of the element
-     */
+   * @memberof Multiplexer
+   * function to change control signal of the element.
+   * @param {number} size
+   * @return {Multiplexer}
+   */
   changeControlSignalSize(size) {
     if (size === undefined || size < 1 || size > 32) {
       return;
@@ -88,15 +90,15 @@ export class Multiplexer extends CircuitElement {
         size,
     );
     this.cleanDelete();
-    globalScope.simulationArea.lastSelected = obj;
+    this.scope.simulationArea.lastSelected = obj;
     return obj;
   }
 
   /**
-     * @memberof Multiplexer
-     * function to change bitwidth of the element
-     * @param {number} bitWidth - bitwidth
-     */
+   * @memberof Multiplexer
+   * function to change bitwidth of the element
+   * @param {number} bitWidth - bitwidth
+   */
   newBitWidth(bitWidth) {
     this.bitWidth = bitWidth;
     for (let i = 0; i < this.inputSize; i++) {
@@ -106,9 +108,9 @@ export class Multiplexer extends CircuitElement {
   }
 
   /**
-     * @memberof Multiplexer
-     * @type {boolean}
-     */
+   * @memberof Multiplexer
+   * @return {boolean}
+   */
   isResolvable() {
     if (
       this.controlSignalInput.value !== undefined &&
@@ -149,7 +151,7 @@ export class Multiplexer extends CircuitElement {
       return;
     }
     this.output1.value = this.inp[this.controlSignalInput.value].value;
-    globalScope.simulationArea.simulationQueue.add(this.output1);
+    this.scope.simulationArea.simulationQueue.add(this.output1);
   }
 
   /**
@@ -220,9 +222,9 @@ export class Multiplexer extends CircuitElement {
 
     ctx.closePath();
     if (
-      (this.hover && !globalScope.simulationArea.shiftDown) ||
-      globalScope.simulationArea.lastSelected === this ||
-      globalScope.simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !this.scope.simulationArea.shiftDown) ||
+      this.scope.simulationArea.lastSelected === this ||
+      this.scope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }

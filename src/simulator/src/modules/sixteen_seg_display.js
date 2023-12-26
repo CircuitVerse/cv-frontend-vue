@@ -24,7 +24,7 @@ export class SixteenSegDisplay extends CircuitElement {
      * @param {Scope} scope - Circuit on which element is drawn.
      * @param {*} color - color of the segments.
      */
-  constructor(x, y, scope = globalScope, color = 'Red') {
+  constructor(x, y, scope, color = 'Red') {
     super(x, y, scope, 'RIGHT', 16);
     this.fixedBitWidth = true;
     this.directionFixed = true;
@@ -506,9 +506,9 @@ export class SixteenSegDisplay extends CircuitElement {
     ctx.stroke();
 
     if (
-      (this.hover && !globalScope.simulationArea.shiftDown) ||
-      globalScope.simulationArea.lastSelected == this ||
-      globalScope.simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !this.scope.simulationArea.shiftDown) ||
+      this.scope.simulationArea.lastSelected == this ||
+      this.scope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = 'rgba(255, 255, 32,0.6)';
       ctx.fill();

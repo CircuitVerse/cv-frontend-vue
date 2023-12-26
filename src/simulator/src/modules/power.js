@@ -20,7 +20,7 @@ export class Power extends CircuitElement {
     * @param {Scope} scope - Circuit on which element is drawn
     * @param {number} bitWidth - bit width per node.
     */
-  constructor(x, y, scope = globalScope, bitWidth = 1) {
+  constructor(x, y, scope, bitWidth = 1) {
     super(x, y, scope, 'RIGHT', bitWidth);
     this.directionFixed = true;
     this.rectangleObject = false;
@@ -34,7 +34,7 @@ export class Power extends CircuitElement {
    */
   resolve() {
     this.output1.value = ~0 >>> (32 - this.bitWidth);
-    globalScope.simulationArea.simulationQueue.add(this.output1);
+    this.scope.simulationArea.simulationQueue.add(this.output1);
   }
 
   /**
@@ -73,9 +73,9 @@ export class Power extends CircuitElement {
     ctx.closePath();
     ctx.stroke();
     if (
-      (this.hover && !globalScope.simulationArea.shiftDown) ||
-      globalScope.simulationArea.lastSelected === this ||
-      globalScope.simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !this.scope.simulationArea.shiftDown) ||
+      this.scope.simulationArea.lastSelected === this ||
+      this.scope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }

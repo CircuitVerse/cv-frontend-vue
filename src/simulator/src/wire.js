@@ -161,6 +161,9 @@ export class Wire {
     return updated;
   }
 
+  /**
+   * Draw a wire.
+   */
   draw() {
     // for calculating min-max Width,min-max Height
     const ctx = globalScope.simulationArea.context;
@@ -244,7 +247,10 @@ export class Wire {
     return false;
   }
 
-  // add intermediate node between these 2 nodes
+  /**
+   * Add intermediate node between these 2 nodes
+   * @param {*} n
+   */
   converge(n) {
     this.node1.connect(n);
     this.node2.connect(n);

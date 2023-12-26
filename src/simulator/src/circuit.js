@@ -101,7 +101,7 @@ export function switchCircuit(id) {
   updateSimulationSet(true);
   updateSubcircuitSet(true);
   forceResetNodesSet(true);
-  dots(false);
+  dots(globalScope, false);
   globalScope.simulationArea.lastSelected = globalScope.root;
   if (!embed) {
     showProperties(globalScope.simulationArea.lastSelected);
@@ -238,7 +238,7 @@ export function newCircuit(name, id, isVerilog = false, isVerilogMain = false) {
     if (!embed) {
       showProperties(scope.root);
     }
-    dots(false);
+    dots(scope, false);
   }
   return scope;
 }
@@ -298,7 +298,7 @@ export class Scope {
     this.oy = 0;
     this.scale = DPR;
     this.stack = [];
-
+    this.allNodes = [];
     this.initialize();
 
     // Setting default layout

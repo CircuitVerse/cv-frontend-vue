@@ -20,7 +20,7 @@ export class Button extends CircuitElement {
  * @param {Scope} scope - Circuit on which element is drawn
  * @param {string} dir - direction of element
      */
-  constructor(x, y, scope = globalScope, dir = 'RIGHT') {
+  constructor(x, y, scope, dir = 'RIGHT') {
     super(x, y, scope, dir, 1);
     this.state = 0;
     this.output1 = new Node(30, 0, 1, this);
@@ -60,7 +60,7 @@ export class Button extends CircuitElement {
       this.state = 0;
       this.output1.value = this.state;
     }
-    globalScope.simulationArea.simulationQueue.add(this.output1);
+    this.scope.simulationArea.simulationQueue.add(this.output1);
   }
 
   /**
@@ -88,9 +88,9 @@ export class Button extends CircuitElement {
     ctx.stroke();
 
     if (
-      (this.hover && !globalScope.simulationArea.shiftDown) ||
-      globalScope.simulationArea.lastSelected === this ||
-      globalScope.simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !this.scope.simulationArea.shiftDown) ||
+      this.scope.simulationArea.lastSelected === this ||
+      this.scope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = 'rgba(232, 13, 13,0.6)';
     }
@@ -118,9 +118,9 @@ export class Button extends CircuitElement {
     drawCircle2(ctx, 0, 0, 6, xx, yy, this.direction);
     ctx.stroke();
     if (
-      (this.hover && !globalScope.simulationArea.shiftDown) ||
-      globalScope.simulationArea.lastSelected == this ||
-      globalScope.simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !this.scope.simulationArea.shiftDown) ||
+      this.scope.simulationArea.lastSelected == this ||
+      this.scope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = 'rgba(232, 13, 13,0.6)';
     }

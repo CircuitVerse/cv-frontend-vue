@@ -27,7 +27,7 @@ export class ImageAnnotation extends CircuitElement {
   constructor(
       x,
       y,
-      scope = globalScope,
+      scope,
       rows = 15,
       cols = 20,
       imageUrl = '',
@@ -127,15 +127,15 @@ export class ImageAnnotation extends CircuitElement {
     } else {
       ctx.beginPath();
       ctx.strokeStyle = 'rgba(0,0,0,1)';
-      ctx.setLineDash([5 * globalScope.scale, 5 * globalScope.scale]);
+      ctx.setLineDash([5 * this.scope.scale, 5 * this.scope.scale]);
       ctx.lineWidth = correctWidth(1.5);
 
       rect(ctx, xx - w / 2, yy - h / 2, w, h);
       ctx.stroke();
 
       if (
-        globalScope.simulationArea.lastSelected === this ||
-        globalScope.simulationArea.multipleObjectSelections.includes(this)
+        this.scope.simulationArea.lastSelected === this ||
+        this.scope.simulationArea.multipleObjectSelections.includes(this)
       ) {
         ctx.fillStyle = 'rgba(255, 255, 32,0.1)';
         ctx.fill();

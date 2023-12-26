@@ -7,14 +7,16 @@ import {colors} from '../themer/themer';
  * @class
  * Ground
  * @extends CircuitElement
- * @param {number} x - x coordinate of element.
- * @param {number} y - y coordinate of element.
- * @param {Scope} scope - Circuit on which element is drawn
- * @param {number} bitWidth - bit width per node.
  * @category modules
  */
 export class Ground extends CircuitElement {
-  constructor(x, y, scope = globalScope, bitWidth = 1) {
+  /**
+   * @param {number} x - x coordinate of element.
+   * @param {number} y - y coordinate of element.
+   * @param {Scope} scope - Circuit on which element is drawn
+   * @param {number} bitWidth - bit width per node.
+   */
+  constructor(x, y, scope, bitWidth = 1) {
     super(x, y, scope, 'RIGHT', bitWidth);
     this.rectangleObject = false;
     this.setDimensions(10, 10);
@@ -47,7 +49,7 @@ export class Ground extends CircuitElement {
    */
   resolve() {
     this.output1.value = 0;
-    globalScope.simulationArea.simulationQueue.add(this.output1);
+    this.scope.simulationArea.simulationQueue.add(this.output1);
   }
 
   /**
@@ -58,9 +60,9 @@ export class Ground extends CircuitElement {
   customDraw(ctx) {
     ctx.beginPath();
     ctx.strokeStyle = [colors['stroke'], 'brown'][
-        ((this.hover && !globalScope.simulationArea.shiftDown) ||
-        globalScope.simulationArea.lastSelected === this ||
-        globalScope.simulationArea.multipleObjectSelections.includes(this)) + 0
+        ((this.hover && !this.scope.simulationArea.shiftDown) ||
+        this.scope.simulationArea.lastSelected === this ||
+        this.scope.simulationArea.multipleObjectSelections.includes(this)) + 0
     ];
     ctx.lineWidth = correctWidth(3);
 

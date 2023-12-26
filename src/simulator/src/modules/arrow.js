@@ -21,7 +21,7 @@ export class Arrow extends CircuitElement {
    * @param {Scope} scope Circuit on which and gate is drawn
    * @param {string} dir direction
    */
-  constructor(x, y, scope = globalScope, dir = 'RIGHT') {
+  constructor(x, y, scope, dir = 'RIGHT') {
     super(x, y, scope, dir, 8);
     this.rectangleObject = false;
     this.fixedBitWidth = true;

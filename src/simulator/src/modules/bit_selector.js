@@ -23,7 +23,7 @@ export class BitSelector extends CircuitElement {
   constructor(
       x,
       y,
-      scope = globalScope,
+      scope,
       dir = 'RIGHT',
       bitWidth = 2,
       selectorBitWidth = 1,

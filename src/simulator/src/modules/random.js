@@ -23,7 +23,7 @@ export class Random extends CircuitElement {
    * @param {string} dir - direction in which element has to drawn.
    * @param {*} bitWidth - bit width.
    */
-  constructor(x, y, scope = globalScope, dir = 'RIGHT', bitWidth = 1) {
+  constructor(x, y, scope, dir = 'RIGHT', bitWidth = 1) {
     super(x, y, scope, dir, bitWidth);
     this.directionFixed = true;
     this.setDimensions(20, 20);
@@ -81,7 +81,7 @@ export class Random extends CircuitElement {
     }
     if (this.output.value != this.currentRandomNo) {
       this.output.value = this.currentRandomNo;
-      globalScope.simulationArea.simulationQueue.add(this.output);
+      this.scope.simulationArea.simulationQueue.add(this.output);
     }
   }
 
@@ -150,9 +150,9 @@ export class Random extends CircuitElement {
     ctx.stroke();
 
     if (
-      (this.hover && !globalScope.simulationArea.shiftDown) ||
-      globalScope.simulationArea.lastSelected == this ||
-      globalScope.simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !this.scope.simulationArea.shiftDown) ||
+      this.scope.simulationArea.lastSelected == this ||
+      this.scope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = 'rgba(255, 255, 32,0.6)';
       ctx.fill();

@@ -19,7 +19,7 @@ import { clockTick } from './utils_clock';
  * @property {number} maxWidth
  * @property {number} minHeight
  * @property {number} minWidth
- * @property {Array} multipleObjectSelections
+ * @property {CircuitElement[]} multipleObjectSelections
  * @property {Array} copyList - List of selected elements
  * @property {boolean} shiftDown - shift down or not
  * @property {boolean} controlDown - control down or not
@@ -41,7 +41,7 @@ export class SimulationArea {
   public canvas: HTMLCanvasElement;
   public context: CanvasRenderingContext2D;
   public selected: boolean = false;
-  public hover: boolean = false;
+  public hover?: Node;
   public clockState: number = 0;
   public clockEnabled: boolean = true;
   public lastSelected?: CircuitElement;
@@ -63,7 +63,7 @@ export class SimulationArea {
   public mouseY: number = 0;
   public mouseDownX: number = 0;
   public mouseDownY: number = 0;
-  public simulationQueue: any;
+  public static simulationQueue: EventQueue;
   static ClockInterval?: NodeJS.Timeout = undefined;
   public clickCount: number = 0;
   public lock: string = 'unlocked';

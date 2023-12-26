@@ -16,12 +16,6 @@ import {colors} from '../themer/themer';
  * @class
  * XnorGate
  * @extends CircuitElement
- * @param {number} x - x coordinate of element.
- * @param {number} y - y coordinate of element.
- * @param {Scope} scope - Circuit on which element is drawn.
- * @param {string} dir - direction of element.
- * @param {number} inputs - number of input nodes.
- * @param {number} bitWidth - bit width per node.
  * @category modules
  */
 export class XnorGate extends CircuitElement {
@@ -36,7 +30,7 @@ export class XnorGate extends CircuitElement {
   constructor(
       x,
       y,
-      scope = globalScope,
+      scope,
       dir = 'RIGHT',
       inputs = 2,
       bitWidth = 1,
@@ -107,7 +101,7 @@ export class XnorGate extends CircuitElement {
     result =
       ((~result >>> 0) << (32 - this.bitWidth)) >>> (32 - this.bitWidth);
     this.output1.value = result;
-    globalScope.simulationArea.simulationQueue.add(this.output1);
+    this.scope.simulationArea.simulationQueue.add(this.output1);
   }
 
   /**
@@ -139,9 +133,9 @@ export class XnorGate extends CircuitElement {
     bezierCurveTo(0, 0, 0, 0, -10, -20, xx, yy, this.direction);
     ctx.closePath();
     if (
-      (this.hover && !globalScope.simulationArea.shiftDown) ||
-      globalScope.simulationArea.lastSelected === this ||
-      globalScope.simulationArea.multipleObjectSelections.includes(this)
+      (this.hover && !this.scope.simulationArea.shiftDown) ||
+      this.scope.simulationArea.lastSelected === this ||
+      this.scope.simulationArea.multipleObjectSelections.includes(this)
     ) {
       ctx.fillStyle = colors['hover_select'];
     }

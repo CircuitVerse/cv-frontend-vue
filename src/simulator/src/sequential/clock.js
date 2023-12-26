@@ -19,7 +19,7 @@ export class Clock extends CircuitElement {
    * @param {Scope} scope - the circuit in which we want the Element
    * @param {string} dir - direction in which element has to drawn
    */
-  constructor(x, y, scope = globalScope, dir = 'RIGHT') {
+  constructor(x, y, scope, dir = 'RIGHT') {
     super(x, y, scope, dir, 1);
     this.fixedBitWidth = true;
     this.output1 = new Node(10, 0, 1, this, 1);
@@ -52,7 +52,7 @@ export class Clock extends CircuitElement {
    */
   resolve() {
     this.output1.value = this.state;
-    globalScope.simulationArea.simulationQueue.add(this.output1);
+    this.scope.simulationArea.simulationQueue.add(this.output1);
   }
 
   /**

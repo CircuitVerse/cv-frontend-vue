@@ -25,7 +25,7 @@ export class verilogShiftLeft extends CircuitElement {
   constructor(
       x,
       y,
-      scope = globalScope,
+      scope,
       dir = 'RIGHT',
       bitWidth = 1,
       outputBitWidth = 1,
