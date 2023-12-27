@@ -100,24 +100,41 @@ export function updateThemeForStyle(themeName) {
  */
 export const getThemeCardSvg = (themeName) => {
     const colors = themeOptions[themeName]
-    let svgIcon = $(themeCardSvg)
+    let svgIcon = document.querySelectorAll(themeCardSvg)
 
     // Dynamically set the colors according to the theme
-    $('.svgText', svgIcon).attr('fill', colors['--text-panel'])
+    svgIcon.querySelectorAll('.svgText').forEach(element => {
+        element.setAttribute('fill', colors['--text-panel']);
+    });
 
-    $('.svgNav', svgIcon).attr('fill', colors['--bg-tab'])
-    $('.svgNav', svgIcon).attr('stroke', colors['--br-primary'])
+    svgIcon.querySelectorAll('.svgNav').forEach(element => {
+        element.setAttribute('fill', colors['--bg-tab']);
+        element.setAttribute('stroke', colors['--br-primary']);
+    });
 
-    $('.svgGridBG', svgIcon).attr('fill', colors['--canvas-fill'])
-    $('.svgGrid', svgIcon).attr('fill', colors['--canvas-stroke'])
+    svgIcon.querySelectorAll('.svgGridBG').forEach(element => {
+        element.setAttribute('fill', colors['--canvas-fill']);
+    });
 
-    $('.svgPanel', svgIcon).attr('fill', colors['--primary'])
-    $('.svgPanel', svgIcon).attr('stroke', colors['--br-primary'])
+    svgIcon.querySelectorAll('.svgGrid').forEach(element => {
+        element.setAttribute('fill', colors['--canvas-stroke']);
+    });
 
-    $('.svgChev', svgIcon).attr('stroke', colors['--br-secondary'])
+    svgIcon.querySelectorAll('.svgPanel').forEach(element => {
+        element.setAttribute('fill', colors['--primary']);
+        element.setAttribute('stroke', colors['--br-primary']);
+    });
 
-    $('.svgHeader', svgIcon).attr('fill', colors['--primary'])
-    let temp = svgIcon.prop('outerHTML')
+    svgIcon.querySelectorAll('.svgChev').forEach(element => {
+        element.setAttribute('stroke', colors['--br-secondary']);
+    });
+
+    svgIcon.querySelectorAll('.svgHeader').forEach(element => {
+        element.setAttribute('fill', colors['--primary']);
+    });
+
+    let temp = svgIcon.outerHTML;
+    
     console.log('----------')
     console.log('===OKK===')
     console.log(temp)
@@ -221,8 +238,8 @@ export const colorThemes = () => {
 }
 
 export const updateBG = () => dots(true, false, true)
-;(() => {
-    if (!localStorage.getItem('theme'))
-        localStorage.setItem('theme', 'Default Theme')
-    updateThemeForStyle(localStorage.getItem('theme'))
-})()
+    ; (() => {
+        if (!localStorage.getItem('theme'))
+            localStorage.setItem('theme', 'Default Theme')
+        updateThemeForStyle(localStorage.getItem('theme'))
+    })()
