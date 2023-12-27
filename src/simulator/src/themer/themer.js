@@ -134,7 +134,7 @@ export const getThemeCardSvg = (themeName) => {
     });
 
     let temp = svgIcon.outerHTML;
-    
+
     console.log('----------')
     console.log('===OKK===')
     console.log(temp)
@@ -173,68 +173,24 @@ export const colorThemes = () => {
     const simulatorStore = SimulatorStore()
     simulatorStore.dialogBox.theme_dialog = true
 
-    // const selectedTheme = localStorage.getItem('theme')
-    // $('#colorThemesDialog').empty()
-    // const themes = Object.keys(themeOptions)
-    // themes.forEach((theme) => {
-    //     if (theme === selectedTheme) {
-    //         $('#colorThemesDialog').append(getThemeCard(theme, true))
-    //     } else {
-    //         $('#colorThemesDialog').append(getThemeCard(theme, false))
-    //     }
-    // })
+    document.getElementById('#colorThemesDialog').focus()
+    document.querySelector('.ui-dialog[aria-describedby="colorThemesDialog"]').addEventListener('click', () => document.getElementById('#colorThemesDialog').focus()) //hack for losing focus
 
-    // $('.selected label').trigger('click')
-    // $('#colorThemesDialog').dialog({
-    //     resizable: false,
-    //     close() {
-    //         // Rollback to previous theme
-    //         updateThemeForStyle(localStorage.getItem('theme'))
-    //         updateBG()
-    //     },
-    //     buttons: [
-    //         {
-    //             text: 'Apply Theme',
-    //             click() {
-    //                 // check if any theme is selected or not
-    //                 if ($('.selected label').text()) {
-    //                     localStorage.removeItem('Custom Theme')
-    //                     localStorage.setItem(
-    //                         'theme',
-    //                         $('.selected label').text()
-    //                     )
-    //                 }
-    //                 $('.set').removeClass('set')
-    //                 $('.selected').addClass('set')
-    //                 $(this).dialog('close')
-    //             },
-    //         },
-    //         {
-    //             text: 'Custom Theme',
-    //             click() {
-    //                  CustomColorThemes()
-    //                 $(this).dialog('close')
-    //             },
-    //         },
-    //     ],
-    // })
-
-    $('#colorThemesDialog').focus()
-    $('.ui-dialog[aria-describedby="colorThemesDialog"]').on('click', () =>
-        $('#colorThemesDialog').focus()
-    ) //hack for losing focus
-
-    $('.themeSel').on('mousedown', (e) => {
-        e.preventDefault()
-        $('.selected').removeClass('selected')
-        let themeCard = $(e.target.parentElement)
-        themeCard.addClass('selected')
-        // Extract radio button
-        var radioButton = themeCard.find('input[type=radio]')
-        radioButton.trigger('click') // Mark as selected
-        updateThemeForStyle(themeCard.find('label').text()) // Extract theme name and set
-        updateBG()
-    })
+    Array.from(document.getElementsByClassName('themeSel')).forEach(themeSel => {
+        themeSel.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            Array.from(document.getElementsByClassName('selected')).forEach(selected => {
+                selected.classList.remove('selected');
+            });
+            let themeCard = e.target.parentElement;
+            themeCard.classList.add('selected');
+            // Extract radio button
+            var radioButton = themeCard.querySelector('input[type=radio]');
+            radioButton.click(); // Mark as selected
+            updateThemeForStyle(themeCard.querySelector('label').textContent); // Extract theme name and set
+            updateBG();
+        });
+    });
 }
 
 export const updateBG = () => dots(true, false, true)
