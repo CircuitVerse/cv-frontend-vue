@@ -100,24 +100,41 @@ export function updateThemeForStyle(themeName) {
  */
 export const getThemeCardSvg = (themeName) => {
     const colors = themeOptions[themeName]
-    let svgIcon = $(themeCardSvg)
+    let svgIcon = document.querySelectorAll(themeCardSvg)
 
     // Dynamically set the colors according to the theme
-    $('.svgText', svgIcon).attr('fill', colors['--text-panel'])
+    svgIcon.querySelectorAll('.svgText').forEach(element => {
+        element.setAttribute('fill', colors['--text-panel']);
+    });
 
-    $('.svgNav', svgIcon).attr('fill', colors['--bg-tab'])
-    $('.svgNav', svgIcon).attr('stroke', colors['--br-primary'])
+    svgIcon.querySelectorAll('.svgNav').forEach(element => {
+        element.setAttribute('fill', colors['--bg-tab']);
+        element.setAttribute('stroke', colors['--br-primary']);
+    });
 
-    $('.svgGridBG', svgIcon).attr('fill', colors['--canvas-fill'])
-    $('.svgGrid', svgIcon).attr('fill', colors['--canvas-stroke'])
+    svgIcon.querySelectorAll('.svgGridBG').forEach(element => {
+        element.setAttribute('fill', colors['--canvas-fill']);
+    });
 
-    $('.svgPanel', svgIcon).attr('fill', colors['--primary'])
-    $('.svgPanel', svgIcon).attr('stroke', colors['--br-primary'])
+    svgIcon.querySelectorAll('.svgGrid').forEach(element => {
+        element.setAttribute('fill', colors['--canvas-stroke']);
+    });
 
-    $('.svgChev', svgIcon).attr('stroke', colors['--br-secondary'])
+    svgIcon.querySelectorAll('.svgPanel').forEach(element => {
+        element.setAttribute('fill', colors['--primary']);
+        element.setAttribute('stroke', colors['--br-primary']);
+    });
 
-    $('.svgHeader', svgIcon).attr('fill', colors['--primary'])
-    let temp = svgIcon.prop('outerHTML')
+    svgIcon.querySelectorAll('.svgChev').forEach(element => {
+        element.setAttribute('stroke', colors['--br-secondary']);
+    });
+
+    svgIcon.querySelectorAll('.svgHeader').forEach(element => {
+        element.setAttribute('fill', colors['--primary']);
+    });
+
+    let temp = svgIcon.outerHTML;
+
     console.log('----------')
     console.log('===OKK===')
     console.log(temp)
@@ -156,73 +173,29 @@ export const colorThemes = () => {
     const simulatorStore = SimulatorStore()
     simulatorStore.dialogBox.theme_dialog = true
 
-    // const selectedTheme = localStorage.getItem('theme')
-    // $('#colorThemesDialog').empty()
-    // const themes = Object.keys(themeOptions)
-    // themes.forEach((theme) => {
-    //     if (theme === selectedTheme) {
-    //         $('#colorThemesDialog').append(getThemeCard(theme, true))
-    //     } else {
-    //         $('#colorThemesDialog').append(getThemeCard(theme, false))
-    //     }
-    // })
+    document.getElementById('#colorThemesDialog').focus()
+    document.querySelector('.ui-dialog[aria-describedby="colorThemesDialog"]').addEventListener('click', () => document.getElementById('#colorThemesDialog').focus()) //hack for losing focus
 
-    // $('.selected label').trigger('click')
-    // $('#colorThemesDialog').dialog({
-    //     resizable: false,
-    //     close() {
-    //         // Rollback to previous theme
-    //         updateThemeForStyle(localStorage.getItem('theme'))
-    //         updateBG()
-    //     },
-    //     buttons: [
-    //         {
-    //             text: 'Apply Theme',
-    //             click() {
-    //                 // check if any theme is selected or not
-    //                 if ($('.selected label').text()) {
-    //                     localStorage.removeItem('Custom Theme')
-    //                     localStorage.setItem(
-    //                         'theme',
-    //                         $('.selected label').text()
-    //                     )
-    //                 }
-    //                 $('.set').removeClass('set')
-    //                 $('.selected').addClass('set')
-    //                 $(this).dialog('close')
-    //             },
-    //         },
-    //         {
-    //             text: 'Custom Theme',
-    //             click() {
-    //                  CustomColorThemes()
-    //                 $(this).dialog('close')
-    //             },
-    //         },
-    //     ],
-    // })
-
-    $('#colorThemesDialog').focus()
-    $('.ui-dialog[aria-describedby="colorThemesDialog"]').on('click', () =>
-        $('#colorThemesDialog').focus()
-    ) //hack for losing focus
-
-    $('.themeSel').on('mousedown', (e) => {
-        e.preventDefault()
-        $('.selected').removeClass('selected')
-        let themeCard = $(e.target.parentElement)
-        themeCard.addClass('selected')
-        // Extract radio button
-        var radioButton = themeCard.find('input[type=radio]')
-        radioButton.trigger('click') // Mark as selected
-        updateThemeForStyle(themeCard.find('label').text()) // Extract theme name and set
-        updateBG()
-    })
+    Array.from(document.getElementsByClassName('themeSel')).forEach(themeSel => {
+        themeSel.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            Array.from(document.getElementsByClassName('selected')).forEach(selected => {
+                selected.classList.remove('selected');
+            });
+            let themeCard = e.target.parentElement;
+            themeCard.classList.add('selected');
+            // Extract radio button
+            var radioButton = themeCard.querySelector('input[type=radio]');
+            radioButton.click(); // Mark as selected
+            updateThemeForStyle(themeCard.querySelector('label').textContent); // Extract theme name and set
+            updateBG();
+        });
+    });
 }
 
 export const updateBG = () => dots(true, false, true)
-;(() => {
-    if (!localStorage.getItem('theme'))
-        localStorage.setItem('theme', 'Default Theme')
-    updateThemeForStyle(localStorage.getItem('theme'))
-})()
+    ; (() => {
+        if (!localStorage.getItem('theme'))
+            localStorage.setItem('theme', 'Default Theme')
+        updateThemeForStyle(localStorage.getItem('theme'))
+    })()
