@@ -91,29 +91,7 @@ const SimulatorState = <SimulatorStateType>useState()
 const drag: Ref<boolean> = ref(false)
 const updateCount: Ref<number> = ref(0);
 
-
-const props = defineProps(['isSimulationAreaClicked']);
-
 const showMaxHeight = ref(true);
-
-watch(() => {
-    console.log('isSimulationAreaClicked:', props.isSimulationAreaClicked);
-    if (props.isSimulationAreaClicked === true && showMaxHeight.value === false) {
-        // If isSimulationAreaClicked is true and showMaxHeight is false, set showMaxHeight to true
-        showMaxHeight.value = true;
-    }
-});
-
-const emit = defineEmits(['changeState']);
-
-function handleClick() {
-    // Emit the event with necessary data
-    emit('changeState', { data: 'some value to pass to parent' });
-}
-
-function handleTabsBarClick() {
-  emit('changeState', { isSimulationAreaClicked: false });
-}
 
 function toggleHeight() {
     showMaxHeight.value = !showMaxHeight.value;
