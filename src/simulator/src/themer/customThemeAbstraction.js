@@ -1,7 +1,7 @@
 /**
  * CreateAbstraction
  * @param {*} themeOptions
- * @return an Object
+ * @return {object} an Object
  */
 export const CreateAbstraction = (themeOptions) => {
   return {

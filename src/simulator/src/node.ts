@@ -1,7 +1,7 @@
-import { drawCircle, drawLine, arc } from './canvas_api';
+import {drawCircle, drawLine, arc} from './canvas_api';
 
-import { distance } from './utils';
-import { showError } from './utils_clock';
+import {distance} from './utils';
+import {showError} from './utils_clock';
 import {
   renderCanvas,
   scheduleUpdate,
@@ -11,10 +11,11 @@ import {
   forceResetNodesSet,
   canvasMessageData,
 } from './engine';
-import { Scope } from './circuit';
-import { Wire } from './wire';
-import { colors } from './themer/themer';
-import { CircuitElement } from './circuit_element';
+import {Scope} from './circuit';
+import {Wire} from './wire';
+import {colors} from './themer/themer';
+import {CircuitElement} from './circuit_element';
+import {SimulationArea} from './simulation_area';
 
 /**
  * Rotate node.
@@ -65,12 +66,12 @@ export function findNode(node: Node): number {
  */
 export function loadNode(data: Node, scope: Scope) {
   new Node(
-    data.x,
-    data.y,
-    data.type,
-    scope.root,
-    data.bitWidth,
-    data.label,
+      data.x,
+      data.y,
+      data.type,
+      scope.root,
+      data.bitWidth,
+      data.label,
   );
 }
 
@@ -104,9 +105,9 @@ export class QueueProperties {
    * @param {number?} index Index of the item in the queue.
    */
   constructor(
-    inQueue: boolean,
-    time?: number,
-    index?: number,
+      inQueue: boolean,
+      time?: number,
+      index?: number,
   ) {
     this.inQueue = inQueue;
     this.time = time;
@@ -167,7 +168,7 @@ export class Node {
    * @param {string} label - label for a node.
    */
   constructor(x: number, y: number, type: number, parent: CircuitElement,
-    bitWidth: number = parent.bitWidth, label: string = '') {
+      bitWidth: number = parent.bitWidth, label: string = '') {
     forceResetNodesSet(true);
 
     this.objectType = 'Node';
@@ -319,9 +320,9 @@ export class Node {
   }
 
   /**
- * update the scope of a node
- * @param {Scope} Circuit to update.
- */
+   * update the scope of a node
+   * @param {Scope} scope - Circuit to update.
+   */
   updateScope(scope: Scope) {
     this.scope = scope;
     if (this.type == 2) {
@@ -330,25 +331,25 @@ export class Node {
   }
 
   /**
- * Determine if value is defined.
- * @return {boolean} true if defined, false if undefined.
- */
+   * Determine if value is defined.
+   * @return {boolean} true if defined, false if undefined.
+   */
   isResolvable() {
     return this.value != undefined;
   }
 
   /**
- * function used to reset the nodes
- */
+   * Reset the nodes.
+   */
   reset() {
     this.value = undefined;
     this.highlighted = false;
   }
 
   /**
- * function to connect two nodes.
- * @param {Node} node - Node to which we are connecting.
- */
+   * Connect two nodes.
+   * @param {Node} node - Node to which we are connecting.
+   */
   connect(node: Node) {
     if (node == this) {
       return;
@@ -366,9 +367,9 @@ export class Node {
   }
 
   /**
- * connects but doesn't draw the wire between nodes
- * @param {Node} node - Node to connect to.
- */
+   * Connects but doesn't draw the wire between nodes.
+   * @param {Node} node - Node to connect to.
+   */
   connectWireLess(node: Node) {
     if (node == this) {
       return;
@@ -385,9 +386,9 @@ export class Node {
   }
 
   /**
- * disconnecting two nodes connected wirelessly.
- * @param {Node} node - Node to disconnect.
- */
+   * disconnecting two nodes connected wirelessly.
+   * @param {Node} node - Node to disconnect.
+   */
   disconnectWireLess(node: Node) {
     let foundIndex = this.connections.indexOf(node);
     if (foundIndex != -1) {
@@ -403,12 +404,13 @@ export class Node {
    * Determine output values and add to simulation queue.
    */
   resolve() {
+    const simArea = globalScope.simulationArea;
     // Remove propagation of values (TriState)
     if (this.value == undefined) {
       for (let i = 0; i < this.connections.length; i++) {
         if (this.connections[i].value !== undefined) {
           this.connections[i].value = undefined;
-          globalScope.simulationArea.simulationQueue.add(this.connections[i]);
+          simArea.simulationQueue.add(this.connections[i]);
         }
       }
 
@@ -416,7 +418,7 @@ export class Node {
         if (this.parent.objectType == 'Splitter') {
           this.parent.removePropagation();
         } else if (this.parent.isResolvable()) {
-          globalScope.simulationArea.simulationQueue.add(this.parent);
+          simArea.simulationQueue.add(this.parent);
         } else {
           this.parent.removePropagation();
         }
@@ -427,12 +429,13 @@ export class Node {
           this.parent.isResolvable() &&
           !this.parent.queueProperties.inQueue
         ) {
+          // TODO: Figure out how to not know about TriState type
           if (this.parent.objectType == 'TriState') {
             if (this.parent.state.value) {
-              globalScope.simulationArea.simulationQueue.add(this.parent);
+              simArea.simulationQueue.add(this.parent);
             }
           } else {
-            globalScope.simulationArea.simulationQueue.add(this.parent);
+            simArea.simulationQueue.add(this.parent);
           }
         }
       }
@@ -441,7 +444,7 @@ export class Node {
 
     if (this.type == 0) {
       if (this.parent.isResolvable()) {
-        globalScope.simulationArea.simulationQueue.add(this.parent);
+        simArea.simulationQueue.add(this.parent);
       }
     }
 
@@ -472,13 +475,13 @@ export class Node {
             node.type == 1
           ) {
             if (node.parent.state.value) {
-              globalScope.simulationArea.contentionPending.push(node.parent);
+              simArea.contentionPending.push(node.parent);
             }
           }
 
           node.bitWidth = this.bitWidth;
           node.value = this.value;
-          globalScope.simulationArea.simulationQueue.add(node);
+          simArea.simulationQueue.add(node);
         } else {
           this.highlighted = true;
           node.highlighted = true;
@@ -490,20 +493,21 @@ export class Node {
   }
 
   /**
- * this function checks if hover over the node
- */
+   * Checks if hover over the node.
+   */
   checkHover() {
-    if (!globalScope.simulationArea.mouseDown) {
-      if (globalScope.simulationArea.hover == this) {
+    const simArea = globalScope.simulationArea;
+    if (!simArea.mouseDown) {
+      if (simArea.hover == this) {
         this.hover = this.isHover();
         if (!this.hover) {
-          globalScope.simulationArea.hover = undefined;
+          simArea.hover = undefined;
           this.showHover = false;
         }
-      } else if (!globalScope.simulationArea.hover) {
+      } else if (!simArea.hover) {
         this.hover = this.isHover();
         if (this.hover) {
-          globalScope.simulationArea.hover = this;
+          simArea.hover = this;
         } else {
           this.showHover = false;
         }
@@ -515,80 +519,81 @@ export class Node {
   }
 
   /**
- * this function draw a node
- */
+   * Draw a node.
+   * @param {SimulationArea} simArea
+   */
   draw(simArea: SimulationArea) {
     const ctx = simArea.context;
     const color = colors.color_wire_draw;
     if (this.clicked) {
       if (this.prev == 'x') {
         drawLine(
-          ctx,
-          this.absX(),
-          this.absY(),
-          simArea.mouseX,
-          this.absY(),
-          color,
-          3,
+            ctx,
+            this.absX(),
+            this.absY(),
+            simArea.mouseX,
+            this.absY(),
+            color,
+            3,
         );
         drawLine(
-          ctx,
-          simArea.mouseX,
-          this.absY(),
-          simArea.mouseX,
-          simArea.mouseY,
-          color,
-          3,
+            ctx,
+            simArea.mouseX,
+            this.absY(),
+            simArea.mouseX,
+            simArea.mouseY,
+            color,
+            3,
         );
       } else if (this.prev == 'y') {
         drawLine(
-          ctx,
-          this.absX(),
-          this.absY(),
-          this.absX(),
-          simArea.mouseY,
-          color,
-          3,
+            ctx,
+            this.absX(),
+            this.absY(),
+            this.absX(),
+            simArea.mouseY,
+            color,
+            3,
         );
         drawLine(
-          ctx,
-          this.absX(),
-          simArea.mouseY,
-          simArea.mouseX,
-          simArea.mouseY,
-          color,
-          3,
+            ctx,
+            this.absX(),
+            simArea.mouseY,
+            simArea.mouseX,
+            simArea.mouseY,
+            color,
+            3,
         );
       } else if (
         Math.abs(this.x + this.parent.x - simArea.mouseX) >
         Math.abs(this.y + this.parent.y - simArea.mouseY)
       ) {
         drawLine(
-          ctx,
-          this.absX(),
-          this.absY(),
-          simArea.mouseX,
-          this.absY(),
-          color,
-          3,
+            ctx,
+            this.absX(),
+            this.absY(),
+            simArea.mouseX,
+            this.absY(),
+            color,
+            3,
         );
       } else {
         drawLine(
-          ctx,
-          this.absX(),
-          this.absY(),
-          this.absX(),
-          simArea.mouseY,
-          color,
-          3,
+            ctx,
+            this.absX(),
+            this.absY(),
+            this.absX(),
+            simArea.mouseY,
+            color,
+            3,
         );
       }
     }
-    let colorNode = colors['stroke'];
-    const colorNodeConnect = colors['color_wire_con'];
-    const colorNodePow = colors['color_wire_pow'];
-    const colorNodeLose = colors['color_wire_lose'];
-    const colorNodeSelected = colors['node'];
+    let colorNode = colors.stroke;
+    const colorNodeConnect = colors.color_wire_con;
+    const colorNodePow = colors.color_wire_pow;
+    const colorNodeLose = colors.color_wire_lose;
+    const colorNodeSelected = colors.node;
 
     if (this.bitWidth == 1) {
       colorNode = [colorNodeConnect, colorNodePow][this.value];
@@ -617,15 +622,15 @@ export class Node {
       ctx.beginPath();
       ctx.lineWidth = 3;
       arc(
-        ctx,
-        this.x,
-        this.y,
-        8,
-        0,
-        Math.PI * 2,
-        this.parent.x,
-        this.parent.y,
-        'RIGHT',
+          ctx,
+          this.x,
+          this.y,
+          8,
+          0,
+          Math.PI * 2,
+          this.parent.x,
+          this.parent.y,
+          'RIGHT',
       );
       ctx.closePath();
       ctx.stroke();
@@ -726,7 +731,7 @@ export class Node {
             i++
           ) {
             simArea.multipleObjectSelections[
-              i
+                i
             ].startDragging();
           }
         }
@@ -795,10 +800,10 @@ export class Node {
       if (
         this.prev == 'a' &&
         distance(
-          simArea.mouseX,
-          simArea.mouseY,
-          this.absX(),
-          this.absY(),
+            simArea.mouseX,
+            simArea.mouseY,
+            this.absX(),
+            this.absY(),
         ) >= 10
       ) {
         if (
@@ -853,15 +858,15 @@ export class Node {
         if (
           this.prev == 'a' &&
           distance(
-            simArea.mouseX,
-            simArea.mouseY,
-            this.absX(),
-            this.absY(),
+              simArea.mouseX,
+              simArea.mouseY,
+              this.absX(),
+              this.absY(),
           ) >= 10
         ) {
           if (
             Math.abs(
-              this.x + this.parent.x - simArea.mouseX,
+                this.x + this.parent.x - simArea.mouseX,
             ) >
             Math.abs(this.y + this.parent.y - simArea.mouseY)
           ) {
@@ -1035,10 +1040,10 @@ export class Node {
           let n = this;
           if (this.type != 2) {
             n = new Node(
-              this.absX(),
-              this.absY(),
-              2,
-              this.scope.root,
+                this.absX(),
+                this.absY(),
+                2,
+                this.scope.root,
             );
             this.connect(n);
           }
@@ -1080,7 +1085,7 @@ Node.prototype.propagationDelay = 0;
  */
 Node.prototype.cleanDelete = Node.prototype.delete;
 
-Node.prototype.processVerilog = function () {
+Node.prototype.processVerilog = function() {
   if (this.type == NodeType.Input) {
     this.scope.stack.push(this.parent);
   }
@@ -1119,8 +1124,8 @@ export function replace(node: Node, index: number): Node {
   if (index == -1) {
     return node;
   }
-  const { scope } = node;
-  const { parent } = node;
+  const {scope} = node;
+  const {parent} = node;
   const foundIndex = parent.nodeList.indexOf(node);
   if (foundIndex != -1) {
     parent.nodeList.splice(foundIndex, 1);

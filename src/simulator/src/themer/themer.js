@@ -4,71 +4,101 @@ import themeCardSvg from './themeCardSvg';
 import {SimulatorStore} from '#/store/SimulatorStore/SimulatorStore';
 
 /**
+ * Color set for theme.
+ */
+export class ColorSet {
+  /**
+   * @param {string} hoverSelect
+   * @param {string} fill
+   * @param {string} miniFill
+   * @param {string} miniStroke
+   * @param {string} stroke
+   * @param {string} strokeAlt
+   * @param {string} inputText
+   * @param {string} colorWireDraw
+   * @param {string} colorWireCon
+   * @param {string} colorWirePow
+   * @param {string} colorWireSel
+   * @param {string} colorWireLose
+   * @param {string} colorWire
+   * @param {string} text
+   * @param {string} node
+   * @param {string} nodeNorm
+   * @param {string} splitter
+   * @param {string} outRect
+   * @param {string} canvasStroke
+   * @param {string} canvasFill
+   */
+  constructor(hoverSelect,
+      fill,
+      miniFill,
+      miniStroke,
+      stroke,
+      strokeAlt,
+      inputText,
+      colorWireDraw,
+      colorWireCon,
+      colorWirePow,
+      colorWireSel,
+      colorWireLose,
+      colorWire,
+      text,
+      node,
+      nodeNorm,
+      splitter,
+      outRect,
+      canvasStroke,
+      canvasFill) {
+    this.hover_select = hoverSelect;
+    this. fill = fill;
+    this.mini_fill = miniFill;
+    this.mini_stroke = miniStroke;
+    this.stroke = stroke;
+    this.stroke_alt = strokeAlt;
+    this.input_text = inputText;
+    this.color_wire_draw = colorWireDraw;
+    this.color_wire_con = colorWireCon;
+    this.color_wire_pow = colorWirePow;
+    this.color_wire_sel = colorWireSel;
+    this.color_wire_lose = colorWireLose;
+    this.color_wire = colorWire;
+    this.text = text;
+    this.node = node;
+    this.node_norm = nodeNorm;
+    this.splitter = splitter;
+    this.out_rect = outRect;
+    this.canvas_stroke = canvasStroke;
+    this.canvas_fill = canvasFill;
+  }
+}
+/**
  * Extracts canvas theme colors from CSS-Variables and returns a JSON Object
- * @return {object}
+ * @return {ColorSet}
  */
 const getCanvasColors = () => {
-  const colors = {};
-  colors['hover_select'] = getComputedStyle(
-      document.documentElement,
-  ).getPropertyValue('--hover-and-sel');
-  colors['fill'] = getComputedStyle(
-      document.documentElement,
-  ).getPropertyValue('--fill');
-  colors['mini_fill'] = getComputedStyle(
-      document.documentElement,
-  ).getPropertyValue('--mini-map');
-  colors['mini_stroke'] = getComputedStyle(
-      document.documentElement,
-  ).getPropertyValue('--mini-map-stroke');
-  colors['stroke'] = getComputedStyle(
-      document.documentElement,
-  ).getPropertyValue('--stroke');
-  colors['stroke_alt'] = getComputedStyle(
-      document.documentElement,
-  ).getPropertyValue('--secondary-stroke');
-  colors['input_text'] = getComputedStyle(
-      document.documentElement,
-  ).getPropertyValue('--input-text');
-  colors['color_wire_draw'] = getComputedStyle(
-      document.documentElement,
-  ).getPropertyValue('--wire-draw');
-  colors['color_wire_con'] = getComputedStyle(
-      document.documentElement,
-  ).getPropertyValue('--wire-cnt');
-  colors['color_wire_pow'] = getComputedStyle(
-      document.documentElement,
-  ).getPropertyValue('--wire-pow');
-  colors['color_wire_sel'] = getComputedStyle(
-      document.documentElement,
-  ).getPropertyValue('--wire-sel');
-  colors['color_wire_lose'] = getComputedStyle(
-      document.documentElement,
-  ).getPropertyValue('--wire-lose');
-  colors['color_wire'] = getComputedStyle(
-      document.documentElement,
-  ).getPropertyValue('--wire-norm');
-  colors['text'] = getComputedStyle(
-      document.documentElement,
-  ).getPropertyValue('--text');
-  colors['node'] = getComputedStyle(
-      document.documentElement,
-  ).getPropertyValue('--node');
-  colors['node_norm'] = getComputedStyle(
-      document.documentElement,
-  ).getPropertyValue('--node-norm');
-  colors['splitter'] = getComputedStyle(
-      document.documentElement,
-  ).getPropertyValue('--splitter');
-  colors['out_rect'] = getComputedStyle(
-      document.documentElement,
-  ).getPropertyValue('--output-rect');
-  colors['canvas_stroke'] = getComputedStyle(
-      document.documentElement,
-  ).getPropertyValue('--canvas-stroke');
-  colors['canvas_fill'] = getComputedStyle(
-      document.documentElement,
-  ).getPropertyValue('--canvas-fill');
+  const el = document.documentElement;
+  const colors = new ColorSet(
+      getComputedStyle(el).getPropertyValue('--hover-and-sel'),
+      getComputedStyle(el).getPropertyValue('--fill'),
+      getComputedStyle(el).getPropertyValue('--mini-map'),
+      getComputedStyle(el).getPropertyValue('--mini-map-stroke'),
+      getComputedStyle(el).getPropertyValue('--stroke'),
+      getComputedStyle(el).getPropertyValue('--secondary-stroke'),
+      getComputedStyle(el).getPropertyValue('--input-text'),
+      getComputedStyle(el).getPropertyValue('--wire-draw'),
+      getComputedStyle(el).getPropertyValue('--wire-cnt'),
+      getComputedStyle(el).getPropertyValue('--wire-pow'),
+      getComputedStyle(el).getPropertyValue('--wire-sel'),
+      getComputedStyle(el).getPropertyValue('--wire-lose'),
+      getComputedStyle(el).getPropertyValue('--wire-norm'),
+      getComputedStyle(el).getPropertyValue('--text'),
+      getComputedStyle(el).getPropertyValue('--node'),
+      getComputedStyle(el).getPropertyValue('--node-norm'),
+      getComputedStyle(el).getPropertyValue('--splitter'),
+      getComputedStyle(el).getPropertyValue('--output-rect'),
+      getComputedStyle(el).getPropertyValue('--canvas-stroke'),
+      getComputedStyle(el).getPropertyValue('--canvas-fill'),
+  );
   return colors;
 };
 
@@ -137,15 +167,15 @@ export const getThemeCard = (themeName, selected) => {
   const selectedClass = selected ? 'selected set' : '';
   // themeSel is the hit area
   return `
-            <div id="theme" class="theme ${selectedClass}">
-              <div class='themeSel'></div>
-              <span>${getThemeCardSvg(themeName)}</span>
-              <span id='themeNameBox' class='themeNameBox'>
-                <input type='radio' id='${themeId}' value='${themeName}' name='theme'>
-                <label for='${themeId}'>${themeName}</label>
-              </span>
-            </div>
-            `;
+    <div id="theme" class="theme ${selectedClass}">
+      <div class='themeSel'></div>
+      <span>${getThemeCardSvg(themeName)}</span>
+      <span id='themeNameBox' class='themeNameBox'>
+        <input type='radio' id='${themeId}' value='${themeName}' name='theme'>
+        <label for='${themeId}'>${themeName}</label>
+      </span>
+    </div>
+    `;
 };
 
 /**

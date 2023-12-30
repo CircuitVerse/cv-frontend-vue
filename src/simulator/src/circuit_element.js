@@ -283,6 +283,7 @@ export class CircuitElement {
    * NOT OVERRIDABLE
    */
   update() {
+    const simArea = globalScope.simulationArea;
     if (layoutModeGet()) {
       return this.layoutUpdate();
     }
@@ -293,24 +294,24 @@ export class CircuitElement {
       if (this.centerElement) {
         this.x =
           Math.round(
-              (globalScope.simulationArea.mouseX -
+              (simArea.mouseX -
               (this.rightDimensionX - this.leftDimensionX) / 2) /
             10,
           ) * 10;
         this.y =
           Math.round(
-              (globalScope.simulationArea.mouseY -
+              (simArea.mouseY -
               (this.downDimensionY - this.upDimensionY) / 2) /
             10,
           ) * 10;
       } else {
-        this.x = globalScope.simulationArea.mouseX;
-        this.y = globalScope.simulationArea.mouseY;
+        this.x = simArea.mouseX;
+        this.y = simArea.mouseY;
       }
 
-      if (globalScope.simulationArea.mouseDown) {
+      if (simArea.mouseDown) {
         this.newElement = false;
-        globalScope.simulationArea.lastSelected = this;
+        simArea.lastSelected = this;
       } else {
         return update;
       }
@@ -320,64 +321,64 @@ export class CircuitElement {
       update |= this.nodeList[i].update();
     }
 
-    if (!globalScope.simulationArea.hover || globalScope.simulationArea.hover === this) {
+    if (!simArea.hover || simArea.hover === this) {
       this.hover = this.isHover();
     }
 
-    if (!globalScope.simulationArea.mouseDown) {
+    if (!simArea.mouseDown) {
       this.hover = false;
     }
 
-    if ((this.clicked || !globalScope.simulationArea.hover) && this.isHover()) {
+    if ((this.clicked || !simArea.hover) && this.isHover()) {
       this.hover = true;
-      globalScope.simulationArea.hover = this;
+      simArea.hover = this;
     } else if (
-      !globalScope.simulationArea.mouseDown &&
+      !simArea.mouseDown &&
       this.hover &&
       this.isHover() === false
     ) {
       if (this.hover) {
-        globalScope.simulationArea.hover = undefined;
+        simArea.hover = undefined;
       }
       this.hover = false;
     }
 
-    if (globalScope.simulationArea.mouseDown && this.clicked) {
+    if (simArea.mouseDown && this.clicked) {
       this.drag();
       if (
-        !globalScope.simulationArea.shiftDown &&
-        globalScope.simulationArea.multipleObjectSelections.includes(this)
+        !simArea.shiftDown &&
+        simArea.multipleObjectSelections.includes(this)
       ) {
         for (
           let i = 0;
-          i < globalScope.simulationArea.multipleObjectSelections.length;
+          i < simArea.multipleObjectSelections.length;
           i++
         ) {
-          globalScope.simulationArea.multipleObjectSelections[i].drag();
+          simArea.multipleObjectSelections[i].drag();
         }
       }
 
       update |= true;
-    } else if (globalScope.simulationArea.mouseDown && !globalScope.simulationArea.selected) {
+    } else if (simArea.mouseDown && !simArea.selected) {
       this.startDragging();
       if (
-        !globalScope.simulationArea.shiftDown &&
-        globalScope.simulationArea.multipleObjectSelections.includes(this)
+        !simArea.shiftDown &&
+        simArea.multipleObjectSelections.includes(this)
       ) {
         for (
           let i = 0;
-          i < globalScope.simulationArea.multipleObjectSelections.length;
+          i < simArea.multipleObjectSelections.length;
           i++
         ) {
-          globalScope.simulationArea.multipleObjectSelections[i].startDragging();
+          simArea.multipleObjectSelections[i].startDragging();
         }
       }
-      globalScope.simulationArea.selected = this.clicked = this.hover;
+      simArea.selected = this.clicked = this.hover;
 
       update |= this.clicked;
     } else {
       if (this.clicked) {
-        globalScope.simulationArea.selected = false;
+        simArea.selected = false;
       }
       this.clicked = false;
       this.wasClicked = false;
@@ -388,27 +389,27 @@ export class CircuitElement {
       }
     }
 
-    if (globalScope.simulationArea.mouseDown && !this.wasClicked) {
+    if (simArea.mouseDown && !this.wasClicked) {
       if (this.clicked) {
         this.wasClicked = true;
         if (this.click) {
           this.click();
         }
-        if (globalScope.simulationArea.shiftDown) {
-          globalScope.simulationArea.lastSelected = undefined;
+        if (simArea.shiftDown) {
+          simArea.lastSelected = undefined;
           if (
-            globalScope.simulationArea.multipleObjectSelections.includes(this)
+            simArea.multipleObjectSelections.includes(this)
           ) {
             const foundIndex =
-                globalScope.simulationArea.multipleObjectSelections.indexOf(this);
+                simArea.multipleObjectSelections.indexOf(this);
             if (foundIndex != -1) {
-              globalScope.simulationArea.multipleObjectSelections.splice(foundIndex, 1);
+              simArea.multipleObjectSelections.splice(foundIndex, 1);
             }
           } else {
-            globalScope.simulationArea.multipleObjectSelections.push(this);
+            simArea.multipleObjectSelections.push(this);
           }
         } else {
-          globalScope.simulationArea.lastSelected = this;
+          simArea.lastSelected = this;
         }
       }
     }
@@ -422,57 +423,58 @@ export class CircuitElement {
    * @return {boolean} true if the state has changed, false otherwise
    **/
   layoutUpdate() {
+    const simArea = globalScope.simulationArea;
     let update = false;
     update |= this.newElement;
     if (this.newElement) {
-      this.subcircuitMetadata.x = globalScope.simulationArea.mouseX;
-      this.subcircuitMetadata.y = globalScope.simulationArea.mouseY;
+      this.subcircuitMetadata.x = simArea.mouseX;
+      this.subcircuitMetadata.y = simArea.mouseY;
 
-      if (globalScope.simulationArea.mouseDown) {
+      if (simArea.mouseDown) {
         this.newElement = false;
-        globalScope.simulationArea.lastSelected = this;
+        simArea.lastSelected = this;
       } else {
         return update;
       }
     }
 
-    if (!globalScope.simulationArea.hover || globalScope.simulationArea.hover == this) {
+    if (!simArea.hover || simArea.hover == this) {
       this.hover = this.isHover();
     }
 
-    if ((this.clicked || !globalScope.simulationArea.hover) && this.isHover()) {
+    if ((this.clicked || !simArea.hover) && this.isHover()) {
       this.hover = true;
-      globalScope.simulationArea.hover = this;
+      simArea.hover = this;
     } else if (
-      !globalScope.simulationArea.mouseDown &&
+      !simArea.mouseDown &&
       this.hover &&
       this.isHover() == false
     ) {
       if (this.hover) {
-        globalScope.simulationArea.hover = undefined;
+        simArea.hover = undefined;
       }
       this.hover = false;
     }
 
-    if (globalScope.simulationArea.mouseDown && this.clicked) {
+    if (simArea.mouseDown && this.clicked) {
       this.drag();
       update |= true;
-    } else if (globalScope.simulationArea.mouseDown && !globalScope.simulationArea.selected) {
+    } else if (simArea.mouseDown && !simArea.selected) {
       this.startDragging();
-      globalScope.simulationArea.selected = this.clicked = this.hover;
+      simArea.selected = this.clicked = this.hover;
       update |= this.clicked;
     } else {
       if (this.clicked) {
-        globalScope.simulationArea.selected = false;
+        simArea.selected = false;
       }
       this.clicked = false;
       this.wasClicked = false;
     }
 
-    if (globalScope.simulationArea.mouseDown && !this.wasClicked) {
+    if (simArea.mouseDown && !this.wasClicked) {
       if (this.clicked) {
         this.wasClicked = true;
-        globalScope.simulationArea.lastSelected = this;
+        simArea.lastSelected = this;
       }
     }
 
@@ -1006,6 +1008,10 @@ export class CircuitElement {
     return this.verilogName();
   }
 
+  /**
+   * Get parameterized type.
+   * @return {string}
+   */
   verilogParametrizedType() {
     let type = this.verilogBaseType();
     // Suffix bitwidth for multi-bit inputs

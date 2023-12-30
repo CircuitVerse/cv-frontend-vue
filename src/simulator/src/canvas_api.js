@@ -466,6 +466,13 @@ export function rect2(ctx, x1, y1, x2, y2, xx, yy, dir = 'RIGHT') {
   );
 }
 
+/**
+ * Rotate x and y coordinates by direction.
+ * @param {*} x1
+ * @param {*} y1
+ * @param {*} dir
+ * @return {number[]}
+ */
 export function rotate(x1, y1, dir) {
   if (dir === 'LEFT') {
     return [-x1, y1];
@@ -479,10 +486,22 @@ export function rotate(x1, y1, dir) {
   return [x1, y1];
 }
 
-export function correctWidth(w) {
-  return Math.max(1, Math.round(w * globalScope.scale));
+/**
+ * Correct width
+ * @param {*} width
+ * @return {number}
+ */
+export function correctWidth(width) {
+  return Math.max(1, Math.round(width * globalScope.scale));
 }
 
+/**
+ * Rotate angle by direction.
+ * @param {*} start
+ * @param {*} stop
+ * @param {*} dir
+ * @return {any[]}
+ */
 function rotateAngle(start, stop, dir) {
   if (dir === 'LEFT') {
     return [start, stop, true];
@@ -552,12 +571,10 @@ export function validColor(color) {
   * @return {Uint8ClampedArray}
   */
 export function colorToRGBA(color) {
-  let cvs;
-  let ctx;
-  cvs = document.createElement('canvas');
+  const cvs = document.createElement('canvas');
   cvs.height = 1;
   cvs.width = 1;
-  ctx = cvs.getContext('2d');
+  const ctx = cvs.getContext('2d');
   ctx.fillStyle = color;
   ctx.fillRect(0, 0, 1, 1);
   return ctx.getImageData(0, 0, 1, 1).data;
@@ -630,6 +647,14 @@ export function canvasMessage(ctx, str, x1, y1, fontSize = 10) {
   ctx.fill();
 }
 
+/**
+ * Fill text on canvas.
+ * @param {*} ctx
+ * @param {*} str
+ * @param {*} x1
+ * @param {*} y1
+ * @param {*} fontSize
+ */
 export function fillText(ctx, str, x1, y1, fontSize = 20) {
   x1 *= globalScope.scale;
   y1 *= globalScope.scale;
@@ -703,12 +728,6 @@ export function fillText4(
     fontSize = 14,
     textAlign = 'center',
 ) {
-  const angle = {
-    RIGHT: 0,
-    LEFT: 0,
-    DOWN: Math.PI / 2,
-    UP: -Math.PI / 2,
-  };
   x1 *= globalScope.scale;
   y1 *= globalScope.scale
   ;[x1, y1] = rotate(x1, y1, dir);
@@ -716,7 +735,6 @@ export function fillText4(
   yy *= globalScope.scale;
 
   ctx.font = `${Math.round(fontSize * globalScope.scale)}px Raleway`;
-  // ctx.font = 20+"px Raleway";
   ctx.textAlign = textAlign;
   ctx.fillText(
       str,

@@ -51,6 +51,7 @@ function hideContextMenu() {
     ctxPos.visible = false;
   }, 200); // Hide after 2 sec
 }
+
 /**
  * Function displays context menu
  * @return {boolean} was context menu shown.
@@ -60,15 +61,16 @@ function showContextMenu() {
   if (layoutModeGet()) {
     return false; // Hide context menu when it is in Layout Mode
   }
-  $('#contextMenu').css({
+  const el = $('#contextMenu');
+  el.css({
     visibility: 'visible',
     opacity: 1,
   });
 
   const windowHeight =
-    $('.simulationArea').height() - $('#contextMenu').height() - 10;
+    $('.simulationArea').height() - el.height() - 10;
   const windowWidth =
-    $('.simulationArea').width() - $('#contextMenu').width() - 10;
+    $('.simulationArea').width() - el.width() - 10;
   // for top, left, right, bottom
   let topPosition;
   let leftPosition;
@@ -78,7 +80,7 @@ function showContextMenu() {
     // When user click on bottom-left part of window
     leftPosition = ctxPos.x;
     bottomPosition = $(window).height() - ctxPos.y;
-    $('#contextMenu').css({
+    el.css({
       left: `${leftPosition}px`,
       bottom: `${bottomPosition}px`,
       right: 'auto',
@@ -88,7 +90,7 @@ function showContextMenu() {
     // When user click on bottom-right part of window
     bottomPosition = $(window).height() - ctxPos.y;
     rightPosition = $(window).width() - ctxPos.x;
-    $('#contextMenu').css({
+    el.css({
       left: 'auto',
       bottom: `${bottomPosition}px`,
       right: `${rightPosition}px`,
@@ -98,7 +100,7 @@ function showContextMenu() {
     // When user click on top-left part of window
     leftPosition = ctxPos.x;
     topPosition = ctxPos.y;
-    $('#contextMenu').css({
+    el.css({
       left: `${leftPosition}px`,
       bottom: 'auto',
       right: 'auto',
@@ -108,7 +110,7 @@ function showContextMenu() {
     // When user click on top-right part of window
     rightPosition = $(window).width() - ctxPos.x;
     topPosition = ctxPos.y;
-    $('#contextMenu').css({
+    el.css({
       left: 'auto',
       bottom: 'auto',
       right: `${rightPosition}px`,
@@ -168,13 +170,20 @@ export function prevPropertyObjGet() {
   return prevPropertyObj;
 }
 
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+/**
+ *
+ */
 function checkValidBitWidth() {
   const selector = $('[name=\'newBitWidth\']');
   if (
     selector === undefined ||
     selector.val() > 32 ||
     selector.val() < 1 ||
-    !$.isNumeric(selector.val())
+    !isNumeric(selector.val())
   ) {
     // fallback to previously saves state
     selector.val(selector.attr('old-val'));
@@ -218,7 +227,7 @@ export function objectPropertyAttributeCheckedUpdate() {
  *
  * @param {*} value
  */
-export function checkPropertiesUpdate(value = 0) {
+export function checkPropertiesUpdate() {
   const elements = document.getElementsByClassName('objectPropertyAttribute');
   Array.from(elements).forEach(function(element) {
     element.removeEventListener('change', objectPropertyAttributeUpdate);
@@ -249,7 +258,7 @@ export function showProperties(obj) {
   if (obj === prevPropertyObjGet()) {
     return;
   }
-  checkPropertiesUpdate(this);
+  checkPropertiesUpdate();
 }
 
 /**

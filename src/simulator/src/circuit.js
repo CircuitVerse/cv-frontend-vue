@@ -299,7 +299,15 @@ export class Scope {
     this.scale = DPR;
     this.stack = [];
     this.allNodes = [];
-    this.initialize();
+    this.tunnelList = {};
+    this.pending = [];
+    this.nodes = []; // intermediate nodes only
+    this.wires = [];
+
+    // Creating arrays for other module elements
+    for (let i = 0; i < moduleList.length; i++) {
+      this[moduleList[i]] = [];
+    }
 
     // Setting default layout
     this.layout = {

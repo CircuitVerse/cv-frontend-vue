@@ -1,4 +1,4 @@
-import { ApplicationMetadata } from './metadata';
+import {ApplicationMetadata} from './metadata';
 
 /**
  *
@@ -12,6 +12,9 @@ export class AppData {
   public updateOrder: string[];
   public renderOrder: string[];
 
+  /**
+   *
+   */
   constructor() {
     this.circuitElementList = [];
     this.annotationList = [];
@@ -23,12 +26,12 @@ export class AppData {
   }
 
   /**
- * It initializes some useful array which are helpful
- * while simulating, saving and loading project.
- * It also draws icons in the sidebar
- * @param {*} applicationMetadata
- * @category setup
- */
+   * It initializes some useful array which are helpful
+   * while simulating, saving and loading project.
+   * It also draws icons in the sidebar
+   * @param {*} applicationMetadata
+   * @category setup
+   */
   setupElementLists(applicationMetadata: ApplicationMetadata) {
     this.circuitElementList = applicationMetadata.circuitElementList;
     this.annotationList = applicationMetadata.annotationList;

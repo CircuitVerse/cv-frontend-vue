@@ -37,6 +37,11 @@ export function openOffline() {
  * @category data
  */
 let projectSaved = true;
+
+/**
+ * Set the project saved flag.
+ * @param {boolean} param
+ */
 export function projectSavedSet(param) {
   projectSaved = param;
 }
@@ -54,9 +59,8 @@ export async function saveOffline() {
   const temp = JSON.parse(localStorage.getItem('projectList')) || {};
   temp[projectId] = getProjectName();
   localStorage.setItem('projectList', JSON.stringify(temp));
-  showMessage(
-      `We have saved your project: ${getProjectName()} in your browser's localStorage`,
-  );
+  showMessage(`We have saved your project: ${getProjectName()} ` +
+      `in your browser's localStorage`);
 }
 
 /**

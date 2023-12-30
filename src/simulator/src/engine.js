@@ -174,18 +174,22 @@ export function errorDetectedGet() {
 
 /**
  * details of where and what canvas message has to be shown.
- * @type {Object}
- * @property {number} x - x coordinate of message
- * @property {number} y - x coordinate of message
- * @property {number} string - the message
  * @category engine
  */
-export var canvasMessageData = {
-  x: undefined,
-  y: undefined,
-  content: undefined,
-};
+export class CanvasMessage {
+  /**
+   * @param {number} x - x coordinate of message
+   * @param {number} y - x coordinate of message
+   * @param {string} content - the message
+   */
+  constructor(x = 0, y = 0, content = '') {
+    this.x = x;
+    this.y = y;
+    this.content = content;
+  }
+}
 
+export const canvasMessageData = new CanvasMessage();
 /**
  *  Flag for updating subCircuits
  * @type {boolean}
@@ -245,11 +249,8 @@ export function renderCanvas(scope) {
     gridUpdateSet(false);
     dots(globalScope);
   }
-  canvasMessageData = {
-    x: undefined,
-    y: undefined,
-    string: undefined,
-  }; //  Globally set in draw fn ()
+  canvasMessageData.content = '';
+  //  Globally set in draw fn ()
   // Render objects
   for (let i = 0; i < renderOrder.length; i++) {
     for (let j = 0; j < scope[renderOrder[i]].length; j++) {
@@ -257,7 +258,7 @@ export function renderCanvas(scope) {
     }
   }
   // Show any message
-  if (canvasMessageData.content !== undefined) {
+  if (canvasMessageData.content) {
     canvasMessage(
         ctx,
         canvasMessageData.content,
@@ -453,7 +454,7 @@ export function play(scope = globalScope, resetNodes = false) {
  * @param {function} fn - function to run before updating UI
  * @category engine
  */
-export function scheduleUpdate(count = 0, time = 100, fn) {
+export function scheduleUpdate(count = 0, time = 100, fn = undefined) {
   if (lightMode) {
     time *= 5;
   }
