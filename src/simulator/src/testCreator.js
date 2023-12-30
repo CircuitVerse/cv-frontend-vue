@@ -34,20 +34,24 @@ window.onload = () => {
     if (query.has('popUp')) {
         if (query.get('popUp') == 'true') {
             creatorMode = CREATORMODE.SIMULATOR_POPUP
-            $('.right-button-group').append(
-                '<button class="lower-button save-buton" onclick="saveData();">Attach</button>'
-            )
+            let rightButtonGroup = document.querySelector('.right-button-group')
+            let button = document.createElement('button')
+            button.className = 'lower-button save-buton'
+            button.textContent = 'Attach'
+            button.addEventListener('click', saveData)
+            rightButtonGroup.appendChild(button)
         }
     }
+    let creatorHead = document.querySelector('#tb-creator-head')
     if (query.has('data')) {
-        $('#tb-creator-head').html('<b>Edit Test</b>')
+        creatorHead.innerHTML = '<b>Edit Test</b>'
         circuitScopeID = query.get('scopeID')
         loadData(query.get('data'))
         return
     }
 
     if (query.has('result')) {
-        $('#tb-creator-head').html('<b>Test Result</b>')
+        creatorHead.innerHTML = '<b>Test Result</b>'
         loadResult(query.get('result'))
         readOnlyUI()
         return
@@ -64,18 +68,19 @@ function changeTestMode(m) {
     if (testMode === m) return false
     dataReset()
     testMode = m
-    $('#combSelect').removeClass('tab-selected')
-    $('#seqSelect').removeClass('tab-selected')
-    $('#tb-new-group').css('visibility', m === 'seq' ? 'visible' : 'hidden')
-    $(`#${m}Select`).addClass('tab-selected')
-    $('#dataGroup').empty()
+    document.querySelector('#combSelect').classList.remove('tab-selected')
+    document.querySelector('#seqSelect').classList.remove('tab-selected')
+    document.querySelector('#tb-new-group').style.visibility =
+        m === 'seq' ? 'visible' : 'hidden'
+    document.querySelector(`#${m}Select`).classList.add('tab-selected')
+    document.querySelector('#dataGroup').innerHTML = ''
 
     return true
 }
 
 /* Adds case to a group */
 function addCase(grp) {
-    const currentGroupTable = $(`#data-table-${grp + 1}`)
+    const currentGroupTable = document.querySelector(`#data-table-${grp + 1}`)
 
     let s =
         '<tr><td class="tb-handle"><div onclick="deleteCase($(this))"class="fa fa-minus-square tb-minus"></div></td>\n'
@@ -84,8 +89,8 @@ function addCase(grp) {
     s += '</tr>'
 
     // Sortable hack
-    currentGroupTable.find('tbody').remove()
-    currentGroupTable.append(s)
+    currentGroupTable.querySelector('tbody').remove()
+    currentGroupTable.appendChild(s)
 }
 
 /* Deletes case from a group */
@@ -101,7 +106,7 @@ function deleteCase(element) {
 function addGroup(
     groupName = `${testMode === 'comb' ? 'Group' : 'Set'} ${groupIndex + 2}`
 ) {
-    $('.plus-button').removeClass('latest-button')
+    document.querySelector('.plus-button').classList.remove('latest-button')
     groupIndex++
 
     const s = `
@@ -121,7 +126,7 @@ function addGroup(
     </div>
     `
     cases[groupIndex] = 0
-    $('#dataGroup').append(s)
+    document.querySelector('#dataGroup').appendChild(s)
 
     makeSortable()
 }
@@ -149,38 +154,44 @@ function addInput(
     const sData = `<td contenteditable="true">${escapeHtml(
         bitwidth.toString()
     )}</td>`
-    $('#testBenchTable')
-        .find('tr')
-        .eq(1)
-        .find('th')
-        .eq(inputCount - 1)
-        .after(sHead)
-    $('#testBenchTable')
-        .find('tr')
-        .eq(2)
-        .find('td')
-        .eq(inputCount - 1)
-        .after(sData)
-    $('#tb-inputs-head').attr('colspan', inputCount)
+    let testBenchTable = document.querySelector('#testBenchTable')
+    testBenchTable
+        .querySelector('tr')[1]
+        .querySelector('th')
+        [inputCount - 1].insertAdjacentHTML('afterend', sHead)
+    testBenchTable
+        .querySelector('tr')[2]
+        .querySelector('td')
+        [inputCount - 1].insertAdjacentHTML('afterend', sData)
+
+    let inputHead = document.querySelector('#tb-inputs-head')
+    inputHead.setAttribute('colspan', inputCount)
 
     // Change data tables' contents
-    $('#dataGroup')
-        .find('table')
-        .each(function (group_i) {
-            $(this)
-                .find('tr')
-                .each(function (case_i) {
-                    const s = `<td contenteditable="true">${
-                        inputData.length
-                            ? escapeHtml(inputData[group_i][case_i])
-                            : 0
-                    }</td>`
-                    $(this)
-                        .find('td')
-                        .eq(inputCount - 1)
-                        .after(s)
-                })
-        })
+
+    let dataGroup = document.querySelector('#dataGroup')
+    let tables = dataGroup.querySelector('table')
+
+    for (let group_i = 0; group_i < tables.length; group_i++) {
+        let currentTable = tables[group_i]
+
+        let rows = currentTable.querySelector('tr')
+
+        for (let case_i = 0; case_i < rows.length; case_i++) {
+            let currentRow = rows[case_i]
+
+            let newTd = document.createElement('td')
+            newTd.setAttribute('contenteditable', 'true')
+
+            let content = inputData.length
+                ? escapeHtml(inputData[group_i][case_i])
+                : 0
+            newTd.innerHTML = content
+
+            let targetTd = currentRow.getElementsByTagName('td')[inputCount - 1]
+            targetTd.parentNode.insertBefore(newTd, targetTd.nextSibling)
+        }
+    }
 }
 
 /* Adds output with default value 0 or values supplied in @param outputData */
@@ -212,81 +223,90 @@ function addOutput(
             bitwidth.toString()
         )}</td>`
     }
-
-    $('#testBenchTable')
-        .find('tr')
-        .eq(1)
-        .find('th')
-        .eq(inputCount + outputCount - 1)
-        .after(sHead)
-    $('#testBenchTable')
-        .find('tr')
-        .eq(2)
-        .find('td')
-        .eq(inputCount + outputCount - 1)
-        .after(sData)
+    testBenchTable
+        .querySelector('tr')[1]
+        .querySelector('th')
+        [inputCount + outputCount - 1].insertAdjacentHTML('afterend', sHead)
+    testBenchTable
+        .querySelector('tr')[2]
+        .querySelector('td')
+        [inputCount + outputCount - 1].insertAdjacentHTML('afterend', sData)
     // If not result then colspan is outputCount
-    $('#tb-outputs-head').attr('colspan', outputCount)
+    let outputHead = document.querySelector('tb-outputs-head')
+    outputHead.setAttribute('colspan', outputCount)
     // else it's 2*outputCount
     if (result) {
-        $('#tb-outputs-head').attr('colspan', 2 * outputCount)
+        outputHead.setAttribute('colspan', 2 * outputCount)
     }
 
     // Change data tables' contents
 
     // If not result just add the outputs
+
     if (!result) {
-        $('#dataGroup')
-            .find('table')
-            .each(function (group_i) {
-                $(this)
-                    .find('tr')
-                    .each(function (case_i) {
-                        const s = `<td contenteditable="true">${
-                            outputData.length
-                                ? escapeHtml(outputData[group_i][case_i])
-                                : 0
-                        }</td>`
-                        $(this)
-                            .find('td')
-                            .eq(inputCount + outputCount - 1)
-                            .after(s)
-                    })
-            })
+        for (let group_i = 0; group_i < tables.length; group_i++) {
+            let currentTable = tables[group_i]
+
+            let rows = currentTable.querySelector('tr')
+
+            for (let case_i = 0; case_i < rows.length; case_i++) {
+                let currentRow = rows[case_i]
+
+                let newTd = document.createElement('td')
+                newTd.setAttribute('contenteditable', 'true')
+
+                let content = outputData.length
+                    ? escapeHtml(outputData[group_i][case_i])
+                    : 0
+                newTd.innerHTML = content
+
+                let targetTd =
+                    currentRow.getElementsByTagName('td')[
+                        inputCount + outputCount - 1
+                    ]
+                targetTd.parentNode.insertBefore(newTd, targetTd.nextSibling)
+            }
+        }
 
         // If result then add results besides the outputs
         // Hacky
     } else {
-        $('#dataGroup')
-            .find('table')
-            .each(function (group_i) {
-                $(this)
-                    .find('tr')
-                    .each(function (case_i) {
-                        // Add the outputs (expected values)
-                        const outputCellData = `<td>${escapeHtml(
-                            outputData[group_i][case_i]
-                        )}</td>`
-                        $(this)
-                            .find('td')
-                            .eq(inputCount + 2 * (outputCount - 1))
-                            .after(outputCellData)
+        for (let group_i = 0; group_i < tables.length; group_i++) {
+            let currentTable = tables[group_i]
 
-                        // Add the actual values
-                        const resultColor =
-                            resultData[group_i][case_i] ===
-                            outputData[group_i][case_i]
-                                ? 'green'
-                                : 'red'
-                        const resultCellData = `<td style="color: ${resultColor}">${escapeHtml(
-                            resultData[group_i][case_i]
-                        )}</td>`
-                        $(this)
-                            .find('td')
-                            .eq(inputCount + 2 * outputCount - 1)
-                            .after(resultCellData)
-                    })
-            })
+            let rows = currentTable.getElementsByTagName('tr')
+
+            for (let case_i = 0; case_i < rows.length; case_i++) {
+                let currentRow = rows[case_i]
+
+                let outputCellData = document.createElement('td')
+                outputCellData.innerHTML = escapeHtml(
+                    outputData[group_i][case_i]
+                )
+                currentRow.insertBefore(
+                    outputCellData,
+                    currentRow.getElementsByTagName('td')[
+                        inputCount + 2 * (outputCount - 1)
+                    ].nextSibling
+                )
+
+                let resultColor =
+                    resultData[group_i][case_i] === outputData[group_i][case_i]
+                        ? 'green'
+                        : 'red'
+                let resultCellData = document.createElement('td')
+                resultCellData.style.color = resultColor
+                resultCellData.innerHTML = escapeHtml(
+                    resultData[group_i][case_i]
+                )
+                currentRow.insertBefore(
+                    resultCellData,
+                    currentRow.getElementsByTagName('td')[
+                        inputCount + 2 * outputCount - 1
+                    ].nextSibling
+                )
+            }
+        }
     }
 }
 
@@ -295,14 +315,21 @@ function deleteInput(element) {
     if (inputCount === 1) return
     const columnIndex = element.parent().eq(0).index()
 
-    $('#testBenchTable tr, .data-group tr')
-        .slice(1)
-        .each(function () {
-            $(this).find('td, th').eq(columnIndex).remove()
-        })
+    let testBenchTableRows = document.querySelectorAll(
+        '#testBenchTable tr, .data-group tr'
+    )
+
+    for (let i = 1; i < testBenchTableRows.length; i++) {
+        let currentRow = testBenchTableRows[i]
+
+        let cells = currentRow.querySelectorAll('td, th')
+
+        let targetCell = cells[columnIndex]
+        targetCell.parentNode.removeChild(targetCell)
+    }
 
     inputCount--
-    $('#tb-inputs-head').attr('colspan', inputCount)
+    inputHead.setAttribute('colspan', inputCount)
 }
 
 /* Deletes output unless there's only one output */
@@ -310,36 +337,37 @@ function deleteOutput(element) {
     if (outputCount === 1) return
     const columnIndex = element.parent().eq(0).index()
 
-    $('#testBenchTable tr, .data-group tr')
-        .slice(1)
-        .each(function () {
-            $(this).find('td, th').eq(columnIndex).remove()
-        })
+    for (let i = 1; i < testBenchTableRows.length; i++) {
+        let currentRow = testBenchTableRows[i]
+
+        let cells = currentRow.querySelectorAll('td, th')
+
+        let targetCell = cells[columnIndex]
+        targetCell.parentNode.removeChild(targetCell)
+    }
 
     outputCount--
-    $('#tb-outputs-head').attr('colspan', outputCount)
+    outputHead.setAttribute('colspan', outputCount)
 }
 
 /* Returns input/output(keys) and their bitwidths(values) */
 /* Called by getData() */
 function getBitWidths() {
     const bitwidths = {}
-    $('#testBenchTable')
-        .find('tr')
-        .eq(1)
-        .find('th')
-        .slice(1)
-        .each(function (index) {
-            const inp = $(this).text()
-            const bw = $('#testBenchTable')
-                .find('tr')
-                .eq(2)
-                .find('td')
-                .slice(1)
-                .eq(index)
-                .html()
-            bitwidths[inp] = Number(bw)
-        })
+    let secondRow = testBenchTable.querySelector('tr')[1]
+    let thElements = secondRow.querySelectorAll('th')
+    thElements = Array.from(thElements).slice(1)
+
+    thElements.forEach(function (th, index) {
+        let inp = th.textContent
+
+        let tdElement = testBenchTable
+            .querySelector('tr')[2]
+            .querySelectorAll('td')[index + 1]
+
+        let bw = tdElement.innerHTML
+        bitwidths[inp] = Number(bw)
+    })
     return bitwidths
 }
 
@@ -348,15 +376,15 @@ function getBitWidths() {
 function getData() {
     const bitwidths = getBitWidths()
     const groups = []
-    const groupCount = $('#dataGroup').children().length
+    const groupCount = document.querySelector('#dataGroup').childElementCount
     for (let group_i = 0; group_i < groupCount; group_i++) {
         const group = {}
         group.label = getGroupTitle(group_i)
         group.inputs = []
         group.outputs = []
 
-        const group_table = $(`#data-table-${group_i + 1}`)
-        group.n = group_table.find('tr').length
+        const group_table = document.querySelector(`#data-table-${group_i + 1}`)
+        group.n = group_table.querySelectorAll('tr').length
 
         // Push all the inputs in the group
         for (let inp_i = 0; inp_i < inputCount; inp_i++) {
@@ -366,8 +394,13 @@ function getData() {
                 bitWidth: bitwidths[label],
                 values: [],
             }
-            group_table.find('tr').each(function () {
-                input.values.push($(this).find('td').slice(1).eq(inp_i).html())
+
+            group_table.querySelectorAll('tr').forEach((row) => {
+                let cells = row.querySelectorAll('td')
+                cells = Array.from(cells).slice(1)
+
+                let cellValue = cells[inp_i].innerHTML
+                input.push(cellValue)
             })
 
             group.inputs.push(input)
@@ -381,14 +414,14 @@ function getData() {
                 bitWidth: bitwidths[label],
                 values: [],
             }
-            group_table.find('tr').each(function () {
-                output.values.push(
-                    $(this)
-                        .find('td')
-                        .slice(1)
-                        .eq(inputCount + out_i)
-                        .html()
-                )
+
+            group_table.querySelectorAll('tr').forEach((row) => {
+                let cells = row.querySelectorAll('td')
+                cells = Array.from(cells).slice(1)
+
+                let cellValue = cells[inputCount + out_i].innerHTML
+
+                output.push(cellValue)
             })
 
             group.outputs.push(output)
@@ -401,11 +434,12 @@ function getData() {
 }
 
 function getTestTitle() {
-    return $('#test-title-label').text()
+    return document.querySelector('#test-title-label').textContent
 }
 
 function getGroupTitle(group_i) {
-    return $(`#data-group-title-${group_i + 1}`).text()
+    return document.querySelector(`#data-group-title-${group_i + 1}`)
+        .textContent
 }
 
 /* Parse UI table into Javascript Object */
@@ -423,14 +457,16 @@ function exportAsCSV() {
     let csvData = ''
     csvData += 'Title,Test Type,Input Count,Output Count\n'
     csvData += `${getTestTitle()},${testMode},${inputCount},${outputCount}\n\n\n`
-    csvData += $('table').eq(0).table2CSV()
+    csvData += document.querySelector('table')[0].table2CSV()
     csvData += '\n\n'
-    $('table')
-        .slice(1)
-        .each(function (group_i) {
+
+    document
+        .querySelectorAll('table:not(:first-of-type)')
+        .forEach(function (table, group_i) {
             csvData += getGroupTitle(group_i)
             csvData += '\n'
-            csvData += $(this).table2CSV()
+
+            csvData += tableToCSV(table)
             csvData += '\n\n'
         })
 
@@ -443,7 +479,7 @@ function exportAsCSV() {
  To achieve this, first converts to JSON then uses request param to load json to table
 */
 function importFromCSV() {
-    const file = $('#csvFileInput').prop('files')[0]
+    const file = document.querySelector('csvFileInput').files[0]
     const reader = new FileReader()
 
     // If circuitScopeID exists, ie. if popup opened from testbench, then use that to redirect
@@ -467,7 +503,7 @@ function importFromCSV() {
 // Clicks the hidden upload file button, entrypoint into importFromCSV()
 // The hidden button in-turn calls importFromCSV()
 function clickUpload() {
-    $('#csvFileInput').click()
+    document.querySelector('csvFileInput').click()
 }
 
 /* Converts CSV to JSON to be loaded into the table */
@@ -587,7 +623,9 @@ function saveData() {
 /* Loads data from JSON string into the table */
 function loadData(dataJSON) {
     const data = JSON.parse(dataJSON)
-    if (data.title) $('#test-title-label').text(data.title)
+    if (data.title) {
+        document.querySelector('#test-title-label').textContent = data.title
+    }
     changeTestMode()
     changeTestMode(data.type)
     for (let group_i = 0; group_i < data.groups.length; group_i++) {
@@ -626,7 +664,9 @@ function loadData(dataJSON) {
  */
 function loadResult(dataJSON) {
     const data = JSON.parse(dataJSON)
-    if (data.title) $('#test-title-label').text(data.title)
+    if (data.title) {
+        document.querySelector('#test-title-label').textContent = data.title
+    }
     changeTestMode()
     changeTestMode(data.type)
     for (let group_i = 0; group_i < data.groups.length; group_i++) {
@@ -688,18 +728,27 @@ function loadResult(dataJSON) {
 function readOnlyUI() {
     makeContentUneditable()
     makeUnsortable()
-    $('.lower-button, .table-button, .tb-minus').hide()
-    $('.tablink').attr('disabled', 'disabled')
-    $('.tablink').removeClass('tablink-no-override')
-    $('.data-group-info').text('')
+    document.querySelectorAll(
+        '.lower-button, .table-button, .tb-minus'
+    ).style.display = 'none'
+    document.querySelectorAll('.tablink').forEach((tablink) => {
+        tablink.disabled = true
+    })
+
+    document.querySelectorAll('.tablink').forEach((tablink) => {
+        tablink.classList.remove('tablink-no-override')
+    })
+    document.querySelector('.data-group-info').textContent = ' '
 }
 
 function makeContentUneditable() {
-    $('body')
-        .find('td, th, span, h3, div')
-        .each(function () {
-            $(this).attr('contenteditable', 'false')
-        })
+    let elements = document.querySelectorAll(
+        'body td, body th, body span, body h3, body div'
+    )
+
+    elements.forEach(function (element) {
+        element.setAttribute('contenteditable', 'false')
+    })
 }
 
 function makeSortable() {
@@ -725,31 +774,64 @@ function makeSortable() {
         if the table has no rows, and once table gets rows, we remove that tbody
      */
     function removeTbody(e, ui) {
-        $(e.target).find('tbody').remove()
+        e.target.querySelectorAll('tbody').forEach((tbodyElement) => {
+            tbodyElement.parentNode.removeChild(tbodyElement)
+        })
     }
 
     function createTbody(e, ui) {
-        if ($(e.target).find('tr, tbody').length === 0) {
-            $(e.target).append('<tbody></tbody>')
+        if (e.target.querySelectorAll('tr, body').length === 0) {
+            e.target.appendChild(document.createElement('tbody'))
         }
     }
 
-    $('.data-group table').sortable({
-        handle: '.tb-handle',
-        helper,
-        start: makePlaceholder,
-        placeholder: 'clone',
-        connectWith: 'table',
-        receive: removeTbody, // For sortable hack
-        remove: createTbody, // For sortable hack
-        items: 'tr',
-        revert: 50,
-        scroll: false,
+    var dataGroupTables = document.querySelectorAll('.data-group table')
+
+    dataGroupTables.forEach(function (table) {
+        table.addEventListener('dragstart', function (event) {
+            var tr = event.target.closest('tr')
+            if (tr) {
+                event.dataTransfer.setData('text/plain', '')
+                event.dataTransfer.effectAllowed = 'move'
+                tr.classList.add('dragging')
+            }
+        })
+
+        table.addEventListener('dragover', function (event) {
+            event.preventDefault()
+            var tr = event.target.closest('tr')
+            var draggingElement = table.querySelector('.dragging')
+            if (tr && draggingElement) {
+                var rect = tr.getBoundingClientRect()
+                var offsetY = event.clientY - rect.top
+                if (offsetY > rect.height / 2) {
+                    tr.parentNode.insertBefore(draggingElement, tr.nextSibling)
+                } else {
+                    tr.parentNode.insertBefore(draggingElement, tr)
+                }
+            }
+        })
+
+        table.addEventListener('dragend', function (event) {
+            var draggingElement = table.querySelector('.dragging')
+            if (draggingElement) {
+                draggingElement.classList.remove('dragging')
+            }
+        })
     })
 }
 
 function makeUnsortable() {
-    $('.data-group table').sortable({ disabled: true })
+var dataGroupTables = document.querySelectorAll('.data-group table');
+
+dataGroupTables.forEach(function(table) {
+    table.draggable = false;  
+
+    table.addEventListener('dragstart', (event) => {
+        event.preventDefault();
+    });
+});
+
 }
 
 function escapeHtml(unsafe) {
