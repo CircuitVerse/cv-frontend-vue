@@ -50,6 +50,12 @@ a:hover,
 a:hover,
 a:active {
     text-decoration: none;
-    color: #fff;
+   
+    color: #fff!important;
+    background: #8B8B8B;
+    border-radius: 5px;
+    padding: 4px 6px;
+    /* align-items: center; */
+    text-align: center;
 }
 </style>
