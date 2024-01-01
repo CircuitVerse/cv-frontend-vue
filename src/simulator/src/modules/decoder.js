@@ -33,24 +33,6 @@ export class Decoder extends CircuitElement {
     if (this.bitWidth <= 3) {
       this.yOff = 2;
     }
-    this.newBitWidth = function(bitWidth) {
-      if (bitWidth === undefined || bitWidth < 1 || bitWidth > 32) {
-        return;
-      }
-      if (this.bitWidth === bitWidth) {
-        return;
-      }
-      const obj = new Decoder(
-          this.x,
-          this.y,
-          this.scope,
-          this.direction,
-          bitWidth,
-      );
-      this.cleanDelete();
-      this.scope.simulationArea.lastSelected = obj;
-      return obj;
-    };
 
     this.setDimensions(20 - this.xOff, this.yOff * 5 * this.outputsize);
     this.rectangleObject = false;
@@ -67,6 +49,30 @@ export class Decoder extends CircuitElement {
       );
       this.output1.push(a);
     }
+  }
+
+  /**
+   * New Bitwidth
+   * @param {number} bitWidth
+   * @return {Decoder}
+   */
+  newBitWidth(bitWidth) {
+    if (bitWidth === undefined || bitWidth < 1 || bitWidth > 32) {
+      return;
+    }
+    if (this.bitWidth === bitWidth) {
+      return;
+    }
+    const obj = new Decoder(
+        this.x,
+        this.y,
+        this.scope,
+        this.direction,
+        bitWidth,
+    );
+    this.delete();
+    this.scope.simulationArea.lastSelected = obj;
+    return obj;
   }
 
   /**

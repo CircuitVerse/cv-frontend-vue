@@ -568,9 +568,7 @@ function runSingleTest(testbenchData, scope) {
 
 /**
  * Runs single combinational test
- * @param {Object} data - Object containing Test Data
- * @param {number} groupIndex - Index of the group to be tested
- * @param {number} caseIndex - Index of the case inside the group
+ * @param {number} testbenchData - testbenchData
  * @param {Scope} scope - The circuit
  */
 function runSingleCombinational(testbenchData, scope) {
@@ -596,9 +594,7 @@ function runSingleCombinational(testbenchData, scope) {
 /**
  * Runs single sequential test and all tests above it in the group
  * Used in MANUAL mode
- * @param {Object} data - Object containing Test Data
- * @param {number} groupIndex - Index of the group to be tested
- * @param {number} caseIndex - Index of the case inside the group
+ * @param {number} testbenchData - testbenchData
  * @param {Scope} scope - The circuit
  */
 function runSingleSequential(testbenchData, scope) {
@@ -616,8 +612,8 @@ function runSingleSequential(testbenchData, scope) {
   triggerReset(reset, scope);
 
   // Run the test and tests above in the same group
-  for (let case_i = 0; case_i <= caseIndex; case_i++) {
-    setInputValues(inputs, group, case_i, scope);
+  for (let caseI = 0; caseI <= caseIndex; caseI++) {
+    setInputValues(inputs, group, caseI, scope);
     tickClock(scope);
   }
 

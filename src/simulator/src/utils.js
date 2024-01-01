@@ -4,6 +4,10 @@ window.projectId = undefined;
 window.id = undefined;
 window.loading = false; // Flag - all assets are loaded
 
+/**
+ * Generate unique string ID
+ * @return {string}
+ */
 export function generateId() {
   let id = '';
   const possible =
@@ -287,6 +291,11 @@ export function promptFile(contentType, multiple) {
   });
 }
 
+/**
+ * Escape an arbitrary string to be HTML safe.
+ * @param {string} unsafe
+ * @return {string} HTML safe string.
+ */
 export function escapeHtml(unsafe) {
   return unsafe
       .replace(/&/g, '&amp;')

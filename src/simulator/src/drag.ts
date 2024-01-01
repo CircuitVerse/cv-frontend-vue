@@ -13,10 +13,10 @@ interface Position {
  * @param {WeakMap<HTMLElement, Position>} positions
  */
 function updatePosition(
-  element: HTMLElement,
-  dx: number,
-  dy: number,
-  positions: WeakMap<HTMLElement, Position>,
+    element: HTMLElement,
+    dx: number,
+    dy: number,
+    positions: WeakMap<HTMLElement, Position>,
 ): void {
   if (!element) {
     return;
@@ -24,7 +24,7 @@ function updatePosition(
 
   // If the element does not exist in the positions WeakMap, create it
   if (!positions.has(element)) {
-    positions.set(element, { x: 0, y: 0 });
+    positions.set(element, {x: 0, y: 0});
   }
 
   // Update the element's x and y position

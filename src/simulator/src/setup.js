@@ -1,4 +1,4 @@
-import {metadata} from './metadata';
+import {ApplicationMetadata, metadata} from './metadata';
 import {generateId} from './utils';
 import {showMessage} from './utils_clock';
 import {plotArea} from './plot_area';
@@ -90,6 +90,7 @@ function setupEnvironment() {
  * It initializes some useful array which are helpful
  * while simulating, saving and loading project.
  * It also draws icons in the sidebar
+ * @param {ApplicationMetadata} applicationMetadata
  * @category setup
  */
 function setupElementLists(applicationMetadata) {
@@ -98,13 +99,19 @@ function setupElementLists(applicationMetadata) {
   window.inputList = applicationMetadata.inputList;
   window.subCircuitInputList = applicationMetadata.subCircuitInputList;
   window.moduleList = [...circuitElementList, ...annotationList];
+  // Order of update
   window.updateOrder = [
     'wires',
     ...circuitElementList,
     'nodes',
     ...annotationList,
-  ]; // Order of update
-  window.renderOrder = [...moduleList.slice().reverse(), 'wires', 'allNodes']; // Order of render
+  ];
+  // Order of render
+  window.renderOrder = [
+    ...moduleList.slice().reverse(),
+    'wires',
+    'allNodes',
+  ];
 }
 
 /**

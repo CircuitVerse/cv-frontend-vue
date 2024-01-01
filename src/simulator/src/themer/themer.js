@@ -119,7 +119,7 @@ export function updateThemeForStyle(themeName) {
     return;
   }
   const html = document.getElementsByTagName('html')[0];
-  Object.keys(selectedTheme).forEach((property, i) => {
+  Object.keys(selectedTheme).forEach((property) => {
     html.style.setProperty(property, selectedTheme[property]);
   });
   colors = getCanvasColors();

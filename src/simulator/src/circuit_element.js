@@ -39,7 +39,6 @@ export class CircuitElement {
       this.newElement = true;
       this.hover = true;
     }
-    this.deleteNodesWhenDeleted = true;
     this.nodeList = [];
     this.clicked = false;
 
@@ -761,14 +760,15 @@ export class CircuitElement {
   /**
    * method to delete object
    * OVERRIDE WITH CAUTION
+   * @param {boolean} deleteNodesWhenDeleted
    */
-  delete() {
+  delete(deleteNodesWhenDeleted = true) {
     globalScope.simulationArea.lastSelected = undefined;
     const foundIndex = this.scope[this.objectType].indexOf(this);
     if (foundIndex != -1) {
       this.scope[this.objectType].splice(foundIndex, 1);
     }
-    if (this.deleteNodesWhenDeleted) {
+    if (deleteNodesWhenDeleted) {
       this.deleteNodes();
     } else {
       for (let i = 0; i < this.nodeList.length; i++) {
@@ -780,16 +780,6 @@ export class CircuitElement {
       }
     }
     this.deleted = true;
-  }
-
-  /**
-   * method to delete object
-   * OVERRIDE WITH CAUTION
-   * @memberof CircuitElement
-   */
-  cleanDelete() {
-    this.deleteNodesWhenDeleted = true;
-    this.delete();
   }
 
   /**
@@ -816,7 +806,7 @@ export class CircuitElement {
     }
     if (this.directionFixed) {
       this.newOrientation(dir);
-      return; // Should it return ?
+      return;
     }
 
     // if (obj.direction === undefined) return;
@@ -881,8 +871,7 @@ export class CircuitElement {
   }
 
   /**
-   * Method to change object delay
-   * OVERRIDE if necessary
+   * Change object delay
    * @param {number} delay - new delay
    */
   changePropagationDelay(delay) {
@@ -903,9 +892,9 @@ export class CircuitElement {
   }
 
   /**
-     * Dummy resolve function
-     * OVERRIDE if necessary
-     */
+   * Dummy resolve function
+   * OVERRIDE if necessary
+   */
   resolve() { }
 
   /**

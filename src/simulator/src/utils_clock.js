@@ -11,6 +11,7 @@ import {plotArea} from './plot_area';
 
 let prevErrorMessage; // Global variable for error messages
 let prevShowMessage; // Global variable for error messages
+
 /**
  * Move the simulation clock forward one tick.
  */
@@ -53,7 +54,10 @@ export function showError(error) {
   }, 1500);
 }
 
-// Helper function to show message
+/**
+ * Show message
+ * @param {string} mes - message to show.
+ */
 export function showMessage(mes) {
   if (mes === prevShowMessage) {
     return;

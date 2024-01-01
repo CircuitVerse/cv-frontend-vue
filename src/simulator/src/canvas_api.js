@@ -9,53 +9,54 @@ const unit = 10;
  * @param {Scope} scope
  */
 export function findDimensions(scope = globalScope) {
+  const simArea = globalScope.simulationArea;
   let totalObjects = 0;
-  globalScope.simulationArea.minWidth = undefined;
-  globalScope.simulationArea.maxWidth = undefined;
-  globalScope.simulationArea.minHeight = undefined;
-  globalScope.simulationArea.maxHeight = undefined;
+  simArea.minWidth = undefined;
+  simArea.maxWidth = undefined;
+  simArea.minHeight = undefined;
+  simArea.maxHeight = undefined;
   for (let i = 0; i < updateOrder.length; i++) {
     if (updateOrder[i] !== 'wires') {
       for (let j = 0; j < scope[updateOrder[i]].length; j++) {
         totalObjects += 1;
         const obj = scope[updateOrder[i]][j];
         if (totalObjects === 1) {
-          globalScope.simulationArea.minWidth = obj.absX();
-          globalScope.simulationArea.minHeight = obj.absY();
-          globalScope.simulationArea.maxWidth = obj.absX();
-          globalScope.simulationArea.maxHeight = obj.absY();
+          simArea.minWidth = obj.absX();
+          simArea.minHeight = obj.absY();
+          simArea.maxWidth = obj.absX();
+          simArea.maxHeight = obj.absY();
         }
         if (obj.objectType !== 'Node') {
-          if (obj.y - obj.upDimensionY < globalScope.simulationArea.minHeight) {
-            globalScope.simulationArea.minHeight = obj.y - obj.upDimensionY;
+          if (obj.y - obj.upDimensionY < simArea.minHeight) {
+            simArea.minHeight = obj.y - obj.upDimensionY;
           }
-          if (obj.y + obj.downDimensionY > globalScope.simulationArea.maxHeight) {
-            globalScope.simulationArea.maxHeight = obj.y + obj.downDimensionY;
+          if (obj.y + obj.downDimensionY > simArea.maxHeight) {
+            simArea.maxHeight = obj.y + obj.downDimensionY;
           }
-          if (obj.x - obj.leftDimensionX < globalScope.simulationArea.minWidth) {
-            globalScope.simulationArea.minWidth = obj.x - obj.leftDimensionX;
+          if (obj.x - obj.leftDimensionX < simArea.minWidth) {
+            simArea.minWidth = obj.x - obj.leftDimensionX;
           }
-          if (obj.x + obj.rightDimensionX > globalScope.simulationArea.maxWidth) {
-            globalScope.simulationArea.maxWidth = obj.x + obj.rightDimensionX;
+          if (obj.x + obj.rightDimensionX > simArea.maxWidth) {
+            simArea.maxWidth = obj.x + obj.rightDimensionX;
           }
         } else {
-          if (obj.absY() < globalScope.simulationArea.minHeight) {
-            globalScope.simulationArea.minHeight = obj.absY();
+          if (obj.absY() < simArea.minHeight) {
+            simArea.minHeight = obj.absY();
           }
-          if (obj.absY() > globalScope.simulationArea.maxHeight) {
-            globalScope.simulationArea.maxHeight = obj.absY();
+          if (obj.absY() > simArea.maxHeight) {
+            simArea.maxHeight = obj.absY();
           }
-          if (obj.absX() < globalScope.simulationArea.minWidth) {
-            globalScope.simulationArea.minWidth = obj.absX();
+          if (obj.absX() < simArea.minWidth) {
+            simArea.minWidth = obj.absX();
           }
-          if (obj.absX() > globalScope.simulationArea.maxWidth) {
-            globalScope.simulationArea.maxWidth = obj.absX();
+          if (obj.absX() > simArea.maxWidth) {
+            simArea.maxWidth = obj.absX();
           }
         }
       }
     }
   }
-  globalScope.simulationArea.objectList = updateOrder;
+  simArea.objectList = updateOrder;
 }
 
 /**

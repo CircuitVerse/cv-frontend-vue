@@ -1,5 +1,4 @@
 import {drawCircle} from '../canvas_api';
-
 import {tempBuffer} from '../layout_mode';
 
 /**
@@ -44,17 +43,26 @@ export class LayoutNode {
     this.objectType = 'Layout Node';
   }
 
+  /**
+   * Absolute X value.
+   * @return {number} x value.
+   */
   absX() {
     return this.x;
   }
 
+  /**
+   * Absolute Y value.
+   * @return {number} y value.
+   */
   absY() {
     return this.y;
   }
 
+  /**
+   *
+   */
   update() {
-    // Code copied from node.update() - Some code is redundant - needs to be removed
-
     if (this === globalScope.simulationArea.hover) {
       globalScope.simulationArea.hover = undefined;
     }
@@ -123,7 +131,8 @@ export class LayoutNode {
 
   /**
    * @memberof layoutNode
-   * this function is used to check if hover
+   * Check if hovered.
+   * @return {boolean}
    */
   isHover() {
     return (

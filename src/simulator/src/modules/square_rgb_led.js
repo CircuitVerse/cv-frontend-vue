@@ -71,7 +71,7 @@ export class SquareRGBLed extends CircuitElement {
       obj.label = this.label;
       obj.labelDirection = this.labelDirection;
 
-      this.cleanDelete();
+      this.delete();
       this.scope.simulationArea.lastSelected = obj;
       return obj;
     };

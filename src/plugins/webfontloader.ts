@@ -4,6 +4,9 @@
  * webfontloader documentation: https://github.com/typekit/webfontloader
  */
 
+/**
+ * Load web fonts.
+ */
 export async function loadFonts() {
   const webFontLoader = await import(
       /* webpackChunkName: "webfontloader" */ 'webfontloader'

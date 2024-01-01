@@ -321,9 +321,9 @@ export const KeyCode = {
   },
 
   /**
-     * Returns true if the key spec (as returned by translate_event) is
-     * currently held down.
-     */
+   * Returns true if the key spec (as returned by translate_event) is
+   * currently held down.
+   */
   is_down: function(key) {
     const code = key.code;
     if (code == KeyCode.CTRL) {

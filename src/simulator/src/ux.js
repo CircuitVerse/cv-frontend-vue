@@ -304,7 +304,7 @@ export function deleteSelected() {
         globalScope.simulationArea.multipleObjectSelections[i].type !== 2
       )
     ) {
-      globalScope.simulationArea.multipleObjectSelections[i].cleanDelete();
+      globalScope.simulationArea.multipleObjectSelections[i].delete();
     }
   }
 

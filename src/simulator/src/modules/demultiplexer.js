@@ -61,7 +61,7 @@ export class Demultiplexer extends CircuitElement {
           this.bitWidth,
           size,
       );
-      this.cleanDelete();
+      this.delete();
       this.scope.simulationArea.lastSelected = obj;
       return obj;
     };

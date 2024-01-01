@@ -88,6 +88,7 @@ export class Wire {
    * @return {boolean} whether an update has occurred
    */
   update() {
+    const simArea = globalScope.simulationArea;
     let updated = false;
     if (embed) {
       return updated;
@@ -102,31 +103,31 @@ export class Wire {
     }
     let n;
     if (
-      globalScope.simulationArea.shiftDown === false &&
-      globalScope.simulationArea.mouseDown === true &&
-      globalScope.simulationArea.selected === false &&
+      simArea.shiftDown === false &&
+      simArea.mouseDown === true &&
+      simArea.selected === false &&
       this.checkWithin(
-          globalScope.simulationArea.mouseDownX,
-          globalScope.simulationArea.mouseDownY,
+          simArea.mouseDownX,
+          simArea.mouseDownY,
       )
     ) {
-      globalScope.simulationArea.selected = true;
-      globalScope.simulationArea.lastSelected = this;
+      simArea.selected = true;
+      simArea.lastSelected = this;
       updated = true;
     } else if (
-      globalScope.simulationArea.mouseDown &&
-      globalScope.simulationArea.lastSelected === this &&
-      !this.checkWithin(globalScope.simulationArea.mouseX, globalScope.simulationArea.mouseY)
+      simArea.mouseDown &&
+      simArea.lastSelected === this &&
+      !this.checkWithin(simArea.mouseX, simArea.mouseY)
     ) {
       n = new Node(
-          globalScope.simulationArea.mouseDownX,
-          globalScope.simulationArea.mouseDownY,
+          simArea.mouseDownX,
+          simArea.mouseDownY,
           2,
           this.scope.root,
       );
       n.clicked = true;
       n.wasClicked = true;
-      globalScope.simulationArea.lastSelected = n;
+      simArea.lastSelected = n;
       this.converge(n);
     }
 
@@ -135,7 +136,7 @@ export class Wire {
       return updated;
     } // if either of the nodes are deleted
 
-    if (globalScope.simulationArea.mouseDown === false) {
+    if (simArea.mouseDown === false) {
       if (this.type === 'horizontal') {
         if (this.node1.absY() !== this.y1) {
           n = new Node(this.node1.absX(), this.y1, 2, this.scope.root);

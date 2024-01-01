@@ -1079,12 +1079,6 @@ export class Node {
  */
 Node.prototype.propagationDelay = 0;
 
-/**
- * backward compatibility?
- * @category node
- */
-Node.prototype.cleanDelete = Node.prototype.delete;
-
 Node.prototype.processVerilog = function() {
   if (this.type == NodeType.Input) {
     this.scope.stack.push(this.parent);

@@ -112,7 +112,7 @@ export class PriorityEncoder extends CircuitElement {
     );
     this.inputSize = 1 << bitWidth;
 
-    this.cleanDelete();
+    this.delete();
     this.scope.simulationArea.lastSelected = obj;
     return obj;
   }

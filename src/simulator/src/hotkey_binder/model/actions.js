@@ -91,9 +91,6 @@ export const setDefault = () => {
   if (getOS() === 'MacOS') {
     const macDefaultKeys = {};
     for (const [key, value] of Object.entries(defaultKeys)) {
-      if (value.split(' + ')[0] == 'Ctrl') {
-
-      }
       macDefaultKeys[key] =
                 value.split(' + ')[0] == 'Ctrl' ?
                     value.replace('Ctrl', 'Meta') :
@@ -101,7 +98,8 @@ export const setDefault = () => {
       localStorage.set('defaultKeys', macDefaultKeys);
     }
   } else {
-    localStorage.set('defaultKeys', defaultKeys); // TODO add a confirmation alert
+    // TODO add a confirmation alert
+    localStorage.set('defaultKeys', defaultKeys);
   }
   addKeys('default');
 };
@@ -200,6 +198,9 @@ export const openDocumentation = () => {
   }
 };
 
+/**
+ *
+ */
 function updateSystem() {
   updateCanvasSet(true);
   wireToBeCheckedSet(1);

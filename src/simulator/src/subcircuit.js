@@ -79,7 +79,8 @@ export class SubCircuit extends CircuitElement {
     this.inputNodes = [];
     this.outputNodes = [];
     this.localScope = new Scope();
-    this.preventCircuitSwitch = false; // prevents from switching circuit if double clicking element
+    // prevents from switching circuit if double clicking element
+    this.preventCircuitSwitch = false;
     this.rectangleObject = false;
 
     const subcircuitScope = scopeList[this.id]; // Scope of the subcircuit
@@ -377,16 +378,16 @@ export class SubCircuit extends CircuitElement {
       }
     }
 
-    const temp_map_out = {};
+    const tempMapOut = {};
     for (let i = 0; i < subcircuitScope.Output.length; i++) {
-      temp_map_out[subcircuitScope.Output[i].layoutProperties.id] = [
+      tempMapOut[subcircuitScope.Output[i].layoutProperties.id] = [
         subcircuitScope.Output[i],
         undefined,
       ];
     }
     for (let i = 0; i < this.outputNodes.length; i++) {
-      if (temp_map_out.hasOwnProperty(this.outputNodes[i].layout_id)) {
-        temp_map_out[this.outputNodes[i].layout_id][1] =
+      if (tempMapOut.hasOwnProperty(this.outputNodes[i].layout_id)) {
+        tempMapOut[this.outputNodes[i].layout_id][1] =
           this.outputNodes[i];
       } else {
         this.outputNodes[i].delete();
@@ -397,29 +398,29 @@ export class SubCircuit extends CircuitElement {
       }
     }
 
-    for (id in temp_map_out) {
-      if (temp_map_out[id][1]) {
+    for (id in tempMapOut) {
+      if (tempMapOut[id][1]) {
         if (
-          temp_map_out[id][0].layoutProperties.x ==
-          temp_map_out[id][1].x &&
-          temp_map_out[id][0].layoutProperties.y ==
-          temp_map_out[id][1].y
+          tempMapOut[id][0].layoutProperties.x ==
+          tempMapOut[id][1].x &&
+          tempMapOut[id][0].layoutProperties.y ==
+          tempMapOut[id][1].y
         ) {
-          temp_map_out[id][1].bitWidth = temp_map_out[id][0].bitWidth;
+          tempMapOut[id][1].bitWidth = tempMapOut[id][0].bitWidth;
         } else {
-          temp_map_out[id][1].delete();
-          const index = this.nodeList.indexOf(temp_map_out[id][1]);
+          tempMapOut[id][1].delete();
+          const index = this.nodeList.indexOf(tempMapOut[id][1]);
           if (index != -1) {
             this.nodeList.splice(index, 1);
           }
-          temp_map_out[id][1] = new Node(
-              temp_map_out[id][0].layoutProperties.x,
-              temp_map_out[id][0].layoutProperties.y,
+          tempMapOut[id][1] = new Node(
+              tempMapOut[id][0].layoutProperties.x,
+              tempMapOut[id][0].layoutProperties.y,
               1,
               this,
-              temp_map_out[id][0].bitWidth,
+              tempMapOut[id][0].bitWidth,
           );
-          temp_map_out[id][1].layout_id = id;
+          tempMapOut[id][1].layout_id = id;
         }
       }
     }
@@ -427,10 +428,10 @@ export class SubCircuit extends CircuitElement {
     this.outputNodes = [];
     for (let i = 0; i < subcircuitScope.Output.length; i++) {
       const output =
-        temp_map_out[subcircuitScope.Output[i].layoutProperties.id][0];
-      if (temp_map_out[output.layoutProperties.id][1]) {
+        tempMapOut[subcircuitScope.Output[i].layoutProperties.id][0];
+      if (tempMapOut[output.layoutProperties.id][1]) {
         this.outputNodes.push(
-            temp_map_out[output.layoutProperties.id][1],
+            tempMapOut[output.layoutProperties.id][1],
         );
       } else {
         const a = new Node(
@@ -470,12 +471,11 @@ export class SubCircuit extends CircuitElement {
     }
   }
 
+  /**
+   * Determine the hovered element.
+   * @return {CircuitElement}
+   */
   getElementHover() {
-    const rX = this.layoutProperties.rightDimensionX;
-    const lX = this.layoutProperties.leftDimensionX;
-    const uY = this.layoutProperties.upDimensionY;
-    const dY = this.layoutProperties.downDimensionY;
-
     for (const el of circuitElementList) {
       if (this.localScope[el].length === 0) {
         continue;
@@ -506,8 +506,8 @@ export class SubCircuit extends CircuitElement {
   }
 
   /**
-     * adds all local scope inputs to the global scope simulation queue
-     */
+   * adds all local scope inputs to the global scope simulation queue
+   */
   addInputs() {
     for (let i = 0; i < subCircuitInputList.length; i++) {
       for (
@@ -527,8 +527,8 @@ export class SubCircuit extends CircuitElement {
   }
 
   /**
-     * Procedure if any element is double clicked inside a subcircuit
-     **/
+   * Procedure if any element is double clicked inside a subcircuit
+   **/
   dblclick() {
     if (this.elementHover) {
       return;
@@ -537,9 +537,11 @@ export class SubCircuit extends CircuitElement {
   }
 
   /**
-     * Returns a javascript object of subcircuit data.
-     * Does not include data of subcircuit elements apart from Input and Output (that is a part of element.subcircuitMetadata)
-     **/
+   * Returns a javascript object of subcircuit data.
+   * Does not include data of subcircuit elements apart from Input and
+   * Output (that is a part of element.subcircuitMetadata)
+   * @return {object}
+   **/
   saveObject() {
     const data = {
       x: this.x,
@@ -574,12 +576,19 @@ export class SubCircuit extends CircuitElement {
     // Leave this to the scope of the subcircuit. Do nothing.
   }
 
+  /**
+   * Verilog name.
+   * @return {string} clean Verilog label.
+   */
   verilogName() {
     return sanitizeLabel(scopeList[this.id].name);
   }
 
   /**
-   * determines where to show label
+   * Determines where to show label.
+   * @param {number} x
+   * @param {number} y
+   * @return {any[]}
    */
   determine_label(x, y) {
     if (x == 0) {

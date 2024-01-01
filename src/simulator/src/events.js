@@ -172,7 +172,7 @@ export function cut(copyList) {
       const obj = globalScope[updateOrder[i]][j];
       if (obj.objectType != 'Wire') {
         if (!copyList.includes(globalScope[updateOrder[i]][j])) {
-          globalScope[updateOrder[i]][j].cleanDelete();
+          globalScope[updateOrder[i]][j].delete();
         }
       }
 
@@ -262,7 +262,7 @@ export function copy(copyList, cutFlag = false) {
       const obj = globalScope[updateOrder[i]][j];
       if (obj.objectType != 'Wire') {
         if (!copyList.includes(globalScope[updateOrder[i]][j])) {
-          globalScope[updateOrder[i]][j].cleanDelete();
+          globalScope[updateOrder[i]][j].delete();
         }
       }
 

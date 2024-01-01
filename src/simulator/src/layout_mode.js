@@ -39,7 +39,7 @@ export function layoutModeGet() {
  * @type {LayoutBuffer} - used to temporarily store all changes.
  * @category layoutMode
  */
-export var tempBuffer;
+export let tempBuffer;
 
 /**
  * Helper function to determine alignment and position of nodes for rendering
@@ -67,7 +67,8 @@ export function determineLabel(x, y) {
  * @category layoutMode
  */
 export function paneLayout(scope = globalScope) {
-  if (!globalScope.simulationArea.selected && globalScope.simulationArea.mouseDown) {
+  if (!globalScope.simulationArea.selected &&
+    globalScope.simulationArea.mouseDown) {
     globalScope.simulationArea.selected = true;
     globalScope.simulationArea.lastSelected = scope.root;
     globalScope.simulationArea.hover = scope.root;
