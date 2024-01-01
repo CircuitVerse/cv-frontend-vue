@@ -1,7 +1,21 @@
-const fadein = () => {
-    let loadingIcon = document.querySelector('.loadingIcon');
-    loadingIcon.style.transition = 'opacity 0.5s linear';
-    loadingIcon.style.opacity = '1';
-}
+export function fadeIn(element, duration = 400) {
+    element.style.opacity = 0;
+    let startTime = null;
 
-export default fadein;
+    function animate(currentTime) {
+        if (!startTime) {
+            startTime = currentTime;
+        }
+
+        const elapsedTime = currentTime - startTime;
+        const opacity = elapsedTime / duration;
+
+        element.style.opacity = opacity > 1 ? 1 : opacity;
+
+        if (elapsedTime < duration) {
+            requestAnimationFrame(animate);
+        }
+    }
+
+    requestAnimationFrame(animate);
+}
