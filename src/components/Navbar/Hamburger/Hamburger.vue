@@ -15,7 +15,4 @@
 
 <script lang="ts" setup></script>
 
-<style>
-/* Commenting since ./Hamburger.css file is empty its showing errors in the console */
-/* @import url('./Hamburger.css'); */
-</style>
+<style></style>
