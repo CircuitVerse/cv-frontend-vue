@@ -302,7 +302,14 @@ function isEmbed(): boolean {
 }
 
 .list-group {
-    display: inline;
+    display: flex;
+    flex-direction: row;
+    overflow-x: scroll;
+    scrollbar-width: none;
+    
+}
+.list-group::-webkit-scrollbar {
+    display: none;
 }
 </style>
 
