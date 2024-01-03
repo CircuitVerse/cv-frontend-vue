@@ -48,12 +48,8 @@
             &#43;
         </button>
         <button id="toggleBtn" @click="toggleHeight">
-            <svg v-if="showMaxHeight" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M6 9l6 6 6-6"/>
-            </svg>
-            <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M6 15l6-6 6 6"/>
-            </svg>
+            <i v-if="showMaxHeight" class="mdi-chevron-down mdi v-icon notranslate v-icon--size-default v-theme--light" aria-hidden="true"></i>
+            <i v-else class="mdi-chevron-up mdi v-icon notranslate v-icon--size-default v-theme--light" aria-hidden="true"></i>
         </button>
     </div>
     <!-- <MessageBox
@@ -349,6 +345,14 @@ function isEmbed(): boolean {
     position: absolute;
     right: 2.5px;
     top: 2.5px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    i{
+        margin-bottom: -5px;
+    }
 }
 
 .tabsbar-close{
