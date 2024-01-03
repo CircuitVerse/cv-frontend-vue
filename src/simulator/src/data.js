@@ -1,4 +1,4 @@
-import { fullView, deleteSelected } from './ux'
+import { fullView } from './ux'
 import { createSubCircuitPrompt } from './subcircuit'
 import save from './data/save'
 import load from './data/load'
@@ -16,12 +16,15 @@ import { colorThemes } from './themer/themer'
 import { showTourGuide } from './tutorials'
 import {
     createVerilogCircuit,
-    saveVerilogCode,
-    resetVerilogCode,
+    // saveVerilogCode,
+    // resetVerilogCode,
+    // applyVerilogTheme,
 } from './Verilog2CV'
 import { generateVerilog } from './verilog'
 import { bitConverterDialog } from './utils'
-import { keyBinder } from './hotkey_binder/keyBinder'
+import { keyBinder } from '#/components/DialogBox/CustomShortcut.vue'
+import { ExportProject } from '#/components/DialogBox/ExportProject.vue'
+import { ImportProject } from '#/components/DialogBox/ImportProject.vue'
 
 const logixFunction = {}
 logixFunction.save = save
@@ -30,7 +33,7 @@ logixFunction.createSaveAsImgPrompt = createSaveAsImgPrompt
 logixFunction.clearProject = clearProject
 logixFunction.newProject = newProject
 logixFunction.saveOffline = saveOffline
-logixFunction.newCircuit = newCircuit
+// logixFunction.newCircuit = newCircuit
 logixFunction.createOpenLocalPrompt = openOffline
 logixFunction.recoverProject = recoverProject
 logixFunction.createSubCircuitPrompt = createSubCircuitPrompt
@@ -39,14 +42,16 @@ logixFunction.createCombinationalAnalysisPrompt =
 logixFunction.fullViewOption = fullView
 logixFunction.colorThemes = colorThemes
 logixFunction.showTourGuide = showTourGuideHelper
-logixFunction.deleteSelected = deleteSelected
 logixFunction.newVerilogModule = createVerilogCircuit
-logixFunction.saveVerilogCode = saveVerilogCode
-logixFunction.resetVerilogCode = resetVerilogCode
+// logixFunction.saveVerilogCode = saveVerilogCode
+// logixFunction.resetVerilogCode = resetVerilogCode
 logixFunction.generateVerilog = generateVerilog
+// logixFunction.applyVerilogTheme = applyVerilogTheme
 logixFunction.bitconverter = bitConverterDialog
 logixFunction.createNewCircuitScope = createNewCircuitScope
 logixFunction.customShortcut = keyBinder
+logixFunction.ExportProject = ExportProject
+logixFunction.ImportProject = ImportProject
 export default logixFunction
 
 // Hack to restart tour guide

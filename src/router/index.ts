@@ -1,18 +1,36 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import index from '../pages/index.vue'
-import simulator from '../pages/simulator.vue'
+import simulatorHandler from '../pages/simulatorHandler.vue'
+import Embed from '../pages/embed.vue'
 
 const routes = [
     {
         path: '/',
-        // name: 'index',
-        // component: index,
-        redirect: '/simulator',
+        redirect: '/simulatorvue', // @TODO: update later back to /simulator
     },
     {
-        path: '/simulator',
+        path: '/simulatorvue', // @TODO: update later back to /simulator
         name: 'simulator',
-        component: simulator,
+        component: simulatorHandler,
+        children: [
+            {
+                path: 'edit/:projectId',
+                name: 'simulator-edit',
+                component: simulatorHandler,
+                props: true,
+            },
+        ],
+    },
+    {
+        path: '/simulatorvue/:projectId',
+        name: 'simulator-view',
+        component: Embed,
+        props: true,
+    },
+    {
+        path: '/simulatorvue/embed/:projectId',
+        name: 'simulator-embed',
+        component: Embed,
+        props: true,
     },
 ]
 const router = createRouter({
