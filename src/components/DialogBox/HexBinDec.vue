@@ -2,17 +2,16 @@
   <v-dialog v-model="SimulatorState.dialogBox.hex_bin_dec_converter_dialog" :persistent="false">
     <v-card class="messageBoxContent">
       <v-card-text>
-        <p class="dialogHeader">Hex-Bin-Dec Convertor</p>
+        <p class="dialogHeader">Hex-Bin-Dec Converter</p>
         <v-btn size="x-small" icon class="dialogClose" @click="
           SimulatorState.dialogBox.hex_bin_dec_converter_dialog = false
           ">
           <v-icon>mdi-close</v-icon>
         </v-btn>
-        <div v-for="inputEle in inputArr" id="bitconverterprompt" :key="inputEle.inputId" title="Dec-Bin-Hex-Converter">
-          <label>{{ inputEle.label }}</label>
+        <div v-for="(value, index) in Object.entries(inputArr)" id="bitconverterprompt" :key="value[0]" title="Dec-Bin-Hex-Converter">
+          <label>{{ value[1].label }}</label>
           <br />
-          <input :id="inputEle.inputId" type="text" :value="inputEle.val" :label="inputEle.label" name="text1"
-            @keyup="() => converter(inputEle.inputId)" />
+          <input :id="value[0]" type="text" :value="value[1].val" :label="value[1].label" @keyup="(payload) => converter(payload)" />
           <br /><br />
         </div>
       </v-card-text>
@@ -28,94 +27,108 @@
 <script lang="ts" setup>
 import { useState } from '#/store/SimulatorStore/state'
 const SimulatorState = useState()
-import { setBaseValues } from '#/simulator/src/utils'
 import { onMounted, ref } from '@vue/runtime-core'
 
-const inputArr = ref([])
-inputArr.value = [
-  {
-    inputId: 'decimalInput',
+const inputArr = ref(
+{
+'decimalInput' : {
     val: '16',
     label: 'Decimal value',
   },
-  {
-    inputId: 'binaryInput',
+  'binaryInput': {
     val: '0b10000',
     label: 'Binary value',
   },
-  {
-    inputId: 'bcdInput',
+  'bcdInput': {
     val: '10110',
-    label: 'Binary-coded decimal vlaue',
+    label: 'Binary-coded decimal value',
   },
-  {
-    inputId: 'octalInput',
+  'octalInput': {
     val: '020',
     label: 'Octal value',
   },
-  {
-    inputId: 'hexInput',
+  'hexInput': {
     val: '0x10',
     label: 'Hexadecimal value',
   },
-]
+})
 
 onMounted(() => {
   SimulatorState.dialogBox.hex_bin_dec_converter_dialog = false
 })
 
-function converter(feildChange) {
-  if (feildChange == 'decimalInput') decimalConvertor()
-  if (feildChange == 'binaryInput') binaryConvertor()
-  if (feildChange == 'bcdInput') bcdConvertor()
-  if (feildChange == 'octalInput') octalConvertor()
-  if (feildChange == 'hexInput') hexConvertor()
+function converter(e: KeyboardEvent) {
+  const target = <HTMLInputElement>e.target!;
+  switch(target.id) {
+  case 'decimalInput':
+    decimalConverter(target.value);
+    break;
+  case 'binaryInput':
+    binaryConverter(target.value);
+    break;
+  case 'bcdInput':
+    bcdConverter(target.value);
+    break;
+  case 'octalInput':
+    octalConverter(target.value);
+    break;
+  case 'hexInput':
+    hexConverter(target.value);
+    break;
+  }
 }
 
-function decimalConvertor() {
-  const x = parseInt($('#decimalInput').val(), 10)
+function setBaseValues(x: number) {
+  if (isNaN(x)) {
+    return;
+  }
+  inputArr.value.binaryInput.val = '0b' + x.toString(2);
+  inputArr.value.bcdInput.val = parseInt(x.toString(10), 16).toString(2);
+  inputArr.value.octalInput.val = '0' + x.toString(8);
+  inputArr.value.hexInput.val = '0x' + x.toString(16);
+  inputArr.value.decimalInput.val = x.toString(10);
+}
+
+function decimalConverter(input: string) {
+  const x = parseInt(input, 10)
   setBaseValues(x)
 }
 
-function binaryConvertor() {
-  const inp = $('#binaryInput').val()
+function binaryConverter(input: string) {
   let x;
-  if (inp.slice(0, 2) == '0b') {
-    x = parseInt(inp.slice(2), 2);
+  if (input.slice(0, 2) == '0b') {
+    x = parseInt(input.slice(2), 2);
   }
   else {
-    x = parseInt(inp, 2);
+    x = parseInt(input, 2);
   }
-  setBaseValues(x)
+  setBaseValues(x);
 }
 
-function bcdConvertor() {
-  var input = $('#bcdInput').val()
+function bcdConverter(input: string) {
   var num = 0
   while (input.length % 4 !== 0) {
     input = '0' + input
   }
-  if (input !== 0) {
-    var i = 0
-    while (i < input.length / 4) {
-      if (parseInt(input.slice(4 * i, 4 * (i + 1)), 2) < 10)
-        num = num * 10 + parseInt(input.slice(4 * i, 4 * (i + 1)), 2)
-      else return setBaseValues(NaN)
-      i++
+  var i = 0
+  while (i < input.length / 4) {
+    if (parseInt(input.slice(4 * i, 4 * (i + 1)), 2) < 10) {
+      num = num * 10 + parseInt(input.slice(4 * i, 4 * (i + 1)), 2);
+    } else {
+      return setBaseValues(NaN);
     }
+    i++
   }
   return setBaseValues(num)
 }
 
-function octalConvertor() {
-  var x = parseInt($('#octalInput').val(), 8)
+function octalConverter(input: string) {
+  var x = parseInt(input, 8)
   setBaseValues(x)
 }
 
-function hexConvertor() {
-  var x = parseInt($('#hexInput').val(), 16)
+function hexConverter(input: string) {
+  var x = parseInt(input, 16)
   setBaseValues(x)
 }
 </script>
-
-<style scoped></style>

@@ -8,7 +8,6 @@ import {
 import {logixFunction} from './data';
 import {circuitProperty} from './circuit';
 import {updateRestrictedElementsInScope} from './restricted_element_div';
-import {converters, setupBitConvertor} from './utils';
 import {updateTestbenchUI, setupTestbenchUI} from './testbench';
 import {dragging} from './drag';
 
@@ -153,7 +152,6 @@ export function setupUI() {
     logixFunction[this.id]();
   });
   setupPanels();
-  setupBitConvertor();
 }
 
 /**
@@ -336,36 +334,6 @@ $('#bitconverter').on('click', () => {
       },
     ],
   });
-});
-
-function setBaseValues(x) {
-  if (isNaN(x)) {
-    return;
-  }
-  $('#binaryInput').val(converters.dec2bin(x));
-  $('#octalInput').val(converters.dec2octal(x));
-  $('#hexInput').val(converters.dec2hex(x));
-  $('#decimalInput').val(x);
-}
-
-$('#decimalInput').on('keyup', () => {
-  const x = parseInt($('#decimalInput').val(), 10);
-  setBaseValues(x);
-});
-
-$('#binaryInput').on('keyup', () => {
-  const x = parseInt($('#binaryInput').val(), 2);
-  setBaseValues(x);
-});
-
-$('#hexInput').on('keyup', () => {
-  const x = parseInt($('#hexInput').val(), 16);
-  setBaseValues(x);
-});
-
-$('#octalInput').on('keyup', () => {
-  const x = parseInt($('#octalInput').val(), 8);
-  setBaseValues(x);
 });
 
 export function setupPanels() {

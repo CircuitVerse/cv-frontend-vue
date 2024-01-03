@@ -119,7 +119,7 @@ export class Text extends CircuitElement {
         this.setLabel(this.label + '\n');
       }
     }
-    $('[name=setLabel]').val(this.label);
+    document.querySelector('[name=setLabel]').value = this.label;
   }
 
   /**

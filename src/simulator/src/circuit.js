@@ -215,7 +215,6 @@ export function newCircuit(name, id, isVerilog = false, isVerilogMain = false) {
     scope.verilogMetadata.isMainCircuit = isVerilogMain;
   }
   globalScope = scope;
-  // $('.circuits').removeClass('current')
   circuitList.value.forEach((circuit) => (circuit.focussed = false));
   circuitList.value[circuitList.value.length - 1].focussed = true;
   activeCircuit.value.id = scope.id;
@@ -223,9 +222,6 @@ export function newCircuit(name, id, isVerilog = false, isVerilogMain = false) {
 
   if (!isVerilog || isVerilogMain) {
     $('.circuitName').off('click');
-
-    // switch circuit function moved inside vue component
-
     if (!embed) {
       $('.circuitName').on('click', () => {
         globalScope.simulationArea.lastSelected = globalScope.root;

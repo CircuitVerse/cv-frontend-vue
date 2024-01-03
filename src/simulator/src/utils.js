@@ -196,17 +196,6 @@ export const converters = {
   dec2bcd: (x) => parseInt(x.toString(10), 16).toString(2),
 };
 
-export function setBaseValues(x) {
-  if (isNaN(x)) {
-    return;
-  }
-  $('#binaryInput').val(converters.dec2bin(x));
-  $('#bcdInput').val(converters.dec2bcd(x));
-  $('#octalInput').val(converters.dec2octal(x));
-  $('#hexInput').val(converters.dec2hex(x));
-  $('#decimalInput').val(x);
-}
-
 export function parseNumber(num) {
   if (num instanceof Number) {
     return num;
@@ -221,53 +210,6 @@ export function parseNumber(num) {
     return parseInt(num, 8);
   }
   return parseInt(num);
-}
-
-export function setupBitConvertor() {
-  $('#decimalInput').on('keyup', function() {
-    const x = parseInt($('#decimalInput').val(), 10);
-    setBaseValues(x);
-  });
-
-  $('#binaryInput').on('keyup', function() {
-    const inp = $('#binaryInput').val();
-    let x;
-    if (inp.slice(0, 2) == '0b') {
-      x = parseInt(inp.slice(2), 2);
-    } else {
-      x = parseInt(inp, 2);
-    }
-    setBaseValues(x);
-  });
-  $('#bcdInput').on('keyup', function() {
-    let input = $('#bcdInput').val();
-    let num = 0;
-    while (input.length % 4 !== 0) {
-      input = '0' + input;
-    }
-    if (input !== 0) {
-      let i = 0;
-      while (i < input.length / 4) {
-        if (parseInt(input.slice(4 * i, 4 * (i + 1)), 2) < 10) {
-          num = num * 10 + parseInt(input.slice(4 * i, 4 * (i + 1)), 2);
-        } else {
-          return setBaseValues(NaN);
-        }
-        i++;
-      }
-    }
-    return setBaseValues(x);
-  });
-
-  $('#hexInput').on('keyup', function() {
-    const x = parseInt($('#hexInput').val(), 16);
-    setBaseValues(x);
-  });
-
-  $('#octalInput').on('keyup', function() {
-    const x = parseInt($('#octalInput').val(), 8);
-    setBaseValues(x);
-  });
 }
 
 export function promptFile(contentType, multiple) {

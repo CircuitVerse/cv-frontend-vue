@@ -115,9 +115,9 @@ export function changeScale(delta, xx, yy, method = 1) {
   if (!embed && !lightMode) {
     findDimensions(globalScope);
     miniMapArea.setup();
-    $('#miniMap').show();
+    document.getElementById('miniMap').style.display = 'block';
     updateLastMinimapShown();
-    $('#miniMap').show();
+    document.getElementById('miniMap').style.display = 'block';
     setTimeout(removeMiniMap, 2000);
   }
 }
