@@ -239,12 +239,14 @@
                     height: 100%;
                 "
             ></canvas>
-            <div id="miniMap">
-                <canvas
-                    id="miniMapArea"
-                    style="position: absolute; left: 0; top: 0; z-index: 3"
-                ></canvas>
-            </div>
+            <Transition>
+                <div id="miniMap">
+                    <canvas
+                        id="miniMapArea"
+                        style="position: absolute; left: 0; top: 0; z-index: 3"
+                    ></canvas>
+                </div>
+            </Transition>
 
             <div id="Help"></div>
             <div
@@ -321,3 +323,15 @@ import InsertSubcircuit from './DialogBox/InsertSubcircuit.vue'
 import OpenOffline from './DialogBox/OpenOffline.vue'
 import ReportIssue from './ReportIssue/ReportIssue.vue'
 </script>
+
+<style>
+.v-enter-active,
+.v-leave-active {
+    transition: opacity 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+    opacity: 0;
+}
+</style>

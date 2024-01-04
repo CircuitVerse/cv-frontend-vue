@@ -189,7 +189,4 @@ export function removeMiniMap() {
         )
         return
     }
-    let miniMap = document.getElementById('miniMap');
-    miniMap.style.transition = 'opacity 0.2s';
-    miniMap.style.opacity = '0';
 }
