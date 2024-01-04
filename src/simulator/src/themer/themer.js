@@ -100,7 +100,7 @@ export function updateThemeForStyle(themeName) {
  */
 export const getThemeCardSvg = (themeName) => {
     const colors = themeOptions[themeName]
-    let svgIcon = document.querySelectorAll(themeCardSvg)
+    let svgIcon = document.querySelector(themeCardSvg)
 
     // Dynamically set the colors according to the theme
     svgIcon.querySelectorAll('.svgText').forEach(element => {
@@ -194,8 +194,8 @@ export const colorThemes = () => {
 }
 
 export const updateBG = () => dots(true, false, true)
-    ; (() => {
-        if (!localStorage.getItem('theme'))
-            localStorage.setItem('theme', 'Default Theme')
-        updateThemeForStyle(localStorage.getItem('theme'))
-    })()
+; (() => {
+    if (!localStorage.getItem('theme'))
+        localStorage.setItem('theme', 'Default Theme')
+    updateThemeForStyle(localStorage.getItem('theme'))
+})()
