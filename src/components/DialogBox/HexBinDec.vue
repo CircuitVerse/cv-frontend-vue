@@ -59,7 +59,7 @@ const inputArr = ref({
         label: 'Binary value',
     },
     bcdInput: {
-        val: '10110',
+        val: '00010110',
         label: 'Binary-coded decimal value',
     },
     octalInput: {
