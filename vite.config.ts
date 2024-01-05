@@ -2,7 +2,7 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'url'
 import vueI18n from '@intlify/vite-plugin-vue-i18n'
-
+import ViteSassPlugin from 'vite-plugin-sass'; 
 // https://github.com/vuetifyjs/vuetify-loader/tree/next/packages/vite-plugin
 import vuetify from 'vite-plugin-vuetify'
 
@@ -11,6 +11,7 @@ const proxyUrl: string = 'http://localhost:3000'
 // https://vitejs.dev/config/
 export default defineConfig({
     plugins: [
+	ViteSassPlugin(),
         vue(),
         vuetify({ autoImport: true }),
         vueI18n({
@@ -35,18 +36,14 @@ export default defineConfig({
         assetsDir: 'assets',
         chunkSizeWarningLimit: 1600,
     },
-    server: {
-        port: 4000,
-        proxy: {
-            // ...(process.env.NODE_ENV === 'development' && {
-            '^/(?!(simulatorvue)).*': {
-                target: proxyUrl,
-                changeOrigin: true,
-                headers: {
-                    origin: proxyUrl,
-                },
-            },
-            // }),
-        },
+      server: {
+    port: 4000,
+    proxy: {
+      '/api': {
+        target: proxyUrl,
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
     },
-})
+  },
+});

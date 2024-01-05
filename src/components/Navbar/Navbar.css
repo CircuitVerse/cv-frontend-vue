@@ -106,6 +106,7 @@
 
 .navbar-text:hover {
     color: var(--primary-green);
+    cursor: pointer
 }
 
 .navbar-text.active {
