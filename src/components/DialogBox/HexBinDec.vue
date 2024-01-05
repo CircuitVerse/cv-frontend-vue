@@ -42,6 +42,49 @@
             </v-card-actions>
         </v-card>
     </v-dialog>
+  <v-dialog
+      v-model="SimulatorState.dialogBox.hex_bin_dec_converter_dialog"
+      :persistent="false"
+  >
+      <v-card class="messageBoxContent">
+          <v-card-text>
+              <p class="dialogHeader">Hex-Bin-Dec Converter</p>
+              <v-btn
+                  size="x-small"
+                  icon
+                  class="dialogClose"
+                  @click="
+                      SimulatorState.dialogBox.hex_bin_dec_converter_dialog = false
+                  "
+              >
+                  <v-icon>mdi-close</v-icon>
+              </v-btn>
+              <div
+              v-for="(value, index) in Object.entries(inputArr)"
+                  id="bitconverterprompt"
+                  :key="value[0]"
+                  title="Dec-Bin-Hex-Converter"
+              >
+                  <label>{{ value[1].label }}</label>
+                  <br />
+                  <input
+                      :id="value[0]"
+                      type="text"
+                      :value="value[1].val"
+                      :label="value[1].label"
+                      name="text1"
+                      @keyup="(payload) => converter(payload)"
+                  />
+                  <br /><br />
+              </div>
+          </v-card-text>
+          <v-card-actions>
+              <v-btn class="messageBtn" block @click="setBaseValues(0)">
+                  Reset
+              </v-btn>
+          </v-card-actions>
+      </v-card>
+  </v-dialog>
 </template>
 
 <script lang="ts" setup>
@@ -78,23 +121,39 @@ onMounted(() => {
 
 function converter(e: KeyboardEvent) {
     const target = <HTMLInputElement>e.target!
+    let value = target.value
+
+    // Regular expressions for validating input
+    const regexBinary = /[^01]/g
+    const regexOctal = /[^0-7]/g
+    const regexDecimal = /[^0-9]/g
+    const regexHex = /[^0-9A-Fa-f]/g
+
     switch (target.id) {
         case 'decimalInput':
-            decimalConverter(target.value)
+            value = value.replace(regexDecimal, '')
+            decimalConverter(value)
             break
         case 'binaryInput':
-            binaryConverter(target.value)
+            value = value.replace(regexBinary, '')
+            binaryConverter(value)
             break
         case 'bcdInput':
-            bcdConverter(target.value)
+            value = value.replace(regexBinary, '')
+            bcdConverter(value)
             break
         case 'octalInput':
-            octalConverter(target.value)
+            value = value.replace(regexOctal, '')
+            octalConverter(value)
             break
         case 'hexInput':
-            hexConverter(target.value)
+            value = value.replace(regexHex, '')
+            hexConverter(value)
             break
     }
+
+    // Update the input field with the cleaned value
+    target.value = value
 }
 
 function convertToBCD(value: number) {
@@ -132,11 +191,11 @@ function binaryConverter(input: string) {
 }
 
 function bcdConverter(input: string) {
-    var num = 0
+    let num = 0
     while (input.length % 4 !== 0) {
         input = '0' + input
     }
-    var i = 0
+    let i = 0
     while (i < input.length / 4) {
         if (parseInt(input.slice(4 * i, 4 * (i + 1)), 2) < 10) {
             num = num * 10 + parseInt(input.slice(4 * i, 4 * (i + 1)), 2)
@@ -149,12 +208,12 @@ function bcdConverter(input: string) {
 }
 
 function octalConverter(input: string) {
-    var x = parseInt(input, 8)
+    let x = parseInt(input, 8)
     setBaseValues(x)
 }
 
 function hexConverter(input: string) {
-    var x = parseInt(input, 16)
+    let x = parseInt(input, 16)
     setBaseValues(x)
 }
 </script>
