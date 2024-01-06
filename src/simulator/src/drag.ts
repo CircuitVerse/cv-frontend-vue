@@ -78,7 +78,7 @@ export function dragging(targetEl: HTMLElement, DragEl: HTMLElement): void {
     })
 
     let panelElements = document.querySelectorAll(
-        '.elementPanel, .layoutElementPanel, #moduleProperty, #layoutDialog, #verilogEditorPanel, .timing-diagram-panel, .testbench-manual-panel, .quick-btn'
+        '.elementPanel, .layoutElementPanel, #moduleProperty, #layoutDialog, #verilogEditorPanel, .timing-diagram-panel, .testbench-manual-panel,.quick-btn'
     )
 
     panelElements.forEach((element) => {

@@ -19,4 +19,7 @@ A clear and concise description of any alternative solutions or features you've 
 **Additional context**
 Add any other context or screenshots about the feature request here.
 
+**Is requested feature is for vue simulator?**
+A clear and concise description of what feature is requested for vue simulator
+
 **Are you working on this? (Yes/No)**

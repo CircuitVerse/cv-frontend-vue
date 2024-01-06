@@ -16,6 +16,7 @@
             :list-items="navbarItem.dropdownItems"
             :drop-down-header="navbarItem.text"
             drop-down-type="navLink"
+            
         />
     </li>
 </template>

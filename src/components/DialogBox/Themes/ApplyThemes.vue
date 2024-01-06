@@ -142,6 +142,8 @@
     </v-dialog>
 </template>
 
+
+
 <script lang="ts" setup>
 import { useState } from '#/store/SimulatorStore/state'
 import { onMounted, onUpdated, ref } from '@vue/runtime-core'
@@ -295,4 +297,8 @@ function closeCustomThemeDialog() {
     updateThemeForStyle(localStorage.getItem('theme'))
     updateBG()
 }
+
+
+
+
 </script>

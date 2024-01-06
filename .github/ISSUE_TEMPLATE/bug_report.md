@@ -23,6 +23,15 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
+**Is faced issue related to vue simulator?**
+A clear and concise description of issue, whether it is realted to vue simulator or not.
+
+**Do you employ vue simulator with or without a backend system? [optional]**
+A clear and concise description of what you used.
+
+**Is bug is only in dev server or build or in both? [optional]**
+A clear and concise description of where the bug is.
+
 **Device Information [optional]:**
 - OS: [e.g. iOS]
 - Browser [e.g. chrome, safari]

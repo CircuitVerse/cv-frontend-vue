@@ -28,7 +28,7 @@
         <li v-if="dropDownType == 'user'">
             <a
                 href="/users/sign_out"
-                class="dropdown-item"
+                class="dropdown-item "
                 rel="nofollow"
                 data-method="delete"
             >
