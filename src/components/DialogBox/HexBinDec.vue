@@ -8,10 +8,12 @@
           ">
           <v-icon>mdi-close</v-icon>
         </v-btn>
-        <div v-for="(value, index) in Object.entries(inputArr)" id="bitconverterprompt" :key="value[0]" title="Dec-Bin-Hex-Converter">
+        <div v-for="(value, index) in Object.entries(inputArr)" id="bitconverterprompt" :key="value[0]"
+          title="Dec-Bin-Hex-Converter">
           <label>{{ value[1].label }}</label>
           <br />
-          <input :id="value[0]" type="text" :value="value[1].val" :label="value[1].label" @keyup="(payload) => converter(payload)" />
+          <input :id="value[0]" type="text" :value="value[1].val" :label="value[1].label"
+            @keyup="(payload) => converter(payload)" />
           <br /><br />
         </div>
       </v-card-text>
@@ -30,28 +32,28 @@ const SimulatorState = useState()
 import { onMounted, ref } from '@vue/runtime-core'
 
 const inputArr = ref(
-{
-'decimalInput' : {
-    val: '16',
-    label: 'Decimal value',
-  },
-  'binaryInput': {
-    val: '0b10000',
-    label: 'Binary value',
-  },
-  'bcdInput': {
-    val: '10110',
-    label: 'Binary-coded decimal value',
-  },
-  'octalInput': {
-    val: '020',
-    label: 'Octal value',
-  },
-  'hexInput': {
-    val: '0x10',
-    label: 'Hexadecimal value',
-  },
-})
+  {
+    'decimalInput': {
+      val: '16',
+      label: 'Decimal value',
+    },
+    'binaryInput': {
+      val: '0b10000',
+      label: 'Binary value',
+    },
+    'bcdInput': {
+      val: '10110',
+      label: 'Binary-coded decimal value',
+    },
+    'octalInput': {
+      val: '020',
+      label: 'Octal value',
+    },
+    'hexInput': {
+      val: '0x10',
+      label: 'Hexadecimal value',
+    },
+  })
 
 onMounted(() => {
   SimulatorState.dialogBox.hex_bin_dec_converter_dialog = false
@@ -59,22 +61,22 @@ onMounted(() => {
 
 function converter(e: KeyboardEvent) {
   const target = <HTMLInputElement>e.target!;
-  switch(target.id) {
-  case 'decimalInput':
-    decimalConverter(target.value);
-    break;
-  case 'binaryInput':
-    binaryConverter(target.value);
-    break;
-  case 'bcdInput':
-    bcdConverter(target.value);
-    break;
-  case 'octalInput':
-    octalConverter(target.value);
-    break;
-  case 'hexInput':
-    hexConverter(target.value);
-    break;
+  switch (target.id) {
+    case 'decimalInput':
+      decimalConverter(target.value);
+      break;
+    case 'binaryInput':
+      binaryConverter(target.value);
+      break;
+    case 'bcdInput':
+      bcdConverter(target.value);
+      break;
+    case 'octalInput':
+      octalConverter(target.value);
+      break;
+    case 'hexInput':
+      hexConverter(target.value);
+      break;
   }
 }
 

@@ -315,27 +315,6 @@ export function deleteSelected() {
   updateRestrictedElementsInScope();
 }
 
-/**
- * listener for opening the prompt for bin conversion
- * @category ux
- */
-$('#bitconverter').on('click', () => {
-  $('#bitconverterprompt').dialog({
-    resizable: false,
-    buttons: [
-      {
-        text: 'Reset',
-        click() {
-          $('#decimalInput').val('0');
-          $('#binaryInput').val('0');
-          $('#octalInput').val('0');
-          $('#hexInput').val('0');
-        },
-      },
-    ],
-  });
-});
-
 export function setupPanels() {
   dragging('#dragQPanel', '.quick-btn');
 
