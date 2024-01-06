@@ -182,6 +182,6 @@ RGBLed.prototype.tooltipText = 'RGB Led ToolTip: RGB Led inputs 8 bit values ' +
  * @type {string}
  * @category modules
  */
-RGBLed.prototype.helplink = 'https://docs.circuitverse.org/#/outputs?id=rgb-led';
+RGBLed.prototype.helplink = 'https://docs.circuitverse.org/#/chapter4/3output?id=rgbled';
 RGBLed.prototype.objectType = 'RGBLed';
 RGBLed.prototype.canShowInSubcircuit = true;

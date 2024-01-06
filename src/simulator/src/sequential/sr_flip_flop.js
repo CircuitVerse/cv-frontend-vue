@@ -125,7 +125,7 @@ export class SRflipFlop extends CircuitElement {
 SRflipFlop.prototype.tooltipText = 'SR FlipFlop ToolTip : SR FlipFlop Selected.';
 
 SRflipFlop.prototype.helplink =
-  'https://docs.circuitverse.org/#/Sequential?id=sr-flip-flop';
+  'https://docs.circuitverse.org/#/chapter4/6sequentialelements?id=sr-flip-flop';
 
 SRflipFlop.prototype.objectType = 'SRflipFlop';
 SRflipFlop.prototype.constructorParameters= ['direction'];
