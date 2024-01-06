@@ -12,7 +12,7 @@ import { dots } from './canvasApi'
 import { update, updateSimulationSet, updateCanvasSet } from './engine'
 import { setupUI } from './ux'
 import startMainListeners from './listeners'
-import startEmbedListeners from './embedListeners'
+// import startEmbedListeners from './embedListeners'
 import './embed'
 import { newCircuit, scopeList } from './circuit'
 import load from './data/load'
@@ -26,7 +26,7 @@ import 'codemirror/addon/edit/closebrackets'
 import 'codemirror/addon/hint/anyword-hint'
 import 'codemirror/addon/hint/show-hint'
 import { setupCodeMirrorEnvironment } from './Verilog2CV'
-import { keyBinder } from './hotkey_binder/keyBinder'
+// import { keyBinder } from '#/components/DialogBox/CustomShortcut.vue'
 import '../vendor/jquery-ui.min.css'
 import '../vendor/jquery-ui.min'
 import { confirmSingleOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
@@ -129,13 +129,16 @@ function setupElementLists() {
  */
 async function fetchProjectData(projectId) {
     try {
-        const response = await fetch(`/api/v1/simulator/${projectId}/data`, {
-            method: 'GET',
-            headers: {
-                Accept: 'application/json',
-                Authorization: `Token ${getToken('cvt')}`,
-            },
-        })
+        const response = await fetch(
+            `/api/v1/projects/${projectId}/circuit_data`,
+            {
+                method: 'GET',
+                headers: {
+                    Accept: 'application/json',
+                    Authorization: `Token ${getToken('cvt')}`,
+                },
+            }
+        )
         if (response.ok) {
             const data = await response.json()
             await load(data)
@@ -196,14 +199,15 @@ function showTour() {
  * @category setup
  */
 export function setup() {
-    let embed = false
-    const startListeners = embed ? startEmbedListeners : startMainListeners
+    // let embed = false
+    // const startListeners = embed ? startEmbedListeners : startMainListeners
     setupElementLists()
     setupEnvironment()
     if (!embed) {
         setupUI()
+        startMainListeners()
     }
-    startListeners()
+    // startListeners()
     loadProjectData()
     showTour()
 }

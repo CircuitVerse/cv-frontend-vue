@@ -62,6 +62,7 @@
             "verilog_module": "Verilog Module",
             "properties": "Properties",
             "layout": "Layout",
+            "keybinding_preference": "Keybinding Preference",
             "render_image": "Render Image",
             "select_theme": "Select Theme",
             "boolean_logic_table": "BooleanLogicTable",
@@ -83,12 +84,15 @@
                 }
             },
             "timing_diagram": {
-                "one_cycle_unit_html": "1 cycle = <br/><input id='timing-diagram-units' type='number' min='1' autocomplete='off' value='1000'><br/>Units"
+                "one_cycle": "1 Cycle =",
+                "units": "Units"
             },
             "verilog_module": {
                 "reset_code": "Reset Code",
                 "save_code": "Save Code",
-                "module_in_experiment_notice": "This is an experimental module. The code is not saved unless the \"Save Code\" button is clicked."
+                "module_in_experiment_notice": "This is an experimental module. The code is not saved unless the \"Save Code\" button is clicked.",
+                "apply_themes": "Apply Themes",
+                "select_theme": "Select a theme:"
             },
             "layout": {
                 "width": "Width",
@@ -119,10 +123,20 @@
                 "octal_value": "Octal value",
                 "hexadecimal_value": "Hexadecimal value"
             },
+            "custom_shortcut": {
+                "esc_cancel": "Press Desire Key Combination & press Enter",
+                "command": "Command",
+                "keymapping": "Keymapping",
+                "reset_to_default": "Reset to Default",
+                "save": "Save"
+            },
             "report_issue": {
                 "describe_issue": "Describe your issue:",
-                "email_html": "<b>Email</b><span> [Optional]</span>:",
-                "report_btn": "Report"
+                "email": "Email",
+                "optional": " [Optional]",
+                "report_btn": "Report",
+                "cancel_btn": "Cancel",
+                "close_btn": "Close"
             }
         },
         "tooltip": {
