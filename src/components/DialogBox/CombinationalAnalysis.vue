@@ -699,7 +699,7 @@ function printBooleanTable() {
         table, th, td {border: solid 1px #DDD;border-collapse: 0;}
         tbody {padding: 2px 3px;text-align: center;} 
         </style>`.replace(/\n/g, "")
-    var win = window.open('', '', 'height=1d 400,width=700')
+    var win = window.open('', '', 'height=700,width=700')
     var htmlBody = `
                        <html><head>\
                        <title>Boolean Logic Table</title>\
