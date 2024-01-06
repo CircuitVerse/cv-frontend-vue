@@ -161,19 +161,15 @@ const selectedTheme = ref('default-theme')
 const iscustomTheme = ref(false)
 
 onMounted(() => {
-    SimulatorState.dialogBox.theme_dialog = false
-    selectedTheme.value = localStorage.getItem('theme')
-    themes.value = Object.keys(themeOptions)
-    themes.value.splice(-1, 1)
-    console.log(themes.value)
+    SimulatorState.dialogBox.theme_dialog = false;
+    selectedTheme.value = localStorage.getItem('theme');
+    themes.value = Object.keys(themeOptions);
+    themes.value.splice(-1, 1);
     customThemesList.value = CreateAbstraction(themeOptions['Custom Theme'])
     customThemes.value = Object.keys(customThemesList.value)
-    console.log(customThemesList.value)
-    console.log(customThemes.value)
 })
 
 function changeTheme(e) {
-    console.log(e)
     e.preventDefault()
     $('.selected').removeClass('selected')
     let themeCard = $(e.target.parentElement)
@@ -186,8 +182,6 @@ function changeTheme(e) {
 }
 
 function changeCustomTheme(e) {
-    console.log('update custom theme')
-    console.log(e)
     customThemesList.value[e.target.name].color = e.target.value
     customThemesList.value[e.target.name].ref.forEach((property) => {
         themeOptions['Custom Theme'][property] = e.target.value
@@ -197,7 +191,6 @@ function changeCustomTheme(e) {
 }
 
 function applyTheme() {
-    console.log('Apply Theme')
     if (iscustomTheme.value == false) {
         if ($('.selected label').text()) {
             localStorage.removeItem('Custom Theme')
@@ -218,8 +211,7 @@ function applyTheme() {
     setTimeout(() => (iscustomTheme.value = false), 1000)
 }
 function applyCustomTheme() {
-    iscustomTheme.value = true
-    console.log('Apply Custom Theme')
+    iscustomTheme.value = true;
     updateThemeForStyle(localStorage.getItem('theme'))
     updateBG()
     localStorage.setItem('theme', 'Custom Theme')
@@ -250,7 +242,6 @@ function receivedText(e) {
 }
 
 function importCustomTheme() {
-    console.log('Import Custom Theme')
     $('#importThemeFile').click()
 
     $('#importThemeFile').on('change', (event) => {
@@ -267,7 +258,6 @@ function importCustomTheme() {
     })
 }
 function exportCustomTheme() {
-    console.log('Export Custom Theme')
     const dlAnchorElem = document.getElementById('downloadThemeFile')
     dlAnchorElem.setAttribute(
         'href',

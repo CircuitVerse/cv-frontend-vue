@@ -1,36 +1,28 @@
-/* eslint-disable import/no-cycle */
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable guard-for-in */
+import {ApplicationMetadata, metadata} from './metadata';
+import {generateId} from './utils';
+import {showMessage} from './utils_clock';
+import {plotArea} from './plot_area';
 
-import { Tooltip } from 'bootstrap'
-import metadata from './metadata.json'
-import { generateId, showMessage } from './utils'
-import backgroundArea from './backgroundArea'
-import plotArea from './plotArea'
-import simulationArea from './simulationArea'
-import { dots } from './canvasApi'
-import { update, updateSimulationSet, updateCanvasSet } from './engine'
-import { setupUI } from './ux'
-import startMainListeners from './listeners'
-// import startEmbedListeners from './embedListeners'
-import './embed'
-import { newCircuit, scopeList } from './circuit'
-import load from './data/load'
-import save from './data/save'
-import { showTourGuide } from './tutorials'
-import setupModules from './moduleSetup'
-import 'codemirror/lib/codemirror.css'
-import 'codemirror/addon/hint/show-hint.css'
-import 'codemirror/mode/javascript/javascript' // verilog.js from codemirror is not working because array prototype is changed.
-import 'codemirror/addon/edit/closebrackets'
-import 'codemirror/addon/hint/anyword-hint'
-import 'codemirror/addon/hint/show-hint'
-import { setupCodeMirrorEnvironment } from './Verilog2CV'
-// import { keyBinder } from '#/components/DialogBox/CustomShortcut.vue'
-import '../vendor/jquery-ui.min.css'
-import '../vendor/jquery-ui.min'
-import { confirmSingleOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
-import { getToken } from '#/pages/simulatorHandler.vue'
+import {dots} from './canvas_api';
+import {update, updateSimulationSet, updateCanvasSet} from './engine';
+import {setupUI} from './ux';
+import {startMainListeners} from './listeners';
+import {newCircuit} from './circuit';
+import {load} from './data/load';
+import {save} from './data/save';
+import {showTourGuide} from './tutorials';
+import {setupModules} from './module_setup';
+// verilog.js from codemirror is not working because array prototype is changed.
+import 'codemirror/mode/javascript/javascript';
+import 'codemirror/addon/edit/closebrackets';
+import 'codemirror/addon/hint/anyword-hint';
+import 'codemirror/addon/hint/show-hint';
+import {setupCodeMirrorEnvironment} from './verilog_to_cv';
+import '../vendor/jquery-ui.min';
+import {confirmSingleOption}
+  from '#/components/helpers/confirmComponent/ConfirmComponent.vue';
+import {getToken} from '#/pages/simulatorHandler.vue';
+import {SimulationArea} from './simulation_area';
 
 /**
  * to resize window and setup things it
@@ -39,87 +31,87 @@ import { getToken } from '#/pages/simulatorHandler.vue'
  * @category setup
  */
 export function resetup() {
-    console.log('hello from re setup')
-    DPR = window.devicePixelRatio || 1
-    if (lightMode) {
-        DPR = 1
-    }
-    width = document.getElementById('simulationArea').clientWidth * DPR
-    if (!embed) {
-        height =
-            (document.body.clientHeight -
-                document.getElementById('toolbar').clientHeight) *
-            DPR
-    } else {
-        height = document.getElementById('simulation').clientHeight * DPR
-    }
-    // setup simulationArea and backgroundArea variables used to make changes to canvas.
-    backgroundArea.setup()
-    simulationArea.setup()
-    // redraw grid
-    dots()
-    document.getElementById('backgroundArea').style.height =
-        height / DPR + 100 + 'px'
-    document.getElementById('backgroundArea').style.width =
-        width / DPR + 100 + 'px'
-    document.getElementById('canvasArea').style.height = height / DPR + 'px'
-    simulationArea.canvas.width = width
-    simulationArea.canvas.height = height
-    backgroundArea.canvas.width = width + 100 * DPR
-    backgroundArea.canvas.height = height + 100 * DPR
-    if (!embed) {
-        plotArea.setup()
-    }
-    updateCanvasSet(true)
-    update() // INEFFICIENT, needs to be deprecated
-    simulationArea.prevScale = 0
-    dots()
+  DPR = window.devicePixelRatio || 1;
+  if (lightMode) {
+    DPR = 1;
+  }
+  const canvasArea = document.getElementById('canvasArea');
+  width = canvasArea.clientWidth * DPR;
+  if (!embed) {
+    height =
+      (document.body.clientHeight -
+        document.getElementById('toolbar').clientHeight) *
+      DPR;
+  } else {
+    height = canvasArea.clientHeight * DPR;
+  }
+  // redraw grid
+  dots(globalScope);
+  globalScope.backgroundArea.canvas.style.height =
+    height / DPR + 100 + 'px';
+  globalScope.backgroundArea.canvas.style.width =
+    width / DPR + 100 + 'px';
+  document.getElementById('canvasArea').style.height = height / DPR + 'px';
+  globalScope.simulationArea.canvas.width = width;
+  globalScope.simulationArea.canvas.height = height;
+  globalScope.backgroundArea.canvas.width = width + 100 * DPR;
+  globalScope.backgroundArea.canvas.height = height + 100 * DPR;
+  if (!embed) {
+    plotArea.setup();
+  }
+  updateCanvasSet(true);
+  update(); // INEFFICIENT, needs to be deprecated
+  globalScope.simulationArea.prevScale = 0;
+  dots(globalScope);
 }
 
-window.onresize = resetup // listener
-window.onorientationchange = resetup // listener
-
+window.onresize = resetup; // listener
+window.onorientationchange = resetup; // listener
+screen.orientation.addEventListener('change', resetup);
 // for mobiles
-window.addEventListener('orientationchange', resetup) // listener
+window.addEventListener('orientationchange', resetup); // listener
 
 /**
  * function to setup environment variables like projectId and DPR
  * @category setup
  */
 function setupEnvironment() {
-    setupModules()
-    const projectId = generateId()
-    window.projectId = projectId
-    updateSimulationSet(true)
-    // const DPR = window.devicePixelRatio || 1 // unused variable
-    newCircuit('Main')
-    window.data = {}
-    resetup()
-    setupCodeMirrorEnvironment()
+  setupModules();
+  const projectId = generateId();
+  window.projectId = projectId;
+  updateSimulationSet(true);
+  newCircuit('Main');
+  window.data = {};
+  resetup();
+  setupCodeMirrorEnvironment();
 }
 
 /**
  * It initializes some useful array which are helpful
  * while simulating, saving and loading project.
  * It also draws icons in the sidebar
+ * @param {ApplicationMetadata} applicationMetadata
  * @category setup
  */
-function setupElementLists() {
-    // console.log('hello from elements list panel setup')
-    // $('#menu').empty()
-
-    window.circuitElementList = metadata.circuitElementList
-    window.annotationList = metadata.annotationList
-    window.inputList = metadata.inputList
-    window.subCircuitInputList = metadata.subCircuitInputList
-    window.moduleList = [...circuitElementList, ...annotationList]
-    window.updateOrder = [
-        'wires',
-        ...circuitElementList,
-        'nodes',
-        ...annotationList,
-    ] // Order of update
-    window.renderOrder = [...moduleList.slice().reverse(), 'wires', 'allNodes'] // Order of render
+function setupElementLists(applicationMetadata) {
+  window.circuitElementList = applicationMetadata.circuitElementList;
+  window.annotationList = applicationMetadata.annotationList;
+  window.inputList = applicationMetadata.inputList;
+  window.subCircuitInputList = applicationMetadata.subCircuitInputList;
+  window.moduleList = [...circuitElementList, ...annotationList];
+  // Order of update
+  window.updateOrder = [
+    'wires',
+    ...circuitElementList,
+    'nodes',
+    ...annotationList,
+  ];
+  // Order of render
+  window.renderOrder = [
+    ...moduleList.slice().reverse(),
+    'wires',
+    'allNodes',
+  ];
 }
 
 /**
@@ -128,55 +120,55 @@ function setupElementLists() {
  * @category setup
  */
 async function fetchProjectData(projectId) {
-    try {
-        const response = await fetch(
-            `/api/v1/projects/${projectId}/circuit_data`,
-            {
-                method: 'GET',
-                headers: {
-                    Accept: 'application/json',
-                    Authorization: `Token ${getToken('cvt')}`,
-                },
-            }
-        )
-        if (response.ok) {
-            const data = await response.json()
-            await load(data)
-            await simulationArea.changeClockTime(data.timePeriod || 500)
-            $('.loadingIcon').fadeOut()
-        } else {
-            throw new Error('API call failed')
-        }
-    } catch (error) {
-        console.error(error)
-        confirmSingleOption('Error: Could not load.')
-        $('.loadingIcon').fadeOut()
+  try {
+    const response = await fetch(
+        `/api/v1/projects/${projectId}/circuit_data`,
+        {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Token ${getToken('cvt')}`,
+          },
+        },
+    );
+    if (response.ok) {
+      const data = await response.json();
+      await load(data);
+      await globalScope.simulationArea.changeClockTime(data.timePeriod || 500);
+      $('.loadingIcon').fadeOut();
+    } else {
+      throw new Error('API call failed');
     }
+  } catch (error) {
+    console.error(error);
+    confirmSingleOption('Error: Could not load.');
+    $('.loadingIcon').fadeOut();
+  }
 }
 
 /**
  * Load project data immediately when available.
- * Improvement to eliminate delay caused by setTimeout in previous implementation revert if issues arise.
  * @category setup
  */
 async function loadProjectData() {
-    window.logixProjectId = window.logixProjectId ?? 0
-    if (window.logixProjectId !== 0) {
-        $('.loadingIcon').fadeIn()
-        await fetchProjectData(window.logixProjectId)
-    } else if (localStorage.getItem('recover_login') && window.isUserLoggedIn) {
-        // Restore unsaved data and save
-        const data = JSON.parse(localStorage.getItem('recover_login'))
-        await load(data)
-        localStorage.removeItem('recover')
-        localStorage.removeItem('recover_login')
-        await save()
-    } else if (localStorage.getItem('recover')) {
-        // Restore unsaved data which didn't get saved due to error
-        showMessage(
-            "We have detected that you did not save your last work. Don't worry we have recovered them. Access them using Project->Recover"
-        )
-    }
+  window.logixProjectId = window.logixProjectId ?? 0;
+  if (window.logixProjectId !== 0) {
+    $('.loadingIcon').fadeIn();
+    await fetchProjectData(window.logixProjectId);
+  } else if (localStorage.getItem('recover_login') && window.isUserLoggedIn) {
+    // Restore unsaved data and save
+    const data = JSON.parse(localStorage.getItem('recover_login'));
+    await load(data);
+    localStorage.removeItem('recover');
+    localStorage.removeItem('recover_login');
+    await save();
+  } else if (localStorage.getItem('recover')) {
+    // Restore unsaved data which didn't get saved due to error
+    showMessage(
+        'We have detected that you did not save your last work. Don\'t worry ' +
+        'we have recovered them. Access them using Project->Recover',
+    );
+  }
 }
 
 /**
@@ -185,11 +177,11 @@ async function loadProjectData() {
  * @category setup
  */
 function showTour() {
-    if (!localStorage.tutorials_tour_done && !embed) {
-        setTimeout(() => {
-            showTourGuide()
-        }, 2000)
-    }
+  if (!localStorage.tutorials_tour_done && !embed) {
+    setTimeout(() => {
+      showTourGuide();
+    }, 2000);
+  }
 }
 
 /**
@@ -199,15 +191,12 @@ function showTour() {
  * @category setup
  */
 export function setup() {
-    // let embed = false
-    // const startListeners = embed ? startEmbedListeners : startMainListeners
-    setupElementLists()
-    setupEnvironment()
-    if (!embed) {
-        setupUI()
-        startMainListeners()
-    }
-    // startListeners()
-    loadProjectData()
-    showTour()
+  setupElementLists(metadata);
+  setupEnvironment();
+  if (!embed) {
+    setupUI();
+    startMainListeners();
+  }
+  loadProjectData();
+  showTour();
 }

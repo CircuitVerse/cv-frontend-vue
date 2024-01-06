@@ -1,0 +1,32 @@
+{
+  "cSpell.words": [
+    "bitwidth",
+    "combinational",
+    "Demultiplexer",
+    "helplink",
+    "localstorage",
+    "logix",
+    "nand",
+    "netlist",
+    "subcircuit",
+    "subcircuits",
+    "tablink",
+    "testbench",
+    "testcase",
+    "themer",
+    "Verilog",
+    "wirelessly"
+  ],
+  "eslint.enable": true,
+  "eslint.format.enable": true,
+  "eslint.validate": [
+    "javascript",
+    "typescript",
+    "svelte"
+  ],
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "files.autoSave": "onFocusChange",
+}
