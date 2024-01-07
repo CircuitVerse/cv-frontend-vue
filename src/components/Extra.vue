@@ -214,7 +214,7 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Simulation Area - Canvas (3) + Help Section-->
-    <div id="simulation" class="simulation">
+    <div id="simulation" class="simulation" @click="callSimulatorAction(true)">
         <!-- <div id="restrictedDiv" class="alert alert-danger display--none"></div> -->
         <div id="canvasArea" class="canvasArea">
             <canvas
@@ -320,4 +320,17 @@ import CustomShortcut from './DialogBox/CustomShortcut.vue'
 import InsertSubcircuit from './DialogBox/InsertSubcircuit.vue'
 import OpenOffline from './DialogBox/OpenOffline.vue'
 import ReportIssue from './ReportIssue/ReportIssue.vue'
+
+// ------------- Code for id="simulation" `obj : Toggling Tabsbar Effect` -------------
+
+import { useActions } from '../store/SimulatorStore/actions';
+const actions = useActions();
+
+const callSimulatorAction = (value: boolean) => {
+    actions.setSimulatorClicked(value);
+};
+
+// -------------------------------------------------------
+
+
 </script>

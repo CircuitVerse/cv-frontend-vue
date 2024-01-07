@@ -24,9 +24,11 @@ export interface State {
         open_project_dialog: boolean
         export_project_dialog: boolean
         import_project_dialog: boolean
+        SimulatorWasClicked: boolean
     }
     // createCircuit: Object | { circuitName: string }
     combinationalAnalysis: Object
+    
 }
 
 export const useState = defineStore({
@@ -51,6 +53,7 @@ export const useState = defineStore({
                 open_project_dialog: false,
                 export_project_dialog: false,
                 import_project_dialog: false,
+                SimulatorWasClicked: false,
             },
             // createCircuit: {
             //     circuitName: 'Untitled Circuit',

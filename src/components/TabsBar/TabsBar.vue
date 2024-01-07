@@ -1,5 +1,11 @@
 <template>
-    <div id="tabsBar" class="noSelect pointerCursor" :class="embedClass()">
+    <div
+        id="tabsBar"
+        class="noSelect pointerCursor"
+        :class="embedClass()"
+        :style="{ height: showMaxHeight ? '28px' : 'auto', maxHeight: showMaxHeight ? '28px' : 'none' }"
+        @click="handleTabsBarClick"
+    >
         <draggable
             :key="updateCount"
             v-model="SimulatorState.circuit_list"
@@ -41,6 +47,14 @@
         <button v-if="!isEmbed()" @click="createNewCircuitScope()">
             &#43;
         </button>
+        <button id="toggleBtn" @click="toggleHeight">
+            <svg v-if="showMaxHeight" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 9l6 6 6-6"/>
+            </svg>
+            <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 15l6-6 6 6"/>
+            </svg>
+        </button>
     </div>
     <!-- <MessageBox
         v-model="SimulatorState.dialogBox.create_circuit"
@@ -60,7 +74,8 @@
 <script lang="ts" setup>
 import draggable from 'vuedraggable'
 import { showMessage, truncateString } from '#/simulator/src/utils'
-import { ref, Ref } from 'vue'
+import { ref, Ref, watch, defineEmits } from 'vue';
+
 import {
     createNewCircuitScope,
     // deleteCurrentCircuit,
@@ -71,10 +86,35 @@ import {
 // import MessageBox from '#/components/MessageBox/messageBox.vue'
 import { useState } from '#/store/SimulatorStore/state'
 import { closeCircuit } from '../helpers/deleteCircuit/DeleteCircuit.vue'
-
 const SimulatorState = <SimulatorStateType>useState()
 const drag: Ref<boolean> = ref(false)
-const updateCount: Ref<number> = ref(0)
+const updateCount: Ref<number> = ref(0);
+
+import { useActions } from '../../store/SimulatorStore/actions';
+
+const showMaxHeight = ref(true);
+const actions = useActions();
+const state = useState();
+
+const callSimulatorAction = (value: boolean) => {
+    actions.setSimulatorClicked(value);
+};
+
+watch(() => {
+    console.log('state.dialogBox.SimulatorWasClicked:', state.dialogBox.SimulatorWasClicked);
+    if (state.dialogBox.SimulatorWasClicked === true && showMaxHeight.value === false) {
+        showMaxHeight.value = true;
+    }
+});
+
+function handleTabsBarClick() {
+  state.dialogBox.SimulatorWasClicked = false;
+}
+
+function toggleHeight() {
+    showMaxHeight.value = !showMaxHeight.value;
+}
+
 // const persistentShow: Ref<boolean> = ref(false)
 // const messageVal: Ref<string> = ref('')
 // const buttonArr: Ref<Array<buttonArrType>> = ref([{ text: '', emitOption: '' }])
@@ -270,6 +310,14 @@ function isEmbed(): boolean {
 </script>
 
 <style scoped>
+#tabsBar{
+    padding-right: 50px;
+    position: relative;
+    overflow: hidden;
+    padding-bottom: 2.5px;
+    z-index: 100;
+}
+
 #tabsBar.embed-tabbar {
     background-color: transparent;
 }
@@ -290,6 +338,12 @@ function isEmbed(): boolean {
     /* border: 1px solid var(--br-circuit-cur); */
 }
 
+#tabsBar button {
+    font-size: 1rem; 
+    height: 20px;
+    width: 20px;
+}
+
 #tabsBar.embed-tabbar button {
     color: var(--text-panel);
     background-color: var(--primary);
@@ -304,6 +358,21 @@ function isEmbed(): boolean {
 .list-group {
     display: inline;
 }
+
+.toolbarButton{
+    height: 22px;
+}
+
+#toggleBtn{
+    position: absolute;
+    right: 2.5px;
+    top: 2.5px;
+}
+
+.tabsbar-close{
+    font-size: 1rem; 
+}
+
 </style>
 
 <!-- TODO: add types for scopelist and fix key issue with draggable -->
