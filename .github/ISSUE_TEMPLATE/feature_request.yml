@@ -26,7 +26,7 @@ body:
     label: Is requested feature related to vue simulator?
     description: A clear and concise description of what the feature request is for
   validations:
-    required: false
+    required: true
 - type: input
   attributes:
     label: Additional context
