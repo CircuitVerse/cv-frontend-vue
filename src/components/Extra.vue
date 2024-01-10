@@ -14,6 +14,16 @@
     <ElementsPanel />
     <!-- --------------------------------------------------------------------------------------------- -->
 
+    <!-- Portait Mode Lock-->
+    <div id="potraidLockBg"></div>
+    <div id="lockPortaidMode">
+        <span class="portaidIcon"> </span>
+        <span id="portaidModeText"
+            >Please switch to the landscape mode and refresh to access the
+            simulator</span
+        >
+    </div>
+
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Layout Element Panel -->
     <div
@@ -321,3 +331,64 @@ import InsertSubcircuit from './DialogBox/InsertSubcircuit.vue'
 import OpenOffline from './DialogBox/OpenOffline.vue'
 import ReportIssue from './ReportIssue/ReportIssue.vue'
 </script>
+
+<style>
+#potraidLockBg {
+    display: none;
+}
+#lockPortaidMode {
+    display: none;
+}
+@media screen and (orientation: portrait) and (max-device-width: 1024px) {
+    #potraidLockBg {
+        display: flex;
+        position: absolute;
+        background-color: rgb(0, 0, 0);
+        width: 100%;
+        height: 100%;
+        opacity: 70%;
+        z-index: 1000;
+    }
+    #lockPortaidMode {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex-grow: 1;
+        position: fixed;
+        z-index: 1000;
+        height: 450px;
+        width: 600px;
+        top: 30%;
+        right: 20%;
+        border-radius: 20px;
+    }
+    .portaidIcon {
+        background: url(../assets/img/PortraidMode.svg) center/cover no-repeat;
+        display: block;
+        font-size: 210px;
+        padding-top: 50px;
+        padding-right: 10px;
+        height: 150px;
+        width: 250px;
+    }
+    #portaidModeText {
+        color: white;
+        font-size: 35px;
+        padding-left: 20px;
+        padding-right: 10px;
+        padding-top: 40px;
+        overflow: hidden;
+        text-align: center;
+        font-weight: bold;
+    }
+    .ce-panel {
+        display: none;
+    }
+    .properties-panel {
+        visibility: hidden;
+    }
+    .timing-diagram-panel {
+        display: none;
+    }
+}
+</style>
