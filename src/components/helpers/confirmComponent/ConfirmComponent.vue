@@ -84,6 +84,9 @@ const promptStore = usePromptStore()
 
 const confirmation = (selectedOption: string | boolean): void => {
     promptStore.confirm.activate = false
+    if (selectedOption === false) {
+        return
+    }
     for (const button of promptStore.confirm.buttonList) {
         if (button.emitOption == selectedOption) {
             promptStore.resolvePromise(button.emitOption)
