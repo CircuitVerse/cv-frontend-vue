@@ -14,10 +14,12 @@
     --text-lite: #fff;
     --text-dark: #000;
     --text-panel: #fff;
+
     --text-circuit: #000;
 
     --context-text: #fff;
     --context-text-hov: #000;
+
 
     --cus-radio_label: #656565;
 
@@ -126,6 +128,11 @@
     background: var(--bg-text);
 }
 
+.liveMenuIcon {
+    background-color: var(--primary);
+    border: 1px solid var(--br-secondary);
+    color: var(--text-panel);
+}
 @supports (backdrop-filter: blur()) {
     #contextMenu {
         background-color: var(--bg-primary-chr);
@@ -564,5 +571,11 @@ select {
 #clockProperty {
     background: var(--primary);
     border: 1px solid var(--br-primary);
+    color: var(--text-panel);
+}
+
+.touchMenuIcon {
+    background-color: var(--primary);
+    border: 2px solid var(--br-secondary);
     color: var(--text-panel);
 }

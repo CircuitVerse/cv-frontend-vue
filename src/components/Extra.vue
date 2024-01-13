@@ -37,129 +37,43 @@
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
-    <!-- Testbench Panel -->
-    <div class="testbench-manual-panel draggable-panel noSelect defaultCursor">
-        <div class="panel-header">
-            Testbench
-            <span class="fas fa-minus-square minimize panel-button"></span>
-            <span
-                class="fas fa-external-link-square-alt maximize panel-button-icon"
-            ></span>
-        </div>
-        <div class="panel-body tb-test-not-null tb-panel-hidden">
-            <div class="tb-manual-test-data">
-                <div style="margin-bottom: 10px; overflow: auto">
-                    <span id="data-title" class="tb-data"
-                        ><b>Test:</b> <span></span
-                    ></span>
-                    <span id="data-type" class="tb-data"
-                        ><b>Type:</b> <span></span
-                    ></span>
-                </div>
-                <button
-                    id="edit-test-btn"
-                    class="custom-btn--basic panel-button tb-dialog-button"
-                >
-                    Edit
-                </button>
-                <button
-                    id="remove-test-btn"
-                    class="custom-btn--tertiary panel-button tb-dialog-button"
-                >
-                    Remove
-                </button>
-            </div>
-            <div style="overflow: auto; margin-bottom: 10px">
-                <div class="tb-manual-test-buttons tb-group-buttons">
-                    <span style="line-height: 24px; margin-right: 5px"
-                        ><b>Group: </b></span
-                    >
-                    <button
-                        id="prev-group-btn"
-                        class="custom-btn--basic panel-button tb-case-button-left tb-case-button"
-                    >
-                        <i class="tb-case-arrow tb-case-arrow-left"></i>
-                    </button>
-                    <span class="tb-test-label group-label"></span>
-                    <button
-                        id="next-group-btn"
-                        class="custom-btn--basic panel-button tb-case-button-right tb-case-button"
-                    >
-                        <i class="tb-case-arrow tb-case-arrow-right"></i>
-                    </button>
-                </div>
-                <div class="tb-manual-test-buttons tb-case-buttons">
-                    <span style="line-height: 24px; margin-right: 5px"
-                        ><b>Case: </b></span
-                    >
-                    <button
-                        id="prev-case-btn"
-                        class="custom-btn--basic panel-button tb-case-button-left tb-case-button"
-                    >
-                        <i class="tb-case-arrow tb-case-arrow-left"></i>
-                    </button>
-                    <span class="tb-test-label case-label"></span>
-                    <button
-                        id="next-case-btn"
-                        class="custom-btn--basic panel-button tb-case-button-right tb-case-button"
-                    >
-                        <i class="tb-case-arrow tb-case-arrow-right"></i>
-                    </button>
-                </div>
-            </div>
-            <div style="text-align: center">
-                <table class="tb-manual-table">
-                    <tr id="tb-manual-table-labels">
-                        <th>LABELS</th>
-                    </tr>
-                    <tr id="tb-manual-table-bitwidths">
-                        <td>Bitwidth</td>
-                    </tr>
-                    <tr id="tb-manual-table-current-case">
-                        <td>Current Case</td>
-                    </tr>
-                    <tr id="tb-manual-table-test-result">
-                        <td>Result</td>
-                    </tr>
-                </table>
-            </div>
-            <div style="display: table; margin-top: 20px; margin-left: 8px">
-                <div class="testbench-manual-panel-buttons">
-                    <button
-                        id="validate-btn"
-                        class="custom-btn--basic panel-button tb-dialog-button"
-                    >
-                        Validate
-                    </button>
-                    <button
-                        id="runall-btn"
-                        class="custom-btn--primary panel-button tb-dialog-button"
-                    >
-                        Run All
-                    </button>
-                </div>
-                <span class="testbench-runall-label">
-                    <span id="runall-summary">placeholder</span> Tests Passed
-                    <span id="runall-detailed-link" style="color: #18a2cd"
-                        >View Detailed</span
-                    >
-                </span>
-            </div>
-        </div>
-        <div class="panel-body tb-test-null">
-            <div class="tb-manual-test-data">
-                <div style="margin-bottom: 10px; overflow: auto">
-                    <p><i>No Test is attached to the current circuit</i></p>
-                </div>
-                <button
-                    id="attach-test-btn"
-                    class="custom-btn--primary panel-button tb-dialog-button"
-                >
-                    Attach Test
-                </button>
-            </div>
-        </div>
+
+    <!-- Touchmenu  Responsive Versions -->
+    <div id="touchMenu">
+        <ul>
+            <i class="fas fa-bezier-curve touchMenuIcon"></i>
+        </ul>
+        <ul>
+            <i class="fas fa-cogs touchMenuIcon"></i>
+        </ul>
+        <ul>
+            <i class="fas fa-wave-square touchMenuIcon"></i>
+        </ul>
+        <ul>
+            <i class="fas fa-ellipsis-h touchMenuIcon"></i>
+        </ul>
     </div>
+
+    <!-- Live Menu button  -->
+    <div id="liveMenu">
+        <ul>
+            <i class="fas fa-compress-arrows-alt liveMenuIcon"></i>
+        </ul>
+        <ul>
+            <i class="fas fa-trash-alt liveMenuIcon"></i>
+        </ul>
+        <ul>
+            <i class="fas fa-undo liveMenuIcon"></i>
+        </ul>
+        <ul>
+            <i class="fas fa-redo liveMenuIcon"></i>
+        </ul>
+    </div>
+
+    <!-- Testbench Panel -->
+
+    <TestBenchPanel />
+
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
@@ -309,6 +223,7 @@
 import VerilogEditorPanel from './Panels/VerilogEditorPanel/VerilogEditorPanel.vue'
 import ElementsPanel from './Panels/ElementsPanel/ElementsPanel.vue'
 import PropertiesPanel from './Panels/PropertiesPanel/PropertiesPanel.vue'
+import TestBenchPanel from './Panels/TestBenchPanel/TestBenchPanel.vue'
 import TimingDiagramPanel from './Panels/TimingDiagramPanel/TimingDiagramPanel.vue'
 import TabsBar from './TabsBar/TabsBar.vue'
 import CombinationalAnalysis from './DialogBox/CombinationalAnalysis.vue'
@@ -321,3 +236,110 @@ import InsertSubcircuit from './DialogBox/InsertSubcircuit.vue'
 import OpenOffline from './DialogBox/OpenOffline.vue'
 import ReportIssue from './ReportIssue/ReportIssue.vue'
 </script>
+
+<style scoped>
+#touchMenu {
+    display: none;
+}
+
+#liveMenu {
+    display: none;
+}
+@media screen and (max-device-width: 1000px) {
+    .report-sidebar {
+        display: none;
+    }
+
+    .testbench-manual-panel {
+        display: none;
+    }
+
+    .ce-panel {
+        display: none;
+    }
+
+    .timing-diagram-panel {
+        display: none;
+    }
+
+    .properties-panel {
+        visibility: hidden;
+    }
+
+    #miniMapArea {
+        display: none;
+    }
+
+    .quick-btn {
+        visibility: hidden;
+    }
+
+    #touchMenu {
+        display: flex;
+        flex-direction: column;
+        z-index: 100;
+        position: fixed;
+        top: 80px;
+        right: 10px;
+    }
+
+    .touchMenuIcon {
+        font-size: 20px;
+        text-align: center;
+        padding: 10px;
+        height: 45px;
+        width: 45px;
+        border-radius: 10px;
+    }
+
+    #liveMenu {
+        display: flex;
+        z-index: 99;
+        position: fixed;
+        top: 90%;
+        right: 40px;
+    }
+    .liveMenuIcon {
+        font-size: 18px;
+        text-align: center;
+        padding: 10px;
+        height: 40px;
+        width: 40px;
+        border-radius: 10px;
+        margin: 0px;
+        position: relative;
+    }
+
+    @media screen and (max-device-width: 823px) {
+        #touchMenu {
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 15%;
+            right: 10px;
+        }
+
+        #liveMenu {
+            top: 85%;
+            right: 70px;
+        }
+
+        .liveMenuIcon {
+        font-size: 15px;
+        text-align: center;
+        padding: 10px;
+        height: 40px;
+        width: 40px;
+    }
+    }
+
+    .touchMenuIcon {
+        font-size: 19px;
+        text-align: center;
+        padding: 10px;
+        height: 45px;
+        width: 45px;
+        border-radius: 10px;
+    }
+}
+</style>
