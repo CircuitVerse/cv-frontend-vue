@@ -14,10 +14,12 @@
     --text-lite: #fff;
     --text-dark: #000;
     --text-panel: #fff;
-    --text-circuit: #fff;
 
-    --context-text: white;
-    --context-text-hov: black;
+    --text-circuit: #000;
+
+    --context-text: #fff;
+    --context-text-hov: #000;
+
 
     --cus-radio_label: #656565;
 
@@ -29,34 +31,34 @@
     --bg-icons: #7d7d7d;
     --bg-text: #cacaca;
     --bg-secondary: #bbb;
-    --canvas-stroke: #eee;
+    --canvas-stroke:#eee;
     --canvas-fill: #fff;
     --bg-toggle-btn-primary: #42b983;
     --primary-btn-hov: #3ca877;
     --btn-danger: #dc5656;
     --btn-danger-darken: #b03662;
-    --disable: 6c8b93;
+    --disable: #6c8b93;
     --qp-box-shadow-1: #3b3b3b;
     --qp-box-shadow-2: #4f4f4f;
     --cus-btn-hov--bg: #ddd;
-    --cus-btn-hov-text: black;
+    --cus-btn-hov-text: #000;
     --node: green;
     --stroke: black;
-    --fill: #fff;
+    --fill: white;
     --hover-and-sel: rgba(255, 255, 32, 0.8);
-    --wire-draw:black;
+    --wire-draw: #000;
     --wire-cnt: green;
-    --wire-pow: lime;
+    --wire-pow: Lime;
     --wire-sel: blue;
     --wire-lose: red;
     --mini-map: green;
     --mini-map-stroke: darkgreen;
     --input-text: green;
     --secondary-stroke: red;
-    --text: #000;
+    --text: black;
     --wire-norm: black;
     --node-norm: green;
-    --splitter: #000;
+    --splitter: black;
     --output-rect: blue;
 }
 
