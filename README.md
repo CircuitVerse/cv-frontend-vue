@@ -20,14 +20,22 @@ npm install
 npm run dev
 ```
 
-## Stackblitz Codeflow setup
+## Setting up on cloud with Stackblitz Codeflow
+Codeflow is a one-click integration with GitHub for seamless coding workflows.
 
-<a href="https:///pr.new/niladrix719/cv-frontend-vue">
+1. Initiate the setup process by clicking on the following button:
+
+<a href="https:///pr.new/CircuitVerse/cv-frontend-vue">
   <img
     alt="Open in Codeflow"
     src="https://developer.stackblitz.com/img/open_in_codeflow.svg"
   />
 </a>
+
+2. Once the setup is complete, a Preview URL will be displayed in the browser window. Append /simulatorvue to your URL to access the simulator.
+```
+https://<your_url>/simulatorvue
+```
 
 ## To Dos -
 1. **Creating the mobile version of the vue simulator** 
