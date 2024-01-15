@@ -21,7 +21,7 @@ npm run dev
 ```
 
 ## Setting up on cloud with Stackblitz Codeflow
-Codeflow is a one-click integration with GitHub for seamless coding workflows.
+[Codeflow](https://developer.stackblitz.com/codeflow/what-is-codeflow) is a one-click integration with GitHub for seamless coding workflows.
 
 1. Initiate the setup process by clicking on the following button:
 
