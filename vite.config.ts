@@ -37,7 +37,6 @@ export default defineConfig({
     },
     server: {
         port: 4000,
-        host: '0.0.0.0',
         proxy: {
             // ...(process.env.NODE_ENV === 'development' && {
             '^/(?!(simulatorvue)).*': {
