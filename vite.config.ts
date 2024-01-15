@@ -36,7 +36,8 @@ export default defineConfig({
         chunkSizeWarningLimit: 1600,
     },
     server: {
-        port: 4000,
+        port: 3000,
+        host: '0.0.0.0',
         proxy: {
             // ...(process.env.NODE_ENV === 'development' && {
             '^/(?!(simulatorvue)).*': {

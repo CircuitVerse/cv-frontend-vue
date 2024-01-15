@@ -22,7 +22,7 @@ npm run dev
 
 ## Stackblitz Codeflow setup
 
-<a href="https:///pr.new/___GH_ACCOUNT__/___GH_REPOSITORY___">
+<a href="https:///pr.new/niladrix719/cv-frontend-vue">
   <img
     alt="Open in Codeflow"
     src="https://developer.stackblitz.com/img/open_in_codeflow.svg"
