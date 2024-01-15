@@ -20,6 +20,15 @@ npm install
 npm run dev
 ```
 
+## Stackblitz Codeflow setup
+
+<a href="https:///pr.new/___GH_ACCOUNT__/___GH_REPOSITORY___">
+  <img
+    alt="Open in Codeflow"
+    src="https://developer.stackblitz.com/img/open_in_codeflow.svg"
+  />
+</a>
+
 ## To Dos -
 1. **Creating the mobile version of the vue simulator** 
 2. **Testing and bug fixing**
