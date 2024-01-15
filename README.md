@@ -27,9 +27,9 @@ npm run dev
 
 [![Open in Codeflow](https://developer.stackblitz.com/img/open_in_codeflow.svg)](https:///pr.new/CircuitVerse/cv-frontend-vue)
 
-2. Once the setup is complete, a Preview URL will be displayed in the browser window. Append /simulatorvue to your URL to access the simulator.
+2. Once the setup is complete, a Preview URL will be displayed in the browser window. Append /simulatorvue/ to your URL to access the simulator.
 ```
-https://<your_url>/simulatorvue
+https://<your_url>/simulatorvue/
 ```
 
 ## To Dos -
