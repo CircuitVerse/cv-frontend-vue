@@ -2,9 +2,7 @@
     <div
         id="tabsBar"
         class="noSelect pointerCursor"
-        :class="embedClass()"
-        :style="{ height: showMaxHeight ? '28px' : 'auto', maxHeight: showMaxHeight ? '28px' : 'none' }"
-        @click="handleTabsBarClick"
+        :class="[embedClass(), { maxHeightStyle: showMaxHeight }]"
     >
         <draggable
             :key="updateCount"
