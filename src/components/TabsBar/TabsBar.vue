@@ -83,12 +83,12 @@ import { closeCircuit } from '../helpers/deleteCircuit/DeleteCircuit.vue'
 
 const SimulatorState = <SimulatorStateType>useState()
 const drag: Ref<boolean> = ref(false)
-const updateCount: Ref<number> = ref(0);
+const updateCount: Ref<number> = ref(0)
 
-const showMaxHeight = ref(true);
+const showMaxHeight = ref(true)
 
 function toggleHeight() {
-    showMaxHeight.value = !showMaxHeight.value;
+    showMaxHeight.value = !showMaxHeight.value
 }
 
 // const persistentShow: Ref<boolean> = ref(false)
