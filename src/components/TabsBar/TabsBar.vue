@@ -67,7 +67,7 @@
 <script lang="ts" setup>
 import draggable from 'vuedraggable'
 import { showMessage, truncateString } from '#/simulator/src/utils'
-import { ref, Ref } from 'vue';
+import { ref, Ref } from 'vue'
 
 import {
     createNewCircuitScope,
