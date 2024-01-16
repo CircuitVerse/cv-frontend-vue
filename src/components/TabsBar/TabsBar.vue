@@ -348,10 +348,12 @@ function isEmbed(): boolean {
     justify-content: center;
     align-items: center;
 
-    i{
-        margin-bottom: -5px;
-    }
 }
+
+.tabsbar-toggle i {
+    margin-bottom: -5px;
+}
+
 
 .tabsbar-close{
     font-size: 1rem; 
