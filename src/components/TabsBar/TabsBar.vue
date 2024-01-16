@@ -46,8 +46,7 @@
             &#43;
         </button>
         <button class="tabsbar-toggle" @click="toggleHeight">
-            <i v-if="showMaxHeight" class="mdi-chevron-down mdi v-icon notranslate v-icon--size-default v-theme--light" aria-hidden="true"></i>
-            <i v-else class="mdi-chevron-up mdi v-icon notranslate v-icon--size-default v-theme--light" aria-hidden="true"></i>
+            <v-icon>{{ showMaxHeight ? 'mdi-chevron-down' : 'mdi-chevron-up' }}</v-icon>
         </button>
     </div>
     <!-- <MessageBox
