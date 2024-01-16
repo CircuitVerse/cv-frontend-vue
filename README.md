@@ -29,7 +29,7 @@ npm run dev
 
 2. Once the setup is complete, a Preview URL will be displayed in the browser window. Append /simulatorvue/ to your URL to access the simulator.
 ```
-https://<your_url>/simulatorvue/
+https://<preview_url>/simulatorvue/
 ```
 
 ## To Dos -
