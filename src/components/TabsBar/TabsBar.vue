@@ -68,7 +68,6 @@
 import draggable from 'vuedraggable'
 import { showMessage, truncateString } from '#/simulator/src/utils'
 import { ref, Ref } from 'vue'
-
 import {
     createNewCircuitScope,
     // deleteCurrentCircuit,
