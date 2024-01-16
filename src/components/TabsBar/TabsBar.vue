@@ -339,7 +339,7 @@ function isEmbed(): boolean {
     height: 22px;
 }
 
-#toggleBtn{
+.tabsbar-toggle{
     position: absolute;
     right: 2.5px;
     top: 2.5px;
