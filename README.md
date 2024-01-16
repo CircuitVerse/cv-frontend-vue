@@ -20,12 +20,13 @@ npm install
 npm run dev
 ```
 
-## Setting up on cloud with Stackblitz Codeflow
-[Codeflow](https://developer.stackblitz.com/codeflow/what-is-codeflow) is a one-click integration with GitHub for seamless coding workflows.
+## Setting up on cloud with Stackblitz
+[StackBlitz](https://developer.stackblitz.com/guides/user-guide/what-is-stackblitz) is an instant fullstack web IDE for the JavaScript ecosystem.
 
 1. Initiate the setup process by clicking on the following button:
 
-[![Open in Codeflow](https://developer.stackblitz.com/img/open_in_codeflow.svg)](https:///pr.new/CircuitVerse/cv-frontend-vue)
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/~/github.com/CircuitVerse/cv-frontend-vue)
+
 
 2. Once the setup is complete, a Preview URL will be displayed in the browser window. Append /simulatorvue/ to your URL to access the simulator.
 ```
