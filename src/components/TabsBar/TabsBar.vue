@@ -45,7 +45,7 @@
         <button v-if="!isEmbed()" @click="createNewCircuitScope()">
             &#43;
         </button>
-        <button id="toggleBtn" @click="toggleHeight">
+        <button class="tabsbar-toggle" @click="toggleHeight">
             <i v-if="showMaxHeight" class="mdi-chevron-down mdi v-icon notranslate v-icon--size-default v-theme--light" aria-hidden="true"></i>
             <i v-else class="mdi-chevron-up mdi v-icon notranslate v-icon--size-default v-theme--light" aria-hidden="true"></i>
         </button>
