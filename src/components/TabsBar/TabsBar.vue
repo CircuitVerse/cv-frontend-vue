@@ -337,6 +337,7 @@ function isEmbed(): boolean {
     height: 30px;
     max-height: 30px;
 }
+
 .toolbarButton{
     height: 22px;
 }
