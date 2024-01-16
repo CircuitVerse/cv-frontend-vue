@@ -27,7 +27,7 @@ npm run dev
 
 [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/~/github.com/CircuitVerse/cv-frontend-vue)
 
-2. Once the setup is complete, a Preview URL will be displayed in the browser window. Append /simulatorvue/ to your URL to access the simulator.
+2. Once the setup is complete, a Preview URL will be displayed in the browser window. Append `/simulatorvue/` to your URL to access the simulator.
 ```
 https://<preview_url>/simulatorvue/
 ```
