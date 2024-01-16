@@ -87,6 +87,17 @@ const showMaxHeight = ref(true)
 
 function toggleHeight() {
     showMaxHeight.value = !showMaxHeight.value
+
+    const navbar = document.querySelector('.navbar');
+    const tabsBar = document.getElementById('tabsBar');
+
+    if (showMaxHeight.value) {
+        navbar.style.zIndex = '';
+        tabsBar.style.zIndex = '';
+    } else {
+        navbar.style.zIndex = '102';
+        tabsBar.style.zIndex = '102';
+    }
 }
 
 // const persistentShow: Ref<boolean> = ref(false)
