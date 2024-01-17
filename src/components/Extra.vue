@@ -330,6 +330,7 @@ import ReportIssue from './ReportIssue/ReportIssue.vue'
     display: none;
 }
 
+.v-enter-from,
 .v-leave-to {
     opacity: 0;
 }
