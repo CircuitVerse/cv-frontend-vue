@@ -95,7 +95,7 @@ function toggleHeight() {
         navbar.style.zIndex = '';
         tabsBar.style.zIndex = '';
     } else {
-        navbar.style.zIndex = '102';
+        navbar.style.zIndex = '103';
         tabsBar.style.zIndex = '102';
     }
 }
@@ -300,7 +300,7 @@ function isEmbed(): boolean {
     position: relative;
     overflow: hidden;
     padding-bottom: 2.5px;
-    z-index: 100;
+    z-index: 99;
 }
 
 #tabsBar.embed-tabbar {
