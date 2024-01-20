@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watchEffect } from 'vue';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 import DropDown from '@/Dropdown/DropDown.vue';
 
 const props = defineProps({
@@ -47,7 +47,7 @@ const toggleDropdown = () => {
   }
 };
 
-document.addEventListener('click', (event) => {
+const handleDocumentClick = (event) => {
   const dropdownElements = Array.from(document.querySelectorAll('.nav-dropdown a'));
 
   const tabsBarToggleButton = document.querySelector('.tabsbar-toggle');
@@ -71,6 +71,14 @@ document.addEventListener('click', (event) => {
         tabsBar.style.zIndex = '';
     } 
   }
+}
+
+onMounted(() => {
+  window.addEventListener('click', handleDocumentClick);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('click', handleDocumentClick);
 });
 
 </script>
