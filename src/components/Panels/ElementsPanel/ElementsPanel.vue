@@ -42,6 +42,12 @@
                     <img :src="element.imgURL" :alt="element.name" />
                 </div>
             </div>
+            <div
+                v-if="elementInput && !searchElements().length"
+                class="search-results"
+            >
+                {{ $t('simulator.panel_body.circuit_elements.search_result') }}
+            </div>
             <v-expansion-panels
                 v-if="elementInput && searchCategories().length"
                 id="menu"
@@ -82,12 +88,6 @@
                     </v-expansion-panel-text>
                 </v-expansion-panel>
             </v-expansion-panels>
-            <div
-                v-if="elementInput && !searchElements().length"
-                class="search-results"
-            >
-                {{ $t('simulator.panel_body.circuit_elements.search_result') }}
-            </div>
             <v-expansion-panels
                 v-if="!elementInput"
                 id="menu"
