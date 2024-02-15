@@ -94,13 +94,13 @@ export default miniMapArea = {
         this.ctx.beginPath()
         this.ctx.rect(
             2.5 +
-                ((this.pageX - this.pageWidth) / globalScope.scale -
-                    this.minX) *
-                    ratio,
+            ((this.pageX - this.pageWidth) / globalScope.scale -
+                this.minX) *
+            ratio,
             2.5 +
-                ((this.pageY - this.pageHeight) / globalScope.scale -
-                    this.minY) *
-                    ratio,
+            ((this.pageY - this.pageHeight) / globalScope.scale -
+                this.minY) *
+            ratio,
             (this.pageWidth * ratio) / globalScope.scale,
             (this.pageHeight * ratio) / globalScope.scale
         )
@@ -119,19 +119,19 @@ export default miniMapArea = {
                     this.ctx.beginPath()
                     this.ctx.moveTo(
                         2.5 +
-                            (globalScope[lst[i]][j].node1.absX() - this.minX) *
-                                ratio,
+                        (globalScope[lst[i]][j].node1.absX() - this.minX) *
+                        ratio,
                         2.5 +
-                            (globalScope[lst[i]][j].node1.absY() - this.minY) *
-                                ratio
+                        (globalScope[lst[i]][j].node1.absY() - this.minY) *
+                        ratio
                     )
                     this.ctx.lineTo(
                         2.5 +
-                            (globalScope[lst[i]][j].node2.absX() - this.minX) *
-                                ratio,
+                        (globalScope[lst[i]][j].node2.absX() - this.minX) *
+                        ratio,
                         2.5 +
-                            (globalScope[lst[i]][j].node2.absY() - this.minY) *
-                                ratio
+                        (globalScope[lst[i]][j].node2.absY() - this.minY) *
+                        ratio
                     )
                     this.ctx.stroke()
                 }
@@ -166,7 +166,7 @@ export default miniMapArea = {
     },
     clear() {
         if (lightMode) return
-        $('#miniMapArea').css('z-index', '-1')
+        document.querySelector('#miniMapArea').style.zIndex = '-1';
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
     },
 }
@@ -189,5 +189,7 @@ export function removeMiniMap() {
         )
         return
     }
-    $('#miniMap').fadeOut('fast')
+    let miniMap = document.getElementById('miniMap');
+    miniMap.style.transition = 'opacity 0.2s';
+    miniMap.style.opacity = '0';
 }
