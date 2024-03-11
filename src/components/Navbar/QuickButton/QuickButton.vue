@@ -164,7 +164,7 @@ function increment(): void {
     top: 90px;
     right: 280px;
     border-radius: 7px;
-    z-index: 100;
+    z-index: 99;
 }
 
 .quick-btn > div {
