@@ -7,9 +7,6 @@
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Verilog Code Editor -->
     <ExportVerilog />
-    <div id="code-window" class="code-window">
-        <textarea id="codeTextArea"></textarea>
-    </div>
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
@@ -36,113 +33,7 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Timing Diagram Panel -->
-    <div class="timing-diagram-panel draggable-panel">
-        <!-- Timing Diagram Panel -->
-        <div class="panel-header">
-            Timing Diagram
-            <span class="fas fa-minus-square minimize panel-button"></span>
-            <span
-                class="fas fa-external-link-square-alt maximize panel-button-icon"
-            ></span>
-        </div>
-        <div class="panel-body">
-            <div class="timing-diagram-toolbar noSelect">
-                <button
-                    class="custom-btn--primary panel-button"
-                    title="Decrease Size"
-                >
-                    <span
-                        class="fas fa-chevron-left timing-diagram-smaller panel-button-icon"
-                    ></span>
-                </button>
-                <button
-                    class="custom-btn--primary panel-button"
-                    title="Increase Size"
-                >
-                    <span
-                        class="fas fa-chevron-right timing-diagram-larger panel-button-icon"
-                    ></span>
-                </button>
-                <button
-                    class="custom-btn--primary panel-button"
-                    title="Decrease Height"
-                >
-                    <span
-                        class="fas fa-chevron-up timing-diagram-small-height panel-button-icon"
-                    ></span>
-                </button>
-                <button
-                    class="custom-btn--primary panel-button"
-                    title="Increase Height"
-                >
-                    <span
-                        class="fas fa-chevron-down timing-diagram-large-height panel-button-icon"
-                    ></span>
-                </button>
-                <button
-                    class="custom-btn--primary panel-button"
-                    title="Download As Image"
-                >
-                    <span
-                        class="fas fa-download timing-diagram-download"
-                    ></span>
-                </button>
-                <button
-                    class="custom-btn--tertiary panel-button"
-                    title="Reset Timing Diagram"
-                >
-                    <span class="fas fa-undo timing-diagram-reset"></span>
-                </button>
-                <button
-                    class="custom-btn--tertiary panel-button"
-                    title="Autocalibrate Cycle Units"
-                >
-                    <span class="fas fa-magic timing-diagram-calibrate"></span>
-                </button>
-                <button
-                    class="custom-btn--primary panel-button"
-                    title="Zoom In"
-                >
-                    <span
-                        class="fas fa-search-plus timing-diagram-zoom-in"
-                    ></span>
-                </button>
-                <button
-                    class="custom-btn--primary panel-button"
-                    title="Zoom Out"
-                >
-                    <span
-                        class="fas fa-search-minus timing-diagram-zoom-out"
-                    ></span>
-                </button>
-                <button
-                    class="custom-btn--primary panel-button"
-                    title="Resume auto-scroll"
-                >
-                    <span class="fas fa-play timing-diagram-resume"></span>
-                </button>
-                <button
-                    class="custom-btn--primary panel-button"
-                    title="Pause auto-scroll"
-                >
-                    <span class="fas fa-pause timing-diagram-pause"></span>
-                </button>
-                1 cycle =
-                <input
-                    id="timing-diagram-units"
-                    type="number"
-                    min="1"
-                    autocomplete="off"
-                    value="1000"
-                />
-                Units
-                <span id="timing-diagram-log"></span>
-            </div>
-            <div id="plot">
-                <canvas id="plotArea"></canvas>
-            </div>
-        </div>
-    </div>
+    <TimingDiagramPanel />
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
@@ -278,68 +169,7 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Verilog Editor Panel -->
-    <div
-        id="verilogEditorPanel"
-        class="noSelect defaultCursor draggable-panel draggable-panel-css"
-    >
-        <div class="panel-header">
-            Verilog Module
-            <span class="fas fa-minus-square minimize"></span>
-            <span class="fas fa-external-link-square-alt maximize"></span>
-        </div>
-
-        <div class="panel-body">
-            <div class="layout-body">
-                <button
-                    id="resetVerilogCode"
-                    class="largeButton btn logixButton btn-xs custom-btn--tertiary"
-                >
-                    Reset Code
-                </button>
-                <button
-                    id="saveVerilogCode"
-                    class="largeButton btn logixButton btn-xs custom-btn--primary"
-                >
-                    Save Code
-                </button>
-                <div id="verilogOutput">
-                    This is an experimental module. The code is not saved unless
-                    the "Save Code" button is clicked.
-                </div>
-            </div>
-        </div>
-
-        <div class="panel-header text-center">Apply Themes</div>
-        <div class="panel-body">
-            <div class="layout-body">
-                <div>
-                    <p class="text-center mb-2">Select a theme:</p>
-                    <select
-                        id="selectVerilogTheme"
-                        class="applyTheme"
-                        style="width: 90%"
-                    >
-                        <optgroup label="Light Themes">
-                            <option>default</option>
-                            <option>solarized</option>
-                            <option>elegant</option>
-                            <option>neat</option>
-                            <option>idea</option>
-                            <option>neo</option>
-                        </optgroup>
-                        <optgroup label="Dark Themes">
-                            <option>blackboard</option>
-                            <option>cobalt</option>
-                            <option>night</option>
-                            <option>the-matrix</option>
-                            <option>midnight</option>
-                            <option>monokai</option>
-                        </optgroup>
-                    </select>
-                </div>
-            </div>
-        </div>
-    </div>
+    <VerilogEditorPanel />
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
@@ -471,88 +301,15 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!---issue reporting-system----->
-    <div class="report-sidebar">
-        <a
-            type="button"
-            class="btn btn-primary text-light"
-            data-toggle="modal"
-            data-target=".issue"
-        >
-            <span class="fa fa-bug"></span>&nbsp;&nbsp;Report an issue</a
-        >
-    </div>
-    <!-- --------------------------------------------------------------------------------------------- -->
-
-    <!-- --------------------------------------------------------------------------------------------- -->
-    <!---MODAL - issue reporting system---->
-    <div
-        class="modal fade issue"
-        tabindex="-1"
-        role="dialog"
-        aria-labelledby="mySmallModalLabel"
-        aria-hidden="true"
-    >
-        <div class="modal-dialog modal-sm">
-            <div class="modal-content">
-                <div class="container my-2">
-                    <button
-                        type="button"
-                        class="close"
-                        data-dismiss="modal"
-                        aria-label="Close"
-                    >
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <div class="container text-center">
-                        <h4>Report an issue</h4>
-                    </div>
-                    <hr />
-                    <div id="result" class="container my-2 text-center"></div>
-                    <label id="report-label" style="font-weight: lighter"
-                        ><b>Describe your issue:</b></label
-                    >
-                    <div class="form-group">
-                        <textarea
-                            id="issuetext"
-                            class="form-control border-primary"
-                            rows="3"
-                        ></textarea>
-                    </div>
-                    <label
-                        id="email-label"
-                        for="emailtext"
-                        style="font-weight: lighter"
-                        ><b>Email</b><span> [Optional]</span>:</label
-                    >
-                    <div class="form-group">
-                        <input
-                            id="emailtext"
-                            class="form-control border-primary"
-                            type="email"
-                            rows="3"
-                        />
-                    </div>
-                    <div class="container">
-                        <center>
-                            <button
-                                id="report"
-                                type="submit"
-                                class="btn btn-primary"
-                            >
-                                Report
-                            </button>
-                        </center>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <ReportIssue />
     <!-- --------------------------------------------------------------------------------------------- -->
 </template>
 
 <script lang="ts" setup>
+import VerilogEditorPanel from './Panels/VerilogEditorPanel/VerilogEditorPanel.vue'
 import ElementsPanel from './Panels/ElementsPanel/ElementsPanel.vue'
 import PropertiesPanel from './Panels/PropertiesPanel/PropertiesPanel.vue'
+import TimingDiagramPanel from './Panels/TimingDiagramPanel/TimingDiagramPanel.vue'
 import TabsBar from './TabsBar/TabsBar.vue'
 import CombinationalAnalysis from './DialogBox/CombinationalAnalysis.vue'
 import HexBinDec from './DialogBox/HexBinDec.vue'
@@ -562,4 +319,5 @@ import ExportVerilog from './DialogBox/ExportVerilog.vue'
 import CustomShortcut from './DialogBox/CustomShortcut.vue'
 import InsertSubcircuit from './DialogBox/InsertSubcircuit.vue'
 import OpenOffline from './DialogBox/OpenOffline.vue'
+import ReportIssue from './ReportIssue/ReportIssue.vue'
 </script>
