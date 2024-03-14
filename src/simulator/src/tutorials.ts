@@ -1,6 +1,10 @@
 import Driver from 'driver.js'
 
-export const tour = [
+interface TourStep extends Driver.Step {
+    className?: string;
+}
+
+export const tour: TourStep[] = [
     {
         element: '#guide_1',
         className: 'guide_1',
@@ -98,11 +102,16 @@ export const tour = [
 ]
 
 // Not used currently
+
+interface HighlightStep extends Driver.Step {
+    showButtons?: boolean;
+}
+
 export const tutorialWrapper = () => {
     const panelHighlight = new Driver()
-    document.querySelector('.panelHeader').addEventListener('click', (e) => {
+    document.querySelector('.panelHeader')?.addEventListener('click', (e) => {
         if (localStorage.tutorials === 'next') {
-            panelHighlight.highlight({
+            const step: HighlightStep = {
                 element: '#guide_1',
                 showButtons: false,
                 popover: {
@@ -111,17 +120,18 @@ export const tutorialWrapper = () => {
                         'Select any element by clicking on it & then click anywhere on the grid to place the element.',
                     position: 'right',
                     offset:
-                        e.target.nextElementSibling.offsetHeight +
-                        e.target.offsetTop -
+                        ((e.target as HTMLElement).nextElementSibling as HTMLElement)?.offsetHeight +
+                        (e.target as HTMLElement).offsetTop -
                         45,
                 },
-            })
+            };
+            panelHighlight.highlight(step);
             localStorage.setItem('tutorials', 'done')
         }
     }, {
         once: true,
-      })
-    document.querySelector('.icon').addEventListener('click', () => {
+    })
+    document.querySelector('.icon')?.addEventListener('click', () => {
         panelHighlight.reset(true)
     })
 }
@@ -134,10 +144,10 @@ const animatedTourDriver = new Driver({
 })
 
 export function showTourGuide() {
-    document.querySelector('.draggable-panel .maximize').click();
+    (document.querySelector('.draggable-panel .maximize') as HTMLButtonElement)?.click();
     animatedTourDriver.defineSteps(tour)
     animatedTourDriver.start()
-    localStorage.setItem('tutorials_tour_done', true)
+    localStorage.setItem('tutorials_tour_done', 'true')
 }
 
 export default showTourGuide
