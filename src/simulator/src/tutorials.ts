@@ -128,9 +128,7 @@ export const tutorialWrapper = () => {
             panelHighlight.highlight(step);
             localStorage.setItem('tutorials', 'done')
         }
-    }, {
-        once: true,
-    })
+    }, {once: true,})
     document.querySelector('.icon')?.addEventListener('click', () => {
         panelHighlight.reset(true)
     })
