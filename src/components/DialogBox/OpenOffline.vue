@@ -74,9 +74,6 @@ onMounted(() => {
 onUpdated(() => {
     var data = localStorage.getItem('projectList')
     projectList.value = JSON.parse(localStorage.getItem('projectList')) || {}
-    if (JSON.stringify(projectList.value) == '{}') {
-    } else {
-    }
 })
 
 function deleteOfflineProject(id) {
