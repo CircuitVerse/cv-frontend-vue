@@ -226,7 +226,11 @@ export function changeLightMode(val) {
         lightMode = true
         globalScope.scale /= DPR
         DPR = 1
-        $('#miniMap').fadeOut('fast')
+        let minimap = document.querySelector("#miniMap");
+        if(minimap) {
+            minimap.style.transition = 'opacity 0.2s';
+            minimap.style.opacity = 0;
+        }
     }
     resetup()
 }
@@ -314,7 +318,7 @@ export function updateSelectionsAndPane(scope = globalScope) {
         } else if (!embed) {
             findDimensions(scope)
             miniMapArea.setup()
-            $('#miniMap').show()
+            document.querySelector("#miniMap").style.display = 'block';
         }
     } else if (
         simulationArea.lastSelected === scope.root &&
@@ -530,7 +534,11 @@ export function update(scope = globalScope, updateEverything = false) {
         simulationArea.lastSelected !== globalScope.root
     ) {
         if (!lightMode) {
-            $('#miniMap').fadeOut('fast')
+            let minimap = document.querySelector("#miniMap");
+            if(miniMap) {
+                minimap.style.transition = 'opacity 0.2s';
+                minimap.style.opacity = 0;
+            }
         }
     }
     // Run simulation
