@@ -233,4 +233,14 @@ function getTooltipText(elementName) {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.panel-body {
+    height: 415px;
+    overflow-y: auto;
+}
+
+.panel-body::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+</style>
