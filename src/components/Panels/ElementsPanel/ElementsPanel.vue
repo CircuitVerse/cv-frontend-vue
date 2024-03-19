@@ -234,13 +234,7 @@ function getTooltipText(elementName) {
 </script>
 
 <style scoped>
-.panel-body {
-    height: 415px;
-    overflow-y: auto;
-}
-
-.panel-body::-webkit-scrollbar {
-    width: 0;
-    height: 0;
+.v-expansion-panel-title {
+    min-height: 36px;
 }
 </style>
