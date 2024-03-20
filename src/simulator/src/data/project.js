@@ -15,15 +15,27 @@ import { confirmOption } from '#/components/helpers/confirmComponent/ConfirmComp
  * Helper function to recover unsaved data
  * @category data
  */
-export async function recoverProject() {
-    if (localStorage.getItem('recover')) {
-        var data = JSON.parse(localStorage.getItem('recover'))
-        if (await confirmOption(`Would you like to recover: ${data.name}`)) {
-            load(data)
-        }
-        localStorage.removeItem('recover')
+function recoverDataFlow(data) {
+    const confirmationMessage = `Would you like to recover: ${data.name}`;
+    if (confirm(confirmationMessage)) {
+        load(data);
+    }
+    localStorage.removeItem('recover');
+    localStorage.removeItem('autosave');
+}
+
+export function recoverProject() {
+    const recoverData = localStorage.getItem('recover');
+    const autosaveData = localStorage.getItem('autosave');
+
+    if (recoverData) {
+        const data = JSON.parse(recoverData);
+        recoverDataFlow(data);
+    } else if (autosaveData) {
+        const data = JSON.parse(autosaveData);
+        recoverDataFlow(data);
     } else {
-        showError('No recover project found')
+        showError('No recover project found');
     }
 }
 
