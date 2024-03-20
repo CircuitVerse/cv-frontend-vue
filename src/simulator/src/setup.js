@@ -174,6 +174,9 @@ async function loadProjectData() {
         showMessage(
             "We have detected that you did not save your last work. Don't worry we have recovered them. Access them using Project->Recover"
         )
+    } else if (localStorage.getItem('autosave')) {
+        // Restore unsaved data which didn't get saved due to unexpected simulator crash.
+        showMessage("We have detected an unexpected simulator crash. Don't worry we have recovered your project. Access them using Project->Recover");
     }
 }
 
