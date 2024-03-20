@@ -521,7 +521,6 @@ export default async function save() {
 var checkForAutosave = 1;
 
 export async function autosave() {
-    console.log('autosave')
     var circuitData = await generateSaveData('Untitled');
     localStorage.setItem('autosave', circuitData);
 }
