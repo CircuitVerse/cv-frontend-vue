@@ -138,9 +138,6 @@ function checkImgType(imageType: string) {
         fullImg.value = true
     } else if (imageType.toLowerCase() !== 'png') {
         transparent.value = false
-        fullImg.value = false
-    } else {
-        fullImg.value = false
     }
 }
 
