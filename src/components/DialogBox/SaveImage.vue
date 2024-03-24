@@ -111,30 +111,30 @@
     </v-dialog>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import { generateImage } from '#/simulator/src/data/save'
 import { useState } from '#/store/SimulatorStore/state'
-import { ref, computed } from '@vue/runtime-core'
+import { ref, computed, Ref } from '@vue/runtime-core'
 
 const SimulatorState = useState()
 
 const dialogState = computed(() => SimulatorState.dialogBox)
 
-const imgTypeList = ref(['PNG', 'JPEG', 'SVG', 'BMP', 'GIF', 'TIFF'])
-const toShow = ref(true)
-const toShow1 = ref(true)
-const fullImg = ref(false)
-const resolution = ref('1')
-const transparent = ref(false)
-const selectedImageType = ref('png')
+const imgTypeList: Ref<string[]> = ref(['PNG', 'JPEG', 'SVG', 'BMP', 'GIF', 'TIFF'])
+const toShow: Ref<boolean> = ref(true)
+const toShow1: Ref<boolean> = ref(true)
+const fullImg: Ref<boolean> = ref(false)
+const resolution: Ref<number> = ref(1)
+const transparent: Ref<boolean> = ref(false)
+const selectedImageType: Ref<string> = ref('png')
 
-function checkImgType(imageType) {
+function checkImgType(imageType: string) {
     const isDisabled = imageType.toLowerCase() === 'svg'
     toShow.value = !isDisabled
     toShow1.value = imageType.toLowerCase() === 'png'
 
     if (isDisabled) {
-        resolution.value = '1'
+        resolution.value = 1
         fullImg.value = true
     } else if (imageType.toLowerCase() !== 'png') {
         transparent.value = false
@@ -144,7 +144,7 @@ function checkImgType(imageType) {
     }
 }
 
-function updateView(isFullImg) {
+function updateView(isFullImg: boolean) {
     fullImg.value = isFullImg
 }
 
