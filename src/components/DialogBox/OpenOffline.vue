@@ -46,7 +46,15 @@
                     block
                     @click="openProjectOffline()"
                 >
-                    BUTTON
+                    open project
+                </v-btn>
+                <v-btn
+                    v-else
+                    class="messageBtn"
+                    block
+                    @click.stop="OpenImportProjectDialog"
+                >
+                    open CV file
                 </v-btn>
             </v-card-actions>
         </v-card>
@@ -64,24 +72,14 @@ onMounted(() => {
 })
 
 onUpdated(() => {
-    console.log('on updated')
     var data = localStorage.getItem('projectList')
-    console.log(data)
     projectList.value = JSON.parse(localStorage.getItem('projectList')) || {}
-    console.log(toRaw(projectList.value))
-    if (JSON.stringify(projectList.value) == '{}') {
-        console.log('true')
-    } else {
-        console.log('false')
-    }
 })
 
 function deleteOfflineProject(id) {
-    console.log('Hello from ok')
     localStorage.removeItem(id)
     const temp = JSON.parse(localStorage.getItem('projectList')) || {}
     delete temp[id]
-    console.log(temp)
     projectList.value = temp
     localStorage.setItem('projectList', JSON.stringify(temp))
 }
@@ -92,5 +90,10 @@ function openProjectOffline() {
     if (!ele.val()) return
     load(JSON.parse(localStorage.getItem(ele.val())))
     window.projectId = ele.val()
+}
+
+function OpenImportProjectDialog() {
+    SimulatorState.dialogBox.open_project_dialog = false
+    SimulatorState.dialogBox.import_project_dialog = true
 }
 </script>

@@ -1,3 +1,8 @@
+/* **************************************************************************************************** */
+/* Implemented in ImportProject.vue Kept for reference in case any bugs occur */
+/* TODO: Remove this file after testing */
+/* **************************************************************************************************** */
+
 // import load from '../data/load'
 // import { generateSaveData } from '../data/save'
 // import { escapeHtml } from '../ux'
