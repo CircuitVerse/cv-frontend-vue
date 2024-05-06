@@ -290,7 +290,6 @@ function isEmbed(): boolean {
     position: relative;
     overflow: hidden;
     padding-bottom: 2.5px;
-    z-index: 100;
 }
 
 #tabsBar.embed-tabbar {
