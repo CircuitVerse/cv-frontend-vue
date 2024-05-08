@@ -3,6 +3,7 @@
         id="tabsBar"
         class="noSelect pointerCursor"
         :class="[embedClass(), { maxHeightStyle: showMaxHeight }]"
+        ref="tabsBar"
     >
         <draggable
             :key="updateCount"
@@ -46,7 +47,7 @@
         <button v-if="!isEmbed()" @click="createNewCircuitScope()">
             &#43;
         </button>
-        <button class="tabsbar-toggle" @click="toggleHeight">
+        <button v-if="isOverflowing" class="tabsbar-toggle" @click="toggleHeight">
             <i :class="showMaxHeight ? 'fa fa-chevron-down' : 'fa fa-chevron-up'"></i>
         </button>
     </div>
@@ -68,7 +69,7 @@
 <script lang="ts" setup>
 import draggable from 'vuedraggable'
 import { showMessage, truncateString } from '#/simulator/src/utils'
-import { ref, Ref } from 'vue'
+import { ref, Ref, onBeforeUnmount, onMounted, computed } from 'vue'
 import {
     createNewCircuitScope,
     // deleteCurrentCircuit,
@@ -79,12 +80,54 @@ import {
 // import MessageBox from '#/components/MessageBox/messageBox.vue'
 import { useState } from '#/store/SimulatorStore/state'
 import { closeCircuit } from '../helpers/deleteCircuit/DeleteCircuit.vue'
+import ResizeObserver from 'resize-observer-polyfill';
 
 const SimulatorState = <SimulatorStateType>useState()
 const drag: Ref<boolean> = ref(false)
 const updateCount: Ref<number> = ref(0)
 
 const showMaxHeight = ref(true)
+const tabsBar: Ref<HTMLElement | null> = ref(null);
+const tabsBarTotalHeight: Ref<number> = ref(0);
+let resizeObserver: ResizeObserver | null = null;
+let mutationObserver: MutationObserver | null = null;
+
+const updateTabsBarTotalHeight = () => {
+    if (tabsBar.value) {
+        tabsBarTotalHeight.value = tabsBar.value.scrollHeight;
+    }
+};
+
+onMounted(() => {
+    if (tabsBar.value) {
+        resizeObserver = new ResizeObserver(updateTabsBarTotalHeight);
+        resizeObserver.observe(tabsBar.value);
+
+        mutationObserver = new MutationObserver(updateTabsBarTotalHeight);
+        mutationObserver.observe(tabsBar.value, { childList: true, subtree: true});
+    }
+});
+
+onBeforeUnmount(() => {
+    if (resizeObserver && tabsBar.value) {
+        resizeObserver.unobserve(tabsBar.value);
+        resizeObserver = null;
+    }
+
+    if (mutationObserver) {
+        mutationObserver.disconnect();
+        mutationObserver = null;
+    }
+});
+
+//To check if the tabs bar is overflowing, for the toggle button
+const isOverflowing = computed(() => {
+    if (tabsBar.value) {
+        return  tabsBar.value.clientHeight < tabsBarTotalHeight.value
+    }
+    return false;
+});
+
 
 function toggleHeight() {
     showMaxHeight.value = !showMaxHeight.value
@@ -286,11 +329,11 @@ function isEmbed(): boolean {
 
 <style scoped>
 #tabsBar{
-    padding-right: 50px;
+    box-sizing: border-box;
     position: relative;
     overflow: hidden;
-    padding-bottom: 2.5px;
-    z-index: 100;
+    padding-bottom: 2px;
+    padding-right: 15px;
 }
 
 #tabsBar.embed-tabbar {
@@ -347,7 +390,6 @@ function isEmbed(): boolean {
     position: absolute;
     right: 2.5px;
     top: 2.5px;
-
     display: flex;
     justify-content: center;
     align-items: center;
