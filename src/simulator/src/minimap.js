@@ -166,7 +166,7 @@ export default miniMapArea = {
     },
     clear() {
         if (lightMode) return
-        $('#miniMapArea').css('z-index', '-1')
+        document.getElementById('miniMapArea').style.zIndex = '-1';
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
     },
 }
@@ -189,5 +189,4 @@ export function removeMiniMap() {
         )
         return
     }
-    $('#miniMap').fadeOut('fast')
 }
