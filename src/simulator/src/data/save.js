@@ -121,7 +121,7 @@ export async function generateSaveData(name, setName = true) {
         }
 
         completed[id] = true
-        update(scopeList[id], true) // For any pending integrity checks on subcircuits
+        update(scopeList[id]) // For any pending integrity checks on subcircuits
         data.scopes.push(backUp(scopeList[id]))
     }
 
