@@ -48,7 +48,7 @@
                 ></canvas>
             </div>
             <div id="elementName"></div>
-            <div v-if="zoomInOut" id="zoom-in-out-embed" class="zoom-wrapper">
+            <div v-if="hasZoomInOut" id="zoom-in-out-embed" class="zoom-wrapper">
                 <div class="noSelect">
                     <button
                         id="zoom-in-embed"
@@ -85,14 +85,14 @@
             >
                 <div id="clockProperty">
                     <input
-                        v-if="fullscreen"
+                        v-if="hasFullscreen"
                         type="button"
                         class="objectPropertyAttributeEmbed custom-btn--secondary embed-fullscreen-btn"
                         name="toggleFullScreen"
                         value="Full Screen"
                         @click="toggleFullScreen"
                     />
-                    <div v-if="clockTime">
+                    <div v-if="hasClockTime">
                         Time:
                         <input
                             v-model="timePeriod"
@@ -104,7 +104,7 @@
                             name="changeClockTime"
                         />
                     </div>
-                    <div v-if="clockTime">
+                    <div v-if="hasClockTime">
                         Clock:
                         <label class="switch">
                             <input
@@ -135,7 +135,7 @@
             </div>
 
             <!-- <% if @external_embed  == true %> -->
-            <div v-if="displayTitle" id="bottom_right_circuit_heading">
+            <div v-if="hasDisplayTitle" id="bottom_right_circuit_heading">
                 project Name
                 <!-- <h5><%= @project.name %></h5> -->
             </div>
@@ -164,7 +164,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onBeforeMount, onMounted, watch } from 'vue'
+import { ref, onBeforeMount, onMounted, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import simulationArea, { changeClockTime } from '#/simulator/src/simulationArea'
 import {
@@ -194,12 +194,12 @@ const clockEnabled = ref(simulationArea.clockEnabled)
 
 // Embed user preferences
 const theme = ref(route.query.theme)
-const displayTitle = ref(route.query.display_title ? route.query.display_title === 'true' : false);
-const clockTime = ref(route.query.clock_time ? route.query.clock_time === 'true' : true);
-const fullscreen = ref(route.query.fullscreen ? route.query.fullscreen === 'true' : true);
-const zoomInOut = ref(route.query.zoom_in_out ? route.query.zoom_in_out === 'true' : true);
+const hasDisplayTitle = ref(route.query.display_title ? route.query.display_title === 'true' : false);
+const hasClockTime = ref(route.query.clock_time ? route.query.clock_time === 'true' : true);
+const hasFullscreen = ref(route.query.fullscreen ? route.query.fullscreen === 'true' : true);
+const hasZoomInOut = ref(route.query.zoom_in_out ? route.query.zoom_in_out === 'true' : true);
 
-const selectedTheme = localStorage.getItem('theme');
+const selectedTheme = computed(() => localStorage.getItem('theme'));
 
 // watch(timePeriod, function (val) {
 //     simulationArea.timePeriod = val
