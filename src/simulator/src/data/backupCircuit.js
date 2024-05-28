@@ -60,6 +60,9 @@ export function backUp(scope = globalScope) {
     }
 
     // Restoring the connections
+    for (let i = 0; i < scope.SubCircuit.length; i++) { scope.SubCircuit[i].makeConnections(); }
+
+    // Restoring the connections
     for (let i = 0; i < scope.SubCircuit.length; i++) {
         scope.SubCircuit[i].makeConnections()
     }
