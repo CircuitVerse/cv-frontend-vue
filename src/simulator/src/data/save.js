@@ -1,6 +1,6 @@
 import { scopeList } from '../circuit'
 import { resetup } from '../setup'
-import { update, updateSubcircuitSet } from '../engine'
+import { update } from '../engine'
 import { stripTags, showMessage } from '../utils'
 import { backUp } from './backupCircuit'
 import simulationArea from '../simulationArea'

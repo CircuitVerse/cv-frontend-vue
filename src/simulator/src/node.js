@@ -14,7 +14,6 @@ import {
 import Wire from './wire'
 // import { colors } from './themer/themer';
 import { colors } from './themer/themer'
-import ContentionMeta from './contention'
 
 /**
  * Constructs all the connections of Node node
