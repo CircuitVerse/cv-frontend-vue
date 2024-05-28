@@ -49,6 +49,7 @@ export function replace(node, index) {
     node.parent = parent
     parent.nodeList.push(node)
     node.updateRotation()
+    node.scope.timeStamp = new Date().getTime()
     return node
 }
 function rotate(x1, y1, dir) {
@@ -188,6 +189,7 @@ export default class Node {
         this.hover = false
         this.wasClicked = false
         this.scope = this.parent.scope
+        this.scope.timeStamp = new Date().getTime()
         /**
          * @type {string}
          * value of this.prev is
@@ -291,6 +293,7 @@ export default class Node {
         for (var i = 0; i < this.connections.length; i++) {
             this.connections[i].connections.clean(this)
         }
+        this.scope.timeStamp = new Date().getTime()
         this.connections = []
     }
 
@@ -341,6 +344,8 @@ export default class Node {
         this.connections.push(n)
         n.connections.push(this)
 
+        this.scope.timeStamp = new Date().getTime()
+
         updateCanvasSet(true)
         updateSimulationSet(true)
         scheduleUpdate()
@@ -355,7 +360,9 @@ export default class Node {
         this.connections.push(n)
         n.connections.push(this)
 
-        updateCanvasSet(true)
+        this.scope.timeStamp = new Date().getTime()
+
+        // updateCanvasSet(true)
         updateSimulationSet(true)
         scheduleUpdate()
     }
@@ -366,6 +373,8 @@ export default class Node {
     disconnectWireLess(n) {
         this.connections.clean(n)
         n.connections.clean(this)
+
+        this.scope.timeStamp = new Date().getTime()
     }
 
     /**
@@ -927,6 +936,9 @@ export default class Node {
             this.connections[i].connections.clean(this)
             this.connections[i].checkDeleted()
         }
+
+        this.scope.timeStamp = new Date().getTime()
+
         wireToBeCheckedSet(1)
         forceResetNodesSet(true)
         scheduleUpdate()
