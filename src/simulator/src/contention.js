@@ -39,24 +39,25 @@ export default class ContentionPendingData {
 	// Removes all contentionPending entries for ourNode.
 	// Since ourNode is strictly a NODE_OUTPUT, we should remove all contentions for the node when the
 	// node resolves.
-	removeAllContentionsForNode(ourNode) {
+	removeContentionsForNode(ourNode, removalFunction) {
 		if (!this.contentionPendingMap.has(ourNode)) return;
 
 		const contentionsForOurNode = this.contentionPendingMap.get(ourNode);
-		for (const theirNode of contentionsForOurNode) this.remove(ourNode, theirNode);
+		for (const theirNode of contentionsForOurNode) removalFunction.call(this, ourNode, theirNode);
+	}
+
+	removeAllContentionsForNode(ourNode) {
+		this.removeContentionsForNode(ourNode, this.remove);
+	}
+
+	removeIfResolvedAllContentionsForNode(ourNode) {
+		this.removeContentionsForNode(ourNode, this.removeIfResolved);
 	}
 	
 	// Removes contention entry ourNode -> theirNode if the contention between them has resolved.
 	removeIfResolved(ourNode, theirNode) {
 		if (ourNode.bitWidth === theirNode.bitWidth && (ourNode.value === theirNode.value || ourNode.value === undefined))
 			this.remove(ourNode, theirNode);
-	}
-
-	removeIfResolvedAllContentionsForNode(ourNode) {
-		if (!this.contentionPendingMap.has(ourNode)) return;
-
-		const contentionsForOurNode = this.contentionPendingMap.get(ourNode);
-		for (const theirNode of contentionsForOurNode) this.removeIfResolved(ourNode, theirNode);
 	}
 
 	size() {

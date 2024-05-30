@@ -71,7 +71,7 @@ export default class TriState extends CircuitElement {
 
         if (this.state.value === 1) {
             if (this.output1.value !== this.inp1.value) {
-                this.output1.value = this.inp1.value // >>>0)<<(32-this.bitWidth))>>>(32-this.bitWidth);
+                this.output1.value = this.inp1.value 
                 simulationArea.simulationQueue.add(this.output1)
             }
         } else if (

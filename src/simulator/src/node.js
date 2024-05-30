@@ -440,13 +440,11 @@ export default class Node {
                         if (node.value != undefined && node.parent.objectType != 'SubCircuit'
                             && !(node.subcircuitOverride && node.scope != this.scope)) {
                             // Tristate has always been a pain in the ass.
-                            if ((node.parent.objectType == 'TriState' || node.parent.objectType == 'ControlledInverter') && node.value != undefined) { 
-                                if (node.parent.state.value) {
-                                    simulationArea.contentionPending.add(node, this);
-                                    break;
-                                }
+                            if (((node.parent.objectType == 'TriState' || node.parent.objectType == 'ControlledInverter') && node.value != undefined) && node.parent.state.value) { 
+                                simulationArea.contentionPending.add(node, this);
+                                break;
                             }
-                            else {
+                            else if(node.parent.state.value) {
                                 simulationArea.contentionPending.add(node, this);
                                 break;
                             }

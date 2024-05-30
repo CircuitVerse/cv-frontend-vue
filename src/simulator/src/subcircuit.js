@@ -315,6 +315,27 @@ export default class SubCircuit extends CircuitElement {
         this.scope.timeStamp = this.localScope.timeStamp
     }
 
+    processNodes(nodes, temp_map, nodeType) {
+        const resultNodes = [];
+        for (let i = 0; i < nodes.length; i++) {
+            const node = temp_map[nodes[i].layoutProperties.id][0];
+            if (temp_map[node.layoutProperties.id][1]) {
+                resultNodes.push(temp_map[node.layoutProperties.id][1]);
+            } else {
+                const newNode = new Node(
+                    node.layoutProperties.x,
+                    node.layoutProperties.y,
+                    nodeType,
+                    this,
+                    node.bitWidth
+                );
+                newNode.layout_id = node.layoutProperties.id;
+                resultNodes.push(newNode);
+            }
+        }
+        return resultNodes;
+    }
+
     reset() {
         this.removeConnections()
 
@@ -395,24 +416,7 @@ export default class SubCircuit extends CircuitElement {
             }
         }
 
-        this.inputNodes = []
-        for (var i = 0; i < subcircuitScope.Input.length; i++) {
-            var input =
-                temp_map_inp[subcircuitScope.Input[i].layoutProperties.id][0]
-            if (temp_map_inp[input.layoutProperties.id][1]) {
-                this.inputNodes.push(temp_map_inp[input.layoutProperties.id][1])
-            } else {
-                var a = new Node(
-                    input.layoutProperties.x,
-                    input.layoutProperties.y,
-                    0,
-                    this,
-                    input.bitWidth
-                )
-                a.layout_id = input.layoutProperties.id
-                this.inputNodes.push(a)
-            }
-        }
+       this.inputNodes = this.processNodes(subcircuitScope.Input, temp_map_inp, 0); 
 
         var temp_map_out = {}
         for (var i = 0; i < subcircuitScope.Output.length; i++) {
@@ -455,26 +459,7 @@ export default class SubCircuit extends CircuitElement {
             }
         }
 
-        this.outputNodes = []
-        for (var i = 0; i < subcircuitScope.Output.length; i++) {
-            var output =
-                temp_map_out[subcircuitScope.Output[i].layoutProperties.id][0]
-            if (temp_map_out[output.layoutProperties.id][1]) {
-                this.outputNodes.push(
-                    temp_map_out[output.layoutProperties.id][1]
-                )
-            } else {
-                var a = new Node(
-                    output.layoutProperties.x,
-                    output.layoutProperties.y,
-                    1,
-                    this,
-                    output.bitWidth
-                )
-                a.layout_id = output.layoutProperties.id
-                this.outputNodes.push(a)
-            }
-        }
+        this.outputNodes = this.processNodes(subcircuitScope.Output, temp_map_out, 1);
         // console.log(subcircuitScope.name, subcircuitScope.timeStamp, this.lastUpdated)
         if (subcircuitScope.timeStamp > this.lastUpdated) {
             this.reBuildCircuit()
