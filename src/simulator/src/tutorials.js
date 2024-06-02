@@ -1,4 +1,5 @@
 import Driver from 'driver.js'
+import i18n from '#/locales/i18n'
 
 export const tour = [
     {
@@ -6,9 +7,8 @@ export const tour = [
         className: 'guide_1',
         popover: {
             className: '',
-            title: 'Circuit Elements panel',
-            description:
-                'This is where you can find all the circuit elements that are offered to build amazing circuits.',
+            title: i18n.global.t('simulator.tutorial_guide.circuit_elements_panel'), 
+            description: i18n.global.t('simulator.tutorial_guide.circuit_elements_panel_desc'),
             position: 'right',
             offset: 160,
         },
@@ -16,9 +16,8 @@ export const tour = [
     {
         element: '.guide_2',
         popover: {
-            title: 'Properties Panel',
-            description:
-                'This panel lets you change element properties as they are selected. When no elements are selected, the panel displays project properties.',
+            title: i18n.global.t('simulator.tutorial_guide.properties_panel'),
+            description: i18n.global.t('simulator.tutorial_guide.properties_panel_desc'),
             position: 'left',
             offset: 200,
         },
@@ -26,9 +25,8 @@ export const tour = [
     {
         element: '.quick-btn',
         popover: {
-            title: 'Quick Access Panel',
-            description:
-                'This movable panel offers to perform some actions like Save Online, Open, Download quickly. Hover over the icons and see for yourself',
+            title: i18n.global.t('simulator.tutorial_guide.quick_access_panel'),
+            description: i18n.global.t('simulator.tutorial_guide.quick_access_panel_desc'),
             position: 'bottom',
             // offset: 750,
         },
@@ -46,9 +44,8 @@ export const tour = [
     {
         element: '#tabsBar',
         popover: {
-            title: 'Circuit Tabs',
-            description:
-                'This section displays all the circuits you have in your project. You can easily add and delete circuits.',
+            title: i18n.global.t('simulator.tutorial_guide.circuit_tabs'),
+            description: i18n.global.t('simulator.tutorial_guide.circuit_tabs_desc'),
             position: 'bottom',
             offset: 250,
         },
@@ -56,9 +53,8 @@ export const tour = [
     {
         element: '.timing-diagram-panel',
         popover: {
-            title: 'Timing Diagram Panel (Waveform)',
-            description:
-                'This panel displays the waveform created by circuits and can be used for resolving race conditions and debugging circuits.',
+            title: i18n.global.t('simulator.tutorial_guide.timing_diagram_panel'),
+            description: i18n.global.t('simulator.tutorial_guide.timing_diagram_panel_desc'),
             position: 'bottom',
             offset: 0,
         },
@@ -66,8 +62,8 @@ export const tour = [
     {
         element: '.testbench-manual-panel',
         popover: {
-            title: 'Test Bench Panel',
-            description: 'This panel helps you test your circuit correctness by observing how your circuit responds under different test cases, ensuring a thorough and effective validation process.',
+            title: i18n.global.t('simulator.tutorial_guide.test_bench_panel'),
+            description: i18n.global.t('simulator.tutorial_guide.test_bench_panel_desc'),
             position: 'right',
             offset: 0,
         },
@@ -86,9 +82,8 @@ export const tour = [
         element: '.report-sidebar a',
         popover: {
             className: 'bug-guide',
-            title: 'Report System',
-            description:
-                'You can report any issues/bugs you face through this issue reporting button there and then quickly.',
+            title: i18n.global.t('simulator.tutorial_guide.report_system'),
+            description: i18n.global.t('simulator.tutorial_guide.report_system_desc'),
             position: 'left',
             offset: -105,
         },
@@ -97,9 +92,8 @@ export const tour = [
         element: '.tour-help',
         popover: {
             className: 'tourHelpStep',
-            title: 'Restart tutorial anytime',
-            description:
-                'You can restart this tutorial anytime by clicking on "Tutorial Guide" under this dropdown.',
+            title: i18n.global.t('simulator.tutorial_guide.restart_tutorial'),
+            description: i18n.global.t('simulator.tutorial_guide.restart_tutorial_desc'),
             position: 'right',
             offset: 0,
         },
