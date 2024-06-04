@@ -7,6 +7,7 @@ import vueI18n from '@intlify/vite-plugin-vue-i18n'
 import vuetify from 'vite-plugin-vuetify'
 
 const proxyUrl: string = 'http://localhost:3000'
+const version = process.env.VERSION || 'v1';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -19,19 +20,19 @@ export default defineConfig({
 
             // you need to set i18n resource including paths !
             include: fileURLToPath(
-                new URL('./src/locales/**', import.meta.url)
+                new URL(`./${version}/src/locales/**`, import.meta.url)
             ),
         }),
     ],
     resolve: {
         alias: {
-            '#': fileURLToPath(new URL('./src', import.meta.url)),
-            '@': fileURLToPath(new URL('./src/components', import.meta.url)),
+            '#': fileURLToPath(new URL(`./${version}/src`, import.meta.url)),
+            '@': fileURLToPath(new URL(`./${version}/src/components`, import.meta.url)),
         },
     },
-    base: '/simulatorvue/',
+    base: `/simulatorvue/${version}/`,
     build: {
-        outDir: '../public/simulatorvue',
+        outDir: `../public/simulatorvue/${version}/`,
         assetsDir: 'assets',
         chunkSizeWarningLimit: 1600,
     },
