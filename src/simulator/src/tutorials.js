@@ -1,103 +1,27 @@
 import Driver from 'driver.js'
 import i18n from '#/locales/i18n'
 
-export const tour = [
-    {
-        element: '#guide_1',
-        className: 'guide_1',
+function createTourStep(element, titleKey, descKey, position, offset = 0) {
+    return {
+        element,
         popover: {
-            className: '',
-            title: i18n.global.t('simulator.tutorial_guide.circuit_elements_panel'), 
-            description: i18n.global.t('simulator.tutorial_guide.circuit_elements_panel_desc'),
-            position: 'right',
-            offset: 160,
+            title: i18n.global.t(titleKey),
+            description: i18n.global.t(descKey),
+            position,
+            offset,
         },
-    },
-    {
-        element: '.guide_2',
-        popover: {
-            title: i18n.global.t('simulator.tutorial_guide.properties_panel'),
-            description: i18n.global.t('simulator.tutorial_guide.properties_panel_desc'),
-            position: 'left',
-            offset: 200,
-        },
-    },
-    {
-        element: '.quick-btn',
-        popover: {
-            title: i18n.global.t('simulator.tutorial_guide.quick_access_panel'),
-            description: i18n.global.t('simulator.tutorial_guide.quick_access_panel_desc'),
-            position: 'bottom',
-            // offset: 750,
-        },
-    },
-    // {
-    //     element: '.forum-tab',
-    //     popover: {
-    //         className: "",
-    //         title: 'Forum Tab',
-    //         description: "The forums can help you report issues & bugs, feature requests, and discussing about circuits with the community!",
-    //         position: 'right',
-    //         // offset: -25,
-    //     },
-    // },
-    {
-        element: '#tabsBar',
-        popover: {
-            title: i18n.global.t('simulator.tutorial_guide.circuit_tabs'),
-            description: i18n.global.t('simulator.tutorial_guide.circuit_tabs_desc'),
-            position: 'bottom',
-            offset: 250,
-        },
-    },
-    {
-        element: '.timing-diagram-panel',
-        popover: {
-            title: i18n.global.t('simulator.tutorial_guide.timing_diagram_panel'),
-            description: i18n.global.t('simulator.tutorial_guide.timing_diagram_panel_desc'),
-            position: 'bottom',
-            offset: 0,
-        },
-    },
-    {
-        element: '.testbench-manual-panel',
-        popover: {
-            title: i18n.global.t('simulator.tutorial_guide.test_bench_panel'),
-            description: i18n.global.t('simulator.tutorial_guide.test_bench_panel_desc'),
-            position: 'right',
-            offset: 0,
-        },
-    },
+    };
+}
 
-    // {
-    //     element: '#delCirGuide',
-    //     popover: {
-    //         title: 'Delete sub-circuit button',
-    //         description: "You can make delete sub-circuits by pressing the cross *Note that main circuit cannot be deleted.",
-    //         position: 'right',
-    //         // offset: 250,
-    //     },
-    // },
-    {
-        element: '.report-sidebar a',
-        popover: {
-            className: 'bug-guide',
-            title: i18n.global.t('simulator.tutorial_guide.report_system'),
-            description: i18n.global.t('simulator.tutorial_guide.report_system_desc'),
-            position: 'left',
-            offset: -105,
-        },
-    },
-    {
-        element: '.tour-help',
-        popover: {
-            className: 'tourHelpStep',
-            title: i18n.global.t('simulator.tutorial_guide.restart_tutorial'),
-            description: i18n.global.t('simulator.tutorial_guide.restart_tutorial_desc'),
-            position: 'right',
-            offset: 0,
-        },
-    },
+export const tour = [
+    createTourStep('#guide_1', 'simulator.tutorial_guide.circuit_elements_panel', 'simulator.tutorial_guide.circuit_elements_panel_desc', 'right', 160),
+    createTourStep('.guide_2', 'simulator.tutorial_guide.properties_panel', 'simulator.tutorial_guide.properties_panel_desc', 'left', 200),
+    createTourStep('.quick-btn', 'simulator.tutorial_guide.quick_access_panel', 'simulator.tutorial_guide.quick_access_panel_desc', 'bottom'),
+    createTourStep('#tabsBar', 'simulator.tutorial_guide.circuit_tabs', 'simulator.tutorial_guide.circuit_tabs_desc', 'bottom', 250),
+    createTourStep('.timing-diagram-panel', 'simulator.tutorial_guide.timing_diagram_panel', 'simulator.tutorial_guide.timing_diagram_panel_desc', 'bottom'),
+    createTourStep('.testbench-manual-panel', 'simulator.tutorial_guide.test_bench_panel', 'simulator.tutorial_guide.test_bench_panel_desc', 'right'),
+    createTourStep('.report-sidebar a', 'simulator.tutorial_guide.report_system', 'simulator.tutorial_guide.report_system_desc', 'left', -105),
+    createTourStep('.tour-help', 'simulator.tutorial_guide.restart_tutorial', 'simulator.tutorial_guide.restart_tutorial_desc', 'right'),
 ]
 
 // Not used currently
