@@ -34,8 +34,8 @@
                 {{ $t('simulator.panel_body.timing_diagram.units') }}
                 <span id="timing-diagram-log"></span>
             </div>
-            <div id="plot" ref="plotRef">
-                <canvas id="plotArea"></canvas>
+            <div id="plot" :style="{ width: plotWidth + 'px', height: plotHeight + 'px' }">
+                <canvas :style="{ width: plotWidth + 'px', height: plotHeight + 'px' }" id="plotArea"></canvas>
             </div>
         </div>
     </div>
@@ -48,6 +48,7 @@ import { timingDiagramButtonActions } from '#/simulator/src/plotArea'
 import TimingDiagramButtons from './TimingDiagramButtons.vue'
 import buttonsJSON from '#/assets/constants/Panels/TimingDiagramPanel/buttons.json'
 import PanelHeader from '../Shared/PanelHeader.vue'
+import { sh } from '#/simulator/src/plotArea.js'
 
 interface TimingDiagramButton {
     title: string
@@ -58,7 +59,6 @@ interface TimingDiagramButton {
 }
 
 interface PlotArea {
-    resize: () => void
     [key: string]: () => void
 }
 
@@ -66,25 +66,18 @@ const plotArea: PlotArea = _plotArea
 const buttons = ref<TimingDiagramButton[]>(buttonsJSON)
 const plotRef = ref<HTMLElement | null>(null)
 const cycleUnits = ref(1000)
+const plotWidth = ref(sh(750));
+const plotHeight = ref(sh(25));
 
 function handleButtonClick(button: string) {
     if (button === 'smaller') {
-        if (plotRef.value) {
-            plotRef.value.style.width = `${Math.max(
-                plotRef.value.offsetWidth - 20,
-                560
-            )}px`
-        }
-        plotArea.resize()
+        plotWidth.value = Math.max(plotWidth.value - sh(20), sh(750));
     } else if (button === 'larger') {
-        if (plotRef.value) {
-            plotRef.value.style.width = `${plotRef.value.offsetWidth + 20}px`
-        }
-        plotArea.resize()
+        plotWidth.value += sh(20);
     } else if (button === 'smallHeight') {
-        timingDiagramButtonActions.smallHeight()
+        plotHeight.value = Math.max(plotHeight.value - sh(20), sh(20));
     } else if (button === 'largeHeight') {
-        timingDiagramButtonActions.largeHeight()
+        plotHeight.value = Math.min(plotHeight.value + sh(20), sh(60));
     } else {
         plotArea[button]()
     }
