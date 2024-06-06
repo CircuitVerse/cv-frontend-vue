@@ -35,7 +35,7 @@
                 <span id="timing-diagram-log"></span>
             </div>
             <div id="plot" :style="{ width: plotWidth + 'px', height: plotHeight + 'px' }">
-                <canvas id="plotArea"></canvas>
+                <canvas :style="{ width: plotWidth + 'px', height: plotHeight + 'px' }" id="plotArea"></canvas>
             </div>
         </div>
     </div>
@@ -59,7 +59,6 @@ interface TimingDiagramButton {
 }
 
 interface PlotArea {
-    resize: () => void
     [key: string]: () => void
 }
 
@@ -67,22 +66,18 @@ const plotArea: PlotArea = _plotArea
 const buttons = ref<TimingDiagramButton[]>(buttonsJSON)
 const plotRef = ref<HTMLElement | null>(null)
 const cycleUnits = ref(1000)
-const plotWidth = ref(sh(560));
-const plotHeight = ref(sh(20));
+const plotWidth = ref(sh(750));
+const plotHeight = ref(sh(25));
 
 function handleButtonClick(button: string) {
     if (button === 'smaller') {
-        plotWidth.value = Math.max(plotWidth.value - sh(20), sh(560));
-        plotArea.resize();
+        plotWidth.value = Math.max(plotWidth.value - sh(20), sh(750));
     } else if (button === 'larger') {
         plotWidth.value += sh(20);
-        plotArea.resize()
     } else if (button === 'smallHeight') {
         plotHeight.value = Math.max(plotHeight.value - sh(20), sh(20));
-        plotArea.resize()
     } else if (button === 'largeHeight') {
-        plotHeight.value = Math.min(plotHeight.value + sh(20), sh(100));
-        plotArea.resize()
+        plotHeight.value = Math.min(plotHeight.value + sh(20), sh(60));
     } else {
         plotArea[button]()
     }

@@ -671,7 +671,7 @@ div.icon img {
 
 .timing-diagram-panel {
     border-radius: 5px;
-    z-index: 70;
+    z-index: 100 !important;
     transition: background 0.5s ease-out;
     position: fixed;
     cursor: pointer;
