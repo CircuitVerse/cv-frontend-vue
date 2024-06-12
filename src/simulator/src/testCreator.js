@@ -734,18 +734,18 @@ function makeSortable() {
         }
     }
 
-    $('.data-group table').sortable({
-        handle: '.tb-handle',
-        helper,
-        start: makePlaceholder,
-        placeholder: 'clone',
-        connectWith: 'table',
-        receive: removeTbody, // For sortable hack
-        remove: createTbody, // For sortable hack
-        items: 'tr',
-        revert: 50,
-        scroll: false,
-    })
+    // $('.data-group table').sortable({
+    //     handle: '.tb-handle',
+    //     helper,
+    //     start: makePlaceholder,
+    //     placeholder: 'clone',
+    //     connectWith: 'table',
+    //     receive: removeTbody, // For sortable hack
+    //     remove: createTbody, // For sortable hack
+    //     items: 'tr',
+    //     revert: 50,
+    //     scroll: false,
+    // })
 }
 
 function makeUnsortable() {

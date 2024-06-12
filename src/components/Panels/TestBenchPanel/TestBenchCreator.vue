@@ -1,6 +1,6 @@
 <template>
   <br><br>
-  <div class="container" style="position: relative">
+  <div class="container" id="testbenchCreator">
     <h1 style="text-align: center" id="tb-creator-head"><b>Create Test</b></h1>
     <div class="test-title">
       <div style="width: 20%; font-weight: bolder;">Title:</div>
@@ -45,15 +45,23 @@
       <button class="lower-button" @mousedown="clickUpload()">Import from CSV</button>
       <button class="lower-button" @mousedown="exportAsCSV()">Export as CSV</button>
       <input id='csvFileInput' type='file' accept=".csv" @mousedown="importFromCSV()" hidden>
+      <button v-if="showAppend" class="lower-button save-buton" @mousedown="saveData()">Attach</button>
     </div>
   </div>
 </template>
 
-<script lang="ts" setup>
+<script lang="js" setup>
 /*
     This file contains all javascript related to the test creator UI
     at /testbench
 */
+// import _ from '../../../simulator/vendor/table2csv.js'
+
+import { useTestBenchStore } from '#/store/testBenchStore';
+import { onBeforeMount, ref } from 'vue';
+
+const testBenchStore = useTestBenchStore();
+const showAppend = ref(false);
 
 const CREATORMODE = {
   NORMAL: 0,
@@ -68,12 +76,24 @@ let outputCount = 0
 let nextOutputIndex = 0
 let cases = [0]
 let creatorMode = CREATORMODE.NORMAL
-let circuitScopeID: string | null
+let circuitScopeID
 
 function dataReset() {
   groupIndex = -1
   cases = [0]
 }
+
+onBeforeMount(() => {
+  if (testBenchStore.showPopup) {
+    creatorMode = CREATORMODE.SIMULATOR_POPUP;
+    showAppend.value = true;
+  }
+
+  circuitScopeID = testBenchStore.scopeId;
+  addInput();
+  addOutput();
+  makeSortable();
+})
 
 /**
  * Onload, check if it is opened in a popup.
@@ -110,7 +130,7 @@ window.onload = () => {
 }
 
 /* Change UI testMode between Combinational(comb) and Sequential(seq) */
-function changeTestMode(m: 'seq' | 'comb') {
+function changeTestMode(m) {
   if (testMode === m) return false
   dataReset()
   testMode = m
@@ -124,7 +144,7 @@ function changeTestMode(m: 'seq' | 'comb') {
 }
 
 /* Adds case to a group */
-function addCase(grp: number) {
+function addCase(grp) {
   const currentGroupTable = $(`#data-table-${grp + 1}`)
 
   let s =
@@ -617,13 +637,17 @@ function download(filename, text) {
  */
 function saveData() {
   const testData = parse()
+  console.log(testData);
+  console.log(creatorMode, CREATORMODE.SIMULATOR_POPUP);
 
-  if (creatorMode === CREATORMODE.SIMULATOR_POPUP) {
+  if (creatorMode === CREATORMODE.SIMULATOR_POPUP || true) {
     const postData = { scopeID: circuitScopeID, testData }
     window.opener.postMessage(
       { type: 'testData', data: JSON.stringify(postData) },
       '*'
     )
+    testBenchStore.toggleTestBenchCreator(false);
+    return;
     window.close()
   }
 }
@@ -824,3 +848,155 @@ window.csv2json = csv2json
 window.clickUpload = clickUpload
 
 </script>
+
+<style scoped>
+.tb-test-title {
+  text-align: center;
+  margin-top: 50px;
+}
+
+.lower-button {
+  height: 40px;
+  width: auto;
+  min-width: 40px;
+  background-color: #ffffff;
+  border: 2px solid black;
+  color: black;
+  padding: 6px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  /*font-size: 16px;*/
+  margin: 4px 2px;
+  border-radius: 4px;
+}
+
+.table-button {
+  height: 20px;
+  width: 20px;
+  background-color: #ffffff;
+  border: 2px solid black;
+  color: black;
+  text-decoration: none;
+  display: inline-block;
+  margin: 4px 4px;
+  padding: 0px;
+  border-radius: 5px;
+}
+
+
+.plus-button {
+  font-size: 25px;
+}
+
+.tb-minus {
+  color: red;
+}
+
+.save-buton {
+  background-color: #42b983;
+  color: white;
+  border: 1px solid gray;
+  min-width: 70px;
+}
+
+.latest-button {
+  float: left;
+}
+
+.buttons-alignment {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.tablink {
+  background-color: #555;
+  color: white;
+  float: left;
+  border: 1px solid white;
+  border-radius: 5px;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  font-size: 17px;
+  width: 50%;
+}
+
+/* Change background color of buttons on hover */
+.tablink:hover.tablink-no-override {
+  background-color: #a5dfc5;
+}
+
+.tablink-hover-override {}
+
+.tablink.tab-selected {
+  background-color: #42b983;
+  color: #fff;
+  outline: none;
+}
+
+.data-group {
+  margin-top: 2%;
+}
+
+.tb-table {
+  table-layout: fixed;
+  width: 100%;
+  height: 20px;
+  border-spacing: 5px;
+}
+
+.tb-table th,
+td {
+  border: 2px solid black;
+  border-collapse: collapse;
+  padding: 15px;
+  text-align: center;
+  transition: transform .2s;
+}
+
+.tb-table th {
+  text-align: center;
+}
+
+.tb-table tr th:first-child,
+tr td:first-child {
+  width: 250px;
+}
+
+.label-table {
+  margin-top: 100px;
+}
+
+.test-title {
+  display: flex;
+  width: 100%;
+  font-size: 25px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.test-title #test-title-label {
+  width: 80%;
+  border: 1px solid;
+  border-radius: 5px;
+}
+
+.tb-handle {
+  padding: 0px !important;
+  border: 0px !important;
+}
+
+#testbenchCreator {
+  display: inline-block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 105;
+  background-color: white;
+  border: 1px solid black;
+  padding: 20px;
+}
+</style>

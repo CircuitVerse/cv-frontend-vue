@@ -90,7 +90,6 @@
         </button>
       </div>
     </div>
-    <TestBenchCreator />
   </div>
 </template>
 
@@ -100,7 +99,9 @@ import { confirmOption } from '#/components/helpers/confirmComponent/ConfirmComp
 import { scheduleBackup } from '#/simulator/src/data/backupCircuit';
 import { changeClockEnable } from '#/simulator/src/sequential';
 import { play } from '#/simulator/src/engine';
-import TestBenchCreator from "./TestBenchCreator.vue";
+import { useTestBenchStore } from '#/store/testBenchStore';
+
+const testBenchStore = useTestBenchStore();
 
 /**
  * Checks if all the labels in the test data are unique. Called by validate()
@@ -312,7 +313,12 @@ function openCreator(type: openCreatorType, dataString: string = '') {
   const popupWidth = 1200
   const popupTop = (window.height - popupHeight) / 2
   const popupLeft = (window.width - popupWidth) / 2
-  const POPUP_STYLE_STRING = `height=${popupHeight},width=${popupWidth},top=${popupTop},left=${popupLeft}`
+  const POPUP_STYLE = {
+    height: popupHeight,
+    width: popupWidth,
+    top: popupTop,
+    left: popupLeft
+  }
   let popUp
 
   /* Listener to catch testData from pop up and load it onto the testbench */
@@ -341,22 +347,25 @@ function openCreator(type: openCreatorType, dataString: string = '') {
   }
 
   if (type === 'create') {
+    testBenchStore.toggleTestBenchCreator(true);
+    testBenchStore.createCreator(globalScope.id, true, POPUP_STYLE);
+    return;
     const url = `${TESTBENCH_CREATOR_PATH}?scopeID=${globalScope.id}&popUp=true`
-    popUp = window.open(url, 'popupWindow', POPUP_STYLE_STRING)
+    popUp = window.open(url, 'popupWindow', POPUP_STYLE)
     creatorOpenPrompt(popUp)
     window.addEventListener('message', dataListener)
   }
 
   if (type === 'edit') {
     const url = `${TESTBENCH_CREATOR_PATH}?scopeID=${globalScope.id}&data=${dataString}&popUp=true`
-    popUp = window.open(url, 'popupWindow', POPUP_STYLE_STRING)
+    popUp = window.open(url, 'popupWindow', POPUP_STYLE)
     creatorOpenPrompt(popUp)
     window.addEventListener('message', dataListener)
   }
 
   if (type === 'result') {
     const url = `${TESTBENCH_CREATOR_PATH}?scopeID=${globalScope.id}&result=${dataString}&popUp=true`
-    popUp = window.open(url, 'popupWindow', POPUP_STYLE_STRING)
+    popUp = window.open(url, 'popupWindow', POPUP_STYLE)
   }
 
   // Check if popup was closed (in case it was closed by window's X button),

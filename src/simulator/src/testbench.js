@@ -186,42 +186,42 @@ export class TestbenchData {
  * UI Function
  * Create prompt for the testbench UI when creator is opened
  */
-function creatorOpenPrompt(creatorWindow) {
-    scheduleBackup()
-    const windowSVG = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="white" class="bi bi-window" viewBox="0 0 16 16">
-      <path d="M2.5 4a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1zm2-.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm1 .5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
-      <path d="M2 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H2zm13 2v2H1V3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1zM2 14a1 1 0 0 1-1-1V6h14v7a1 1 0 0 1-1 1H2z"/>
-    </svg>
-    `
+// function creatorOpenPrompt(creatorWindow) {
+//     scheduleBackup()
+//     const windowSVG = `
+//     <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="white" class="bi bi-window" viewBox="0 0 16 16">
+//       <path d="M2.5 4a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1zm2-.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm1 .5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
+//       <path d="M2 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H2zm13 2v2H1V3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1zM2 14a1 1 0 0 1-1-1V6h14v7a1 1 0 0 1-1 1H2z"/>
+//     </svg>
+//     `
 
-    const s = `
-    <div style="text-align: center;">
-        <div style="margin: 20px;">
-            ${windowSVG}
-        </div>
-        <p>A browser pop-up is opened to create the test</p>
-        <p>Please save the test to open it here</p>
-    </div>
-    `
+//     const s = `
+//     <div style="text-align: center;">
+//         <div style="margin: 20px;">
+//             ${windowSVG}
+//         </div>
+//         <p>A browser pop-up is opened to create the test</p>
+//         <p>Please save the test to open it here</p>
+//     </div>
+//     `
 
-    $('#setTestbenchData').dialog({
-        resizable: false,
-        width: 'auto',
-        buttons: [
-            {
-                text: 'Close Pop-Up',
-                click() {
-                    $(this).dialog('close')
-                    creatorWindow.close()
-                },
-            },
-        ],
-    })
+//     $('#setTestbenchData').dialog({
+//         resizable: false,
+//         width: 'auto',
+//         buttons: [
+//             {
+//                 text: 'Close Pop-Up',
+//                 click() {
+//                     $(this).dialog('close')
+//                     creatorWindow.close()
+//                 },
+//             },
+//         ],
+//     })
 
-    $('#setTestbenchData').empty()
-    $('#setTestbenchData').append(s)
-}
+//     $('#setTestbenchData').empty()
+//     $('#setTestbenchData').append(s)
+// }
 
 /**
  * Interface function to run testbench. Called by testbench prompt on simulator or assignments
@@ -1072,6 +1072,7 @@ function setUIResult(testbenchData, result) {
  * @param {String} dataString - data in JSON string to load in case of 'edit' and 'result'
  */
 function openCreator(type, dataString) {
+    return;
     const popupHeight = 800
     const popupWidth = 1200
     const popupTop = (window.height - popupHeight) / 2
@@ -1106,14 +1107,14 @@ function openCreator(type, dataString) {
     if (type === 'create') {
         const url = `${TESTBENCH_CREATOR_PATH}?scopeID=${globalScope.id}&popUp=true`
         popUp = window.open(url, 'popupWindow', POPUP_STYLE_STRING)
-        creatorOpenPrompt(popUp)
+        // creatorOpenPrompt(popUp)
         window.addEventListener('message', dataListener)
     }
 
     if (type === 'edit') {
         const url = `${TESTBENCH_CREATOR_PATH}?scopeID=${globalScope.id}&data=${dataString}&popUp=true`
         popUp = window.open(url, 'popupWindow', POPUP_STYLE_STRING)
-        creatorOpenPrompt(popUp)
+        // creatorOpenPrompt(popUp)
         window.addEventListener('message', dataListener)
     }
 
