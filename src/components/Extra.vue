@@ -242,7 +242,6 @@
             <div id="miniMap">
                 <canvas
                     id="miniMapArea"
-                    style="position: absolute; left: 0; top: 0; z-index: 3"
                 ></canvas>
             </div>
 
