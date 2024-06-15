@@ -25,7 +25,6 @@ export interface State {
         export_project_dialog: boolean
         import_project_dialog: boolean
     }
-    // createCircuit: Object | { circuitName: string }
     combinationalAnalysis: Object
     subCircuitElementList: Array<LayoutElementGroup>
     isEmptySubCircuitElementList: boolean
@@ -59,9 +58,6 @@ export const useState = defineStore({
                 export_project_dialog: false,
                 import_project_dialog: false,
             },
-            // createCircuit: {
-            //     circuitName: 'Untitled Circuit',
-            // },
             combinationalAnalysis: {
                 inputNameList: 'eg. In A, In B',
                 outputNameList: 'eg. Out X, Out Y',
