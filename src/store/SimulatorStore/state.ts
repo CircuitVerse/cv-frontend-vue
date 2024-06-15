@@ -11,8 +11,6 @@ export interface State {
           }
     circuit_list: Array<Object>
     dialogBox: {
-        // create_circuit: boolean
-        // delete_circuit: boolean
         combinationalanalysis_dialog: boolean
         hex_bin_dec_converter_dialog: boolean
         saveimage_dialog: boolean
@@ -44,8 +42,6 @@ export const useState = defineStore({
             activeCircuit: {},
             circuit_list: [],
             dialogBox: {
-                // create_circuit: false,
-                // delete_circuit: false,
                 combinationalanalysis_dialog: false,
                 hex_bin_dec_converter_dialog: false,
                 saveimage_dialog: false,
