@@ -1,8 +1,8 @@
 [build]
-  command = "
+  command = """
     VERSION=${VERSION:-v0}
-    npm run build && mkdir -p ./dist && cp -r ../public/* ./dist/ && mv ./dist/simulatorvue/$VERSION/index.html ./dist/
- "
+    npm run build && mkdir -p ./dist && cp -r ../public/simulatorvue/$VERSION/* ./dist/ && mv ./dist/index.html ./dist/simulatorvue/$VERSION/
+  """
 
 [context.production.environment]
   VERSION = "v1"
