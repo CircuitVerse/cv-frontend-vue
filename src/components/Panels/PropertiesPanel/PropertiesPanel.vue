@@ -33,7 +33,7 @@ function showPropertiesPanel() {
     if (toRaw(propertiesPanelObj.value) == simulationArea.lastSelected) return
     prevPropertyObjSet(simulationArea.lastSelected)
     propertiesPanelObj.value = simulationArea.lastSelected
-    if(simulationArea.lastSelected.newElement) {
+    if(simulationArea.lastSelected && simulationArea.lastSelected.newElement) {
         simulationArea.lastSelected.label = ""
     }
     // there are 3 types of panel body for Properties Panel
