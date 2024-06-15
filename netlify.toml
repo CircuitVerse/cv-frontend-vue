@@ -1,7 +1,21 @@
 [build]
-  command = "npm run build && mkdir -p ./dist && cp -r ../public/* ./dist/ && mv ./dist/simulatorvue/index.html ./dist/"
+  command = "
+    VERSION=${VERSION:-v0}
+    npm run build && mkdir -p ./dist && cp -r ../public/* ./dist/ && mv ./dist/simulatorvue/$VERSION/index.html ./dist/
+ "
+
+[context.production.environment]
+  VERSION = "v1"
+
+[context.deploy-preview.environment]
+  VERSION = "v0"
 
 [[redirects]]
-  from = "/simulatorvue/*"
-  to = "/index.html"
+  from = "/simulatorvue/v0/*"
+  to = "/simulatorvue/v0/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/simulatorvue/v1/*"
+  to = "/simulatorvue/v1/index.html"
   status = 200
