@@ -21,7 +21,7 @@
               <div class="icon-image">
                 <img :src="`/img/${group.type}.svg`" />
                 <p class="img__description">
-                  {{ element.description !== '' ? element.description : 'unlabeled' }}
+                  {{ element.label !== '' ? element.label : 'unlabeled' }}
                 </p>
               </div>
             </div>
@@ -50,7 +50,9 @@ const dragElement = (groupType: string, element: any, index: number) => {
   SimulatorState.subCircuitElementList.forEach((typeGroup) => {
     typeGroup.elements = typeGroup.elements.filter(
       (_, i) => {
-        if(typeGroup.type === groupType && index === i) return false
+        if(typeGroup.type === groupType && index === i)
+        return false
+
         return true;
       }
     )
