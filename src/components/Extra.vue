@@ -37,6 +37,7 @@
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Testbench -->
     <TestBenchPanel />
+    <Creator />
     <TestBenchCreator v-if="isTestBenchCreatorVisible" />
     <!-- --------------------------------------------------------------------------------------------- -->
 
@@ -174,6 +175,7 @@ import OpenOffline from './DialogBox/OpenOffline.vue'
 import ReportIssue from './ReportIssue/ReportIssue.vue'
 import TestBenchPanel from './Panels/TestBenchPanel/TestBenchPanel.vue'
 import TestBenchCreator from './Panels/TestBenchPanel/TestBenchCreator.vue'
+import Creator from './Panels/TestBenchPanel/Creator.vue'
 import { useTestBenchStore } from '#/store/testBenchStore'
 
 const testBenchStore = useTestBenchStore();
