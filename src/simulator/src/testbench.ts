@@ -3,8 +3,10 @@ import { showMessage } from '#/simulator/src/utils'
 import { useTestBenchStore } from "#/store/testBenchStore";
 import { changeClockEnable } from '#/simulator/src/sequential'
 import { play } from '#/simulator/src/engine'
+import { toRefs } from "vue";
 
 const testBenchStore = useTestBenchStore()
+const { testbenchData } = toRefs(testBenchStore)
 
 const CONTEXT = {
   CONTEXT_SIMULATOR: 0,
@@ -382,7 +384,7 @@ export function runTestBench(
           return
       }
 
-      testBenchStore.testbenchData = tempTestbenchData
+      testbenchData.value = tempTestbenchData
 
       return
   }

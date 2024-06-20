@@ -18,7 +18,7 @@ import { generateId } from '../utils'
 import modules from '../modules'
 import { oppositeDirection } from '../canvasApi'
 import plotArea from '../plotArea'
-import { TestbenchData } from '#/components/Panels/TestBenchPanel/testbench'
+import { TestbenchData } from '#/simulator/src/testbench'
 import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
 import { toRefs } from 'vue'
 /**

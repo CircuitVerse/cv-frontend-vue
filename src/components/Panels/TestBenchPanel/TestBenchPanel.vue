@@ -113,7 +113,6 @@ import { play } from '#/simulator/src/engine'
 import { showMessage, escapeHtml } from '#/simulator/src/utils'
 import { confirmOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
 import { useTestBenchStore } from '#/store/testBenchStore'
-import { TestbenchData } from '#/components/Panels/TestBenchPanel/testbench'
 import { TestData } from "#/store/testBenchStore";
 import { TestBenchData } from '#/store/testBenchStore'
 import { computed } from 'vue'

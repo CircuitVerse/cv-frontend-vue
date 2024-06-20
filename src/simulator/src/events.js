@@ -12,7 +12,7 @@ import { backUp } from './data/backupCircuit'
 import { getNextPosition } from './modules'
 import { generateId } from './utils'
 import simulationArea from './simulationArea'
-import { TestbenchData } from '#/components/Panels/TestBenchPanel/testbench'
+import { TestbenchData } from '#/simulator/src/testbench'
 
 /**
  * Helper function to paste

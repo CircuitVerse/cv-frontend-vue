@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { reactive, ref } from "vue";
-import { runTestBench } from "#/components/Panels/TestBenchPanel/testbench";
+import { runTestBench } from "#/simulator/src/testbench";
 
 export interface TestData {
   type: string;
