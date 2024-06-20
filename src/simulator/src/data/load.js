@@ -18,7 +18,7 @@ import { generateId } from '../utils'
 import modules from '../modules'
 import { oppositeDirection } from '../canvasApi'
 import plotArea from '../plotArea'
-import { updateTestbenchUI, TestbenchData } from '../testbench'
+import { TestbenchData } from '#/components/Panels/TestBenchPanel/testbench'
 import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
 import { toRefs } from 'vue'
 /**
@@ -281,9 +281,6 @@ export default function load(data) {
 
     // Switch to last focussedCircuit
     if (data.focussedCircuit) switchCircuit(String(data.focussedCircuit))
-
-    // Update the testbench UI
-    updateTestbenchUI()
 
     updateSimulationSet(true)
     updateCanvasSet(true)

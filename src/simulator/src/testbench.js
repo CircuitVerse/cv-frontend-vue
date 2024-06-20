@@ -250,7 +250,6 @@ export function runTestBench(
 
         globalScope.testbenchData = tempTestbenchData
 
-        updateTestbenchUI()
         return
     }
 
@@ -271,12 +270,8 @@ export function updateTestbenchUI() {
     $('.tb-dialog-button').off('click')
     $('.tb-case-button').off('click')
 
-    setupTestbenchUI()
     if (globalScope.testbenchData != undefined) {
         const { testbenchData } = globalScope
-
-        // Initialize the UI
-        setUITableHeaders(testbenchData)
 
         // Add listeners to buttons
         $('.tb-case-button#prev-case-btn').on(
@@ -403,7 +398,6 @@ const buttonListenerFunctions = {
             )
             return
         }
-        const results = runAll(globalScope.testbenchData.testData, globalScope)
         const { passed } = results.summary
         const { total } = results.summary
         const resultString = JSON.stringify(results.detailed)
@@ -437,7 +431,6 @@ const buttonListenerFunctions = {
             )
         ) {
             globalScope.testbenchData = undefined
-            setupTestbenchUI()
         }
     },
 
@@ -693,26 +686,26 @@ function showValidationUI(validationErrors) {
         s += '</table></div>'
     }
 
-    $('#testbenchValidate').dialog({
-        resizable: false,
-        width: 'auto',
-        buttons: [
-            {
-                text: 'Ok',
-                click() {
-                    $(this).dialog('close')
-                },
-            },
-            {
-                text: 'Auto Fix',
-                click() {
-                    const fixes = validationAutoFix(validationErrors)
-                    showMessage(`Testbench: Auto fixed ${fixes} errors`)
-                    $(this).dialog('close')
-                },
-            },
-        ],
-    })
+    // $('#testbenchValidate').dialog({
+    //     resizable: false,
+    //     width: 'auto',
+    //     buttons: [
+    //         {
+    //             text: 'Ok',
+    //             click() {
+    //                 $(this).dialog('close')
+    //             },
+    //         },
+    //         {
+    //             text: 'Auto Fix',
+    //             click() {
+    //                 const fixes = validationAutoFix(validationErrors)
+    //                 showMessage(`Testbench: Auto fixed ${fixes} errors`)
+    //                 $(this).dialog('close')
+    //             },
+    //         },
+    //     ],
+    // })
 
     $('#testbenchValidate').empty()
     $('#testbenchValidate').append(s)

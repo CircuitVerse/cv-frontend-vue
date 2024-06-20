@@ -1,9 +1,10 @@
 <template>
-    <v-dialog v-model="show" :persistent="false">
+    <v-dialog v-model="showCreator" :persistent="false">
         <v-card class="messageBoxContent" id="creatorBox">
             <v-card-text class="creatorHeader">
-                <p class="dialogHeader">Create Test</p>
-                <v-btn size="x-small" icon class="dialogClose" @mousedown="show = false">
+                <p class="dialogHeader">{{ dialogTitle }}</p>
+                <v-btn size="x-small" icon class="dialogClose"
+                    @mousedown="testBenchStore.toggleTestBenchCreator(false)">
                     <v-icon>mdi-close</v-icon>
                 </v-btn>
                 <div class="testInput">
@@ -13,10 +14,10 @@
             </v-card-text>
 
             <v-card-actions class="testType">
-                <v-btn class="messageBtn" block @mousedown="() => { }">
+                <v-btn class="messageBtn" block @mousedown="testType = 'seq'">
                     Sequential Test
                 </v-btn>
-                <v-btn class="messageBtn" block @mousedown="() => { }">
+                <v-btn class="messageBtn" block @mousedown="testType = 'comb'">
                     Combinational Test
                 </v-btn>
             </v-card-actions>
@@ -27,21 +28,27 @@
 
                     </div>
                     <div class="testRow fullTestRow space">
-                        <span>Inputs</span> <span @mousedown="increInputs()" class="plusBtn">+</span>
+                        <span>Inputs</span> <span @mousedown="increInputs" class="plusBtn">+</span>
                     </div>
                     <div class="testRow fullTestRow space">
-                        <span>Outputs</span> <span @mousedown="increOutputs()" class="plusBtn">+</span>
+                        <span>Outputs</span> <span @mousedown="increOutputs" class="plusBtn">+</span>
                     </div>
                 </div>
                 <div class="testCol">
                     <div class="testRow firstCol">
                         Label
                     </div>
-                    <div class="testRow fullTestRow">
-                        inp1
+                    <div class="testContainer">
+                        <div v-for="(_, i) in inputsName" class="testRow"
+                            :style="{ width: 100 / inputsBandWidth.length + '%' }">
+                            <input class="inputField dataGroupTitle smInputName" type="text" v-model="inputsName[i]" />
+                        </div>
                     </div>
-                    <div class="testRow fullTestRow">
-                        out1
+                    <div class="testContainer">
+                        <div v-for="(_, i) in outputsName" class="testRow"
+                            :style="{ width: 100 / outputsBandWidth.length + '%' }">
+                            <input class="inputField dataGroupTitle smInputName" type="text" v-model="outputsName[i]" />
+                        </div>
                     </div>
                 </div>
                 <div class="testCol">
@@ -49,13 +56,17 @@
                         Bandwidth
                     </div>
                     <div class="testContainer">
-                        <div v-for="(_, i) in inputs" class="testRow" :style="{ width: 100 / inputs.length + '%' }">
-                            <input class="inputField dataGroupTitle smInput" type="text" v-model="inputs[i]" maxlength="1" />
+                        <div v-for="(_, i) in inputsBandWidth" class="testRow"
+                            :style="{ width: 100 / inputsBandWidth.length + '%' }">
+                            <input class="inputField dataGroupTitle smInput" type="text" v-model="inputsBandWidth[i]"
+                                maxlength="1" />
                         </div>
                     </div>
                     <div class="testContainer">
-                        <div v-for="(_, i) in outputs" class="testRow" :style="{ width: 100 / outputs.length + '%' }">
-                            <input class="inputField dataGroupTitle smInput" type="text" v-model="outputs[i]" maxlength="1" />
+                        <div v-for="(_, i) in outputsBandWidth" class="testRow"
+                            :style="{ width: 100 / outputsBandWidth.length + '%' }">
+                            <input class="inputField dataGroupTitle smInput" type="text" v-model="outputsBandWidth[i]"
+                                maxlength="1" />
                         </div>
                     </div>
                 </div>
@@ -64,21 +75,24 @@
                     <input v-model="group.title" class="inputField dataGroupTitle" type="text" />
                     <p>Click + to add tests to the group</p>
 
-                    <div v-for="(test, index) in group.inputs" class="groupRow" :key="index">
+                    <div v-for="(_, index) in group.inputs[0]" class="groupRow" :key="index">
                         <div class="testRow firstCol spaceArea"></div>
                         <div class="testContainer">
-                            <div v-for="(_, i) in inputs" class="testRow" :style="{ width: 100 / inputs.length + '%' }">
-                                <input class="inputField dataGroupTitle smInput" type="text" v-model="group.inputs[index][i]" maxlength="1" />
+                            <div v-for="(_, i) in group.inputs" class="testRow colWise"
+                                :style="{ width: 100 / inputsBandWidth.length + '%' }">
+                                <input class="inputField dataGroupTitle smInput" type="text" v-model="group.inputs[i][index]" maxlength="1" />
                             </div>
                         </div>
                         <div class="testContainer">
-                            <div v-for="(_, i) in outputs" class="testRow" :style="{ width: 100 / outputs.length + '%' }">
-                                <input class="inputField dataGroupTitle smInput" type="text" v-model="group.outputs[index][i]" maxlength="1" />
+                            <div v-for="(_, i) in group.outputs" class="testRow colWise"
+                                :style="{ width: 100 / outputsBandWidth.length + '%' }">
+                                <input class="inputField dataGroupTitle smInput" type="text" v-model="group.outputs[i][index]" maxlength="1" />
                             </div>
                         </div>
                     </div>
 
-                    <v-btn v-if="groupIndex !== groups.length - 1" class="messageBtn addBtn" block @mousedown="addTestToGroup(groupIndex)">
+                    <v-btn v-if="groupIndex !== groups.length - 1" class="messageBtn addBtn" block
+                        @mousedown="addTestToGroup(groupIndex)">
                         +
                     </v-btn>
                 </div>
@@ -100,7 +114,7 @@
                     <v-btn class="messageBtn" block>
                         Export As CSV
                     </v-btn>
-                    <v-btn class="messageBtn" block>
+                    <v-btn v-if="showPopup" class="messageBtn" block @mousedown="sendData">
                         Attach
                     </v-btn>
                 </div>
@@ -110,17 +124,29 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
+import { useTestBenchStore } from '#/store/testBenchStore';
 
-const show = ref(true);
+const testBenchStore = useTestBenchStore();
+
+const showCreator = computed(() => testBenchStore.showTestBenchCreator);
+const showPopup = computed(() => testBenchStore.showPopup);
+
 const testTitle = ref('Untitled');
-const inputs = ref([1]);
-const outputs = ref([1]);
+const dialogTitle = ref('Create Test');
+const testType = ref('comb');
+
+const inputsBandWidth = ref([1]);
+const outputsBandWidth = ref([1]);
+const inputsName = ref<string[]>(["inp1"]);
+const outputsName = ref<string[]>(["out1"]);
+
+const circuitScopeID = ref<null | string>(null);
 
 interface Group {
     title: string;
-    inputs: number[][];
-    outputs: number[][];
+    inputs: string[][];
+    outputs: string[][];
 }
 
 const groups = reactive<Group[]>([
@@ -131,14 +157,70 @@ const groups = reactive<Group[]>([
     }
 ]);
 
+watch([testBenchStore.data, testBenchStore.result], () => {
+    if (testBenchStore.data) {
+        dialogTitle.value = 'Edit Test';
+        circuitScopeID.value = testBenchStore.scopeId;
+        // loadData(testBenchStore.data);
+    }
+    else if (testBenchStore.result) {
+        dialogTitle.value = 'Test Result';
+        // loadResult(testBenchStore.result);
+        // readOnlyUI();
+    }
+    else {
+        dialogTitle.value = 'Create Test';
+        circuitScopeID.value = testBenchStore.scopeId;
+    }
+});
+
+const sendData = () => {
+    const groupsData = groups.map(group => {
+        const inputsData = group.inputs.map((input, index) => {
+            return {
+                label: inputsName.value[index],
+                bitWidth: inputsBandWidth.value[index],
+                values: input
+            };
+        });
+
+        const outputsData = group.outputs.map((output, index) => {
+            return {
+                label: outputsName.value[index],
+                bitWidth: outputsBandWidth.value[index],
+                values: output
+            };
+        });
+
+        return {
+            label: group.title,
+            inputs: inputsData,
+            outputs: outputsData,
+            n: inputsData[0].values.length,
+        };
+    });
+
+    const testData = {
+        type: testType.value,
+        title: testTitle.value,
+        groups: groupsData,
+    };
+
+    testBenchStore.sendData(testData, circuitScopeID.value);
+}
+
 const addTestToGroup = (index: number) => {
     const group = groups[index];
-    group.inputs.push([]);
-    group.outputs.push([]);
+    for (let i = 0; i < inputsBandWidth.value.length; i++) {
+        if(group.inputs.length === i)
+            group.inputs.push([]);
+        group.inputs[i].push("0");
+    }
 
-    for(let i = 0; i < inputs.value.length; i++) {
-        group.inputs[group.inputs.length - 1].push(0);
-        group.outputs[group.outputs.length - 1].push(0);
+    for (let i = 0; i < outputsBandWidth.value.length; i++) {
+        if(group.outputs.length === i)
+            group.outputs.push([]);
+        group.outputs[i].push("0");
     }
 };
 
@@ -151,23 +233,33 @@ const addNewGroup = () => {
 };
 
 const increInputs = () => {
-    for(let i = 0; i < groups.length; i++) {
-        for(let j = 0; j < groups[i].inputs.length; j++) {
-            groups[i].inputs[j].push(0);
-        }
-    }
+    groups.forEach((group) => {
+        if(group.inputs.length === 0) return;
 
-    inputs.value.push(1);
+        group.inputs.push([]);
+
+        for (let i = 0; i < inputsBandWidth.value.length; i++) {
+            group.inputs[group.inputs.length - 1].push("0");
+        }
+    });
+
+    inputsBandWidth.value.push(1);
+    inputsName.value.push(`inp${inputsName.value.length + 1}`);
 };
 
 const increOutputs = () => {
-    for(let i = 0; i < groups.length; i++) {
-        for(let j = 0; j < groups[i].outputs.length; j++) {
-            groups[i].outputs[j].push(0);
-        }
-    }
+    groups.forEach((group) => {
+        if(group.outputs.length === 0) return;
 
-    outputs.value.push(1);
+        group.outputs.push([]);
+
+        for (let i = 0; i < outputsBandWidth.value.length; i++) {
+            group.outputs[group.outputs.length - 1].push("0");
+        }
+    });
+
+    outputsBandWidth.value.push(1);
+    outputsName.value.push(`out${outputsName.value.length + 1}`);
 };
 </script>
 
@@ -213,6 +305,13 @@ const increOutputs = () => {
     align-items: center;
 }
 
+.colWise{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 .testCol {
     display: flex;
     gap: 0.5rem;
@@ -234,7 +333,7 @@ const increOutputs = () => {
     visibility: hidden;
 }
 
-.testContainer{
+.testContainer {
     display: flex;
     width: 35%;
     gap: 0.5rem;
@@ -245,7 +344,7 @@ const increOutputs = () => {
     width: 35%;
 }
 
-.groupRow{
+.groupRow {
     display: flex;
     gap: 0.5rem;
     justify-content: center;
@@ -259,30 +358,41 @@ const increOutputs = () => {
     border: 1px solid #c5c5c5;
 }
 
-.space{
+.space {
     gap: 0.25rem;
 }
 
-.groupParent{
-   margin-bottom: 2rem;
-   margin-top: 2rem;
+.groupParent {
+    margin-bottom: 2rem;
+    margin-top: 2rem;
 }
 
-.addBtn{
+.addBtn {
     background-color: transparent;
     color: white;
 }
 
-.testCard{
+.testCard {
     padding-left: 2.2rem;
 }
 
-.smInput{
+.smInput {
     width: 12px;
     border: none;
 }
 
-.smInput:focus{
+.smInputName {
+    width: 34px;
+    border: none;
+}
+
+.smInputName:focus,
+.smInput:focus {
+    outline: none;
+    border: none;
+}
+
+.smInput:focus {
     outline: none;
     border: none;
 }

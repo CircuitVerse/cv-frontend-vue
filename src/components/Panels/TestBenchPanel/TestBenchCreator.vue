@@ -802,18 +802,18 @@ function makeSortable() {
     }
   }
 
-  $('.data-group table').sortable({
-    handle: '.tb-handle',
-    helper,
-    start: makePlaceholder,
-    placeholder: 'clone',
-    connectWith: 'table',
-    receive: removeTbody, // For sortable hack
-    remove: createTbody, // For sortable hack
-    items: 'tr',
-    revert: 50,
-    scroll: false,
-  })
+  // $('.data-group table').sortable({
+  //   handle: '.tb-handle',
+  //   helper,
+  //   start: makePlaceholder,
+  //   placeholder: 'clone',
+  //   connectWith: 'table',
+  //   receive: removeTbody, // For sortable hack
+  //   remove: createTbody, // For sortable hack
+  //   items: 'tr',
+  //   revert: 50,
+  //   scroll: false,
+  // })
 }
 
 function makeUnsortable() {
@@ -927,8 +927,6 @@ window.clickUpload = clickUpload
 .tablink:hover.tablink-no-override {
   background-color: #a5dfc5;
 }
-
-.tablink-hover-override {}
 
 .tablink.tab-selected {
   background-color: #42b983;

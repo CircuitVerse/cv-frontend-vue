@@ -38,7 +38,7 @@
     <!-- Testbench -->
     <TestBenchPanel />
     <Creator />
-    <TestBenchCreator v-if="isTestBenchCreatorVisible" />
+    <!-- <TestBenchCreator v-if="isTestBenchCreatorVisible" /> -->
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
