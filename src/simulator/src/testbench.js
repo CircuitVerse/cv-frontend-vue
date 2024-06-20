@@ -205,22 +205,25 @@ function creatorOpenPrompt(creatorWindow) {
     </div>
     `
 
-    $('#setTestbenchData').dialog({
-        resizable: false,
-        width: 'auto',
-        buttons: [
-            {
-                text: 'Close Pop-Up',
-                click() {
-                    $(this).dialog('close')
-                    creatorWindow.close()
-                },
-            },
-        ],
-    })
+function showDialog() {
+    let setTestbenchData = document.querySelector('#setTestbenchData');
 
-    $('#setTestbenchData').empty()
-    $('#setTestbenchData').append(s)
+    setTestbenchData.style.display = 'block';
+
+    let closeButton = document.createElement('button');
+    closeButton.textContent = 'Close Pop-Up';
+    closeButton.addEventListener('click', () => {
+        setTestbenchData.style.display = 'none';
+        creatorWindow.close();
+    });
+
+    setTestbenchData.appendChild(closeButton);
+}
+showDialog();
+
+
+    let element = document.getElementById("#setTestbenchData");
+    element += s;
 }
 
 /**
@@ -268,8 +271,14 @@ export function runTestBench(
  */
 export function updateTestbenchUI() {
     // Remove all listeners from buttons
-    $('.tb-dialog-button').off('click')
-    $('.tb-case-button').off('click')
+    let dialogButton = document.querySelectorAll('.tb-dialog-button');
+    dialogButton.forEach((button) => {
+        button.removeEventListener("click", buttonListenerFunctions);
+    })
+    let caseButton = document.querySelectorAll('.tb-case-button');
+    caseButton.forEach((button) => {
+        button.removeEventListener("click", buttonListenerFunctions);
+    })
 
     setupTestbenchUI()
     if (globalScope.testbenchData != undefined) {
@@ -279,49 +288,39 @@ export function updateTestbenchUI() {
         setUITableHeaders(testbenchData)
 
         // Add listeners to buttons
-        $('.tb-case-button#prev-case-btn').on(
-            'click',
-            buttonListenerFunctions.previousCaseButton
-        )
-        $('.tb-case-button#next-case-btn').on(
-            'click',
-            buttonListenerFunctions.nextCaseButton
-        )
-        $('.tb-case-button#prev-group-btn').on(
-            'click',
-            buttonListenerFunctions.previousGroupButton
-        )
-        $('.tb-case-button#next-group-btn').on(
-            'click',
-            buttonListenerFunctions.nextGroupButton
-        )
-        $('.tb-dialog-button#change-test-btn').on(
-            'click',
-            buttonListenerFunctions.changeTestButton
-        )
-        $('.tb-dialog-button#runall-btn').on(
-            'click',
-            buttonListenerFunctions.runAllButton
-        )
-        $('.tb-dialog-button#edit-test-btn').on(
-            'click',
-            buttonListenerFunctions.editTestButton
-        )
-        $('.tb-dialog-button#validate-btn').on(
-            'click',
-            buttonListenerFunctions.validateButton
-        )
-        $('.tb-dialog-button#remove-test-btn').on(
-            'click',
-            buttonListenerFunctions.removeTestButton
-        )
+        document.querySelector('.tb-case-button#prev-case-btn').addEventListener(
+            'click', 
+            buttonListenerFunctions.previousCaseButton);
+        document.querySelector('.tb-case-button#next-case-btn').addEventListener(
+            'click', 
+            buttonListenerFunctions.nextCaseButton);
+        document.querySelector('.tb-case-button#prev-group-btn').addEventListener(
+            'click', 
+            buttonListenerFunctions.previousGroupButton);
+        document.querySelector('.tb-case-button#next-group-btn').addEventListener(
+            'click', 
+            buttonListenerFunctions.nextGroupButton);
+        document.querySelector('.tb-dialog-button#change-test-btn').addEventListener(
+            'click', 
+            buttonListenerFunctions.changeTestButton);
+        document.querySelector('.tb-dialog-button#runall-btn').addEventListener(
+            'click', 
+            buttonListenerFunctions.runAllButton);
+        document.querySelector('.tb-dialog-button#edit-test-btn').addEventListener(
+            'click', 
+            buttonListenerFunctions.editTestButton);
+        document.querySelector('.tb-dialog-button#validate-btn').addEventListener(
+            'click', 
+            buttonListenerFunctions.validateButton);
+        document.querySelector('.tb-dialog-button#remove-test-btn').addEventListener(
+            'click', 
+            buttonListenerFunctions.removeTestButton);
     }
 
     // Add listener to attach test button
-    $('.tb-dialog-button#attach-test-btn').on(
-        'click',
-        buttonListenerFunctions.attachTestButton
-    )
+    document.querySelector('.tb-dialog-button#attach-test-btn').addEventListener(
+        'click', 
+        buttonListenerFunctions.attachTestButton);
 }
 
 /**
@@ -407,12 +406,19 @@ const buttonListenerFunctions = {
         const { passed } = results.summary
         const { total } = results.summary
         const resultString = JSON.stringify(results.detailed)
-        $('#runall-summary').text(`${passed} out of ${total}`)
-        $('#runall-detailed-link').on('click', () => {
-            openCreator('result', resultString)
+        document.querySelector("#runall-summary").textContent = `${passed} out of ${total}`;
+        document.querySelector("#runall-detailed-link").addEventListener("click", () => {
+            openCreator('result', resultString);
         })
-        $('.testbench-runall-label').css('display', 'table-cell')
-        $('.testbench-runall-label').delay(5000).fadeOut('slow')
+        let element = document.querySelectorAll(".testbench-runall-label");
+        element.style.display = "table-cell";
+
+        setTimeout(() => {
+            element.forEach((element) => {
+                element.style.transition = 'opacity 1s';
+                element.style.opacity = 0;
+            })
+        },5000)
     },
 
     editTestButton: () => {
@@ -462,16 +468,17 @@ const buttonListenerFunctions = {
  */
 export function setupTestbenchUI() {
     // Don't change UI if UI is minimized (because hide() and show() are recursive)
-    if ($('.testbench-manual-panel .minimize').css('display') === 'none') return
+    
+    if (document.querySelector('.testbench-manual-panel .minimize').style.display === "none") return
 
     if (globalScope.testbenchData === undefined) {
-        $('.tb-test-not-null').hide()
-        $('.tb-test-null').show()
+        document.querySelector('.tb-test-not-null').style.display = "none";
+        document.querySelector('.tb-test-null').style.display = "block";
         return
     }
 
-    $('.tb-test-null').hide()
-    $('.tb-test-not-null').show()
+    document.querySelector('.tb-test-null').style.display = "none";
+    document.querySelector('.tb-test-not-null').style.display = "block";
 }
 
 /**
@@ -693,29 +700,34 @@ function showValidationUI(validationErrors) {
         s += '</table></div>'
     }
 
-    $('#testbenchValidate').dialog({
-        resizable: false,
-        width: 'auto',
-        buttons: [
-            {
-                text: 'Ok',
-                click() {
-                    $(this).dialog('close')
-                },
-            },
-            {
-                text: 'Auto Fix',
-                click() {
-                    const fixes = validationAutoFix(validationErrors)
-                    showMessage(`Testbench: Auto fixed ${fixes} errors`)
-                    $(this).dialog('close')
-                },
-            },
-        ],
-    })
+function showDialogBox() {
+    var testbenchValidate = document.querySelector('#testbenchValidate');
 
-    $('#testbenchValidate').empty()
-    $('#testbenchValidate').append(s)
+    testbenchValidate.style.display = 'block';
+
+    let OkButton = document.createElement('button');
+    OkButton.textContent = 'Ok';
+    OkButton.addEventListener('click', function() {
+        testbenchValidate.style.display = 'none';
+    });
+
+    testbenchValidate.appendChild(OkButton);
+
+    let FixButton = document.createElement('button');
+    FixButton.textContent = 'Auto Fix';
+    FixButton.addEventListener('click', function() {
+        const fixes = validationAutoFix(validationErrors)
+        showMessage(`Testbench: Auto fixed ${fixes} errors`)
+        testbenchValidate.style.display = 'none';
+    });
+
+    testbenchValidate.appendChild(FixButton);
+}
+
+showDialogBox();
+
+    let element = document.querySelector('#testbenchValidate');
+    element += s;
 }
 
 /**
@@ -972,28 +984,22 @@ function setUITableHeaders(testbenchData) {
     const inputCount = data.groups[0].inputs.length
     const outputCount = data.groups[0].outputs.length
 
-    $('#tb-manual-table-inputs-head').attr('colspan', inputCount)
-    $('#tb-manual-table-outputs-head').attr('colspan', outputCount)
+    document.querySelector("#tb-manual-table-inputs-head").setAttribute('colspan', inputCount);
+    document.querySelector("#tb-manual-table-outputs-head").setAttribute('colspan', outputCount);
 
-    $('.testbench-runall-label').css('display', 'none')
+    document.querySelector(".testbench-runall-label").style.display = "none";
 
-    $('.tb-data#data-title')
-        .children()
-        .eq(1)
-        .text(data.title || 'Untitled')
-    $('.tb-data#data-type')
-        .children()
-        .eq(1)
-        .text(data.type === 'comb' ? 'Combinational' : 'Sequential')
+    document.querySelector(".tb-data#data-title").children[1].textContent = data.title || "Untitled";
+    document.querySelector(".tb-data#data-type").children[1].textContent = data.type === 'comb' ? 'Combinational' : 'Sequential';
 
-    $('#tb-manual-table-labels').html('<th>LABELS</th>')
-    $('#tb-manual-table-bitwidths').html('<td>Bitwidth</td>')
+    document.querySelector("#tb-manual-table-labels").innerHTML = '<th>LABELS</th>';
+    document.querySelector("#tb-manual-table-bitwidths").innerHTML = '<td>Bitwidth</td>';
 
     data.groups[0].inputs.concat(data.groups[0].outputs).forEach((io) => {
         const label = `<th>${escapeHtml(io.label)}</th>`
         const bw = `<td>${escapeHtml(io.bitWidth.toString())}</td>`
-        $('#tb-manual-table-labels').append(label)
-        $('#tb-manual-table-bitwidths').append(bw)
+        document.querySelector("#tb-manual-table-labels").appendChild(label);
+        document.querySelector("#tb-manual-table-bitwidths").appendChild(bw);
     })
 
     setUICurrentCase(testbenchData)
@@ -1010,12 +1016,12 @@ function setUICurrentCase(testbenchData) {
     const data = testbenchData.testData
     const groupIndex = testbenchData.currentGroup
     const caseIndex = testbenchData.currentCase
-
-    const currCaseElement = $('#tb-manual-table-current-case')
-    currCaseElement.empty()
-    currCaseElement.append('<td>Current Case</td>')
-    $('#tb-manual-table-test-result').empty()
-    $('#tb-manual-table-test-result').append('<td>Result</td>')
+    
+    const currCaseElement = document.querySelector('#tb-manual-table-current-case');
+    currCaseElement.innerHTML = '';
+    currCaseElement.innerHTML = '<td>Current Case</td>';
+    document.querySelector('#tb-manual-table-test-result').innerHTML = '';
+    document.querySelector('#tb-manual-table-test-result').innerHTML = '<td>Result</td>';
 
     data.groups[groupIndex].inputs.forEach((input) => {
         currCaseElement.append(
@@ -1029,10 +1035,8 @@ function setUICurrentCase(testbenchData) {
         )
     })
 
-    $('.testbench-manual-panel .group-label').text(
-        data.groups[groupIndex].label
-    )
-    $('.testbench-manual-panel .case-label').text(caseIndex + 1)
+    document.querySelector('.testbench-manual-panel .group-label').textContent = data.groups[groupIndex].label;
+    document.querySelector('.testbench-manual-panel .case-label').textContent = caseIndex + 1;
 }
 
 /**
@@ -1045,12 +1049,12 @@ function setUIResult(testbenchData, result) {
     const data = testbenchData.testData
     const groupIndex = testbenchData.currentGroup
     const caseIndex = testbenchData.currentCase
-    const resultElement = $('#tb-manual-table-test-result')
+    const resultElement = document.querySelector('#tb-manual-table-test-result')
     let inputCount = data.groups[0].inputs.length
-    resultElement.empty()
-    resultElement.append('<td>Result</td>')
+    resultElement.innerHTML = '';
+    resultElement.innerHTMl = '<td>Result</td>';
     while (inputCount--) {
-        resultElement.append('<td> - </td>')
+        resultElement.innerHTMl = '<td> - </td>';   
     }
 
     for (const output of result.keys()) {
@@ -1100,7 +1104,7 @@ function openCreator(type, dataString) {
         runTestBench(data.testData, globalScope, CONTEXT.CONTEXT_SIMULATOR)
 
         // Close the 'Pop up is open' dialog
-        $('#setTestbenchData').dialog('close')
+        document.querySelector('#setTestbenchData').style.display = 'none';
     }
 
     if (type === 'create') {
@@ -1128,8 +1132,8 @@ function openCreator(type, dataString) {
         const checkPopUp = setInterval(() => {
             if (popUp.closed) {
                 // Close the dialog if it's open
-                if ($('#setTestbenchData').dialog('isOpen'))
-                    $('#setTestbenchData').dialog('close')
+                if (document.querySelector('#setTestbenchData').style.display !== 'none')
+                document.querySelector('#setTestbenchData').style.display = 'none';
 
                 // Remove the event listener that listens for data from popup
                 window.removeEventListener('message', dataListener)
