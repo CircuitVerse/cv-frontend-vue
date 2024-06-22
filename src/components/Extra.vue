@@ -37,8 +37,8 @@
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Testbench -->
     <TestBenchPanel />
-    <Creator />
-    <!-- <TestBenchCreator v-if="isTestBenchCreatorVisible" /> -->
+    <!-- --------------------------------------------------------------------------------------------- -->
+    <TestBenchCreator />
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
@@ -129,7 +129,7 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Dialog Box - Testbench -->
-     <TestBenchValidate />
+     <TestBenchValidator />
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
@@ -153,7 +153,6 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue'
 import VerilogEditorPanel from './Panels/VerilogEditorPanel/VerilogEditorPanel.vue'
 import ElementsPanel from './Panels/ElementsPanel/ElementsPanel.vue'
 import PropertiesPanel from './Panels/PropertiesPanel/PropertiesPanel.vue'
@@ -170,10 +169,5 @@ import OpenOffline from './DialogBox/OpenOffline.vue'
 import ReportIssue from './ReportIssue/ReportIssue.vue'
 import TestBenchPanel from './Panels/TestBenchPanel/TestBenchPanel.vue'
 import TestBenchCreator from './Panels/TestBenchPanel/TestBenchCreator.vue'
-import Creator from './Panels/TestBenchPanel/Creator.vue'
-import { useTestBenchStore } from '#/store/testBenchStore'
-import TestBenchValidate from './Panels/TestBenchPanel/TestBenchValidate.vue'
-
-const testBenchStore = useTestBenchStore();
-const isTestBenchCreatorVisible = computed(() => testBenchStore.showTestBenchCreator);
+import TestBenchValidator from './Panels/TestBenchPanel/TestBenchValidator.vue'
 </script>

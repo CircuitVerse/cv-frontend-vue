@@ -530,27 +530,24 @@ function runSingleSequential(testbenchData: TestBenchData, scope) {
 
 type openCreatorType = 'create' | 'edit' | 'result'
 
-function openCreator(type: openCreatorType, dataString: string = '') {
+export function openCreator(type: openCreatorType) {
   const testBenchStore = useTestBenchStore();
   if (type === 'create') {
     testBenchStore.showResults = false;
     testBenchStore.readOnly = false;
-    testBenchStore.toggleTestBenchCreator(true);
-    testBenchStore.createCreator(globalScope.id, true);
+    testBenchStore.showTestBenchCreator = true;
   }
 
   if (type === 'edit') {
     testBenchStore.showResults = false;
     testBenchStore.readOnly = false;
-    testBenchStore.toggleTestBenchCreator(true);
-    testBenchStore.createCreator(globalScope.id, true, dataString, "data");
+    testBenchStore.showTestBenchCreator = true;
   }
 
   if (type === 'result') {
     testBenchStore.showResults = true;
     testBenchStore.readOnly = true;
-    testBenchStore.toggleTestBenchCreator(true);
-    testBenchStore.createCreator(globalScope.id, true, dataString, "result");
+    testBenchStore.showTestBenchCreator = true;
   }
 }
 
@@ -683,13 +680,18 @@ export const buttonListenerFunctions = {
 
     useTestBenchStore().passed = passed
     useTestBenchStore().total = total
+    useTestBenchStore().showPassed = true
+
+    setTimeout(() => {
+      useTestBenchStore().showPassed = false
+    }, 3000)
   },
 
   editTestButton: () => {
     const editDataString = JSON.stringify(
       useTestBenchStore().testbenchData.testData
     )
-    openCreator('edit', editDataString)
+    openCreator('edit')
   },
 
   validateButton: () => {

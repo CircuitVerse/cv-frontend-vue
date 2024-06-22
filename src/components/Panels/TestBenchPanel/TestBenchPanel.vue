@@ -83,9 +83,9 @@
                         Run All
                     </button>
                 </div>
-                <span v-if="testBenchStore.total > 0">
+                <span v-if="testBenchStore.showPassed">
                     <span>{{ testBenchStore.passed }} out of {{ testBenchStore.total }}</span> Tests Passed
-                    <span @mousedown="testBenchStore.showResults = true; testBenchStore.showTestBenchCreator = true; testBenchStore.readOnly = true;" style="color: #18a2cd">View Detailed</span>
+                    <span @mousedown="openCreator('result')" :style="{ color: '#18a2cd' }">View Detailed</span>
                 </span>
             </div>
         </div>
@@ -105,8 +105,9 @@
 
 <script lang="ts" setup>
 import { useTestBenchStore } from '#/store/testBenchStore'
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { buttonListenerFunctions } from '#/simulator/src/testbench'
+import { openCreator } from '#/simulator/src/testbench';
 
 const testBenchStore = useTestBenchStore();
 const testData = computed(() => testBenchStore.testbenchData?.testData);

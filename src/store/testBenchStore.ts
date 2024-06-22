@@ -53,13 +53,12 @@ export interface Result {
 
 export const useTestBenchStore = defineStore("testBenchStore", () => {
   const showTestBenchCreator = ref(false);
-  const scopeId = ref<string | null>(null);
-  const showPopup = ref(false);
   const showTestbenchUI = ref(false);
   const showTestBenchValidator = ref(false);
   const resultValues = ref<Result[]>([]);
   const passed = ref(0);
   const total = ref(0);
+  const showPassed = ref(false);
   const showResults = ref(false);
   const readOnly = ref(false);
 
@@ -80,45 +79,17 @@ export const useTestBenchStore = defineStore("testBenchStore", () => {
     invalids: []
   });
 
-  const toggleTestBenchCreator = (value: boolean) => {
-    showTestBenchCreator.value = value;
-  }
-
-  const createCreator = (id: string, popup: boolean, dataString?: string, dataType?: "data" | "result") => {
-    scopeId.value = id;
-    showPopup.value = popup;
-    if (!dataString) return;
-
-    if (dataType === "data") {
-      const dataValues = JSON.parse(dataString) as TestData;
-      testData.type = dataValues.type;
-      testData.title = dataValues.title;
-      testData.groups = dataValues.groups;
-    } else {
-      const dataValues = JSON.parse(dataString) as TestData;
-      testData.type = dataValues.type;
-      testData.title = dataValues.title;
-      testData.groups = dataValues.groups;
-    }
-  }
-
-  const sendData = (dataValues: TestData, circuitScopeID: string | null) => {
-    // if (circuitScopeID !== scopeId.value) return;
-
+  const sendData = (dataValues: TestData) => {
     showTestbenchUI.value = true;
     testData.type = dataValues.type;
     testData.title = dataValues.title;
     testData.groups = dataValues.groups;
     runTestBench(dataValues, globalScope, 0);
-    toggleTestBenchCreator(false);
+    showTestBenchCreator.value = false;
   }
 
   return {
     showTestBenchCreator,
-    toggleTestBenchCreator,
-    createCreator,
-    scopeId,
-    showPopup,
     sendData,
     testbenchData,
     showTestbenchUI,
@@ -129,5 +100,6 @@ export const useTestBenchStore = defineStore("testBenchStore", () => {
     total,
     showResults,
     readOnly,
+    showPassed,
   }
 })

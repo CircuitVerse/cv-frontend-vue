@@ -1,996 +1,552 @@
 <template>
-  <br><br>
-  <div class="container" id="testbenchCreator">
-    <h1 style="text-align: center" id="tb-creator-head"><b>Create Test</b></h1>
-    <div class="test-title">
-      <div style="width: 20%; font-weight: bolder;">Title:</div>
-      <div id="test-title-label" contenteditable="true">Untitled</div>
-    </div>
-    <button class="tablink tablink-no-override" id="seqSelect"
-      @mousedown="changeTestMode('seq'); addGroup();">Sequential Test</button>
-    <button class="tablink tab-selected tablink-no-override" id="combSelect"
-      @mousedown="changeTestMode('comb'); addGroup();">Combinational Test</button>
-    <!-- Default table -->
-    <table class="tb-table label-table ui-sortable" id="testBenchTable">
-      <tr>
-        <th colspan="1"></th>
-        <th colspan="0" id="tb-inputs-head">INPUTS<button class="table-button" id="plus-1"
-            @mousedown="addInput()">+</button>
-        </th>
-        <th colspan="0" id="tb-outputs-head">OUTPUTS<button class="table-button" id="plus-1"
-            @mousedown="addOutput()">+</button>
-        </th>
-      </tr>
-      <tr>
-        <th>Label</th>
-      </tr>
-      <tr>
-        <td>Bitwidth</td>
-      </tr>
-    </table>
-    <div id="dataGroup">
-      <div id="data-group-1" class="data-group">
-        <h3 id="data-group-title-1" contenteditable="true">Group 1</h3>
-        <h5 class="data-group-info">Click + to add tests to the group</h5>
-        <table class="tb-table" id="data-table-1">
-          <tbody></tbody>
-        </table>
-        <button class="lower-button plus-button latest-button" id="plus-1" @mousedown="addCase(0)">+</button>
-      </div>
-    </div>
-    <div class="buttons-alignment" style="display: inline-flex;">
-      <button class="lower-button" @mousedown="addGroup()">New Group</button>
-    </div>
-    <div style="float: right;" class="right-button-group">
-      <button class="lower-button" @mousedown="clickUpload()">Import from CSV</button>
-      <button class="lower-button" @mousedown="exportAsCSV()">Export as CSV</button>
-      <input id='csvFileInput' type='file' accept=".csv" @mousedown="importFromCSV()" hidden>
-      <button v-if="showAppend" class="lower-button save-buton" @mousedown="saveData()">Attach</button>
-    </div>
-  </div>
+    <v-dialog v-model="showCreator" :persistent="false">
+        <v-card class="messageBoxContent" id="creatorBox">
+            <v-card-text class="creatorHeader">
+                <p class="dialogHeader">{{ dialogTitle }}</p>
+                <v-btn size="x-small" icon class="dialogClose"
+                    @mousedown="testBenchStore.showTestBenchCreator = false">
+                    <v-icon>mdi-close</v-icon>
+                </v-btn>
+                <div class="testInput">
+                    <label for="fileNameInputField">Title:</label>
+                    <input v-model="testTitle" class="inputField" type="text" />
+                </div>
+            </v-card-text>
+
+            <v-card-actions class="testType">
+                <v-btn class="messageBtn" block @mousedown="testType = 'seq'">
+                    Sequential Test
+                </v-btn>
+                <v-btn class="messageBtn" block @mousedown="testType = 'comb'">
+                    Combinational Test
+                </v-btn>
+            </v-card-actions>
+
+            <v-card-text style="testCard">
+                <div class="testCol">
+                    <div class="testRow firstCol">
+
+                    </div>
+                    <div class="testRow fullTestRow space">
+                        <span>Inputs</span> <span @mousedown="increInputs" class="plusBtn">+</span>
+                    </div>
+                    <div class="testRow fullTestRow space">
+                        <span>Outputs</span> <span @mousedown="increOutputs" class="plusBtn">+</span>
+                    </div>
+                </div>
+                <div class="testCol">
+                    <div class="testRow firstCol">
+                        Label
+                    </div>
+                    <div class="testContainer">
+                        <div v-for="(_, i) in inputsName" class="testRow"
+                            :style="{ width: 100 / inputsBandWidth.length + '%' }">
+                            <input class="inputField dataGroupTitle smInputName" type="text" v-model="inputsName[i]" />
+                        </div>
+                    </div>
+                    <div class="testContainer">
+                        <div v-for="(_, i) in outputsName" class="testRow"
+                            :style="{ width: 100 / outputsBandWidth.length + '%' }">
+                            <input class="inputField dataGroupTitle smInputName" type="text" v-model="outputsName[i]" />
+                        </div>
+                    </div>
+                </div>
+                <div class="testCol">
+                    <div class="testRow firstCol">
+                        Bandwidth
+                    </div>
+                    <div class="testContainer">
+                        <div v-for="(_, i) in inputsBandWidth" class="testRow"
+                            :style="{ width: 100 / inputsBandWidth.length + '%' }">
+                            <input class="inputField dataGroupTitle smInput" type="text" v-model="inputsBandWidth[i]"
+                                maxlength="1" />
+                        </div>
+                    </div>
+                    <div class="testContainer">
+                        <div v-for="(_, i) in outputsBandWidth" class="testRow"
+                            :style="{ width: 100 / outputsBandWidth.length + '%' }">
+                            <input class="inputField dataGroupTitle smInput" type="text" v-model="outputsBandWidth[i]"
+                                maxlength="1" />
+                        </div>
+                    </div>
+                </div>
+
+                <div v-for="(group, groupIndex) in groups" class="groupParent" :key="groupIndex">
+                    <input v-model="group.title" class="inputField dataGroupTitle" type="text" />
+                    <p>Click + to add tests to the {{ testType === 'comb' ? 'group' : 'set' }}</p>
+
+                    <div v-for="(_, index) in group.inputs[0]" class="groupRow" :key="index">
+                        <div class="testRow firstCol spaceArea"></div>
+                        <div class="testContainer">
+                            <div v-for="(_, i) in group.inputs" class="testRow colWise"
+                                :style="{ width: 100 / inputsBandWidth.length + '%' }">
+                                <input class="inputField dataGroupTitle smInput" type="text"
+                                    :disabled="testBenchStore.readOnly" v-model="group.inputs[i][index]"
+                                    maxlength="1" />
+                            </div>
+                        </div>
+                        <div class="testContainer">
+                            <div v-for="(_, i) in group.outputs" class="testRow colWise"
+                                :style="{ width: 100 / outputsBandWidth.length + '%' }">
+                                <input class="inputField dataGroupTitle smInput" type="text"
+                                    :disabled="testBenchStore.readOnly" v-model="group.outputs[i][index]"
+                                    maxlength="1" />
+                            </div>
+                        </div>
+                        <div v-if="testBenchStore.showResults" class="resultContainer">
+                            <div v-for="(_, i) in results" class="testRow colWise"
+                                :style="{ width: 100 / outputsBandWidth.length + '%', color: results[groupIndex][i][index] ? '#17FC12' : '#FF1616' }">
+                                 {{ results[groupIndex][i][index] ? '✔' : '✘' }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <v-btn v-if="groupIndex !== groups.length - 1" class="messageBtn addBtn" block
+                        @mousedown="addTestToGroup(groupIndex)">
+                        +
+                    </v-btn>
+                </div>
+            </v-card-text>
+
+            <v-card-actions class="testActionBtns">
+                <div class="btnDiv">
+                    <v-btn class="messageBtn" block @mousedown="addTestToGroup(groups.length - 1)">
+                        +
+                    </v-btn>
+                    <v-btn class="messageBtn" block @mousedown="addNewGroup">
+                        New Group
+                    </v-btn>
+                </div>
+                <div class="btnDiv">
+                    <v-btn class="messageBtn" block @mousedown="importFromCSV">
+                        Import From CSV
+                    </v-btn>
+                    <v-btn class="messageBtn" block @mousedown="exportAsCSV">
+                        Export As CSV
+                    </v-btn>
+                    <v-btn class="messageBtn" block @mousedown="sendData">
+                        Attach
+                    </v-btn>
+                </div>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
 </template>
 
-<script lang="js" setup>
-/*
-    This file contains all javascript related to the test creator UI
-    at /testbench
-*/
-// import _ from '../../../simulator/vendor/table2csv.js'
-
+<script lang="ts" setup>
+import { computed, ref, reactive, watch } from 'vue';
 import { useTestBenchStore } from '#/store/testBenchStore';
-import { onBeforeMount, ref } from 'vue';
 
 const testBenchStore = useTestBenchStore();
-const showAppend = ref(false);
 
-const CREATORMODE = {
-  NORMAL: 0,
-  SIMULATOR_POPUP: 1,
+const showCreator = computed(() => testBenchStore.showTestBenchCreator);
+
+const results: boolean[][][] = reactive([]);
+const testTitle = ref('Untitled');
+const dialogTitle = ref('Create Test');
+const testType = ref<string>('comb');
+
+const inputsBandWidth = ref([1]);
+const outputsBandWidth = ref([1]);
+const inputsName = ref<string[]>(["inp1"]);
+const outputsName = ref<string[]>(["out1"]);
+
+interface Group {
+    title: string;
+    inputs: string[][];
+    outputs: string[][];
 }
 
-let testMode = 'comb'
-let groupIndex = 0
-let inputCount = 0
-let nextInputIndex = 0
-let outputCount = 0
-let nextOutputIndex = 0
-let cases = [0]
-let creatorMode = CREATORMODE.NORMAL
-let circuitScopeID
-
-function dataReset() {
-  groupIndex = -1
-  cases = [0]
-}
-
-onBeforeMount(() => {
-  if (testBenchStore.showPopup) {
-    creatorMode = CREATORMODE.SIMULATOR_POPUP;
-    showAppend.value = true;
-  }
-
-  circuitScopeID = testBenchStore.scopeId;
-  addInput();
-  addOutput();
-  makeSortable();
-})
-
-/**
- * Onload, check if it is opened in a popup.
- * Check if test is being edited, or created
- */
-window.onload = () => {
-  const query = new URLSearchParams(window.location.search)
-  if (query.has('popUp')) {
-    if (query.get('popUp') == 'true') {
-      creatorMode = CREATORMODE.SIMULATOR_POPUP
-      $('.right-button-group').append(
-        '<button class="lower-button save-buton" onclick="saveData();">Attach</button>'
-      )
+const groups = reactive<Group[]>([
+    {
+        title: 'Group 1',
+        inputs: [],
+        outputs: [],
     }
-  }
-  if (query.has('data')) {
-    $('#tb-creator-head').html('<b>Edit Test</b>')
-    circuitScopeID = query.get('scopeID')
-    loadData(query.get('data'))
-    return
-  }
+]);
 
-  if (query.has('result')) {
-    $('#tb-creator-head').html('<b>Test Result</b>')
-    loadResult(query.get('result'))
-    readOnlyUI()
-    return
-  }
+watch(() => testBenchStore.testbenchData.testData.groups, () => {
+    const { groups: newGroups } = testBenchStore.testbenchData.testData;
 
-  circuitScopeID = query.get('scopeID')
-  addInput()
-  addOutput()
-  makeSortable()
+    const values = newGroups.map(group => ({
+        title: group.label,
+        inputs: group.inputs.map(input => input.values),
+        outputs: group.outputs.map(output => output.values),
+    }));
+
+    groups.splice(0, groups.length, ...values);
+
+    if (newGroups[0]) {
+        const { inputs, outputs } = newGroups[0];
+
+        inputsBandWidth.value.splice(0, inputsBandWidth.value.length, ...inputs.map(input => input.bitWidth));
+        outputsBandWidth.value.splice(0, outputsBandWidth.value.length, ...outputs.map(output => output.bitWidth));
+        inputsName.value.splice(0, inputsName.value.length, ...inputs.map(input => input.label));
+        outputsName.value.splice(0, outputsName.value.length, ...outputs.map(output => output.label));
+    } else {
+        inputsBandWidth.value.splice(0, inputsBandWidth.value.length, 1);
+        outputsBandWidth.value.splice(0, outputsBandWidth.value.length, 1);
+        inputsName.value.splice(0, inputsName.value.length, "inp1");
+        outputsName.value.splice(0, outputsName.value.length, "out1");
+    }
+});
+
+watch(() => testBenchStore.testbenchData.testData.groups, () => {
+    results.splice(0, results.length);
+    testBenchStore.testbenchData.testData.groups.map(group => {
+        results.push([]);
+        group.outputs.map((output) => {
+            results[results.length - 1].push([]);
+            for(let i = 0; i < output.values.length; i++) {
+                if(output.results && output.values[i] === output.results[i]) {
+                    results[results.length - 1][results[results.length - 1].length - 1].push(true);
+                } else {
+                    results[results.length - 1][results[results.length - 1].length - 1].push(false);
+                }
+            }
+        });
+    });
+},
+    { deep: true }
+);
+
+watch(testType, () => {
+    if (testType.value === 'comb') {
+        groups.forEach(group => {
+            group.title = `Group ${groups.indexOf(group) + 1}`;
+        });
+    }
+    else {
+        groups.forEach(group => {
+            group.title = `Set ${groups.indexOf(group) + 1}`;
+        });
+    }
+});
+
+const sendData = () => {
+    const groupsData = groups.map(group => {
+        const inputsData = group.inputs.map((input, index) => {
+            return {
+                label: inputsName.value[index],
+                bitWidth: inputsBandWidth.value[index],
+                values: input
+            };
+        });
+
+        const outputsData = group.outputs.map((output, index) => {
+            return {
+                label: outputsName.value[index],
+                bitWidth: outputsBandWidth.value[index],
+                values: output
+            };
+        });
+
+        return {
+            label: group.title,
+            inputs: inputsData,
+            outputs: outputsData,
+            n: inputsData[0] ? inputsData[0].values.length : 0,
+        };
+    });
+
+    const testData = {
+        type: testType.value,
+        title: testTitle.value,
+        groups: groupsData,
+    };
+
+    testBenchStore.sendData(testData);
 }
 
-/* Change UI testMode between Combinational(comb) and Sequential(seq) */
-function changeTestMode(m) {
-  if (testMode === m) return false
-  dataReset()
-  testMode = m
-  $('#combSelect').removeClass('tab-selected')
-  $('#seqSelect').removeClass('tab-selected')
-  $('#tb-new-group').css('visibility', m === 'seq' ? 'visible' : 'hidden')
-  $(`#${m}Select`).addClass('tab-selected')
-  $('#dataGroup').empty()
-
-  return true
-}
-
-/* Adds case to a group */
-function addCase(grp) {
-  const currentGroupTable = $(`#data-table-${grp + 1}`)
-
-  let s =
-    '<tr><td class="tb-handle"><div onclick="deleteCase($(this))"class="fa fa-minus-square tb-minus"></div></td>\n'
-  for (let i = 0; i < inputCount + outputCount; i++)
-    s += '<td contenteditable="true">0</td>'
-  s += '</tr>'
-
-  // Sortable hack
-  currentGroupTable.find('tbody').remove()
-  currentGroupTable.append(s)
-}
-
-/* Deletes case from a group */
-function deleteCase(element) {
-  const row = element.parent().parent()
-  const grp = Number(row.parent().attr('id').split('-').pop())
-
-  row.remove()
-}
-
-/* Adds group with default name 'Group N' or name supplied in @param groupName */
-/* Used without params by UI, used with params by loadData() */
-function addGroup(
-  groupName = `${testMode === 'comb' ? 'Group' : 'Set'} ${groupIndex + 2}`
-) {
-  $('.plus-button').removeClass('latest-button')
-  groupIndex++
-
-  const s = `
-    <div id="data-group-${groupIndex + 1}" class="data-group">
-        <h3 id="data-group-title-${groupIndex + 1
-    }" contenteditable="true">${escapeHtml(groupName)}</h3>
-        <h5 class="data-group-info">Click + to add tests to the ${testMode === 'comb' ? 'group' : 'set'
-    }</h5>
-        <table class="tb-table" id="data-table-${groupIndex + 1}">
-        <tbody></tbody>
-        </table>
-        <button class="lower-button plus-button latest-button" id="plus-${groupIndex + 1
-    }" onclick="addCase(${groupIndex})" style="font-size: 25px;">+</button>
-    </div>
-    `
-  cases[groupIndex] = 0
-  $('#dataGroup').append(s)
-
-  makeSortable()
-}
-
-/* Deletes a group */
-function deleteGroup(element) {
-  const groupDiv = element.parent()
-  const grp = Number(groupDiv.attr('id').split('-').pop())
-  groupDiv.remove()
-}
-
-/* Adds input with default value 0 or values supplied in @param inputData */
-/* Used without params for UI, used with params by loadData() */
-function addInput(
-  label = `inp${nextInputIndex + 1}`,
-  bitwidth = 1,
-  inputData = []
-) {
-  nextInputIndex++
-  inputCount++
-  // Change head table contents
-  const sHead = `<th style="background-color: #aaf" id="tb-inp-label-${nextInputIndex}"><span contenteditable="true">${escapeHtml(
-    label
-  )}</span> <a onclick="deleteInput($(this));"><span class="fa fa-minus-square tb-minus"></span></a></th>`
-  const sData = `<td contenteditable="true">${escapeHtml(
-    bitwidth.toString()
-  )}</td>`
-  $('#testBenchTable')
-    .find('tr')
-    .eq(1)
-    .find('th')
-    .eq(inputCount - 1)
-    .after(sHead)
-  $('#testBenchTable')
-    .find('tr')
-    .eq(2)
-    .find('td')
-    .eq(inputCount - 1)
-    .after(sData)
-  $('#tb-inputs-head').attr('colspan', inputCount)
-
-  // Change data tables' contents
-  $('#dataGroup')
-    .find('table')
-    .each(function (group_i) {
-      $(this)
-        .find('tr')
-        .each(function (case_i) {
-          const s = `<td contenteditable="true">${inputData.length
-            ? escapeHtml(inputData[group_i][case_i])
-            : 0
-            }</td>`
-          $(this)
-            .find('td')
-            .eq(inputCount - 1)
-            .after(s)
-        })
-    })
-}
-
-/* Adds output with default value 0 or values supplied in @param outputData */
-/* Used without params for UI, used with params by loadData() */
-/* Used with resultData and result=true for setting result */
-function addOutput(
-  label = `out${nextOutputIndex + 1}`,
-  bitwidth = 1,
-  outputData = [],
-  result = false,
-  resultData = []
-) {
-  nextOutputIndex++
-  outputCount++
-  // Change head table contents
-  let sHead = `<th style="background-color: #afa" id="tb-out-label-${nextOutputIndex}"><span contenteditable="true">${escapeHtml(
-    label
-  )}</span> <a onclick="deleteOutput($(this));"><span class="fa fa-minus-square tb-minus"></span></a></th>`
-  let sData = `<td contenteditable="true">${escapeHtml(
-    bitwidth.toString()
-  )}</td>`
-
-  // If result then set colspan to 2
-  if (result) {
-    sHead = `<th style="background-color: #afa" id="tb-out-label-${nextOutputIndex}" colspan="2"><span contenteditable="true">${escapeHtml(
-      label
-    )}</span> <a onclick="deleteOutput($(this));"><span class="fa fa-minus-square tb-minus"></span></a></th>`
-    sData = `<td contenteditable="true" colspan="2">${escapeHtml(
-      bitwidth.toString()
-    )}</td>`
-  }
-
-  $('#testBenchTable')
-    .find('tr')
-    .eq(1)
-    .find('th')
-    .eq(inputCount + outputCount - 1)
-    .after(sHead)
-  $('#testBenchTable')
-    .find('tr')
-    .eq(2)
-    .find('td')
-    .eq(inputCount + outputCount - 1)
-    .after(sData)
-  // If not result then colspan is outputCount
-  $('#tb-outputs-head').attr('colspan', outputCount)
-  // else it's 2*outputCount
-  if (result) {
-    $('#tb-outputs-head').attr('colspan', 2 * outputCount)
-  }
-
-  // Change data tables' contents
-
-  // If not result just add the outputs
-  if (!result) {
-    $('#dataGroup')
-      .find('table')
-      .each(function (group_i) {
-        $(this)
-          .find('tr')
-          .each(function (case_i) {
-            const s = `<td contenteditable="true">${outputData.length
-              ? escapeHtml(outputData[group_i][case_i])
-              : 0
-              }</td>`
-            $(this)
-              .find('td')
-              .eq(inputCount + outputCount - 1)
-              .after(s)
-          })
-      })
-
-    // If result then add results besides the outputs
-    // Hacky
-  } else {
-    $('#dataGroup')
-      .find('table')
-      .each(function (group_i) {
-        $(this)
-          .find('tr')
-          .each(function (case_i) {
-            // Add the outputs (expected values)
-            const outputCellData = `<td>${escapeHtml(
-              outputData[group_i][case_i]
-            )}</td>`
-            $(this)
-              .find('td')
-              .eq(inputCount + 2 * (outputCount - 1))
-              .after(outputCellData)
-
-            // Add the actual values
-            const resultColor =
-              resultData[group_i][case_i] ===
-                outputData[group_i][case_i]
-                ? 'green'
-                : 'red'
-            const resultCellData = `<td style="color: ${resultColor}">${escapeHtml(
-              resultData[group_i][case_i]
-            )}</td>`
-            $(this)
-              .find('td')
-              .eq(inputCount + 2 * outputCount - 1)
-              .after(resultCellData)
-          })
-      })
-  }
-}
-
-/* Deletes input unless there's only one input */
-function deleteInput(element) {
-  if (inputCount === 1) return
-  const columnIndex = element.parent().eq(0).index()
-
-  $('#testBenchTable tr, .data-group tr')
-    .slice(1)
-    .each(function () {
-      $(this).find('td, th').eq(columnIndex).remove()
-    })
-
-  inputCount--
-  $('#tb-inputs-head').attr('colspan', inputCount)
-}
-
-/* Deletes output unless there's only one output */
-function deleteOutput(element) {
-  if (outputCount === 1) return
-  const columnIndex = element.parent().eq(0).index()
-
-  $('#testBenchTable tr, .data-group tr')
-    .slice(1)
-    .each(function () {
-      $(this).find('td, th').eq(columnIndex).remove()
-    })
-
-  outputCount--
-  $('#tb-outputs-head').attr('colspan', outputCount)
-}
-
-/* Returns input/output(keys) and their bitwidths(values) */
-/* Called by getData() */
-function getBitWidths() {
-  const bitwidths = {}
-  $('#testBenchTable')
-    .find('tr')
-    .eq(1)
-    .find('th')
-    .slice(1)
-    .each(function (index) {
-      const inp = $(this).text()
-      const bw = $('#testBenchTable')
-        .find('tr')
-        .eq(2)
-        .find('td')
-        .slice(1)
-        .eq(index)
-        .html()
-      bitwidths[inp] = Number(bw)
-    })
-  return bitwidths
-}
-
-/* Returns data for all the groups for all inputs and outputs */
-/* Called by parse() */
-function getData() {
-  const bitwidths = getBitWidths()
-  const groups = []
-  const groupCount = $('#dataGroup').children().length
-  for (let group_i = 0; group_i < groupCount; group_i++) {
-    const group = {}
-    group.label = getGroupTitle(group_i)
-    group.inputs = []
-    group.outputs = []
-
-    const group_table = $(`#data-table-${group_i + 1}`)
-    group.n = group_table.find('tr').length
-
-    // Push all the inputs in the group
-    for (let inp_i = 0; inp_i < inputCount; inp_i++) {
-      const label = Object.keys(bitwidths)[inp_i]
-      const input = {
-        label: label.slice(0, label.length - 1),
-        bitWidth: bitwidths[label],
-        values: [],
-      }
-      group_table.find('tr').each(function () {
-        input.values.push($(this).find('td').slice(1).eq(inp_i).html())
-      })
-
-      group.inputs.push(input)
+const addTestToGroup = (index: number) => {
+    const group = groups[index];
+    for (let i = 0; i < inputsBandWidth.value.length; i++) {
+        if (group.inputs.length === i)
+            group.inputs.push([]);
+        group.inputs[i].push("0");
     }
 
-    // Push all the outputs in the group
-    for (let out_i = 0; out_i < outputCount; out_i++) {
-      const label = Object.keys(bitwidths)[inputCount + out_i]
-      const output = {
-        label: label.slice(0, label.length - 1),
-        bitWidth: bitwidths[label],
-        values: [],
-      }
-      group_table.find('tr').each(function () {
-        output.values.push(
-          $(this)
-            .find('td')
-            .slice(1)
-            .eq(inputCount + out_i)
-            .html()
-        )
-      })
-
-      group.outputs.push(output)
+    for (let i = 0; i < outputsBandWidth.value.length; i++) {
+        if (group.outputs.length === i)
+            group.outputs.push([]);
+        group.outputs[i].push("0");
     }
+};
 
-    groups.push(group)
-  }
+const addNewGroup = () => {
+    groups.push({
+        title: `Group ${groups.length + 1}`,
+        inputs: [],
+        outputs: [],
+    });
+};
 
-  return groups
-}
+const increInputs = () => {
+    groups.forEach((group) => {
+        if (group.inputs.length === 0) return;
 
-function getTestTitle() {
-  return $('#test-title-label').text()
-}
+        group.inputs.push([]);
 
-function getGroupTitle(group_i) {
-  return $(`#data-group-title-${group_i + 1}`).text()
-}
+        for (let i = 0; i < group.inputs[0].length; i++) {
+            group.inputs[group.inputs.length - 1].push("0");
+        }
+    });
 
-/* Parse UI table into Javascript Object */
-function parse() {
-  const data = {}
-  const tableData = getData()
-  data.type = testMode
-  data.title = getTestTitle()
-  data.groups = tableData
-  return data
-}
+    inputsBandWidth.value.push(1);
+    inputsName.value.push(`inp${inputsName.value.length + 1}`);
+};
 
-/* Export test data as a CSV file */
-function exportAsCSV() {
-  let csvData = ''
-  csvData += 'Title,Test Type,Input Count,Output Count\n'
-  csvData += `${getTestTitle()},${testMode},${inputCount},${outputCount}\n\n\n`
-  csvData += $('table').eq(0).table2CSV()
-  csvData += '\n\n'
-  $('table')
-    .slice(1)
-    .each(function (group_i) {
-      csvData += getGroupTitle(group_i)
-      csvData += '\n'
-      csvData += $(this).table2CSV()
-      csvData += '\n\n'
-    })
+const increOutputs = () => {
+    groups.forEach((group) => {
+        if (group.outputs.length === 0) return;
 
-  download(`${getTestTitle()}.csv`, csvData)
-  return csvData
-}
+        group.outputs.push([]);
 
-/*
- Imports data from CSV and loads into the table
- To achieve this, first converts to JSON then uses request param to load json to table
-*/
-function importFromCSV() {
-  const file = $('#csvFileInput').prop('files')[0]
-  const reader = new FileReader()
+        for (let i = 0; i < group.outputs[0].length; i++) {
+            group.outputs[group.outputs.length - 1].push("0");
+        }
+    });
 
-  // If circuitScopeID exists, ie. if popup opened from testbench, then use that to redirect
-  const query = new URLSearchParams(window.location.search)
-  // Preserve popup status while redirecting
-  const isPopup = query.get('popUp') || false
+    outputsBandWidth.value.push(1);
+    outputsName.value.push(`out${outputsName.value.length + 1}`);
+};
 
-  // When the file is read, redirect to the data location
-  reader.onload = () => {
-    const csvContent = reader.result
-    const jsonData = csv2json(csvContent, 1, 1)
+const exportAsCSV = () => {
+    let csv = `${testType.value},${testTitle.value}\n`;
 
-    window.location = `/testbench?scopeID=${circuitScopeID || ''
-      }&data=${jsonData}&popUp=${isPopup}`
-  }
+    csv += `Inputs BandWidth: ${inputsBandWidth.value.join(',')}\n`;
+    csv += `Outputs BandWidth: ${outputsBandWidth.value.join(',')}\n`;
+    csv += `Inputs Name: ${inputsName.value.join(',')}\n`;
+    csv += `Outputs Name: ${outputsName.value.join(',')}\n`;
 
-  reader.readAsText(file)
-}
+    csv += groups.map(group => {
+        let groupStr = `G-${group.title}:\n`;
+        groupStr += group.inputs.map((input, index) => `I-${inputsName.value[index]}:${input.join(',')}`).join('\n');
+        groupStr += '\n';
+        groupStr += group.outputs.map((output, index) => `O-${outputsName.value[index]}:${output.join(',')}`).join('\n');
+        return groupStr;
+    }).join('\n');
 
-// Clicks the hidden upload file button, entrypoint into importFromCSV()
-// The hidden button in-turn calls importFromCSV()
-function clickUpload() {
-  $('#csvFileInput').click()
-}
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
 
-/* Converts CSV to JSON to be loaded into the table */
-function csv2json(csvFileData) {
-  const stripQuotes = (str) => str.replaceAll('"', '')
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${testTitle.value}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+};
 
-  /* Extracts bitwidths from the csv data */
-  const getBitWidthsCSV = (csvDataBW) => {
-    const testMetadata = csvDataBW.split('\n\n')[0].split('\n')
-    const labels = testMetadata[1]
-      .split(',')
-      .slice(1)
-      .map((label) => stripQuotes(label))
-    const bitWidths = testMetadata[2]
-      .split(',')
-      .slice(1)
-      .map((bw) => Number(stripQuotes(bw)))
+const importFromCSV = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.csv';
+    input.onchange = () => {
+        const file = input.files?.[0];
+        if (!file) return;
 
-    return { labels, bitWidths }
-  }
+        const reader = new FileReader();
+        reader.onload = () => {
+            const csv = reader.result as string;
+            const lines = csv.split('\n');
 
-  const csvMetadata = csvFileData.split('\n\n\n')[0].split('\n')[1].split(',')
-  const csvData = csvFileData.split('\n\n\n')[1]
-  const jsonData = {}
+            const firstLine = lines.shift();
+            if (firstLine) {
+                [testType.value, testTitle.value] = firstLine.split(',');
+            }
 
-  jsonData.title = csvMetadata[0]
-  jsonData.type = csvMetadata[1]
-  const inputCountCSV = Number(csvMetadata[2])
-  const outputCountCSV = Number(csvMetadata[3])
+            let line = lines.shift();
+            if (line) {
+                inputsBandWidth.value = line.split(': ')[1].split(',').map(Number);
+            }
+            line = lines.shift();
+            if (line) {
+                outputsBandWidth.value = line.split(': ')[1].split(',').map(Number);
+            }
+            line = lines.shift();
+            if (line) {
+                inputsName.value = line.split(': ')[1].split(',');
+            }
+            line = lines.shift();
+            if (line) {
+                outputsName.value = line.split(': ')[1].split(',');
+            }
 
-  jsonData.groups = []
-  const { labels, bitWidths } = getBitWidthsCSV(csvData)
+            const newGroups: Group[] = [];
+            let group: Group = {
+                title: '',
+                inputs: [],
+                outputs: [],
+            }
+            lines.forEach(line => {
+                if (line.startsWith('G-')) {
+                    if (group.title) {
+                        newGroups.push(group);
+                    }
+                    group = { title: line.slice(2), inputs: [], outputs: [] };
+                } else {
+                    const [name, values] = line.split(':');
+                    const isInput = name.startsWith('I-') && inputsName.value.includes(name.slice(2));
+                    const isOutput = name.startsWith('O-') && outputsName.value.includes(name.slice(2));
+                    if (isInput) {
+                        group.inputs.push(values.split(','));
+                    } else if (isOutput) {
+                        group.outputs.push(values.split(','));
+                    }
+                }
+            });
+            if (group.title) {
+                newGroups.push(group);
+            }
 
-  const groups = csvData.split('\n\n').slice(1)
-  for (let group_i = 0; group_i < groups.length - 1; group_i++) {
-    const rows = groups[group_i].split('\n')
-    jsonData.groups[group_i] = {
-      label: rows[0],
-      n: rows.length - 1,
-      inputs: [],
-      outputs: [],
-    }
+            groups.splice(0, groups.length, ...newGroups);
+        };
 
-    // Parse Inputs
-    for (let input_i = 0; input_i < inputCountCSV; input_i++) {
-      const thisInput = {
-        label: labels[input_i],
-        bitWidth: bitWidths[input_i],
-        values: [],
-      }
-      for (let case_i = 1; case_i < rows.length; case_i++)
-        thisInput.values.push(
-          stripQuotes(rows[case_i].split(',')[input_i + 1])
-        )
+        reader.readAsText(file);
+    };
 
-      jsonData.groups[group_i].inputs.push(thisInput)
-    }
-
-    // Parse Outputs
-    for (
-      let output_i = inputCountCSV;
-      output_i < inputCountCSV + outputCountCSV;
-      output_i++
-    ) {
-      const thisOutput = {
-        label: labels[output_i],
-        bitWidth: bitWidths[output_i],
-        values: [],
-      }
-      for (let case_i = 1; case_i < rows.length; case_i++) {
-        thisOutput.values.push(
-          stripQuotes(rows[case_i].split(',')[output_i + 1])
-        )
-      }
-
-      jsonData.groups[group_i].outputs.push(thisOutput)
-    }
-  }
-
-  return JSON.stringify(jsonData)
-}
-
-/* Helper function to download generated file */
-function download(filename, text) {
-  var element = document.createElement('a')
-  element.setAttribute(
-    'href',
-    `data:text/plain;charset=utf-8,${encodeURIComponent(text)}`
-  )
-  element.setAttribute('download', filename)
-
-  element.style.display = 'none'
-  document.body.appendChild(element)
-
-  element.click()
-
-  document.body.removeChild(element)
-}
-
-/**
- * Called when Save is clicked. If opened in popup, sends message to parent window
- * to attach test to the testbench.
- */
-function saveData() {
-  const testData = parse()
-
-  if (creatorMode === CREATORMODE.SIMULATOR_POPUP || true) {
-    const postData = { scopeID: circuitScopeID, testData }
-    window.opener.postMessage(
-      { type: 'testData', data: JSON.stringify(postData) },
-      '*'
-    )
-    testBenchStore.toggleTestBenchCreator(false);
-    return;
-    window.close()
-  }
-}
-
-/* Loads data from JSON string into the table */
-function loadData(dataJSON) {
-  const data = JSON.parse(dataJSON)
-  changeTestMode()
-  changeTestMode(data.type)
-  for (let group_i = 0; group_i < data.groups.length; group_i++) {
-    const group = data.groups[group_i]
-    addGroup(group.label)
-    for (let case_i = 0; case_i < group.inputs[0].values.length; case_i++) {
-      addCase(group_i)
-    }
-  }
-
-  // Add input values
-  for (let input_i = 0; input_i < data.groups[0].inputs.length; input_i++) {
-    const input = data.groups[0].inputs[input_i]
-    const values = data.groups.map((group) => group.inputs[input_i].values)
-
-    addInput(input.label, input.bitWidth, values)
-  }
-
-  // Add output values
-  for (
-    let output_i = 0;
-    output_i < data.groups[0].outputs.length;
-    output_i++
-  ) {
-    const output = data.groups[0].outputs[output_i]
-    const values = data.groups.map(
-      (group) => group.outputs[output_i].values
-    )
-
-    addOutput(output.label, output.bitWidth, values)
-  }
-}
-
-/**
- * Loads result from JSON string into the testbench creator UI
- */
-function loadResult(dataJSON) {
-  const data = JSON.parse(dataJSON)
-  changeTestMode()
-  changeTestMode(data.type)
-  for (let group_i = 0; group_i < data.groups.length; group_i++) {
-    const group = data.groups[group_i]
-    addGroup(group.label)
-    for (let case_i = 0; case_i < group.inputs[0].values.length; case_i++) {
-      addCase(group_i)
-    }
-  }
-
-  // Add input values
-  for (let input_i = 0; input_i < data.groups[0].inputs.length; input_i++) {
-    const input = data.groups[0].inputs[input_i]
-    const values = data.groups.map((group) => group.inputs[input_i].values)
-
-    addInput(input.label, input.bitWidth, values)
-  }
-
-  // Add output values
-  for (
-    let output_i = 0;
-    output_i < data.groups[0].outputs.length;
-    output_i++
-  ) {
-    const output = data.groups[0].outputs[output_i]
-    const values = data.groups.map(
-      (group) => group.outputs[output_i].values
-    )
-    const results = data.groups.map(
-      (group) => group.outputs[output_i].results
-    )
-    const expectedOutputs = []
-    const actualOutputs = []
-
-    for (let group_i = 0; group_i < values.length; group_i++) {
-      const groupExpectedOuts = []
-      const groupActualOuts = []
-      for (let val_i = 0; val_i < values[group_i].length; val_i++) {
-        groupExpectedOuts.push(values[group_i][val_i])
-        groupActualOuts.push(results[group_i][val_i])
-      }
-
-      expectedOutputs.push(groupExpectedOuts)
-      actualOutputs.push(groupActualOuts)
-    }
-    addOutput(
-      `${output.label}`,
-      output.bitWidth,
-      expectedOutputs,
-      true,
-      actualOutputs
-    )
-  }
-}
-
-/**
- * Makes the UI read only for displaying results
- */
-function readOnlyUI() {
-  makeContentUneditable()
-  makeUnsortable()
-  $('.lower-button, .table-button, .tb-minus').hide()
-  $('.tablink').attr('disabled', 'disabled')
-  $('.tablink').removeClass('tablink-no-override')
-  $('.data-group-info').text('')
-}
-
-function makeContentUneditable() {
-  $('body')
-    .find('td, th, span, h3, div')
-    .each(function () {
-      $(this).attr('contenteditable', 'false')
-    })
-}
-
-function makeSortable() {
-  const helper = function (e, ui) {
-    const helperE = ui.clone()
-    helperE.children().each(function (child_i) {
-      $(this).width(ui.children().eq(child_i).width())
-    })
-
-    return helperE
-  }
-
-  function makePlaceholder(e, ui) {
-    ui.placeholder.children().each(function () {
-      $(this).css('border', '0px')
-    })
-  }
-
-  /*
-      Sortable hack: To allow sorting inside empty tables, the tables should have some height.
-      But it is not possible to give tables height without having rows, so we add a tbody.
-      tbody gives the table height but messes up all the other things. So we only keep tbody
-      if the table has no rows, and once table gets rows, we remove that tbody
-   */
-  function removeTbody(e, ui) {
-    $(e.target).find('tbody').remove()
-  }
-
-  function createTbody(e, ui) {
-    if ($(e.target).find('tr, tbody').length === 0) {
-      $(e.target).append('<tbody></tbody>')
-    }
-  }
-
-  // $('.data-group table').sortable({
-  //   handle: '.tb-handle',
-  //   helper,
-  //   start: makePlaceholder,
-  //   placeholder: 'clone',
-  //   connectWith: 'table',
-  //   receive: removeTbody, // For sortable hack
-  //   remove: createTbody, // For sortable hack
-  //   items: 'tr',
-  //   revert: 50,
-  //   scroll: false,
-  // })
-}
-
-function makeUnsortable() {
-  $('.data-group table').sortable({ disabled: true })
-}
-
-function escapeHtml(unsafe) {
-  return unsafe
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;')
-}
-
-// Making HTML called functions global
-
-window.addGroup = addGroup
-window.deleteGroup = deleteGroup
-window.addCase = addCase
-window.deleteCase = deleteCase
-window.addInput = addInput
-window.deleteInput = deleteInput
-window.addOutput = addOutput
-window.deleteOutput = deleteOutput
-window.parse = parse
-window.saveData = saveData
-window.changeTestMode = changeTestMode
-window.exportAsCSV = exportAsCSV
-window.importFromCSV = importFromCSV
-window.csv2json = csv2json
-window.clickUpload = clickUpload
-
+    input.click();
+};
 </script>
 
 <style scoped>
-.tb-test-title {
-  text-align: center;
-  margin-top: 50px;
+#creatorBox {
+    width: 1100px;
 }
 
-.lower-button {
-  height: 40px;
-  width: auto;
-  min-width: 40px;
-  background-color: #ffffff;
-  border: 2px solid black;
-  color: black;
-  padding: 6px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  /*font-size: 16px;*/
-  margin: 4px 2px;
-  border-radius: 4px;
+.creatorHeader {
+    position: relative;
 }
 
-.table-button {
-  height: 20px;
-  width: 20px;
-  background-color: #ffffff;
-  border: 2px solid black;
-  color: black;
-  text-decoration: none;
-  display: inline-block;
-  margin: 4px 4px;
-  padding: 0px;
-  border-radius: 5px;
+.testInput {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 }
 
-
-.plus-button {
-  font-size: 25px;
+.testType {
+    width: 97%;
 }
 
-.tb-minus {
-  color: red;
+.testActionBtns {
+    width: 97%;
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 1rem;
 }
 
-.save-buton {
-  background-color: #42b983;
-  color: white;
-  border: 1px solid gray;
-  min-width: 70px;
+.btnDiv {
+    display: flex;
+    gap: 0.1rem;
+    align-items: center;
 }
 
-.latest-button {
-  float: left;
+.testRow {
+    border: 1px solid #c5c5c5;
+    padding: 0.75rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.buttons-alignment {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
+.colWise {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
-.tablink {
-  background-color: #555;
-  color: white;
-  float: left;
-  border: 1px solid white;
-  border-radius: 5px;
-  outline: none;
-  cursor: pointer;
-  padding: 14px 16px;
-  font-size: 17px;
-  width: 50%;
+.testCol {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 0.5rem;
 }
 
-/* Change background color of buttons on hover */
-.tablink:hover.tablink-no-override {
-  background-color: #a5dfc5;
+.firstCol {
+    width: 30%;
 }
 
-.tablink.tab-selected {
-  background-color: #42b983;
-  color: #fff;
-  outline: none;
+.dataGroupTitle {
+    border: none;
+    padding: 0;
+    margin: 0;
 }
 
-.data-group {
-  margin-top: 2%;
+.spaceArea {
+    visibility: hidden;
 }
 
-.tb-table {
-  table-layout: fixed;
-  width: 100%;
-  height: 20px;
-  border-spacing: 5px;
+.testContainer {
+    display: flex;
+    width: 35%;
+    gap: 0.5rem;
+    overflow-x: scroll;
 }
 
-.tb-table th,
-td {
-  border: 2px solid black;
-  border-collapse: collapse;
-  padding: 15px;
-  text-align: center;
-  transition: transform .2s;
+.resultContainer {
+    display: flex;
+    width: 15%;
+    gap: 0.5rem;
+    overflow-x: scroll;
 }
 
-.tb-table th {
-  text-align: center;
+.fullTestRow {
+    width: 35%;
 }
 
-.tb-table tr th:first-child,
-tr td:first-child {
-  width: 250px;
+.groupRow {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
 }
 
-.label-table {
-  margin-top: 100px;
+.plusBtn {
+    cursor: pointer;
+    padding: 2px;
+    padding-top: 0.5px;
+    padding-bottom: 0.5px;
+    border: 1px solid #c5c5c5;
 }
 
-.test-title {
-  display: flex;
-  width: 100%;
-  font-size: 25px;
-  margin-top: 20px;
-  margin-bottom: 10px;
+.space {
+    gap: 0.25rem;
 }
 
-.test-title #test-title-label {
-  width: 80%;
-  border: 1px solid;
-  border-radius: 5px;
+.groupParent {
+    margin-bottom: 2rem;
+    margin-top: 2rem;
 }
 
-.tb-handle {
-  padding: 0px !important;
-  border: 0px !important;
+.addBtn {
+    background-color: transparent;
+    color: white;
 }
 
-#testbenchCreator {
-  display: inline-block;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 105;
-  background-color: white;
-  border: 1px solid black;
-  padding: 20px;
+.testCard {
+    padding-left: 2.2rem;
+}
+
+.smInput {
+    width: 12px;
+    border: none;
+}
+
+.smInputName {
+    width: 34px;
+    border: none;
+}
+
+.smInputName:focus,
+.smInput:focus {
+    outline: none;
+    border: none;
+}
+
+.smInput:focus {
+    outline: none;
+    border: none;
 }
 </style>
