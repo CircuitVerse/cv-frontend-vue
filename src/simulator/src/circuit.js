@@ -36,7 +36,6 @@ import { setProjectName, getProjectName } from './data/save'
 import { changeClockEnable } from './sequential'
 import { changeInputSize } from './modules'
 import { verilogModeGet, verilogModeSet } from './Verilog2CV'
-import { updateTestbenchUI } from './testbench'
 import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
 import { toRef, toRefs } from 'vue'
 import { provideCircuitName } from '#/components/helpers/promptComponent/PromptComponent.vue'
@@ -111,7 +110,6 @@ export function switchCircuit(id) {
     simulationArea.lastSelected = globalScope.root
     if (!embed) {
         showProperties(simulationArea.lastSelected)
-        updateTestbenchUI()
         plotArea.reset()
     }
     updateCanvasSet(true)
@@ -185,7 +183,6 @@ export async function createNewCircuitScope(
     newCircuit(name, id, isVerilog, isVerilogMain)
     if (!embed) {
         showProperties(simulationArea.lastSelected)
-        updateTestbenchUI()
         plotArea.reset()
     }
     return true
