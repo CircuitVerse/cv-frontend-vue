@@ -10,6 +10,8 @@ export interface State {
               name: string
           }
     circuit_list: Array<Object>
+    errorMessages: string[]
+    successMessages: string[]
     dialogBox: {
         // create_circuit: boolean
         // delete_circuit: boolean
@@ -37,6 +39,8 @@ export const useState = defineStore({
             title: 'Welcome to CircuitVerse Simulator',
             activeCircuit: {},
             circuit_list: [],
+            errorMessages: [],
+            successMessages: [],
             dialogBox: {
                 // create_circuit: false,
                 // delete_circuit: false,

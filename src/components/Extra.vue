@@ -164,7 +164,10 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Message Display -->
-    <div id="MessageDiv"></div>
+    <div id="MessageDiv">
+        <div v-for="mes in useState().successMessages" class='alert alert-success' role='alert'> {{ mes }}</div>
+        <div v-for="error in useState().errorMessages" class='alert alert-danger' role='alert'> {{ error }}</div>
+    </div>
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
@@ -320,4 +323,6 @@ import CustomShortcut from './DialogBox/CustomShortcut.vue'
 import InsertSubcircuit from './DialogBox/InsertSubcircuit.vue'
 import OpenOffline from './DialogBox/OpenOffline.vue'
 import ReportIssue from './ReportIssue/ReportIssue.vue'
+
+import { useState } from '#/store/SimulatorStore/state'
 </script>
