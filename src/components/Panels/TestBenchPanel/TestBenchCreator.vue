@@ -637,8 +637,6 @@ function download(filename, text) {
  */
 function saveData() {
   const testData = parse()
-  console.log(testData);
-  console.log(creatorMode, CREATORMODE.SIMULATOR_POPUP);
 
   if (creatorMode === CREATORMODE.SIMULATOR_POPUP || true) {
     const postData = { scopeID: circuitScopeID, testData }
@@ -655,7 +653,6 @@ function saveData() {
 /* Loads data from JSON string into the table */
 function loadData(dataJSON) {
   const data = JSON.parse(dataJSON)
-  if (data.title) $('#test-title-label').text(data.title)
   changeTestMode()
   changeTestMode(data.type)
   for (let group_i = 0; group_i < data.groups.length; group_i++) {
@@ -694,7 +691,6 @@ function loadData(dataJSON) {
  */
 function loadResult(dataJSON) {
   const data = JSON.parse(dataJSON)
-  if (data.title) $('#test-title-label').text(data.title)
   changeTestMode()
   changeTestMode(data.type)
   for (let group_i = 0; group_i < data.groups.length; group_i++) {

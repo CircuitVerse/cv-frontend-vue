@@ -128,13 +128,8 @@
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
-    <!-- Dialog Box 1 - Testbench -->
-    <div id="setTestbenchData" style="display: none" title="Create Test"></div>
-    <!-- --------------------------------------------------------------------------------------------- -->
-
-    <!-- --------------------------------------------------------------------------------------------- -->
-    <!-- Dialog Box 2 - Testbench -->
-    <div id="testbenchValidate" style="display: none" title="Testbench Validation"></div>
+    <!-- Dialog Box - Testbench -->
+     <TestBenchValidate />
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
@@ -177,6 +172,7 @@ import TestBenchPanel from './Panels/TestBenchPanel/TestBenchPanel.vue'
 import TestBenchCreator from './Panels/TestBenchPanel/TestBenchCreator.vue'
 import Creator from './Panels/TestBenchPanel/Creator.vue'
 import { useTestBenchStore } from '#/store/testBenchStore'
+import TestBenchValidate from './Panels/TestBenchPanel/TestBenchValidate.vue'
 
 const testBenchStore = useTestBenchStore();
 const isTestBenchCreatorVisible = computed(() => testBenchStore.showTestBenchCreator);

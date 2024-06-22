@@ -73,20 +73,30 @@
 
                 <div v-for="(group, groupIndex) in groups" class="groupParent" :key="groupIndex">
                     <input v-model="group.title" class="inputField dataGroupTitle" type="text" />
-                    <p>Click + to add tests to the group</p>
+                    <p>Click + to add tests to the {{ testType === 'comb' ? 'group' : 'set' }}</p>
 
                     <div v-for="(_, index) in group.inputs[0]" class="groupRow" :key="index">
                         <div class="testRow firstCol spaceArea"></div>
                         <div class="testContainer">
                             <div v-for="(_, i) in group.inputs" class="testRow colWise"
                                 :style="{ width: 100 / inputsBandWidth.length + '%' }">
-                                <input class="inputField dataGroupTitle smInput" type="text" v-model="group.inputs[i][index]" maxlength="1" />
+                                <input class="inputField dataGroupTitle smInput" type="text"
+                                    :disabled="testBenchStore.readOnly" v-model="group.inputs[i][index]"
+                                    maxlength="1" />
                             </div>
                         </div>
                         <div class="testContainer">
                             <div v-for="(_, i) in group.outputs" class="testRow colWise"
                                 :style="{ width: 100 / outputsBandWidth.length + '%' }">
-                                <input class="inputField dataGroupTitle smInput" type="text" v-model="group.outputs[i][index]" maxlength="1" />
+                                <input class="inputField dataGroupTitle smInput" type="text"
+                                    :disabled="testBenchStore.readOnly" v-model="group.outputs[i][index]"
+                                    maxlength="1" />
+                            </div>
+                        </div>
+                        <div v-if="testBenchStore.showResults" class="resultContainer">
+                            <div v-for="(_, i) in results" class="testRow colWise"
+                                :style="{ width: 100 / outputsBandWidth.length + '%', color: results[groupIndex][i][index] ? '#17FC12' : '#FF1616' }">
+                                 {{ results[groupIndex][i][index] ? '✔' : '✘' }}
                             </div>
                         </div>
                     </div>
@@ -108,10 +118,10 @@
                     </v-btn>
                 </div>
                 <div class="btnDiv">
-                    <v-btn class="messageBtn" block>
+                    <v-btn class="messageBtn" block @mousedown="importFromCSV">
                         Import From CSV
                     </v-btn>
-                    <v-btn class="messageBtn" block>
+                    <v-btn class="messageBtn" block @mousedown="exportAsCSV">
                         Export As CSV
                     </v-btn>
                     <v-btn v-if="showPopup" class="messageBtn" block @mousedown="sendData">
@@ -124,7 +134,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, reactive, ref, watch } from 'vue';
+import { computed, ref, reactive, watch } from 'vue';
 import { useTestBenchStore } from '#/store/testBenchStore';
 
 const testBenchStore = useTestBenchStore();
@@ -132,9 +142,10 @@ const testBenchStore = useTestBenchStore();
 const showCreator = computed(() => testBenchStore.showTestBenchCreator);
 const showPopup = computed(() => testBenchStore.showPopup);
 
+const results: boolean[][][] = reactive([]);
 const testTitle = ref('Untitled');
 const dialogTitle = ref('Create Test');
-const testType = ref('comb');
+const testType = ref<string>('comb');
 
 const inputsBandWidth = ref([1]);
 const outputsBandWidth = ref([1]);
@@ -157,20 +168,61 @@ const groups = reactive<Group[]>([
     }
 ]);
 
-watch([testBenchStore.data, testBenchStore.result], () => {
-    if (testBenchStore.data) {
-        dialogTitle.value = 'Edit Test';
-        circuitScopeID.value = testBenchStore.scopeId;
-        // loadData(testBenchStore.data);
+watch(() => testBenchStore.testbenchData.testData.groups, () => {
+    const { groups: newGroups } = testBenchStore.testbenchData.testData;
+
+    const values = newGroups.map(group => ({
+        title: group.label,
+        inputs: group.inputs.map(input => input.values),
+        outputs: group.outputs.map(output => output.values),
+    }));
+
+    groups.splice(0, groups.length, ...values);
+
+    if (newGroups[0]) {
+        const { inputs, outputs } = newGroups[0];
+
+        inputsBandWidth.value.splice(0, inputsBandWidth.value.length, ...inputs.map(input => input.bitWidth));
+        outputsBandWidth.value.splice(0, outputsBandWidth.value.length, ...outputs.map(output => output.bitWidth));
+        inputsName.value.splice(0, inputsName.value.length, ...inputs.map(input => input.label));
+        outputsName.value.splice(0, outputsName.value.length, ...outputs.map(output => output.label));
+    } else {
+        inputsBandWidth.value.splice(0, inputsBandWidth.value.length, 1);
+        outputsBandWidth.value.splice(0, outputsBandWidth.value.length, 1);
+        inputsName.value.splice(0, inputsName.value.length, "inp1");
+        outputsName.value.splice(0, outputsName.value.length, "out1");
     }
-    else if (testBenchStore.result) {
-        dialogTitle.value = 'Test Result';
-        // loadResult(testBenchStore.result);
-        // readOnlyUI();
+});
+
+watch(() => testBenchStore.testbenchData.testData.groups, () => {
+    results.splice(0, results.length);
+    testBenchStore.testbenchData.testData.groups.map(group => {
+        results.push([]);
+        group.outputs.map((output) => {
+            results[results.length - 1].push([]);
+            for(let i = 0; i < output.values.length; i++) {
+                if(output.results && output.values[i] === output.results[i]) {
+                    results[results.length - 1][results[results.length - 1].length - 1].push(true);
+                } else {
+                    results[results.length - 1][results[results.length - 1].length - 1].push(false);
+                }
+            }
+        });
+    });
+},
+    { deep: true }
+);
+
+watch(testType, () => {
+    if (testType.value === 'comb') {
+        groups.forEach(group => {
+            group.title = `Group ${groups.indexOf(group) + 1}`;
+        });
     }
     else {
-        dialogTitle.value = 'Create Test';
-        circuitScopeID.value = testBenchStore.scopeId;
+        groups.forEach(group => {
+            group.title = `Set ${groups.indexOf(group) + 1}`;
+        });
     }
 });
 
@@ -196,7 +248,7 @@ const sendData = () => {
             label: group.title,
             inputs: inputsData,
             outputs: outputsData,
-            n: inputsData[0].values.length,
+            n: inputsData[0] ? inputsData[0].values.length : 0,
         };
     });
 
@@ -212,13 +264,13 @@ const sendData = () => {
 const addTestToGroup = (index: number) => {
     const group = groups[index];
     for (let i = 0; i < inputsBandWidth.value.length; i++) {
-        if(group.inputs.length === i)
+        if (group.inputs.length === i)
             group.inputs.push([]);
         group.inputs[i].push("0");
     }
 
     for (let i = 0; i < outputsBandWidth.value.length; i++) {
-        if(group.outputs.length === i)
+        if (group.outputs.length === i)
             group.outputs.push([]);
         group.outputs[i].push("0");
     }
@@ -234,11 +286,11 @@ const addNewGroup = () => {
 
 const increInputs = () => {
     groups.forEach((group) => {
-        if(group.inputs.length === 0) return;
+        if (group.inputs.length === 0) return;
 
         group.inputs.push([]);
 
-        for (let i = 0; i < inputsBandWidth.value.length; i++) {
+        for (let i = 0; i < group.inputs[0].length; i++) {
             group.inputs[group.inputs.length - 1].push("0");
         }
     });
@@ -249,17 +301,114 @@ const increInputs = () => {
 
 const increOutputs = () => {
     groups.forEach((group) => {
-        if(group.outputs.length === 0) return;
+        if (group.outputs.length === 0) return;
 
         group.outputs.push([]);
 
-        for (let i = 0; i < outputsBandWidth.value.length; i++) {
+        for (let i = 0; i < group.outputs[0].length; i++) {
             group.outputs[group.outputs.length - 1].push("0");
         }
     });
 
     outputsBandWidth.value.push(1);
     outputsName.value.push(`out${outputsName.value.length + 1}`);
+};
+
+const exportAsCSV = () => {
+    let csv = `${testType.value},${testTitle.value}\n`;
+
+    csv += `Inputs BandWidth: ${inputsBandWidth.value.join(',')}\n`;
+    csv += `Outputs BandWidth: ${outputsBandWidth.value.join(',')}\n`;
+    csv += `Inputs Name: ${inputsName.value.join(',')}\n`;
+    csv += `Outputs Name: ${outputsName.value.join(',')}\n`;
+
+    csv += groups.map(group => {
+        let groupStr = `G-${group.title}:\n`;
+        groupStr += group.inputs.map((input, index) => `I-${inputsName.value[index]}:${input.join(',')}`).join('\n');
+        groupStr += '\n';
+        groupStr += group.outputs.map((output, index) => `O-${outputsName.value[index]}:${output.join(',')}`).join('\n');
+        return groupStr;
+    }).join('\n');
+
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${testTitle.value}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+};
+
+const importFromCSV = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.csv';
+    input.onchange = () => {
+        const file = input.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = () => {
+            const csv = reader.result as string;
+            const lines = csv.split('\n');
+
+            const firstLine = lines.shift();
+            if (firstLine) {
+                [testType.value, testTitle.value] = firstLine.split(',');
+            }
+
+            let line = lines.shift();
+            if (line) {
+                inputsBandWidth.value = line.split(': ')[1].split(',').map(Number);
+            }
+            line = lines.shift();
+            if (line) {
+                outputsBandWidth.value = line.split(': ')[1].split(',').map(Number);
+            }
+            line = lines.shift();
+            if (line) {
+                inputsName.value = line.split(': ')[1].split(',');
+            }
+            line = lines.shift();
+            if (line) {
+                outputsName.value = line.split(': ')[1].split(',');
+            }
+
+            const newGroups: Group[] = [];
+            let group: Group = {
+                title: '',
+                inputs: [],
+                outputs: [],
+            }
+            lines.forEach(line => {
+                if (line.startsWith('G-')) {
+                    if (group.title) {
+                        newGroups.push(group);
+                    }
+                    group = { title: line.slice(2), inputs: [], outputs: [] };
+                } else {
+                    const [name, values] = line.split(':');
+                    const isInput = name.startsWith('I-') && inputsName.value.includes(name.slice(2));
+                    const isOutput = name.startsWith('O-') && outputsName.value.includes(name.slice(2));
+                    if (isInput) {
+                        group.inputs.push(values.split(','));
+                    } else if (isOutput) {
+                        group.outputs.push(values.split(','));
+                    }
+                }
+            });
+            if (group.title) {
+                newGroups.push(group);
+            }
+
+            groups.splice(0, groups.length, ...newGroups);
+        };
+
+        reader.readAsText(file);
+    };
+
+    input.click();
 };
 </script>
 
@@ -305,7 +454,7 @@ const increOutputs = () => {
     align-items: center;
 }
 
-.colWise{
+.colWise {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -336,6 +485,13 @@ const increOutputs = () => {
 .testContainer {
     display: flex;
     width: 35%;
+    gap: 0.5rem;
+    overflow-x: scroll;
+}
+
+.resultContainer {
+    display: flex;
+    width: 15%;
     gap: 0.5rem;
     overflow-x: scroll;
 }

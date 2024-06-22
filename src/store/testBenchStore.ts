@@ -36,13 +36,32 @@ export interface TestBenchData {
   goToFirstValidGroup?(): boolean;
 };
 
+export interface ValidationErrors {
+  ok: boolean
+  invalids?: {
+    type: number
+    identifier: string
+    message: string
+    extraInfo?: any
+  }[]
+}
+
+export interface Result {
+  value: string;
+  color: string;
+}
+
 export const useTestBenchStore = defineStore("testBenchStore", () => {
   const showTestBenchCreator = ref(false);
   const scopeId = ref<string | null>(null);
   const showPopup = ref(false);
-  const data = ref<string | null>(null);
-  const result = ref<string | null>(null);
   const showTestbenchUI = ref(false);
+  const showTestBenchValidator = ref(false);
+  const resultValues = ref<Result[]>([]);
+  const passed = ref(0);
+  const total = ref(0);
+  const showResults = ref(false);
+  const readOnly = ref(false);
 
   const testData = reactive<TestData>({
     type: "",
@@ -56,6 +75,11 @@ export const useTestBenchStore = defineStore("testBenchStore", () => {
     currentCase: 0,
   });
 
+  const validationErrors: ValidationErrors = reactive({
+    ok: true,
+    invalids: []
+  });
+
   const toggleTestBenchCreator = (value: boolean) => {
     showTestBenchCreator.value = value;
   }
@@ -63,12 +87,18 @@ export const useTestBenchStore = defineStore("testBenchStore", () => {
   const createCreator = (id: string, popup: boolean, dataString?: string, dataType?: "data" | "result") => {
     scopeId.value = id;
     showPopup.value = popup;
-    if(!dataString) return;
+    if (!dataString) return;
 
     if (dataType === "data") {
-      data.value = dataString;
+      const dataValues = JSON.parse(dataString) as TestData;
+      testData.type = dataValues.type;
+      testData.title = dataValues.title;
+      testData.groups = dataValues.groups;
     } else {
-      result.value = dataString;
+      const dataValues = JSON.parse(dataString) as TestData;
+      testData.type = dataValues.type;
+      testData.title = dataValues.title;
+      testData.groups = dataValues.groups;
     }
   }
 
@@ -89,10 +119,15 @@ export const useTestBenchStore = defineStore("testBenchStore", () => {
     createCreator,
     scopeId,
     showPopup,
-    data,
-    result,
     sendData,
     testbenchData,
     showTestbenchUI,
+    validationErrors,
+    showTestBenchValidator,
+    resultValues,
+    passed,
+    total,
+    showResults,
+    readOnly,
   }
 })
