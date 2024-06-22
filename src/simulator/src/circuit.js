@@ -198,7 +198,7 @@ export async function createNewCircuitScope(
  * @param {string} id - identifier for circuit
  * @category circuit
  */
-export function newCircuit(name, id, isVerilog = false, isVerilogMain = false) {
+export function newCircuit(name, id = undefined, isVerilog = false, isVerilogMain = false) {
     const simulatorStore = SimulatorStore()
     const { circuit_list } = toRefs(simulatorStore)
     const { activeCircuit } = toRefs(simulatorStore)
