@@ -1,8 +1,7 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
 import simulationArea from '../simulationArea'
-import { correctWidth, lineTo, moveTo, arc } from '../canvasApi'
-import { changeInputSize } from '../modules'
+import { correctWidth, lineTo, moveTo } from '../canvasApi'
 /**
  * @class
  * Ground
@@ -18,9 +17,6 @@ import { colors } from '../themer/themer'
 export default class Ground extends CircuitElement {
     constructor(x, y, scope = globalScope, bitWidth = 1) {
         super(x, y, scope, 'RIGHT', bitWidth)
-        /* this is done in this.baseSetup() now
-        this.scope['Ground'].push(this);
-        */
         this.rectangleObject = false
         this.setDimensions(10, 10)
         this.directionFixed = true
@@ -52,21 +48,6 @@ export default class Ground extends CircuitElement {
     resolve() {
         this.output1.value = 0
         simulationArea.simulationQueue.add(this.output1)
-    }
-
-    /**
-     * @memberof Ground
-     * fn to create save Json Data of object
-     * @return {JSON}
-     */
-    customSave() {
-        const data = {
-            nodes: {
-                output1: findNode(this.output1),
-            },
-            constructorParamaters: [this.bitWidth],
-        }
-        return data
     }
 
     /**
