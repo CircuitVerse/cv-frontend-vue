@@ -248,49 +248,6 @@ export function parseNumber(num) {
     return parseInt(num)
 }
 
-export function setupBitConvertor() {
-    $('#decimalInput').on('keyup', function () {
-        var x = parseInt($('#decimalInput').val(), 10)
-        setBaseValues(x)
-    })
-
-    $('#binaryInput').on('keyup', function () {
-        var inp = $('#binaryInput').val()
-        var x
-        if (inp.slice(0, 2) == '0b') x = parseInt(inp.slice(2), 2)
-        else x = parseInt(inp, 2)
-        setBaseValues(x)
-    })
-    $('#bcdInput').on('keyup', function () {
-        var input = $('#bcdInput').val()
-        var num = 0
-        while (input.length % 4 !== 0) {
-            input = '0' + input
-        }
-        if (input !== 0) {
-            var i = 0
-            while (i < input.length / 4) {
-                if (parseInt(input.slice(4 * i, 4 * (i + 1)), 2) < 10)
-                    num =
-                        num * 10 + parseInt(input.slice(4 * i, 4 * (i + 1)), 2)
-                else return setBaseValues(NaN)
-                i++
-            }
-        }
-        return setBaseValues(x)
-    })
-
-    $('#hexInput').on('keyup', function () {
-        var x = parseInt($('#hexInput').val(), 16)
-        setBaseValues(x)
-    })
-
-    $('#octalInput').on('keyup', function () {
-        var x = parseInt($('#octalInput').val(), 8)
-        setBaseValues(x)
-    })
-}
-
 export function promptFile(contentType, multiple) {
     var input = document.createElement('input')
     input.type = 'file'
