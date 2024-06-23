@@ -13,7 +13,6 @@ import simulationArea from './simulationArea'
 import logixFunction from './data'
 import { circuitProperty } from './circuit'
 import { updateRestrictedElementsInScope } from './restrictedElementDiv'
-import { setupBitConvertor } from './utils'
 import { updateTestbenchUI, setupTestbenchUI } from './testbench'
 import { dragging } from './drag'
 
@@ -148,7 +147,6 @@ export function setupUI() {
         logixFunction[this.id]()
     })
     setupPanels()
-    setupBitConvertor()
 }
 
 /**
