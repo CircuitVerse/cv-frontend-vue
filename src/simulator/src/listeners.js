@@ -38,7 +38,6 @@ import redo from './data/redo'
 import { copy, paste, selectAll } from './events'
 import save from './data/save'
 import { verilogModeGet } from './Verilog2CV'
-import { setupTimingListeners } from './plotArea'
 
 var unit = 10
 var listenToSimulator = true
@@ -571,10 +570,6 @@ export default function startListeners() {
     })
 
     zoomSliderListeners()
-    // setupLayoutModePanelListeners()
-    if (!embed) {
-        setupTimingListeners()
-    }
 }
 
 var isIe =

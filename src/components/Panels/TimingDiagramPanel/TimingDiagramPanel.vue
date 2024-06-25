@@ -26,28 +26,42 @@
                     type="number"
                     min="1"
                     autocomplete="off"
-                    :value="cycleUnits"
+                    :value="plotArea.cycleUnit"
                     @change="handleUnitsChange"
                     @paste="handleUnitsChange"
                     @keyup="handleUnitsChange"
                 />
                 {{ $t('simulator.panel_body.timing_diagram.units') }}
-                <span id="timing-diagram-log"></span>
+                <span
+                    v-if="timingDiagramStore.showUtilization"
+                    id="timing-diagram-log"
+                    :style="{ backgroundColor: (utilization >= 90 || utilization <= 10) ? '#dc5656' : '#42b983' }">
+                    Utilization: {{ Math.round(plotArea.unitUsed) }} Units ({{ utilization }}%)
+                    {{ (utilization >= 90 || utilization <= 10) ? `Recommended Units: ${recommendedUnit}` : '' }}
+                </span>
             </div>
             <div id="plot" ref="plotRef">
-                <canvas id="plotArea"></canvas>
+                <canvas
+                    id="plotArea"
+                    @mousedown="setupTimingListeners.plotAreaMouseDown"
+                    @mousemove="setupTimingListeners.plotAreaMouseMove"
+                    @mouseup="setupTimingListeners.plotAreaMouseUp"
+                >
+                </canvas>
             </div>
         </div>
     </div>
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import _plotArea from '#/simulator/src/plotArea'
 import { timingDiagramButtonActions } from '#/simulator/src/plotArea'
 import TimingDiagramButtons from './TimingDiagramButtons.vue'
 import buttonsJSON from '#/assets/constants/Panels/TimingDiagramPanel/buttons.json'
 import PanelHeader from '../Shared/PanelHeader.vue'
+import { useTimingDiagramStore } from '#/store/timingDiagramStore'
+import { setupTimingListeners } from '#/simulator/src/plotArea'
 
 interface TimingDiagramButton {
     title: string
@@ -57,15 +71,12 @@ interface TimingDiagramButton {
     click: string
 }
 
-interface PlotArea {
-    resize: () => void
-    [key: string]: () => void
-}
-
-const plotArea: PlotArea = _plotArea
+const plotArea = reactive(_plotArea)
+const timingDiagramStore = useTimingDiagramStore()
 const buttons = ref<TimingDiagramButton[]>(buttonsJSON)
 const plotRef = ref<HTMLElement | null>(null)
-const cycleUnits = ref(1000)
+const utilization = computed(() => (Math.round((plotArea.unitUsed * 10000) / plotArea.cycleUnit) / 100))
+const recommendedUnit = computed(() => (Math.max(20, Math.round(plotArea.unitUsed * 3))))
 
 function handleButtonClick(button: string) {
     if (button === 'smaller') {
@@ -86,11 +97,13 @@ function handleButtonClick(button: string) {
     } else if (button === 'largeHeight') {
         timingDiagramButtonActions.largeHeight()
     } else {
-        plotArea[button]()
+        if (button === 'reset' || button === 'resume' || button === 'pause' || button === 'nextCycle' || button === 'setExecutionTime' || button === 'zoomIn' || button === 'zoomOut' || button === 'download' || button === 'resize' || button === 'setup' || button === 'calibrate' || button === 'getCurrentTime' || button === 'update' || button === 'render' || button === 'plot' || button === 'clear') {
+            plotArea[button]()
+        }
     }
 }
 
-function handleUnitsChange(event: Event) {
+function handleUnitsChange(event: React.ChangeEvent<HTMLInputElement> | React.ClipboardEvent<HTMLInputElement>) {
     const inputElem = event.target as HTMLInputElement
     const timeUnits = parseInt(inputElem.value, 10)
     if (isNaN(timeUnits) || timeUnits < 1) return
