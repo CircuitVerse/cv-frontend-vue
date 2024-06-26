@@ -1,18 +1,16 @@
 import { scheduleUpdate, play, updateCanvasSet } from './engine'
 import simulationArea from './simulationArea'
+import { clockTick } from './utils'
 
 /**
  * a global function as a helper for simulationArea.changeClockEnable
- * @category sequential
  */
-export function changeClockEnable(val) {
+export function changeClockEnable(val: boolean) {
     simulationArea.clockEnabled = val
 }
 
 /**
  * WIP function defined and used
- * @param {number} n
- * @category sequential
  */
 export function runTest(n = 10) {
     var t = new Date().getTime()
