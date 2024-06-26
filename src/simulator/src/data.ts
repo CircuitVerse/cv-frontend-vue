@@ -10,7 +10,7 @@ import {
     openOffline,
     recoverProject,
 } from './data/project'
-import { newCircuit, createNewCircuitScope } from './circuit'
+import { createNewCircuitScope } from './circuit'
 import { createCombinationalAnalysisPrompt } from './combinationalAnalysis'
 import { colorThemes } from './themer/themer'
 import { showTourGuide } from './tutorials'
