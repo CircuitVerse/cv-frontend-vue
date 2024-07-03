@@ -25,6 +25,15 @@ export default class Ground extends CircuitElement {
 
     /**
      * @memberof Ground
+     * resolve output values based on inputData
+     */
+    resolve() {
+        this.output1.value = 0
+        simulationArea.simulationQueue.add(this.output1)
+    }
+
+    /**
+     * @memberof Ground
      * fn to create save Json Data of object
      * @return {JSON}
      */
@@ -33,21 +42,9 @@ export default class Ground extends CircuitElement {
             nodes: {
                 output1: findNode(this.output1),
             },
-            values: {
-                state: this.state,
-            },
-            constructorParamaters: [this.direction, this.bitWidth],
+            constructorParamaters: [this.bitWidth],
         }
         return data
-    }
-
-    /**
-     * @memberof Ground
-     * resolve output values based on inputData
-     */
-    resolve() {
-        this.output1.value = 0
-        simulationArea.simulationQueue.add(this.output1)
     }
 
     /**
