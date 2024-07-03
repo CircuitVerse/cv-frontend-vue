@@ -88,6 +88,17 @@ const showMaxHeight = ref(true)
 
 function toggleHeight() {
     showMaxHeight.value = !showMaxHeight.value
+
+    const navbar = document.querySelector('.navbar');
+    const tabsBar = document.getElementById('tabsBar');
+
+    if (showMaxHeight.value) {
+        navbar.style.zIndex = '';
+        tabsBar.style.zIndex = '';
+    } else {
+        navbar.style.zIndex = '103';
+        tabsBar.style.zIndex = '102';
+    }
 }
 
 // const persistentShow: Ref<boolean> = ref(false)
@@ -290,7 +301,7 @@ function isEmbed(): boolean {
     position: relative;
     overflow: hidden;
     padding-bottom: 2.5px;
-    z-index: 100;
+    z-index: 99;
 }
 
 #tabsBar.embed-tabbar {
