@@ -144,7 +144,7 @@
 
 <script lang="ts" setup>
 import { useState } from '#/store/SimulatorStore/state'
-import { onMounted, onUpdated, ref } from '@vue/runtime-core'
+import { onMounted, onUpdated, ref } from 'vue'
 import themeOptions from '#/simulator/src/themer/themes'
 import {
     getThemeCardSvg,

@@ -64,7 +64,7 @@
 <script lang="ts" setup>
 import load from '#/simulator/src/data/load'
 import { useState } from '#/store/SimulatorStore/state'
-import { onMounted, onUpdated, ref, toRaw } from '@vue/runtime-core'
+import { onMounted, onUpdated, ref, toRaw } from 'vue'
 const SimulatorState = useState()
 const projectList = ref({})
 onMounted(() => {
