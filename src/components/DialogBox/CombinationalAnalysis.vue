@@ -199,7 +199,7 @@ function createLogicTable() {
         SimulatorState.dialogBox.combinationalanalysis_dialog = false
         output.value = []
         solveBooleanFunction(booleanInputVariables, booleanExpression)
-        if (output != null) {
+        if (output.value != null) {
             createBooleanPrompt(booleanInputVariables, booleanExpression)
         }
     } else if (
