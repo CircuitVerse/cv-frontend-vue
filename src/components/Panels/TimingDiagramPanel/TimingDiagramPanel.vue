@@ -35,9 +35,9 @@
                 <span
                     v-if="timingDiagramStore.showUtilization"
                     id="timing-diagram-log"
-                    :style="{ backgroundColor: (utilization >= 90 || utilization <= 10) ? '#dc5656' : '#42b983' }">
-                    Utilization: {{ Math.round(plotArea.unitUsed) }} Units ({{ utilization }}%)
-                    {{ (utilization >= 90 || utilization <= 10) ? `Recommended Units: ${recommendedUnit}` : '' }}
+                    :style="{ backgroundColor: (utilizationComputed >= 90 || utilizationComputed <= 10) ? '#dc5656' : '#42b983' }">
+                    Utilization: {{ Math.round(plotArea.unitUsed) }} Units ({{ utilizationComputed }}%)
+                    {{ (utilizationComputed >= 90 || utilizationComputed <= 10) ? `Recommended Units: ${recommendedUnitComputed}` : '' }}
                 </span>
             </div>
             <div id="plot" ref="plotRef">
@@ -75,8 +75,8 @@ const plotArea = reactive(_plotArea)
 const timingDiagramStore = useTimingDiagramStore()
 const buttons = ref<TimingDiagramButton[]>(buttonsJSON)
 const plotRef = ref<HTMLElement | null>(null)
-const utilization = computed(() => (Math.round((plotArea.unitUsed * 10000) / plotArea.cycleUnit) / 100))
-const recommendedUnit = computed(() => (Math.max(20, Math.round(plotArea.unitUsed * 3))))
+const utilizationComputed = computed(() => (Math.round((plotArea.unitUsed * 10000) / plotArea.cycleUnit) / 100))
+const recommendedUnitComputed = computed(() => (Math.max(20, Math.round(plotArea.unitUsed * 3))))
 
 function handleButtonClick(button: string) {
     if (button === 'smaller') {
