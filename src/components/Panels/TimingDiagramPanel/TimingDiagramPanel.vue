@@ -97,7 +97,7 @@ function handleButtonClick(button: string) {
     } else if (button === 'largeHeight') {
         timingDiagramButtonActions.largeHeight()
     } else {
-        if (button === 'reset' || button === 'resume' || button === 'pause' || button === 'nextCycle' || button === 'setExecutionTime' || button === 'zoomIn' || button === 'zoomOut' || button === 'download' || button === 'resize' || button === 'setup' || button === 'calibrate' || button === 'getCurrentTime' || button === 'update' || button === 'render' || button === 'plot' || button === 'clear') {
+        if (['reset', 'resume', 'pause', 'nextCycle', 'setExecutionTime', 'zoomIn', 'zoomOut', 'download', 'resize', 'setup', 'calibrate', 'getCurrentTime', 'update', 'render', 'plot', 'clear'].includes(button)) {
             plotArea[button]()
         }
     }
