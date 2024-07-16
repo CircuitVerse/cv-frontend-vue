@@ -1,5 +1,5 @@
 export const loadVersion = (version: string): Promise<void> => {
-    return import(`./${version}/src/main.ts`)
+    return import(`../${version}/src/main.ts`)
       .then(module => {
         console.log(`Loaded ${version}`);
       })
