@@ -14,7 +14,7 @@ interface QueueObject {
 
 export default class EventQueue {
     size: number
-    queue: any[]
+    queue: Array<QueueObject>
     frontIndex: number
     time: number
     constructor(size: number) {
