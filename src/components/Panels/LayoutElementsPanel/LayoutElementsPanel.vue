@@ -8,15 +8,15 @@
     <div class="panel-body">
       <div class="search-results"></div>
       <div id="subcircuitMenu" class="accordion">
-        <div v-for="(group, i) in SimulatorState.subCircuitElementList" :key="i">
+        <div v-for="(group, groupIndex) in SimulatorState.subCircuitElementList" :key="groupIndex">
           <div class="panelHeader">{{ group.type }}s</div>
           <div class="panel">
             <div
-              v-for="(element, j) in group.elements"
+              v-for="(element, elementIndex) in group.elements"
               class="icon subcircuitModule"
-              :key="`${i}-${j}`"
-              :id="`${group.type}-${j}`" :data-element-id="j" :data-element-name="group.type"
-              @mousedown="dragElement(group.type, element, j)"
+              :key="`${groupIndex}-${elementIndex}`"
+              :id="`${group.type}-${elementIndex}`" :data-element-id="elementIndex" :data-element-name="group.type"
+              @mousedown="dragElement(group.type, element, elementIndex)"
             >
               <div class="icon-image">
                 <img :src="`/img/${group.type}.svg`" />
@@ -49,8 +49,8 @@ const dragElement = (groupType: string, element: any, index: number) => {
   // Remove the element from subCircuitElementList
   SimulatorState.subCircuitElementList.forEach((typeGroup) => {
     typeGroup.elements = typeGroup.elements.filter(
-      (_, i) => {
-        if(typeGroup.type === groupType && index === i)
+      (_, elementIndex) => {
+        if(typeGroup.type === groupType && index === elementIndex)
         return false
 
         return true;
