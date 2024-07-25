@@ -236,4 +236,4 @@ function getTooltipText(elementName) {
 .v-expansion-panel-title {
     min-height: 36px;
 }
-</style>#/simulator/src/metadata
+</style>
