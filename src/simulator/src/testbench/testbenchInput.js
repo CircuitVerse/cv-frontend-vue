@@ -1,5 +1,5 @@
 import CircuitElement from '../circuitElement'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { correctWidth, lineTo, moveTo, fillText } from '../canvasApi'
 import Node, { findNode } from '../node'
 import plotArea from '../plotArea'
@@ -68,7 +68,6 @@ export default class TB_Input extends CircuitElement {
         this.nodeList = []
         this.nodeList.push(this.clockInp)
         this.testData = this.testData || { inputs: [], outputs: [], n: 0 }
-        // this.clockInp = new Node(0,20, 0,this,1);
 
         this.setDimensions()
 

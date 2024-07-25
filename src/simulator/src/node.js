@@ -1,6 +1,6 @@
 /* eslint-disable import/no-cycle */
 import { drawCircle, drawLine, arc } from './canvasApi'
-import simulationArea from './simulationArea'
+import { simulationArea } from './simulationArea'
 import { distance, showError } from './utils'
 import {
     renderCanvas,
@@ -12,7 +12,6 @@ import {
     canvasMessageData,
 } from './engine'
 import Wire from './wire'
-// import { colors } from './themer/themer';
 import { colors } from './themer/themer'
 
 /**
