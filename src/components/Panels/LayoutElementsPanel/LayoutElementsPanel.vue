@@ -37,7 +37,7 @@
 
 <script lang="ts" setup>
 import { useState } from '#/store/SimulatorStore/state'
-import simulationArea from '#/simulator/src/simulationArea'
+import { simulationArea } from '#/simulator/src/simulationArea'
 
 const SimulatorState = useState();
 
