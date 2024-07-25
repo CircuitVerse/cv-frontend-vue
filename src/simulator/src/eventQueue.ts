@@ -12,7 +12,7 @@ interface QueueObject {
     propagationDelay: number
 }
 
-export default class EventQueue {
+export class EventQueue {
     size: number
     queue: Array<QueueObject>
     frontIndex: number

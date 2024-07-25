@@ -1,5 +1,5 @@
 /* eslint-disable import/no-cycle */
-import EventQueue from './eventQueue'
+import { EventQueue } from './eventQueue'
 import { clockTick } from './utils'
 
 /**
