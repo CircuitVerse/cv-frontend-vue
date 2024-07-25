@@ -1,13 +1,13 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
 import { simulationArea } from '../simulationArea'
-import { correctWidth, bezierCurveTo, moveTo, arc2 } from '../canvasApi'
+import { correctWidth, bezierCurveTo, moveTo } from '../canvasApi'
 import { changeInputSize } from '../modules'
 import { gateGenerateVerilog } from '../utils'
 
 /**
  * @class
- * XorGate
+ * OrGate
  * @extends CircuitElement
  * @param {number} x - x coordinate of element.
  * @param {number} y - y coordinate of element.
@@ -19,7 +19,7 @@ import { gateGenerateVerilog } from '../utils'
  */
 import { colors } from '../themer/themer'
 
-export default class XorGate extends CircuitElement {
+export default class OrGate extends CircuitElement {
     constructor(
         x,
         y,
@@ -28,31 +28,31 @@ export default class XorGate extends CircuitElement {
         inputs = 2,
         bitWidth = 1
     ) {
+        // Calling base class constructor
         super(x, y, scope, dir, bitWidth)
         this.rectangleObject = false
         this.setDimensions(15, 20)
-
+        // Inherit base class prototype
         this.inp = []
         this.inputSize = inputs
-
         if (inputs % 2 === 1) {
-            for (let i = 0; i < inputs / 2 - 1; i++) {
-                const a = new Node(-20, -10 * (i + 1), 0, this)
+            for (let i = Math.floor(inputs / 2) - 1; i >= 0; i--) {
+                const a = new Node(-10, -10 * (i + 1), 0, this)
                 this.inp.push(a)
             }
-            let a = new Node(-20, 0, 0, this)
+            let a = new Node(-10, 0, 0, this)
             this.inp.push(a)
-            for (let i = inputs / 2 + 1; i < inputs; i++) {
-                a = new Node(-20, 10 * (i + 1 - inputs / 2 - 1), 0, this)
+            for (let i = 0; i < Math.floor(inputs / 2); i++) {
+                a = new Node(-10, 10 * (i + 1), 0, this)
                 this.inp.push(a)
             }
         } else {
-            for (let i = 0; i < inputs / 2; i++) {
-                const a = new Node(-20, -10 * (i + 1), 0, this)
+            for (let i = inputs / 2 - 1; i >= 0; i--) {
+                const a = new Node(-10, -10 * (i + 1), 0, this)
                 this.inp.push(a)
             }
-            for (let i = inputs / 2; i < inputs; i++) {
-                const a = new Node(-20, 10 * (i + 1 - inputs / 2), 0, this)
+            for (let i = 0; i < inputs / 2; i++) {
+                const a = new Node(-10, 10 * (i + 1), 0, this)
                 this.inp.push(a)
             }
         }
@@ -60,7 +60,7 @@ export default class XorGate extends CircuitElement {
     }
 
     /**
-     * @memberof XorGate
+     * @memberof OrGate
      * fn to create save Json Data of object
      * @return {JSON}
      */
@@ -71,6 +71,7 @@ export default class XorGate extends CircuitElement {
                 this.inputSize,
                 this.bitWidth,
             ],
+
             nodes: {
                 inp: this.inp.map(findNode),
                 output1: findNode(this.output1),
@@ -80,7 +81,7 @@ export default class XorGate extends CircuitElement {
     }
 
     /**
-     * @memberof XorGate
+     * @memberof OrGate
      * resolve output values based on inputData
      */
     resolve() {
@@ -89,14 +90,13 @@ export default class XorGate extends CircuitElement {
             return
         }
         for (let i = 1; i < this.inputSize; i++)
-            result ^= this.inp[i].value || 0
-
-        this.output1.value = result
+            result |= this.inp[i].value || 0
+        this.output1.value = result >>> 0
         simulationArea.simulationQueue.add(this.output1)
     }
 
     /**
-     * @memberof XorGate
+     * @memberof OrGate
      * function to draw element
      */
     customDraw() {
@@ -108,6 +108,7 @@ export default class XorGate extends CircuitElement {
         const yy = this.y
         ctx.beginPath()
         ctx.fillStyle = colors['fill']
+
         moveTo(ctx, -10, -20, xx, yy, this.direction, true)
         bezierCurveTo(0, -20, +15, -10, 20, 0, xx, yy, this.direction)
         bezierCurveTo(
@@ -131,53 +132,41 @@ export default class XorGate extends CircuitElement {
             ctx.fillStyle = colors['hover_select']
         ctx.fill()
         ctx.stroke()
-        ctx.beginPath()
-        arc2(
-            ctx,
-            -35,
-            0,
-            25,
-            1.7 * Math.PI,
-            0.3 * Math.PI,
-            xx,
-            yy,
-            this.direction
-        )
-        ctx.stroke()
     }
 
     generateVerilog() {
-        return gateGenerateVerilog.call(this, '^')
+        return gateGenerateVerilog.call(this, '|')
     }
 }
 
 /**
- * @memberof XorGate
+ * @memberof OrGate
  * Help Tip
  * @type {string}
  * @category modules
  */
-XorGate.prototype.tooltipText = 'Xor Gate Tooltip : Implements an exclusive OR.'
+OrGate.prototype.tooltipText =
+    'Or Gate Tooltip : Implements logical disjunction'
 
 /**
- * @memberof XorGate
- * @type {boolean}
- * @category modules
- */
-XorGate.prototype.alwaysResolve = true
-
-/**
- * @memberof XorGate
+ * @memberof OrGate
  * function to change input nodes of the element
  * @category modules
  */
-XorGate.prototype.changeInputSize = changeInputSize
+OrGate.prototype.changeInputSize = changeInputSize
 
 /**
- * @memberof XorGate
+ * @memberof SevenSegDisplay
+ * @type {boolean}
+ * @category modules
+ */
+OrGate.prototype.alwaysResolve = true
+
+/**
+ * @memberof SevenSegDisplay
  * @type {string}
  * @category modules
  */
-XorGate.prototype.verilogType = 'xor'
-XorGate.prototype.helplink = 'https://docs.circuitverse.org/#/chapter4/4gates?id=xor-gate'
-XorGate.prototype.objectType = 'XorGate'
+OrGate.prototype.verilogType = 'or'
+OrGate.prototype.helplink = 'https://docs.circuitverse.org/#/chapter4/4gates?id=or-gate'
+OrGate.prototype.objectType = 'OrGate'

@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement';
 import Node, { findNode } from '../node';
-import simulationArea from '../simulationArea';
+import { simulationArea } from '../simulationArea';
 import { correctWidth, bezierCurveTo, moveTo } from '../canvasApi';
 import { changeInputSize } from '../modules';
 import { gateGenerateVerilog } from '../utils';
@@ -64,38 +64,40 @@ export default class OrGate extends CircuitElement {
 
     customDraw() {
         var ctx = simulationArea.context;
-        ctx.strokeStyle = colors['stroke'];
-        ctx.lineWidth = correctWidth(3);
+        if (ctx) {
+            ctx.strokeStyle = colors['stroke'];
+            ctx.lineWidth = correctWidth(3);
 
-        const xx = this.x;
-        const yy = this.y;
-        ctx.beginPath();
-        ctx.fillStyle = colors['fill'];
+            const xx = this.x;
+            const yy = this.y;
+            ctx.beginPath();
+            ctx.fillStyle = colors['fill'];
 
-        moveTo(ctx, -10, -20, xx, yy, this.direction, true);
-        bezierCurveTo(0, -20, +15, -10, 20, 0, xx, yy, this.direction);
-        bezierCurveTo(
-            0 + 15,
-            0 + 10,
-            0,
-            0 + 20,
-            -10,
-            +20,
-            xx,
-            yy,
-            this.direction
-        );
-        bezierCurveTo(0, 0, 0, 0, -10, -20, xx, yy, this.direction);
-        ctx.closePath();
-        if (
-            (this.hover && !simulationArea.shiftDown) ||
-            simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
-        ) {
-            ctx.fillStyle = colors['hover_select'];
+            moveTo(ctx, -10, -20, xx, yy, this.direction, true);
+            bezierCurveTo(0, -20, +15, -10, 20, 0, xx, yy, this.direction);
+            bezierCurveTo(
+                0 + 15,
+                0 + 10,
+                0,
+                0 + 20,
+                -10,
+                +20,
+                xx,
+                yy,
+                this.direction
+            );
+            bezierCurveTo(0, 0, 0, 0, -10, -20, xx, yy, this.direction);
+            ctx.closePath();
+            if (
+                (this.hover && !simulationArea.shiftDown) ||
+                simulationArea.lastSelected === this ||
+                simulationArea.multipleObjectSelections.contains(this)
+            ) {
+                ctx.fillStyle = colors['hover_select'];
+            }
+            ctx.fill();
+            ctx.stroke();
         }
-        ctx.fill();
-        ctx.stroke();
     }
 
     customSave(): object {
