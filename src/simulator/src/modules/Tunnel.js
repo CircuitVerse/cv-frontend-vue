@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { correctWidth, rect2, fillText } from '../canvasApi'
 import plotArea from '../plotArea'
 import { showError } from '../utils'
@@ -28,9 +28,6 @@ export default class Tunnel extends CircuitElement {
         identifier
     ) {
         super(x, y, scope, dir, bitWidth)
-        /* this is done in this.baseSetup() now
-        this.scope['Tunnel'].push(this);
-        */
         this.rectangleObject = false
         this.centerElement = true
         this.xSize = 10
@@ -77,8 +74,6 @@ export default class Tunnel extends CircuitElement {
         this.upDimensionY = Math.abs(-20 + yRotate)
         this.rightDimensionX = Math.abs(xRotate)
         this.downDimensionY = Math.abs(20 + yRotate)
-
-        // rect2(ctx, -120 + xRotate + this.xSize, -20 + yRotate, 120 - this.xSize, 40, xx, yy, "RIGHT");
     }
 
     /**

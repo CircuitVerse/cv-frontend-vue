@@ -1,13 +1,12 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { gateGenerateVerilog } from '../utils'
 
 import {
     correctWidth,
     bezierCurveTo,
     moveTo,
-    arc2,
     drawCircle2,
 } from '../canvasApi'
 import { changeInputSize } from '../modules'
@@ -35,9 +34,6 @@ export default class NorGate extends CircuitElement {
         bitWidth = 1
     ) {
         super(x, y, scope, dir, bitWidth)
-        /* this is done in this.baseSetup() now
-        this.scope['NorGate'].push(this);
-        */
         this.rectangleObject = false
         this.setDimensions(15, 20)
 
@@ -136,7 +132,7 @@ export default class NorGate extends CircuitElement {
             simulationArea.lastSelected === this ||
             simulationArea.multipleObjectSelections.contains(this)
         )
-            ctx.fillStyle = colors['hover_select']
+        ctx.fillStyle = colors['hover_select']
         ctx.fill()
         ctx.stroke()
         ctx.beginPath()
