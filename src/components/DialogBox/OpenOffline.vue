@@ -31,7 +31,7 @@
                         {{ projectName }}<span></span>
                         <i
                             class="fa fa-trash deleteOfflineProject"
-                            @click="deleteOfflineProject(projectId)"
+                            @click="deleteOfflineProject(projectId.toString())"
                         ></i>
                     </label>
                     <p v-if="JSON.stringify(projectList) == '{}'">
@@ -65,10 +65,12 @@
 <script lang="ts" setup>
 import load from '#/simulator/src/data/load'
 import { useState } from '#/store/SimulatorStore/state'
-import { onMounted, onUpdated, ref } from '@vue/runtime-core'
+import { onMounted, onUpdated, ref, reactive } from '@vue/runtime-core'
 const SimulatorState = useState()
-const projectList = ref({})
-const selectedProjectId = ref(null)
+const projectList: {
+    [key: string]: string
+} = reactive({})
+const selectedProjectId = ref<string | null>(null)
 
 onMounted(() => {
     SimulatorState.dialogBox.open_project_dialog = false
