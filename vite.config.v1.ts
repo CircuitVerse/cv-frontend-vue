@@ -30,7 +30,7 @@ export default defineConfig({
             '@': fileURLToPath(new URL(`./v1/src/components`, import.meta.url)),
         },
     },
-    base: '/simulatorvue/',
+    base: '/simulatorvue/v1/',
     build: {
         outDir: `../public/simulatorvue/v1/`,
         assetsDir: 'assets',
