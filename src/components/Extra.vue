@@ -239,13 +239,14 @@
                     height: 100%;
                 "
             ></canvas>
-            <div id="miniMap">
-                <canvas
-                    id="miniMapArea"
-                    style="position: absolute; left: 0; top: 0; z-index: 3"
-                ></canvas>
-            </div>
-
+            <transition>
+                <div id="miniMap" style="height: 253px; width: 255px">
+                    <canvas
+                        id="miniMapArea"
+                        style="position: absolute; left: 0; top: 0; z-index: 3"
+                    ></canvas>
+                </div>
+            </transition>
             <div id="Help"></div>
             <div
                 class="sk-folding-cube loadingIcon"
@@ -321,3 +322,16 @@ import InsertSubcircuit from './DialogBox/InsertSubcircuit.vue'
 import OpenOffline from './DialogBox/OpenOffline.vue'
 import ReportIssue from './ReportIssue/ReportIssue.vue'
 </script>
+
+<style>
+.v-enter-active,
+.v-leave-active {
+    transition: opacity 0.8s linear;
+    display: none;
+}
+
+.v-enter-from,
+.v-leave-to {
+    opacity: 0;
+}
+</style>
