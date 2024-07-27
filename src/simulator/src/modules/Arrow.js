@@ -1,8 +1,6 @@
 import CircuitElement from '../circuitElement'
-import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
-import { correctWidth, lineTo, moveTo, arc } from '../canvasApi'
-import { changeInputSize } from '../modules'
+import { simulationArea } from '../simulationArea'
+import { correctWidth, lineTo, moveTo } from '../canvasApi'
 /**
  * @class
  * Arrow
@@ -79,5 +77,5 @@ export default class Arrow extends CircuitElement {
  */
 Arrow.prototype.tooltipText = 'Arrow ToolTip : Arrow Selected.'
 Arrow.prototype.propagationDelayFixed = true
-Arrow.prototype.helplink = 'https://docs.circuitverse.org/#/annotation?id=arrow'
+Arrow.prototype.helplink = 'https://docs.circuitverse.org/#/chapter4/7annotation?id=arrow'
 Arrow.prototype.objectType = 'Arrow'

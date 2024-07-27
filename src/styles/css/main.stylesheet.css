@@ -208,7 +208,6 @@ input[type='text']:focus {
     display: inline-block;
     max-width: 11rem;
     white-space: nowrap;
-    overflow: hidden;
     text-overflow: ellipsis;
     text-align: right;
 }
@@ -230,6 +229,7 @@ input[type='text']:focus {
 
 .signIn-btn:hover {
     color: var(--text-primary);
+    text-decoration: none;
 }
 
 .logo {
@@ -240,78 +240,6 @@ input[type='text']:focus {
     margin-right: 36px;
 }
 
-.quick-btn {
-    display: flex;
-    position: absolute;
-    width: 400px;
-    height: 33px;
-    top: 90px;
-    right: 280px;
-    border-radius: 7px;
-    z-index: 100;
-}
-
-.quick-btn > div {
-    margin: auto;
-}
-
-.quick-btn > div > button {
-    margin: auto;
-    border: none;
-}
-
-.quick-btn-save-online {
-    background: url(./assets/shorcuts/save-online.svg) center/cover;
-    width: 21.43px;
-    height: 15.2px;
-    display: block;
-}
-
-.quick-btn-save {
-    background: url(./assets/shorcuts/save.svg) center/cover;
-    width: 15.2px;
-    height: 15.2px;
-    display: block;
-}
-
-.quick-btn-delete {
-    background: url(./assets/shorcuts/delete.svg) center/cover;
-    width: 20px;
-    height: 15.2px;
-    display: block;
-}
-
-.quick-btn-download {
-    background: url(./assets/shorcuts/download.svg) center/cover;
-    width: 15.2px;
-    height: 15.2px;
-    display: block;
-}
-
-.quick-btn-zoom-fit {
-    background: url(./assets/shorcuts/fit.svg) center/cover;
-    width: 15.2px;
-    height: 15.2px;
-    display: block;
-}
-
-.quick-btn-undo {
-    background: url(./assets/shorcuts/undo.svg) center/cover;
-    width: 15.2px;
-    height: 16.2px;
-    display: block;
-}
-
-.quick-btn-redo {
-    background: url(./assets/shorcuts/redo.svg) center/cover;
-    width: 15.2px;
-    height: 16.2px;
-    display: block;
-}
-
-.quick-btn-view {
-    color: white;
-}
 /* dropdown-menu styles */
 
 .dropdown > ul {
@@ -1589,12 +1517,14 @@ input:checked + .slider:before {
 #miniMap {
     position: fixed;
     z-index: 3;
-    bottom: 20px;
-    right: 40px;
+    bottom: -6rem;
+    right: 0.5rem;
     overflow-y: scroll;
     opacity: 0.5;
     overflow: hidden;
     border: none;
+    height: 15rem;
+    width: 18rem;
 }
 
 .disable::after {
@@ -1604,26 +1534,6 @@ input:checked + .slider:before {
     width: 100%;
     cursor: not-allowed;
     left: 0;
-}
-
-#bitconverterprompt {
-    text-align: center;
-    font: inherit;
-    border: none;
-    margin-top: 5px;
-    padding: 0;
-}
-
-#bitconverterprompt input {
-    background: transparent;
-    border: none;
-    outline: none;
-    text-align: center;
-    font: inherit;
-}
-
-#bitconverterprompt input:focus {
-    border: none;
 }
 
 .ui-dialog .ui-dialog-buttonpane button {
@@ -1668,57 +1578,6 @@ input:checked + .slider:before {
 
 .search-results div {
     border-radius: 3px;
-}
-
-.zoom-slider {
-    color: white;
-    font-size: 20px;
-}
-
-.zoom-slider-increment {
-    position: relative;
-    bottom: 0.3rem;
-}
-.zoom-slider-decrement {
-    position: relative;
-    bottom: 0.4rem;
-}
-
-.custom-range {
-    width: 80px !important;
-}
-.custom-range::-moz-range-track {
-    height: 1px;
-}
-
-.custom-range::-moz-range-thumb {
-    width: 10px;
-    height: 10px;
-    background-color: white;
-    border: 0;
-    border-radius: 50%;
-    cursor: pointer;
-}
-.custom-range:focus::-moz-range-thumb {
-    box-shadow: 0 0 0 1px #fff, 0 0 0 0.2rem rgba(75, 86, 99, 0.25);
-}
-
-input[type='range'] {
-    -webkit-appearance: none;
-}
-
-input[type='range']::-webkit-slider-runnable-track {
-    height: 1px;
-}
-
-input[type='range']::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 10px;
-    height: 10px;
-    background-color: white;
-    border: 0;
-    border-radius: 50%;
-    cursor: pointer;
 }
 
 .draggable-panel-css .minimize {
@@ -1770,16 +1629,6 @@ input[type='range']::-webkit-slider-thumb {
     box-shadow: 0px 0px 10Xpx #4545457f;
     padding: 10px 15px;
     border-radius: 5px;
-}
-
-.panel-drag {
-    cursor: move;
-    opacity: 0.6;
-    /* display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
-  padding: 6px 0;
-  width: 1px; */
 }
 
 .ce-hidden,
@@ -1881,7 +1730,7 @@ canvas {
 /*! Custom Color theme dialog styles ends here*/
 
 .code-window .CodeMirror {
-    height: calc(100% - 78px);
+    height: calc(100vh - 78px);
     overflow: scroll;
 }
 
@@ -1937,7 +1786,7 @@ canvas {
 }
 
 /* CustomColorInput Styles Starts Here */
-.customColorInput{
+.customColorInput {
     cursor: pointer;
     width: 30%;
     height: 30px;
@@ -1952,9 +1801,8 @@ canvas {
     border-color: buttonborder;
     border-image: initial;
     padding: 1px 2px;
-    
 }
-.customColorLabel{
+.customColorLabel {
     width: 60%;
     height: 30px;
 }
@@ -2006,6 +1854,39 @@ canvas {
     margin: auto;
 }
 
+.v-input__details {
+    margin-bottom: 0.5rem;
+}
+
+/*
+.ProseMirror ul {
+    list-style-type: disc;
+}
+
+.ProseMirror ol {
+    list-style-type: decimal;
+} */
+
+.ProseMirror {
+    height: 12rem;
+    overflow-y: auto;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    outline: none;
+}
+
+.fullscreen .ProseMirror {
+    height: 75vh;
+}
+
+/* .ProseMirror ul,
+.ProseMirror ol,
+.ProseMirror li {
+    margin: 0;
+    padding: 0;
+    list-style: inherit;
+} */
+
 .messageBoxContent {
     height: auto;
     width: 760px;
@@ -2021,7 +1902,7 @@ canvas {
 
 /* media query for .messageBoxContent */
 @media screen and (max-width: 991px) {
-    .messageBoxContent{
+    .messageBoxContent {
         width: 100%;
     }
 }

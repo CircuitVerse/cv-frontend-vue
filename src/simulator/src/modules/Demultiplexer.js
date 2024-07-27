@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { correctWidth, lineTo, moveTo, fillText } from '../canvasApi'
 /**
  * @class
@@ -320,5 +320,5 @@ export default class Demultiplexer extends CircuitElement {
 Demultiplexer.prototype.tooltipText =
     'DeMultiplexer ToolTip : Multiple outputs and a single line input.'
 Demultiplexer.prototype.helplink =
-    'https://docs.circuitverse.org/#/decodersandplexers?id=demultiplexer'
+    'https://docs.circuitverse.org/#/chapter4/5muxandplex?id=demultiplexer'
 Demultiplexer.prototype.objectType = 'Demultiplexer'

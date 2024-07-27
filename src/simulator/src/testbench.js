@@ -2,12 +2,11 @@
  * This file contains all functions related the the testbench
  * Contains the the testbench engine and UI modules
  */
-
 import { scheduleBackup } from './data/backupCircuit'
 import { changeClockEnable } from './sequential'
 import { play } from './engine'
-import Scope from './circuit'
 import { showMessage, escapeHtml } from './utils'
+import { confirmOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
 
 /**
  * @typedef {number} RunContext
@@ -78,7 +77,6 @@ export class TestbenchData {
             this.currentCase = caseIndex
             return true
         }
-
         return false
     }
 
@@ -429,9 +427,9 @@ const buttonListenerFunctions = {
         showValidationUI(isValid)
     },
 
-    removeTestButton: () => {
+    removeTestButton: async () => {
         if (
-            confirm(
+            await confirmOption(
                 'Are you sure you want to remove the test from the circuit?'
             )
         ) {
@@ -528,7 +526,6 @@ export function runAll(data, scope = globalScope) {
     const results = {}
     results.detailed = data
     results.summary = { passed: passedCases, total: totalCases }
-    // console.log(JSON.stringify(results.detailed));
     return results
 }
 

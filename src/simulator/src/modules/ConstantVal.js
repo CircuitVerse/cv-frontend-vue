@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { correctWidth, rect2, fillText, oppositeDirection } from '../canvasApi'
 import { colors } from '../themer/themer'
 
@@ -198,7 +198,7 @@ ConstantVal.prototype.tooltipText =
  * @category modules
  */
 ConstantVal.prototype.helplink =
-    'https://docs.circuitverse.org/#/inputElements?id=constantval'
+    'https://docs.circuitverse.org/#/chapter4/2input?id=constantval'
 
 /**
  * @memberof ConstantVal

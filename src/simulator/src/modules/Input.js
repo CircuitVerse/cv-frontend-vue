@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { correctWidth, oppositeDirection, fillText } from '../canvasApi'
 import { getNextPosition } from '../modules'
 import { generateId } from '../utils'
@@ -40,9 +40,6 @@ export default class Input extends CircuitElement {
         layoutProperties
     ) {
         super(x, y, scope, dir, bitWidth)
-        /* this is done in this.baseSetup() now
-        this.scope['Input'].push(this);
-        */
         if (layoutProperties) {
             this.layoutProperties = layoutProperties
         } else {
@@ -199,7 +196,7 @@ Input.prototype.tooltipText =
  * @category modules
  */
 Input.prototype.helplink =
-    'https://docs.circuitverse.org/#/inputElements?id=input'
+    'https://docs.circuitverse.org/#/chapter4/2input?id=input'
 
 /**
  * @memberof Input

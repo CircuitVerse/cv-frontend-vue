@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode, extractBits } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { correctWidth, rect, fillText } from '../canvasApi'
 /**
  * @class
@@ -153,7 +153,7 @@ export default class BitSelector extends CircuitElement {
 BitSelector.prototype.tooltipText =
     'BitSelector ToolTip : Divides input bits into several equal-sized groups.'
 BitSelector.prototype.helplink =
-    'https://docs.circuitverse.org/#/decodersandplexers?id=bit-selector'
+    'https://docs.circuitverse.org/#/chapter4/5muxandplex?id=bitselector'
 
 /**
  * @memberof BitSelector
