@@ -1,17 +1,11 @@
 import { defaultKeys } from '../defaultKeys'
 import { addShortcut } from './addShortcut'
 import { updateHTML } from '../view/panel.ui'
-import simulationArea from '../../simulationArea'
+import { simulationArea } from '../../simulationArea'
 import {
     scheduleUpdate,
-    update,
-    updateSelectionsAndPane,
     wireToBeCheckedSet,
-    updatePositionSet,
-    updateSimulationSet,
     updateCanvasSet,
-    gridUpdateSet,
-    errorDetectedSet,
 } from '../../engine'
 
 import { getOS } from './utils.js'
@@ -107,7 +101,7 @@ export const setDefault = () => {
  * @param {string} combo the key combo
  * @param {string} target the target option of the panel
  */
-export const warnOverride = (combo, target) => {
+export const warnOverride = (combo, target, warning) => {
     let x = 0
     while ($('#preference').children()[x]) {
         if (
@@ -118,9 +112,10 @@ export const warnOverride = (combo, target) => {
         ) {
             const assignee =
                 $('#preference').children()[x].children[1].children[0].innerText
-            $('#warning').text(
-                `This key(s) is already assigned to: ${assignee}, press Enter to override.`
-            )
+            // $('#warning').text(
+            //     `This key(s) is already assigned to: ${assignee}, press Enter to override.`
+            // )
+            warning.value = `This key(s) is already assigned to: ${assignee}, press Enter to override.`
             $('#edit').css('border', '1.5px solid #dc5656')
             return
         } else {
@@ -182,7 +177,8 @@ export const moveElement = (direct) => () => {
 
 export const openHotkey = () => $('#customShortcut').trigger('click')
 
-export const newCircuitCall = () => $('#newCircuit').trigger('click')
+export const createNewCircuitScopeCall = () =>
+    $('#createNewCircuitScope').trigger('click') // TODO: remove later
 
 export const openDocumentation = () => {
     if (

@@ -1,5 +1,5 @@
 import CircuitElement from '../circuitElement'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { correctWidth, lineTo, moveTo, fillText } from '../canvasApi'
 import Node, { findNode } from '../node'
 import plotArea from '../plotArea'
@@ -41,7 +41,7 @@ export default class TB_Input extends CircuitElement {
 
     /**
      * @memberof TB_Input
-     * Takes iput when double clicked. For help on generation of input refer to TB_Input.helplink
+     * Takes input when double clicked. For help on generation of input refer to TB_Input.helplink
      */
     dblclick() {
         this.testData = JSON.parse(prompt('Enter TestBench Json'))
@@ -68,7 +68,6 @@ export default class TB_Input extends CircuitElement {
         this.nodeList = []
         this.nodeList.push(this.clockInp)
         this.testData = this.testData || { inputs: [], outputs: [], n: 0 }
-        // this.clockInp = new Node(0,20, 0,this,1);
 
         this.setDimensions()
 
@@ -328,7 +327,7 @@ TB_Input.prototype.tooltipText = 'Test Bench Input Selected'
  */
 TB_Input.prototype.centerElement = true
 
-TB_Input.prototype.helplink = 'https://docs.circuitverse.org/#/testbench'
+TB_Input.prototype.helplink = 'https://docs.circuitverse.org/#/chapter7/3testcircuits'
 
 TB_Input.prototype.mutableProperties = {
     identifier: {

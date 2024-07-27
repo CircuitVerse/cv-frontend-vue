@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { correctWidth, lineTo, moveTo, drawCircle2, arc } from '../canvasApi'
 import { changeInputSize } from '../modules'
 import { gateGenerateVerilog } from '../utils'
@@ -29,9 +29,6 @@ export default class NandGate extends CircuitElement {
         bitWidth = 1
     ) {
         super(x, y, scope, dir, bitWidth)
-        /* this is done in this.baseSetup() now
-        this.scope['NandGate'].push(this);
-        */
         this.rectangleObject = false
         this.setDimensions(15, 20)
         this.inp = []
@@ -165,5 +162,5 @@ NandGate.prototype.changeInputSize = changeInputSize
  */
 NandGate.prototype.verilogType = 'nand'
 NandGate.prototype.helplink =
-    'https://docs.circuitverse.org/#/gates?id=nand-gate'
+    'https://docs.circuitverse.org/#/chapter4/4gates?id=nand-gate'
 NandGate.prototype.objectType = 'NandGate'

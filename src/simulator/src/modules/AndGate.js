@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { correctWidth, lineTo, moveTo, arc } from '../canvasApi'
 import { changeInputSize } from '../modules'
 import { colors } from '../themer/themer'
@@ -164,5 +164,5 @@ AndGate.prototype.verilogType = 'and'
  * @category modules
  */
 AndGate.prototype.changeInputSize = changeInputSize
-AndGate.prototype.helplink = 'https://docs.circuitverse.org/#/gates?id=and-gate'
+AndGate.prototype.helplink = 'https://docs.circuitverse.org/#/chapter4/4gates?id=and-gate'
 AndGate.prototype.objectType = 'AndGate'

@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import {
     correctWidth,
     bezierCurveTo,
@@ -35,9 +35,6 @@ export default class XnorGate extends CircuitElement {
         bitWidth = 1
     ) {
         super(x, y, scope, dir, bitWidth)
-        /* this is done in this.baseSetup() now
-        this.scope['XnorGate'].push(this);
-        */
         this.rectangleObject = false
         this.setDimensions(15, 20)
 
@@ -132,7 +129,6 @@ export default class XnorGate extends CircuitElement {
             this.direction
         )
         bezierCurveTo(0, 0, 0, 0, -10, -20, xx, yy, this.direction)
-        // arc(ctx, 0, 0, -20, (-Math.PI / 2), (Math.PI / 2), xx, yy, this.direction);
         ctx.closePath()
         if (
             (this.hover && !simulationArea.shiftDown) ||
@@ -195,5 +191,5 @@ XnorGate.prototype.changeInputSize = changeInputSize
  */
 XnorGate.prototype.verilogType = 'xnor'
 XnorGate.prototype.helplink =
-    'https://docs.circuitverse.org/#/gates?id=xnor-gate'
+    'https://docs.circuitverse.org/#/chapter4/4gates?id=xnor-gate'
 XnorGate.prototype.objectType = 'XnorGate'

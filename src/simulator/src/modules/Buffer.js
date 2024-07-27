@@ -1,8 +1,7 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
-import { correctWidth, lineTo, moveTo, arc } from '../canvasApi'
-import { changeInputSize } from '../modules'
+import { simulationArea } from '../simulationArea'
+import { correctWidth, lineTo, moveTo } from '../canvasApi'
 /**
  * @class
  * Buffer
@@ -130,5 +129,5 @@ export default class Buffer extends CircuitElement {
 Buffer.prototype.tooltipText =
     'Buffer ToolTip : Isolate the input from the output.'
 Buffer.prototype.helplink =
-    'https://docs.circuitverse.org/#/miscellaneous?id=buffer'
+    'https://docs.circuitverse.org/#/chapter4/8misc?id=buffer'
 Buffer.prototype.objectType = 'Buffer'
