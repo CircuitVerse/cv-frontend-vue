@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
-import backgroundArea from './backgroundArea'
-import simulationArea from './simulationArea'
+import { backgroundArea } from './backgroundArea'
+import { simulationArea } from './simulationArea'
 import miniMapArea, { removeMiniMap, updatelastMinimapShown } from './minimap'
 import { colors } from './themer/themer'
 import { updateOrder } from './metadata'
@@ -241,7 +241,10 @@ export function moveTo(ctx, x1, y1, xx, yy, dir, bypass = false) {
     xx *= globalScope.scale
     yy *= globalScope.scale
     if (bypass) {
-        ctx.moveTo(xx + globalScope.ox + newX, yy + globalScope.oy + newY)
+        ctx.moveTo(
+            Math.round(xx + globalScope.ox + newX),
+            Math.round(yy + globalScope.oy + newY)
+        )
     } else {
         ctx.moveTo(
             Math.round(xx + globalScope.ox + newX - correction) + correction,
