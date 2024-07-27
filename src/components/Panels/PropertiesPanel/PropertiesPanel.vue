@@ -11,9 +11,8 @@
 <script lang="ts" setup>
 import ModuleProperty from '#/components/Panels/PropertiesPanel/ModuleProperty/ModuleProperty.vue'
 import LayoutProperty from '#/components/Panels/PropertiesPanel/LayoutProperty/LayoutProperty.vue'
-import { ref, toRaw } from '@vue/reactivity'
-import simulationArea from '#/simulator/src/simulationArea'
-import { onMounted } from 'vue'
+import { ref, toRaw, onMounted } from 'vue'
+import { simulationArea } from '#/simulator/src/simulationArea'
 import { checkPropertiesUpdate, prevPropertyObjSet } from '#/simulator/src/ux'
 import { layoutModeGet } from '#/simulator/src/layoutMode'
 
@@ -33,6 +32,9 @@ function showPropertiesPanel() {
     if (toRaw(propertiesPanelObj.value) == simulationArea.lastSelected) return
     prevPropertyObjSet(simulationArea.lastSelected)
     propertiesPanelObj.value = simulationArea.lastSelected
+    if(simulationArea.lastSelected && simulationArea.lastSelected.newElement) {
+        simulationArea.lastSelected.label = ""
+    }
     // there are 3 types of panel body for Properties Panel
     // depending upon which is last selected
     // 1. Properties Panel in Layout mode

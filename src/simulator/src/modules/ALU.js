@@ -1,7 +1,7 @@
 /* eslint-disable no-bitwise */
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { correctWidth, lineTo, moveTo, fillText4 } from '../canvasApi'
 import { colors } from '../themer/themer'
 
@@ -196,5 +196,5 @@ ALU.prototype.tooltipText =
  * @type {string}
  * @category modules
  */
-ALU.prototype.helplink = 'https://docs.circuitverse.org/#/miscellaneous?id=alu'
+ALU.prototype.helplink = 'https://docs.circuitverse.org/#/chapter4/8misc?id=alu'
 ALU.prototype.objectType = 'ALU'

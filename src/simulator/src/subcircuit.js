@@ -1,7 +1,7 @@
 /* eslint-disable import/no-cycle */
 import Scope, { scopeList, switchCircuit } from './circuit'
 import CircuitElement from './circuitElement'
-import simulationArea from './simulationArea'
+import { simulationArea } from './simulationArea'
 import { scheduleBackup, checkIfBackup } from './data/backupCircuit'
 import {
     scheduleUpdate,
@@ -20,6 +20,8 @@ import { layoutModeGet } from './layoutMode'
 import { verilogModeGet } from './Verilog2CV'
 import { sanitizeLabel } from './verilogHelpers'
 import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
+import { circuitElementList, subCircuitInputList } from './metadata'
+
 /**
  * Function to load a subcicuit
  * @category subcircuit
@@ -34,57 +36,12 @@ export function loadSubCircuit(savedData, scope) {
  * @category subcircuit
  */
 export function createSubCircuitPrompt(scope = globalScope) {
-    console.log('Hello')
     if (verilogModeGet() || layoutModeGet()) {
         showError('Subcircuit cannot be inserted in this mode')
         return
     }
     const simulatorStore = SimulatorStore()
     simulatorStore.dialogBox.insertsubcircuit_dialog = true
-    /*
-    $('#insertSubcircuitDialog').empty()
-    let flag = true
-    for (id in scopeList) {
-        if (
-            !scopeList[id].checkDependency(scope.id) &&
-            scopeList[id].isVisible()
-        ) {
-            flag = false
-            $('#insertSubcircuitDialog').append(
-                `<label class="option custom-radio inline"><input type="radio" name="subCircuitId" value="${id}" />${scopeList[id].name}<span></span></label>`
-            )
-        }
-    }
-    if (flag)
-        $('#insertSubcircuitDialog').append(
-            "<p>Looks like there are no other circuits which doesn't have this circuit as a dependency. Create a new one!</p>"
-        )
-    $('#insertSubcircuitDialog').dialog({
-        resizable: false,
-        maxHeight: 800,
-        width: 450,
-        maxWidth: 800,
-        minWidth: 250,
-        buttons: !flag
-            ? [
-                  {
-                      text: 'Insert SubCircuit',
-                      click() {
-                          if (!$('input[name=subCircuitId]:checked').val())
-                              return
-                          simulationArea.lastSelected = new SubCircuit(
-                              undefined,
-                              undefined,
-                              globalScope,
-                              $('input[name=subCircuitId]:checked').val()
-                          )
-                          $(this).dialog('close')
-                      },
-                  },
-              ]
-            : [],
-    })
-    */
 }
 
 /**
@@ -298,10 +255,6 @@ export default class SubCircuit extends CircuitElement {
 
     // Needs to be deprecated, removed
     reBuild() {
-        // new SubCircuit(x = this.x, y = this.y, scope = this.scope, this.id);
-        // this.scope.backups = []; // Because all previous states are invalid now
-        // this.delete();
-        // showMessage('Subcircuit: ' + subcircuitScope.name + ' has been reloaded.');
     }
 
     /**
@@ -689,7 +642,7 @@ export default class SubCircuit extends CircuitElement {
                 )
             }
         } else {
-            console.log('Unknown Version: ', this.version)
+            console.error('Unknown Version: ', this.version)
         }
 
         for (var i = 0; i < subcircuitScope.Input.length; i++) {
