@@ -1,6 +1,5 @@
 import CircuitElement from '../circuitElement'
-import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { rect2, fillText } from '../canvasApi'
 /**
  * @class
@@ -19,10 +18,6 @@ import { copy, paste } from '../events'
 export default class Text extends CircuitElement {
     constructor(x, y, scope = globalScope, label = '', fontSize = 14) {
         super(x, y, scope, 'RIGHT', 1)
-        /* this is done in this.baseSetup() now
-        this.scope['Text'].push(this);
-        */
-        // this.setDimensions(15, 15);
         this.fixedBitWidth = true
         this.directionFixed = true
         this.labelDirectionFixed = true
@@ -181,7 +176,7 @@ Text.prototype.tooltipText = 'Text ToolTip: Use this to document your circuit.'
  * @category modules
  */
 Text.prototype.helplink =
-    'https://docs.circuitverse.org/#/annotation?id=adding-labels'
+    'https://docs.circuitverse.org/#/chapter4/7annotation?id=text'
 
 /**
  * @memberof Text

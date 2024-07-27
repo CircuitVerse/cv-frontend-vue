@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { correctWidth, lineTo, moveTo, fillText3 } from '../canvasApi'
 import { colors } from '../themer/themer'
 
@@ -21,9 +21,6 @@ import { colors } from '../themer/themer'
 export default class TTY extends CircuitElement {
     constructor(x, y, scope = globalScope, rows = 3, cols = 32) {
         super(x, y, scope, 'RIGHT', 1)
-        /*
-        this.scope['TTY'].push(this);
-        */
         this.directionFixed = true
         this.fixedBitWidth = true
         this.cols = cols || parseInt(prompt('Enter cols:'))
@@ -33,7 +30,6 @@ export default class TTY extends CircuitElement {
         this.elementHeight = Math.max(40, Math.ceil((this.rows * 15) / 20) * 20)
         this.setWidth(this.elementWidth / 2)
         this.setHeight(this.elementHeight / 2)
-        // this.element = new Element(x, y, "TTY",this.elementWidth/2, this,this.elementHeight/2);
 
         this.clockInp = new Node(
             -this.elementWidth / 2,
@@ -51,7 +47,6 @@ export default class TTY extends CircuitElement {
             7,
             'Ascii Input'
         )
-        // this.qOutput = new Node(20, -10, 1, this);
         this.reset = new Node(
             30 - this.elementWidth / 2,
             this.elementHeight / 2,
@@ -68,8 +63,6 @@ export default class TTY extends CircuitElement {
             1,
             'Enable'
         )
-        // this.masterState = 0;
-        // this.slaveState = 0;
         this.prevClockState = 0
 
         this.data = ''
@@ -173,7 +166,6 @@ export default class TTY extends CircuitElement {
         ctx.lineWidth = correctWidth(3)
         var xx = this.x
         var yy = this.y
-        // rect(ctx, xx - this.elementWidth/2, yy - this.elementHeight/2, this.elementWidth, this.elementHeight);
 
         moveTo(
             ctx,
@@ -199,9 +191,6 @@ export default class TTY extends CircuitElement {
             yy,
             this.direction
         )
-
-        // if ((this.b.hover&&!simulationArea.shiftDown)|| simulationArea.lastSelected == this || simulationArea.multipleObjectSelections.contains(this))
-        //     ctx.fillStyle = "rgba(255, 255, 32,0.8)";
         ctx.stroke()
 
         ctx.beginPath()
@@ -228,7 +217,7 @@ export default class TTY extends CircuitElement {
 }
 
 TTY.prototype.tooltipText = 'TTY ToolTip : Tele typewriter selected.'
-TTY.prototype.helplink = 'https://docs.circuitverse.org/#/Sequential?id=tty'
+TTY.prototype.helplink = 'https://docs.circuitverse.org/#/chapter4/6sequentialelements?id=tty'
 
 TTY.prototype.mutableProperties = {
     cols: {

@@ -8,7 +8,7 @@ import {
     gridUpdateSet,
 } from '../engine'
 import { updateRestrictedElementsInScope } from '../restrictedElementDiv'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 
 import { loadSubCircuit } from '../subcircuit'
 import { scheduleBackup } from './backupCircuit'
@@ -21,6 +21,8 @@ import plotArea from '../plotArea'
 import { updateTestbenchUI, TestbenchData } from '../testbench'
 import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
 import { toRefs } from 'vue'
+import { moduleList } from '../metadata'
+
 /**
  * Backward compatibility - needs to be deprecated
  * @param {CircuitElement} obj - the object to be rectified
