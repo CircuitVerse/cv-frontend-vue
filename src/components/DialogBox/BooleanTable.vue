@@ -1,6 +1,6 @@
 <template>
     <table class="content-table">
-        <tbody style="display: block; max-height: 70vh; overflow-y: scroll">
+        <tbody style="display: block; max-height: 70vh;">
             <tr>
                 <th v-for="tableHeading in tableHeader" :key="tableHeading">
                     {{ tableHeading }}
@@ -20,6 +20,4 @@ const props = defineProps({
     tableHeader: { type: Array, default: () => [] },
     tableBody: { type: Array, default: () => [] },
 })
-console.log(props.tableHeader)
-console.log(props.tableBody)
 </script>

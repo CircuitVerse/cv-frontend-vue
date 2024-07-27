@@ -2,7 +2,7 @@
  * Event Queue is simply a priority Queue, basic implementation O(n^2).
  * @category eventQueue
  */
-export default class EventQueue {
+export class EventQueue {
     constructor(size) {
         this.size = size
         this.queue = new Array(size)
@@ -41,7 +41,6 @@ export default class EventQueue {
 
         if (this.frontIndex == this.size) throw 'EventQueue size exceeded'
         this.queue[this.frontIndex] = obj
-        // obj.queueProperties.time=obj.propagationDelay;
         obj.queueProperties.time = this.time + (delay || obj.propagationDelay)
         obj.queueProperties.index = this.frontIndex
         this.frontIndex++

@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { correctWidth, bezierCurveTo, moveTo, arc2 } from '../canvasApi'
 import { changeInputSize } from '../modules'
 import { gateGenerateVerilog } from '../utils'
@@ -29,9 +29,6 @@ export default class XorGate extends CircuitElement {
         bitWidth = 1
     ) {
         super(x, y, scope, dir, bitWidth)
-        /* this is done in this.baseSetup() now
-        this.scope['XorGate'].push(this);
-        */
         this.rectangleObject = false
         this.setDimensions(15, 20)
 
@@ -125,7 +122,6 @@ export default class XorGate extends CircuitElement {
             this.direction
         )
         bezierCurveTo(0, 0, 0, 0, -10, -20, xx, yy, this.direction)
-        // arc(ctx, 0, 0, -20, (-Math.PI / 2), (Math.PI / 2), xx, yy, this.direction);
         ctx.closePath()
         if (
             (this.hover && !simulationArea.shiftDown) ||
@@ -183,5 +179,5 @@ XorGate.prototype.changeInputSize = changeInputSize
  * @category modules
  */
 XorGate.prototype.verilogType = 'xor'
-XorGate.prototype.helplink = 'https://docs.circuitverse.org/#/gates?id=xor-gate'
+XorGate.prototype.helplink = 'https://docs.circuitverse.org/#/chapter4/4gates?id=xor-gate'
 XorGate.prototype.objectType = 'XorGate'

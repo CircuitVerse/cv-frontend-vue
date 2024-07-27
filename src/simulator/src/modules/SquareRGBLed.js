@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { correctWidth, lineTo, moveTo, rect2 } from '../canvasApi'
 
 /**
@@ -17,9 +17,6 @@ import { correctWidth, lineTo, moveTo, rect2 } from '../canvasApi'
 export default class SquareRGBLed extends CircuitElement {
     constructor(x, y, scope = globalScope, dir = 'UP', pinLength = 1) {
         super(x, y, scope, dir, 8)
-        /* this is done in this.baseSetup() now
-        this.scope['SquareRGBLed'].push(this);
-        */
         this.rectangleObject = false
         this.setDimensions(15, 15)
         this.pinLength = pinLength === undefined ? 1 : pinLength
@@ -204,7 +201,7 @@ SquareRGBLed.prototype.tooltipText =
  * @category modules
  */
 SquareRGBLed.prototype.helplink =
-    'https://docs.circuitverse.org/#/outputs?id=square-rgb-led'
+    'https://docs.circuitverse.org/#/chapter4/3output?id=squarergbled'
 SquareRGBLed.prototype.objectType = 'SquareRGBLed'
 SquareRGBLed.prototype.canShowInSubcircuit = true
 SquareRGBLed.prototype.layoutProperties = {
