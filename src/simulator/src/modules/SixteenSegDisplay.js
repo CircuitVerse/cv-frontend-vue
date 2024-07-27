@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import {
     colorToRGBA,
     correctWidth,
@@ -10,7 +10,6 @@ import {
     rect2,
     validColor,
 } from '../canvasApi'
-import { changeInputSize } from '../modules'
 /**
  * @class
  * SixteenSegDisplay
@@ -23,9 +22,6 @@ import { changeInputSize } from '../modules'
 export default class SixteenSegDisplay extends CircuitElement {
     constructor(x, y, scope = globalScope, color = 'Red') {
         super(x, y, scope, 'RIGHT', 16)
-        /* this is done in this.baseSetup() now
-        this.scope['SixteenSegDisplay'].push(this);
-        */
         this.fixedBitWidth = true
         this.directionFixed = true
         this.setDimensions(30, 50)
@@ -464,7 +460,7 @@ SixteenSegDisplay.prototype.tooltipText =
  * @category modules
  */
 SixteenSegDisplay.prototype.helplink =
-    'https://docs.circuitverse.org/#/outputs?id=sixteen-segment-display'
+    'https://docs.circuitverse.org/#/chapter4/3output?id=sixteensegdisplay'
 SixteenSegDisplay.prototype.objectType = 'SixteenSegDisplay'
 SixteenSegDisplay.prototype.canShowInSubcircuit = true
 SixteenSegDisplay.prototype.layoutProperties = {

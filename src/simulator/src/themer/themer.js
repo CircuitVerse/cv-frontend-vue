@@ -5,7 +5,7 @@ import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
 
 /**
  * Extracts canvas theme colors from CSS-Variables and returns a JSON Object
- * @returns {object}
+ * @returns {Object.<string, string>}
  */
 const getCanvasColors = () => {
     let colors = {}
@@ -117,11 +117,6 @@ export const getThemeCardSvg = (themeName) => {
     $('.svgChev', svgIcon).attr('stroke', colors['--br-secondary'])
 
     $('.svgHeader', svgIcon).attr('fill', colors['--primary'])
-    let temp = svgIcon.prop('outerHTML')
-    console.log('----------')
-    console.log('===OKK===')
-    console.log(temp)
-    console.log('----------')
     return svgIcon.prop('outerHTML')
 }
 
@@ -152,7 +147,6 @@ export const getThemeCard = (themeName, selected) => {
  * Create Color Themes Dialog
  */
 export const colorThemes = () => {
-    console.log('Hello')
     const simulatorStore = SimulatorStore()
     simulatorStore.dialogBox.theme_dialog = true
 

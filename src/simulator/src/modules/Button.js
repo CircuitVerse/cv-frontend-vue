@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { correctWidth, lineTo, moveTo, drawCircle2 } from '../canvasApi'
 
 /**
@@ -172,7 +172,7 @@ Button.prototype.tooltipText =
  * @category modules
  */
 Button.prototype.helplink =
-    'https://docs.circuitverse.org/#/inputElements?id=button'
+    'https://docs.circuitverse.org/#/chapter4/2input?id=button'
 
 /**
  * @memberof Button

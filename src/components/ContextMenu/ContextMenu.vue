@@ -58,7 +58,6 @@ export default {
         menuItemClicked(event) {
             this.hideContextMenu()
             const id = event.target.dataset.index
-            console.log('Hello From Context Menu' + id)
             if (id == 0) {
                 document.execCommand('copy')
             } else if (id == 1) {
@@ -69,7 +68,6 @@ export default {
             } else if (id == 3) {
                 deleteSelected()
             } else if (id == 4) {
-                undo()
                 undo()
             } else if (id == 5) {
                 createNewCircuitScope()
