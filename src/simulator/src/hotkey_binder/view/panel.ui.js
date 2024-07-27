@@ -5,30 +5,15 @@ import { setUserKeys } from '../model/actions'
  * @param {string} mode user prefered if present, or default keys configuration
  */
 export const updateHTML = (mode) => {
-    let x = 0
-    if (mode == 'user') {
-        const userKeys = localStorage.get('userKeys')
-        while ($('#preference').children()[x]) {
-            $('#preference').children()[x].children[1].children[1].innerText =
-                userKeys[
-                    $('#preference').children()[
-                        x
-                    ].children[1].children[0].innerText
-                ]
-            x++
-        }
-    } else if (mode == 'default') {
-        while ($('#preference').children()[x]) {
-            const defaultKeys = localStorage.get('defaultKeys')
-            $('#preference').children()[x].children[1].children[1].innerText =
-                defaultKeys[
-                    $('#preference').children()[
-                        x
-                    ].children[1].children[0].innerText
-                ]
-            x++
-        }
-    }
+    const preferenceChildren = document.querySelector('#preference').children
+    const keys =
+        mode === 'user'
+            ? localStorage.get('userKeys')
+            : localStorage.get('defaultKeys')
+    Array.from(preferenceChildren).forEach((child) => {
+        const key = child.children[1].children[0].innerText
+        child.children[1].children[1].innerText = keys[key]
+    })
 }
 /**
  * fn to override key of duplicate entries
@@ -37,24 +22,21 @@ export const updateHTML = (mode) => {
  */
 export const override = (combo) => {
     let x = 0
-    while ($('#preference').children()[x]) {
-        if (
-            $('#preference').children()[x].children[1].children[1].innerText ===
-            combo
-        )
-            $('#preference').children()[x].children[1].children[1].innerText =
-                ''
+    const preference = document.querySelector('#preference')
+    while (preference.children[x]) {
+        if (preference.children[x].children[1].children[1].innerText === combo)
+            preference.children[x].children[1].children[1].innerText = ''
         x++
     }
 }
 
 export const closeEdit = () => {
-    $('#pressedKeys').text('')
-    $('#edit').css('display', 'none')
+    document.querySelector('#pressedKeys').textContent = ''
+    document.querySelector('#edit').style.display = 'none'
 }
 
 export const submit = () => {
-    $('#edit').css('display', 'none')
+    document.querySelector('#edit').style.display = 'none'
     setUserKeys()
     updateHTML('user')
 }
