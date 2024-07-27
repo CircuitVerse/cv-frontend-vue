@@ -25,6 +25,8 @@
                 "open_offline": "ऑफ़लाइन खोलें",
                 "save_online": "ऑनलाइन सहेजें",
                 "save_offline": "ऑफ़लाइन सहेजें",
+                "export_as_file": "फ़ाइल में निर्यात करें",
+                "import_project": "फ़ाइल से आयात करें",
                 "preview_circuit": "पूर्वावलोकन सर्किट",
                 "clear_project": "परियोजना क्लियर करें",
                 "recover_project": "परियोजना पुनर्प्राप्त करें",
@@ -60,6 +62,7 @@
             "verilog_module": "वेरिलोग मॉड्यूल",
             "properties": "प्रॉपर्टीज",
             "layout": "लेआउट",
+            "keybinding_preference": "कीबाइंडिंग परेफरेंस",
             "render_image": "छवि प्रस्तुत करें",
             "select_theme": "थीम चुनें",
             "boolean_logic_table": "बूलियन लॉजिक टेबल",
@@ -81,12 +84,15 @@
                 }
             },
             "timing_diagram": {
-                "one_cycle_unit_html": "1 साइकिल = <br/><input id='timing-diagram-units' type='number' min='1' autocomplete='off' value='1000'><br/>यूनिट"
+                "one_cycle": "1 साइकिल =",
+                "units": "यूनिट्स"
             },
             "verilog_module": {
                 "reset_code": "कोड रिसेट करें",
                 "save_code": "कोड सेव करें",
-                "module_in_experiment_notice": "यह एक प्रायोगिक मॉड्यूल है। कोड तब तक सेव नहीं होगा जब तक \"कोड सेव करें\" बटन क्लिक नहीं किया जाता।"
+                "module_in_experiment_notice": "यह एक प्रायोगिक मॉड्यूल है। कोड तब तक सेव नहीं होगा जब तक \"कोड सेव करें\" बटन क्लिक नहीं किया जाता।",
+                "apply_themes": "थीम लागू करें",
+                "select_theme": "थीम चुनें:"
             },
             "layout": {
                 "width": "चौड़ाई",
@@ -120,10 +126,20 @@
                 "octal_value": "ऑक्टल वैल्यू",
                 "hexadecimal_value": "हेक्साडेसिमल वैल्यू"
             },
+            "custom_shortcut": {
+                "esc_cancel": "वांछित कुंजी संयोजन दबाएं और स्टोर करने के लिए enter दबाएं",
+                "command": "कमांड",
+                "keymapping": "कीमैपिंग",
+                "reset_to_default": "डिफ़ॉल्ट पर रीसेट करें",
+                "save": "सेव करें"
+            },
             "report_issue": {
                 "describe_issue": "अपनी समस्या का वर्णन करें:",
-                "email_html": "<b>ईमेल</b><span> [वैकल्पिक]</span>:",
-                "report_btn": "रिपोर्ट करें"
+                "email": "ईमेल",
+                "optional": " [वैकल्पिक]",
+                "report_btn": "रिपोर्ट करें",
+                "cancel_btn": "रद्द करें",
+                "close_btn": "बंद करें"
             }
         },
         "tooltip": {
