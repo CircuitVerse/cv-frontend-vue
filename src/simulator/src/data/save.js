@@ -3,20 +3,21 @@ import { resetup } from '../setup'
 import { update } from '../engine'
 import { stripTags, showMessage } from '../utils'
 import { backUp } from './backupCircuit'
-import simulationArea from '../simulationArea'
-import backgroundArea from '../backgroundArea'
+import { simulationArea } from '../simulationArea'
+import { backgroundArea } from '../backgroundArea'
 import { findDimensions } from '../canvasApi'
 import { projectSavedSet } from './project'
 import { colors } from '../themer/themer'
 import { layoutModeGet, toggleLayoutMode } from '../layoutMode'
 import { verilogModeGet } from '../Verilog2CV'
 import domtoimage from 'dom-to-image'
-import '../../vendor/canvas2svg'
+import canvasToSvg from "canvas-to-svg"
 import { useProjectStore } from '#/store/projectStore'
 import { provideProjectName } from '#/components/helpers/promptComponent/PromptComponent.vue'
 import { UpdateProjectDetail } from '#/components/helpers/createNewProject/UpdateProjectDetail.vue'
 import { confirmOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
 import { getToken } from '#/pages/simulatorHandler.vue'
+import { renderOrder } from '../metadata'
 
 // var projectName = undefined
 
@@ -185,7 +186,7 @@ export function generateImage(
 
     // If SVG, create SVG context - using canvas2svg here
     if (imgType === 'svg') {
-        simulationArea.context = new C2S(width, height)
+        simulationArea.context = new canvasToSvg(width, height)
         resolution = 1
     } else if (imgType !== 'png') {
         transparent = false
@@ -236,7 +237,7 @@ export function generateImage(
         simulationArea.context.fill()
     }
 
-    // Draw circuits, why is it updateOrder and not renderOrder?
+    // Draw circuits
     for (let i = 0; i < renderOrder.length; i++) {
         for (let j = 0; j < scope[renderOrder[i]].length; j++) {
             scope[renderOrder[i]][j].draw()
