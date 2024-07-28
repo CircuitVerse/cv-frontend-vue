@@ -1,7 +1,7 @@
 /* eslint-disable no-multi-assign */
 // wire object
 import { drawLine } from './canvasApi'
-import simulationArea from './simulationArea'
+import { simulationArea } from './simulationArea'
 import Node from './node'
 import { updateSimulationSet, forceResetNodesSet } from './engine'
 import { colors } from './themer/themer'
@@ -74,11 +74,6 @@ export default class Wire {
             this.y1 = this.y2 = this.node1.absY()
             this.type = 'horizontal'
         }
-
-        // if (wireToBeChecked && this.checkConnections()) {
-        //     this.delete();
-        //     return updated;
-        // } // SLOW , REMOVE
         if (
             simulationArea.shiftDown === false &&
             simulationArea.mouseDown === true &&
@@ -148,7 +143,6 @@ export default class Wire {
 
     draw() {
         // for calculating min-max Width,min-max Height
-        //
         const ctx = simulationArea.context
 
         var color
