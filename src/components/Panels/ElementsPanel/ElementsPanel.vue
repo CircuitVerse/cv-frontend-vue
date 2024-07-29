@@ -170,7 +170,7 @@ onBeforeMount(() => {
 })
 
 onMounted(() => {
-    layoutStore.elementsPanel = elementsPanelRef.value
+    layoutStore.elementsPanelRef = elementsPanelRef.value
 })
 
 function getImgUrl(elementName) {

@@ -123,7 +123,7 @@ const layoutStore = useLayoutStore()
 const layoutDialogRef = ref<HTMLElement | null>(null);
 
 onMounted(() => {
-    layoutStore.layoutDialog = layoutDialogRef.value
+    layoutStore.layoutDialogRef = layoutDialogRef.value
 })
 
 watch(

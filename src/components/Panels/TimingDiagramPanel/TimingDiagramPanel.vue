@@ -71,7 +71,7 @@ const timingDiagramPanelRef = ref<HTMLElement | null>(null);
 const layoutStore = useLayoutStore()
 
 onMounted(() => {
-    layoutStore.timingDiagramPanel = timingDiagramPanelRef.value
+    layoutStore.timingDiagramPanelRef = timingDiagramPanelRef.value
 })
 
 function handleButtonClick(button: string) {

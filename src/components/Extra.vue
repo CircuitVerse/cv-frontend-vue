@@ -330,7 +330,7 @@ const testbenchPanelRef = ref<HTMLElement | null>(null);
 const layoutElementPanelRef = ref<HTMLElement | null>(null);
 
 onMounted(() => {
-    layoutStore.testbenchPanel = testbenchPanelRef.value
-    layoutStore.layoutElementPanel = layoutElementPanelRef.value
+    layoutStore.testbenchPanelRef = testbenchPanelRef.value
+    layoutStore.layoutElementPanelRef = layoutElementPanelRef.value
 })
 </script>
