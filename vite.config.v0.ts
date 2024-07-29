@@ -5,6 +5,7 @@ import vueI18n from '@intlify/vite-plugin-vue-i18n'
 
 // https://github.com/vuetifyjs/vuetify-loader/tree/next/packages/vite-plugin
 import vuetify from 'vite-plugin-vuetify'
+import { createHtmlPlugin } from 'vite-plugin-html'
 
 const proxyUrl: string = 'http://localhost:3000'
 
@@ -23,6 +24,14 @@ export default defineConfig({
                 new URL(`./v0/src/locales/**`, import.meta.url)
             ),
         }),
+        createHtmlPlugin({
+            minify: true,
+            inject: {
+              data: {
+                injectScript: '<script type="module" src="/v0/src/main.ts"></script>',
+              },
+            },
+          }),
     ],
     resolve: {
         alias: {
