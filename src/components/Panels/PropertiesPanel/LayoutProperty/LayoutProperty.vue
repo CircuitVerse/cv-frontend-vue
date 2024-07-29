@@ -1,5 +1,5 @@
 <template>
-    <div id="layoutDialog" ref="layoutDialog" class="draggable-panel draggable-panel-css">
+    <div id="layoutDialog" ref="layoutDialogRef" class="draggable-panel draggable-panel-css">
         <PanelHeader :header-title="$t('simulator.panel_header.layout')" />
         <div id="layout-body" class="layout-body panel-body">
             <div class="">
@@ -120,10 +120,10 @@ import { useLayoutStore } from '#/store/layoutStore'
 
 const titleEnable = ref(tempBuffer.layout.titleEnabled)
 const layoutStore = useLayoutStore()
-const layoutDialog = ref<HTMLElement | null>(null);
+const layoutDialogRef = ref<HTMLElement | null>(null);
 
 onMounted(() => {
-    layoutStore.layoutDialog = layoutDialog.value
+    layoutStore.layoutDialog = layoutDialogRef.value
 })
 
 watch(

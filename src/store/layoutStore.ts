@@ -3,25 +3,25 @@ import { ref, Ref, watch } from "vue";
 
 export const useLayoutStore = defineStore("layoutStore", () => {
   const layoutMode = ref(false);
-  const layoutDialog: Ref<HTMLElement | null> = ref(null);
-  const layoutElementPanel: Ref<HTMLElement | null> = ref(null);
-  const elementsPanel: Ref<HTMLElement | null> = ref(null);
-  const timingDiagramPanel: Ref<HTMLElement | null> = ref(null);
-  const testbenchPanel: Ref<HTMLElement | null> = ref(null);
+  const layoutDialogRef: Ref<HTMLElement | null> = ref(null);
+  const layoutElementPanelRef: Ref<HTMLElement | null> = ref(null);
+  const elementsPanelRef: Ref<HTMLElement | null> = ref(null);
+  const timingDiagramPanelRef: Ref<HTMLElement | null> = ref(null);
+  const testbenchPanelRef: Ref<HTMLElement | null> = ref(null);
 
   watch(layoutMode, (val) => {
     if (val) {
-      fadeIn(layoutDialog.value);
-      fadeIn(layoutElementPanel.value);
-      fadeOut(elementsPanel.value);
-      fadeOut(timingDiagramPanel.value);
-      fadeOut(testbenchPanel.value);
+      fadeIn(layoutDialogRef.value);
+      fadeIn(layoutElementPanelRef.value);
+      fadeOut(elementsPanelRef.value);
+      fadeOut(timingDiagramPanelRef.value);
+      fadeOut(testbenchPanelRef.value);
     } else {
-      fadeOut(layoutDialog.value);
-      fadeOut(layoutElementPanel.value);
-      fadeIn(elementsPanel.value);
-      fadeIn(timingDiagramPanel.value);
-      fadeIn(testbenchPanel.value);
+      fadeOut(layoutDialogRef.value);
+      fadeOut(layoutElementPanelRef.value);
+      fadeIn(elementsPanelRef.value);
+      fadeIn(timingDiagramPanelRef.value);
+      fadeIn(testbenchPanelRef.value);
     }
   });
 
@@ -75,10 +75,10 @@ export const useLayoutStore = defineStore("layoutStore", () => {
 
   return {
     layoutMode,
-    layoutDialog,
-    layoutElementPanel,
-    elementsPanel,
-    timingDiagramPanel,
-    testbenchPanel,
+    layoutDialogRef,
+    layoutElementPanelRef,
+    elementsPanelRef,
+    timingDiagramPanelRef,
+    testbenchPanelRef,
   };
 });

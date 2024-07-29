@@ -18,7 +18,7 @@
     <!-- Layout Element Panel -->
     <div
         class="noSelect defaultCursor layoutElementPanel draggable-panel draggable-panel-css"
-        ref="layoutElementPanel"
+        ref="layoutElementPanelRef"
     >
         <div class="panel-header">
             Layout Elements
@@ -39,7 +39,7 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Testbench Panel -->
-    <div class="testbench-manual-panel draggable-panel noSelect defaultCursor" ref="testbenchPanel">
+    <div class="testbench-manual-panel draggable-panel noSelect defaultCursor" ref="testbenchPanelRef">
         <div class="panel-header">
             Testbench
             <span class="fas fa-minus-square minimize panel-button"></span>
@@ -326,11 +326,11 @@ import { onMounted, ref } from 'vue'
 
 const layoutStore = useLayoutStore()
 
-const testbenchPanel = ref<HTMLElement | null>(null);
-const layoutElementPanel = ref<HTMLElement | null>(null);
+const testbenchPanelRef = ref<HTMLElement | null>(null);
+const layoutElementPanelRef = ref<HTMLElement | null>(null);
 
 onMounted(() => {
-    layoutStore.testbenchPanel = testbenchPanel.value
-    layoutStore.layoutElementPanel = layoutElementPanel.value
+    layoutStore.testbenchPanel = testbenchPanelRef.value
+    layoutStore.layoutElementPanel = layoutElementPanelRef.value
 })
 </script>

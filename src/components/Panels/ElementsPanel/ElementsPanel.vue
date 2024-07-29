@@ -1,6 +1,6 @@
 <template>
     <div
-        ref="elementsPanel"
+        ref="elementsPanelRef"
         class="noSelect defaultCursor draggable-panel draggable-panel-css modules ce-panel elementPanel"
     >
         <PanelHeader
@@ -152,7 +152,7 @@ window.elementHierarchy = metadata.elementHierarchy
 window.elementPanelList = []
 const layoutStore = useLayoutStore()
 
-const elementsPanel = ref<HTMLElement | null>(null);
+const elementsPanelRef = ref<HTMLElement | null>(null);
 
 onBeforeMount(() => {
     for (const category in elementHierarchy) {
@@ -170,7 +170,7 @@ onBeforeMount(() => {
 })
 
 onMounted(() => {
-    layoutStore.elementsPanel = elementsPanel.value
+    layoutStore.elementsPanel = elementsPanelRef.value
 })
 
 function getImgUrl(elementName) {

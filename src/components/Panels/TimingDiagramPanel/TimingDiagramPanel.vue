@@ -1,5 +1,5 @@
 <template>
-    <div class="timing-diagram-panel draggable-panel" ref="timingDiagramPanel">
+    <div class="timing-diagram-panel draggable-panel" ref="timingDiagramPanelRef">
         <!-- Timing Diagram Panel -->
         <PanelHeader
             :header-title="$t('simulator.panel_header.timing_diagram')"
@@ -67,11 +67,11 @@ const plotArea: PlotArea = _plotArea
 const buttons = ref<TimingDiagramButton[]>(buttonsJSON)
 const plotRef = ref<HTMLElement | null>(null)
 const cycleUnits = ref(1000)
-const timingDiagramPanel = ref<HTMLElement | null>(null);
+const timingDiagramPanelRef = ref<HTMLElement | null>(null);
 const layoutStore = useLayoutStore()
 
 onMounted(() => {
-    layoutStore.timingDiagramPanel = timingDiagramPanel.value
+    layoutStore.timingDiagramPanel = timingDiagramPanelRef.value
 })
 
 function handleButtonClick(button: string) {
