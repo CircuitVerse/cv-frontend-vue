@@ -98,6 +98,7 @@ export async function generateSaveData(name, setName = true) {
     data.timePeriod = simulationArea.timePeriod
     data.clockEnabled = simulationArea.clockEnabled
     data.projectId = projectId
+    data.simulatorVersion = "v1"
     data.focussedCircuit = globalScope.id
     data.orderedTabs = getTabsOrder()
 
