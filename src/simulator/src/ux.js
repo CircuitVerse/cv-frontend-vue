@@ -14,6 +14,7 @@ import logixFunction from './data'
 import { circuitProperty } from './circuit'
 import { updateRestrictedElementsInScope } from './restrictedElementDiv'
 import { dragging } from './drag'
+import { circuitElementList } from './metadata'
 
 export const uxvar = {
     smartDropXX: 50,

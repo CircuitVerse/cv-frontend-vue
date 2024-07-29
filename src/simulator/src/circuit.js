@@ -37,6 +37,7 @@ import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
 import { toRefs } from 'vue'
 import { provideCircuitName } from '#/components/helpers/promptComponent/PromptComponent.vue'
 import { deleteCurrentCircuit } from '#/components/helpers/deleteCircuit/DeleteCircuit.vue'
+import { inputList, moduleList } from './metadata'
 
 export const circuitProperty = {
     toggleLayoutMode,
@@ -394,7 +395,7 @@ export default class Scope {
         var list = []
         for (let i = 0; i < this.SubCircuit.length; i++) {
             list.push(this.SubCircuit[i].id)
-            list.extend(scopeList[this.SubCircuit[i].id].getDependencies())
+            list.push(...scopeList[this.SubCircuit[i].id].getDependencies())
         }
         return uniq(list)
     }
