@@ -20,6 +20,8 @@ import { layoutModeGet } from './layoutMode'
 import { verilogModeGet } from './Verilog2CV'
 import { sanitizeLabel } from './verilogHelpers'
 import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
+import { circuitElementList, subCircuitInputList } from './metadata'
+
 /**
  * Function to load a subcicuit
  * @category subcircuit
@@ -163,8 +165,8 @@ export default class SubCircuit extends CircuitElement {
                 this.downDimensionY = subcircuitScope.layout.height
             }
 
-            this.nodeList.extend(this.inputNodes)
-            this.nodeList.extend(this.outputNodes)
+            this.nodeList.push(...this.inputNodes)
+            this.nodeList.push(...this.outputNodes)
         } else {
             this.version = '2.0'
         }
@@ -317,7 +319,7 @@ export default class SubCircuit extends CircuitElement {
             } else {
                 this.scope.backups = []
                 this.inputNodes[i].delete()
-                this.nodeList.clean(this.inputNodes[i])
+                this.nodeList = this.nodeList.filter(x => x !== this.inputNodes[i])
             }
         }
 
@@ -333,7 +335,7 @@ export default class SubCircuit extends CircuitElement {
                 } else {
                     this.scope.backups = []
                     temp_map_inp[id][1].delete()
-                    this.nodeList.clean(temp_map_inp[id][1])
+                    this.nodeList = this.nodeList.filter(x => x !== temp_map_inp[id][1])
                     temp_map_inp[id][1] = new Node(
                         temp_map_inp[id][0].layoutProperties.x,
                         temp_map_inp[id][0].layoutProperties.y,
@@ -378,7 +380,7 @@ export default class SubCircuit extends CircuitElement {
                     this.outputNodes[i]
             } else {
                 this.outputNodes[i].delete()
-                this.nodeList.clean(this.outputNodes[i])
+                this.nodeList = this.nodeList.filter(x => x !== this.outputNodes[i])
             }
         }
 
@@ -393,7 +395,7 @@ export default class SubCircuit extends CircuitElement {
                     temp_map_out[id][1].bitWidth = temp_map_out[id][0].bitWidth
                 } else {
                     temp_map_out[id][1].delete()
-                    this.nodeList.clean(temp_map_out[id][1])
+                    this.nodeList = this.nodeList.filter(x => x !== temp_map_out[id][1])
                     temp_map_out[id][1] = new Node(
                         temp_map_out[id][0].layoutProperties.x,
                         temp_map_out[id][0].layoutProperties.y,
@@ -610,7 +612,7 @@ export default class SubCircuit extends CircuitElement {
             if (
                 (this.hover && !simulationArea.shiftDown) ||
                 simulationArea.lastSelected === this ||
-                simulationArea.multipleObjectSelections.contains(this)
+                simulationArea.multipleObjectSelections.includes(this)
             )
                 ctx.fillStyle = colors['hover_select']
         }
