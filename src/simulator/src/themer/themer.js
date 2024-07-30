@@ -5,7 +5,7 @@ import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
 
 /**
  * Extracts canvas theme colors from CSS-Variables and returns a JSON Object
- * @returns {object}
+ * @returns {Object.<string, string>}
  */
 const getCanvasColors = () => {
     let colors = {}
@@ -117,7 +117,6 @@ export const getThemeCardSvg = (themeName) => {
     $('.svgChev', svgIcon).attr('stroke', colors['--br-secondary'])
 
     $('.svgHeader', svgIcon).attr('fill', colors['--primary'])
-    let temp = svgIcon.prop('outerHTML')
     return svgIcon.prop('outerHTML')
 }
 

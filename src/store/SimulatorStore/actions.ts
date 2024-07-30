@@ -5,7 +5,6 @@ export const useActions = defineStore('simulatorStore.actions', () => {
     const state = useState()
 
     function showTitle(): void {
-        console.log(state.title)
     }
 
     function showMessage(message: string, type: 'error' | 'success') {

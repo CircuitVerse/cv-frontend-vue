@@ -1,4 +1,4 @@
-import simulationArea from './simulationArea'
+import { simulationArea } from './simulationArea'
 import {
     scheduleUpdate,
     play,
@@ -203,8 +203,8 @@ export function truncateString(str: string, num: number) {
 }
 
 export function bitConverterDialog() {
-    const simulatorStore = SimulatorStore();
-    simulatorStore.dialogBox.hex_bin_dec_converter_dialog = true;
+    const simulatorStore = SimulatorStore()
+    simulatorStore.dialogBox.hex_bin_dec_converter_dialog = true
 }
 
 export function getImageDimensions(file: string) {

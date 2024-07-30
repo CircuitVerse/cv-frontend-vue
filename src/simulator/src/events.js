@@ -11,8 +11,9 @@ import {
 import { backUp } from './data/backupCircuit'
 import { getNextPosition } from './modules'
 import { generateId } from './utils'
-import simulationArea from './simulationArea'
-import { TestbenchData } from './testbench'
+import { simulationArea } from './simulationArea'
+import { TestbenchData } from '#/simulator/src/testbench'
+import { moduleList, updateOrder } from './metadata'
 
 /**
  * Helper function to paste
@@ -104,7 +105,7 @@ export function paste(copyData) {
             l !== 'objects' &&
             l !== 'CircuitElement'
         ) {
-            globalScope[l].extend(tempScope[l])
+            globalScope[l].push(...tempScope[l])
         }
     })
     for (let i = 0; i < tempScope.Input.length; i++) {
@@ -119,7 +120,6 @@ export function paste(copyData) {
             globalScope
         )
     }
-    var canvasUpdate = true
     updateSimulationSet(true)
     updateSubcircuitSet(true)
     scheduleUpdate()
@@ -165,7 +165,7 @@ export function cut(copyList) {
             const obj = globalScope[updateOrder[i]][j]
             if (obj.objectType != 'Wire') {
                 // }&&obj.objectType!='CircuitElement'){//}&&(obj.objectType!='Node'||obj.type==2)){
-                if (!copyList.contains(globalScope[updateOrder[i]][j])) {
+                if (!copyList.includes(globalScope[updateOrder[i]][j])) {
                     globalScope[updateOrder[i]][j].cleanDelete()
                 }
             }
@@ -198,9 +198,8 @@ export function cut(copyList) {
     data.logixClipBoardData = true
     data = JSON.stringify(data)
 
-    simulationArea.multipleObjectSelections = [] // copyList.slice();
-    simulationArea.copyList = [] // copyList.slice();
-    var canvasUpdate = true
+    simulationArea.multipleObjectSelections = []
+    simulationArea.copyList = []
     updateSimulationSet(true)
     globalScope = tempScope
     scheduleUpdate()
@@ -252,7 +251,7 @@ export function copy(copyList, cutflag = false) {
             const obj = globalScope[updateOrder[i]][j]
             if (obj.objectType != 'Wire') {
                 // }&&obj.objectType!='CircuitElement'){//}&&(obj.objectType!='Node'||obj.type==2)){
-                if (!copyList.contains(globalScope[updateOrder[i]][j])) {
+                if (!copyList.includes(globalScope[updateOrder[i]][j])) {
                     globalScope[updateOrder[i]][j].cleanDelete()
                 }
             }
@@ -297,9 +296,8 @@ export function copy(copyList, cutflag = false) {
     data.logixClipBoardData = true
     data.testbenchData = undefined // Don't copy testbench data
     data = JSON.stringify(data)
-    simulationArea.multipleObjectSelections = [] // copyList.slice();
-    simulationArea.copyList = [] // copyList.slice();
-    var canvasUpdate = true
+    simulationArea.multipleObjectSelections = []
+    simulationArea.copyList = []
     updateSimulationSet(true)
     globalScope = tempScope
     scheduleUpdate()
