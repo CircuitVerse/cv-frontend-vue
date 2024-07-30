@@ -42,12 +42,14 @@
             </div>
             <div id="plot" ref="plotRef">
                 <canvas
+                    v-if="!embed"
                     id="plotArea"
                     @mousedown="setupTimingListeners.plotAreaMouseDown"
                     @mousemove="setupTimingListeners.plotAreaMouseMove"
                     @mouseup="setupTimingListeners.plotAreaMouseUp"
                 >
                 </canvas>
+                <canvas v-else id="plotArea"></canvas>
             </div>
         </div>
     </div>
