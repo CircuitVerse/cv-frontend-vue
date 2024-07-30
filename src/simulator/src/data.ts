@@ -76,8 +76,8 @@ const logixFunction = {
 export default logixFunction
 
 // Hack to restart tour guide
-function showTourGuideHelper() {
-    setTimeout(() => {
+function showTourGuideHelper(): void {
+    setTimeout((): void => {
         showTourGuide()
     }, 100)
 }

@@ -1,3 +1,5 @@
+import Node from "./node"
+
 export function sanitizeLabel(name: string) {
     //        return name.replace(/ Inverse/g, "_inv").replace(/ /g , "_");
     var temp = name
@@ -20,7 +22,7 @@ export function sanitizeLabel(name: string) {
     return temp
 }
 
-export function generateNodeName(node: { verilogLabel: any; parent: { verilogLabel: any }; label: any }, currentCount: string | number, totalCount: number) {
+export function generateNodeName(node: Node, currentCount: number, totalCount: number) {
     if (node.verilogLabel) return node.verilogLabel
     var parentVerilogLabel = node.parent.verilogLabel
     var nodeName
