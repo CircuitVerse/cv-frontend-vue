@@ -1,7 +1,6 @@
 import Node from "./node"
 
 export function sanitizeLabel(name: string) {
-    //        return name.replace(/ Inverse/g, "_inv").replace(/ /g , "_");
     var temp = name
     // if there is a space anywhere but the last place
     // replace spaces by "_"
