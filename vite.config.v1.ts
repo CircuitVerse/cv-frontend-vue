@@ -44,6 +44,12 @@ export default defineConfig({
         outDir: `../public/simulatorvue/v1/`,
         assetsDir: 'assets',
         chunkSizeWarningLimit: 1600,
+        rollupOptions: {
+            input: {
+                main: fileURLToPath(new URL('index-cv.html', import.meta.url))
+            }
+        }
+
     },
     server: {
         port: 4000,
