@@ -20,6 +20,7 @@ import miniMapArea from './minimap'
 import { showMessage } from './utils'
 import { verilogModeSet } from './Verilog2CV'
 import { useLayoutStore } from '#/store/layoutStore'
+import { circuitElementList } from './metadata'
 
 /**
  * Layout.js - all subcircuit layout related code is here
