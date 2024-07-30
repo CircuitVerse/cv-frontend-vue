@@ -170,6 +170,9 @@ import CustomShortcut from './DialogBox/CustomShortcut.vue'
 import InsertSubcircuit from './DialogBox/InsertSubcircuit.vue'
 import OpenOffline from './DialogBox/OpenOffline.vue'
 import ReportIssue from './ReportIssue/ReportIssue.vue'
+import TestBenchPanel from './Panels/TestBenchPanel/TestBenchPanel.vue'
+import TestBenchCreator from './Panels/TestBenchPanel/TestBenchCreator.vue'
+import TestBenchValidator from './Panels/TestBenchPanel/TestBenchValidator.vue'
 import { useLayoutStore } from '#/store/layoutStore'
 import { onMounted, ref } from 'vue'
 
@@ -180,8 +183,4 @@ const layoutElementPanelRef = ref<HTMLElement | null>(null);
 onMounted(() => {
     layoutStore.layoutElementPanelRef = layoutElementPanelRef.value
 })
-
-import TestBenchPanel from './Panels/TestBenchPanel/TestBenchPanel.vue'
-import TestBenchCreator from './Panels/TestBenchPanel/TestBenchCreator.vue'
-import TestBenchValidator from './Panels/TestBenchPanel/TestBenchValidator.vue'
 </script>
