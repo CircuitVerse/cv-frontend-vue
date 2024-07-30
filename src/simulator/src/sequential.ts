@@ -1,6 +1,4 @@
-import { scheduleUpdate, play, updateCanvasSet } from './engine'
 import { simulationArea } from './simulationArea'
-import { clockTick } from './utils'
 
 /**
  * a global function as a helper for simulationArea.changeClockEnable

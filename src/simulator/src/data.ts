@@ -14,12 +14,7 @@ import { createNewCircuitScope } from './circuit'
 import { createCombinationalAnalysisPrompt } from './combinationalAnalysis'
 import { colorThemes } from './themer/themer'
 import { showTourGuide } from './tutorials'
-import {
-    createVerilogCircuit,
-    // saveVerilogCode,
-    // resetVerilogCode,
-    // applyVerilogTheme,
-} from './Verilog2CV'
+import { createVerilogCircuit } from './Verilog2CV'
 import { generateVerilog } from './verilog'
 import { bitConverterDialog } from './utils'
 import { keyBinder } from '#/components/DialogBox/CustomShortcut.vue'
@@ -48,31 +43,7 @@ const logixFunction = {
     ExportProject,
     ImportProject,
 }
-// logixFunction.save = save
-// logixFunction.load = load
-// logixFunction.createSaveAsImgPrompt = createSaveAsImgPrompt
-// logixFunction.clearProject = clearProject
-// logixFunction.newProject = newProject
-// logixFunction.saveOffline = saveOffline
-// // logixFunction.newCircuit = newCircuit
-// logixFunction.createOpenLocalPrompt = openOffline
-// logixFunction.recoverProject = recoverProject
-// logixFunction.createSubCircuitPrompt = createSubCircuitPrompt
-// logixFunction.createCombinationalAnalysisPrompt =
-//     createCombinationalAnalysisPrompt
-// logixFunction.fullViewOption = fullView
-// logixFunction.colorThemes = colorThemes
-// logixFunction.showTourGuide = showTourGuideHelper
-// logixFunction.newVerilogModule = createVerilogCircuit
-// // logixFunction.saveVerilogCode = saveVerilogCode
-// // logixFunction.resetVerilogCode = resetVerilogCode
-// logixFunction.generateVerilog = generateVerilog
-// // logixFunction.applyVerilogTheme = applyVerilogTheme
-// logixFunction.bitconverter = bitConverterDialog
-// logixFunction.createNewCircuitScope = createNewCircuitScope
-// logixFunction.customShortcut = keyBinder
-// logixFunction.ExportProject = ExportProject
-// logixFunction.ImportProject = ImportProject
+
 export default logixFunction
 
 // Hack to restart tour guide
