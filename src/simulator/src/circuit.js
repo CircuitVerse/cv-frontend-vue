@@ -33,11 +33,11 @@ import { setProjectName } from './data/save'
 import { changeClockEnable } from './sequential'
 import { changeInputSize } from './modules'
 import { verilogModeGet, verilogModeSet } from './Verilog2CV'
-import { updateTestbenchUI } from './testbench'
 import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
 import { toRefs } from 'vue'
 import { provideCircuitName } from '#/components/helpers/promptComponent/PromptComponent.vue'
 import { deleteCurrentCircuit } from '#/components/helpers/deleteCircuit/DeleteCircuit.vue'
+import { inputList, moduleList } from './metadata'
 
 export const circuitProperty = {
     toggleLayoutMode,
@@ -107,7 +107,6 @@ export function switchCircuit(id) {
     simulationArea.lastSelected = globalScope.root
     if (!embed) {
         showProperties(simulationArea.lastSelected)
-        updateTestbenchUI()
         plotArea.reset()
     }
     updateCanvasSet(true)
@@ -181,7 +180,6 @@ export async function createNewCircuitScope(
     newCircuit(name, id, isVerilog, isVerilogMain)
     if (!embed) {
         showProperties(simulationArea.lastSelected)
-        updateTestbenchUI()
         plotArea.reset()
     }
     return true
@@ -397,7 +395,7 @@ export default class Scope {
         var list = []
         for (let i = 0; i < this.SubCircuit.length; i++) {
             list.push(this.SubCircuit[i].id)
-            list.extend(scopeList[this.SubCircuit[i].id].getDependencies())
+            list.push(...scopeList[this.SubCircuit[i].id].getDependencies())
         }
         return uniq(list)
     }
