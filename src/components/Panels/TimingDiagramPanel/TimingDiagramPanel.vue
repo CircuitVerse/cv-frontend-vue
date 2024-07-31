@@ -32,7 +32,7 @@
                     @keyup="handleUnitsChange"
                 />
                 {{ $t('simulator.panel_body.timing_diagram.units') }}
-                <span id="timing-diagram-log"></span>
+                <span v-if="globalScope?.Flag.length" id="timing-diagram-log"></span>
             </div>
             <div id="plot" :style="{ width: plotWidth + 'px', height: plotHeight + 'px' }">
                 <canvas :style="{ width: plotWidth + 'px', height: plotHeight + 'px' }" id="plotArea"></canvas>
@@ -64,12 +64,16 @@ interface PlotArea {
 
 const plotArea: PlotArea = _plotArea
 const buttons = ref<TimingDiagramButton[]>(buttonsJSON)
-const plotRef = ref<HTMLElement | null>(null)
 const cycleUnits = ref(1000)
 const plotWidth = ref(sh(750));
 const plotHeight = ref(sh(25));
 
 function handleButtonClick(button: string) {
+    if(globalScope?.Flag.length === 0) {
+        plotHeight.value = sh(25);
+        plotWidth.value = sh(750);
+        return;
+    };
     if (button === 'smaller') {
         plotWidth.value = Math.max(plotWidth.value - sh(20), sh(750));
     } else if (button === 'larger') {
