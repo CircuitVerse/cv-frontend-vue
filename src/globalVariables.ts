@@ -6,8 +6,6 @@ declare const window: any
 import jQuery from 'jquery'
 window.$ = window.jQuery = jQuery
 
-import Array from './simulator/src/arrayHelpers.js'
-window.Array = Array
 window.isUserLoggedIn = false
 window.logixProjectId = undefined
 
@@ -23,5 +21,3 @@ window.embed = false
 window.width = undefined
 window.height = undefined
 window.DPR = window.devicePixelRatio || 1 // devicePixelRatio, 2 for retina displays, 1 for low resolution displays
-
-window.elementHierarchy = []
