@@ -194,11 +194,11 @@ const timePeriod = ref(simulationArea.timePeriod)
 const clockEnabled = ref(simulationArea.clockEnabled)
 
 // Embed user preferences
-const theme = ref(route.query.theme)
-const hasDisplayTitle = ref(route.query.display_title ? route.query.display_title === 'true' : false);
-const hasClockTime = ref(route.query.clock_time ? route.query.clock_time === 'true' : true);
-const hasFullscreen = ref(route.query.fullscreen ? route.query.fullscreen === 'true' : true);
-const hasZoomInOut = ref(route.query.zoom_in_out ? route.query.zoom_in_out === 'true' : true);
+const theme = computed(() => route.query.theme);
+const hasDisplayTitle = computed(() => route.query.display_title ? route.query.display_title === 'true' : false);
+const hasClockTime = computed(() => route.query.clock_time ? route.query.clock_time === 'true' : true);
+const hasFullscreen = computed(() => route.query.fullscreen ? route.query.fullscreen === 'true' : true);
+const hasZoomInOut = computed(() => route.query.zoom_in_out ? route.query.zoom_in_out === 'true' : true);
 
 const selectedTheme = computed(() => localStorage.getItem('theme'));
 
