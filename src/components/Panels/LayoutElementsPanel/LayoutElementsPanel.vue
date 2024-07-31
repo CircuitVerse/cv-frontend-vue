@@ -1,7 +1,7 @@
 <template>
   <div class="noSelect defaultCursor layoutElementPanel draggable-panel draggable-panel-css">
     <div class="panel-header">
-      Layout Elements
+      {{ $t('simulator.layout.layout_elements') }}
       <span class="fas fa-minus-square minimize"></span>
       <span class="fas fa-external-link-square-alt maximize"></span>
     </div>
@@ -19,16 +19,16 @@
               @mousedown="dragElement(group.type, element, elementIndex)"
             >
               <div class="icon-image">
-                <img :src="`/img/${group.type}.svg`" />
+                <img :src="`/src/simulator/src/img/${group.type}.svg`" />
                 <p class="img__description">
-                  {{ element.label !== '' ? element.label : 'unlabeled' }}
+                  {{ element.label !== '' ? element.label : $t('simulator.unlabeled') }}
                 </p>
               </div>
             </div>
           </div>
         </div>
         <div v-if="SimulatorState.subCircuitElementList.length === 0">
-          <p>No layout elements available</p>
+          <p>{{ $t('simulator.layout.no_elements_available') }}</p>
         </div>
       </div>
     </div>
