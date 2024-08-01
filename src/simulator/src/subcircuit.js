@@ -432,10 +432,11 @@ export default class SubCircuit extends CircuitElement {
 
         if (subcircuitScope.timeStamp > this.lastUpdated) {
             this.reBuildCircuit()
-            this.localScope.reset()
-            updateSimulationSet(true)
-            forceResetNodesSet(true)
         }
+
+        this.localScope.reset()
+        updateSimulationSet(true)
+        forceResetNodesSet(true)
 
         this.makeConnections()
     }
