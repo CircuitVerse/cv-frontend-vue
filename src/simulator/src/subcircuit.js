@@ -433,12 +433,9 @@ export default class SubCircuit extends CircuitElement {
             this.reBuildCircuit()
         }
 
-        // Should this be done here or only when this.reBuildCircuit() is called?
-        {
-            this.localScope.reset()
-            updateSimulationSet(true)
-            forceResetNodesSet(true)
-        }
+        this.localScope.reset()
+        updateSimulationSet(true)
+        forceResetNodesSet(true)
 
         this.makeConnections()
     }
