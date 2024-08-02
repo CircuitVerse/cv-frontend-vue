@@ -112,14 +112,18 @@ async function fetchProjectData(projectId) {
             const data = await response.json()
             await load(data)
             await simulationArea.changeClockTime(data.timePeriod || 500)
-            $('.loadingIcon').fadeOut()
+            let loadingIcon = document.querySelector('.loadingIcon')
+            loadingIcon.style.transition = 'opacity 0.2s';
+            loadingIcon.style.opacity = '0';
         } else {
             throw new Error('API call failed')
         }
     } catch (error) {
         console.error(error)
         confirmSingleOption('Error: Could not load.')
-        $('.loadingIcon').fadeOut()
+        let loadingIcon = document.querySelector('.loadingIcon')
+        loadingIcon.style.transition = 'opacity 0.2s';
+        loadingIcon.style.opacity = '0';
     }
 }
 
@@ -131,7 +135,9 @@ async function fetchProjectData(projectId) {
 async function loadProjectData() {
     window.logixProjectId = window.logixProjectId ?? 0
     if (window.logixProjectId !== 0) {
-        $('.loadingIcon').fadeIn()
+        let loadingIcon = document.querySelector('.loadingIcon');
+        loadingIcon.style.transition = 'opacity 0.5s linear';
+        loadingIcon.style.opacity = '1';
         await fetchProjectData(window.logixProjectId)
     } else if (localStorage.getItem('recover_login') && window.isUserLoggedIn) {
         // Restore unsaved data and save
