@@ -177,8 +177,8 @@ export const moveElement = (direct) => () => {
 
 export const openHotkey = () => $('#customShortcut').trigger('click')
 
-export const createNewCircuitScopeCall = () =>
-    $('#createNewCircuitScope').trigger('click') // TODO: remove later
+// export const createNewCircuitScopeCall = () =>
+// $('#createNewCircuitScope').trigger('click') // TODO: remove later
 
 export const openDocumentation = () => {
     if (
