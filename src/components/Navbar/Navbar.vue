@@ -5,12 +5,10 @@
 
         <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse">
             <NavbarLinks :navbar-data="navbarData" />
-
-            <span
-                id="projectName"
-                class="projectName noSelect defaultCursor font-weight-bold"
-            >
-                {{ projectStore.getProjectName }}
+            <span id="projectName" class="projectName noSelect defaultCursor font-weight-bold">
+                <div class="projectNameTextArea">
+                    {{ projectStore.getProjectName }}
+                </div>
             </span>
             <User :user-data="userDropdownItems" />
         </div>

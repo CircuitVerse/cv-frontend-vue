@@ -184,6 +184,11 @@ input[type='text']:focus {
     text-overflow: ellipsis;
 }
 
+.projectNameTextArea:hover {
+    cursor: pointer;
+    text-decoration-line: underline;
+}
+
 @media (max-width: 991px) {
     .projectName {
         visibility: hidden;
