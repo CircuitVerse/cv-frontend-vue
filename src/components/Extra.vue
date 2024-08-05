@@ -1,4 +1,5 @@
 <template>
+    <QuickButtonMobile v-if="simulatorMobileStore.showMobileView" />
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- TabsBar -->
     <TabsBar />
@@ -173,10 +174,13 @@ import ReportIssue from './ReportIssue/ReportIssue.vue'
 import TestBenchPanel from './Panels/TestBenchPanel/TestBenchPanel.vue'
 import TestBenchCreator from './Panels/TestBenchPanel/TestBenchCreator.vue'
 import TestBenchValidator from './Panels/TestBenchPanel/TestBenchValidator.vue'
+import QuickButtonMobile from './Navbar/QuickButton/QuickButtonMobile.vue'
 import { useLayoutStore } from '#/store/layoutStore'
+import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { onMounted, ref } from 'vue'
 
 const layoutStore = useLayoutStore()
+const simulatorMobileStore = useSimulatorMobileStore()
 
 const layoutElementPanelRef = ref<HTMLElement | null>(null);
 

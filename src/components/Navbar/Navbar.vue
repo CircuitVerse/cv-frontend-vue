@@ -15,13 +15,14 @@
             <User :user-data="userDropdownItems" />
         </div>
     </nav>
-    <QuickButton />
+    <QuickButton v-if="!simulatorMobileStore.showMobileView" />
 </template>
 
 <script lang="ts" setup>
 import QuickButton from '@/Navbar/QuickButton/QuickButton.vue'
 import User from '@/Navbar/User/User.vue'
 import NavbarLinks from '@/Navbar/NavbarLinks/NavbarLinks.vue'
+import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 
 import navbarData from '#/assets/constants/Navbar/NAVBAR_DATA.json'
 import userDropdownItems from '#/assets/constants/Navbar/USER_DATA.json'
@@ -35,6 +36,7 @@ const navbarLogo = ref('logo')
 const minWidthToShowSidebar = ref(992)
 const showSidebar = ref(false)
 const projectStore = useProjectStore()
+const simulatorMobileStore = useSimulatorMobileStore()
 showSidebar.value =
     window.innerWidth < minWidthToShowSidebar.value ? true : false
 onMounted(() => {
