@@ -3,7 +3,11 @@
 </div>
 
 # CircuitVerse Frontend Vue
-[CircuitVerse Frontend Vue](https://circuitverse.netlify.app/simulatorvue) is dedicated to enhancing the CircuitVerse platform in several key ways. Our primary focus is on decoupling the [CircuitVerse Simulator](https://circuitverse.org/simulator) from the backend, allowing it to function independently and with greater flexibility. Additionally, we're working to remove the reliance on jQueryUI, opting for cleaner and more contemporary code practices. To improve performance and code readability, we're transitioning from traditional DOM mutations to string-based manipulation. Furthermore, we're actively integrating internationalization features to ensure the platform is accessible to users worldwide. In summary, our repository aims to elevate the capabilities and user experience of CircuitVerse through targeted improvements and optimizations.
+[CircuitVerse Frontend Vue](https://circuitverse.netlify.app/simulatorvue) is dedicated to enhancing the CircuitVerse platform in several key ways.
+- **Decoupling the CircuitVerse Simulator**: Allowing it to function independently and with greater flexibility.
+- **Removing jQueryUI**: Opting for cleaner and more contemporary code practices.
+- **Improving Performance**: Transitioning from traditional DOM mutations to string-based manipulation.
+- **Internationalization**: Ensuring the platform is accessible to users worldwide.
 
 ## Community
 We would love to hear from you! We communicate on Slack:
