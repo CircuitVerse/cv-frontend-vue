@@ -1,5 +1,5 @@
 <template>
-  <div class="noSelect defaultCursor layoutElementPanel draggable-panel draggable-panel-css">
+  <div class="noSelect defaultCursor layoutElementPanel draggable-panel draggable-panel-css" ref="layoutElementPanelRef">
     <div class="panel-header">
       {{ $t('simulator.layout.layout_elements') }}
       <span class="fas fa-minus-square minimize"></span>
@@ -38,6 +38,16 @@
 <script lang="ts" setup>
 import { useState } from '#/store/SimulatorStore/state'
 import { simulationArea } from '#/simulator/src/simulationArea'
+import { useLayoutStore } from '#/store/layoutStore';
+import { ref, onMounted } from 'vue';
+
+const layoutStore = useLayoutStore()
+
+const layoutElementPanelRef = ref<HTMLElement | null>(null);
+
+onMounted(() => {
+    layoutStore.layoutElementPanelRef = layoutElementPanelRef.value
+})
 
 const SimulatorState = useState();
 
