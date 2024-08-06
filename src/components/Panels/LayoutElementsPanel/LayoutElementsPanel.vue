@@ -19,7 +19,7 @@
               @mousedown="dragElement(group.type, element, elementIndex)"
             >
               <div class="icon-image">
-                <img :src="`/src/simulator/src/img/${group.type}.svg`" />
+                <img :src="getImgUrl(group.type)" />
                 <p class="img__description">
                   {{ element.label !== '' ? element.label : $t('simulator.unlabeled') }}
                 </p>
@@ -63,6 +63,14 @@ const dragElement = (groupType: string, element: any, index: number) => {
     SimulatorState.subCircuitElementList.filter(
       (typeGroup) => typeGroup.elements.length > 0
     )
+}
+
+function getImgUrl(elementName: string) {
+  const elementImg = new URL(
+    `../../../simulator/src/img/${elementName}.svg`,
+    import.meta.url
+  ).href;
+  return elementImg;
 }
 </script>
 
