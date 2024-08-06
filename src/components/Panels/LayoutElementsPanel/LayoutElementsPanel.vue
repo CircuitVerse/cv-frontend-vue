@@ -19,7 +19,7 @@
               @mousedown="dragElement(group.type, element, elementIndex)"
             >
               <div class="icon-image">
-                <img :src="`/src/simulator/src/img/${group.type}.svg`" />
+                <img :src="`#/simulator/src/img/${group.type}.svg`" />
                 <p class="img__description">
                   {{ element.label !== '' ? element.label : $t('simulator.unlabeled') }}
                 </p>
