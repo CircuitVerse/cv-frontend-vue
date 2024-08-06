@@ -47,6 +47,7 @@ export function replace(node, index) {
     node.parent = parent
     parent.nodeList.push(node)
     node.updateRotation()
+    node.scope.timeStamp = new Date().getTime()
     return node
 }
 function rotate(x1, y1, dir) {
@@ -186,6 +187,7 @@ export default class Node {
         this.hover = false
         this.wasClicked = false
         this.scope = this.parent.scope
+        this.scope.timeStamp = new Date().getTime()
         /**
          * @type {string}
          * value of this.prev is
@@ -249,7 +251,7 @@ export default class Node {
     }
 
     /**
-     * Funciton for saving a node
+     * function for saving a node
      */
     saveObject() {
         if (this.type == NODE_INTERMEDIATE2) {
@@ -289,6 +291,7 @@ export default class Node {
         for (var i = 0; i < this.connections.length; i++) {
             this.connections[i].connections = this.connections[i].connections.filter(x => x !== this)
         }
+        this.scope.timeStamp = new Date().getTime()
         this.connections = []
     }
 
@@ -341,6 +344,8 @@ export default class Node {
         this.connections.push(n)
         n.connections.push(this)
 
+        this.scope.timeStamp = new Date().getTime()
+
         updateCanvasSet(true)
         updateSimulationSet(true)
         scheduleUpdate()
@@ -355,7 +360,9 @@ export default class Node {
         this.connections.push(n)
         n.connections.push(this)
 
-        updateCanvasSet(true)
+        this.scope.timeStamp = new Date().getTime()
+
+        // updateCanvasSet(true)
         updateSimulationSet(true)
         scheduleUpdate()
     }
@@ -366,6 +373,8 @@ export default class Node {
     disconnectWireLess(n) {
         this.connections = this.connections.filter(x => x !== n)
         n.connections = n.connections.filter(x => x !== this)
+
+        this.scope.timeStamp = new Date().getTime()
     }
 
     /**
@@ -402,7 +411,7 @@ export default class Node {
                     this.parent.isResolvable() &&
                     !this.parent.queueProperties.inQueue
                 ) {
-                    if (this.parent.objectType == 'TriState') {
+                    if (this.parent.objectType == 'TriState' || this.parent.objectType == 'ControlledInverter') {
                         if (this.parent.state.value) {
                             simulationArea.simulationQueue.add(this.parent)
                         }
@@ -441,11 +450,7 @@ export default class Node {
                         `Contention Error: ${this.value} and ${node.value} at ${circuitElementName} in ${circuitName}`
                     )
                 } else if (node.bitWidth == this.bitWidth || node.type == 2) {
-                    if (
-                        node.parent.objectType == 'TriState' &&
-                        node.value != undefined &&
-                        node.type == 1
-                    ) {
+                    if ((node.parent.objectType == 'TriState' || node.parent.objectType == 'ControlledInverter') && node.value != undefined) {
                         if (node.parent.state.value) {
                             simulationArea.contentionPending.push(node.parent)
                         }
@@ -918,6 +923,9 @@ export default class Node {
             this.connections[i].connections = this.connections[i].connections.filter(x => x !== this)
             this.connections[i].checkDeleted()
         }
+
+        this.scope.timeStamp = new Date().getTime()
+
         wireToBeCheckedSet(1)
         forceResetNodesSet(true)
         scheduleUpdate()
