@@ -40,6 +40,11 @@ import { setupTimingListeners } from './plotArea'
 
 var unit = 10
 var listenToSimulator = true
+let coordinate;
+const returnCoordinate = {
+  x: 0,
+  y: 0
+}
 
 export default function startListeners() {
     $(document).on('keyup', (e) => {
@@ -53,46 +58,6 @@ export default function startListeners() {
         }, 100)
     })
 
-    document
-        .getElementById('simulationArea')
-        .addEventListener('mousedown', (e) => {
-            simulationArea.mouseDown = true
-
-            // Deselect Input
-            if (document.activeElement instanceof HTMLElement)
-                document.activeElement.blur()
-
-            errorDetectedSet(false)
-            updateSimulationSet(true)
-            updatePositionSet(true)
-            updateCanvasSet(true)
-
-            simulationArea.lastSelected = undefined
-            simulationArea.selected = false
-            simulationArea.hover = undefined
-            var rect = simulationArea.canvas.getBoundingClientRect()
-            simulationArea.mouseDownRawX = (e.clientX - rect.left) * DPR
-            simulationArea.mouseDownRawY = (e.clientY - rect.top) * DPR
-            simulationArea.mouseDownX =
-                Math.round(
-                    (simulationArea.mouseDownRawX - globalScope.ox) /
-                        globalScope.scale /
-                        unit
-                ) * unit
-            simulationArea.mouseDownY =
-                Math.round(
-                    (simulationArea.mouseDownRawY - globalScope.oy) /
-                        globalScope.scale /
-                        unit
-                ) * unit
-            simulationArea.oldx = globalScope.ox
-            simulationArea.oldy = globalScope.oy
-
-            e.preventDefault()
-            scheduleBackup()
-            scheduleUpdate(1)
-            $('.dropdown.open').removeClass('open')
-        })
     document
         .getElementById('simulationArea')
         .addEventListener('mouseup', (e) => {
@@ -129,9 +94,6 @@ export default function startListeners() {
                 }
             }
         })
-    document
-        .getElementById('simulationArea')
-        .addEventListener('mousemove', onMouseMove)
 
     window.addEventListener('keyup', (e) => {
         scheduleUpdate(1)
@@ -370,10 +332,6 @@ export default function startListeners() {
 
     document
         .getElementById('simulationArea')
-        .addEventListener('mouseup', onMouseUp)
-
-    document
-        .getElementById('simulationArea')
         .addEventListener('mousewheel', MouseScroll)
     document
         .getElementById('simulationArea')
@@ -526,85 +484,129 @@ var isIe =
     navigator.userAgent.toLowerCase().indexOf('msie') != -1 ||
     navigator.userAgent.toLowerCase().indexOf('trident') != -1
 
-function onMouseMove(e) {
-    var rect = simulationArea.canvas.getBoundingClientRect()
-    simulationArea.mouseRawX = (e.clientX - rect.left) * DPR
-    simulationArea.mouseRawY = (e.clientY - rect.top) * DPR
-    simulationArea.mouseXf =
-        (simulationArea.mouseRawX - globalScope.ox) / globalScope.scale
-    simulationArea.mouseYf =
-        (simulationArea.mouseRawY - globalScope.oy) / globalScope.scale
-    simulationArea.mouseX = Math.round(simulationArea.mouseXf / unit) * unit
-    simulationArea.mouseY = Math.round(simulationArea.mouseYf / unit) * unit
+/*
+ *Function to start the pan in simulator
+ *Works for both touch and Mouse
+ *For now variable name starts from mouse like mouseDown are used both
+  touch and mouse will change in future
+ */
+export function panStart(e) {
+    coordinate = getCoordinate(e);
+    simulationArea.mouseDown = true;
 
-    updateCanvasSet(true)
+    // Deselect Input
+    if (document.activeElement instanceof HTMLElement)
+        document.activeElement.blur();
 
-    if (
-        simulationArea.lastSelected &&
-        (simulationArea.mouseDown || simulationArea.lastSelected.newElement)
-    ) {
-        updateCanvasSet(true)
-        var fn
+    errorDetectedSet(false);
+    updateSimulationSet(true);
+    updatePositionSet(true);
+    updateCanvasSet(true);
+
+    simulationArea.lastSelected = undefined;
+    simulationArea.selected = false;
+    simulationArea.hover = undefined;
+    var rect = simulationArea.canvas.getBoundingClientRect();
+    simulationArea.mouseDownRawX = (coordinate.x - rect.left) * DPR;
+    simulationArea.mouseDownRawY = (coordinate.y - rect.top) * DPR;
+    simulationArea.mouseDownX = Math.round(((simulationArea.mouseDownRawX - globalScope.ox) / globalScope.scale) / unit) * unit;
+    simulationArea.mouseDownY = Math.round(((simulationArea.mouseDownRawY - globalScope.oy) / globalScope.scale) / unit) * unit;
+    if (simulationArea.touch){
+        simulationArea.mouseX = simulationArea.mouseDownX;
+        simulationArea.mouseY = simulationArea.mouseDownY;
+    }
+    simulationArea.oldx = globalScope.ox;
+    simulationArea.oldy = globalScope.oy;
+
+    e.preventDefault();
+    scheduleBackup();
+    scheduleUpdate(1);
+    $('.dropdown.open').removeClass('open');
+}
+
+/*
+ * Function to pan in simulator
+ * Works for both touch and Mouse
+ * Pinch to zoom also implemented in the same
+ * For now variable name starts from mouse like mouseDown are used both
+   touch and mouse will change in future
+ */
+
+export function panMove(e) {
+    coordinate = getCoordinate(e);
+    if (!simulationArea.touch || e.touches.length === 1) {
+    var rect = simulationArea.canvas.getBoundingClientRect();
+    simulationArea.mouseRawX = (coordinate.x- rect.left) * DPR;
+    simulationArea.mouseRawY = (coordinate.y - rect.top) * DPR;
+    simulationArea.mouseXf = (simulationArea.mouseRawX - globalScope.ox) / globalScope.scale;
+    simulationArea.mouseYf = (simulationArea.mouseRawY - globalScope.oy) / globalScope.scale;
+    simulationArea.mouseX = Math.round(simulationArea.mouseXf / unit) * unit;
+    simulationArea.mouseY = Math.round(simulationArea.mouseYf / unit) * unit;
+
+    updateCanvasSet(true);
+
+    if (simulationArea.lastSelected && (simulationArea.mouseDown || simulationArea.lastSelected.newElement)) {
+        updateCanvasSet(true);
+        var fn;
 
         if (simulationArea.lastSelected == globalScope.root) {
             fn = function () {
-                updateSelectionsAndPane()
-            }
+                updateSelectionsAndPane();
+            };
         } else {
             fn = function () {
-                if (simulationArea.lastSelected) {
-                    simulationArea.lastSelected.update()
-                }
-            }
+                if (simulationArea.lastSelected) { simulationArea.lastSelected.update(); }
+            };
         }
-        scheduleUpdate(0, 20, fn)
+        scheduleUpdate(0, 20, fn);
     } else {
-        scheduleUpdate(0, 200)
+        scheduleUpdate(0, 200);
     }
 }
+   if (simulationArea.touch && e.touches.length === 2) {}
 
-function onMouseUp(e) {
-    simulationArea.mouseDown = false
+}
+
+/* Function for Panstop on simulator
+   *For now variable name starts from mouse like mouseDown are used both
+    touch and mouse will change in future
+*/
+
+export function panStop(e) {
+    simulationArea.mouseDown = false;
     if (!lightMode) {
-        updatelastMinimapShown()
-        setTimeout(removeMiniMap, 2000)
+        updatelastMinimapShown();
+        setTimeout(removeMiniMap, 2000);
     }
 
-    errorDetectedSet(false)
-    updateSimulationSet(true)
-    updatePositionSet(true)
-    updateCanvasSet(true)
-    gridUpdateSet(true)
-    wireToBeCheckedSet(1)
+    errorDetectedSet(false);
+    updateSimulationSet(true);
+    updatePositionSet(true);
+    updateCanvasSet(true);
+    gridUpdateSet(true);
+    wireToBeCheckedSet(1);
 
-    scheduleUpdate(1)
-    simulationArea.mouseDown = false
+    scheduleUpdate(1);
+    simulationArea.mouseDown = false;
 
     for (var i = 0; i < 2; i++) {
-        updatePositionSet(true)
-        wireToBeCheckedSet(1)
-        update()
+        updatePositionSet(true);
+        wireToBeCheckedSet(1);
+        update();
     }
-    errorDetectedSet(false)
-    updateSimulationSet(true)
-    updatePositionSet(true)
-    updateCanvasSet(true)
-    gridUpdateSet(true)
-    wireToBeCheckedSet(1)
+    errorDetectedSet(false);
+    updateSimulationSet(true);
+    updatePositionSet(true);
+    updateCanvasSet(true);
+    gridUpdateSet(true);
+    wireToBeCheckedSet(1);
 
-    scheduleUpdate(1)
-    var rect = simulationArea.canvas.getBoundingClientRect()
+    scheduleUpdate(1);
+    var rect = simulationArea.canvas.getBoundingClientRect();
 
-    if (
-        !(
-            simulationArea.mouseRawX < 0 ||
-            simulationArea.mouseRawY < 0 ||
-            simulationArea.mouseRawX > width ||
-            simulationArea.mouseRawY > height
-        )
-    ) {
-        uxvar.smartDropXX = simulationArea.mouseX + 100
-        uxvar.smartDropYY = simulationArea.mouseY - 50
+    if (!(simulationArea.mouseRawX < 0 || simulationArea.mouseRawY < 0 || simulationArea.mouseRawX > width || simulationArea.mouseRawY > height)) {
+        uxvar.smartDropXX = simulationArea.mouseX + 100; // Math.round(((simulationArea.mouseRawX - globalScope.ox+100) / globalScope.scale) / unit) * unit;
+        uxvar.smartDropYY = simulationArea.mouseY - 50; // Math.round(((simulationArea.mouseRawY - globalScope.oy+100) / globalScope.scale) / unit) * unit;
     }
 }
 
@@ -677,5 +679,21 @@ function zoomSliderListeners() {
             document.getElementById('customRange1').value = zoomLevel
             curLevel = zoomLevel
         }
+    }
+}
+
+/* Function to getCoordinate
+    *If touch is enable then it will return touch coordinate
+    *else it will return mouse coordinate
+ */
+function getCoordinate(e) {
+    if (simulationArea.touch) {
+        returnCoordinate.x = e.touches[0].clientX;
+        returnCoordinate.y = e.touches[0].clientY;
+        return returnCoordinate;
+    } else {
+        returnCoordinate.x = e.clientX;
+        returnCoordinate.y = e.clientY;
+        return returnCoordinate;
     }
 }
