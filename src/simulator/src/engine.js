@@ -439,14 +439,15 @@ export function play(scope = globalScope, resetNodes = false) {
             forceResetNodesSet(true)
         }
     }
-    // Check for TriState Contentions
+    // Check for Contentions
     if (simulationArea.contentionPending.size() > 0) {
         for (const [ourNode, theirNode] of simulationArea.contentionPending.nodes()) {
             ourNode.highlighted = true;
             theirNode.highlighted = true;
         }
 
-        showError('Contention Error: One or more bus contentions in the circuit');
+        forceResetNodesSet(true);
+        showError('Contention Error: One or more bus contentions in the circuit (check highlighted nodes)');
     }
 }
 
@@ -461,7 +462,7 @@ export function resetNodeHighlights(scope) {
  * @param {function} fn - function to run before updating UI
  * @category engine
  */
-export function scheduleUpdate(count = 0, time = 100, fn) {
+export function scheduleUpdate(count = 0, time = 100, fn = undefined) {
     if (lightMode) time *= 5
     var updateFn = layoutModeGet() ? layoutUpdate : update
     if (count) {

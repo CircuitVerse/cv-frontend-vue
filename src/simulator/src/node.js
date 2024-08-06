@@ -48,6 +48,7 @@ export function replace(node, index) {
     node.parent = parent
     parent.nodeList.push(node)
     node.updateRotation()
+    node.scope.timeStamp = new Date().getTime()
     return node
 }
 function rotate(x1, y1, dir) {
@@ -187,6 +188,7 @@ export default class Node {
         this.hover = false
         this.wasClicked = false
         this.scope = this.parent.scope
+        this.scope.timeStamp = new Date().getTime()
         /**
          * @type {string}
          * value of this.prev is
@@ -250,7 +252,7 @@ export default class Node {
     }
 
     /**
-     * Funciton for saving a node
+     * function for saving a node
      */
     saveObject() {
         if (this.type == 2) {
@@ -290,6 +292,7 @@ export default class Node {
         for (var i = 0; i < this.connections.length; i++) {
             this.connections[i].connections = this.connections[i].connections.filter(x => x !== this)
         }
+        this.scope.timeStamp = new Date().getTime()
         this.connections = []
     }
 
@@ -342,6 +345,8 @@ export default class Node {
         this.connections.push(n)
         n.connections.push(this)
 
+        this.scope.timeStamp = new Date().getTime()
+
         updateCanvasSet(true)
         updateSimulationSet(true)
         scheduleUpdate()
@@ -356,7 +361,9 @@ export default class Node {
         this.connections.push(n)
         n.connections.push(this)
 
-        updateCanvasSet(true)
+        this.scope.timeStamp = new Date().getTime()
+
+        // updateCanvasSet(true)
         updateSimulationSet(true)
         scheduleUpdate()
     }
@@ -367,6 +374,8 @@ export default class Node {
     disconnectWireLess(n) {
         this.connections = this.connections.filter(x => x !== n)
         n.connections = n.connections.filter(x => x !== this)
+
+        this.scope.timeStamp = new Date().getTime()
     }
 
     /**
@@ -397,7 +406,7 @@ export default class Node {
                     this.parent.isResolvable() &&
                     !this.parent.queueProperties.inQueue
                 ) {
-                    if (this.parent.objectType == 'TriState') {
+                    if (this.parent.objectType == 'TriState' || this.parent.objectType == 'ControlledInverter') {
                         if (this.parent.state.value) {
                             simulationArea.simulationQueue.add(this.parent)
                         }
@@ -424,36 +433,36 @@ export default class Node {
         }
 
         for (var i = 0; i < this.connections.length; i++) {
-            const node = this.connections[i]
+            const node = this.connections[i];
 
             switch (node.type) {
-                // TODO: For an output node, a downstream value (value given by elements other than the parent)
-                // should be overwritten in contention check and should not cause contention.
-                case NODE_OUTPUT:
-                    if (node.value != this.value || node.bitWidth != this.bitWidth) {
-                        // Check contentions
-                        if (node.value != undefined && node.parent.objectType != 'SubCircuit'
-                            && !(node.subcircuitOverride && node.scope != this.scope)) {
-                            // Tristate has always been a pain in the ass.
-                            if (node.parent.objectType == 'TriState' && node.value != undefined) {
-                                if (node.parent.state.value) {
-                                    simulationArea.contentionPending.add(node, this);
-                                    break;
-                                }
-                            }
-                            else {
+            // TODO: For an output node, a downstream value (value given by elements other than the parent)
+            // should be overwritten in contention check and should not cause contention.
+            case NODE_OUTPUT:
+                if (node.value != this.value || node.bitWidth != this.bitWidth) {
+                    // Check contentions
+                    if (node.value != undefined && node.parent.objectType != 'SubCircuit'
+                        && !(node.subcircuitOverride && node.scope != this.scope)) {
+                        // Tristate has always been a pain in the ass.
+                        if ((node.parent.objectType == 'TriState' || node.parent.objectType == 'ControlledInverter') && node.value != undefined) {
+                            if (node.parent.state.value) {
                                 simulationArea.contentionPending.add(node, this);
                                 break;
                             }
                         }
-                    } else {
-                        // Output node was given an agreeing value, so remove any contention
-                        // entry between these two nodes if it exists.
-                        simulationArea.contentionPending.remove(node, this);
+                        else {
+                            simulationArea.contentionPending.add(node, this);
+                            break;
+                        }
                     }
+                } else {
+                    // Output node was given an agreeing value, so remove any contention
+                    // entry between these two nodes if it exists.
+                    simulationArea.contentionPending.remove(node, this);
+                }
 
-                // Fallthrough. NODE_OUTPUT propagates like a contention checked NODE_INPUT
-                case NODE_INPUT:
+            // Fallthrough. NODE_OUTPUT propagates like a contention checked NODE_INPUT
+            case NODE_INPUT:
                 // Check bitwidths
                 if (this.bitWidth != node.bitWidth) {
                     this.highlighted = true;
@@ -930,6 +939,9 @@ export default class Node {
             this.connections[i].connections = this.connections[i].connections.filter(x => x !== this)
             this.connections[i].checkDeleted()
         }
+
+        this.scope.timeStamp = new Date().getTime()
+
         wireToBeCheckedSet(1)
         forceResetNodesSet(true)
         scheduleUpdate()
