@@ -1,10 +1,49 @@
 import { simulationArea } from './simulationArea'
 import { convertors } from './utils'
+import { useTimingDiagramStore } from '#/store/timingDiagramStore';
 
 var DPR = window.devicePixelRatio || 1
 
+export interface PlotArea {
+    cycleOffset: number;
+    DPR: number;
+    canvas: HTMLCanvasElement | null;
+    cycleCount: number;
+    cycleTime: number;
+    executionStartTime: number;
+    autoScroll: boolean;
+    width: number;
+    height: number;
+    unitUsed: number;
+    cycleUnit: number;
+    mouseDown: boolean;
+    mouseX: number;
+    mouseDownX: number;
+    mouseDownTime: number;
+    scrollAcc?: number;
+    ctx?: CanvasRenderingContext2D | null;
+    timeOutPlot?: NodeJS.Timeout;
+    reset: () => void;
+    resume: () => void;
+    pause: () => void;
+    nextCycle: () => void;
+    setExecutionTime: () => void;
+    zoomIn: () => void;
+    zoomOut: () => void;
+    download: () => void;
+    resize: () => void;
+    setup: () => void;
+    getPlotTime: (timeUnit: number) => number;
+    calibrate: () => void;
+    getCurrentTime: () => number;
+    update: () => void;
+    render: () => void;
+    plot: () => void;
+    clear: () => void;
+}
+
 // Helper function to scale to display
-function sh(x) {
+function sh(x: number) {
     return x * DPR
 }
 
@@ -32,15 +71,15 @@ var timeLineStartX = flagLabelWidth + padding
 
 // Helper functions for canvas
 
-function getFullHeight(flagCount) {
+function getFullHeight(flagCount: number) {
     return timeLineHeight + (plotHeight + padding) * flagCount
 }
 
-function getFlagStartY(flagIndex) {
+function getFlagStartY(flagIndex: number) {
     return getFullHeight(flagIndex) + padding
 }
 
-function getCycleStartX(cycleNumber) {
+function getCycleStartX(cycleNumber: number) {
     return timeLineStartX + (cycleNumber - plotArea.cycleOffset) * cycleWidth
 }
 
@@ -48,10 +87,10 @@ function getCycleStartX(cycleNumber) {
  * @type {Object} plotArea
  * @category plotArea
  */
-const plotArea = {
+const plotArea: PlotArea = {
     cycleOffset: 0, // Determines timeline offset
     DPR: window.devicePixelRatio || 1,
-    canvas: document.getElementById('plotArea'),
+    canvas: document.getElementById('plotArea') as HTMLCanvasElement,
     cycleCount: 0, // Number of clock cycles passed
     cycleTime: 0, // Time of last clock tick (in ms)
     executionStartTime: 0, // Last time play() function ran in engine.js (in ms)
@@ -106,9 +145,11 @@ const plotArea = {
     },
     // download as image
     download() {
-        var img = this.canvas.toDataURL(`image/png`)
+        var img = this.canvas?.toDataURL(`image/png`)
         const anchor = document.createElement('a')
-        anchor.href = img
+        if (img) {
+            anchor.href = img
+        }
         anchor.download = `waveform.png`
         anchor.click()
     },
@@ -116,18 +157,20 @@ const plotArea = {
     resize() {
         var oldHeight = this.height
         var oldWidth = this.width
-        this.width = document.getElementById('plot').clientWidth * this.DPR
+        this.width = document.getElementById('plot')?.clientWidth ?? 0 * this.DPR
         this.height = getFullHeight(globalScope.Flag.length)
         if (oldHeight == this.height && oldWidth == this.width) return
-        this.canvas.width = this.width
-        this.canvas.height = this.height
+        if (this.canvas && this.canvas.width && this.canvas.height) {
+            this.canvas.width = this.width
+            this.canvas.height = this.height
+        }
         this.plot()
     },
     // Setup function, called on page load
     setup() {
-        this.canvas = document.getElementById('plotArea')
+        this.canvas = document.getElementById('plotArea') as HTMLCanvasElement
         if (!embed) {
-            this.ctx = this.canvas.getContext('2d')
+            this.ctx = this.canvas?.getContext('2d')
         }
         this.timeOutPlot = setInterval(() => {
             plotArea.plot()
@@ -150,7 +193,6 @@ const plotArea = {
     calibrate() {
         var recommendedUnit = Math.max(20, Math.round(this.unitUsed * 3))
         this.cycleUnit = recommendedUnit
-        $('#timing-diagram-units').val(recommendedUnit)
         this.reset()
     },
     // Get current time in clock cycles
@@ -163,32 +205,14 @@ const plotArea = {
         return time
     },
     update() {
+
         this.resize()
-        var dangerColor = '#dc5656'
-        var normalColor = '#42b983'
         this.unitUsed = Math.max(
             this.unitUsed,
             simulationArea.simulationQueue.time
         )
-        var unitUsed = this.unitUsed
-        var units = this.cycleUnit
-        var utilization = Math.round((unitUsed * 10000) / units) / 100
-        $('#timing-diagram-log').html(
-            `Utilization: ${Math.round(unitUsed)} Units (${utilization}%)`
-        )
-        if (utilization >= 90 || utilization <= 10) {
-            var recommendedUnit = Math.max(20, Math.round(unitUsed * 3))
-            $('#timing-diagram-log').append(
-                ` Recommended Units: ${recommendedUnit}`
-            )
-            $('#timing-diagram-log').css('background-color', dangerColor)
-            if (utilization >= 100) {
-                this.clear()
-                return
-            }
-        } else {
-            $('#timing-diagram-log').css('background-color', normalColor)
-        }
+
+        useTimingDiagramStore().showUtilization = true;
 
         var width = this.width
         var endTime = this.getCurrentTime()
@@ -203,9 +227,11 @@ const plotArea = {
             )
         } else if (!plotArea.mouseDown) {
             // Scroll
-            this.cycleOffset -= plotArea.scrollAcc
+            this.cycleOffset -= plotArea.scrollAcc ?? 0
             // Friction
-            plotArea.scrollAcc *= 0.95
+            if (plotArea.scrollAcc) {
+                plotArea.scrollAcc *= 0.95
+            }
             // No negative numbers allowed, so negative scroll to 0
             if (this.cycleOffset < 0) plotArea.scrollAcc = this.cycleOffset / 5
             // Set position to 0, to avoid infinite scrolling
@@ -214,32 +240,36 @@ const plotArea = {
     },
     render() {
         var { width, height } = this
-        this.canvas.height = height
-        this.canvas.width = width
+        if (this.canvas) {
+            this.canvas.height = height
+            this.canvas.width = width
+        }
         var endTime = this.getCurrentTime()
         // Reset canvas
         this.clear()
         var ctx = this.ctx
 
         // Background Color
-        ctx.fillStyle = backgroundColor
-        ctx.fillRect(0, 0, width, height)
+        if (ctx) {
+            ctx.fillStyle = backgroundColor
+            ctx.fillRect(0, 0, width, height)
 
-        ctx.lineWidth = sh(1)
-        ctx.font = `${sh(15)}px Raleway`
-        ctx.textAlign = 'left'
+            ctx.lineWidth = sh(1)
+            ctx.font = `${sh(15)}px Raleway`
+            ctx.textAlign = 'left'
 
-        // Timeline
-        ctx.fillStyle = foregroundColor
-        ctx.fillRect(timeLineStartX, 0, this.canvas.width, timeLineHeight)
-        ctx.fillRect(0, 0, flagLabelWidth, timeLineHeight)
-        ctx.fillStyle = textColor
-        ctx.fillText('Time', sh(5), timeLineHeight * 0.7)
+            // Timeline
+            ctx.fillStyle = foregroundColor
+            ctx.fillRect(timeLineStartX, 0, this.canvas?.width ?? 0, timeLineHeight)
+            ctx.fillRect(0, 0, flagLabelWidth, timeLineHeight)
+            ctx.fillStyle = textColor
+            ctx.fillText('Time', sh(5), timeLineHeight * 0.7)
 
-        // Timeline numbers
-        ctx.font = `${sh(9)}px Times New Roman`
-        ctx.strokeStyle = textColor
-        ctx.textAlign = 'center'
+            // Timeline numbers
+            ctx.font = `${sh(9)}px Times New Roman`
+            ctx.strokeStyle = textColor
+            ctx.textAlign = 'center'
+        }
         for (
             var i = Math.floor(plotArea.cycleOffset);
             getCycleStartX(i) <= width;
@@ -248,7 +278,7 @@ const plotArea = {
             var x = getCycleStartX(i)
             // Large ticks + number
             // @TODO - collapse number if it doesn't fit
-            if (x >= timeLineStartX) {
+            if (x >= timeLineStartX && ctx) {
                 ctx.fillText(`${i}`, x, timeLineHeight - sh(15) / 2)
                 ctx.beginPath()
                 ctx.moveTo(x, timeLineHeight - sh(5))
@@ -258,7 +288,7 @@ const plotArea = {
             // Small ticks
             for (var j = 1; j < 5; j++) {
                 var x1 = x + Math.round((j * cycleWidth) / 5)
-                if (x1 >= timeLineStartX) {
+                if (x1 >= timeLineStartX && ctx) {
                     ctx.beginPath()
                     ctx.moveTo(x1, timeLineHeight - sh(2))
                     ctx.lineTo(x1, timeLineHeight)
@@ -268,17 +298,22 @@ const plotArea = {
         }
 
         // Flag Labels
-        ctx.textAlign = 'left'
+        if (ctx) {
+            ctx.textAlign = 'left'
+        }
         for (var i = 0; i < globalScope.Flag.length; i++) {
             var startHeight = getFlagStartY(i)
-            ctx.fillStyle = foregroundColor
-            ctx.fillRect(0, startHeight, flagLabelWidth, plotHeight)
-            ctx.fillStyle = textColor
-            ctx.fillText(
+            if (ctx) {
+                ctx.fillStyle = foregroundColor
+                ctx.fillStyle = textColor
+            }
+            ctx?.fillRect(0, startHeight, flagLabelWidth, plotHeight)
+            ctx?.fillText(
                 globalScope.Flag[i].identifier,
                 sh(5),
                 startHeight + plotHeight * 0.7
             )
+
         }
 
         // Waveform Status Flags
@@ -287,8 +322,10 @@ const plotArea = {
         const WAVEFORM_OVER = 3
 
         // Waveform
-        ctx.strokeStyle = waveFormColor
-        ctx.textAlign = 'center'
+        if (ctx) {
+            ctx.strokeStyle = waveFormColor
+            ctx.textAlign = 'center'
+        }
         var endX = Math.min(getCycleStartX(endTime), width)
 
         for (var i = 0; i < globalScope.Flag.length; i++) {
@@ -337,7 +374,7 @@ const plotArea = {
                 var value = plotValues[j][1]
                 if (value === undefined) {
                     if (state == WAVEFORM_STARTED) {
-                        ctx.stroke()
+                        ctx?.stroke()
                     }
                     state = WAVEFORM_NOT_STARTED
                     continue
@@ -348,30 +385,32 @@ const plotArea = {
                     if (state == WAVEFORM_NOT_STARTED) {
                         // Start new plot
                         state = WAVEFORM_STARTED
-                        ctx.beginPath()
-                        ctx.moveTo(x, y)
+                        ctx?.beginPath()
+                        ctx?.moveTo(x, y)
                     } else {
-                        ctx.lineTo(x, prevY)
-                        ctx.lineTo(x, y)
+                        if (prevY) {
+                            ctx?.lineTo(x, prevY)
+                        }
+                        ctx?.lineTo(x, y)
                     }
                     prevY = y
                 } else {
-                    var endX
+                    var endX: number
                     if (j + 1 == plotValues.length) {
                         endX = getCycleStartX(endTime)
                     } else {
                         endX = getCycleStartX(plotValues[j + 1][0])
                     }
                     var smallOffset = waveFormHeight / 2
-                    ctx.beginPath()
-                    ctx.moveTo(endX, yMid)
-                    ctx.lineTo(endX - smallOffset, yTop)
-                    ctx.lineTo(x + smallOffset, yTop)
-                    ctx.lineTo(x, yMid)
-                    ctx.lineTo(x + smallOffset, yBottom)
-                    ctx.lineTo(endX - smallOffset, yBottom)
-                    ctx.closePath()
-                    ctx.stroke()
+                    ctx?.beginPath()
+                    ctx?.moveTo(endX, yMid)
+                    ctx?.lineTo(endX - smallOffset, yTop)
+                    ctx?.lineTo(x + smallOffset, yTop)
+                    ctx?.lineTo(x, yMid)
+                    ctx?.lineTo(x + smallOffset, yBottom)
+                    ctx?.lineTo(endX - smallOffset, yBottom)
+                    ctx?.closePath()
+                    ctx?.stroke()
 
                     // Text position
                     // Clamp start and end are within the screen
@@ -379,9 +418,11 @@ const plotArea = {
                     var x2 = Math.min(endX, width)
                     var textPositionX = (x1 + x2) / 2
 
-                    ctx.font = `${sh(9)}px Times New Roman`
-                    ctx.fillStyle = 'white'
-                    ctx.fillText(
+                    if (ctx) {
+                        ctx.font = `${sh(9)}px Times New Roman`
+                        ctx.fillStyle = 'white'
+                    }
+                    ctx?.fillText(
                         convertors.dec2hex(value),
                         textPositionX,
                         yMid + sh(3)
@@ -389,22 +430,22 @@ const plotArea = {
                 }
                 if (x > width) {
                     state = WAVEFORM_OVER
-                    ctx.stroke()
+                    ctx?.stroke()
                     break
                 }
             }
             if (state == WAVEFORM_STARTED) {
-                if (globalScope.Flag[i].bitWidth == 1) {
-                    ctx.lineTo(endX, prevY)
+                if (globalScope.Flag[i].bitWidth == 1 && prevY) {
+                    ctx?.lineTo(endX, prevY)
                 }
-                ctx.stroke()
+                ctx?.stroke()
             }
         }
     },
     // Driver function to render and update
     plot() {
         if (embed) return
-        if (globalScope.Flag.length === 0) {
+        if (globalScope.Flag.length === 0 && this.canvas) {
             this.canvas.width = 0
             this.canvas.height = 0
             return
@@ -414,7 +455,7 @@ const plotArea = {
         this.render()
     },
     clear() {
-        this.ctx.clearRect(0, 0, plotArea.canvas.width, plotArea.canvas.height)
+        this.ctx?.clearRect(0, 0, plotArea.canvas?.width ?? 0, plotArea.canvas?.height ?? 0)
     },
 }
 export default plotArea
@@ -444,32 +485,33 @@ const timingDiagramButtonActions = {
 
 export { timingDiagramButtonActions }
 
-export function setupTimingListeners() {
-    document.getElementById('plotArea').addEventListener('mousedown', (e) => {
-        var rect = plotArea.canvas.getBoundingClientRect()
-        var x = sh(e.clientX - rect.left)
+export const setupTimingListeners =  {
+    plotAreaMouseDown: (e: MouseEvent) => {
+        const rect = plotArea.canvas?.getBoundingClientRect()
+        const x = sh(e.clientX - (rect?.left ?? 0))
         plotArea.scrollAcc = 0
         plotArea.autoScroll = false
         plotArea.mouseDown = true
         plotArea.mouseX = x
         plotArea.mouseDownX = x
         plotArea.mouseDownTime = new Date().getTime()
-    })
-    document.getElementById('plotArea').addEventListener('mouseup', (e) => {
-        plotArea.mouseDown = false
-        var time = new Date().getTime() - plotArea.mouseDownTime
-        var offset = (plotArea.mouseX - plotArea.mouseDownX) / cycleWidth
-        plotArea.scrollAcc = (offset * frameInterval) / time
-    })
+    },
 
-    document.getElementById('plotArea').addEventListener('mousemove', (e) => {
-        var rect = plotArea.canvas.getBoundingClientRect()
-        var x = sh(e.clientX - rect.left)
+    plotAreaMouseUp: () => {
+        plotArea.mouseDown = false
+        const time = new Date().getTime() - plotArea.mouseDownTime
+        const offset = (plotArea.mouseX - plotArea.mouseDownX) / cycleWidth
+        plotArea.scrollAcc = (offset * frameInterval) / time
+    },
+
+    plotAreaMouseMove: (e: MouseEvent) => {
+        const rect = plotArea.canvas?.getBoundingClientRect()
+        const x = sh(e.clientX - (rect?.left ?? 0))
         if (plotArea.mouseDown) {
             plotArea.cycleOffset -= (x - plotArea.mouseX) / cycleWidth
             plotArea.mouseX = x
         } else {
             plotArea.mouseDown = false
         }
-    })
+    }
 }

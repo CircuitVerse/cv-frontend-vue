@@ -36,7 +36,6 @@ import undo from './data/undo'
 import redo from './data/redo'
 import { copy, paste, selectAll } from './events'
 import { verilogModeGet } from './Verilog2CV'
-import { setupTimingListeners } from './plotArea'
 
 var unit = 10
 var listenToSimulator = true
@@ -517,9 +516,6 @@ export default function startListeners() {
     })
 
     zoomSliderListeners()
-    if (!embed) {
-        setupTimingListeners()
-    }
 }
 
 var isIe =
