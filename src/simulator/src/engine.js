@@ -437,11 +437,11 @@ export function play(scope = globalScope, resetNodes = false) {
             forceResetNodesSet(true)
         }
     }
-    // Check for TriState Contentions
+    // Check for Contentions
     if (simulationArea.contentionPending.length) {
         showError('Contention at TriState')
         forceResetNodesSet(true)
-        errorDetectedSet(true)
+        showError('Contention Error: One or more bus contentions in the circuit (check highlighted nodes)');
     }
 }
 
@@ -452,7 +452,7 @@ export function play(scope = globalScope, resetNodes = false) {
  * @param {function} fn - function to run before updating UI
  * @category engine
  */
-export function scheduleUpdate(count = 0, time = 100, fn) {
+export function scheduleUpdate(count = 0, time = 100, fn = undefined) {
     if (lightMode) time *= 5
     var updateFn = layoutModeGet() ? layoutUpdate : update
     if (count) {
