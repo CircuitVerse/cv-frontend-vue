@@ -3,15 +3,19 @@ import { defineStore } from 'pinia'
 // use camel case variable names
 export interface State {
     title: string
-    activeCircuit:
-        | Object
-        | {
-              id: number | string
-              name: string
-          }
-    circuit_list: Array<Object>
+    activeCircuit: {
+        id: number | string
+        name: string
+    } | undefined;
+    circuit_list: {
+        id: number | string
+        name: string
+        isVerilog?: boolean
+        focussed?: boolean
+    }[];
     errorMessages: string[]
     successMessages: string[]
+    circuit_name_clickable: boolean;
     dialogBox: {
         // create_circuit: boolean
         // delete_circuit: boolean
@@ -37,10 +41,11 @@ export const useState = defineStore({
     state: (): State => {
         return {
             title: 'Welcome to CircuitVerse Simulator',
-            activeCircuit: {},
+            activeCircuit: undefined,
             circuit_list: [],
             errorMessages: [],
             successMessages: [],
+            circuit_name_clickable: false,
             dialogBox: {
                 // create_circuit: false,
                 // delete_circuit: false,

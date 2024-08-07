@@ -16,7 +16,10 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Layout Element Panel -->
-    <div class="noSelect defaultCursor layoutElementPanel draggable-panel draggable-panel-css">
+    <div
+        class="noSelect defaultCursor layoutElementPanel draggable-panel draggable-panel-css"
+        ref="layoutElementPanelRef"
+    >
         <div class="panel-header">
             Layout Elements
             <span class="fas fa-minus-square minimize"></span>
@@ -173,6 +176,5 @@ import ReportIssue from './ReportIssue/ReportIssue.vue'
 import TestBenchPanel from './Panels/TestBenchPanel/TestBenchPanel.vue'
 import TestBenchCreator from './Panels/TestBenchPanel/TestBenchCreator.vue'
 import TestBenchValidator from './Panels/TestBenchPanel/TestBenchValidator.vue'
-
 import { useState } from '#/store/SimulatorStore/state'
 </script>
