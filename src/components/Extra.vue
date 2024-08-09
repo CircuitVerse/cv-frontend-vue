@@ -1,5 +1,6 @@
 <template>
     <QuickButtonMobile v-if="simulatorMobileStore.showMobileView" />
+    <TimingDiagramMobile v-if="simulatorMobileStore.showMobileView" />
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- TabsBar -->
     <TabsBar />
@@ -35,7 +36,7 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Timing Diagram Panel -->
-    <TimingDiagramPanel />
+    <TimingDiagramPanel v-if="!simulatorMobileStore.showMobileView" />
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
@@ -175,6 +176,7 @@ import TestBenchPanel from './Panels/TestBenchPanel/TestBenchPanel.vue'
 import TestBenchCreator from './Panels/TestBenchPanel/TestBenchCreator.vue'
 import TestBenchValidator from './Panels/TestBenchPanel/TestBenchValidator.vue'
 import QuickButtonMobile from './Navbar/QuickButton/QuickButtonMobile.vue'
+import TimingDiagramMobile from './Panels/TimingDiagramPanel/TimingDiagramMobile.vue'
 import { useLayoutStore } from '#/store/layoutStore'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { onMounted, ref } from 'vue'

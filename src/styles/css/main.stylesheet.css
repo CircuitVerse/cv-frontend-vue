@@ -1763,8 +1763,10 @@ canvas {
 }
 
 .timing-diagram-toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
     padding-left: 4px;
-    padding: 2px;
     cursor: default;
 }
 
