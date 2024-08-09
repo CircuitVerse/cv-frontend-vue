@@ -101,6 +101,22 @@ function handleUnitsChange(event: Event) {
 
 .timing-btn-container {
     white-space: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.timing-btn-container::-webkit-scrollbar {
+    height: 0px;
+}
+
+.timing-btn-container::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    border-radius: 4px;
+}
+
+.timing-btn-container::-webkit-scrollbar-track {
+    background-color: transparent;
 }
 
 .timing-btn-container > * {

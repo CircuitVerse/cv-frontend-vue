@@ -1,6 +1,6 @@
 <template>
     <QuickButtonMobile v-if="simulatorMobileStore.showMobileView" />
-    <TimingDiagramMobile v-if="simulatorMobileStore.showMobileView" />
+    <TimingDiagramMobile v-if="simulatorMobileStore.showMobileView" v-show="simulatorMobileStore.showTimingDiagram" />
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- TabsBar -->
     <TabsBar />

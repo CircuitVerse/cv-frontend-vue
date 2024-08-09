@@ -70,6 +70,7 @@
           <button
               type="button"
               class="quick-btn-timing"
+              @mousedown="simulatorMobileStore.showTimingDiagram = !simulatorMobileStore.showTimingDiagram"
           >
           <i :style="{ transform: simulatorMobileStore.showMobileView ? 'scale(1)' : 'scale(1.25)' }" class="fa-solid fa-timeline"></i>
           </button>
