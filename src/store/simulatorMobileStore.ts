@@ -6,6 +6,7 @@ export const useSimulatorMobileStore = defineStore("simulatorMobileStore", () =>
   const showMobileView = ref(false);
   const showCanvas = ref(false);
   const showTimingDiagram = ref(false);
+  const showElementsPanel = ref(false);
 
   showMobileView.value = window.innerWidth < minWidthToShowMobile.value ? true : false
 
@@ -14,5 +15,6 @@ export const useSimulatorMobileStore = defineStore("simulatorMobileStore", () =>
     showMobileView,
     showCanvas,
     showTimingDiagram,
+    showElementsPanel,
   };
 });

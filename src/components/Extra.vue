@@ -13,7 +13,7 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Circuit Elements Panel -->
-    <ElementsPanel />
+    <ElementsPanel  v-if="!simulatorMobileStore.showMobileView"/>
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
@@ -182,6 +182,17 @@
     <!---issue reporting-system----->
     <ReportIssue />
     <!-- --------------------------------------------------------------------------------------------- -->
+
+    <v-btn
+      class="cir-ele-btn"
+      @mousedown="simulatorMobileStore.showElementsPanel = !simulatorMobileStore.showElementsPanel"
+      :style="{bottom: simulatorMobileStore.showElementsPanel ? '10rem' : '2rem'}"
+      v-if="simulatorMobileStore.showMobileView"
+    >
+        <i class="fa-solid fa-wave-square"></i>
+    </v-btn>
+
+    <ElementsPanelMobile v-if="simulatorMobileStore.showMobileView" />
 </template>
 
 <script lang="ts" setup>
@@ -207,6 +218,7 @@ import TimingDiagramMobile from './Panels/TimingDiagramPanel/TimingDiagramMobile
 import { useLayoutStore } from '#/store/layoutStore'
 import  { panStart, panMove, panStop } from '#/simulator/src/listeners'
 import { simulationArea } from '#/simulator/src/simulationArea'
+import ElementsPanelMobile from './Panels/ElementsPanel/ElementsPanelMobile.vue'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { onMounted, ref } from 'vue'
 
@@ -219,3 +231,24 @@ onMounted(() => {
     layoutStore.layoutElementPanelRef = layoutElementPanelRef.value
 })
 </script>
+
+<style scoped>
+.cir-ele-btn{
+    position: absolute;
+    right: 2rem;
+    bottom: 15rem;
+    z-index: 100;
+    background-color: var(--bg-toggle-btn-primary);
+    color: white;
+    border-radius: 100%;
+    font-size: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: 0.3s;
+    padding: 1rem;
+    height: 4rem;
+    width: 4rem;
+}
+</style>
