@@ -119,10 +119,10 @@
                 </div>
                 <div class="btnDiv">
                     <v-btn class="messageBtn" block @mousedown="importFromCSV">
-                        Import From CSV
+                        <span>Import</span> <span class="csv-text">&nbsp;From CSV</span>
                     </v-btn>
                     <v-btn class="messageBtn" block @mousedown="exportAsCSV">
-                        Export As CSV
+                        <span>Export</span> <span class="csv-text">&nbsp;As CSV</span>
                     </v-btn>
                     <v-btn class="messageBtn" block @mousedown="sendData">
                         Attach
@@ -411,7 +411,45 @@ const importFromCSV = () => {
 
 <style scoped>
 #creatorBox {
-    width: 1100px;
+    width: 75%;
+}
+
+.testActionBtns {
+    width: 97%;
+    display: flex;
+    justify-content: space-between !important;
+    padding-bottom: 1rem;
+}
+
+.testType {
+    width: 97%;
+}
+
+.btnDiv {
+    display: flex;
+    gap: 0.1rem;
+    align-items: center;
+}
+
+@media screen and (max-width: 768px) {
+    #creatorBox {
+        width: 99%;
+    }
+
+    .testActionBtns {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .testType {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .csv-text {
+        display: none;
+    }
 }
 
 .creatorHeader {
@@ -419,26 +457,7 @@ const importFromCSV = () => {
 }
 
 .testInput {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.testType {
-    width: 97%;
-}
-
-.testActionBtns {
-    width: 97%;
-    display: flex;
-    justify-content: space-between;
-    padding-bottom: 1rem;
-}
-
-.btnDiv {
-    display: flex;
-    gap: 0.1rem;
-    align-items: center;
+    flex-wrap: wrap;
 }
 
 .testRow {
