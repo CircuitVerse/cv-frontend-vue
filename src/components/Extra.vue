@@ -1,4 +1,6 @@
 <template>
+    <QuickButtonMobile v-if="simulatorMobileStore.showMobileView" />
+    <TimingDiagramMobile v-if="simulatorMobileStore.showMobileView" v-show="simulatorMobileStore.showTimingDiagram" />
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- TabsBar -->
     <TabsBar />
@@ -34,7 +36,7 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Timing Diagram Panel -->
-    <TimingDiagramPanel />
+    <TimingDiagramPanel v-if="!simulatorMobileStore.showMobileView" />
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
@@ -110,9 +112,9 @@
                         simulationArea.touch = true;
                         panStart(e)
                     }"
-                    @touchend="(e) => {
+                    @touchend="() => {
                         simulationArea.touch = true;
-                        panStop(e)
+                        panStop()
                     }"
                     @touchmove="(e) => {
                         simulationArea.touch = true;
@@ -126,9 +128,9 @@
                         simulationArea.touch = false;
                         panMove(e)
                     }"
-                    @mouseup="(e) => {
+                    @mouseup="() => {
                         simulationArea.touch = false;
-                        panStop(e)
+                        panStop()
                     }"
             ></canvas>
             <div id="miniMap">
@@ -200,12 +202,16 @@ import ReportIssue from './ReportIssue/ReportIssue.vue'
 import TestBenchPanel from './Panels/TestBenchPanel/TestBenchPanel.vue'
 import TestBenchCreator from './Panels/TestBenchPanel/TestBenchCreator.vue'
 import TestBenchValidator from './Panels/TestBenchPanel/TestBenchValidator.vue'
+import QuickButtonMobile from './Navbar/QuickButton/QuickButtonMobile.vue'
+import TimingDiagramMobile from './Panels/TimingDiagramPanel/TimingDiagramMobile.vue'
 import { useLayoutStore } from '#/store/layoutStore'
 import  { panStart, panMove, panStop } from '#/simulator/src/listeners'
 import { simulationArea } from '#/simulator/src/simulationArea'
+import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { onMounted, ref } from 'vue'
 
 const layoutStore = useLayoutStore()
+const simulatorMobileStore = useSimulatorMobileStore()
 
 const layoutElementPanelRef = ref<HTMLElement | null>(null);
 
