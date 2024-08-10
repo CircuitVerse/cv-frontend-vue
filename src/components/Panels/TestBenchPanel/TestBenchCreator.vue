@@ -1,6 +1,6 @@
 <template>
     <v-dialog v-model="showCreator" :persistent="false">
-        <v-card class="messageBoxContent" id="creatorBox">
+        <div class="messageBoxContent testbenchContent" id="creatorBox">
             <v-card-text class="creatorHeader">
                 <p class="dialogHeader">{{ dialogTitle }}</p>
                 <v-btn size="x-small" icon class="dialogClose"
@@ -129,7 +129,7 @@
                     </v-btn>
                 </div>
             </v-card-actions>
-        </v-card>
+        </div>
     </v-dialog>
 </template>
 
@@ -414,6 +414,10 @@ const importFromCSV = () => {
     width: 75%;
 }
 
+.testbenchContent {
+    overflow-y: auto;
+}
+
 .testActionBtns {
     width: 97%;
     display: flex;
@@ -502,14 +506,14 @@ const importFromCSV = () => {
     display: flex;
     width: 35%;
     gap: 0.5rem;
-    overflow-x: scroll;
+    overflow-x: auto;
 }
 
 .resultContainer {
     display: flex;
     width: 15%;
     gap: 0.5rem;
-    overflow-x: scroll;
+    overflow-x: auto;
 }
 
 .fullTestRow {
