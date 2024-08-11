@@ -180,7 +180,7 @@ import { setup } from '#/simulator/src/setup'
 import startListeners from '#/simulator/src/embedListeners'
 import TabsBar from '#/components/TabsBar/TabsBar.vue'
 import { updateThemeForStyle } from '#/simulator/src/themer/themer'
-import { THEME } from '#/assets/constants/theme'
+import { THEME, ThemeType } from '#/assets/constants/theme'
 // import { time } from 'console'
 // __logix_project_id = "<%= @logix_project_id %>";
 // embed=true;
@@ -241,28 +241,8 @@ onBeforeMount(() => {
 })
 
 onMounted(() => {
-    switch (theme.value) {
-    case 'default':
-        updateThemeForStyle(THEME.default);
-        break;
-    case 'night-sky':
-        updateThemeForStyle(THEME.night_sky);
-        break;
-    case 'lite-born-spring':
-        updateThemeForStyle(THEME.lite_born_spring);
-        break;
-    case 'g-and-w':
-        updateThemeForStyle(THEME.g_and_w);
-        break;
-    case 'high-contrast':
-        updateThemeForStyle(THEME.high_contrast);
-        break;
-    case 'color-blind':
-        updateThemeForStyle(THEME.color_blind);
-        break;
-    default:
-        updateThemeForStyle(selectedTheme);
-    }
+    const themeValue = theme?.value as string;
+    updateThemeForStyle(THEME[themeValue as keyof ThemeType]);
 })
 
 onMounted(() => {
