@@ -163,6 +163,15 @@
         <i class="fa-solid fa-wave-square"></i>
     </v-btn>
 
+    <v-btn
+      class="select-mul-btn"
+      @mousedown="() => {}"
+      :style="{bottom: simulatorMobileStore.showElementsPanel ? '10rem' : '2rem'}"
+      v-if="simulatorMobileStore.showMobileView"
+    >
+    <i class="fa-solid fa-vector-square"></i>
+    </v-btn>
+
     <ElementsPanelMobile v-if="simulatorMobileStore.showMobileView" />
 </template>
 
@@ -202,8 +211,27 @@ onMounted(() => {
 <style scoped>
 .cir-ele-btn{
     position: absolute;
-    right: 2rem;
+    right: 1.5rem;
     bottom: 15rem;
+    z-index: 100;
+    background-color: var(--bg-toggle-btn-primary);
+    color: white;
+    border-radius: 100%;
+    font-size: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: 0.3s;
+    padding: 1rem;
+    height: 4rem;
+    width: 4rem;
+}
+
+.select-mul-btn{
+    position: absolute;
+    left: 1.5rem;
+    bottom: 2rem;
     z-index: 100;
     background-color: var(--bg-toggle-btn-primary);
     color: white;
