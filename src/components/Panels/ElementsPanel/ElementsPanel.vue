@@ -1,6 +1,6 @@
 <template>
     <div
-        ref="ElementsPanel"
+        ref="elementsPanelRef"
         class="noSelect defaultCursor draggable-panel draggable-panel-css modules ce-panel elementPanel"
     >
         <PanelHeader
@@ -141,14 +141,17 @@
 
 <script lang="ts" setup>
 import PanelHeader from '../Shared/PanelHeader.vue'
-import metadata from '#/simulator/src/metadata.json'
+import { elementHierarchy } from '#/simulator/src/metadata'
 import { simulationArea } from '#/simulator/src/simulationArea'
 import { uxvar } from '#/simulator/src/ux'
 import modules from '#/simulator/src/modules'
-import { onBeforeMount, ref } from 'vue'
+import { onBeforeMount, onMounted, ref } from 'vue'
+import { useLayoutStore } from '#/store/layoutStore'
 var panelData = []
-window.elementHierarchy = metadata.elementHierarchy
 window.elementPanelList = []
+const layoutStore = useLayoutStore()
+
+const elementsPanelRef = ref<HTMLElement | null>(null);
 
 onBeforeMount(() => {
     for (const category in elementHierarchy) {
@@ -165,6 +168,10 @@ onBeforeMount(() => {
     }
 })
 
+onMounted(() => {
+    layoutStore.elementsPanelRef = elementsPanelRef.value
+})
+
 function getImgUrl(elementName) {
     const elementImg = new URL(
         `../../../assets/img/${elementName}.svg`,
@@ -175,7 +182,7 @@ function getImgUrl(elementName) {
 
 var elementInput = ref('')
 function searchElements() {
-    if (!elementInput) return []
+    if (!elementInput.value) return []
     // logic imported from listener.js
     const result = elementPanelList.filter((ele) =>
         ele.toLowerCase().includes(elementInput.value.toLowerCase())
@@ -237,4 +244,4 @@ function getTooltipText(elementName) {
 .v-expansion-panel-title {
     min-height: 36px;
 }
-</style>
+</style>#/simulator/src/metadata
