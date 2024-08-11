@@ -63,10 +63,10 @@ export const setUserKeys = () => {
     if (localStorage.defaultKeys) localStorage.removeItem('defaultKeys')
     let userKeys = {}
     let x = 0
-    while ($('#preference').children()[x]) {
+    while (document.getElementById('#preference').children()[x]) {
         userKeys[
-            $('#preference').children()[x].children[1].children[0].innerText
-        ] = $('#preference').children()[x].children[1].children[1].innerText
+            document.getElementById('#preference').children()[x].children[1].children[0].innerText
+        ] = document.getElementById('#preference').children()[x].children[1].children[1].innerText
         x++
     }
     localStorage.set('userKeys', userKeys)
@@ -103,23 +103,23 @@ export const setDefault = () => {
  */
 export const warnOverride = (combo, target, warning) => {
     let x = 0
-    while ($('#preference').children()[x]) {
+    while (document.getElementById('#preference').children()[x]) {
         if (
-            $('#preference').children()[x].children[1].children[1].innerText ===
-                combo &&
-            $('#preference').children()[x].children[1].children[0].innerText !==
-                target.previousElementSibling.innerText
+            document.getElementById('#preference').children()[x].children[1].children[1].innerText ===
+            combo &&
+            document.getElementById('#preference').children()[x].children[1].children[0].innerText !==
+            target.previousElementSibling.innerText
         ) {
             const assignee =
-                $('#preference').children()[x].children[1].children[0].innerText
+                document.getElementById('#preference').children()[x].children[1].children[0].innerText
             // $('#warning').text(
             //     `This key(s) is already assigned to: ${assignee}, press Enter to override.`
             // )
             warning.value = `This key(s) is already assigned to: ${assignee}, press Enter to override.`
-            $('#edit').css('border', '1.5px solid #dc5656')
+            document.getElementById('#edit').style.border = '1.5px solid #dc5656'
             return
         } else {
-            $('#edit').css('border', 'none')
+            document.getElementById('#edit').style.border = 'none'
         }
         x++
     }
@@ -128,7 +128,7 @@ export const warnOverride = (combo, target, warning) => {
 export const elementDirection = (direct) => () => {
     if (simulationArea.lastSelected) {
         simulationArea.lastSelected.newDirection(direct.toUpperCase())
-        $("select[name |= 'newDirection']").val(direct.toUpperCase())
+        document.querySelector("select[name |= 'newDirection']").value = direct.toUpperCase()
         updateSystem()
     }
 }
@@ -139,18 +139,18 @@ export const labelDirection = (direct) => () => {
         !simulationArea.lastSelected.labelDirectionFixed
     ) {
         simulationArea.lastSelected.labelDirection = direct.toUpperCase()
-        $("select[name |= 'newLabelDirection']").val(direct.toUpperCase())
+        document.querySelector("select[name |= 'newLabelDirection']").value = direct.toUpperCase()
         updateSystem()
     }
 }
 
 export const insertLabel = () => {
     if (simulationArea.lastSelected) {
-        $("input[name |= 'setLabel']").focus()
-        $("input[name |= 'setLabel']").val().length
+        document.querySelector("input[name |= 'setLabel']").focus()
+        document.querySelector("input[name |= 'setLabel']").value.length
             ? null
-            : $("input[name |= 'setLabel']").val('Untitled')
-        $("input[name |= 'setLabel']").select()
+            : document.querySelector("input[name |= 'setLabel']").value('Untitled')
+        document.querySelector("input[name |= 'setLabel']").select()
         updateSystem()
     }
 }
@@ -175,10 +175,14 @@ export const moveElement = (direct) => () => {
     }
 }
 
-export const openHotkey = () => $('#customShortcut').trigger('click')
+export const openHotkey = () => document.querySelector('#customShortcut').click()
 
-export const createNewCircuitScopeCall = () =>
-    $('#createNewCircuitScope').trigger('click') // TODO: remove later
+export const createNewCircuitScopeCall = () => {
+    const createNewCircuitScopeElement = document.querySelector('#createNewCircuitScope');
+    if (createNewCircuitScopeElement) {
+        createNewCircuitScopeElement.click();
+    }
+} // TODO: remove later
 
 export const openDocumentation = () => {
     if (
