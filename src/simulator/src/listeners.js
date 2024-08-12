@@ -49,6 +49,7 @@ export default function startListeners() {
     $('#projectName').on('click', () => {
         simulationArea.lastSelected = globalScope.root
         setTimeout(() => {
+            document.querySelector('#moduleProperty .maximize').click()
             document.getElementById('projname').select()
         }, 100)
     })
