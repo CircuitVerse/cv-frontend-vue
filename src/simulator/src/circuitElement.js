@@ -646,7 +646,7 @@ export default class CircuitElement {
     /**
         Draws element in layout mode (inside the subcircuit)
         @param {number} xOffset - x position of the subcircuit
-        @param {number} yOffset - y position of the subcircuit 
+        @param {number} yOffset - y position of the subcircuit
 
         Called by subcirucit.js/customDraw() - for drawing as a part of another circuit
         and layoutMode.js/renderLayout() -  for drawing in layoutMode
@@ -931,6 +931,18 @@ export default class CircuitElement {
                     this.nodeList[i].value = undefined
                     simulationArea.simulationQueue.add(this.nodeList[i])
                 }
+            }
+        }
+    }
+
+    /**
+     * Sets isValueUpstream for all output nodes of the
+     * element.
+     * */
+    setOutputsUpstream(bool) {
+        for (let i = 0; i < this.nodeList.length; i++) {
+            if (this.nodeList[i].type === NODE_OUTPUT) {
+                this.nodeList[i].isValueUpstream = bool;
             }
         }
     }

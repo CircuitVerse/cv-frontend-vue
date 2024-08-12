@@ -30,6 +30,7 @@ export default class Ground extends CircuitElement {
     resolve() {
         this.output1.value = 0
         simulationArea.simulationQueue.add(this.output1)
+        this.setOutputsUpstream(true);
     }
 
     /**

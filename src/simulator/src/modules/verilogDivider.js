@@ -108,6 +108,8 @@ export default class verilogDivider extends CircuitElement {
             (32 - this.outputBitWidth)
         simulationArea.simulationQueue.add(this.quotient)
         simulationArea.simulationQueue.add(this.remainder)
+
+        this.setOutputsUpstream(true);
     }
 }
 

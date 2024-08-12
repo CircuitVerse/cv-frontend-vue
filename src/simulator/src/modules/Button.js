@@ -57,6 +57,8 @@ export default class Button extends CircuitElement {
             this.output1.value = this.state
         }
         simulationArea.simulationQueue.add(this.output1)
+
+        this.setOutputsUpstream(true);
     }
 
     /**
@@ -138,7 +140,7 @@ export default class Button extends CircuitElement {
     /*
     module Button${i}(out);
       output reg out;
-    
+
       initial begin
         //do something with the button here
       end

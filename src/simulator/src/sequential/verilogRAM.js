@@ -476,6 +476,8 @@ export default class verilogRAM extends CircuitElement {
             this.readDffEnPolarity,
             this.numRead
         )
+
+        this.setOutputsUpstream(true);
     }
 
     customDraw() {
