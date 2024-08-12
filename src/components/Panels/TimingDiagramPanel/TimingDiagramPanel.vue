@@ -1,5 +1,5 @@
 <template>
-    <div class="timing-diagram-panel draggable-panel">
+    <div class="timing-diagram-panel draggable-panel" ref="timingDiagramPanelRef">
         <!-- Timing Diagram Panel -->
         <PanelHeader
             :header-title="$t('simulator.panel_header.timing_diagram')"
@@ -42,13 +42,14 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import _plotArea from '#/simulator/src/plotArea'
 import { timingDiagramButtonActions } from '#/simulator/src/plotArea'
 import TimingDiagramButtons from './TimingDiagramButtons.vue'
 import buttonsJSON from '#/assets/constants/Panels/TimingDiagramPanel/buttons.json'
 import PanelHeader from '../Shared/PanelHeader.vue'
 import { sh } from '#/simulator/src/plotArea.js'
+import { useLayoutStore } from '#/store/layoutStore'
 
 interface TimingDiagramButton {
     title: string
@@ -67,6 +68,12 @@ const buttons = ref<TimingDiagramButton[]>(buttonsJSON)
 const cycleUnits = ref(1000)
 const plotWidth = ref(sh(560));
 const plotHeight = ref(sh(25));
+const timingDiagramPanelRef = ref<HTMLElement | null>(null);
+const layoutStore = useLayoutStore()
+
+onMounted(() => {
+    layoutStore.timingDiagramPanelRef = timingDiagramPanelRef.value
+})
 
 function handleButtonClick(button: string) {
     if(globalScope?.Flag.length === 0) {
