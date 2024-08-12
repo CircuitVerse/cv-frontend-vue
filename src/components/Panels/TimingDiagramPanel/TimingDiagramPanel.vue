@@ -65,17 +65,17 @@ interface PlotArea {
 const plotArea: PlotArea = _plotArea
 const buttons = ref<TimingDiagramButton[]>(buttonsJSON)
 const cycleUnits = ref(1000)
-const plotWidth = ref(sh(750));
+const plotWidth = ref(sh(560));
 const plotHeight = ref(sh(25));
 
 function handleButtonClick(button: string) {
     if(globalScope?.Flag.length === 0) {
         plotHeight.value = sh(25);
-        plotWidth.value = sh(750);
+        plotWidth.value = sh(560);
         return;
     };
     if (button === 'smaller') {
-        plotWidth.value = Math.max(plotWidth.value - sh(20), sh(750));
+        plotWidth.value = Math.max(plotWidth.value - sh(20), sh(560));
     } else if (button === 'larger') {
         plotWidth.value += sh(20);
     } else if (button === 'smallHeight') {
