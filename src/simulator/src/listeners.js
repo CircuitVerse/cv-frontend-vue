@@ -46,6 +46,57 @@ let centreY;
 
 var isIe = (navigator.userAgent.toLowerCase().indexOf('msie') != -1 || navigator.userAgent.toLowerCase().indexOf('trident') != -1);
 
+/* Function to getCoordinate
+    *If touch is enable then it will return touch coordinate
+    *else it will return mouse coordinate
+ */
+function getCoordinate(e) {
+    if (simulationArea.touch) {
+        returnCoordinate.x = e.touches[0].clientX;
+        returnCoordinate.y = e.touches[0].clientY;
+        return returnCoordinate;
+    }
+    if (!simulationArea.touch) {
+        returnCoordinate.x = e.clientX;
+        returnCoordinate.y = e.clientY;
+        return returnCoordinate;
+    }
+    return returnCoordinate;
+}
+/* Function for Panstop on simulator
+   *For now variable name starts with mouse like mouseDown are used both
+    touch and mouse will change in future
+*/
+function pinchZoom(e) {
+    gridUpdateSet(true);
+    scheduleUpdate();
+    updateSimulationSet(true);
+    updatePositionSet(true);
+    updateCanvasSet(true);
+    // calculating distance between touch to see if its pinchIN or pinchOut
+    distance = Math.sqrt((e.touches[1].clientX - e.touches[0].clientX) * (e.touches[1].clientX - e.touches[0].clientX), (e.touches[1].clientY - e.touches[0].clientY) * (e.touches[1].clientY - e.touches[0].clientY));
+    centreX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+    centreY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+    if (distance >= currDistance) {
+        pinchZ += 0.05;
+        currDistance = distance;
+    } else if (currDistance >= distance) {
+        pinchZ -= 0.05;
+        currDistance = distance;
+    }
+    if (pinchZ >= 4.5) {
+        pinchZ = 4.5;
+    } else if (pinchZ <= 1) {
+        pinchZ = 1;
+    }
+    globalScope.scale = Math.max(0.5, Math.min(4 * DPR, pinchZ * 2));
+    globalScope.scale = Math.round(globalScope.scale * 10) / 10;
+    globalScope.ox -= Math.round(centreX * (globalScope.scale - oldScale));
+    globalScope.oy -= Math.round(centreY * (globalScope.scale - oldScale));
+    gridUpdateSet(true);
+    scheduleUpdate(1);
+}
+
 /*
  *Function to start the pan in simulator
  *Works for both touch and Mouse
@@ -127,11 +178,6 @@ export function panMove(e) {
     }
 }
 
-/* Function for Panstop on simulator
-   *For now variable name starts with mouse like mouseDown are used both
-    touch and mouse will change in future
-*/
-
 export function panStop() {
     simulationArea.mouseDown = false;
     if (!lightMode) {
@@ -168,57 +214,6 @@ export function panStop() {
         uxvar.smartDropXX = simulationArea.mouseX + 100; // Math.round(((simulationArea.mouseRawX - globalScope.ox+100) / globalScope.scale) / unit) * unit;
         uxvar.smartDropYY = simulationArea.mouseY - 50; // Math.round(((simulationArea.mouseRawY - globalScope.oy+100) / globalScope.scale) / unit) * unit;
     }
-}
-
-/* Function to getCoordinate
-    *If touch is enable then it will return touch coordinate
-    *else it will return mouse coordinate
- */
-function getCoordinate(e) {
-    if (simulationArea.touch) {
-        returnCoordinate.x = e.touches[0].clientX;
-        returnCoordinate.y = e.touches[0].clientY;
-        return returnCoordinate;
-    }
-    if (!simulationArea.touch) {
-        returnCoordinate.x = e.clientX;
-        returnCoordinate.y = e.clientY;
-        return returnCoordinate;
-    }
-}
-
-/* Function for Pinch zoom
-    *This function is used to ZoomIN and Zoomout on Simulator
-*/
-function pinchZoom(e) {
-    gridUpdateSet(true);
-    scheduleUpdate();
-    updateSimulationSet(true);
-    updatePositionSet(true);
-    updateCanvasSet(true);
-    distance = Math.sqrt(
-        (e.touches[1].clientX - e.touches[0].clientX) * (e.touches[1].clientX - e.touches[0].clientX),
-        (e.touches[1].clientY - e.touches[0].clientY) * (e.touches[1].clientY - e.touches[0].clientY));
-    centreX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-    centreY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-    if (distance >= currDistance) {
-        pinchZ += 0.05;
-        currDistance = distance;
-    } else if (currDistance >= distance) {
-        pinchZ -= 0.05;
-        currDistance = distance;
-    }
-    if (pinchZ >= 4.5) {
-        pinchZ = 4.5;
-    } else if (pinchZ <= 1) {
-        pinchZ = 1;
-    }
-    globalScope.scale = Math.max(0.5, Math.min(4 * DPR, pinchZ * 2));
-    globalScope.scale = Math.round(globalScope.scale * 10) / 10;
-    globalScope.ox -= Math.round(centreX * (globalScope.scale - oldScale));
-    globalScope.oy -= Math.round(centreY * (globalScope.scale - oldScale));
-    gridUpdateSet(true);
-    scheduleUpdate(1);
 }
 
 export default function startListeners() {
