@@ -1,5 +1,6 @@
 /* eslint-disable no-multi-assign */
 /* eslint-disable no-bitwise */
+/* eslint-disable */
 import { scheduleUpdate } from './engine'
 import { simulationArea } from './simulationArea'
 import {
@@ -479,8 +480,8 @@ export default class CircuitElement {
      * NOT OVERRIDABLE
      */
     isHover() {
-        var mX = simulationArea.touch ? simulationArea.mouseX - this.x : simulationArea.mouseXf - this.x;
-        var mY = simulationArea.touch ? this.y - simulationArea.mouseY : this.y - simulationArea.mouseYf;
+        var mX = simulationArea.touch ? simulationArea.mouseDownX - this.x : simulationArea.mouseXf - this.x;
+        var mY = simulationArea.touch ? this.y - simulationArea.mouseDownY : this.y - simulationArea.mouseYf;
 
         var rX = this.rightDimensionX
         var lX = this.leftDimensionX

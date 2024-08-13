@@ -1,5 +1,5 @@
 <template>
-    <div class="timing-diagram-panel draggable-panel" ref="timingDiagramPanelRef">
+    <div class="timing-diagram-panel draggable-panel" ref="timingDiagramPanelRef" id="time-Diagram">
         <!-- Timing Diagram Panel -->
         <PanelHeader
             :header-title="$t('simulator.panel_header.timing_diagram')"
