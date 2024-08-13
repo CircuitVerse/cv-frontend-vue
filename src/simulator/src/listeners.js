@@ -1,3 +1,8 @@
+/* eslint-disable no-alert */
+/* eslint-disable no-negated-condition */
+/* eslint-disable complexity */
+/* eslint-disable eqeqeq */
+/* eslint-disable no-var */
 /* eslint-disable quotes */
 /* eslint-disable no-undef */
 /* eslint-disable semi */
@@ -50,30 +55,33 @@ var isIe = (navigator.userAgent.toLowerCase().indexOf('msie') != -1 || navigator
     *If touch is enable then it will return touch coordinate
     *else it will return mouse coordinate
  */
-function getCoordinate(e) {
+export function getCoordinate(e) {
     if (simulationArea.touch) {
         returnCoordinate.x = e.touches[0].clientX;
         returnCoordinate.y = e.touches[0].clientY;
         return returnCoordinate;
     }
+
     if (!simulationArea.touch) {
         returnCoordinate.x = e.clientX;
         returnCoordinate.y = e.clientY;
         return returnCoordinate;
     }
+
     return returnCoordinate;
 }
+
 /* Function for Panstop on simulator
    *For now variable name starts with mouse like mouseDown are used both
     touch and mouse will change in future
 */
-function pinchZoom(e) {
+export function pinchZoom(e) {
     gridUpdateSet(true);
     scheduleUpdate();
     updateSimulationSet(true);
     updatePositionSet(true);
     updateCanvasSet(true);
-    // calculating distance between touch to see if its pinchIN or pinchOut
+    // Calculating distance between touch to see if its pinchIN or pinchOut
     distance = Math.sqrt((e.touches[1].clientX - e.touches[0].clientX) * (e.touches[1].clientX - e.touches[0].clientX), (e.touches[1].clientY - e.touches[0].clientY) * (e.touches[1].clientY - e.touches[0].clientY));
     centreX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
     centreY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
@@ -84,11 +92,13 @@ function pinchZoom(e) {
         pinchZ -= 0.05;
         currDistance = distance;
     }
+
     if (pinchZ >= 4.5) {
         pinchZ = 4.5;
     } else if (pinchZ <= 1) {
         pinchZ = 1;
     }
+
     globalScope.scale = Math.max(0.5, Math.min(4 * DPR, pinchZ * 2));
     globalScope.scale = Math.round(globalScope.scale * 10) / 10;
     globalScope.ox -= Math.round(centreX * (globalScope.scale - oldScale));
@@ -105,31 +115,35 @@ function pinchZoom(e) {
  */
 export function panStart(e) {
     coordinate = getCoordinate(e);
-    simulationArea.mouseDown = true;
-    // Deselect Input
-    if (document.activeElement instanceof HTMLElement) { document.activeElement.blur() }
-    errorDetectedSet(false);
-    updateSimulationSet(true);
-    updatePositionSet(true);
-    updateCanvasSet(true);
-    simulationArea.lastSelected = undefined;
-    simulationArea.selected = false;
-    simulationArea.hover = undefined;
-    var rect = simulationArea.canvas.getBoundingClientRect();
-    simulationArea.mouseDownRawX = (coordinate.x - rect.left) * DPR;
-    simulationArea.mouseDownRawY = (coordinate.y - rect.top) * DPR;
-    simulationArea.mouseDownX = Math.round(((simulationArea.mouseDownRawX - globalScope.ox) / globalScope.scale) / unit) * unit;
-    simulationArea.mouseDownY = Math.round(((simulationArea.mouseDownRawY - globalScope.oy) / globalScope.scale) / unit) * unit;
-    if (simulationArea.touch) {
-        simulationArea.mouseX = simulationArea.mouseDownX;
-        simulationArea.mouseY = simulationArea.mouseDownY;
-    }
-    simulationArea.oldx = globalScope.ox;
-    simulationArea.oldy = globalScope.oy;
-    e.preventDefault();
-    scheduleBackup();
-    scheduleUpdate(1);
-    $('.dropdown.open').removeClass('open');
+	simulationArea.mouseDown = true;
+	// Deselect Input
+	if (document.activeElement instanceof HTMLElement) {
+		document.activeElement.blur()
+	}
+
+	errorDetectedSet(false);
+	updateSimulationSet(true);
+	updatePositionSet(true);
+	updateCanvasSet(true);
+	simulationArea.lastSelected = undefined;
+	simulationArea.selected = false;
+	simulationArea.hover = undefined;
+	var rect = simulationArea.canvas.getBoundingClientRect();
+	simulationArea.mouseDownRawX = (coordinate.x - rect.left) * DPR;
+	simulationArea.mouseDownRawY = (coordinate.y - rect.top) * DPR;
+	simulationArea.mouseDownX = Math.round(((simulationArea.mouseDownRawX - globalScope.ox) / globalScope.scale) / unit) * unit;
+	simulationArea.mouseDownY = Math.round(((simulationArea.mouseDownRawY - globalScope.oy) / globalScope.scale) / unit) * unit;
+	if (simulationArea.touch) {
+		simulationArea.mouseX = simulationArea.mouseDownX;
+		simulationArea.mouseY = simulationArea.mouseDownY;
+	}
+
+	simulationArea.oldx = globalScope.ox;
+	simulationArea.oldy = globalScope.oy;
+	e.preventDefault();
+	scheduleBackup();
+	scheduleUpdate(1);
+	$('.dropdown.open').removeClass('open');
 }
 
 /*
@@ -141,79 +155,84 @@ export function panStart(e) {
  */
 
 export function panMove(e) {
-    // if only one figure it touched
+    // If only one  it touched
     // pan left or right
     if (!simulationArea.touch || e.touches.length === 1) {
-        coordinate = getCoordinate(e);
-        var rect = simulationArea.canvas.getBoundingClientRect();
-        simulationArea.mouseRawX = (coordinate.x - rect.left) * DPR;
-        simulationArea.mouseRawY = (coordinate.y - rect.top) * DPR;
-        simulationArea.mouseXf = (simulationArea.mouseRawX - globalScope.ox) / globalScope.scale;
-        simulationArea.mouseYf = (simulationArea.mouseRawY - globalScope.oy) / globalScope.scale;
-        simulationArea.mouseX = Math.round(simulationArea.mouseXf / unit) * unit;
-        simulationArea.mouseY = Math.round(simulationArea.mouseYf / unit) * unit;
-        updateCanvasSet(true);
-        if (simulationArea.lastSelected && (simulationArea.mouseDown || simulationArea.lastSelected.newElement)) {
-            updateCanvasSet(true);
-            var fn;
+		coordinate = getCoordinate(e);
+		var rect = simulationArea.canvas.getBoundingClientRect();
+		simulationArea.mouseRawX = (coordinate.x - rect.left) * DPR;
+		simulationArea.mouseRawY = (coordinate.y - rect.top) * DPR;
+		simulationArea.mouseXf = (simulationArea.mouseRawX - globalScope.ox) / globalScope.scale;
+		simulationArea.mouseYf = (simulationArea.mouseRawY - globalScope.oy) / globalScope.scale;
+		simulationArea.mouseX = Math.round(simulationArea.mouseXf / unit) * unit;
+		simulationArea.mouseY = Math.round(simulationArea.mouseYf / unit) * unit;
+		updateCanvasSet(true);
+		if (simulationArea.lastSelected && (simulationArea.mouseDown || simulationArea.lastSelected.newElement)) {
+			updateCanvasSet(true);
+			var fn;
 
-            if (simulationArea.lastSelected == globalScope.root) {
-                fn = function () {
-                    updateSelectionsAndPane();
-                };
-            } else {
-                fn = function () {
-                    if (simulationArea.lastSelected) { simulationArea.lastSelected.update(); }
-                };
-            }
-            scheduleUpdate(0, 20, fn);
-        } else {
-            scheduleUpdate(0, 200);
-        }
-    }
-    // if two fingures are touched
-    // pinchZoom
-    if (simulationArea.touch && e.touches.length === 2) {
-        pinchZoom(e);
-    }
+			if (simulationArea.lastSelected == globalScope.root) {
+				fn = function () {
+					updateSelectionsAndPane();
+				};
+			} else {
+				fn = function () {
+					if (simulationArea.lastSelected) {
+						simulationArea.lastSelected.update();
+					}
+				};
+			}
+
+			scheduleUpdate(0, 20, fn);
+		} else {
+			scheduleUpdate(0, 200);
+		}
+	}
+
+	// If two fingures are touched
+	// pinchZoom
+	if (simulationArea.touch && e.touches.length === 2) {
+		pinchZoom(e);
+	}
 }
 
 export function panStop() {
     simulationArea.mouseDown = false;
-    if (!lightMode) {
-        updatelastMinimapShown();
-        setTimeout(removeMiniMap, 2000);
-    }
+	if (!lightMode) {
+		updatelastMinimapShown();
+		setTimeout(removeMiniMap, 2000);
+	}
 
-    errorDetectedSet(false);
-    updateSimulationSet(true);
-    updatePositionSet(true);
-    updateCanvasSet(true);
-    gridUpdateSet(true);
-    wireToBeCheckedSet(1);
+	errorDetectedSet(false);
+	updateSimulationSet(true);
+	updatePositionSet(true);
+	updateCanvasSet(true);
+	gridUpdateSet(true);
+	wireToBeCheckedSet(1);
 
-    scheduleUpdate(1);
-    simulationArea.mouseDown = false;
+	scheduleUpdate(1);
+	simulationArea.mouseDown = false;
 
-    for (var i = 0; i < 2; i++) {
-        updatePositionSet(true);
-        wireToBeCheckedSet(1);
-        update();
-    }
-    errorDetectedSet(false);
-    updateSimulationSet(true);
-    updatePositionSet(true);
-    updateCanvasSet(true);
-    gridUpdateSet(true);
-    wireToBeCheckedSet(1);
+	for (var i = 0; i < 2; i++) {
+		updatePositionSet(true);
+		wireToBeCheckedSet(1);
+		update();
+	}
 
-    scheduleUpdate(1);
-    // var rect = simulationArea.canvas.getBoundingClientRect();
+	errorDetectedSet(false);
+	updateSimulationSet(true);
+	updatePositionSet(true);
+	updateCanvasSet(true);
+	gridUpdateSet(true);
+	wireToBeCheckedSet(1);
 
-    if (!(simulationArea.mouseRawX < 0 || simulationArea.mouseRawY < 0 || simulationArea.mouseRawX > width || simulationArea.mouseRawY > height)) {
-        uxvar.smartDropXX = simulationArea.mouseX + 100; // Math.round(((simulationArea.mouseRawX - globalScope.ox+100) / globalScope.scale) / unit) * unit;
-        uxvar.smartDropYY = simulationArea.mouseY - 50; // Math.round(((simulationArea.mouseRawY - globalScope.oy+100) / globalScope.scale) / unit) * unit;
-    }
+	scheduleUpdate(1);
+	// Var rect = simulationArea.canvas.getBoundingClientRect();
+
+	if (!(simulationArea.mouseRawX < 0 || simulationArea.mouseRawY < 0 || simulationArea.mouseRawX > width || simulationArea.mouseRawY > height)) {
+		uxvar.smartDropXX = simulationArea.mouseX + 100; // Math.round(((simulationArea.mouseRawX - globalScope.ox+100) / globalScope.scale) / unit) * unit;
+		uxvar.smartDropYY = simulationArea.mouseY - 50; // Math.round(((simulationArea.mouseRawY - globalScope.oy+100) / globalScope.scale) / unit) * unit;
+	}
 }
 
 export default function startListeners() {
@@ -222,11 +241,11 @@ export default function startListeners() {
     })
 
     $('#projectName').on('click', () => {
-        simulationArea.lastSelected = globalScope.root
-        setTimeout(() => {
-            document.getElementById('projname').select()
-        }, 100)
-    })
+		simulationArea.lastSelected = globalScope.root;
+		setTimeout(() => {
+			document.getElementById("projname").select();
+		}, 100);
+	});
 
     document
         .getElementById('simulationArea')
