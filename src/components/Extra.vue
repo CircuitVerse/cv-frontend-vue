@@ -39,9 +39,9 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Testbench -->
-    <TestBenchPanel />
+    <TestBenchPanel v-if="!simulatorMobileStore.showMobileView" />
     <!-- --------------------------------------------------------------------------------------------- -->
-    <TestBenchCreator />
+    <TestBenchCreator v-if="!simulatorMobileStore.showMobileView" />
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
@@ -165,7 +165,15 @@
 
     <v-btn
       class="select-mul-btn"
-      @mousedown="() => {}"
+      @mousedown="(e: React.MouseEvent) => {
+        if(simulationArea.shiftDown == false) {
+            simulationArea.shiftDown = true;
+        }
+        else {
+            simulationArea.shiftDown = false;
+            e.preventDefault();
+        }
+      }"
       :style="{bottom: simulatorMobileStore.showElementsPanel ? '10rem' : '2rem'}"
       v-if="simulatorMobileStore.showMobileView"
     >
@@ -194,6 +202,7 @@ import TestBenchPanel from './Panels/TestBenchPanel/TestBenchPanel.vue'
 import TestBenchCreator from './Panels/TestBenchPanel/TestBenchCreator.vue'
 import TestBenchValidator from './Panels/TestBenchPanel/TestBenchValidator.vue'
 import ElementsPanelMobile from './Panels/ElementsPanel/ElementsPanelMobile.vue'
+import { simulationArea } from '#/simulator/src/simulationArea'
 import { useLayoutStore } from '#/store/layoutStore'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { onMounted, ref } from 'vue'
