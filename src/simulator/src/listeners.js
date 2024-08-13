@@ -1,11 +1,15 @@
 /* eslint-disable no-alert */
-/* eslint-disable no-negated-condition */
-/* eslint-disable complexity */
-/* eslint-disable eqeqeq */
+/* eslint-disable no-plusplus */
 /* eslint-disable no-var */
-/* eslint-disable quotes */
+/* eslint-disable vars-on-top */
+/* eslint-disable import/no-named-as-default-member */
+/* eslint-disable func-names */
+/* eslint-disable max-len */
 /* eslint-disable no-undef */
-/* eslint-disable semi */
+/* eslint-disable eqeqeq */
+/* eslint-disable prefer-template */
+/* eslint-disable no-param-reassign */
+/* eslint-disable import/no-cycle */
 // Most Listeners are stored here
 import {
     layoutModeGet,
@@ -37,48 +41,35 @@ import { setupTimingListeners } from './plotArea'
 import {findDimensions} from './canvasApi';
 
 const unit = 10
-var listenToSimulator = true
+let listenToSimulator = true
 let coordinate;
 const returnCoordinate = {
   x: 0,
   y: 0
 }
 
-var currDistance = 0;
-var distance = 0;
-var pinchZ = 0;
-var centreX;
-var centreY;
-var timeout;
-var lastTap = 0;
-var initX
-var initY
-var currX
-var currY
+let currDistance = 0;
+let distance = 0;
+let pinchZ = 0;
+let centreX;
+let centreY;
+let timeout;
+let lastTap = 0;
 
 /**
  *
  * @param {event} e
- * @param {elementId} elementId
- * Function to drag element of selected ID
+ * function for double click or double tap
  */
-
-function dragStart(e, elementId) {
-	initX = e.touches[0].clientX - elementId.offsetLeft;
-	initY = e.touches[0].clientY - elementId.offsetTop;
-}
-
-function dragMove(e, elementId) {
-	currY = e.touches[0].clientY - initY;
-	currX = e.touches[0].clientX - initX;
-
-	elementId.style.left = currX + "px";
-	elementId.style.top = currY + "px";
-}
-
-function dragEnd() {
-	initX = currX;
-	initY = currY;
+function onDoubleClickorTap(e) {
+    updateCanvasSet(true);
+    if (simulationArea.lastSelected && simulationArea.lastSelected.dblclick !== undefined) {
+        simulationArea.lastSelected.dblclick();
+    } else if (!simulationArea.shiftDown) {
+        simulationArea.multipleObjectSelections = [];
+    }
+    scheduleUpdate(2);
+    e.preventDefault();
 }
 
 /**
@@ -87,37 +78,20 @@ function dragEnd() {
  * function to detect tap and double tap
  */
 function getTap(e) {
-	var currentTime = new Date().getTime();
-	var tapLength = currentTime - lastTap;
-	clearTimeout(timeout);
-	if (tapLength < 500 && tapLength > 0) {
-		onDoubleClickorTap(e);
-	} else {
-		// Single tap
-	}
+    const currentTime = new Date().getTime();
+    const tapLength = currentTime - lastTap;
+    clearTimeout(timeout);
+    if (tapLength < 500 && tapLength > 0) {
+        onDoubleClickorTap(e);
+    } else {
+        // Single tap
+    }
 
-	lastTap = currentTime;
-	e.preventDefault();
+    lastTap = currentTime;
+    e.preventDefault();
 }
 
-var isIe = (navigator.userAgent.toLowerCase().indexOf('msie') != -1 || navigator.userAgent.toLowerCase().indexOf('trident') != -1);
-
-/**
- *
- * @param {event} e
- * function for double click or double tap
- */
-function onDoubleClickorTap(e) {
-	updateCanvasSet(true);
-	if (simulationArea.lastSelected && simulationArea.lastSelected.dblclick !== undefined) {
-		simulationArea.lastSelected.dblclick();
-	} else if (!simulationArea.shiftDown) {
-		simulationArea.multipleObjectSelections = [];
-	}
-
-	scheduleUpdate(2);
-	e.preventDefault();
-}
+const isIe = (navigator.userAgent.toLowerCase().indexOf('msie') != -1 || navigator.userAgent.toLowerCase().indexOf('trident') != -1);
 
 /* Function to getCoordinate
     *If touch is enable then it will return touch coordinate
@@ -150,16 +124,18 @@ export function pinchZoom(e, globalScope) {
     updatePositionSet(true);
     updateCanvasSet(true);
     // Calculating distance between touch to see if its pinchIN or pinchOut
-    distance = Math.sqrt((e.touches[1].clientX - e.touches[0].clientX) * (e.touches[1].clientX - e.touches[0].clientX), (e.touches[1].clientY - e.touches[0].clientY) * (e.touches[1].clientY - e.touches[0].clientY));
+    distance = Math.sqrt((e.touches[1].clientX - e.touches[0].clientX)
+        * (e.touches[1].clientX - e.touches[0].clientX), (e.touches[1].clientY - e.touches[0].clientY)
+    * (e.touches[1].clientY - e.touches[0].clientY));
     centreX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
     centreY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-    var rect = simulationArea.canvas.getBoundingClientRect();
-	var RawX = (centreX - rect.left) * DPR;
-	var RawY = (centreY - rect.top) * DPR;
-	var Xf = (RawX - globalScope.ox) / globalScope.scale;
-	var Yf = (RawY - globalScope.oy) / globalScope.scale;
-	var currCentreX = Math.round(Xf / unit) * unit;
-	var currCentreY = Math.round(Yf / unit) * unit;
+    const rect = simulationArea.canvas.getBoundingClientRect();
+    const RawX = (centreX - rect.left) * DPR;
+    const RawY = (centreY - rect.top) * DPR;
+    const Xf = (RawX - globalScope.ox) / globalScope.scale;
+    const Yf = (RawY - globalScope.oy) / globalScope.scale;
+    const currCentreX = Math.round(Xf / unit) * unit;
+    const currCentreY = Math.round(Yf / unit) * unit;
     if (distance >= currDistance) {
         pinchZ += 0.03;
         currDistance = distance;
@@ -174,7 +150,7 @@ export function pinchZoom(e, globalScope) {
         pinchZ = 1;
     }
 
-    var oldScale = globalScope.scale;
+    const oldScale = globalScope.scale;
     globalScope.scale = Math.max(0.5, Math.min(4 * DPR, pinchZ * 2));
     globalScope.scale = Math.round(globalScope.scale * 10) / 10;
     globalScope.ox -= Math.round(currCentreX * (globalScope.scale - oldScale));
@@ -204,7 +180,7 @@ export function panStart(e) {
 	simulationArea.lastSelected = undefined;
 	simulationArea.selected = false;
 	simulationArea.hover = undefined;
-	var rect = simulationArea.canvas.getBoundingClientRect();
+	const rect = simulationArea.canvas.getBoundingClientRect();
 	simulationArea.mouseDownRawX = (coordinate.x - rect.left) * DPR;
 	simulationArea.mouseDownRawY = (coordinate.y - rect.top) * DPR;
 	simulationArea.mouseDownX = Math.round(((simulationArea.mouseDownRawX - globalScope.ox) / globalScope.scale) / unit) * unit;
@@ -235,7 +211,7 @@ export function panMove(e) {
     // pan left or right
     if (!simulationArea.touch || e.touches.length === 1) {
 		coordinate = getCoordinate(e);
-		var rect = simulationArea.canvas.getBoundingClientRect();
+		const rect = simulationArea.canvas.getBoundingClientRect();
 		simulationArea.mouseRawX = (coordinate.x - rect.left) * DPR;
 		simulationArea.mouseRawY = (coordinate.y - rect.top) * DPR;
 		simulationArea.mouseXf = (simulationArea.mouseRawX - globalScope.ox) / globalScope.scale;
@@ -245,7 +221,7 @@ export function panMove(e) {
 		updateCanvasSet(true);
 		if (simulationArea.lastSelected && (simulationArea.mouseDown || simulationArea.lastSelected.newElement)) {
 			updateCanvasSet(true);
-			var fn;
+			let fn;
 
 			if (simulationArea.lastSelected == globalScope.root) {
 				fn = function () {
@@ -274,52 +250,50 @@ export function panMove(e) {
 
 export function panStop(e) {
     simulationArea.mouseDown = false;
-	if (!lightMode) {
-		updatelastMinimapShown();
-		setTimeout(removeMiniMap, 2000);
-	}
+    if (!lightMode) {
+        updatelastMinimapShown();
+        setTimeout(removeMiniMap, 2000);
+    }
 
-	errorDetectedSet(false);
-	updateSimulationSet(true);
-	updatePositionSet(true);
-	updateCanvasSet(true);
-	gridUpdateSet(true);
-	wireToBeCheckedSet(1);
+    errorDetectedSet(false);
+    updateSimulationSet(true);
+    updatePositionSet(true);
+    updateCanvasSet(true);
+    gridUpdateSet(true);
+    wireToBeCheckedSet(1);
 
-	scheduleUpdate(1);
-	simulationArea.mouseDown = false;
+    scheduleUpdate(1);
+    simulationArea.mouseDown = false;
 
-	for (var i = 0; i < 2; i++) {
-		updatePositionSet(true);
-		wireToBeCheckedSet(1);
-		update();
-	}
+    // eslint-disable-next-line no-plusplus
+    for (let i = 0; i < 2; i++) {
+        updatePositionSet(true);
+        wireToBeCheckedSet(1);
+        update();
+    }
 
-	errorDetectedSet(false);
-	updateSimulationSet(true);
-	updatePositionSet(true);
-	updateCanvasSet(true);
-	gridUpdateSet(true);
-	wireToBeCheckedSet(1);
+    errorDetectedSet(false);
+    updateSimulationSet(true);
+    updatePositionSet(true);
+    updateCanvasSet(true);
+    gridUpdateSet(true);
+    wireToBeCheckedSet(1);
 
-	scheduleUpdate(1);
-	// Var rect = simulationArea.canvas.getBoundingClientRect();
+    scheduleUpdate(1);
+    // Var rect = simulationArea.canvas.getBoundingClientRect();
 
-	if (!(simulationArea.mouseRawX < 0 || simulationArea.mouseRawY < 0 || simulationArea.mouseRawX > width || simulationArea.mouseRawY > height)) {
-		uxvar.smartDropXX = simulationArea.mouseX + 100; // Math.round(((simulationArea.mouseRawX - globalScope.ox+100) / globalScope.scale) / unit) * unit;
-		uxvar.smartDropYY = simulationArea.mouseY - 50; // Math.round(((simulationArea.mouseRawY - globalScope.oy+100) / globalScope.scale) / unit) * unit;
-	}
+    if (!(simulationArea.mouseRawX < 0 || simulationArea.mouseRawY < 0 || simulationArea.mouseRawX > width || simulationArea.mouseRawY > height)) {
+        uxvar.smartDropXX = simulationArea.mouseX + 100; // Math.round(((simulationArea.mouseRawX - globalScope.ox+100) / globalScope.scale) / unit) * unit;
+        uxvar.smartDropYY = simulationArea.mouseY - 50; // Math.round(((simulationArea.mouseRawY - globalScope.oy+100) / globalScope.scale) / unit) * unit;
+    }
 
     if (simulationArea.touch) {
-		// Current circuit element should not spwan above last circuit element
-		findDimensions(globalScope);
-		simulationArea.mouseX = 100 + simulationArea.maxWidth || 0;
-		simulationArea.mouseY = simulationArea.minHeight || 0;
-		getTap(e);
-		if(simulationArea.touch && e.touches.length === 2){
-
-		}
-	}
+        // Current circuit element should not spwan above last circuit element
+        findDimensions(globalScope);
+        simulationArea.mouseX = 100 + simulationArea.maxWidth || 0;
+        simulationArea.mouseY = simulationArea.minHeight || 0;
+        getTap(e);
+    }
 }
 
 export default function startListeners() {
@@ -746,9 +720,9 @@ export default function startListeners() {
 }
 
 function resizeTabs() {
-    var $windowsize = $('body').width()
-    var $sideBarsize = $('.side').width()
-    var $maxwidth = $windowsize - $sideBarsize
+    const $windowsize = $('body').width()
+    const $sideBarsize = $('.side').width()
+    const $maxwidth = $windowsize - $sideBarsize
     $('#tabsBar div').each(function (e) {
         $(this).css({ 'max-width': $maxwidth - 30 })
     })
@@ -804,8 +778,8 @@ function handleZoom (direction) {
       }
     }
     function sliderZoomButton (direction) {
-      var zoomSlider = $('#customRange1');
-      var currentSliderValue = parseInt(zoomSlider.val(), 10);
+      const zoomSlider = $('#customRange1');
+      let currentSliderValue = parseInt(zoomSlider.val(), 10);
       if (direction === -1) {
         currentSliderValue--;
       } else {
