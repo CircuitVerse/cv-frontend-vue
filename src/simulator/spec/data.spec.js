@@ -1,8 +1,4 @@
-/**
- * @jest-environment jsdom
- */
-
-import CodeMirror from 'codemirror'
+import { describe, test, expect, vi, beforeAll } from 'vitest'
 import { setup } from '../src/setup'
 import load from '../src/data/load'
 import gatesCircuitData from './circuits/gates-circuitdata.json'
@@ -20,12 +16,17 @@ import {
 } from '../src/data/project'
 import createSaveAsImgPrompt from '../src/data/saveImage'
 
-jest.mock('codemirror')
+// Mocking CodeMirror
+vi.mock('codemirror', () => ({
+    fromTextArea: vi.fn(() => ({ setValue: () => {} })),
+}))
 
 describe('data dir working', () => {
-    CodeMirror.fromTextArea.mockReturnValueOnce({ setValue: () => {} })
-    window.confirm = jest.fn(() => true)
-    setup()
+    beforeAll(() => {
+        global.window = global
+        global.window.confirm = vi.fn(() => true)
+        setup()
+    })
 
     test('load gates_circuitData without throwing error', () => {
         expect(() => load(gatesCircuitData)).not.toThrow()
@@ -36,7 +37,7 @@ describe('data dir working', () => {
     })
 
     test('schedule backup working', () => {
-        // toggle states of inputs a dn then run schedule backup
+        // toggle states of inputs and then run schedule backup
         globalScope.Input.forEach((input) => {
             input.state = input.state === 1 ? 0 : 1
             expect(() => scheduleBackup()).not.toThrow()
@@ -44,7 +45,7 @@ describe('data dir working', () => {
     })
 
     test('check if backup performed', () => {
-        expect(() => checkIfBackup(globalScope)).toBeTruthy()
+        expect(checkIfBackup(globalScope)).toBeTruthy()
     })
 
     test('undo working', () => {
@@ -108,9 +109,9 @@ describe('data dir working', () => {
         // open dialog
         openOffline()
         // click on first input
-        $('#openProjectDialog input')[0].click()
+        document.querySelector('#openProjectDialog input').click()
         // click on open button
-        $('#Open_offline_btn')[0].click()
+        document.querySelector('#Open_offline_btn').click()
         // it should load the offline saved project
         expect(globalScope.id).toBe(11597572508)
     })

@@ -9,7 +9,8 @@
         "preview": "vite preview",
         "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src",
         "format": "prettier .  --write",
-        "postinstall": "husky install"
+        "postinstall": "husky install",
+        "test": "vitest"
     },
     "dependencies": {
         "@fortawesome/fontawesome-free": "^6.5.1",
@@ -23,12 +24,15 @@
         "@tiptap/starter-kit": "^2.0.3",
         "@tiptap/vue-3": "^2.0.3",
         "bootstrap": "^4.6.1",
+        "bootstrap-input-spinner": "^4.0.1",
         "canvas-to-svg": "^1.0.3",
         "codemirror": "^5.65.1",
         "codemirror-editor-vue3": "^2.1.7",
         "dom-to-image": "^2.6.0",
         "driver.js": "^0.9.8",
         "esbuild": "^0.14.45",
+        "happy-dom": "^14.12.3",
+        "identity-obj-proxy": "^3.0.0",
         "interactjs": "^1.10.17",
         "jquery": "^3.6.0",
         "pinia": "^2.0.14",
@@ -56,6 +60,7 @@
         "typescript": "^4.5.4",
         "vite": "^2.9.18",
         "vite-plugin-vuetify": "^1.0.0-alpha.0",
+        "vitest": "^2.0.5",
         "vue-cli-plugin-vuetify": "~2.5.1",
         "vue-tsc": "^0.34.7"
     },
