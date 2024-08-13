@@ -1,5 +1,5 @@
 <template>
-    <div class="quick-btn" @ondragover="dragover">
+    <div class="quick-btn" id='quick-btn-id' @ondragover="dragover">
         <div id="dragQPanel" class="panel-drag">
             <!-- <DragSvgDots /> -->
             <div class="drag-dot-svg"></div>

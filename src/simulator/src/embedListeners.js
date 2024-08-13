@@ -1,3 +1,4 @@
+/* eslint-disable max-depth */
 /* eslint-disable import/no-cycle */
 // Listeners when circuit is embedded
 // Refer listeners.js
@@ -250,6 +251,7 @@ export default function startListeners() {
     }
 }
 
+// eslint-disable-next-line no-unused-vars
 var isIe =
     navigator.userAgent.toLowerCase().indexOf('msie') != -1 ||
     navigator.userAgent.toLowerCase().indexOf('trident') != -1

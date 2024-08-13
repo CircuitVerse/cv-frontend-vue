@@ -34,6 +34,7 @@ import redo from './data/redo'
 import { copy, paste, selectAll } from './events'
 import { verilogModeGet } from './Verilog2CV'
 import { setupTimingListeners } from './plotArea'
+import {findDimensions} from './canvasApi';
 
 const unit = 10
 var listenToSimulator = true
@@ -43,13 +44,80 @@ const returnCoordinate = {
   y: 0
 }
 
-let currDistance = 0;
-let distance = 0;
-let pinchZ = 0;
-let centreX;
-let centreY;
+var currDistance = 0;
+var distance = 0;
+var pinchZ = 0;
+var centreX;
+var centreY;
+var timeout;
+var lastTap = 0;
+var initX
+var initY
+var currX
+var currY
+
+/**
+ *
+ * @param {event} e
+ * @param {elementId} elementId
+ * Function to drag element of selected ID
+ */
+
+function dragStart(e, elementId) {
+	initX = e.touches[0].clientX - elementId.offsetLeft;
+	initY = e.touches[0].clientY - elementId.offsetTop;
+}
+
+function dragMove(e, elementId) {
+	currY = e.touches[0].clientY - initY;
+	currX = e.touches[0].clientX - initX;
+
+	elementId.style.left = currX + "px";
+	elementId.style.top = currY + "px";
+}
+
+function dragEnd() {
+	initX = currX;
+	initY = currY;
+}
+
+/**
+ *
+ * @param {event} e
+ * function to detect tap and double tap
+ */
+function getTap(e) {
+	var currentTime = new Date().getTime();
+	var tapLength = currentTime - lastTap;
+	clearTimeout(timeout);
+	if (tapLength < 500 && tapLength > 0) {
+		onDoubleClickorTap(e);
+	} else {
+		// Single tap
+	}
+
+	lastTap = currentTime;
+	e.preventDefault();
+}
 
 var isIe = (navigator.userAgent.toLowerCase().indexOf('msie') != -1 || navigator.userAgent.toLowerCase().indexOf('trident') != -1);
+
+/**
+ *
+ * @param {event} e
+ * function for double click or double tap
+ */
+function onDoubleClickorTap(e) {
+	updateCanvasSet(true);
+	if (simulationArea.lastSelected && simulationArea.lastSelected.dblclick !== undefined) {
+		simulationArea.lastSelected.dblclick();
+	} else if (!simulationArea.shiftDown) {
+		simulationArea.multipleObjectSelections = [];
+	}
+
+	scheduleUpdate(2);
+	e.preventDefault();
+}
 
 /* Function to getCoordinate
     *If touch is enable then it will return touch coordinate
@@ -75,7 +143,7 @@ export function getCoordinate(e) {
    *For now variable name starts with mouse like mouseDown are used both
     touch and mouse will change in future
 */
-export function pinchZoom(e) {
+export function pinchZoom(e, globalScope) {
     gridUpdateSet(true);
     scheduleUpdate();
     updateSimulationSet(true);
@@ -85,24 +153,32 @@ export function pinchZoom(e) {
     distance = Math.sqrt((e.touches[1].clientX - e.touches[0].clientX) * (e.touches[1].clientX - e.touches[0].clientX), (e.touches[1].clientY - e.touches[0].clientY) * (e.touches[1].clientY - e.touches[0].clientY));
     centreX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
     centreY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+    var rect = simulationArea.canvas.getBoundingClientRect();
+	var RawX = (centreX - rect.left) * DPR;
+	var RawY = (centreY - rect.top) * DPR;
+	var Xf = (RawX - globalScope.ox) / globalScope.scale;
+	var Yf = (RawY - globalScope.oy) / globalScope.scale;
+	var currCentreX = Math.round(Xf / unit) * unit;
+	var currCentreY = Math.round(Yf / unit) * unit;
     if (distance >= currDistance) {
-        pinchZ += 0.05;
+        pinchZ += 0.03;
         currDistance = distance;
     } else if (currDistance >= distance) {
-        pinchZ -= 0.05;
+        pinchZ -= 0.03;
         currDistance = distance;
     }
 
-    if (pinchZ >= 4.5) {
-        pinchZ = 4.5;
+    if (pinchZ >= 2) {
+        pinchZ = 2;
     } else if (pinchZ <= 1) {
         pinchZ = 1;
     }
 
+    var oldScale = globalScope.scale;
     globalScope.scale = Math.max(0.5, Math.min(4 * DPR, pinchZ * 2));
     globalScope.scale = Math.round(globalScope.scale * 10) / 10;
-    globalScope.ox -= Math.round(centreX * (globalScope.scale - oldScale));
-    globalScope.oy -= Math.round(centreY * (globalScope.scale - oldScale));
+    globalScope.ox -= Math.round(currCentreX * (globalScope.scale - oldScale));
+    globalScope.oy -= Math.round(currCentreY * (globalScope.scale - oldScale));
     gridUpdateSet(true);
     scheduleUpdate(1);
 }
@@ -192,11 +268,11 @@ export function panMove(e) {
 	// If two fingures are touched
 	// pinchZoom
 	if (simulationArea.touch && e.touches.length === 2) {
-		pinchZoom(e);
+		pinchZoom(e, globalScope);
 	}
 }
 
-export function panStop() {
+export function panStop(e) {
     simulationArea.mouseDown = false;
 	if (!lightMode) {
 		updatelastMinimapShown();
@@ -232,6 +308,17 @@ export function panStop() {
 	if (!(simulationArea.mouseRawX < 0 || simulationArea.mouseRawY < 0 || simulationArea.mouseRawX > width || simulationArea.mouseRawY > height)) {
 		uxvar.smartDropXX = simulationArea.mouseX + 100; // Math.round(((simulationArea.mouseRawX - globalScope.ox+100) / globalScope.scale) / unit) * unit;
 		uxvar.smartDropYY = simulationArea.mouseY - 50; // Math.round(((simulationArea.mouseRawY - globalScope.oy+100) / globalScope.scale) / unit) * unit;
+	}
+
+    if (simulationArea.touch) {
+		// Current circuit element should not spwan above last circuit element
+		findDimensions(globalScope);
+		simulationArea.mouseX = 100 + simulationArea.maxWidth || 0;
+		simulationArea.mouseY = simulationArea.minHeight || 0;
+		getTap(e);
+		if(simulationArea.touch && e.touches.length === 2){
+
+		}
 	}
 }
 
@@ -504,20 +591,9 @@ export default function startListeners() {
         true
     )
 
-    document
-        .getElementById('simulationArea')
-        .addEventListener('dblclick', (e) => {
-            updateCanvasSet(true)
-            if (
-                simulationArea.lastSelected &&
-                simulationArea.lastSelected.dblclick !== undefined
-            ) {
-                simulationArea.lastSelected.dblclick()
-            } else if (!simulationArea.shiftDown) {
-                simulationArea.multipleObjectSelections = []
-            }
-            scheduleUpdate(2)
-        })
+    document.getElementById('simulationArea').addEventListener('dblclick', e => {
+		onDoubleClickorTap(e);
+	});
 
     document
         .getElementById('simulationArea')
