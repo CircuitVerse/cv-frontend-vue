@@ -4,9 +4,6 @@
       class="noSelect defaultCursor draggable-panel-mobile draggable-panel-css modules ce-panel elementPanel elementsPanelMobile"
       :style="{bottom: simulatorMobileStore.showElementsPanel ? '0' : '-12rem'}"
   >
-      <!-- <PanelHeader
-          :header-title="$t('simulator.panel_header.circuit_elements')"
-      /> -->
       <div class="panel-body" style="padding: 0;">
           <div style="position: relative" class="search-container">
               <input
@@ -25,110 +22,6 @@
                   ></i
               ></span>
           </div>
-          <!-- <div
-              v-if="elementInput && searchElements().length"
-              class="search-results"
-          >
-              <div
-                  v-for="element in searchElements()"
-                  :id="element.name"
-                  :key="element.name"
-                  :title="element.label"
-                  class="icon logixModules"
-                  @click="createElement(element.name)"
-                  @mousedown="createElement(element.name)"
-                  @mouseover="getTooltipText(element.name)"
-                  @mouseleave="tooltipText = 'null'"
-              >
-                  <img :src="element.imgURL" :alt="element.name" />
-              </div>
-          </div> -->
-          <!-- <v-expansion-panels
-              v-if="elementInput && searchCategories().length"
-              id="menu"
-              class="accordion"
-              variant="accordion"
-          >
-              <v-expansion-panel
-                  v-for="category in searchCategories()"
-                  :key="category[0]"
-              >
-                  <v-expansion-panel-title>
-                      {{
-                          $t(
-                              'simulator.panel_body.circuit_elements.expansion_panel_title.' +
-                                  category[0]
-                          )
-                      }}
-                  </v-expansion-panel-title>
-                  <v-expansion-panel-text eager>
-                      <div class="panel customScroll">
-                          <div
-                              v-for="element in category[1]"
-                              :id="element.name"
-                              :key="element"
-                              :title="element.label"
-                              class="icon logixModules"
-                              @click="createElement(element.name)"
-                              @mousedown="createElement(element.name)"
-                              @mouseover="getTooltipText(element.name)"
-                              @mouseleave="tooltipText = 'null'"
-                          >
-                              <img
-                                  :src="element.imgURL"
-                                  :alt="element.name"
-                              />
-                          </div>
-                      </div>
-                  </v-expansion-panel-text>
-              </v-expansion-panel>
-          </v-expansion-panels> -->
-          <!-- <div
-              v-if="elementInput && !searchElements().length && !searchCategories().length"
-              class="search-results"
-          >
-              {{ $t('simulator.panel_body.circuit_elements.search_result') }}
-          </div> -->
-          <!-- <v-expansion-panels
-              v-if="!elementInput"
-              id="menu"
-              class="accordion"
-              variant="accordion"
-          >
-              <v-expansion-panel
-                  v-for="category in panelData"
-                  :key="category[0]"
-              >
-                  <v-expansion-panel-title>
-                      {{
-                          $t(
-                              'simulator.panel_body.circuit_elements.expansion_panel_title.' +
-                                  category[0]
-                          )
-                      }}
-                  </v-expansion-panel-title>
-                  <v-expansion-panel-text eager>
-                      <div class="panel customScroll">
-                          <div
-                              v-for="element in category[1]"
-                              :id="element.name"
-                              :key="element"
-                              :title="element.label"
-                              class="icon logixModules"
-                              @click="createElement(element.name)"
-                              @mousedown="createElement(element.name)"
-                              @mouseover="getTooltipText(element.name)"
-                              @mouseleave="tooltipText = 'null'"
-                          >
-                              <img
-                                  :src="element.imgURL"
-                                  :alt="element.name"
-                              />
-                          </div>
-                      </div>
-                  </v-expansion-panel-text>
-              </v-expansion-panel>
-          </v-expansion-panels> -->
 
           <div class="element-category-tabs">
             <div
@@ -173,7 +66,6 @@
 </template>
 
 <script lang="ts" setup>
-import PanelHeader from '../Shared/PanelHeader.vue'
 import { elementHierarchy } from '#/simulator/src/metadata'
 import { simulationArea } from '#/simulator/src/simulationArea'
 import { uxvar } from '#/simulator/src/ux'
@@ -233,46 +125,6 @@ function getImgUrl(elementName) {
 }
 
 var elementInput = ref('')
-function searchElements() {
-  if (!elementInput.value) return []
-  // logic imported from listener.js
-  const result = elementPanelList.filter((ele) =>
-      ele.toLowerCase().includes(elementInput.value.toLowerCase())
-  )
-  var finalResult = []
-  for (const j in result) {
-      if (Object.prototype.hasOwnProperty.call(result, j)) {
-          for (const category in elementHierarchy) {
-              if (
-                  Object.prototype.hasOwnProperty.call(
-                      elementHierarchy,
-                      category
-                  )
-              ) {
-                  const categoryData = elementHierarchy[category]
-                  for (let i = 0; i < categoryData.length; i++) {
-                      if (result[j] == categoryData[i].label) {
-                          finalResult.push(categoryData[i])
-                      }
-                  }
-              }
-          }
-      }
-  }
-  return finalResult
-}
-
-function searchCategories() {
-  const result = panelData.filter((category) => {
-      const categoryName = category[0];
-      const categoryNameWords = categoryName.split(' ');
-
-      return categoryNameWords.some((word) =>
-          word.toLowerCase().startsWith(elementInput.value.toLowerCase())
-      );
-  })
-  return result;
-}
 
 function createElement(elementName) {
   if (simulationArea.lastSelected && simulationArea.lastSelected.newElement)

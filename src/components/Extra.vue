@@ -41,9 +41,9 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Testbench -->
-    <TestBenchPanel />
+    <TestBenchPanel v-if="!simulatorMobileStore.showMobileView" />
     <!-- --------------------------------------------------------------------------------------------- -->
-    <TestBenchCreator />
+    <TestBenchCreator v-if="!simulatorMobileStore.showMobileView" />
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
@@ -192,6 +192,23 @@
         <i class="fa-solid fa-wave-square"></i>
     </v-btn>
 
+    <v-btn
+      class="select-mul-btn"
+      @mousedown="(e: React.MouseEvent) => {
+        if(simulationArea.shiftDown == false) {
+            simulationArea.shiftDown = true;
+        }
+        else {
+            simulationArea.shiftDown = false;
+            e.preventDefault();
+        }
+      }"
+      :style="{bottom: simulatorMobileStore.showElementsPanel ? '10rem' : '2rem'}"
+      v-if="simulatorMobileStore.showMobileView"
+    >
+    <i class="fa-solid fa-vector-square"></i>
+    </v-btn>
+
     <ElementsPanelMobile v-if="simulatorMobileStore.showMobileView" />
 </template>
 
@@ -215,10 +232,10 @@ import TestBenchCreator from './Panels/TestBenchPanel/TestBenchCreator.vue'
 import TestBenchValidator from './Panels/TestBenchPanel/TestBenchValidator.vue'
 import QuickButtonMobile from './Navbar/QuickButton/QuickButtonMobile.vue'
 import TimingDiagramMobile from './Panels/TimingDiagramPanel/TimingDiagramMobile.vue'
+import ElementsPanelMobile from './Panels/ElementsPanel/ElementsPanelMobile.vue'
+import { simulationArea } from '#/simulator/src/simulationArea'
 import { useLayoutStore } from '#/store/layoutStore'
 import  { panStart, panMove, panStop } from '#/simulator/src/listeners'
-import { simulationArea } from '#/simulator/src/simulationArea'
-import ElementsPanelMobile from './Panels/ElementsPanel/ElementsPanelMobile.vue'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { onMounted, ref } from 'vue'
 
@@ -235,8 +252,27 @@ onMounted(() => {
 <style scoped>
 .cir-ele-btn{
     position: absolute;
-    right: 2rem;
+    right: 1.5rem;
     bottom: 15rem;
+    z-index: 100;
+    background-color: var(--bg-toggle-btn-primary);
+    color: white;
+    border-radius: 100%;
+    font-size: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: 0.3s;
+    padding: 1rem;
+    height: 4rem;
+    width: 4rem;
+}
+
+.select-mul-btn{
+    position: absolute;
+    left: 1.5rem;
+    bottom: 2rem;
     z-index: 100;
     background-color: var(--bg-toggle-btn-primary);
     color: white;
