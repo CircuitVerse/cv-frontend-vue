@@ -160,7 +160,7 @@
       :style="{bottom: simulatorMobileStore.showElementsPanel ? '10rem' : '2rem'}"
       v-if="simulatorMobileStore.showMobileView"
     >
-        <i class="fa-solid fa-wave-square"></i>
+        <i class="fas fa-bezier-curve"></i>
     </v-btn>
 
     <v-btn
@@ -178,6 +178,29 @@
       v-if="simulatorMobileStore.showMobileView"
     >
     <i class="fa-solid fa-vector-square"></i>
+    </v-btn>
+
+    <v-btn
+      class="select-mul-btn"
+      @mousedown="() => {
+        simulationArea.shiftDown = false;
+        simulatorMobileStore.isCopy = true;
+      }"
+      :style="{bottom: simulatorMobileStore.showElementsPanel ? '16rem' : '8rem'}"
+      v-if="simulatorMobileStore.showMobileView && !simulatorMobileStore.isCopy"
+    >
+    <i class="fa-solid fa-copy"></i>
+    </v-btn>
+
+    <v-btn
+      class="select-mul-btn"
+      @mousedown="() => {
+        simulatorMobileStore.isCopy = false;
+      }"
+      :style="{bottom: simulatorMobileStore.showElementsPanel ? '16rem' : '8rem'}"
+      v-if="simulatorMobileStore.showMobileView && simulatorMobileStore.isCopy"
+    >
+    <i class="fa-solid fa-paste"></i>
     </v-btn>
 
     <ElementsPanelMobile v-if="simulatorMobileStore.showMobileView" />
