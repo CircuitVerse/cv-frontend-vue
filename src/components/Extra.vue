@@ -227,7 +227,17 @@
     <i class="fa-solid fa-paste"></i>
     </v-btn>
 
+    <v-btn
+      class="select-mul-btn"
+      @mousedown="propertiesBtnClick()"
+      :style="{bottom: simulatorMobileStore.showElementsPanel ? '22rem' : '14rem'}"
+      v-if="simulatorMobileStore.showMobileView"
+    >
+    <i class="fa-solid fa-sliders"></i>
+    </v-btn>
+
     <ElementsPanelMobile v-if="simulatorMobileStore.showMobileView" />
+    <PropertiesPanelMobile v-if="simulatorMobileStore.showMobileView" />
 </template>
 
 <script lang="ts" setup>
@@ -251,6 +261,7 @@ import TestBenchValidator from './Panels/TestBenchPanel/TestBenchValidator.vue'
 import QuickButtonMobile from './Navbar/QuickButton/QuickButtonMobile.vue'
 import TimingDiagramMobile from './Panels/TimingDiagramPanel/TimingDiagramMobile.vue'
 import ElementsPanelMobile from './Panels/ElementsPanel/ElementsPanelMobile.vue'
+import PropertiesPanelMobile from './Panels/PropertiesPanel/PropertiesPanelMobile.vue'
 import { simulationArea } from '#/simulator/src/simulationArea'
 import { paste } from '#/simulator/src/events'
 import { useLayoutStore } from '#/store/layoutStore'
@@ -276,6 +287,10 @@ const copyBtnClick = () => {
 const pasteBtnClick = () => {
     paste(localStorage.getItem('clipboardData'));
     simulatorMobileStore.isCopy = false
+}
+
+const propertiesBtnClick = () => {
+    simulatorMobileStore.showPropertiesPanel = !simulatorMobileStore.showPropertiesPanel
 }
 </script>
 

@@ -902,6 +902,7 @@ div.icon img {
 #moduleProperty-inner {
     width: 85%;
     margin: auto;
+    padding: 1rem;
 }
 
 #moduleProperty-header {
