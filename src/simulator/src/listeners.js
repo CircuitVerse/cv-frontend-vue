@@ -81,7 +81,6 @@ function getTap(e) {
     } else {
     // Single tap
     }
-    openCurrMenu(-1);
     lastTap = currentTime;
     e.preventDefault();
 }
@@ -282,13 +281,11 @@ export function panStop(e) {
     }
 
     if (simulationArea.touch) {
-    // small hack so Current circuit element should not spwan above last circuit element
-        if(!isCopy) {
-            findDimensions(globalScope);
-            simulationArea.mouseX = 100 + simulationArea.maxWidth || 0;
-            simulationArea.mouseY = simulationArea.minHeight || 0;
-            getTap(e);
-        }
+        // small hack so Current circuit element should not spwan above last circuit element
+        findDimensions(globalScope);
+        simulationArea.mouseX = 100 + simulationArea.maxWidth || 0;
+        simulationArea.mouseY = simulationArea.minHeight || 0;
+        getTap(e);
     }
 }
 
