@@ -1,11 +1,11 @@
-/* eslint-disable no-alert */
+/* eslint-disable no-shadow */
 /* eslint-disable no-negated-condition */
-/* eslint-disable complexity */
-/* eslint-disable eqeqeq */
-/* eslint-disable no-var */
-/* eslint-disable quotes */
+/* eslint-disable no-alert */
+/* eslint-disable new-cap */
 /* eslint-disable no-undef */
-/* eslint-disable semi */
+/* eslint-disable eqeqeq */
+/* eslint-disable prefer-template */
+/* eslint-disable no-param-reassign */
 // Most Listeners are stored here
 import {
     layoutModeGet,
@@ -24,9 +24,9 @@ import {
     gridUpdateSet,
     errorDetectedSet,
 } from './engine'
-import { changeScale } from './canvasApi'
+import { changeScale, findDimensions } from './canvasApi'
 import { scheduleBackup } from './data/backupCircuit'
-import { hideProperties, deleteSelected, uxvar } from './ux';
+import { hideProperties, deleteSelected, uxvar, exitFullView } from './ux';
 import { updateRestrictedElementsList, updateRestrictedElementsInScope, hideRestricted, showRestricted } from './restrictedElementDiv';
 import { removeMiniMap, updatelastMinimapShown } from './minimap'
 import undo from './data/undo'
@@ -34,51 +34,37 @@ import redo from './data/redo'
 import { copy, paste, selectAll } from './events'
 import { verilogModeGet } from './Verilog2CV'
 import { setupTimingListeners } from './plotArea'
-import {findDimensions} from './canvasApi';
 
 const unit = 10
-var listenToSimulator = true
+let listenToSimulator = true
 let coordinate;
 const returnCoordinate = {
   x: 0,
   y: 0
 }
 
-var currDistance = 0;
-var distance = 0;
-var pinchZ = 0;
-var centreX;
-var centreY;
-var timeout;
-var lastTap = 0;
-var initX
-var initY
-var currX
-var currY
+let currDistance = 0;
+let distance = 0;
+let pinchZ = 0;
+let centreX;
+let centreY;
+let timeout;
+let lastTap = 0;
 
 /**
  *
  * @param {event} e
- * @param {elementId} elementId
- * Function to drag element of selected ID
+ * function for double click or double tap
  */
-
-function dragStart(e, elementId) {
-	initX = e.touches[0].clientX - elementId.offsetLeft;
-	initY = e.touches[0].clientY - elementId.offsetTop;
-}
-
-function dragMove(e, elementId) {
-	currY = e.touches[0].clientY - initY;
-	currX = e.touches[0].clientX - initX;
-
-	elementId.style.left = currX + "px";
-	elementId.style.top = currY + "px";
-}
-
-function dragEnd() {
-	initX = currX;
-	initY = currY;
+function onDoubleClickorTap(e) {
+    updateCanvasSet(true);
+    if (simulationArea.lastSelected && simulationArea.lastSelected.dblclick !== undefined) {
+        simulationArea.lastSelected.dblclick();
+    } else if (!simulationArea.shiftDown) {
+        simulationArea.multipleObjectSelections = [];
+    }
+    scheduleUpdate(2);
+    e.preventDefault();
 }
 
 /**
@@ -87,42 +73,25 @@ function dragEnd() {
  * function to detect tap and double tap
  */
 function getTap(e) {
-	var currentTime = new Date().getTime();
-	var tapLength = currentTime - lastTap;
-	clearTimeout(timeout);
-	if (tapLength < 500 && tapLength > 0) {
-		onDoubleClickorTap(e);
-	} else {
-		// Single tap
-	}
-
-	lastTap = currentTime;
-	e.preventDefault();
+    const currentTime = new Date().getTime();
+    const tapLength = currentTime - lastTap;
+    clearTimeout(timeout);
+    if (tapLength < 500 && tapLength > 0) {
+        onDoubleClickorTap(e);
+    } else {
+    // Single tap
+    }
+    openCurrMenu(-1);
+    lastTap = currentTime;
+    e.preventDefault();
 }
 
-var isIe = (navigator.userAgent.toLowerCase().indexOf('msie') != -1 || navigator.userAgent.toLowerCase().indexOf('trident') != -1);
+const isIe = (navigator.userAgent.toLowerCase().indexOf('msie') != -1 || navigator.userAgent.toLowerCase().indexOf('trident') != -1);
 
-/**
- *
- * @param {event} e
- * function for double click or double tap
- */
-function onDoubleClickorTap(e) {
-	updateCanvasSet(true);
-	if (simulationArea.lastSelected && simulationArea.lastSelected.dblclick !== undefined) {
-		simulationArea.lastSelected.dblclick();
-	} else if (!simulationArea.shiftDown) {
-		simulationArea.multipleObjectSelections = [];
-	}
-
-	scheduleUpdate(2);
-	e.preventDefault();
-}
-
-/* Function to getCoordinate
-    *If touch is enable then it will return touch coordinate
-    *else it will return mouse coordinate
- */
+// Function to getCoordinate
+//  *If touch is enable then it will return touch coordinate
+//  *else it will return mouse coordinate
+//
 export function getCoordinate(e) {
     if (simulationArea.touch) {
         returnCoordinate.x = e.touches[0].clientX;
@@ -144,41 +113,42 @@ export function getCoordinate(e) {
     touch and mouse will change in future
 */
 export function pinchZoom(e, globalScope) {
+    e.preventDefault();
     gridUpdateSet(true);
     scheduleUpdate();
     updateSimulationSet(true);
     updatePositionSet(true);
     updateCanvasSet(true);
     // Calculating distance between touch to see if its pinchIN or pinchOut
-    distance = Math.sqrt((e.touches[1].clientX - e.touches[0].clientX) * (e.touches[1].clientX - e.touches[0].clientX), (e.touches[1].clientY - e.touches[0].clientY) * (e.touches[1].clientY - e.touches[0].clientY));
-    centreX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-    centreY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-    var rect = simulationArea.canvas.getBoundingClientRect();
-	var RawX = (centreX - rect.left) * DPR;
-	var RawY = (centreY - rect.top) * DPR;
-	var Xf = (RawX - globalScope.ox) / globalScope.scale;
-	var Yf = (RawY - globalScope.oy) / globalScope.scale;
-	var currCentreX = Math.round(Xf / unit) * unit;
-	var currCentreY = Math.round(Yf / unit) * unit;
+    distance = Math.sqrt((e.touches[1].clientX - e.touches[0].clientX) ** 2, (e.touches[1].clientY - e.touches[0].clientY) ** 2);
     if (distance >= currDistance) {
-        pinchZ += 0.03;
+        pinchZ += 0.02;
         currDistance = distance;
     } else if (currDistance >= distance) {
-        pinchZ -= 0.03;
+        pinchZ -= 0.02;
         currDistance = distance;
     }
-
     if (pinchZ >= 2) {
         pinchZ = 2;
-    } else if (pinchZ <= 1) {
-        pinchZ = 1;
     }
-
-    var oldScale = globalScope.scale;
-    globalScope.scale = Math.max(0.5, Math.min(4 * DPR, pinchZ * 2));
+    else if (pinchZ <= 0.5) {
+        pinchZ = 0.5;
+    }
+    const oldScale = globalScope.scale;
+    globalScope.scale = Math.max(0.5, Math.min(4 * DPR, pinchZ * 3));
     globalScope.scale = Math.round(globalScope.scale * 10) / 10;
-    globalScope.ox -= Math.round(currCentreX * (globalScope.scale - oldScale));
-    globalScope.oy -= Math.round(currCentreY * (globalScope.scale - oldScale));
+    // This is not working as expected
+    centreX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+    centreY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+    const rect = simulationArea.canvas.getBoundingClientRect();
+    const RawX = (centreX - rect.left) * DPR;
+    const RawY = (centreY - rect.top) * DPR;
+    const Xf = Math.round(((RawX - globalScope.ox) / globalScope.scale) / unit);
+    const Yf = Math.round(((RawY - globalScope.ox) / globalScope.scale) / unit);
+    const currCentreX = Math.round(Xf / unit) * unit;
+    const currCentreY = Math.round(Yf / unit) * unit;
+    globalScope.ox = Math.round(currCentreX * (globalScope.scale - oldScale));
+    globalScope.oy = Math.round(currCentreY * (globalScope.scale - oldScale));
     gridUpdateSet(true);
     scheduleUpdate(1);
 }
@@ -191,35 +161,35 @@ export function pinchZoom(e, globalScope) {
  */
 export function panStart(e) {
     coordinate = getCoordinate(e);
-	simulationArea.mouseDown = true;
-	// Deselect Input
-	if (document.activeElement instanceof HTMLElement) {
-		document.activeElement.blur()
-	}
+    simulationArea.mouseDown = true;
+    // Deselect Input
+    if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+    }
 
-	errorDetectedSet(false);
-	updateSimulationSet(true);
-	updatePositionSet(true);
-	updateCanvasSet(true);
-	simulationArea.lastSelected = undefined;
-	simulationArea.selected = false;
-	simulationArea.hover = undefined;
-	var rect = simulationArea.canvas.getBoundingClientRect();
-	simulationArea.mouseDownRawX = (coordinate.x - rect.left) * DPR;
-	simulationArea.mouseDownRawY = (coordinate.y - rect.top) * DPR;
-	simulationArea.mouseDownX = Math.round(((simulationArea.mouseDownRawX - globalScope.ox) / globalScope.scale) / unit) * unit;
-	simulationArea.mouseDownY = Math.round(((simulationArea.mouseDownRawY - globalScope.oy) / globalScope.scale) / unit) * unit;
-	if (simulationArea.touch) {
-		simulationArea.mouseX = simulationArea.mouseDownX;
-		simulationArea.mouseY = simulationArea.mouseDownY;
-	}
+    errorDetectedSet(false);
+    updateSimulationSet(true);
+    updatePositionSet(true);
+    updateCanvasSet(true);
+    simulationArea.lastSelected = undefined;
+    simulationArea.selected = false;
+    simulationArea.hover = undefined;
+    const rect = simulationArea.canvas.getBoundingClientRect();
+    simulationArea.mouseDownRawX = (coordinate.x - rect.left) * DPR;
+    simulationArea.mouseDownRawY = (coordinate.y - rect.top) * DPR;
+    simulationArea.mouseDownX = Math.round(((simulationArea.mouseDownRawX - globalScope.ox) / globalScope.scale) / unit) * unit;
+    simulationArea.mouseDownY = Math.round(((simulationArea.mouseDownRawY - globalScope.oy) / globalScope.scale) / unit) * unit;
+    if (simulationArea.touch) {
+        simulationArea.mouseX = simulationArea.mouseDownX;
+        simulationArea.mouseY = simulationArea.mouseDownY;
+    }
 
-	simulationArea.oldx = globalScope.ox;
-	simulationArea.oldy = globalScope.oy;
-	e.preventDefault();
-	scheduleBackup();
-	scheduleUpdate(1);
-	$('.dropdown.open').removeClass('open');
+    simulationArea.oldx = globalScope.ox;
+    simulationArea.oldy = globalScope.oy;
+    e.preventDefault();
+    scheduleBackup();
+    scheduleUpdate(1);
+    $('.dropdown.open').removeClass('open');
 }
 
 /*
@@ -234,92 +204,92 @@ export function panMove(e) {
     // If only one  it touched
     // pan left or right
     if (!simulationArea.touch || e.touches.length === 1) {
-		coordinate = getCoordinate(e);
-		var rect = simulationArea.canvas.getBoundingClientRect();
-		simulationArea.mouseRawX = (coordinate.x - rect.left) * DPR;
-		simulationArea.mouseRawY = (coordinate.y - rect.top) * DPR;
-		simulationArea.mouseXf = (simulationArea.mouseRawX - globalScope.ox) / globalScope.scale;
-		simulationArea.mouseYf = (simulationArea.mouseRawY - globalScope.oy) / globalScope.scale;
-		simulationArea.mouseX = Math.round(simulationArea.mouseXf / unit) * unit;
-		simulationArea.mouseY = Math.round(simulationArea.mouseYf / unit) * unit;
-		updateCanvasSet(true);
-		if (simulationArea.lastSelected && (simulationArea.mouseDown || simulationArea.lastSelected.newElement)) {
-			updateCanvasSet(true);
-			var fn;
+        coordinate = getCoordinate(e);
+        const rect = simulationArea.canvas.getBoundingClientRect();
+        simulationArea.mouseRawX = (coordinate.x - rect.left) * DPR;
+        simulationArea.mouseRawY = (coordinate.y - rect.top) * DPR;
+        simulationArea.mouseXf = (simulationArea.mouseRawX - globalScope.ox) / globalScope.scale;
+        simulationArea.mouseYf = (simulationArea.mouseRawY - globalScope.oy) / globalScope.scale;
+        simulationArea.mouseX = Math.round(simulationArea.mouseXf / unit) * unit;
+        simulationArea.mouseY = Math.round(simulationArea.mouseYf / unit) * unit;
+        updateCanvasSet(true);
+        if (simulationArea.lastSelected && (simulationArea.mouseDown || simulationArea.lastSelected.newElement)) {
+            updateCanvasSet(true);
+            let fn;
 
-			if (simulationArea.lastSelected == globalScope.root) {
-				fn = function () {
-					updateSelectionsAndPane();
-				};
-			} else {
-				fn = function () {
-					if (simulationArea.lastSelected) {
-						simulationArea.lastSelected.update();
-					}
-				};
-			}
+            if (simulationArea.lastSelected == globalScope.root) {
+                fn = function () {
+                    updateSelectionsAndPane();
+                };
+            } else {
+                fn = function () {
+                    if (simulationArea.lastSelected) {
+                        simulationArea.lastSelected.update();
+                    }
+                };
+            }
 
-			scheduleUpdate(0, 20, fn);
-		} else {
-			scheduleUpdate(0, 200);
-		}
-	}
+            scheduleUpdate(0, 20, fn);
+        } else {
+            scheduleUpdate(0, 200);
+        }
+    }
 
-	// If two fingures are touched
-	// pinchZoom
-	if (simulationArea.touch && e.touches.length === 2) {
-		pinchZoom(e, globalScope);
-	}
+    // If two fingures are touched
+    // pinchZoom
+    if (simulationArea.touch && e.touches.length === 2) {
+        pinchZoom(e, globalScope);
+    }
 }
 
 export function panStop(e) {
     simulationArea.mouseDown = false;
-	if (!lightMode) {
-		updatelastMinimapShown();
-		setTimeout(removeMiniMap, 2000);
-	}
+    if (!lightMode) {
+        updatelastMinimapShown();
+        setTimeout(removeMiniMap, 2000);
+    }
 
-	errorDetectedSet(false);
-	updateSimulationSet(true);
-	updatePositionSet(true);
-	updateCanvasSet(true);
-	gridUpdateSet(true);
-	wireToBeCheckedSet(1);
+    errorDetectedSet(false);
+    updateSimulationSet(true);
+    updatePositionSet(true);
+    updateCanvasSet(true);
+    gridUpdateSet(true);
+    wireToBeCheckedSet(1);
 
-	scheduleUpdate(1);
-	simulationArea.mouseDown = false;
+    scheduleUpdate(1);
+    simulationArea.mouseDown = false;
 
-	for (var i = 0; i < 2; i++) {
-		updatePositionSet(true);
-		wireToBeCheckedSet(1);
-		update();
-	}
+    // eslint-disable-next-line no-plusplus
+    for (let i = 0; i < 2; i++) {
+        updatePositionSet(true);
+        wireToBeCheckedSet(1);
+        update();
+    }
 
-	errorDetectedSet(false);
-	updateSimulationSet(true);
-	updatePositionSet(true);
-	updateCanvasSet(true);
-	gridUpdateSet(true);
-	wireToBeCheckedSet(1);
+    errorDetectedSet(false);
+    updateSimulationSet(true);
+    updatePositionSet(true);
+    updateCanvasSet(true);
+    gridUpdateSet(true);
+    wireToBeCheckedSet(1);
 
-	scheduleUpdate(1);
-	// Var rect = simulationArea.canvas.getBoundingClientRect();
+    scheduleUpdate(1);
+    // Var rect = simulationArea.canvas.getBoundingClientRect();
 
-	if (!(simulationArea.mouseRawX < 0 || simulationArea.mouseRawY < 0 || simulationArea.mouseRawX > width || simulationArea.mouseRawY > height)) {
-		uxvar.smartDropXX = simulationArea.mouseX + 100; // Math.round(((simulationArea.mouseRawX - globalScope.ox+100) / globalScope.scale) / unit) * unit;
-		uxvar.smartDropYY = simulationArea.mouseY - 50; // Math.round(((simulationArea.mouseRawY - globalScope.oy+100) / globalScope.scale) / unit) * unit;
-	}
+    if (!(simulationArea.mouseRawX < 0 || simulationArea.mouseRawY < 0 || simulationArea.mouseRawX > width || simulationArea.mouseRawY > height)) {
+        uxvar.smartDropXX = simulationArea.mouseX + 100; // Math.round(((simulationArea.mouseRawX - globalScope.ox+100) / globalScope.scale) / unit) * unit;
+        uxvar.smartDropYY = simulationArea.mouseY - 50; // Math.round(((simulationArea.mouseRawY - globalScope.oy+100) / globalScope.scale) / unit) * unit;
+    }
 
     if (simulationArea.touch) {
-		// Current circuit element should not spwan above last circuit element
-		findDimensions(globalScope);
-		simulationArea.mouseX = 100 + simulationArea.maxWidth || 0;
-		simulationArea.mouseY = simulationArea.minHeight || 0;
-		getTap(e);
-		if(simulationArea.touch && e.touches.length === 2){
-
-		}
-	}
+    // small hack so Current circuit element should not spwan above last circuit element
+        if(!isCopy) {
+            findDimensions(globalScope);
+            simulationArea.mouseX = 100 + simulationArea.maxWidth || 0;
+            simulationArea.mouseY = simulationArea.minHeight || 0;
+            getTap(e);
+        }
+    }
 }
 
 export default function startListeners() {
@@ -595,13 +565,6 @@ export default function startListeners() {
 		onDoubleClickorTap(e);
 	});
 
-    document
-        .getElementById('simulationArea')
-        .addEventListener('mousewheel', MouseScroll)
-    document
-        .getElementById('simulationArea')
-        .addEventListener('DOMMouseScroll', MouseScroll)
-
     function MouseScroll(event) {
         updateCanvasSet(true)
         event.preventDefault()
@@ -616,6 +579,13 @@ export default function startListeners() {
         if (layoutModeGet()) layoutUpdate()
         else update() // Schedule update not working, this is INEFFICIENT
     }
+
+    document
+        .getElementById('simulationArea')
+        .addEventListener('mousewheel', MouseScroll)
+    document
+        .getElementById('simulationArea')
+        .addEventListener('DOMMouseScroll', MouseScroll)
 
     document.addEventListener('cut', (e) => {
         if (verilogModeGet()) return
@@ -633,7 +603,7 @@ export default function startListeners() {
                 simulationArea.copyList.push(simulationArea.lastSelected)
             }
 
-            var textToPutOnClipboard = copy(simulationArea.copyList, true)
+            const textToPutOnClipboard = copy(simulationArea.copyList, true)
 
             // Updated restricted elements
             updateRestrictedElementsInScope()
@@ -664,7 +634,7 @@ export default function startListeners() {
                 simulationArea.copyList.push(simulationArea.lastSelected)
             }
 
-            var textToPutOnClipboard = copy(simulationArea.copyList)
+            const textToPutOnClipboard = copy(simulationArea.copyList)
 
             // Updated restricted elements
             updateRestrictedElementsInScope()
@@ -701,33 +671,25 @@ export default function startListeners() {
     })
 
     // 'drag and drop' event listener for subcircuit elements in layout mode
-    $('#subcircuitMenu').on(
-        'dragstop',
-        '.draggableSubcircuitElement',
-        function (event, ui) {
-            const sideBarWidth = $('#guide_1')[0].clientWidth
-            let tempElement
+    $('#subcircuitMenu').on('dragstop', '.draggableSubcircuitElement', function (event, ui) {
+        const sideBarWidth = $('#guide_1')[0].clientWidth;
+        let tempElement;
 
-            if (ui.position.top > 10 && ui.position.left > sideBarWidth) {
-                // make a shallow copy of the element with the new coordinates
-                tempElement =
-                    globalScope[this.dataset.elementName][
-                        this.dataset.elementId
-                    ]
-
-                // Changing the coordinate doesn't work yet, nodes get far from element
-                tempElement.x = ui.position.left - sideBarWidth
-                tempElement.y = ui.position.top
-                for (let node of tempElement.nodeList) {
-                    node.x = ui.position.left - sideBarWidth
-                    node.y = ui.position.top
-                }
-
-                tempBuffer.subElements.push(tempElement)
-                this.parentElement.removeChild(this)
+        if (ui.position.top > 10 && ui.position.left > sideBarWidth) {
+            // Make a shallow copy of the element with the new coordinates
+            tempElement = globalScope[this.dataset.elementName][this.dataset.elementId];
+            // Changing the coordinate doesn't work yet, nodes get far from element
+            tempElement.x = ui.position.left - sideBarWidth;
+            tempElement.y = ui.position.top;
+            for (const node of tempElement.nodeList) {
+                node.x = ui.position.left - sideBarWidth;
+                node.y = ui.position.top;
             }
+
+            tempBuffer.subElements.push(tempElement);
+            this.parentElement.removeChild(this);
         }
-    )
+    });
 
     restrictedElements.forEach((element) => {
         $(`#${element}`).mouseover(() => {
@@ -746,9 +708,9 @@ export default function startListeners() {
 }
 
 function resizeTabs() {
-    var $windowsize = $('body').width()
-    var $sideBarsize = $('.side').width()
-    var $maxwidth = $windowsize - $sideBarsize
+    const $windowsize = $('body').width()
+    const $sideBarsize = $('.side').width()
+    const $maxwidth = $windowsize - $sideBarsize
     $('#tabsBar div').each(function (e) {
         $(this).css({ 'max-width': $maxwidth - 30 })
     })
@@ -804,8 +766,8 @@ function handleZoom (direction) {
       }
     }
     function sliderZoomButton (direction) {
-      var zoomSlider = $('#customRange1');
-      var currentSliderValue = parseInt(zoomSlider.val(), 10);
+      const zoomSlider = $('#customRange1');
+      let currentSliderValue = parseInt(zoomSlider.val(), 10);
       if (direction === -1) {
         currentSliderValue--;
       } else {

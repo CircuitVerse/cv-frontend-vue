@@ -1,6 +1,9 @@
-/* eslint-disable max-depth */
 /* eslint-disable import/no-cycle */
 // Listeners when circuit is embedded
+/* eslint-disable no-plusplus */
+/* eslint-disable func-names */
+/* eslint-disable prefer-const */
+/* eslint-disable max-len */
 // Refer listeners.js
 import { simulationArea } from './simulationArea'
 import {
@@ -17,7 +20,7 @@ import {
 import { changeScale } from './canvasApi'
 import { ZoomIn, ZoomOut, pinchZoom, getCoordinate, } from './listeners';
 
-var unit = 10
+const unit = 10
 let embedCoordinate;
 /** *Function embedPanStart
     *This function hepls to initialize mouse and touch
@@ -34,7 +37,7 @@ function embedPanStart(e) {
     simulationArea.lastSelected = undefined;
     simulationArea.selected = false;
     simulationArea.hover = undefined;
-    var rect = simulationArea.canvas.getBoundingClientRect();
+    const rect = simulationArea.canvas.getBoundingClientRect();
     simulationArea.mouseDownRawX = (embedCoordinate.x - rect.left) * DPR;
     simulationArea.mouseDownRawY = (embedCoordinate.y - rect.top) * DPR;
     simulationArea.mouseDownX = Math.round(((simulationArea.mouseDownRawX - globalScope.ox) / globalScope.scale) / unit) * unit;
@@ -53,7 +56,7 @@ function embedPanStart(e) {
 function embedPanMove(e) {
     embedCoordinate = getCoordinate(e);
     if (!simulationArea.touch || e.touches.length === 1) {
-        var rect = simulationArea.canvas.getBoundingClientRect();
+        const rect = simulationArea.canvas.getBoundingClientRect();
         simulationArea.mouseRawX = (embedCoordinate.x - rect.left) * DPR;
         simulationArea.mouseRawY = (embedCoordinate.y - rect.top) * DPR;
         simulationArea.mouseXf = (simulationArea.mouseRawX - globalScope.ox) / globalScope.scale;
@@ -63,7 +66,7 @@ function embedPanMove(e) {
         updateCanvasSet(true);
         if (simulationArea.lastSelected == globalScope.root) {
             updateCanvasSet(true);
-            var fn;
+            let fn;
             fn = function () {
                 updateSelectionsAndPane();
             };
@@ -96,12 +99,12 @@ function embedPanEnd() {
 */
 
 function BlockElementPan() {
-    var ele = document.getElementById('elementName');
+    const ele = document.getElementById('elementName');
     if (globalScope && simulationArea && simulationArea.objectList) {
-        var { objectList } = simulationArea;
+        let { objectList } = simulationArea;
         objectList = objectList.filter((val) => val !== 'wires');
-        for (var i = 0; i < objectList.length; i++) {
-            for (var j = 0; j < globalScope[objectList[i]].length; j++) {
+        for (let i = 0; i < objectList.length; i++) {
+            for (let j = 0; j < globalScope[objectList[i]].length; j++) {
                 if (globalScope[objectList[i]][j].isHover()) {
                     ele.style.display = 'block';
                     if (objectList[i] === 'SubCircuit') {
@@ -225,9 +228,9 @@ export default function startListeners() {
         updateCanvasSet(true);
 
         event.preventDefault();
-        var deltaY = event.wheelDelta ? event.wheelDelta : -event.detail;
-        var scrolledUp = deltaY < 0;
-        var scrolledDown = deltaY > 0;
+        const deltaY = event.wheelDelta ? event.wheelDelta : -event.detail;
+        const scrolledUp = deltaY < 0;
+        const scrolledDown = deltaY > 0;
 
         if (event.ctrlKey) {
             if (scrolledUp && globalScope.scale > 0.5 * DPR) {
