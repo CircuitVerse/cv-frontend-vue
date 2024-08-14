@@ -34,6 +34,8 @@ import redo from './data/redo'
 import { copy, paste, selectAll } from './events'
 import { verilogModeGet } from './Verilog2CV'
 import { setupTimingListeners } from './plotArea'
+import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
+import { toRefs } from 'vue'
 
 const unit = 10
 let listenToSimulator = true
@@ -242,6 +244,7 @@ export function panMove(e) {
 }
 
 export function panStop(e) {
+    const simulatorMobileStore = useSimulatorMobileStore()
     simulationArea.mouseDown = false;
     if (!lightMode) {
         updatelastMinimapShown();
@@ -281,11 +284,14 @@ export function panStop(e) {
     }
 
     if (simulationArea.touch) {
+        const { isCopy } = toRefs(simulatorMobileStore)
         // small hack so Current circuit element should not spwan above last circuit element
-        findDimensions(globalScope);
-        simulationArea.mouseX = 100 + simulationArea.maxWidth || 0;
-        simulationArea.mouseY = simulationArea.minHeight || 0;
-        getTap(e);
+        if (!isCopy) {
+            findDimensions(globalScope);
+            simulationArea.mouseX = 100 + simulationArea.maxWidth || 0;
+            simulationArea.mouseY = simulationArea.minHeight || 0;
+            getTap(e);
+        }
     }
 }
 

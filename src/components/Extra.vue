@@ -211,10 +211,7 @@
 
     <v-btn
       class="select-mul-btn"
-      @mousedown="() => {
-        simulationArea.shiftDown = false;
-        simulatorMobileStore.isCopy = true;
-      }"
+      @mousedown="copyBtnClick()"
       :style="{bottom: simulatorMobileStore.showElementsPanel ? '16rem' : '8rem'}"
       v-if="simulatorMobileStore.showMobileView && !simulatorMobileStore.isCopy"
     >
@@ -223,9 +220,7 @@
 
     <v-btn
       class="select-mul-btn"
-      @mousedown="() => {
-        simulatorMobileStore.isCopy = false;
-      }"
+      @mousedown="pasteBtnClick()"
       :style="{bottom: simulatorMobileStore.showElementsPanel ? '16rem' : '8rem'}"
       v-if="simulatorMobileStore.showMobileView && simulatorMobileStore.isCopy"
     >
@@ -257,6 +252,7 @@ import QuickButtonMobile from './Navbar/QuickButton/QuickButtonMobile.vue'
 import TimingDiagramMobile from './Panels/TimingDiagramPanel/TimingDiagramMobile.vue'
 import ElementsPanelMobile from './Panels/ElementsPanel/ElementsPanelMobile.vue'
 import { simulationArea } from '#/simulator/src/simulationArea'
+import { paste } from '#/simulator/src/events'
 import { useLayoutStore } from '#/store/layoutStore'
 import  { panStart, panMove, panStop } from '#/simulator/src/listeners'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
@@ -270,6 +266,17 @@ const layoutElementPanelRef = ref<HTMLElement | null>(null);
 onMounted(() => {
     layoutStore.layoutElementPanelRef = layoutElementPanelRef.value
 })
+
+const copyBtnClick = () => {
+    window.document.execCommand('copy')
+    simulationArea.shiftDown = false
+    simulatorMobileStore.isCopy = true
+}
+
+const pasteBtnClick = () => {
+    paste(localStorage.getItem('clipboardData'));
+    simulatorMobileStore.isCopy = false
+}
 </script>
 
 <style scoped>
