@@ -112,9 +112,9 @@
                         simulationArea.touch = true;
                         panStart(e)
                     }"
-                    @touchend="() => {
+                    @touchend="(e) => {
                         simulationArea.touch = true;
-                        panStop()
+                        panStop(e)
                     }"
                     @touchmove="(e) => {
                         simulationArea.touch = true;
@@ -128,9 +128,9 @@
                         simulationArea.touch = false;
                         panMove(e)
                     }"
-                    @mouseup="() => {
+                    @mouseup="(e) => {
                         simulationArea.touch = false;
-                        panStop()
+                        panStop(e)
                     }"
             ></canvas>
             <div id="miniMap">
