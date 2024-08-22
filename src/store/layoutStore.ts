@@ -13,7 +13,6 @@ export const useLayoutStore = defineStore("layoutStore", () => {
     if (val) {
       fadeIn(layoutDialogRef.value);
       fadeIn(layoutElementPanelRef.value);
-      fadeOut(elementsPanelRef.value);
       fadeOut(timingDiagramPanelRef.value);
       fadeOut(testbenchPanelRef.value);
     } else {

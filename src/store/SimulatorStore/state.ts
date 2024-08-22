@@ -31,6 +31,13 @@ export interface State {
     }
     // createCircuit: Object | { circuitName: string }
     combinationalAnalysis: Object
+    subCircuitElementList: Array<LayoutElementGroup>
+    isEmptySubCircuitElementList: boolean
+}
+
+interface LayoutElementGroup {
+    type: string
+    elements: any[]
 }
 
 export const useState = defineStore({
@@ -66,6 +73,8 @@ export const useState = defineStore({
                 booleanExpression: 'Example: (AB)',
                 decimalColumnBox: false,
             },
+            subCircuitElementList: [],
+            isEmptySubCircuitElementList: true,
         }
     },
 })

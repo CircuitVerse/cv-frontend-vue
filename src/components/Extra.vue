@@ -19,6 +19,7 @@
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Layout Element Panel -->
     <div
+        v-if="!simulatorMobileStore.showMobileView"
         class="noSelect defaultCursor layoutElementPanel draggable-panel draggable-panel-css"
         ref="layoutElementPanelRef"
     >

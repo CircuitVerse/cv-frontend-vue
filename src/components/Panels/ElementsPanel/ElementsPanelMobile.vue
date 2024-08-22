@@ -23,7 +23,7 @@
               ></span>
           </div>
 
-          <div class="element-category-tabs">
+          <div v-if="simulatorMobileStore.showCircuits === 'elements'" class="element-category-tabs">
             <div
               v-for="category in panelData" :key="category[0]"
               class="element-category-tab" @mousedown="selectCategory(category[1], category[0])"
@@ -33,7 +33,7 @@
             </div>
           </div>
 
-          <div class="mobile-icons">
+          <div v-if="simulatorMobileStore.showCircuits === 'elements'" class="mobile-icons">
             <div>
             <div
               v-for="element in filteredElements"
@@ -54,6 +54,37 @@
             </div>
           </div>
 
+          <div v-if="simulatorMobileStore.showCircuits === 'layout-elements'" class="element-category-tabs tabs-layout">
+            <div
+              v-for="(group, groupIndex) in SimulatorState.subCircuitElementList" :key="groupIndex"
+              class="element-category-tab" @mousedown="selectCategory(group.elements, group.type, 'layout-elements')"
+              :style="{backgroundColor: selectedLayoutCategoryName === group.type ? 'var(--primary)' : '#eee', color: selectedLayoutCategoryName === group.type ? 'white' : 'black'}"
+            >
+            {{ group.type }}s
+            </div>
+          </div>
+
+          <div v-if="simulatorMobileStore.showCircuits === 'layout-elements'" class="mobile-icons">
+            <div class="panel">
+            <div
+              v-for="(element, elementIndex) in filteredLayoutElements"
+              :key="`${elementIndex}-${elementIndex}`"
+              :id="`${element.type}-${elementIndex}`"
+              :data-element-id="elementIndex"
+              :data-element-name="element.type"
+              class="icon subcircuitModule"
+              @mousedown="dragElement(selectedLayoutCategoryName, element, elementIndex)"
+            >
+              <div class="icon-image">
+                <img :src="getImgUrl(element.constructor.name)" />
+                <p class="img__description">
+                  {{ element.label !== '' ? element.label : $t('simulator.unlabeled') }}
+                </p>
+              </div>
+            </div>
+            </div>
+          </div>
+
           <!-- <div
               id="Help"
               lines="one"
@@ -61,8 +92,9 @@
           >
               {{ tooltipText }}
           </div> -->
+
+        </div>
       </div>
-  </div>
 </template>
 
 <script lang="ts" setup>
@@ -70,27 +102,23 @@ import { elementHierarchy } from '#/simulator/src/metadata'
 import { simulationArea } from '#/simulator/src/simulationArea'
 import { uxvar } from '#/simulator/src/ux'
 import modules from '#/simulator/src/modules'
-import { onBeforeMount, onMounted, ref, computed } from 'vue'
+import { onBeforeMount, onMounted, ref, computed, watch } from 'vue'
 import { useLayoutStore } from '#/store/layoutStore'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
+import { useState } from '#/store/SimulatorStore/state'
+import { ElementsType } from '#/store/simulatorMobileStore'
+
 var panelData = []
 window.elementPanelList = []
 const layoutStore = useLayoutStore()
 const simulatorMobileStore = useSimulatorMobileStore()
+const SimulatorState = useState()
 
 const elementsPanelRef = ref<HTMLElement | null>(null);
-const selectedCategory = ref(null)
+const selectedCategory = ref<any[] | null>(null)
+const selectedLayoutCategory = ref<any[] | null>(null)
 const selectedCategoryName = ref('Input')
-
-
-const filteredElements = computed(() => {
-  const elements = selectedCategory.value ? selectedCategory.value : panelData[0][1]
-  return elements.filter(element => {
-    const elementNameLower = element.name.toLowerCase()
-    const elementInputLower = elementInput.value.toLowerCase()
-    return elementNameLower.includes(elementInputLower)
-  })
-})
+const selectedLayoutCategoryName = ref<string | null>(null)
 
 onBeforeMount(() => {
   for (const category in elementHierarchy) {
@@ -109,19 +137,101 @@ onBeforeMount(() => {
 
 onMounted(() => {
   layoutStore.elementsPanelRef = elementsPanelRef.value
+
+  console.log(SimulatorState.subCircuitElementList.length)
+
+  if (SimulatorState.subCircuitElementList.length > 0) {
+    selectedLayoutCategory.value = SimulatorState.subCircuitElementList[0].elements
+    selectedLayoutCategoryName.value = SimulatorState.subCircuitElementList[0].type
+  }
 })
 
-function selectCategory(categoryData, categoryName) {
-  selectedCategory.value = categoryData
+watch(() => simulatorMobileStore.showCircuits, () => {{
+  if(simulatorMobileStore.showCircuits === 'layout-elements') {
+    selectedLayoutCategory.value = (SimulatorState.subCircuitElementList && SimulatorState.subCircuitElementList.length > 0) ? SimulatorState.subCircuitElementList[0].elements : []
+    selectedLayoutCategoryName.value = (SimulatorState.subCircuitElementList && SimulatorState.subCircuitElementList.length > 0) ? SimulatorState.subCircuitElementList[0].type : null
+  }
+}})
+
+watch(() => SimulatorState.subCircuitElementList, (newVal) => {
+  const currSelectedType = selectedLayoutCategoryName.value
+  if (currSelectedType) {
+    const newSelectedType = newVal.find((typeGroup) => typeGroup.type === currSelectedType)
+    selectedLayoutCategory.value = newSelectedType ? newSelectedType.elements : []
+    selectedLayoutCategoryName.value = newSelectedType ? newSelectedType.type : null
+  }
+})
+
+const dragElement = (groupType: string | null, element: any, index: number) => {
+  element.subcircuitMetadata.showInSubcircuit = true
+  element.newElement = true
+  simulationArea.lastSelected = element
+
+  SimulatorState.subCircuitElementList.forEach((typeGroup) => {
+    typeGroup.elements = typeGroup.elements.filter(
+      (_, elementIndex) => {
+        if(typeGroup.type === groupType && index === elementIndex)
+        return false
+
+        return true;
+      }
+    )
+  })
+
+  SimulatorState.subCircuitElementList =
+    SimulatorState.subCircuitElementList.filter(
+      (typeGroup) => typeGroup.elements.length > 0
+    )
+
+  const elIndex = SimulatorState.subCircuitElementList.findIndex((typeGroup) => typeGroup.type === groupType)
+
+  if (elIndex === -1) {
+    selectedLayoutCategory.value = (SimulatorState.subCircuitElementList && SimulatorState.subCircuitElementList.length > 0)
+      ? SimulatorState.subCircuitElementList[0].elements
+      : [];
+
+    selectedLayoutCategoryName.value = (SimulatorState.subCircuitElementList && SimulatorState.subCircuitElementList.length > 0) ? SimulatorState.subCircuitElementList[0].type : null;
+  }
+}
+
+const filteredElements = computed(() => {
+  const elements = selectedCategory.value ? selectedCategory.value : panelData[0][1]
+  return elements.filter(element => {
+    const elementNameLower = element.name.toLowerCase()
+    const elementInputLower = elementInput.value.toLowerCase()
+    return elementNameLower.includes(elementInputLower)
+  })
+})
+
+const filteredLayoutElements = computed(() => {
+  const elements = selectedLayoutCategory.value ? selectedLayoutCategory.value : (SimulatorState.subCircuitElementList && SimulatorState.subCircuitElementList.length > 0) ? SimulatorState.subCircuitElementList[0].elements : []
+
+  return elements.filter(element => {
+    const elementNameLower = element.constructor.name.toLowerCase()
+    const elementInputLower = elementInput.value.toLowerCase()
+    return elementNameLower.includes(elementInputLower)
+  })
+})
+
+function selectCategory(categoryData, categoryName, type: ElementsType = 'elements') {
+  if (type === 'elements') {
+    selectedCategory.value = categoryData
     selectedCategoryName.value = categoryName
+  }
+  else {
+    selectedLayoutCategory.value = categoryData
+    selectedLayoutCategoryName.value = categoryName
+  }
 }
 
 function getImgUrl(elementName) {
-  const elementImg = new URL(
-      `../../../assets/img/${elementName}.svg`,
-      import.meta.url
-  ).href
-  return elementImg
+  try {
+    const elementImg = new URL(`../../../assets/img/${elementName}.svg`, import.meta.url).href;
+    return elementImg;
+  } catch (e) {
+    console.error("Error loading image:", e);
+    return '';
+  }
 }
 
 var elementInput = ref('')
@@ -194,6 +304,10 @@ function getTooltipText(elementName) {
     align-items: center;
 }
 
+.tabs-layout {
+  justify-content: start;
+}
+
 .mobile-icons{
     display: flex;
     justify-content: space-between;
@@ -219,5 +333,26 @@ function getTooltipText(elementName) {
 .search-container {
     padding: 0.5rem;
     color: black;
+}
+
+.img__description {
+  position: absolute;
+  bottom: -16;
+  text-align: center;
+  left: 0;
+  right: 0;
+  background-color: grey;
+  color: white;
+  font-size: 8px;
+  visibility: hidden;
+  border-bottom-left-radius: 2px;
+  border-bottom-right-radius: 2px;
+  opacity: 0;
+  transition: opacity 0.2s, visibility 0.2s;
+}
+
+.icon:hover .img__description {
+  visibility: visible;
+  opacity: 1;
 }
 </style>

@@ -902,7 +902,6 @@ div.icon img {
 #moduleProperty-inner {
     width: 85%;
     margin: auto;
-    padding: 1rem;
 }
 
 #moduleProperty-header {
@@ -1386,6 +1385,10 @@ input:checked + .slider:before {
     .nav-dropdown {
         text-align: center;
         padding-top: 20px;
+    }
+
+    #moduleProperty-inner {
+        padding: 1rem;
     }
 }
 
