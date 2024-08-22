@@ -49,7 +49,10 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Message Display -->
-    <div id="MessageDiv"></div>
+    <div id="MessageDiv">
+        <div v-for="mes in useState().successMessages" class='alert alert-success' role='alert'> {{ mes }}</div>
+        <div v-for="error in useState().errorMessages" class='alert alert-danger' role='alert'> {{ error }}</div>
+    </div>
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
@@ -268,6 +271,7 @@ import { paste } from '#/simulator/src/events'
 import { useLayoutStore } from '#/store/layoutStore'
 import  { panStart, panMove, panStop } from '#/simulator/src/listeners'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
+import { useState } from '#/store/SimulatorStore/state'
 import { onMounted, ref } from 'vue'
 
 const layoutStore = useLayoutStore()
