@@ -136,7 +136,7 @@ function increment(): void {
 }
 </script>
 
-<style scoped>
+<style>
 /* @import url('./QuickButton.css'); */
 
 .panel-drag {

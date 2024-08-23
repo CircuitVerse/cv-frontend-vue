@@ -130,19 +130,6 @@ input[type='text']:focus {
     -o-user-select: none;
 }
 
-.navbar-menu {
-    position: relative;
-    transition: all 0.2s ease-in-out;
-}
-
-.navbar-menu > li > a {
-    border: 1px solid transparent;
-    border-radius: 1px;
-    padding: 2px 8px;
-    transition: all 0.2s ease-in-out;
-    margin-right: 10px;
-}
-
 .navbar-menu > li > a span,
 .acc-caret {
     content: '';
@@ -160,84 +147,9 @@ input[type='text']:focus {
     transition: all 0.2s ease-in-out;
 }
 
-.acc-caret {
-    right: -17px;
-}
-.navbar-menu > li > a:hover {
-    border-bottom: 1px solid white;
-    text-decoration: none;
-}
-
 .navbar-menu > li > a:hover span,
 .acc-drop:hover .acc-caret {
     background: none;
-}
-
-.projectName {
-    position: relative;
-    left: 0.5rem;
-    font-size: 1em;
-    text-align: center;
-    display: inline-block;
-    width: 35vw;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-@media (max-width: 991px) {
-    .projectName {
-        visibility: hidden;
-    }
-}
-
-.account-btn {
-    position: absolute;
-    right: 13px;
-    padding: 4px 10px;
-    border: 1px solid transparent;
-    border-radius: 1px;
-    transition: all 0.2s ease-in-out;
-}
-
-.account-btn:hover {
-    border-bottom: 1px solid white;
-    text-decoration: none;
-}
-
-.user-field {
-    display: inline-block;
-    max-width: 11rem;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    text-align: right;
-}
-
-@media (max-width: 991px) {
-    .user-field {
-        visibility: hidden;
-    }
-}
-
-.signIn-btn {
-    color: var(--text-primary);
-}
-
-.cur-user,
-.signIn-btn {
-    color: #fff;
-}
-
-.signIn-btn:hover {
-    color: var(--text-primary);
-    text-decoration: none;
-}
-
-.logo {
-    background: url(./assets/logo.svg) center/cover;
-    height: 30px;
-    width: 105px;
-    display: inline-block;
-    margin-right: 36px;
 }
 
 /* dropdown-menu styles */
@@ -287,79 +199,11 @@ input[type='text']:focus {
     top: 14.5px;
 }
 
-.dropdown-menu > li > a {
-    padding: 7px 0;
-    width: 90%;
-    margin: auto;
-    transition: all 0.2s ease-in-out;
-    text-align: left;
-    padding-left: 10px;
-}
-
-.dropdown-menu > li > a:hover {
-    border-radius: 7px;
-    opacity: 1;
-}
-
 @media (max-width: 991px) {
     .navbar-nav .dropdown-menu {
         position: absolute !important;
         float: none;
     }
-}
-
-#contextMenu {
-    width: 150px;
-    visibility: hidden;
-    position: fixed;
-    z-index: 1000;
-    opacity: 0;
-    top: 100;
-    left: 100;
-    cursor: pointer;
-    padding-bottom: 7px;
-    padding-top: 7px;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    user-select: none;
-    border-radius: 5px;
-}
-
-#contextMenu ul {
-    margin: 0;
-    padding: 0;
-}
-
-#contextMenu ul li {
-    list-style: none;
-    padding: 8px;
-    padding-left: 20px;
-    width: 90%;
-    margin: auto;
-}
-
-#contextMenu ul li:hover {
-    border-radius: 7px;
-    opacity: 1;
-}
-
-@supports (backdrop-filter: blur()) {
-    #contextMenu {
-        backdrop-filter: blur(5px);
-    }
-    #contextMenu ul li:hover {
-        backdrop-filter: blur(50px);
-        -webkit-backdrop-filter: blur(50px);
-    }
-}
-
-/** ce-panel styling  starts */
-
-.ce-panel {
-    font: inherit;
-    width: 240px;
-    top: 90px;
-    left: 10px;
 }
 
 .accordion > :last-child {
@@ -569,418 +413,12 @@ div.icon img {
 
 /*! custom scroll  styling starts ends here  */
 
-/*! ce-panel styling  ends */
-
-/** tab bar styling starts */
-
-#tabsBar {
-    width: 100%;
-    /* height: 23.5px; */
-    display: block;
-    align-items: center;
-    z-index: 99;
-    /* position: absolute;
-    top: 47px; */
-}
-
-.embed-tabs {
-    background-color: transparent !important;
-}
-
-#tabsBar .placeholder {
-    justify-content: space-between;
-    padding: 1px;
-    display: inline-block;
-    margin: 2px;
-    text-align: center;
-    /* min-width: 110px; */
-    font-size: 14px;
-    transition: all 0.2s ease-in-out;
-}
-
-.placeholder::before {
-    display: inline-block;
-    padding: 2px 5px;
-    content: '|';
-}
-
-#tabsBar .circuits {
-    justify-content: space-between;
-    border-radius: 3px;
-    padding: 1px;
-    display: inline-flex;
-    align-items: center;
-    margin: 2px;
-    text-align: center;
-    /* min-width: 110px; */
-    font-size: 14px;
-    transition: all 0.2s ease-in-out;
-}
-
-#tabsBar .circuits > span {
-    display: inline-block;
-    padding: 2px 5px;
-}
-
-.circuitName {
-    cursor: pointer;
-}
-
-#tabsBar button {
-    order: 99; /* could have better solution */
-    width: 20px;
-    align-items: center;
-    display: inline;
-    font-size: 20px;
-    text-align: center;
-    padding-bottom: 5px;
-    text-decoration: none;
-    outline: none;
-    border-radius: 1px;
-    transition: all 0.1s ease-in-out;
-    border-radius: 4px;
-    margin-left: 1px;
-}
-
-#tabsBar button:focus {
-    outline: none !important;
-    box-shadow: none !important;
-}
-#tabsBar button:active {
-    outline: none !important;
-    box-shadow: none !important;
-}
-
-/*! tab bar styling ends */
-/** Module property styling starts here */
-
-.moduleProperty {
-    font: inherit;
-    width: 250px;
-    top: 90px;
-    right: 10px;
-}
-
 .layoutElementPanel {
     width: 220px;
     font: inherit;
     display: none;
     top: 90px;
     left: 10px;
-}
-
-.timing-diagram-panel {
-    border-radius: 5px;
-    z-index: 70;
-    transition: background 0.5s ease-out;
-    position: fixed;
-    cursor: pointer;
-    left: 300px;
-    top: 90px;
-}
-
-.timing-diagram-panel .panel-header {
-    border-radius: 5px;
-    border-top-right-radius: 5px;
-    padding: 3px;
-    font-weight: bold;
-    font-size: 16px;
-    text-transform: uppercase;
-    text-align: left;
-    cursor: move;
-}
-
-/* Testbench UI Styling begin */
-
-.testbench-manual-panel {
-    border-radius: 5px;
-    z-index: 100;
-    transition: background 0.5s ease-out;
-    position: fixed;
-    cursor: pointer;
-    left: 10px;
-    top: 470px;
-}
-
-.testbench-manual-panel .panel-header {
-    border-radius: 5px;
-    border-top-right-radius: 5px;
-    padding: 3px;
-    font-weight: bold;
-    font-size: 16px;
-    text-transform: uppercase;
-    text-align: left;
-    cursor: move;
-}
-
-.tb-case-arrow {
-    border: solid var(--text-panel);
-    border-width: 0 3px 3px 0;
-    display: inline-block;
-    padding: 3px;
-}
-
-.tb-case-arrow-right {
-    transform: rotate(-45deg);
-    -webkit-transform: rotate(-45deg);
-}
-
-.tb-case-arrow-left {
-    transform: rotate(135deg);
-    -webkit-transform: rotate(135deg);
-}
-
-.testbench-manual-panel .panel-body {
-    width: 700px;
-}
-
-.testbench-manual-panel b {
-    font-weight: bold;
-}
-
-.tb-manual-test-data {
-    /*text-align: center;*/
-    margin-top: 10px;
-    border-bottom: 1px solid var(--br-secondary);
-    padding-left: 8px;
-    padding-right: 8px;
-}
-
-.tb-manual-test-data .tb-data {
-    margin-right: 10px;
-}
-
-.tb-data span {
-    vertical-align: middle;
-    display: inline-block;
-    max-width: 200px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-
-.tb-data#data-title {
-    float: left;
-}
-
-.tb-data#data-type {
-    float: right;
-}
-
-.tb-manual-table {
-    position: relative;
-    display: inline-block;
-    margin-top: 10px;
-    color: var(--text-panel);
-    max-width: 650px;
-    overflow-x: auto;
-    white-space: nowrap;
-}
-
-.tb-manual-table td,
-.tb-manual-table th {
-    padding-left: 15px;
-    padding-right: 15px;
-    padding-top: 12px;
-    padding-bottom: 12px;
-    text-align: center;
-    min-width: 80px;
-}
-
-.tb-manual-table th {
-    background: var(--table-head-dark);
-    height: 50px;
-}
-
-.testbench-manual-panel-buttons {
-    position: relative;
-    display: table-cell;
-    flex-wrap: wrap;
-    right: 0px;
-    text-align: left;
-    width: 200px;
-}
-
-.tb-dialog-button {
-    display: inline;
-    margin: 8px;
-    border-radius: 5px !important;
-    padding-left: 8px !important;
-    padding-right: 8px !important;
-    padding-top: 4px !important;
-    padding-bottom: 4px !important;
-}
-
-.tb-manual-test-buttons {
-    display: flex;
-    margin-top: 20px;
-    margin-left: 30px;
-    margin-right: 30px;
-    height: 25px;
-    overflow: auto;
-}
-
-.tb-manual-test-buttons .tb-case-button-left {
-    border-bottom-left-radius: 5px;
-    border-top-left-radius: 5px;
-    width: 24px;
-}
-
-.tb-manual-test-buttons .tb-case-button-right {
-    border-bottom-right-radius: 5px;
-    border-top-right-radius: 5px;
-    width: 24px;
-}
-
-.tb-manual-test-buttons .tb-test-label {
-    position: relative;
-    top: 0px;
-    line-height: 25px;
-    height: 25px;
-    margin: 0px;
-    padding-left: 2px;
-    padding-right: 2px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    background: #c4c4c4;
-    color: black;
-}
-
-.tb-manual-test-buttons .tb-test-label.group-label {
-    text-align: center;
-    width: 100px;
-}
-
-.tb-manual-test-buttons .tb-test-label.case-label {
-    text-align: center;
-    width: 40px;
-}
-
-.tb-group-buttons {
-    float: left;
-}
-
-.tb-case-buttons {
-    float: right;
-}
-
-.tb-test-null {
-    width: 350px !important;
-}
-
-.validation-ui-table td,
-.validation-ui-table th {
-    padding-left: 15px;
-    padding-right: 15px;
-    padding-top: 12px;
-    padding-bottom: 12px;
-    text-align: center;
-    min-width: 80px;
-    color: white;
-}
-
-/* Testbench UI styling end */
-
-#plotArea {
-    padding: 3px;
-    width: 100%;
-}
-
-#verilogEditorPanel {
-    width: 220px;
-    font: inherit;
-    display: none;
-    top: 90px;
-    right: 300px;
-}
-
-#moduleProperty-toolTip {
-    padding: 10px;
-}
-
-#moduleProperty-inner {
-    width: 85%;
-    margin: auto;
-}
-
-#moduleProperty-header {
-    font-size: 1.1em;
-    text-transform: uppercase;
-    margin-bottom: 20px;
-    text-align: left;
-}
-
-#moduleProperty-inner > p span {
-    display: inline-block;
-    font-weight: bold;
-}
-
-#moduleProperty-inner > div span {
-    display: inline-block;
-    font-weight: bold;
-}
-
-#moduleProperty-inner > p button {
-    border-radius: 2px;
-    margin: 3px;
-}
-
-#moduleProperty-inner > div button {
-    border-radius: 2px;
-    margin: 3px;
-}
-
-#moduleProperty-inner:last-child {
-    margin-bottom: 15px;
-}
-
-.moduleProperty select {
-    background-color: transparent;
-    border: none;
-    margin-left: 2px;
-    outline: none;
-}
-
-.moduleProperty input,
-.moduleProperty textarea {
-    background-color: transparent;
-    margin-top: 7px;
-    outline: none;
-    padding: 5px 5px;
-    width: 100%;
-}
-
-.moduleProperty textarea {
-    text-align: left;
-}
-
-.moduleProperty select,
-.moduleProperty input,
-.moduleProperty textarea {
-    border-radius: 7px !important;
-}
-
-.moduleProperty input:focus,
-.moduleProperty select:focus,
-.moduleProperty textarea {
-    outline-width: 0;
-    outline: none;
-    box-shadow: none;
-}
-
-.input-group-prepend button {
-    margin-right: 5px;
-}
-.input-group-append button {
-    margin-left: 5px;
-}
-
-.input-group-prepend button:hover {
-    border-radius: 3px !important;
-}
-.input-group-append button:hover {
-    border-radius: 3px !important;
 }
 
 /* toogle */
@@ -1062,15 +500,6 @@ input:checked + .slider:before {
     border: solid 1px;
 }
 
-#HelpButton {
-    background-color: transparent;
-    border: 2px solid white;
-    width: 90%;
-    margin-bottom: 15px;
-    margin-top: 15px;
-    font-weight: bold;
-}
-
 .btn-parent {
     width: 100%;
     display: flex;
@@ -1080,23 +509,6 @@ input:checked + .slider:before {
 
 /* custom spin button */
 
-/*! Module property styling starts here */
-
-/** selects styling starts here */
-
-.moduleProperty select {
-    text-align: center;
-    width: 81px;
-    height: 20px;
-    float: right;
-    font-size: 17px;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-}
-
-/*! selects styling end here */
-
 /** layout dialog styling starts here */
 
 .layout-body {
@@ -1104,57 +516,6 @@ input:checked + .slider:before {
     padding: 10px;
     padding-bottom: 17px;
     font-weight: bold;
-}
-
-#layoutDialog {
-    /* display: none; */
-    right: 10px;
-    top: 90px;
-    width: 220px;
-}
-
-.layout-title span {
-    display: block;
-    font-weight: bold;
-    margin: 8px;
-}
-
-.layout-title--enable {
-    display: flex;
-    justify-content: space-between;
-    margin: 15px 0;
-    padding: 0 8px;
-}
-
-.Layout-btn {
-    width: 48%;
-    height: 30px;
-    line-height: inherit;
-}
-
-.zoomButton-up {
-    /* background: url(./assets/layout-panel/up.svg) center/cover no-repeat; */
-    display: inline-block;
-    height: 35px;
-    width: 35px;
-}
-.zoomButton-down {
-    /* background: url(./assets/layout-panel/down.svg) center/cover no-repeat; */
-    display: inline-block;
-    height: 35px;
-    width: 35px;
-}
-.zoomButton-left {
-    /* background: url(./assets/layout-panel/left.svg) center/cover no-repeat; */
-    display: inline-block;
-    height: 35px;
-    width: 35px;
-}
-.zoomButton-right {
-    /* background: url(./assets/layout-panel/right.svg) center/cover no-repeat; */
-    display: inline-block;
-    height: 35px;
-    width: 35px;
 }
 
 /*! layout dialog styling ends here */
@@ -1199,17 +560,6 @@ input:checked + .slider:before {
     visibility: hidden;
 }
 
-.download-dialog-section-2 .btn {
-    color: var(--text-lite);
-}
-.download-dialog-section-2 .btn:hover {
-    color: var(--text-lite);
-}
-
-.download-dialog-section-2 .option {
-    background: transparent;
-}
-
 .custom-radio span {
     height: 20px;
     width: 20px;
@@ -1236,69 +586,6 @@ input:checked + .slider:before {
 
 .custom-radio input[type='radio']:checked ~ span:after {
     transform: translate(-50%, -50%) scale(1);
-}
-
-#saveImageDialog {
-    border-radius: 2px;
-    padding: 13px;
-    margin: 0;
-    margin-top: 15px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    min-height: 188px !important;
-}
-
-.download-dialog-section-2 .option {
-    padding: 0;
-}
-
-.download-dialog-section-1 > label {
-    height: 30px;
-    width: 85px;
-}
-
-.download-dialog-section-2 {
-    background: transparent;
-    width: 100%;
-    display: inline-flex;
-    justify-content: space-around;
-}
-
-.btn-group-toggle {
-    background-color: transparent;
-    overflow: hidden;
-}
-.download-dialog-section-2 .active-btn {
-    box-shadow: none;
-}
-
-.download-dialog-section-2 .btn input[type='radio']:disabled {
-    background: red !important;
-    color: red !important;
-}
-
-.download-dialog-section-2_2 {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.download-dialog-section-3 {
-    border-radius: 2px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 6px 10px;
-    width: 320px;
-    position: inherit;
-}
-
-.download-dialog-section-3 > label {
-    width: 60px;
-    height: 25px;
-    margin-bottom: 0;
 }
 
 .ui-dialog-buttonpane {
@@ -1365,49 +652,6 @@ input:checked + .slider:before {
     height: 35px;
     border-radius: 1px;
 }
-.navbar {
-    transition: background 0.5s ease-out;
-}
-
-.navbar .nav.pull-right {
-    float: right;
-    margin-right: 10px;
-    min-width: 85px;
-}
-
-@media (max-width: 991px) {
-    .navbar .nav.pull-right {
-        display: none;
-    }
-}
-
-@media (max-width: 991px) {
-    .nav-dropdown {
-        text-align: center;
-        padding-top: 20px;
-    }
-}
-
-/*! download dialog styling end here */
-
-/** combinationalAnalysis dialog styling starts here */
-
-.ui-dialog[aria-describedby='combinationalAnalysis'] {
-    width: 460px;
-    min-height: 210px;
-    border: none;
-}
-
-#combinationalAnalysis {
-    margin-top: 10px;
-}
-
-#combinationalAnalysis p input {
-    border: 1px solid white;
-    background: transparent;
-    font: inherit;
-    text-align: center;
-}
 
 .ui-dialog input::placeholder {
     /* Chrome, Firefox, Opera, Safari 10.1+ */
@@ -1415,99 +659,8 @@ input:checked + .slider:before {
     opacity: 0.7; /* Firefox */
 }
 
-#combinationalAnalysis table {
-    width: 460px;
-}
-
-#booleanTable {
-    width: 200px;
-}
-
-.content-table {
-    border-collapse: collapse;
-    font-size: 0.9em;
-    min-width: 400px;
-}
-
-.content-table tr th {
-    font-weight: bold;
-}
-
-.content-table th,
-.content-table td {
-    padding: 5px 15px;
-    margin: 0 3px;
-    width: 20%;
-    border-radius: 2px;
-}
-
-.content-table tbody tr {
-    text-align: center;
-    display: flex;
-    margin-bottom: 4px;
-}
-
-.content-table tbody {
-    display: table-row-group;
-    overflow: auto !important;
-    margin-left: 52px;
-}
-
 .output {
     cursor: pointer;
-}
-
-/*! combinationalAnalysis dialog styling end here */
-
-#setTestbenchData input {
-    border: 1px solid white;
-    background: transparent;
-    text-align: center;
-    font: inherit;
-    color: white;
-}
-
-#setTestbenchData p {
-    font: inherit;
-    color: white;
-}
-
-/** openProjectDialog styling starts here */
-
-#openProjectDialog {
-    display: grid;
-    /* grid-template-columns: 1fr 1fr 1fr; */
-    /* grid-gap: 0 10px; */
-    align-items: center;
-}
-
-#openProjectDialog > label {
-    margin: 4px;
-    padding: 10px;
-    background: transparent;
-    border-radius: 1px;
-    width: 100%;
-}
-
-/*! openProjectDialog styling ends here */
-
-#insertSubcircuitDialog {
-    display: block;
-    padding-bottom: 0;
-    overflow: visible;
-}
-
-#insertSubcircuitDialog > p {
-    margin-bottom: 0;
-}
-
-#insertSubcircuitDialog > label {
-    height: 30px;
-    border-radius: 3px;
-    margin: 0 5px;
-    margin-bottom: 4px;
-    justify-content: center;
-    padding-left: 10px;
 }
 
 #miniMap {
@@ -1632,13 +785,6 @@ input:checked + .slider:before {
     cursor: move;
 }
 
-#canvasArea,
-#backgroundArea,
-#simulationArea,
-canvas {
-    /* cursor: wait !important; */
-}
-
 /** Color them dialog styles starts here*/
 
 .ui-dialog[aria-describedby='colorThemesDialog'] {
@@ -1665,39 +811,6 @@ canvas {
     margin-bottom: 0;
 }
 
-.theme {
-    color: white;
-    width: 202.5px;
-    line-height: 30px;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    user-select: none;
-    margin: 15px;
-    border-radius: 1.5px;
-    transition: all 0.1s ease-out;
-    position: relative;
-    overflow-x: hidden;
-    height: 154px;
-}
-
-.themeNameBox {
-    display: block;
-    width: 100%;
-    cursor: pointer;
-}
-
-.themeSel {
-    background: transparent;
-    display: block;
-    width: 100%;
-    height: 100%;
-    position: absolute;
-}
-
-/*! Color them dialog styles ends here*/
-
-/*! Custom Color theme dialog styles starts here*/
-
 .ui-dialog[aria-describedby='CustomColorThemesDialog'] {
     min-width: 760px;
     -webkit-user-select: none;
@@ -1723,86 +836,6 @@ canvas {
     height: 30px;
 }
 
-/*! Custom Color theme dialog styles ends here*/
-
-.code-window .CodeMirror {
-    height: calc(100vh - 78px);
-    overflow: scroll;
-}
-
-.code-window-embed .CodeMirror {
-    height: 100%;
-    overflow: scroll;
-}
-
-.code-window-embed {
-    position: absolute;
-    top: 28px;
-    height: 100%;
-    width: 100%;
-    overflow: scroll;
-    z-index: 3;
-    display: none;
-}
-
-.code-window {
-    display: none;
-}
-
-#verilogOutput {
-    font-size: 12px;
-}
-
-.embed-fullscreen-btn {
-    border-radius: 3px;
-    width: auto;
-}
-
-#plot {
-    width: 800px;
-}
-
-.timing-diagram-toolbar {
-    padding-left: 4px;
-    padding: 2px;
-    cursor: default;
-}
-
-.timing-diagram-toolbar input {
-    width: 80px;
-    background: transparent !important;
-}
-
-#timing-diagram-log {
-    font-size: 12.5px;
-    padding: 3px;
-    margin-left: 5px;
-    /* margin-bottom: 5px; */
-    border-radius: 3px;
-}
-
-/* CustomColorInput Styles Starts Here */
-.customColorInput {
-    cursor: pointer;
-    width: 30%;
-    height: 30px;
-    overflow: visible;
-    position: relative;
-    top: 8px;
-    appearance: auto;
-    background-color: buttonface;
-    color: buttontext;
-    border-width: 1px;
-    border-style: solid;
-    border-color: buttonborder;
-    border-image: initial;
-    padding: 1px 2px;
-}
-.customColorLabel {
-    width: 60%;
-    height: 30px;
-}
-
 /* Vue Dialog Box Styles STARTS */
 
 .inputField {
@@ -1814,28 +847,6 @@ canvas {
     border: 1px solid #c5c5c5;
     color: white;
     outline: none;
-}
-
-.cAinput {
-    width: 30%;
-    padding: 0 5px;
-    margin: 8px 0;
-    box-sizing: border-box;
-    border-radius: 5px;
-    border: 1px solid #c5c5c5;
-    color: white;
-    outline: none;
-}
-
-.combinationalAnalysisInput:first-child {
-    padding-top: 20px;
-}
-
-.combinationalAnalysisInput {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
-    align-items: baseline;
 }
 
 .inputField:focus {
@@ -1853,35 +864,6 @@ canvas {
 .v-input__details {
     margin-bottom: 0.5rem;
 }
-
-/*
-.ProseMirror ul {
-    list-style-type: disc;
-}
-
-.ProseMirror ol {
-    list-style-type: decimal;
-} */
-
-.ProseMirror {
-    height: 12rem;
-    overflow-y: auto;
-    padding-left: 0.5em;
-    padding-right: 0.5em;
-    outline: none;
-}
-
-.fullscreen .ProseMirror {
-    height: 75vh;
-}
-
-/* .ProseMirror ul,
-.ProseMirror ol,
-.ProseMirror li {
-    margin: 0;
-    padding: 0;
-    list-style: inherit;
-} */
 
 .messageBoxContent {
     height: auto;
@@ -1901,10 +883,6 @@ canvas {
     .messageBoxContent {
         width: 100%;
     }
-}
-
-.tabsbarInput {
-    align-items: center;
 }
 
 .messageBtn {

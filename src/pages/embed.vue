@@ -311,4 +311,24 @@ if (document.addEventListener) {
     background-color: var(--bg-circuit);
     color: var(--text);
 }
+
+.embed-fullscreen-btn {
+    border-radius: 3px;
+    width: auto;
+}
+
+.code-window-embed .CodeMirror {
+    height: 100%;
+    overflow: scroll;
+}
+
+.code-window-embed {
+    position: absolute;
+    top: 28px;
+    height: 100%;
+    width: 100%;
+    overflow: scroll;
+    z-index: 3;
+    display: none;
+}
 </style>

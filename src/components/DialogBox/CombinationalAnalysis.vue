@@ -673,7 +673,7 @@ function printBooleanTable() {
         `<style>
         table {font: 40px Calibri;}
         table, th, td {border: solid 1px #DDD;border-collapse: 0;}
-        tbody {padding: 2px 3px;text-align: center;} 
+        tbody {padding: 2px 3px;text-align: center;}
         </style>`.replace(/\n/g, "")
     var win = window.open('', '', 'height=700,width=700')
     var htmlBody = `
@@ -691,6 +691,41 @@ function printBooleanTable() {
 }
 </script>
 
+<style>
+#combinationalAnalysis p input {
+    border: 1px solid white;
+    background: transparent;
+    font: inherit;
+    text-align: center;
+}
+
+#combinationalAnalysis table {
+    width: 460px;
+}
+
+.cAinput {
+    width: 30%;
+    padding: 0 5px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border-radius: 5px;
+    border: 1px solid #c5c5c5;
+    color: white;
+    outline: none;
+}
+
+.combinationalAnalysisInput:first-child {
+    padding-top: 20px;
+}
+
+.combinationalAnalysisInput {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: baseline;
+}
+</style>
+
 <style scoped>
 .alertStyle {
     position: absolute;
@@ -700,9 +735,19 @@ function printBooleanTable() {
     transform: translate(-50%, -50%);
     z-index: 10000;
 }
+
+.ui-dialog[aria-describedby='combinationalAnalysis'] {
+    width: 460px;
+    min-height: 210px;
+    border: none;
+}
+
+#combinationalAnalysis {
+    margin-top: 10px;
+}
 </style>
 
-<!-- 
-    some errors due to output.value 
+<!--
+    some errors due to output.value
     output.value == null not working
 -->

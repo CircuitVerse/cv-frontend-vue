@@ -79,3 +79,19 @@ function decreaseValue() {
     ele.dispatchEvent(e)
 }
 </script>
+
+<style scoped>
+.input-group-prepend button {
+    margin-right: 5px;
+}
+.input-group-append button {
+    margin-left: 5px;
+}
+
+.input-group-prepend button:hover {
+    border-radius: 3px !important;
+}
+.input-group-append button:hover {
+    border-radius: 3px !important;
+}
+</style>

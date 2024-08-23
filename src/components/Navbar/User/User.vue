@@ -52,4 +52,50 @@ a:active {
     text-decoration: none;
     color: #fff;
 }
+
+.acc-caret {
+    right: -17px;
+}
+
+.account-btn {
+    position: absolute;
+    right: 13px;
+    padding: 4px 10px;
+    border: 1px solid transparent;
+    border-radius: 1px;
+    transition: all 0.2s ease-in-out;
+}
+
+.account-btn:hover {
+    border-bottom: 1px solid white;
+    text-decoration: none;
+}
+
+.user-field {
+    display: inline-block;
+    max-width: 11rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-align: right;
+}
+
+@media (max-width: 991px) {
+    .user-field {
+        visibility: hidden;
+    }
+}
+
+.signIn-btn {
+    color: var(--text-primary);
+}
+
+.cur-user,
+.signIn-btn {
+    color: #fff;
+}
+
+.signIn-btn:hover {
+    color: var(--text-primary);
+    text-decoration: none;
+}
 </style>

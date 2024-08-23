@@ -56,3 +56,19 @@ const props = defineProps({
 })
 const userId = useAuthStore().getUserId
 </script>
+
+<style scoped>
+.dropdown-menu > li > a {
+    padding: 7px 0;
+    width: 90%;
+    margin: auto;
+    transition: all 0.2s ease-in-out;
+    text-align: left;
+    padding-left: 10px;
+}
+
+.dropdown-menu > li > a:hover {
+    border-radius: 7px;
+    opacity: 1;
+}
+</style>

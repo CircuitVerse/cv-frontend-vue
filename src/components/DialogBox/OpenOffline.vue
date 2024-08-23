@@ -105,3 +105,26 @@ function OpenImportProjectDialog() {
     SimulatorState.dialogBox.import_project_dialog = true
 }
 </script>
+
+<style scoped>
+#openProjectDialog {
+    display: grid;
+    /* grid-template-columns: 1fr 1fr 1fr; */
+    /* grid-gap: 0 10px; */
+    align-items: center;
+}
+
+#openProjectDialog > label {
+    margin: 4px;
+    padding: 10px;
+    background: transparent;
+    border-radius: 1px;
+    width: 100%;
+}
+
+.deleteOfflineProject {
+    float: right;
+    cursor: pointer;
+    padding: 2px;
+}
+</style>

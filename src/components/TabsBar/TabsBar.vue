@@ -287,6 +287,88 @@ function isEmbed(): boolean {
     z-index: 1;
 }
 
+#tabsBar {
+    width: 100%;
+    /* height: 23.5px; */
+    display: block;
+    align-items: center;
+    z-index: 99;
+    /* position: absolute;
+    top: 47px; */
+}
+
+.embed-tabs {
+    background-color: transparent !important;
+}
+
+#tabsBar .placeholder {
+    justify-content: space-between;
+    padding: 1px;
+    display: inline-block;
+    margin: 2px;
+    text-align: center;
+    /* min-width: 110px; */
+    font-size: 14px;
+    transition: all 0.2s ease-in-out;
+}
+
+.placeholder::before {
+    display: inline-block;
+    padding: 2px 5px;
+    content: '|';
+}
+
+#tabsBar .circuits {
+    justify-content: space-between;
+    border-radius: 3px;
+    padding: 1px;
+    display: inline-flex;
+    align-items: center;
+    margin: 2px;
+    text-align: center;
+    /* min-width: 110px; */
+    font-size: 14px;
+    transition: all 0.2s ease-in-out;
+}
+
+#tabsBar .circuits > span {
+    display: inline-block;
+    padding: 2px 5px;
+}
+
+.circuitName {
+    cursor: pointer;
+}
+
+.tabsbarInput {
+    align-items: center;
+}
+
+#tabsBar button {
+    order: 99; /* could have better solution */
+    width: 20px;
+    align-items: center;
+    display: inline;
+    font-size: 20px;
+    text-align: center;
+    padding-bottom: 5px;
+    text-decoration: none;
+    outline: none;
+    border-radius: 1px;
+    transition: all 0.1s ease-in-out;
+    border-radius: 4px;
+    margin-left: 1px;
+}
+
+#tabsBar button:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+#tabsBar button:active {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
 #tabsBar.embed-tabbar {
     background-color: transparent;
 }
