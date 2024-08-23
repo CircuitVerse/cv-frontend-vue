@@ -94,10 +94,31 @@ watch(selectedTheme, (newTheme: string) => {
 })
 </script>
 
-<style scoped>
+<style>
+#verilogOutput {
+    font-size: 12px;
+}
+
 .applyTheme {
     width: 90%;
     border: 1px solid #fff;
     padding: 8px;
+}
+
+#verilogEditorPanel {
+    width: 220px;
+    font: inherit;
+    display: none;
+    top: 90px;
+    right: 300px;
+}
+
+.code-window .CodeMirror {
+    height: calc(100vh - 78px);
+    overflow: scroll;
+}
+
+.code-window {
+    display: none;
 }
 </style>

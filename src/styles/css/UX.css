@@ -1,49 +1,3 @@
-.deleteOfflineProject {
-    float: right;
-    cursor: pointer;
-    padding: 2px;
-}
-
-#contextMenu {
-    width: 150px;
-    visibility: hidden;
-    box-shadow: 0px 2px 7px rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    position: fixed;
-    z-index: 100;
-    background: #fff;
-    opacity: 0;
-    top: 100;
-    left: 100;
-    cursor: pointer;
-    color: #000;
-    padding-bottom: 4px;
-    padding-top: 4px;
-    transition: opacity 0.2s ease-in-out;
-    user-select: none;
-}
-
-#contextMenu ul {
-    margin: 0;
-    padding: 0;
-    font: 16px sans-serif;
-}
-
-#contextMenu ul li {
-    list-style: none;
-    padding: 8px;
-    padding-left: 20px;
-}
-
-#contextMenu ul li a {
-    text-decoration: none;
-    color: #000 !important;
-}
-
-#contextMenu ul li:hover {
-    background: rgba(0, 0, 0, 0.1);
-}
-
 button:focus {
     outline: 0;
 }
@@ -72,33 +26,6 @@ button:focus {
 
 .pannel-heading {
     background-color: #f5f5f5;
-}
-
-#layoutDialog {
-    position: absolute;
-    right: 100px;
-    top: 100px;
-    z-index: 101;
-    width: 200px;
-    height: 230px;
-    border: 1px solid grey;
-    border-radius: 2px;
-    background-color: white;
-    overflow-x: hidden;
-}
-
-.projectName {
-    /*margin:3px;*/
-    color: #0099ff;
-    margin: 0 auto;
-    text-align: center;
-    font-size: 1.4em;
-    position: static;
-    left: 50%;
-    display: block;
-    width: 500px;
-    text-align: center;
-    margin-left: -250px;
 }
 
 .inline {
@@ -218,64 +145,9 @@ input[type='radio']:checked ~ label {
     /*margin-bottom: 0;*/
 }
 
-/* MODULES */
-
-.moduleProperty {
-    display: none;
-    background-color: #333;
-    color: #fff;
-    /*padding-bottom: 2em;*/
-    margin-top: 1em;
-}
-
-#moduleProperty-inner {
-    border: 1px solid #0099ff;
-    padding: 1em;
-    /*margin-bottom: 1em;*/
-}
-
-#moduleProperty-toolTip {
-    padding: 10px;
-    /*font-size: 1.1em;*/
-    color: #0099ff;
-}
-
-#moduleProperty-title {
-    text-transform: uppercase;
-    font-size: 1.3em;
-    color: #0099ff;
-    margin-bottom: 0.55em;
-    text-align: center;
-}
-
-#moduleProperty-header {
-    font-size: 1.1em;
-    text-transform: uppercase;
-    margin-bottom: 0.5em;
-}
-
-#moduleProperty-inner > p {
-    margin: 0;
-    margin-top: 0.2em;
-}
-
 input,
 select {
     padding: 0.25rem;
-}
-
-.moduleProperty input,
-.moduleProperty select {
-    background-color: #333;
-    border: none;
-    border-bottom: 2px solid #ccc;
-}
-
-.moduleProperty input:active,
-.moduleProperty input:focus,
-.moduleProperty select:active,
-.moduleProperty select:focus {
-    border-bottom: 2px solid #0099ff;
 }
 
 .navbar.navbar-default {
@@ -294,62 +166,6 @@ select {
 
 /* END OF MODULES  */
 
-#tabsBar {
-    width: 100%;
-    /*height: 3em;*/
-    margin-left: 20px;
-    background-color: #000;
-}
-
-#tabsBar div {
-    display: inline-block;
-    /*padding-left: 0.5em;*/
-    margin: 0.1em;
-    color: #fff;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    position: relative;
-}
-
-#tabsBar .circuits {
-    color: #fff;
-    text-align: center;
-    background-color: #00284d;
-    padding-left: 0.5em;
-    padding-right: 1.5em;
-    border: 1px solid #005cb3;
-    border-radius: 0.1em;
-}
-
-#tabsBar .circuits:hover {
-    background-color: #00ace6;
-    /*border: 1px solid #0099ff;*/
-    transition-duration: 100ms;
-}
-
-#tabsBar .current {
-    /*background-color: #0086b3;*/
-    background-color: #004280;
-    border: 1px solid #0099ff;
-}
-
-.tabsCloseButton:hover {
-    color: #fff;
-    font-family: 'Gill Sans', sans-serif;
-    margin-left: 1em;
-    opacity: 0.5;
-}
-.tabsCloseButton {
-    color: #111;
-    font-family: 'Gill Sans', sans-serif;
-    margin-left: 1em;
-    opacity: 1;
-    position: absolute;
-    top: 5px;
-    right: 3;
-}
-
 th,
 td {
     padding-left: 15px;
@@ -357,10 +173,6 @@ td {
     text-align: left;
     border: 1px solid #0099ff;
     color: white;
-}
-
-#booleanTable {
-    width: 200px;
 }
 
 table {
@@ -586,19 +398,6 @@ input:checked + .slider2:before {
     box-shadow: 0px 0px 15px #888888;
     overflow: hidden;
     /*transition: opacity .25s ease-in-out;*/
-}
-
-#plot {
-    position: fixed;
-    z-index: 1;
-    bottom: 0;
-    right: 0;
-    /*display: block;*/
-    /*height: 0px;*/
-    /*width: 100%;*/
-    overflow-y: scroll;
-    background-color: #eee;
-    /*background-blend-mode: color;*/
 }
 
 .left {

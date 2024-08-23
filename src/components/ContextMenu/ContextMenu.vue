@@ -80,3 +80,50 @@ export default {
     },
 }
 </script>
+
+<style scoped>
+#contextMenu {
+    width: 150px;
+    visibility: hidden;
+    position: fixed;
+    z-index: 1000;
+    opacity: 0;
+    top: 100;
+    left: 100;
+    cursor: pointer;
+    padding-bottom: 7px;
+    padding-top: 7px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    border-radius: 5px;
+}
+
+#contextMenu ul {
+    margin: 0;
+    padding: 0;
+}
+
+#contextMenu ul li {
+    list-style: none;
+    padding: 8px;
+    padding-left: 20px;
+    width: 90%;
+    margin: auto;
+}
+
+#contextMenu ul li:hover {
+    border-radius: 7px;
+    opacity: 1;
+}
+
+@supports (backdrop-filter: blur()) {
+    #contextMenu {
+        backdrop-filter: blur(5px);
+    }
+    #contextMenu ul li:hover {
+        backdrop-filter: blur(50px);
+        -webkit-backdrop-filter: blur(50px);
+    }
+}
+</style>

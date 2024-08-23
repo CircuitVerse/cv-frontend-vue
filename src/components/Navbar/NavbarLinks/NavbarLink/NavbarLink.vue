@@ -30,4 +30,11 @@ const props = defineProps({
 
 <style scoped>
 /* @import url("./NavbarLink.css"); */
+
+@media (max-width: 991px) {
+    .nav-dropdown {
+        text-align: center;
+        padding-top: 20px;
+    }
+}
 </style>

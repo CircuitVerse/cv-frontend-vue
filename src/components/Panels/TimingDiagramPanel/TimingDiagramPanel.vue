@@ -105,9 +105,58 @@ function handleUnitsChange(event: Event) {
 }
 </script>
 
-<style scoped>
+<style>
+#plotArea {
+    padding: 3px;
+    width: 100%;
+}
+
 .timing-diagram-panel-button {
     margin-right: 5px;
+}
+
+.timing-diagram-panel {
+    border-radius: 5px;
+    z-index: 70;
+    transition: background 0.5s ease-out;
+    position: fixed;
+    cursor: pointer;
+    left: 300px;
+    top: 90px;
+}
+
+#plot {
+    width: 800px;
+}
+
+.timing-diagram-toolbar {
+    padding-left: 4px;
+    padding: 2px;
+    cursor: default;
+}
+
+.timing-diagram-toolbar input {
+    width: 80px;
+    background: transparent !important;
+}
+
+#timing-diagram-log {
+    font-size: 12.5px;
+    padding: 3px;
+    margin-left: 5px;
+    /* margin-bottom: 5px; */
+    border-radius: 3px;
+}
+
+.timing-diagram-panel .panel-header {
+    border-radius: 5px;
+    border-top-right-radius: 5px;
+    padding: 3px;
+    font-weight: bold;
+    font-size: 16px;
+    text-transform: uppercase;
+    text-align: left;
+    cursor: move;
 }
 </style>
 

@@ -132,3 +132,193 @@ const currentCase = computed(() => testBenchStore.testbenchData.currentCase);
 const inputs = computed(() => testData.value.groups[currentGroup.value].inputs);
 const outputs = computed(() => testData.value.groups[currentGroup.value].outputs);
 </script>
+
+<style scoped>
+.testbench-manual-panel {
+    border-radius: 5px;
+    z-index: 100;
+    transition: background 0.5s ease-out;
+    position: fixed;
+    cursor: pointer;
+    left: 10px;
+    top: 470px;
+}
+
+.testbench-manual-panel .panel-header {
+    border-radius: 5px;
+    border-top-right-radius: 5px;
+    padding: 3px;
+    font-weight: bold;
+    font-size: 16px;
+    text-transform: uppercase;
+    text-align: left;
+    cursor: move;
+}
+
+.tb-case-arrow {
+    border: solid var(--text-panel);
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 3px;
+}
+
+.tb-case-arrow-right {
+    transform: rotate(-45deg);
+    -webkit-transform: rotate(-45deg);
+}
+
+.tb-case-arrow-left {
+    transform: rotate(135deg);
+    -webkit-transform: rotate(135deg);
+}
+
+.testbench-manual-panel .panel-body {
+    width: 700px;
+}
+
+.testbench-manual-panel b {
+    font-weight: bold;
+}
+
+.tb-manual-test-data {
+    /*text-align: center;*/
+    margin-top: 10px;
+    border-bottom: 1px solid var(--br-secondary);
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+.tb-manual-test-data .tb-data {
+    margin-right: 10px;
+}
+
+.tb-data span {
+    vertical-align: middle;
+    display: inline-block;
+    max-width: 200px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.tb-data#data-title {
+    float: left;
+}
+
+.tb-data#data-type {
+    float: right;
+}
+
+.tb-manual-table {
+    position: relative;
+    display: inline-block;
+    margin-top: 10px;
+    color: var(--text-panel);
+    max-width: 650px;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.tb-manual-table td,
+.tb-manual-table th {
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: center;
+    min-width: 80px;
+}
+
+.tb-manual-table th {
+    background: var(--table-head-dark);
+    height: 50px;
+}
+
+.testbench-manual-panel-buttons {
+    position: relative;
+    display: table-cell;
+    flex-wrap: wrap;
+    right: 0px;
+    text-align: left;
+    width: 200px;
+}
+
+.tb-dialog-button {
+    display: inline;
+    margin: 8px;
+    border-radius: 5px !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+}
+
+.tb-manual-test-buttons {
+    display: flex;
+    margin-top: 20px;
+    margin-left: 30px;
+    margin-right: 30px;
+    height: 25px;
+    overflow: auto;
+}
+
+.tb-manual-test-buttons .tb-case-button-left {
+    border-bottom-left-radius: 5px;
+    border-top-left-radius: 5px;
+    width: 24px;
+}
+
+.tb-manual-test-buttons .tb-case-button-right {
+    border-bottom-right-radius: 5px;
+    border-top-right-radius: 5px;
+    width: 24px;
+}
+
+.tb-manual-test-buttons .tb-test-label {
+    position: relative;
+    top: 0px;
+    line-height: 25px;
+    height: 25px;
+    margin: 0px;
+    padding-left: 2px;
+    padding-right: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background: #c4c4c4;
+    color: black;
+}
+
+.tb-manual-test-buttons .tb-test-label.group-label {
+    text-align: center;
+    width: 100px;
+}
+
+.tb-manual-test-buttons .tb-test-label.case-label {
+    text-align: center;
+    width: 40px;
+}
+
+.tb-group-buttons {
+    float: left;
+}
+
+.tb-case-buttons {
+    float: right;
+}
+
+.tb-test-null {
+    width: 350px !important;
+}
+
+.validation-ui-table td,
+.validation-ui-table th {
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: center;
+    min-width: 80px;
+    color: white;
+}
+</style>

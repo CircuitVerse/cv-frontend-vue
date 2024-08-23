@@ -107,7 +107,28 @@ function newCircuit() {
 }
 </script>
 
-<!-- 
+<!--
 	Some error on inserting empty circuit as subcircuit
-	Some error on checking for rendering 
+	Some error on checking for rendering
 -->
+
+<style scoped>
+#insertSubcircuitDialog {
+    display: block;
+    padding-bottom: 0;
+    overflow: visible;
+}
+
+#insertSubcircuitDialog > p {
+    margin-bottom: 0;
+}
+
+#insertSubcircuitDialog > label {
+    height: 30px;
+    border-radius: 3px;
+    margin: 0 5px;
+    margin-bottom: 4px;
+    justify-content: center;
+    padding-left: 10px;
+}
+</style>

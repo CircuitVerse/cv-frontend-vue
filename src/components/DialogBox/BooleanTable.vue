@@ -21,3 +21,39 @@ const props = defineProps({
     tableBody: { type: Array, default: () => [] },
 })
 </script>
+
+<style scoped>
+#booleanTable {
+    width: 200px;
+}
+
+.content-table {
+    border-collapse: collapse;
+    font-size: 0.9em;
+    min-width: 400px;
+}
+
+.content-table tr th {
+    font-weight: bold;
+}
+
+.content-table th,
+.content-table td {
+    padding: 5px 15px;
+    margin: 0 3px;
+    width: 20%;
+    border-radius: 2px;
+}
+
+.content-table tbody tr {
+    text-align: center;
+    display: flex;
+    margin-bottom: 4px;
+}
+
+.content-table tbody {
+    display: table-row-group;
+    overflow: auto !important;
+    margin-left: 52px;
+}
+</style>

@@ -155,3 +155,79 @@ function renderCircuit() {
     )
 }
 </script>
+
+<style scoped>
+.download-dialog-section-2 .btn {
+    color: var(--text-lite);
+}
+.download-dialog-section-2 .btn:hover {
+    color: var(--text-lite);
+}
+
+.download-dialog-section-2 .option {
+    background: transparent;
+}
+
+#saveImageDialog {
+    border-radius: 2px;
+    padding: 13px;
+    margin: 0;
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 188px !important;
+}
+
+.download-dialog-section-2 .option {
+    padding: 0;
+}
+
+.download-dialog-section-1 > label {
+    height: 30px;
+    width: 85px;
+}
+
+.download-dialog-section-2 {
+    background: transparent;
+    width: 100%;
+    display: inline-flex;
+    justify-content: space-around;
+}
+
+.btn-group-toggle {
+    background-color: transparent;
+    overflow: hidden;
+}
+.download-dialog-section-2 .active-btn {
+    box-shadow: none;
+}
+
+.download-dialog-section-2 .btn input[type='radio']:disabled {
+    background: red !important;
+    color: red !important;
+}
+
+.download-dialog-section-2_2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.download-dialog-section-3 {
+    border-radius: 2px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px;
+    width: 320px;
+    position: inherit;
+}
+
+.download-dialog-section-3 > label {
+    width: 60px;
+    height: 25px;
+    margin-bottom: 0;
+}
+</style>

@@ -297,3 +297,56 @@ function closeCustomThemeDialog() {
     updateBG()
 }
 </script>
+
+<style scoped>
+.theme {
+    color: white;
+    width: 202.5px;
+    line-height: 30px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    margin: 15px;
+    border-radius: 1.5px;
+    transition: all 0.1s ease-out;
+    position: relative;
+    overflow-x: hidden;
+    height: 154px;
+}
+
+.themeNameBox {
+    display: block;
+    width: 100%;
+    cursor: pointer;
+}
+
+.themeSel {
+    background: transparent;
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+
+.customColorInput {
+    cursor: pointer;
+    width: 30%;
+    height: 30px;
+    overflow: visible;
+    position: relative;
+    top: 8px;
+    appearance: auto;
+    background-color: buttonface;
+    color: buttontext;
+    border-width: 1px;
+    border-style: solid;
+    border-color: buttonborder;
+    border-image: initial;
+    padding: 1px 2px;
+}
+
+.customColorLabel {
+    width: 60%;
+    height: 30px;
+}
+</style>

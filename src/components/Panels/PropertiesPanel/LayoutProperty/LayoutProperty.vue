@@ -139,7 +139,7 @@ function layoutFunction(func: string) {
 }
 </script>
 
-<style scoped>
+<style>
 .v-btn.layoutBtn {
     margin: 7px 5px 0px 5px;
     width: 30px;
@@ -154,5 +154,31 @@ function layoutFunction(func: string) {
 
 .layout--btn-group {
     margin-right: 0;
+}
+
+#layoutDialog {
+    /* display: none; */
+    right: 10px;
+    top: 90px;
+    width: 220px;
+}
+
+.layout-title span {
+    display: block;
+    font-weight: bold;
+    margin: 8px;
+}
+
+.layout-title--enable {
+    display: flex;
+    justify-content: space-between;
+    margin: 15px 0;
+    padding: 0 8px;
+}
+
+.Layout-btn {
+    width: 48%;
+    height: 30px;
+    line-height: inherit;
 }
 </style>

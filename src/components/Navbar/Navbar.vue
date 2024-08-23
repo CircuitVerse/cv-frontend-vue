@@ -46,6 +46,41 @@ function checkShowSidebar() {
 }
 </script>
 
+<style>
+.navbar .nav.pull-right {
+    float: right;
+    margin-right: 10px;
+    min-width: 85px;
+}
+
+@media (max-width: 991px) {
+    .navbar .nav.pull-right {
+        display: none;
+    }
+}
+</style>
+
 <style scoped>
 @import './Navbar.css';
+
+.navbar {
+    transition: background 0.5s ease-out;
+}
+
+.projectName {
+    position: relative;
+    left: 0.5rem;
+    font-size: 1em;
+    text-align: center;
+    display: inline-block;
+    width: 35vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 991px) {
+    .projectName {
+        visibility: hidden;
+    }
+}
 </style>

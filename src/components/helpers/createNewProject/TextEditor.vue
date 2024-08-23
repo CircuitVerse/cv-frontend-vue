@@ -442,4 +442,16 @@ export default {
     background: #333;
     color: #fff;
 }
+
+.ProseMirror {
+    height: 12rem;
+    overflow-y: auto;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    outline: none;
+}
+
+.fullscreen .ProseMirror {
+    height: 75vh;
+}
 </style>

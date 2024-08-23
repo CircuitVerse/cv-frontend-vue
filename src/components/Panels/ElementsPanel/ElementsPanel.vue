@@ -240,8 +240,15 @@ function getTooltipText(elementName) {
 }
 </script>
 
-<style scoped>
+<style>
 .v-expansion-panel-title {
     min-height: 36px;
+}
+
+.ce-panel {
+    font: inherit;
+    width: 240px;
+    top: 90px;
+    left: 10px;
 }
 </style>#/simulator/src/metadata
