@@ -1,6 +1,5 @@
 <template>
   <div
-      ref="elementsPanelRef"
       class="noSelect defaultCursor draggable-panel-mobile draggable-panel-css modules ce-panel elementPanel elementsPanelMobile"
       :style="{bottom: simulatorMobileStore.showElementsPanel ? '0' : '-12rem'}"
   >
@@ -100,7 +99,7 @@
 <script lang="ts" setup>
 import { elementHierarchy } from '#/simulator/src/metadata'
 import { simulationArea } from '#/simulator/src/simulationArea'
-import { uxvar } from '#/simulator/src/ux'
+import { createElement, getImgUrl } from './ElementsPanel'
 import modules from '#/simulator/src/modules'
 import { onBeforeMount, onMounted, ref, computed, watch } from 'vue'
 import { useLayoutStore } from '#/store/layoutStore'
@@ -137,8 +136,6 @@ onBeforeMount(() => {
 
 onMounted(() => {
   layoutStore.elementsPanelRef = elementsPanelRef.value
-
-  console.log(SimulatorState.subCircuitElementList.length)
 
   if (SimulatorState.subCircuitElementList.length > 0) {
     selectedLayoutCategory.value = SimulatorState.subCircuitElementList[0].elements
@@ -224,41 +221,15 @@ function selectCategory(categoryData, categoryName, type: ElementsType = 'elemen
   }
 }
 
-function getImgUrl(elementName) {
-  try {
-    const elementImg = new URL(`../../../assets/img/${elementName}.svg`, import.meta.url).href;
-    return elementImg;
-  } catch (e) {
-    console.error("Error loading image:", e);
-    return '';
-  }
-}
-
 var elementInput = ref('')
 
-function createElement(elementName) {
-  if (simulationArea.lastSelected && simulationArea.lastSelected.newElement)
-      simulationArea.lastSelected.delete()
-  var obj = new modules[elementName]()
-  simulationArea.lastSelected = obj
-  uxvar.smartDropXX += 70
-  if (uxvar.smartDropXX / globalScope.scale > width) {
-      uxvar.smartDropXX = 50
-      uxvar.smartDropYY += 80
-  }
-}
-
 const tooltipText = ref('null')
-function getTooltipText(elementName) {
+function getTooltipText(elementName: string) {
   tooltipText.value = modules[elementName].prototype.tooltipText
 }
 </script>
 
 <style scoped>
-.v-expansion-panel-title {
-  min-height: 36px;
-}
-
 .elementsPanelMobile{
   top: unset !important;
   left: 0;

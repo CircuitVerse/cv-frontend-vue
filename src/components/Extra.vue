@@ -13,7 +13,7 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Circuit Elements Panel -->
-    <ElementsPanel  v-if="!simulatorMobileStore.showMobileView"/>
+    <ElementsPanel v-if="!simulatorMobileStore.showMobileView"/>
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
@@ -197,24 +197,26 @@
     </v-btn>
 
     <v-btn
-      class="select-mul-btn"
+      class="cir-btn"
       @mousedown="(e: React.MouseEvent) => {
         if(simulationArea.shiftDown == false) {
             simulationArea.shiftDown = true;
+            selectMultiple = true;
         }
         else {
             simulationArea.shiftDown = false;
+            selectMultiple = false;
             e.preventDefault();
         }
       }"
-      :style="{bottom: simulatorMobileStore.showElementsPanel ? '10rem' : '2rem'}"
+      :style="{bottom: simulatorMobileStore.showElementsPanel ? '10rem' : '2rem', backgroundColor: selectMultiple ? 'var(--primary)' : 'var(--bg-toggle-btn-primary)'}"
       v-if="simulatorMobileStore.showMobileView"
     >
     <i class="fa-solid fa-vector-square"></i>
     </v-btn>
 
     <v-btn
-      class="select-mul-btn"
+      class="cir-btn"
       @mousedown="copyBtnClick()"
       :style="{bottom: simulatorMobileStore.showElementsPanel ? '16rem' : '8rem'}"
       v-if="simulatorMobileStore.showMobileView && !simulatorMobileStore.isCopy"
@@ -223,7 +225,7 @@
     </v-btn>
 
     <v-btn
-      class="select-mul-btn"
+      class="cir-btn"
       @mousedown="pasteBtnClick()"
       :style="{bottom: simulatorMobileStore.showElementsPanel ? '16rem' : '8rem'}"
       v-if="simulatorMobileStore.showMobileView && simulatorMobileStore.isCopy"
@@ -232,7 +234,7 @@
     </v-btn>
 
     <v-btn
-      class="select-mul-btn"
+      class="cir-btn"
       @mousedown="propertiesBtnClick()"
       :style="{bottom: simulatorMobileStore.showElementsPanel ? '22rem' : '14rem'}"
       v-if="simulatorMobileStore.showMobileView"
@@ -276,6 +278,7 @@ import { onMounted, ref } from 'vue'
 
 const layoutStore = useLayoutStore()
 const simulatorMobileStore = useSimulatorMobileStore()
+const selectMultiple = ref(false)
 
 const layoutElementPanelRef = ref<HTMLElement | null>(null);
 
@@ -304,7 +307,7 @@ const propertiesBtnClick = () => {
     position: absolute;
     right: 1.5rem;
     bottom: 15rem;
-    z-index: 100;
+    z-index: 90;
     background-color: var(--bg-toggle-btn-primary);
     color: white;
     border-radius: 100%;
@@ -319,11 +322,11 @@ const propertiesBtnClick = () => {
     width: 4rem;
 }
 
-.select-mul-btn{
+.cir-btn{
     position: absolute;
     left: 1.5rem;
     bottom: 2rem;
-    z-index: 100;
+    z-index: 90;
     background-color: var(--bg-toggle-btn-primary);
     color: white;
     border-radius: 100%;
