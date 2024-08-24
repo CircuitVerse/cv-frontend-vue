@@ -12,7 +12,8 @@
             >
                 {{ projectStore.getProjectName }}
             </span>
-            <User :user-data="userDropdownItems" />
+            <!-- <User :user-data="userDropdownItems" /> -->
+            <UserMenu style="margin: 0 2rem 0 auto" />
         </div>
     </nav>
     <QuickButton />
@@ -21,6 +22,7 @@
 <script lang="ts" setup>
 import QuickButton from '@/Navbar/QuickButton/QuickButton.vue'
 import User from '@/Navbar/User/User.vue'
+import UserMenu from './User/UserMenu.vue'
 import NavbarLinks from '@/Navbar/NavbarLinks/NavbarLinks.vue'
 
 import navbarData from '#/assets/constants/Navbar/NAVBAR_DATA.json'

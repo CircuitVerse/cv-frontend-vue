@@ -6,6 +6,7 @@ import bn from './bn.json'
 const i18n = createI18n({
     legacy: false,
     locale: 'en',
+    fallbackLocale: 'en',
     globalInjection: true,
     // messages
     messages: {
@@ -14,5 +15,13 @@ const i18n = createI18n({
         bn,
     },
 })
+
+export const availableLocale: Array<{
+    title: string
+    value: string
+}> = [
+    { title: 'English', value: 'en' },
+    { title: 'Hindi', value: 'hi' },
+]
 
 export default i18n
