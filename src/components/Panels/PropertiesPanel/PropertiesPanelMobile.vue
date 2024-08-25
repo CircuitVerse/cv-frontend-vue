@@ -4,7 +4,7 @@
       v-model="simulatorMobileStore.showPropertiesPanel"
       :persistent="false"
   >
-    <div id="moduleProperty-inner" class="messageBoxContent">
+    <div id="moduleProperty-inner" class="messageBoxContent moduleProperty">
         <div id="moduleProperty-header">{{ propertiesPanelStore.panelBodyHeader }}</div>
         <ProjectProperty v-if="propertiesPanelStore.panelType == 1" />
         <ElementProperty
@@ -26,7 +26,7 @@
       v-model="simulatorMobileStore.showPropertiesPanel"
       :persistent="false"
   >
-    <div id="layout-body" class="layout-body panel-body messageBoxContent">
+    <div id="layout-body" class="layout-body panel-body messageBoxContent moduleProperty">
         <div class="">
             <v-btn
                 id="decreaseLayoutWidth"

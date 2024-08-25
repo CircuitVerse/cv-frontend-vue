@@ -166,7 +166,7 @@ const simulatorMobileStore = useSimulatorMobileStore()
 
 @media (max-width: 768px) {
   .quick-btn-mobile {
-    padding: 0 0.5rem;
+    padding: 0 0.75rem;
   }
 }
 </style>

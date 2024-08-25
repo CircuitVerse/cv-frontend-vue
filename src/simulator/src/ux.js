@@ -16,7 +16,8 @@ import { updateRestrictedElementsInScope } from './restrictedElementDiv'
 import { dragging } from './drag'
 import { circuitElementList } from './metadata'
 import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
-import { toRefs, watch } from 'vue'
+import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
+import { toRefs } from 'vue'
 
 export const uxvar = {
     smartDropXX: 50,
@@ -413,6 +414,13 @@ export function exitFullView() {
             element.style.display = ''
         }
     })
+
+    // Mobile Components
+
+    const simulatorMobileStore = toRefs(useSimulatorMobileStore());
+
+    simulatorMobileStore.showQuickButtons.value = true
+    simulatorMobileStore.showMobileButtons.value = true
 }
 
 export function fullView() {
@@ -430,6 +438,16 @@ export function fullView() {
             element.style.display = 'none'
         }
     })
+
+    // Mobile Components
+
+    const simulatorMobileStore = toRefs(useSimulatorMobileStore());
+
+    simulatorMobileStore.showElementsPanel.value = false
+    simulatorMobileStore.showPropertiesPanel.value = false
+    simulatorMobileStore.showTimingDiagram.value = false
+    simulatorMobileStore.showQuickButtons.value = false
+    simulatorMobileStore.showMobileButtons.value = false
 
     app.appendChild(exitViewEl)
     exitViewEl.addEventListener('click', exitFullView)

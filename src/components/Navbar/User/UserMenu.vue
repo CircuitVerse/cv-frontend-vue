@@ -7,6 +7,18 @@
               class="userMenu"
               temporary
           >
+              <div class="close-parent">
+                  <v-btn
+                      size="x-small"
+                      icon
+                      class="dialogClose"
+                      @click="
+                          drawer = !drawer
+                      "
+                  >
+                      <v-icon style="font-size: 1.5rem;">mdi-arrow-right</v-icon>
+                  </v-btn>
+              </div>
               <v-list-item
                   class="list-item-avatar"
                   :prepend-avatar="authStore.getUserAvatar"

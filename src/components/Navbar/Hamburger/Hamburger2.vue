@@ -8,6 +8,18 @@
               location="right"
               temporary
           >
+              <div class="close-parent">
+                  <v-btn
+                      size="x-small"
+                      icon
+                      class="dialogClose"
+                      @click="
+                          navDrawer = !navDrawer
+                      "
+                  >
+                      <v-icon style="font-size: 1.5rem;">mdi-arrow-right</v-icon>
+                  </v-btn>
+              </div>
               <v-list-item class="d-flex justify-center align-center">
                   <span>Project Name: &nbsp;</span>
                   <span style="font-size: 1.5rem">
@@ -116,5 +128,8 @@ function userMenuClick() {
 .userMenuHamBurger .avatar-btn {
   /* display: hidden !important; */
   visibility: hidden !important;
+}
+.close-parent {
+  height: 2rem;
 }
 </style>

@@ -255,10 +255,6 @@ type SimulatorStateType = {
     width: 100%;
     margin-bottom: 5px;
 }
-
-#projname {
-    color: white;
-}
 </style>
 
 <!-- TODO: add type to scopeList and fix clock timer and clock enable and lite mode (crashing with continuous resetup() calls) -->

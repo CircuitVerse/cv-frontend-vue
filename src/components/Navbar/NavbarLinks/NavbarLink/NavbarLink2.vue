@@ -25,7 +25,7 @@
                   :key="index"
                   density="compact"
                   :id="listItem.itemid"
-                  @click.stop="() => logixFunction[listItem.itemid]"
+                  @click.stop="logixFunction[listItem.itemid]()"
                   v-bind="
                   Object.fromEntries(
                       listItem.attributes.map((attr:AttrType) => [

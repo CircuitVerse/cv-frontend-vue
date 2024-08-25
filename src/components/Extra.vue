@@ -1,5 +1,5 @@
 <template>
-    <QuickButtonMobile v-if="simulatorMobileStore.showMobileView" />
+    <QuickButtonMobile v-if="simulatorMobileStore.showQuickButtons && simulatorMobileStore.showMobileView" />
     <TimingDiagramMobile v-if="simulatorMobileStore.showMobileView" v-show="simulatorMobileStore.showTimingDiagram" />
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- TabsBar -->
@@ -191,7 +191,7 @@
       class="cir-ele-btn"
       @mousedown="simulatorMobileStore.showElementsPanel = !simulatorMobileStore.showElementsPanel"
       :style="{bottom: simulatorMobileStore.showElementsPanel ? '10rem' : '2rem'}"
-      v-if="simulatorMobileStore.showMobileView"
+      v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.showMobileView"
     >
         <i class="fas fa-bezier-curve"></i>
     </v-btn>
@@ -210,7 +210,7 @@
         }
       }"
       :style="{bottom: simulatorMobileStore.showElementsPanel ? '10rem' : '2rem', backgroundColor: selectMultiple ? 'var(--primary)' : 'var(--bg-toggle-btn-primary)'}"
-      v-if="simulatorMobileStore.showMobileView"
+      v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.showMobileView"
     >
     <i class="fa-solid fa-vector-square"></i>
     </v-btn>
@@ -219,7 +219,7 @@
       class="cir-btn"
       @mousedown="copyBtnClick()"
       :style="{bottom: simulatorMobileStore.showElementsPanel ? '16rem' : '8rem'}"
-      v-if="simulatorMobileStore.showMobileView && !simulatorMobileStore.isCopy"
+      v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.showMobileView && !simulatorMobileStore.isCopy"
     >
     <i class="fa-solid fa-copy"></i>
     </v-btn>
@@ -228,7 +228,7 @@
       class="cir-btn"
       @mousedown="pasteBtnClick()"
       :style="{bottom: simulatorMobileStore.showElementsPanel ? '16rem' : '8rem'}"
-      v-if="simulatorMobileStore.showMobileView && simulatorMobileStore.isCopy"
+      v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.showMobileView && simulatorMobileStore.isCopy"
     >
     <i class="fa-solid fa-paste"></i>
     </v-btn>
@@ -237,7 +237,7 @@
       class="cir-btn"
       @mousedown="propertiesBtnClick()"
       :style="{bottom: simulatorMobileStore.showElementsPanel ? '22rem' : '14rem'}"
-      v-if="simulatorMobileStore.showMobileView"
+      v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.showMobileView"
     >
     <i class="fa-solid fa-sliders"></i>
     </v-btn>
