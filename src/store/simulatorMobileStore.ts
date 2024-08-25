@@ -12,7 +12,9 @@ export const useSimulatorMobileStore = defineStore("simulatorMobileStore", () =>
   const showPropertiesPanel = ref(false);
   const showQuickButtons = ref(true);
   const showMobileButtons = ref(true);
+  const showVerilogPanel = ref(false);
   const isCopy = ref(false);
+  const isVerilog = ref(false);
   const showCircuits = ref<ElementsType>('elements')
 
   showMobileView.value = window.innerWidth <= minWidthToShowMobile.value ? true : false
@@ -26,7 +28,9 @@ export const useSimulatorMobileStore = defineStore("simulatorMobileStore", () =>
     showPropertiesPanel,
     showQuickButtons,
     showMobileButtons,
+    showVerilogPanel,
     isCopy,
+    isVerilog,
     showCircuits,
   };
 });

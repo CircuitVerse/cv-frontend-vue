@@ -31,6 +31,8 @@ import 'codemirror/addon/hint/show-hint.js'
 import 'codemirror/addon/display/autorefresh.js'
 import { showError, showMessage } from './utils'
 import { showProperties } from './ux'
+import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
+import { toRefs } from 'vue'
 
 var editor
 var verilogMode = false
@@ -42,7 +44,13 @@ export async function createVerilogCircuit() {
         true,
         true
     )
-    if (returned) verilogModeSet(true)
+
+    if (returned) {
+        verilogModeSet(true)
+
+        const simulatorMobileStore = toRefs(useSimulatorMobileStore())
+        simulatorMobileStore.isVerilog.value = true
+    }
 }
 
 export function saveVerilogCode() {
@@ -74,9 +82,19 @@ export function verilogModeSet(mode) {
     if (mode) {
         document.getElementById('code-window').style.display = 'block'
         document.querySelector('.elementPanel').style.display = 'none'
+
+        const timingDiagramPanel = document.querySelector('.timing-diagram-panel')
+        if(timingDiagramPanel)
         document.querySelector('.timing-diagram-panel').style.display = 'none'
+
+        const quickBtn = document.querySelector('.quick-btn')
+        if(quickBtn)
         document.querySelector('.quick-btn').style.display = 'none'
+
+        const verilogEditorPanel = document.getElementById('verilogEditorPanel')
+        if(verilogEditorPanel)
         document.getElementById('verilogEditorPanel').style.display = 'block'
+
         if (!embed) {
             simulationArea.lastSelected = globalScope.root
             showProperties(undefined)

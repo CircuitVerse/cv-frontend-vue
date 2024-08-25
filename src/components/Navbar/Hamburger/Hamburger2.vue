@@ -12,7 +12,7 @@
                   <v-btn
                       size="x-small"
                       icon
-                      class="dialogClose"
+                      class="dialogClose navDrawerClose"
                       @click="
                           navDrawer = !navDrawer
                       "
@@ -129,7 +129,14 @@ function userMenuClick() {
   /* display: hidden !important; */
   visibility: hidden !important;
 }
+
 .close-parent {
   height: 2rem;
+  display: flex;
+  justify-content: end;
+}
+
+.navDrawerClose {
+  position: relative;
 }
 </style>

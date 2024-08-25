@@ -57,7 +57,12 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Verilog Editor Panel -->
-    <VerilogEditorPanel />
+    <VerilogEditorPanel v-if="!simulatorMobileStore.showMobileView" />
+
+    <div id="code-window" class="code-window">
+        <textarea id="codeTextArea"></textarea>
+    </div>
+    <VerilogEditorPanelMobile v-if="simulatorMobileStore.showMobileView && simulatorMobileStore.showVerilogPanel" />
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
@@ -191,7 +196,7 @@
       class="cir-ele-btn"
       @mousedown="simulatorMobileStore.showElementsPanel = !simulatorMobileStore.showElementsPanel"
       :style="{bottom: simulatorMobileStore.showElementsPanel ? '10rem' : '2rem'}"
-      v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.showMobileView"
+      v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.showMobileView && !simulatorMobileStore.isVerilog"
     >
         <i class="fas fa-bezier-curve"></i>
     </v-btn>
@@ -210,36 +215,44 @@
         }
       }"
       :style="{bottom: simulatorMobileStore.showElementsPanel ? '10rem' : '2rem', backgroundColor: selectMultiple ? 'var(--primary)' : 'var(--bg-toggle-btn-primary)'}"
-      v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.showMobileView"
+      v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.showMobileView && !simulatorMobileStore.isVerilog"
     >
-    <i class="fa-solid fa-vector-square"></i>
+        <i class="fa-solid fa-vector-square"></i>
+    </v-btn>
+
+    <v-btn
+      class="cir-verilog-btn"
+      @mousedown="simulatorMobileStore.showVerilogPanel = !simulatorMobileStore.showVerilogPanel"
+      v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.isVerilog && simulatorMobileStore.showMobileView"
+    >
+        <i class="fa-solid fa-gears"></i>
     </v-btn>
 
     <v-btn
       class="cir-btn"
       @mousedown="copyBtnClick()"
       :style="{bottom: simulatorMobileStore.showElementsPanel ? '16rem' : '8rem'}"
-      v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.showMobileView && !simulatorMobileStore.isCopy"
+      v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.showMobileView && !simulatorMobileStore.isCopy && !simulatorMobileStore.isVerilog"
     >
-    <i class="fa-solid fa-copy"></i>
+        <i class="fa-solid fa-copy"></i>
     </v-btn>
 
     <v-btn
       class="cir-btn"
       @mousedown="pasteBtnClick()"
       :style="{bottom: simulatorMobileStore.showElementsPanel ? '16rem' : '8rem'}"
-      v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.showMobileView && simulatorMobileStore.isCopy"
+      v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.showMobileView && simulatorMobileStore.isCopy && !simulatorMobileStore.isVerilog"
     >
-    <i class="fa-solid fa-paste"></i>
+        <i class="fa-solid fa-paste"></i>
     </v-btn>
 
     <v-btn
       class="cir-btn"
       @mousedown="propertiesBtnClick()"
-      :style="{bottom: simulatorMobileStore.showElementsPanel ? '22rem' : '14rem'}"
+      :style="{bottom: simulatorMobileStore.showElementsPanel ? `${propertiesPanelPos.up}rem` : `${propertiesPanelPos.down}rem`}"
       v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.showMobileView"
     >
-    <i class="fa-solid fa-sliders"></i>
+        <i class="fa-solid fa-sliders"></i>
     </v-btn>
 
     <ElementsPanelMobile v-if="simulatorMobileStore.showMobileView" />
@@ -248,6 +261,7 @@
 
 <script lang="ts" setup>
 import VerilogEditorPanel from './Panels/VerilogEditorPanel/VerilogEditorPanel.vue'
+import VerilogEditorPanelMobile from './Panels/VerilogEditorPanel/VerilogEditorPanelMobile.vue'
 import ElementsPanel from './Panels/ElementsPanel/ElementsPanel.vue'
 import PropertiesPanel from './Panels/PropertiesPanel/PropertiesPanel.vue'
 import TimingDiagramPanel from './Panels/TimingDiagramPanel/TimingDiagramPanel.vue'
@@ -274,11 +288,25 @@ import { useLayoutStore } from '#/store/layoutStore'
 import  { panStart, panMove, panStop } from '#/simulator/src/listeners'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { useState } from '#/store/SimulatorStore/state'
-import { onMounted, ref } from 'vue'
+import { onMounted, reactive, ref, watch } from 'vue'
 
 const layoutStore = useLayoutStore()
 const simulatorMobileStore = useSimulatorMobileStore()
 const selectMultiple = ref(false)
+const propertiesPanelPos = reactive({
+    up: 22,
+    down: 14
+});
+
+watch(() => simulatorMobileStore.isVerilog, (val) => {
+    if (val) {
+        propertiesPanelPos.up = 10
+        propertiesPanelPos.down = 2
+    } else {
+        propertiesPanelPos.up = 22
+        propertiesPanelPos.down = 14
+    }
+})
 
 const layoutElementPanelRef = ref<HTMLElement | null>(null);
 
@@ -303,7 +331,7 @@ const propertiesBtnClick = () => {
 </script>
 
 <style scoped>
-.cir-ele-btn{
+.cir-ele-btn, .cir-verilog-btn {
     position: absolute;
     right: 1.5rem;
     bottom: 15rem;
@@ -320,6 +348,10 @@ const propertiesBtnClick = () => {
     padding: 1rem;
     height: 4rem;
     width: 4rem;
+}
+
+.cir-verilog-btn {
+    bottom: 2rem;
 }
 
 .cir-btn{
