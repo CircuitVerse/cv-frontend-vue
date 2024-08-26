@@ -7,12 +7,19 @@
     "distDir": "../dist"
   },
   "package": {
-    "productName": "cv-desktop-vue",
+    "productName": "CircuitVerse",
     "version": "0.1.0"
   },
   "tauri": {
     "allowlist": {
-      "all": false
+      "fs": {
+        "readFile": true,
+        "writeFile": true,
+        "scope": ["*/**"]
+      },
+      "path": {
+        "all": true
+      }
     },
     "bundle": {
       "active": true,
