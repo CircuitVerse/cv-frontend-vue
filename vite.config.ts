@@ -31,9 +31,18 @@ export default defineConfig({
     },
     base: '/simulatorvue/',
     build: {
-        outDir: '../public/simulatorvue',
+        outDir: './public/simulatorvue',
         assetsDir: 'assets',
-        chunkSizeWarningLimit: 1600,
+        chunkSizeWarningLimit: 2000,
+        rollupOptions: {
+            output: {
+                manualChunks(id) {
+                    if (id.includes('node_modules')) {
+                        return id.toString().split('node_modules/')[1].split('/')[0].toString();
+                    }
+                }
+            }
+        }
     },
     server: {
         port: 4000,
