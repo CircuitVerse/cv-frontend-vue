@@ -11,7 +11,7 @@ node_modules
 dist
 dist-ssr
 *.local
-public/simulatorvue
+public/output
 
 # Editor directories and files
 .vscode/*

@@ -29,9 +29,9 @@ export default defineConfig({
             '@': fileURLToPath(new URL('./src/components', import.meta.url)),
         },
     },
-    base: '/simulatorvue/',
+    base: process.env.VITE_BASE_URL,
     build: {
-        outDir: './public/simulatorvue',
+        outDir: './public/output',
         assetsDir: 'assets',
         chunkSizeWarningLimit: 2000,
         rollupOptions: {
@@ -57,5 +57,6 @@ export default defineConfig({
             },
             // }),
         },
+        host: true
     },
 })
