@@ -80,7 +80,12 @@ export function verilogModeSet(mode) {
     if (mode == verilogMode) return
     verilogMode = mode
     if (mode) {
+        const code_window = document.getElementById('code-window')
+        if(code_window)
         document.getElementById('code-window').style.display = 'block'
+
+        const elementPanel = document.querySelector('.elementPanel')
+        if(elementPanel)
         document.querySelector('.elementPanel').style.display = 'none'
 
         const timingDiagramPanel = document.querySelector('.timing-diagram-panel')
@@ -102,10 +107,24 @@ export function verilogModeSet(mode) {
         }
         resetVerilogCode()
     } else {
+        const code_window = document.getElementById('code-window')
+        if(code_window)
         document.getElementById('code-window').style.display = 'none'
+
+        const elementPanel = document.querySelector('.elementPanel')
+        if(elementPanel)
         document.querySelector('.elementPanel').style.display = ''
+
+        const timingDiagramPanel = document.querySelector('.timing-diagram-panel')
+        if(timingDiagramPanel)
         document.querySelector('.timing-diagram-panel').style.display = ''
+
+        const quickBtn = document.querySelector('.quick-btn')
+        if(quickBtn)
         document.querySelector('.quick-btn').style.display = ''
+
+        const verilogEditorPanel = document.getElementById('verilogEditorPanel')
+        if(verilogEditorPanel)
         document.getElementById('verilogEditorPanel').style.display = 'none'
     }
 }
