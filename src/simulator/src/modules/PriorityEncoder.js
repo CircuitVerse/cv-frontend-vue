@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode, dec2bin } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { correctWidth, rect, fillText } from '../canvasApi'
 /**
  * @class
@@ -26,7 +26,8 @@ export default class PriorityEncoder extends CircuitElement {
             this.yOff = 2
         }
 
-        this.setDimensions(20, this.yOff * 5 * this.inputSize)
+        this.setDimensions(20, this.yOff * 5 * this.inputSize + 10);
+        this.rightDimensionX += 10;
         this.directionFixed = true
         this.rectangleObject = false
 
@@ -179,7 +180,7 @@ export default class PriorityEncoder extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         )
             ctx.fillStyle = colors['hover_select']
         ctx.fill()

@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { correctWidth, lineTo, moveTo, drawCircle2 } from '../canvasApi'
 /**
  * @class
@@ -74,7 +74,7 @@ export default class NotGate extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         )
             ctx.fillStyle = colors['hover_select']
         ctx.fill()
@@ -102,7 +102,7 @@ export default class NotGate extends CircuitElement {
  * @category modules
  */
 NotGate.prototype.tooltipText =
-    'Not Gate Tooltip : Inverts the input digital signal.'
+    'Not Gate ToolTip : Inverts the input digital signal.'
 NotGate.prototype.helplink = 'https://docs.circuitverse.org/#/chapter4/4gates?id=not-gate'
 NotGate.prototype.objectType = 'NotGate'
 NotGate.prototype.verilogType = 'not'

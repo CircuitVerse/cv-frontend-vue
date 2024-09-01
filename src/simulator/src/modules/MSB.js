@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode, dec2bin } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { correctWidth, rect, fillText } from '../canvasApi'
 /**
  * @class
@@ -93,7 +93,7 @@ export default class MSB extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         )
         ctx.fillStyle = colors['hover_select']
         ctx.fill()

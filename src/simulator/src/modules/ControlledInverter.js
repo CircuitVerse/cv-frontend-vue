@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { correctWidth, lineTo, moveTo, drawCircle2 } from '../canvasApi'
 /**
  * @class
@@ -68,9 +68,14 @@ export default class ControlledInverter extends CircuitElement {
                 (32 - this.bitWidth)
             simulationArea.simulationQueue.add(this.output1)
         }
-        if (this.state.value === 0) {
-            this.output1.value = undefined
+        else if (
+            this.output1.value !== undefined &&
+            !simulationArea.contentionPending.has(this.output1)
+        ) {
+            this.output1.value = undefined;
+            simulationArea.simulationQueue.add(this.output1);
         }
+        simulationArea.contentionPending.removeAllContentionsForNode(this.output1);
     }
 
     /**
@@ -92,7 +97,7 @@ export default class ControlledInverter extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         )
             ctx.fillStyle = colors['hover_select']
         ctx.fill()

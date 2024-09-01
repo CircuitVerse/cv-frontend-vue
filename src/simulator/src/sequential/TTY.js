@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { correctWidth, lineTo, moveTo, fillText3 } from '../canvasApi'
 import { colors } from '../themer/themer'
 
@@ -71,7 +71,7 @@ export default class TTY extends CircuitElement {
 
     /**
      * @memberof TTY
-     * this funciton is used to change the size of the screen
+     * this function is used to change the size of the screen
      */
     changeRowSize(size) {
         if (size == undefined || size < 1 || size > 10) return
@@ -84,7 +84,7 @@ export default class TTY extends CircuitElement {
 
     /**
      * @memberof TTY
-     * this funciton is used to change the size of the screen
+     * this function is used to change the size of the screen
      */
     changeColSize(size) {
         if (size == undefined || size < 20 || size > 100) return

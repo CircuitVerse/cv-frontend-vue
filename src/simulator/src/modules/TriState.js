@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { correctWidth, lineTo, moveTo } from '../canvasApi'
 /**
  * @class
@@ -67,15 +67,14 @@ export default class TriState extends CircuitElement {
                 this.output1.value = this.inp1.value // >>>0)<<(32-this.bitWidth))>>>(32-this.bitWidth);
                 simulationArea.simulationQueue.add(this.output1)
             }
-            simulationArea.contentionPending.clean(this)
         } else if (
             this.output1.value !== undefined &&
-            !simulationArea.contentionPending.contains(this)
+            !simulationArea.contentionPending.has(this.output1)
         ) {
             this.output1.value = undefined
             simulationArea.simulationQueue.add(this.output1)
         }
-        simulationArea.contentionPending.clean(this)
+        simulationArea.contentionPending.removeAllContentionsForNode(this.output1);
     }
 
     /**
@@ -97,7 +96,7 @@ export default class TriState extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         )
             ctx.fillStyle = colors['hover_select']
         ctx.fill()

@@ -1,7 +1,7 @@
 /* eslint-disable no-multi-assign */
 /* eslint-disable no-bitwise */
 import { scheduleUpdate } from './engine'
-import simulationArea from './simulationArea'
+import { simulationArea } from './simulationArea'
 import {
     fixDirection,
     fillText,
@@ -154,7 +154,7 @@ export default class CircuitElement {
     /**
      * To generate JSON-safe data that can be loaded
      * @memberof CircuitElement
-     * @return {JSON} - the data to be saved
+     * @return {object} - the data to be saved
      */
     saveObject() {
         var data = {
@@ -176,7 +176,7 @@ export default class CircuitElement {
     /**
      * Always overriden
      * @memberof CircuitElement
-     * @return {JSON} - the data to be saved
+     * @return {object} - the data to be saved
      */
     // eslint-disable-next-line class-methods-use-this
     customSave() {
@@ -332,7 +332,7 @@ export default class CircuitElement {
             this.drag()
             if (
                 !simulationArea.shiftDown &&
-                simulationArea.multipleObjectSelections.contains(this)
+                simulationArea.multipleObjectSelections.includes(this)
             ) {
                 for (
                     let i = 0;
@@ -348,7 +348,7 @@ export default class CircuitElement {
             this.startDragging()
             if (
                 !simulationArea.shiftDown &&
-                simulationArea.multipleObjectSelections.contains(this)
+                simulationArea.multipleObjectSelections.includes(this)
             ) {
                 for (
                     let i = 0;
@@ -376,9 +376,9 @@ export default class CircuitElement {
                 if (simulationArea.shiftDown) {
                     simulationArea.lastSelected = undefined
                     if (
-                        simulationArea.multipleObjectSelections.contains(this)
+                        simulationArea.multipleObjectSelections.includes(this)
                     ) {
-                        simulationArea.multipleObjectSelections.clean(this)
+                        simulationArea.multipleObjectSelections = simulationArea.multipleObjectSelections.filter(x => x !== this);
                     } else {
                         simulationArea.multipleObjectSelections.push(this)
                     }
@@ -578,7 +578,7 @@ export default class CircuitElement {
             if (
                 (this.hover && !simulationArea.shiftDown) ||
                 simulationArea.lastSelected === this ||
-                simulationArea.multipleObjectSelections.contains(this)
+                simulationArea.multipleObjectSelections.includes(this)
             )
                 ctx.fillStyle = colors['hover_select']
             ctx.fill()
@@ -734,7 +734,7 @@ export default class CircuitElement {
     // OVERRIDE WITH CAUTION
     delete() {
         simulationArea.lastSelected = undefined
-        this.scope[this.objectType].clean(this) // CHECK IF THIS IS VALID
+        this.scope[this.objectType] = this.scope[this.objectType].filter(x => x !== this)
         if (this.deleteNodesWhenDeleted) {
             this.deleteNodes()
         } else {
@@ -852,7 +852,8 @@ export default class CircuitElement {
     resolve() {}
 
     /**
-     * Helper Function to process verilog
+     * Helper Function to process Verilog
+     * @return {string}
      */
     processVerilog() {
         // Output count used to sanitize output
@@ -882,7 +883,7 @@ export default class CircuitElement {
                     if (
                         !this.scope.verilogWireList[
                             this.nodeList[i].bitWidth
-                        ].contains(this.nodeList[i].verilogLabel)
+                        ].includes(this.nodeList[i].verilogLabel)
                     )
                         this.scope.verilogWireList[
                             this.nodeList[i].bitWidth
@@ -956,8 +957,8 @@ export default class CircuitElement {
     }
 
     /**
-     * Helper Function to generate verilog
-     * @return {JSON}
+     * Helper Function to generate Verilog.
+     * @return {string}
      */
     generateVerilog() {
         // Example: and and_1(_out, _out, _Q[0]);
