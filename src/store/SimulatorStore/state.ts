@@ -17,8 +17,6 @@ export interface State {
     successMessages: string[]
     circuit_name_clickable: boolean;
     dialogBox: {
-        // create_circuit: boolean
-        // delete_circuit: boolean
         combinationalanalysis_dialog: boolean
         hex_bin_dec_converter_dialog: boolean
         saveimage_dialog: boolean
@@ -31,7 +29,6 @@ export interface State {
         export_project_dialog: boolean
         import_project_dialog: boolean
     }
-    // createCircuit: Object | { circuitName: string }
     combinationalAnalysis: Object
     subCircuitElementList: Array<LayoutElementGroup>
     isEmptySubCircuitElementList: boolean
@@ -54,8 +51,6 @@ export const useState = defineStore({
             successMessages: [],
             circuit_name_clickable: false,
             dialogBox: {
-                // create_circuit: false,
-                // delete_circuit: false,
                 combinationalanalysis_dialog: false,
                 hex_bin_dec_converter_dialog: false,
                 saveimage_dialog: false,
@@ -68,9 +63,6 @@ export const useState = defineStore({
                 export_project_dialog: false,
                 import_project_dialog: false,
             },
-            // createCircuit: {
-            //     circuitName: 'Untitled Circuit',
-            // },
             combinationalAnalysis: {
                 inputNameList: 'eg. In A, In B',
                 outputNameList: 'eg. Out X, Out Y',

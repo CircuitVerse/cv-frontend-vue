@@ -18,21 +18,7 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Layout Element Panel -->
-    <div
-        v-if="!simulatorMobileStore.showMobileView"
-        class="noSelect defaultCursor layoutElementPanel draggable-panel draggable-panel-css"
-        ref="layoutElementPanelRef"
-    >
-        <div class="panel-header">
-            Layout Elements
-            <span class="fas fa-minus-square minimize"></span>
-            <span class="fas fa-external-link-square-alt maximize"></span>
-        </div>
-        <div class="panel-body">
-            <div class="search-results"></div>
-            <div id="subcircuitMenu" class="accordion"></div>
-        </div>
-    </div>
+    <LayoutElementsPanel />
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
@@ -275,6 +261,7 @@ import CustomShortcut from './DialogBox/CustomShortcut.vue'
 import InsertSubcircuit from './DialogBox/InsertSubcircuit.vue'
 import OpenOffline from './DialogBox/OpenOffline.vue'
 import ReportIssue from './ReportIssue/ReportIssue.vue'
+import LayoutElementsPanel from './Panels/LayoutElementsPanel/LayoutElementsPanel.vue'
 import TestBenchPanel from './Panels/TestBenchPanel/TestBenchPanel.vue'
 import TestBenchCreator from './Panels/TestBenchPanel/TestBenchCreator.vue'
 import TestBenchValidator from './Panels/TestBenchPanel/TestBenchValidator.vue'
