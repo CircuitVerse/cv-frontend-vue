@@ -17,7 +17,6 @@ import { dragging } from './drag'
 import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
 import { toRefs } from 'vue'
 import { circuitElementList } from './metadata'
-import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { toRefs } from 'vue'
 
