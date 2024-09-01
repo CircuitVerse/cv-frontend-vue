@@ -3,7 +3,7 @@ import modules from "#/simulator/src/modules"
 import { uxvar } from "#/simulator/src/ux"
 
 export function createElement(elementName: string) {
-  if (simulationArea.lastSelected && simulationArea.lastSelected.newElement)
+  if (simulationArea.lastSelected?.newElement)
       simulationArea.lastSelected.delete()
   var obj = new modules[elementName]()
   simulationArea.lastSelected = obj
