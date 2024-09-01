@@ -58,6 +58,9 @@ export function showPropertiesPanel() {
 }
 
 export function layoutFunction(func: string) {
+    if (!layoutFunctions[func]) {
+        throw new Error(`Function \`${func}\` not found in layoutFunctions.`);
+    }
     layoutFunctions[func]()
     scheduleUpdate()
 }
