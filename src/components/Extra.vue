@@ -33,7 +33,10 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Message Display -->
-    <div id="MessageDiv"></div>
+    <div id="MessageDiv">
+        <div v-for="mes in useState().successMessages" class='alert alert-success' role='alert'> {{ mes }}</div>
+        <div v-for="error in useState().errorMessages" class='alert alert-danger' role='alert'> {{ error }}</div>
+    </div>
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
@@ -161,4 +164,5 @@ import LayoutElementsPanel from './Panels/LayoutElementsPanel/LayoutElementsPane
 import TestBenchPanel from './Panels/TestBenchPanel/TestBenchPanel.vue'
 import TestBenchCreator from './Panels/TestBenchPanel/TestBenchCreator.vue'
 import TestBenchValidator from './Panels/TestBenchPanel/TestBenchValidator.vue'
+import { useState } from '#/store/SimulatorStore/state'
 </script>
