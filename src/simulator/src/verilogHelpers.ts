@@ -1,4 +1,6 @@
-export function sanitizeLabel(name) {
+import Node from "./node"
+
+export function sanitizeLabel(name: string) {
     var temp = name
     // if there is a space anywhere but the last place
     // replace spaces by "_"
@@ -19,7 +21,7 @@ export function sanitizeLabel(name) {
     return temp
 }
 
-export function generateNodeName(node, currentCount, totalCount) {
+export function generateNodeName(node: Node, currentCount: number, totalCount: number) {
     if (node.verilogLabel) return node.verilogLabel
     var parentVerilogLabel = node.parent.verilogLabel
     var nodeName

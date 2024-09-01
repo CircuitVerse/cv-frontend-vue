@@ -17,8 +17,6 @@ import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
 
 /**
  * The prompt for combinational analysis
- * @param {Scope=} - the circuit in which we want combinational analysis
- * @category combinationalAnalysis
  */
 export function createCombinationalAnalysisPrompt(scope = globalScope) {
     scheduleBackup()
