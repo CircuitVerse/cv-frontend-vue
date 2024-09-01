@@ -44,13 +44,25 @@ export async function createVerilogCircuit() {
         true,
         true
     )
+export async function createVerilogCircuit() {
+    const returned = await createNewCircuitScope(
+        undefined,
+        undefined,
+        true,
+        true
+    )
 
     if (returned) {
         verilogModeSet(true)
 
-        const simulatorMobileStore = toRefs(useSimulatorMobileStore())
-        simulatorMobileStore.isVerilog.value = true
+        try {
+            const simulatorMobileStore = toRefs(useSimulatorMobileStore())
+            simulatorMobileStore.isVerilog.value = true
+        } catch (error) {
+            console.error('Failed to update simulatorMobileStore:', error)
+        }
     }
+}
 }
 
 export function saveVerilogCode() {
