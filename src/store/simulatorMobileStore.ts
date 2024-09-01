@@ -17,7 +17,7 @@ export const useSimulatorMobileStore = defineStore("simulatorMobileStore", () =>
   const isVerilog = ref(false);
   const showCircuits = ref<ElementsType>('elements')
 
-  showMobileView.value = window.innerWidth <= minWidthToShowMobile.value ? true : false
+  showMobileView.value = window.innerWidth <= minWidthToShowMobile.value
 
   return {
     minWidthToShowMobile,
