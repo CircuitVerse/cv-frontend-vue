@@ -271,13 +271,11 @@ import ElementsPanelMobile from './Panels/ElementsPanel/ElementsPanelMobile.vue'
 import PropertiesPanelMobile from './Panels/PropertiesPanel/PropertiesPanelMobile.vue'
 import { simulationArea } from '#/simulator/src/simulationArea'
 import { paste } from '#/simulator/src/events'
-import { useLayoutStore } from '#/store/layoutStore'
 import  { panStart, panMove, panStop } from '#/simulator/src/listeners'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { useState } from '#/store/SimulatorStore/state'
-import { onMounted, reactive, ref, watch } from 'vue'
+import { reactive, ref, watch } from 'vue'
 
-const layoutStore = useLayoutStore()
 const simulatorMobileStore = useSimulatorMobileStore()
 const selectMultiple = ref(false)
 const propertiesPanelPos = reactive({
