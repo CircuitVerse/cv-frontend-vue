@@ -295,12 +295,6 @@ watch(() => simulatorMobileStore.isVerilog, (val) => {
     }
 })
 
-const layoutElementPanelRef = ref<HTMLElement | null>(null);
-
-onMounted(() => {
-    layoutStore.layoutElementPanelRef = layoutElementPanelRef.value
-})
-
 const copyBtnClick = () => {
     window.document.execCommand('copy')
     simulationArea.shiftDown = false
