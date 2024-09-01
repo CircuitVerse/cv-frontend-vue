@@ -286,7 +286,7 @@ export function panStop(e) {
     if (simulationArea.touch) {
         const { isCopy } = toRefs(simulatorMobileStore)
         // small hack so Current circuit element should not spwan above last circuit element
-        if (!isCopy) {
+        if (!isCopy.value) {
             findDimensions(globalScope);
             simulationArea.mouseX = 100 + simulationArea.maxWidth || 0;
             simulationArea.mouseY = simulationArea.minHeight || 0;

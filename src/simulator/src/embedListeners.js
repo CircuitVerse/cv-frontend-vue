@@ -144,7 +144,7 @@ export default function startListeners() {
         simulationArea.touch = true;
         embedPanStart(e);
     });
-    document.getElementById('simulationArea').addEventListener('touchmove', (e) => {
+    document.getElementById('simulationArea').addEventListener('touchmove', () => {
         simulationArea.touch = true;
         BlockElementPan();
     });
@@ -218,7 +218,7 @@ export default function startListeners() {
             simulationArea.changeClockTime(prompt('Enter Time:'));
         }
     });
-    document.getElementById('simulationArea').addEventListener('dblclick', (e) => {
+    document.getElementById('simulationArea').addEventListener('dblclick', () => {
         scheduleUpdate(2);
         if (simulationArea.lastSelected && simulationArea.lastSelected.dblclick !== undefined) {
             simulationArea.lastSelected.dblclick();
