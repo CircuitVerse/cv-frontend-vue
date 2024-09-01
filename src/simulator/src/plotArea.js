@@ -4,7 +4,7 @@ import { convertors } from './utils'
 var DPR = window.devicePixelRatio || 1
 
 // Helper function to scale to display
-function sh(x) {
+export function sh(x) {
     return x * DPR
 }
 
