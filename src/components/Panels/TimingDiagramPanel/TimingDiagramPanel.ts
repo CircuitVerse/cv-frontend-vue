@@ -37,6 +37,6 @@ export function handleButtonClick(button: string) {
 export function handleUnitsChange(event: Event) {
   const inputElem = event.target as HTMLInputElement
   const timeUnits = parseInt(inputElem.value, 10)
-  if (isNaN(timeUnits) || timeUnits < 1) return
+  if (Number.isNaN(timeUnits) || timeUnits < 1) return
   plotArea.cycleUnit = timeUnits
 }
