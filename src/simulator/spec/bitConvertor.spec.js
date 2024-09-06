@@ -7,6 +7,9 @@ import i18n from '#/locales/i18n';
 import { routes } from '#/router';
 import vuetify from '#/plugins/vuetify';
 import simulator from '#/pages/simulator.vue';
+import ResizeObserver from 'resize-observer-polyfill';
+
+global.ResizeObserver = ResizeObserver;
 
 vi.mock('codemirror', async (importOriginal) => {
     const actual = await importOriginal();
