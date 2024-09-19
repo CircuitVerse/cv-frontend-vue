@@ -14,6 +14,7 @@ import { resetup } from './setup'
 import { verilogModeGet } from './Verilog2CV'
 import { renderOrder, updateOrder } from './metadata'
 import ContentionPendingData from './contention';
+import { hidetabs, visibletabs } from './listeners';
 
 /**
  * Core of the simulation and rendering algorithm.
@@ -401,53 +402,65 @@ export function updateSelectionsAndPane(scope = globalScope) {
  * @category engine
  */
 export function play(scope = globalScope, resetNodes = false) {
-    if (errorDetected) return // Don't simulate until error is fixed
-    if (loading === true) return // Don't simulate until loaded
+    try {
+        if (errorDetected) return; // Don't simulate until error is fixed
+        if (loading === true) return; // Don't simulate until loaded
 
-    simulationArea.simulationQueue.reset()
-    plotArea.setExecutionTime() // Waveform thing
-    resetNodeHighlights(scope);
-    // Reset Nodes if required
-    if (resetNodes || forceResetNodes) {
-        scope.reset()
-        simulationArea.simulationQueue.reset()
-        forceResetNodesSet(false)
-    }
+        simulationArea.simulationQueue.reset();
+        plotArea.setExecutionTime(); // Waveform thing
+        resetNodeHighlights(scope);
+        // Reset Nodes if required
+        if (resetNodes || forceResetNodes) {
+            scope.reset();
+            simulationArea.simulationQueue.reset();
+            forceResetNodesSet(false);
+        }
 
-    // To store set of Nodes that have shown contention but kept temporarily
+        // To store set of Nodes that have shown contention but kept temporarily
     simulationArea.contentionPending = new ContentionPendingData();
-    // add inputs to the simulation queue
-    scope.addInputs()
-    // to check if we have infinite loop in circuit
-    let stepCount = 0
-    let elem
-    while (!simulationArea.simulationQueue.isEmpty()) {
-        if (errorDetected) {
-            simulationArea.simulationQueue.reset()
-            return
-        }
-        elem = simulationArea.simulationQueue.pop()
+        // add inputs to the simulation queue
+        scope.addInputs();
+        // to check if we have infinite loop in circuit
+        let stepCount = 0;
+        let elem;
+        while (!simulationArea.simulationQueue.isEmpty()) {
+            if (errorDetected) {
+                simulationArea.simulationQueue.reset();
+                return;
+            }
+            elem = simulationArea.simulationQueue.pop();
 
-        elem.resolve()
+            elem.resolve();
 
-        stepCount++
-        if (stepCount > 1000000) {
-            // Cyclic or infinite Circuit Detection
-            showError(
-                'Simulation Stack limit exceeded: maybe due to cyclic paths or contention'
-            )
-            forceResetNodesSet(true)
+            stepCount++;
+            if (stepCount > 1000000) { // Cyclic or infinite Circuit Detection
+                showError('Simulation Stack limit exceeded: maybe due to cyclic paths or contention');
+                forceResetNodesSet(true);
+            }
         }
-    }
-    // Check for Contentions
-    if (simulationArea.contentionPending.size() > 0) {
-        for (const [ourNode, theirNode] of simulationArea.contentionPending.nodes()) {
-            ourNode.highlighted = true;
-            theirNode.highlighted = true;
-        }
+        // Check for Contentions
+        if (simulationArea.contentionPending.size() > 0) {
+            for (const [ourNode, theirNode] of simulationArea.contentionPending.nodes()) {
+                ourNode.highlighted = true;
+                theirNode.highlighted = true;
+            }
 
-        forceResetNodesSet(true);
+            forceResetNodesSet(true);
         showError('Contention Error: One or more bus contentions in the circuit (check highlighted nodes)');
+        }
+
+        // change the state of simulator to normal
+        if (globalScope.currentState === globalScope.states.ERROR) {
+            globalScope.currentState = globalScope.states.NORMAL;
+        }
+        visibletabs();
+    } catch (error) {
+        // change the state of simulator to error
+        if (globalScope.currentState === globalScope.states.NORMAL) {
+            globalScope.currentState = globalScope.states.ERROR;
+            hidetabs();
+        }
+        showError('The simulator is in an error state. Now, you can only delete or undo components until the simulator returns to the normal state');
     }
 }
 
