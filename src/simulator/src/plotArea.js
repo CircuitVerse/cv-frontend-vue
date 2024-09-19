@@ -3,6 +3,8 @@ import { convertors } from './utils'
 import { join, downloadDir } from '@tauri-apps/api/path';
 import { writeBinaryFile } from '@tauri-apps/api/fs';
 import { isTauri } from './utils';
+import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
+import { toRefs } from 'vue'
 
 var DPR = window.devicePixelRatio || 1
 
@@ -437,12 +439,16 @@ const plotArea = {
     },
     // Driver function to render and update
     plot() {
+        const simulatorMobileStore = useSimulatorMobileStore()
+        const { showCanvas } = toRefs(simulatorMobileStore)
         if (embed) return
         if (globalScope.Flag.length === 0) {
             this.canvas.width = 0
             this.canvas.height = 0
+            showCanvas.value = false
             return
         }
+       showCanvas.value = true
 
         this.update()
         this.render()
