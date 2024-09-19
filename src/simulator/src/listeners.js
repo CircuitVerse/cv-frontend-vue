@@ -24,7 +24,7 @@ import {
     gridUpdateSet,
     errorDetectedSet,
 } from './engine'
-import { changeScale, findDimensions, lineTo } from './canvasApi';
+import { changeScale, findDimensions } from './canvasApi';
 import { scheduleBackup } from './data/backupCircuit'
 import { hideProperties, deleteSelected, uxvar, exitFullView } from './ux';
 import { updateRestrictedElementsList, updateRestrictedElementsInScope, hideRestricted, showRestricted } from './restrictedElementDiv';
