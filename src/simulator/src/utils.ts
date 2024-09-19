@@ -52,7 +52,7 @@ export function clockTick() {
  */
 export function showError(error: string) {
     errorDetectedSet(true)
-    // if error ha been shown return
+    // if error has been shown return
     if (error === prevErrorMessage) return
     prevErrorMessage = error
 
