@@ -28,10 +28,10 @@
 
                     </div>
                     <div class="testRow fullTestRow space">
-                        <span>Inputs</span> <span @mousedown="increInputs" class="plusBtn">+</span>
+                        <span>Inputs</span> <span @mousedown="increInputs" class="plusMinusBtn">+</span>
                     </div>
                     <div class="testRow fullTestRow space">
-                        <span>Outputs</span> <span @mousedown="increOutputs" class="plusBtn">+</span>
+                        <span>Outputs</span> <span @mousedown="increOutputs" class="plusMinusBtn">+</span>
                     </div>
                 </div>
                 <div class="testCol">
@@ -42,14 +42,14 @@
                         <div v-for="(_, i) in inputsName" class="testRow"
                             :style="{ width: 100 / inputsBandWidth.length + '%' }">
                             <input class="inputField dataGroupTitle smInputName" type="text" v-model="inputsName[i]" />
-                            <span @mousedown="deleteInput(i)" class="plusBtn">-</span>
+                            <span @mousedown="deleteInput(i)" class="plusMinusBtn">-</span>
                         </div>
                     </div>
                     <div class="testContainer">
                         <div v-for="(_, i) in outputsName" class="testRow"
                             :style="{ width: 100 / outputsBandWidth.length + '%' }">
                             <input class="inputField dataGroupTitle smInputName" type="text" v-model="outputsName[i]" />
-                            <span @mousedown="deleteOutput(i)" class="plusBtn">-</span>
+                            <span @mousedown="deleteOutput(i)" class="plusMinusBtn">-</span>
                         </div>
                     </div>
                 </div>
@@ -79,6 +79,7 @@
 
                     <div v-for="(_, index) in group.inputs[0]" class="groupRow" :key="index">
                         <div class="testRow firstCol spaceArea"></div>
+                        <span @mousedown="deleteTestFromGroup(groupIndex, index)" class="plusMinusBtn">-</span>
                         <div class="testContainer">
                             <div v-for="(_, i) in group.inputs" class="testRow colWise"
                                 :style="{ width: 100 / inputsBandWidth.length + '%' }">
@@ -275,6 +276,16 @@ const addTestToGroup = (index: number) => {
     }
 };
 
+const deleteTestFromGroup = (groupIndex: number, testIndex: number) => {
+    groups[groupIndex].inputs.forEach(input => {
+        input.splice(testIndex, 1);
+    });
+
+    groups[groupIndex].outputs.forEach(output => {
+        output.splice(testIndex, 1);
+    });
+};
+
 const addNewGroup = () => {
     groups.push({
         title: `Group ${groups.length + 1}`,
@@ -299,6 +310,7 @@ const increInputs = () => {
 };
 
 const deleteInput = (index:number) => {
+    if(inputsName.value.length === 1) return;
     groups.forEach((group) => {
         if (group.inputs.length === 0) return;
 
@@ -325,6 +337,7 @@ const increOutputs = () => {
 };
 
 const deleteOutput = (index:number) => {
+    if(outputsName.value.length === 1) return;
     groups.forEach((group) => {
         if (group.outputs.length === 0) return;
 
@@ -527,7 +540,10 @@ const importFromCSV = () => {
     justify-content: center;
 }
 
-.plusBtn {
+.plusMinusBtn {
+    align-self: center;
+    text-align: center;
+    width: 16px;
     cursor: pointer;
     padding: 2px;
     padding-top: 0.5px;
