@@ -42,18 +42,20 @@
                         <div v-for="(_, i) in inputsName" class="testRow"
                             :style="{ width: 100 / inputsBandWidth.length + '%' }">
                             <input class="inputField dataGroupTitle smInputName" type="text" v-model="inputsName[i]" />
+                            <span @mousedown="deleteInput(i)" class="plusBtn">-</span>
                         </div>
                     </div>
                     <div class="testContainer">
                         <div v-for="(_, i) in outputsName" class="testRow"
                             :style="{ width: 100 / outputsBandWidth.length + '%' }">
                             <input class="inputField dataGroupTitle smInputName" type="text" v-model="outputsName[i]" />
+                            <span @mousedown="deleteOutput(i)" class="plusBtn">-</span>
                         </div>
                     </div>
                 </div>
                 <div class="testCol">
                     <div class="testRow firstCol">
-                        Bandwidth
+                        Bitwidth
                     </div>
                     <div class="testContainer">
                         <div v-for="(_, i) in inputsBandWidth" class="testRow"
@@ -296,6 +298,17 @@ const increInputs = () => {
     inputsName.value.push(`inp${inputsName.value.length + 1}`);
 };
 
+const deleteInput = (index:number) => {
+    groups.forEach((group) => {
+        if (group.inputs.length === 0) return;
+
+        group.inputs.splice(index, 1);
+    });
+
+    inputsBandWidth.value.splice(index, 1);
+    inputsName.value.splice(index, 1);
+};
+
 const increOutputs = () => {
     groups.forEach((group) => {
         if (group.outputs.length === 0) return;
@@ -309,6 +322,17 @@ const increOutputs = () => {
 
     outputsBandWidth.value.push(1);
     outputsName.value.push(`out${outputsName.value.length + 1}`);
+};
+
+const deleteOutput = (index:number) => {
+    groups.forEach((group) => {
+        if (group.outputs.length === 0) return;
+
+        group.outputs.splice(index, 1);
+    });
+
+    outputsBandWidth.value.splice(index, 1);
+    outputsName.value.splice(index, 1);
 };
 
 const exportAsCSV = () => {
