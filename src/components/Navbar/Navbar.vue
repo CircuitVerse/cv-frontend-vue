@@ -11,9 +11,19 @@
 
             <span
                 id="projectName"
-                class="projectName noSelect defaultCursor font-weight-bold"
+                class="projectName noSelect font-weight-bold"
+                :class="{ 'defaultCursor': !isEditing }"
+                @click="startEditing"
             >
-                {{ projectStore.getProjectName }}
+                <input
+                    v-if="isEditing"
+                    v-model="editedProjectName"
+                    @blur="finishEditing"
+                    @keyup.enter="finishEditing"
+                    ref="projectNameInput"
+                    class="project-name-input"
+                />
+                <span v-else>{{ projectStore.getProjectName }}</span>
             </span>
             <UserMenu class="useMenuBtn" />
         </div>
@@ -22,24 +32,37 @@
 </template>
 
 <script lang="ts" setup>
+import { ref, onMounted, nextTick } from 'vue'
 import QuickButton from '@/Navbar/QuickButton/QuickButton.vue'
-import User from '@/Navbar/User/User.vue'
 import NavbarLinks from '@/Navbar/NavbarLinks/NavbarLinks.vue'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
-
 import navbarData from '#/assets/constants/Navbar/NAVBAR_DATA.json'
-import userDropdownItems from '#/assets/constants/Navbar/USER_DATA.json'
-
 import Logo from '@/Logo/Logo.vue'
-import Hamburger from '@/Navbar/Hamburger/Hamburger.vue'
-import Hamburger2 from './Hamburger/Hamburger2.vue'
 import UserMenu from './User/UserMenu.vue'
-import { ref } from 'vue'
 import { useProjectStore } from '#/store/projectStore'
 
 const navbarLogo = ref('logo')
 const projectStore = useProjectStore()
 const simulatorMobileStore = useSimulatorMobileStore()
+
+const isEditing = ref(false)
+const editedProjectName = ref('')
+const projectNameInput = ref<HTMLInputElement | null>(null)
+
+const startEditing = () => {
+    isEditing.value = true
+    editedProjectName.value = projectStore.getProjectName
+    nextTick(() => {
+        projectNameInput.value?.focus()
+    })
+}
+
+const finishEditing = () => {
+    isEditing.value = false
+    if (editedProjectName.value.trim() !== '') {
+        projectStore.setProjectName(editedProjectName.value.trim())
+    }
+}
 </script>
 
 <style scoped>
@@ -47,5 +70,15 @@ const simulatorMobileStore = useSimulatorMobileStore()
 
 .useMenuBtn {
     margin: 0 2rem 0 auto;
+}
+
+.project-name-input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid white;
+    color: white;
+    font-weight: bold;
+    outline: none;
+    width: 200px;
 }
 </style>
