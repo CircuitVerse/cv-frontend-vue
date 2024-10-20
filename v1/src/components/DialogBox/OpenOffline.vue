@@ -89,8 +89,12 @@ function openProjectOffline() {
     let ele = $('input[name=projectId]:checked')
     if (!ele.val()) return
     const simulatorVersion = JSON.parse(localStorage.getItem(ele.val())).simulatorVersion
-    if(simulatorVersion && simulatorVersion !== "v1"){
-        window.location.href = `/simulatorvue?simver=${simulatorVersion}`
+    const projectName = JSON.parse(localStorage.getItem(ele.val())).name
+    if(!simulatorVersion){                 
+        window.location.href = `/simulator/edit/${projectName}`             
+    } 
+    if(simulatorVersion && simulatorVersion != "v1"){
+        window.location.href = `/simulatorvue/edit/${projectName}?simver=${simulatorVersion}`
     }
     load(JSON.parse(localStorage.getItem(ele.val())))
     window.projectId = ele.val()
