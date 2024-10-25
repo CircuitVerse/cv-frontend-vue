@@ -122,8 +122,7 @@ function openProjectOffline() {
     if (!simulatorVersion) {
         // If no version, proceed directly
         targetVersion.value = "Legacy"
-        SimulatorState.dialogBox.version_mismatch_dialog = true
-        window.location.href = `/simulator/edit/${projectName}`             
+        SimulatorState.dialogBox.version_mismatch_dialog = true           
     } else if (simulatorVersion && simulatorVersion != "v0") {
         // Set the targetVersion and show the version mismatch dialog
         targetVersion.value = simulatorVersion
@@ -138,7 +137,12 @@ function openProjectOffline() {
 function confirmOpenProject() {
     SimulatorState.dialogBox.version_mismatch_dialog = false
     // Redirect to the appropriate version after confirmation
-    window.location.href = `/simulatorvue/edit/${projectName}?simver=${targetVersion.value}`
+    if(targetVersion.value == "Legacy"){
+        window.location.href = `/simulator/edit/${projectName}`  
+    }else{
+        window.location.href = `/simulatorvue/edit/${projectName}?simver=${targetVersion.value}`
+    }
+    
 }
 
 function cancelOpenProject() {
