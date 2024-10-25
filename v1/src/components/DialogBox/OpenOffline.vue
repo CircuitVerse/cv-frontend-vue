@@ -1,4 +1,5 @@
 <template>
+    <!-- Existing Open Project Dialog -->
     <v-dialog
         v-model="SimulatorState.dialogBox.open_project_dialog"
         :persistent="false"
@@ -59,6 +60,29 @@
             </v-card-actions>
         </v-card>
     </v-dialog>
+
+    <!--  Version Mismatch Dialog -->
+    <v-dialog
+        v-model="SimulatorState.dialogBox.version_mismatch_dialog"
+        :persistent="true"
+    >
+        <v-card class="messageBoxContent">
+            <v-card-text>
+                <p class="dialogHeader">Version Mismatch</p>
+                <p>The version of the simulator does not match the expected version for this project.</p>
+                <p>
+                    You are attempting to open this project in version: 
+                    {{ targetVersion }}
+                </p>
+            </v-card-text>
+            <v-card-actions>
+                <v-btn class="messageBtn" block @click="confirmOpenProject">
+                    Continue Anyway
+                </v-btn>
+                <v-btn class="messageBtn" block @click="cancelOpenProject">Cancel</v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
 </template>
 
 <script lang="ts" setup>
@@ -67,6 +91,8 @@ import { useState } from '#/store/SimulatorStore/state'
 import { onMounted, onUpdated, ref, toRaw } from '@vue/runtime-core'
 const SimulatorState = useState()
 const projectList = ref({})
+const targetVersion = ref('') 
+let projectName = '' 
 onMounted(() => {
     SimulatorState.dialogBox.open_project_dialog = false
 })
@@ -88,16 +114,35 @@ function openProjectOffline() {
     SimulatorState.dialogBox.open_project_dialog = false
     let ele = $('input[name=projectId]:checked')
     if (!ele.val()) return
-    const simulatorVersion = JSON.parse(localStorage.getItem(ele.val())).simulatorVersion
-    const projectName = JSON.parse(localStorage.getItem(ele.val())).name
-    if(!simulatorVersion){                 
+    const projectData = JSON.parse(localStorage.getItem(ele.val()))
+    const simulatorVersion = projectData.simulatorVersion
+    projectName = projectData.name
+    
+    // Handle version mismatch logic
+    if (!simulatorVersion) {
+        // If no version, proceed directly
+        targetVersion.value = "Legacy"
+        SimulatorState.dialogBox.version_mismatch_dialog = true
         window.location.href = `/simulator/edit/${projectName}`             
-    } 
-    if(simulatorVersion && simulatorVersion != "v1"){
-        window.location.href = `/simulatorvue/edit/${projectName}?simver=${simulatorVersion}`
+    } else if (simulatorVersion && simulatorVersion != "v1") {
+        // Set the targetVersion and show the version mismatch dialog
+        targetVersion.value = simulatorVersion
+        SimulatorState.dialogBox.version_mismatch_dialog = true
+    } else {
+        // For other cases, proceed normally
+        load(projectData)
+        window.projectId = ele.val()
     }
-    load(JSON.parse(localStorage.getItem(ele.val())))
-    window.projectId = ele.val()
+}
+
+function confirmOpenProject() {
+    SimulatorState.dialogBox.version_mismatch_dialog = false
+    // Redirect to the appropriate version after confirmation
+    window.location.href = `/simulatorvue/edit/${projectName}?simver=${targetVersion.value}`
+}
+
+function cancelOpenProject() {
+    SimulatorState.dialogBox.version_mismatch_dialog = false
 }
 
 function OpenImportProjectDialog() {
