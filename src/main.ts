@@ -5,9 +5,7 @@ import router from './router/index'
 import { createPinia } from 'pinia'
 import { loadFonts } from './plugins/webfontloader'
 import i18n from './locales/i18n'
-import * as Sentry from "@sentry/vue";
-import { BrowserTracing } from "@sentry/tracing";
-
+import * as Sentry from "@sentry/vue"
 import 'bootstrap'
 
 import './globalVariables'
@@ -26,14 +24,12 @@ const app = createApp(App)
 Sentry.init({
   app,
   dsn: "https://20a3411a988862503af74d4d8e7ec450@o4508321713684480.ingest.us.sentry.io/4508321717747712",
-  integrations: [
-    new BrowserTracing({
-      routingInstrumentation: Sentry.vueRouterInstrumentation(router),
-      tracingOrigins: ["localhost", /^\//],
-    }),
-  ],
+  integrations: [],
   tracesSampleRate: 1.0,
   trackComponents: true,
+  environment: import.meta.env.MODE,
+  attachProps: true,
+  logErrors: true,
 });
 
 app.use(createPinia())
@@ -41,3 +37,8 @@ app.use(vuetify)
 app.use(router)
 app.use(i18n)
 app.mount('#app')
+
+// Test Sentry error reporting
+setTimeout(() => {
+  throw new Error("Test error to verify Sentry integration");
+}, 2000);

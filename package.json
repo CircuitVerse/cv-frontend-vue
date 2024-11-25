@@ -15,6 +15,8 @@
     "dependencies": {
         "@fortawesome/fontawesome-free": "^6.5.1",
         "@mdi/font": "5.9.55",
+        "@sentry/tracing": "^7.114.0",
+        "@sentry/vue": "^8.40.0",
         "@tiptap/core": "^2.0.3",
         "@tiptap/extension-character-count": "^2.0.3",
         "@tiptap/extension-subscript": "^2.0.3",
@@ -44,6 +46,8 @@
         "@commitlint/cli": "^17.0.2",
         "@commitlint/config-conventional": "^17.0.2",
         "@intlify/vite-plugin-vue-i18n": "^3.4.0",
+        "@sentry/cli": "^2.39.0",
+        "@sentry/vite-plugin": "^2.22.6",
         "@types/jquery": "^3.5.14",
         "@types/webfontloader": "^1.0.0",
         "@vitejs/plugin-vue": "^2.3.3",
