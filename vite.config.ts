@@ -28,6 +28,9 @@ export default defineConfig(() => ({
           org: "circuitverse",
           project: "javascript-vue",
           authToken: process.env.SENTRY_AUTH_TOKEN,
+          ...(!process.env.SENTRY_AUTH_TOKEN || !process.env.SENTRY_DSN) && {
+            throw new Error('SENTRY_AUTH_TOKEN and SENTRY_DSN are required for Sentry integration')
+          },
           enabled: process.env.NODE_ENV === 'production',
           telemetry: false,
           debug: process.env.NODE_ENV === 'development'
