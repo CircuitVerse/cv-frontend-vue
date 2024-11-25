@@ -3,6 +3,7 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'url'
 import vueI18n from '@intlify/vite-plugin-vue-i18n'
+import { sentryVitePlugin } from "@sentry/vite-plugin"
 
 // https://github.com/vuetifyjs/vuetify-loader/tree/next/packages/vite-plugin
 import vuetify from 'vite-plugin-vuetify'
@@ -23,6 +24,17 @@ export default defineConfig(() => ({
                 new URL('./src/locales/**', import.meta.url)
             ),
         }),
+        sentryVitePlugin({
+          org: "circuitverse",
+          project: "javascript-vue",
+          authToken: process.env.SENTRY_AUTH_TOKEN,
+          ...(!process.env.SENTRY_AUTH_TOKEN || !process.env.SENTRY_DSN) && {
+            throw new Error('SENTRY_AUTH_TOKEN and SENTRY_DSN are required for Sentry integration')
+          },
+          enabled: process.env.NODE_ENV === 'production',
+          telemetry: false,
+          debug: process.env.NODE_ENV === 'development'
+        }),
     ],
     resolve: {
         alias: {
@@ -35,6 +47,7 @@ export default defineConfig(() => ({
         outDir: '../public/simulatorvue',
         assetsDir: 'assets',
         chunkSizeWarningLimit: 1600,
+        sourcemap: process.env.NODE_ENV === 'development', // Enable source maps only in development
     },
     test:{
         globals: true,

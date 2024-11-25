@@ -3,7 +3,7 @@ import { SimulationArea } from './interface/simulationArea'
 import { clockTick } from './utils'
 
 const simulationArea: SimulationArea = {
-    canvas: document.getElementById('simulationArea') as HTMLCanvasElement,
+    canvas: null,
     context: null,
     selected: false,
     hover: false,
@@ -29,42 +29,44 @@ const simulationArea: SimulationArea = {
     mouseDownX: 0,
     mouseDownY: 0,
     simulationQueue: new EventQueue(10000),
-    clickCount: 0,
-    lock: 'unlocked',
-    mouseDown: false,
-    ClockInterval: null,
-    touch: false,
 
     timer() {
-        const clickTimer = setTimeout(() => {
-            simulationArea.clickCount = 0
-        }, 600)
+        if (this.clockEnabled) {
+            clockTick();
+        }
+        setTimeout(() => this.timer(), this.timePeriod);
     },
+
     setup() {
         this.canvas = document.getElementById('simulationArea') as HTMLCanvasElement;
-        this.canvas.width = width;
-        this.canvas.height = height;
-        this.simulationQueue = new EventQueue(10000);
-        this.context = this.canvas.getContext('2d')!;
-        simulationArea.changeClockTime(simulationArea.timePeriod);
-        this.mouseDown = false;
-    },
-    changeClockTime(t: number) {
-        if (t < 50) {
+        if (!this.canvas) {
+            console.error('Simulation canvas not found');
             return;
         }
-        if (simulationArea.ClockInterval != null) {
-            clearInterval(simulationArea.ClockInterval);
-        }
-        simulationArea.timePeriod = t;
-        simulationArea.ClockInterval = setInterval(clockTick, t);
-    },
-    clear() {
+        
+        this.context = this.canvas.getContext('2d');
         if (!this.context) {
+            console.error('Could not get 2D context');
             return;
         }
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+        this.timer();
     },
+
+    changeClockTime(t: number) {
+        if (t < 50) return;
+        this.timePeriod = t;
+        this.clockEnabled = true;
+    },
+
+    clear() {
+        if (this.context && this.canvas) {
+            this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        }
+    }
 };
+
 export { simulationArea }
 export const { changeClockTime } = simulationArea
