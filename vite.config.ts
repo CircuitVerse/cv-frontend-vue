@@ -27,9 +27,10 @@ export default defineConfig(() => ({
         sentryVitePlugin({
           org: "circuitverse",
           project: "javascript-vue",
-          // Auth token can be obtained from https://sentry.io/settings/account/api/auth-tokens/
-          // Ensure the token has `project:releases` and `org:read` scopes
           authToken: process.env.SENTRY_AUTH_TOKEN,
+          enabled: process.env.NODE_ENV === 'production',
+          telemetry: false,
+          debug: process.env.NODE_ENV === 'development'
         }),
     ],
     resolve: {
@@ -43,7 +44,7 @@ export default defineConfig(() => ({
         outDir: '../public/simulatorvue',
         assetsDir: 'assets',
         chunkSizeWarningLimit: 1600,
-        sourcemap: true, // Source map generation must be turned on
+        sourcemap: process.env.NODE_ENV === 'development', // Enable source maps only in development
     },
     test:{
         globals: true,

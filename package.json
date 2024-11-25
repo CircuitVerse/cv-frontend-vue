@@ -15,7 +15,7 @@
     "dependencies": {
         "@fortawesome/fontawesome-free": "^6.5.1",
         "@mdi/font": "5.9.55",
-        "@sentry/tracing": "^7.114.0",
+        "@sentry/tracing": "^8.40.0",
         "@sentry/vue": "^8.40.0",
         "@tiptap/core": "^2.0.3",
         "@tiptap/extension-character-count": "^2.0.3",
