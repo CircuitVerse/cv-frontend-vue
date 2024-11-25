@@ -76,6 +76,8 @@ export default class Random extends CircuitElement {
             this.output.value = this.currentRandomNo
             simulationArea.simulationQueue.add(this.output)
         }
+
+        this.setOutputsUpstream(true);
     }
 
     customSave() {
@@ -145,7 +147,7 @@ export default class Random extends CircuitElement {
         output reg [WIDTH-1:0] val;
         input clk;
         input [WIDTH-1:0] max;
-      
+
         always @ (posedge clk)
           if (^max === 1'bX)
             val = $urandom_range(0, {WIDTH{1'b1}});

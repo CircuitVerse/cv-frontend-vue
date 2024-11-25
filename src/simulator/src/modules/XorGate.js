@@ -93,6 +93,8 @@ export default class XorGate extends CircuitElement {
 
         this.output1.value = result
         simulationArea.simulationQueue.add(this.output1)
+
+        this.setOutputsUpstream(true);
     }
 
     /**
