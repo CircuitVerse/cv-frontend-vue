@@ -1,11 +1,10 @@
 <template>
-    <div id="contextMenu" oncontextmenu="return false;">
+    <div id="contextMenu" @contextmenu.prevent>
         <ul>
             <li
                 v-for="(menuOption, index) in contextMenuOptions"
                 :key="index"
-                :data-index="index"
-                @click="menuItemClicked($event)"
+                @click="menuItemClicked(index)"
             >
                 {{ menuOption }}
             </li>
@@ -48,33 +47,40 @@ export default {
     },
     methods: {
         hideContextMenu() {
-            var el = document.getElementById('contextMenu')
-            el.style = 'opacity:0;'
+            const el = document.querySelector('#contextMenu')
+            el.style.opacity = '0'
             setTimeout(() => {
-                el.style = 'visibility:hidden;'
+                el.style.visibility = 'hidden'
                 this.ctxPos.visible = false
             }, 200) // Hide after 2 sec
         },
-        menuItemClicked(event) {
+        menuItemClicked(id) {
             this.hideContextMenu()
-            const id = event.target.dataset.index
-            if (id == 0) {
-                document.execCommand('copy')
-            } else if (id == 1) {
-                document.execCommand('cut')
-            } else if (id == 2) {
-                // document.execCommand('paste'); it is restricted to sove this problem we use dataPasted variable
-                paste(localStorage.getItem('clipboardData'))
-            } else if (id == 3) {
-                deleteSelected()
-            } else if (id == 4) {
-                undo()
-            } else if (id == 5) {
-                createNewCircuitScope()
-            } else if (id == 6) {
-                logixFunction.createSubCircuitPrompt()
-            } else if (id == 7) {
-                globalScope.centerFocus(false)
+            switch (id) {
+                case 0:
+                    document.execCommand('copy')
+                    break
+                case 1:
+                    document.execCommand('cut')
+                    break
+                case 2:
+                    paste(localStorage.getItem('clipboardData'))
+                    break
+                case 3:
+                    deleteSelected()
+                    break
+                case 4:
+                    undo()
+                    break
+                case 5:
+                    createNewCircuitScope()
+                    break
+                case 6:
+                    logixFunction.createSubCircuitPrompt()
+                    break
+                case 7:
+                    globalScope.centerFocus(false)
+                    break
             }
         },
     },
