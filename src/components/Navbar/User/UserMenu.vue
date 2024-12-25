@@ -47,7 +47,7 @@
                       <v-list-item
                           @click.stop="signin"
                           prepend-icon="mdi-login"
-                          title="Sign-In"
+                          title="Sign In"
                           value="sign_in"
                       ></v-list-item>
                       <v-list-item
