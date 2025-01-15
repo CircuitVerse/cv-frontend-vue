@@ -155,7 +155,7 @@ export async function clearProject() {
  Function used to start a new project while prompting confirmation from the user
  */
 export async function newProject(verify: boolean) {
-    
+    // Check if verification is not required and unsaved changes exist
     if (
         !verify &&
         (!projectSaved && checkToSave()) &&
@@ -163,7 +163,7 @@ export async function newProject(verify: boolean) {
             'What you like to start a new project? Any unsaved changes will be lost.'
         ))
     ) {
-        return  
+        return // Abort if user does not confirm
     }
 
     // Proceed to clear project and create a new one if confirmed or conditions met
