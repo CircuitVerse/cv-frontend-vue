@@ -15,12 +15,12 @@
                     <div class="container my-2">
                         <button
                             type="button"
-                            class="close"
-                            data-dismiss="modal"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
                             aria-label="Close"
                             @click="closeReportModal"
                         >
-                            <span aria-hidden="true">&times;</span>
+                            
                         </button>
                         <div class="container text-center">
                             <h4>{{ $t('simulator.report_issue') }}</h4>
@@ -41,7 +41,7 @@
                                 )
                             }}</b></label
                         >
-                        <div class="form-group">
+                        <div class="mb-3">
                             <textarea
                                 v-if="issueText"
                                 id="issuetext"
@@ -66,7 +66,7 @@
                                 }}</span
                             >:</label
                         >
-                        <div class="form-group">
+                        <div class="mb-3">
                             <input
                                 v-if="issueEmail"
                                 id="emailtext"
@@ -81,7 +81,7 @@
                                 <button
                                     type="button"
                                     class="btn btn-primary close-btn"
-                                    data-dismiss="modal"
+                                    data-bs-dismiss="modal"
                                     aria-label="Close"
                                     @click="closeReportModal"
                                 >

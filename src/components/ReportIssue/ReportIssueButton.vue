@@ -3,8 +3,8 @@
         <a
             type="button"
             class="btn btn-primary text-light"
-            data-toggle="modal"
-            data-target=".issue"
+            data-bs-toggle="modal"
+            data-bs-target=".issue"
             :style="{ bottom: simulatorMobileStore.showElementsPanel ? '250px' : '120px' }"
             @click="openReportingModal"
         >

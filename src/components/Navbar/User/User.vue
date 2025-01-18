@@ -5,7 +5,7 @@
             <a
                 href="#"
                 class="cur-user acc-drop user-field"
-                data-toggle="dropdown"
+                data-bs-toggle="dropdown"
                 role="button"
                 aria-haspopup="true"
                 aria-expanded="false"

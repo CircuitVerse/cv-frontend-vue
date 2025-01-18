@@ -3,8 +3,8 @@
     <button
         class="navbar-toggler collapsed"
         type="button"
-        data-toggle="collapse"
-        data-target="#bs-example-navbar-collapse-1"
+        data-bs-toggle="collapse"
+        data-bs-target="#bs-example-navbar-collapse-1"
         aria-controls="collapsedNavbar"
         aria-expanded="false"
         aria-label="Toggle navigation"
