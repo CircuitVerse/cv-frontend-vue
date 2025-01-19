@@ -86,7 +86,7 @@
           <input
               id="customRange1"
               type="range"
-              class="custom-range"
+              class="form-range"
               min="0"
               max="45"
               step="1"

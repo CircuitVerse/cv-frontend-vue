@@ -11,7 +11,7 @@
 
             <span
                 id="projectName"
-                class="projectName noSelect defaultCursor font-weight-bold"
+                class="projectName noSelect defaultCursor fw-bold"
             >
                 {{ projectStore.getProjectName }}
             </span>

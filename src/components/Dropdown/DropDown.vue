@@ -30,7 +30,7 @@
                 href="/users/sign_out"
                 class="dropdown-item"
                 rel="nofollow"
-                data-method="delete"
+                data-bs-method="delete"
             >
                 {{ $t('simulator.nav.sign_out') }}
             </a>

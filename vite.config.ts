@@ -24,6 +24,18 @@ export default defineConfig(() => ({
             ),
         }),
     ],
+    css: {
+        preprocessorOptions: {
+            scss: {
+                includePaths: ['node_modules'],
+                sassOptions: {                      // For the color function deprecations. To remove after future bootstrap updates !
+                    quietDeps: true,                // i.e. when bootstrap has fixed its import methods as per sass requests.
+                    verbose: false  
+                }
+            }
+        }
+    },
+      
     resolve: {
         alias: {
             '#': fileURLToPath(new URL('./src', import.meta.url)),

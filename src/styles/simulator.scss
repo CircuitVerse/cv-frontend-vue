@@ -1,6 +1,7 @@
-$fa-font-path: '../../node_modules/@fortawesome/fontawesome-free/webfonts';
-@import '../../node_modules/@fortawesome/fontawesome-free/scss/fontawesome.scss';
-@import '../../node_modules/@fortawesome/fontawesome-free/scss/solid.scss';
+@use '@fortawesome/fontawesome-free/scss/fontawesome' with (
+    $fa-font-path: '../../node_modules/@fortawesome/fontawesome-free/webfonts'
+);
+@use '@fortawesome/fontawesome-free/scss/solid' as solid;
 
 .subcircuitdialog {
     display: none;

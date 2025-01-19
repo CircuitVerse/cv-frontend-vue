@@ -3,7 +3,7 @@
         <a
             href="#"
             class=""
-            data-toggle="dropdown"
+            data-bs-toggle="dropdown"
             role="button"
             aria-haspopup="true"
             aria-expanded="false"

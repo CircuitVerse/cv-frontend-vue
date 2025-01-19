@@ -34,7 +34,7 @@
                             v-if="toShow"
                             class="option inline btn-group btn-group-toggle"
                             style="border: none"
-                            data-toggle="buttons"
+                            data-bs-toggle="buttons"
                         >
                             <div
                                 id="radio-full"
