@@ -12,10 +12,7 @@
 import CircuitElement from './circuitElement'
 import plotArea from './plotArea'
 import { simulationArea } from './simulationArea'
-import {
-    stripTags,
-    uniq,
-} from './utils'
+import { stripTags, uniq } from './utils'
 import { findDimensions, dots } from './canvasApi'
 import { updateRestrictedElementsList } from './restrictedElementDiv'
 import { scheduleBackup } from './data/backupCircuit'
@@ -48,7 +45,7 @@ export const circuitProperty = {
     changeClockEnable,
     changeInputSize,
     changeLightMode,
-    changeClockTime
+    changeClockTime,
 }
 
 function changeClockTime(t: number) {
@@ -131,11 +128,9 @@ export function getDependenciesList(scopeId: string | number) {
 
     let dependencies = ''
     for (let id in scopeList) {
-        let formattedId;
-        if (typeof scopeId === 'number')
-            formattedId = scopeId;
-        else
-            formattedId = parseInt(scopeId);
+        let formattedId
+        if (typeof scopeId === 'number') formattedId = scopeId
+        else formattedId = parseInt(scopeId)
         if (id != scope.id && scopeList[id].checkDependency(formattedId)) {
             if (dependencies === '') {
                 dependencies = scopeList[id].name
@@ -207,7 +202,12 @@ export function circuitNameClicked() {
  * Function to create new circuit
  * Function creates button in tab, creates scope and switches to this circuit
  */
-export function newCircuit(name: string | undefined, id: string | undefined, isVerilog = false, isVerilogMain = false) {
+export function newCircuit(
+    name: string | undefined,
+    id: string | undefined,
+    isVerilog = false,
+    isVerilogMain = false
+) {
     const simulatorStore = SimulatorStore()
     const { circuit_list } = toRefs(simulatorStore)
     const { activeCircuit } = toRefs(simulatorStore)
@@ -249,7 +249,7 @@ export function newCircuit(name: string | undefined, id: string | undefined, isV
     }
 
     if (!isVerilog || isVerilogMain) {
-        circuit_name_clickable.value = false;
+        circuit_name_clickable.value = false
         // Remove listeners
         // $('.circuitName').off('click')
         // switch circuit function moved inside vue component
@@ -261,7 +261,7 @@ export function newCircuit(name: string | undefined, id: string | undefined, isV
             //         document.getElementById('circname').select()
             //     }, 100)
             // })
-            circuit_name_clickable.value = true;
+            circuit_name_clickable.value = true
         }
         if (!embed) {
             showProperties(scope.root)
@@ -292,30 +292,41 @@ export function changeCircuitName(name: string, id = globalScope.id) {
  * @category circuit
  */
 export default class Scope {
-    restrictedCircuitElementsUsed: any[];
-    id: number | string;
-    CircuitElement: any[];
-    name: string;
-    root: CircuitElement;
-    backups: string[];
-    history: string[];
-    timeStamp: number;
-    verilogMetadata: { isVerilogCircuit: boolean; isMainCircuit: boolean; code: string; subCircuitScopeIds: string[]; };
-    ox: number;
-    oy: number;
-    scale: number;
-    stack: any[];
-    layout: { width: number; height: number; title_x: number; title_y: number; titleEnabled: boolean; };
-    tunnelList?: {};
-    pending?: any[];
-    nodes?: any[];
-    allNodes?: any[];
-    wires?: any[];
-    Input?: any[];
-    Output?: any[];
-    Splitter?: any[];
-    SubCircuit?: any[];
-    Clock?: any[];
+    restrictedCircuitElementsUsed: any[]
+    id: number | string
+    CircuitElement: any[]
+    name: string
+    root: CircuitElement
+    backups: string[]
+    history: string[]
+    timeStamp: number
+    verilogMetadata: {
+        isVerilogCircuit: boolean
+        isMainCircuit: boolean
+        code: string
+        subCircuitScopeIds: string[]
+    }
+    ox: number
+    oy: number
+    scale: number
+    stack: any[]
+    layout: {
+        width: number
+        height: number
+        title_x: number
+        title_y: number
+        titleEnabled: boolean
+    }
+    tunnelList?: {}
+    pending?: any[]
+    nodes?: any[]
+    allNodes?: any[]
+    wires?: any[]
+    Input?: any[]
+    Output?: any[]
+    Splitter?: any[]
+    SubCircuit?: any[]
+    Clock?: any[]
     constructor(name = 'localScope', id = undefined) {
         this.restrictedCircuitElementsUsed = []
         this.id = id || Math.floor(Math.random() * 100000000000 + 1)
