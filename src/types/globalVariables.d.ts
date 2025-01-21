@@ -1,3 +1,4 @@
+/* eslint no-var: 0 */ // This is a global file, so we need to use var
 declare global {
     var $: typeof import('jquery')
     var jQuery: typeof import('jquery')
