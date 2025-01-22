@@ -1,0 +1,236 @@
+import { defaultKeys } from '../defaultKeys'
+import { addShortcut } from './addShortcut'
+import { updateHTML } from '../view/panel.ui'
+import { simulationArea } from '../../simulationArea'
+import {
+    scheduleUpdate,
+    wireToBeCheckedSet,
+    updateCanvasSet,
+} from '../../engine'
+
+import { getOS } from './utils'
+import { shortcut } from './shortcuts.plugin'
+
+// Define interfaces and types
+interface KeyMap {
+    [key: string]: string
+}
+
+interface SimulationArea {
+    lastSelected?: {
+        newDirection: (direction: string) => void
+        labelDirection: string
+        labelDirectionFixed?: boolean
+        x: number
+        y: number
+        helplink?: string
+    }
+}
+
+type DirectionType = 'up' | 'down' | 'left' | 'right'
+
+/**
+ * Function used to add or change keys user or default
+ * grabs the keycombo from localstorage &
+ * calls the addShortcut function in a loop to bind them
+ * @param {string} mode - user custom keys or default keys
+ */
+export const addKeys = (mode: 'user' | 'default'): void => {
+    shortcut.removeAll()
+    if (mode === 'user') {
+        localStorage.removeItem('defaultKeys')
+        const userKeys: KeyMap = localStorage.get('userKeys')
+        for (const pref in userKeys) {
+            let key = userKeys[pref]
+            key = key.split(' ').join('')
+            addShortcut(key, pref)
+        }
+        updateHTML('user')
+    } else if (mode === 'default') {
+        if (localStorage.userKeys) localStorage.removeItem('userKeys')
+        const defaultKeys: KeyMap = localStorage.get('defaultKeys')
+        for (const pref in defaultKeys) {
+            let key = defaultKeys[pref]
+            key = key.split(' ').join('')
+            addShortcut(key, pref)
+        }
+        updateHTML('default')
+    }
+}
+
+/**
+ * Function used to check if new keys are added, adds missing keys if added
+ */
+export const checkUpdate = (): void => {
+    const userK: KeyMap = localStorage.get('userKeys')
+    if (Object.keys(userK).length !== Object.keys(defaultKeys).length) {
+        for (const [key, value] of Object.entries(defaultKeys)) {
+            if (!Object.keys(userK).includes(key)) {
+                userK[key] = value
+            }
+        }
+        localStorage.set('userKeys', userK)
+    }
+}
+
+/**
+ * Function used to set userKeys, grabs the keycombo from the panel UI
+ * sets it to the localStorage & cals addKeys
+ * removes the defaultkeys from localStorage
+ */
+export const setUserKeys = (): void => {
+    if (localStorage.defaultKeys) localStorage.removeItem('defaultKeys')
+    const userKeys: KeyMap = {}
+    let x = 0
+    const preferenceChildren = document.getElementById('preference')?.children
+
+    while (preferenceChildren?.[x]) {
+        const keyElement = preferenceChildren[x].children[1].children[0] as HTMLElement
+        const valueElement = preferenceChildren[x].children[1].children[1] as HTMLElement
+
+        if (keyElement && valueElement) {
+            userKeys[keyElement.innerText] = valueElement.innerText
+        }
+        x++
+    }
+    localStorage.set('userKeys', userKeys)
+    addKeys('user')
+}
+
+/**
+ * Function used to set defaultKeys, grabs the keycombo from the defaultkeys metadata
+ * sets it to the localStorage & cals addKeys
+ * removes the userkeys from localStorage if present
+ * also checks for OS type
+ */
+export const setDefault = (): void => {
+    if (localStorage.userKeys) localStorage.removeItem('userKeys')
+    if (getOS() === 'MacOS') {
+        const macDefaultKeys: KeyMap = {}
+        for (const [key, value] of Object.entries(defaultKeys)) {
+            macDefaultKeys[key] = value.split(' + ')[0] === 'Ctrl'
+                ? value.replace('Ctrl', 'Meta')
+                : value
+            localStorage.set('defaultKeys', macDefaultKeys)
+        }
+    } else {
+        localStorage.set('defaultKeys', defaultKeys)
+    }
+    addKeys('default')
+}
+
+/**
+ * function to check if user entered keys are already assigned to other key
+ * gives a warning message if keys already assigned
+ */
+export const warnOverride = (
+    combo: string,
+    target: HTMLElement,
+    warning: HTMLInputElement
+): void => {
+    let x = 0
+    const preferenceChildren = document.getElementById('preference')?.children
+
+    while (preferenceChildren?.[x]) {
+        const element = preferenceChildren[x].children[1].children[1] as HTMLElement
+        const assigneeElement = preferenceChildren[x].children[1].children[0] as HTMLElement
+        const assignee = assigneeElement.innerText
+
+        if (element.innerText === combo && assignee !== (target.previousElementSibling as HTMLElement)?.innerText) {
+            warning.value = `This key(s) is already assigned to: ${assignee}, press Enter to override.`
+            const editElement = document.getElementById('edit')
+            if (editElement) {
+                editElement.style.border = '1.5px solid #dc5656'
+            }
+            return
+        } else {
+            const editElement = document.getElementById('edit')
+            if (editElement) {
+                editElement.style.border = 'none'
+            }
+        }
+        x++
+    }
+}
+
+export const elementDirection = (direct: string) => (): void => {
+    if (simulationArea.lastSelected) {
+        simulationArea.lastSelected.newDirection(direct.toUpperCase())
+
+        const selectElement = document.querySelector<HTMLSelectElement>("select[name^='newDirection']")
+        if (selectElement) {
+            selectElement.value = direct.toUpperCase()
+        }
+
+        updateSystem()
+    }
+}
+
+export const labelDirection = (direct: string) => (): void => {
+    if (simulationArea.lastSelected && !simulationArea.lastSelected.labelDirectionFixed) {
+        simulationArea.lastSelected.labelDirection = direct.toUpperCase()
+        const selectElement = document.querySelector<HTMLSelectElement>("select[name^='newLabelDirection']")
+        if (selectElement) {
+            selectElement.value = direct.toUpperCase()
+        }
+        updateSystem()
+    }
+}
+
+export const insertLabel = (): void => {
+    if (simulationArea.lastSelected) {
+        const labelInput = document.querySelector<HTMLInputElement>("input[name^='setLabel']")
+        if (labelInput) {
+            labelInput.focus()
+            if (!labelInput.value) {
+                labelInput.value = 'Untitled'
+            }
+            labelInput.select()
+            updateSystem()
+        }
+    }
+}
+
+export const moveElement = (direct: DirectionType) => (): void => {
+    if (simulationArea.lastSelected) {
+        switch (direct) {
+            case 'up':
+                simulationArea.lastSelected.y -= 10
+                break
+            case 'down':
+                simulationArea.lastSelected.y += 10
+                break
+            case 'left':
+                simulationArea.lastSelected.x -= 10
+                break
+            case 'right':
+                simulationArea.lastSelected.x += 10
+                break
+        }
+        updateSystem()
+    }
+}
+
+export const openHotkey = (): void => {
+    const customShortcutElement = document.getElementById('customShortcut')
+    if (customShortcutElement) {
+        customShortcutElement.click()
+    }
+}
+
+export const openDocumentation = (): void => {
+    if (
+        simulationArea.lastSelected === undefined ||
+        simulationArea.lastSelected.helplink === undefined
+    ) {
+        window.open('https://docs.circuitverse.org/', '_blank')
+    } else {
+        window.open(simulationArea.lastSelected.helplink, '_blank')
+    }
+}
+
+function updateSystem(): void {
+    updateCanvasSet(true)
+    wireToBeCheckedSet(1)
+    scheduleUpdate(1)
+}
