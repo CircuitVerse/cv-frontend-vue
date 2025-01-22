@@ -39,7 +39,7 @@ export const addKeys = (mode: 'user' | 'default'): void => {
     shortcut.removeAll()
     if (mode === 'user') {
         localStorage.removeItem('defaultKeys')
-        const userKeys: KeyMap = localStorage.get('userKeys')
+        const userKeys: KeyMap = JSON.parse(localStorage.getItem('userKeys') || '{}')
         for (const pref in userKeys) {
             let key = userKeys[pref]
             key = key.split(' ').join('')
@@ -48,7 +48,7 @@ export const addKeys = (mode: 'user' | 'default'): void => {
         updateHTML('user')
     } else if (mode === 'default') {
         if (localStorage.userKeys) localStorage.removeItem('userKeys')
-        const defaultKeys: KeyMap = localStorage.get('defaultKeys')
+        const defaultKeys: KeyMap = JSON.parse(localStorage.getItem('defaultKeys') || '{}')
         for (const pref in defaultKeys) {
             let key = defaultKeys[pref]
             key = key.split(' ').join('')
