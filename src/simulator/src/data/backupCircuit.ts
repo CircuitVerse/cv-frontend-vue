@@ -74,7 +74,7 @@ function extract(obj: { saveObject: () => any }): any {
 */
 export function checkIfBackup(scope: Scope): boolean {
    for (let i = 0; i < updateOrder.length; i++) {
-       if (scope[updateOrder[i]].length) return true;
+      if (scope[updateOrder[i]] && scope[updateOrder[i]].length) return true;
    }
    return false;
 }
@@ -102,7 +102,7 @@ export function backUp(scope: Scope = globalScope): BackupData {
 
    // Storing details of all module objects
    for (let i = 0; i < moduleList.length; i++) {
-       if (scope[moduleList[i]].length) {
+      if (scope[moduleList[i]] && scope[moduleList[i]].length) {
            data[moduleList[i]] = scope[moduleList[i]].map(extract);
        }
    }
