@@ -1,3 +1,4 @@
+/* eslint-disable import/no-cycle */
 import { defaultKeys } from '../defaultKeys'
 import { addShortcut } from './addShortcut'
 import { updateHTML } from '../view/panel.ui'
@@ -11,7 +12,6 @@ import {
 import { getOS } from './utils'
 import { shortcut } from './shortcuts.plugin'
 
-// Define interfaces and types
 interface KeyMap {
     [key: string]: string
 }
@@ -81,18 +81,21 @@ export const checkUpdate = (): void => {
 export const setUserKeys = (): void => {
     if (localStorage.defaultKeys) localStorage.removeItem('defaultKeys')
     const userKeys: KeyMap = {}
-    let x = 0
+    
     const preferenceChildren = document.getElementById('preference')?.children
-
-    while (preferenceChildren?.[x]) {
-        const keyElement = preferenceChildren[x].children[1].children[0] as HTMLElement
-        const valueElement = preferenceChildren[x].children[1].children[1] as HTMLElement
-
-        if (keyElement && valueElement) {
-            userKeys[keyElement.innerText] = valueElement.innerText
+    if (!preferenceChildren) return
+    
+    let x = 0
+    while (x < preferenceChildren.length) {
+        const keyChild = preferenceChildren[x]?.children[1]?.children[0]
+        const valueChild = preferenceChildren[x]?.children[1]?.children[1]
+        
+        if (keyChild instanceof HTMLElement && valueChild instanceof HTMLElement) {
+            userKeys[keyChild.innerText] = valueChild.innerText
         }
         x++
     }
+    
     localStorage.set('userKeys', userKeys)
     addKeys('user')
 }
@@ -128,26 +131,30 @@ export const warnOverride = (
     target: HTMLElement,
     warning: HTMLInputElement
 ): void => {
-    let x = 0
     const preferenceChildren = document.getElementById('preference')?.children
-
-    while (preferenceChildren?.[x]) {
-        const element = preferenceChildren[x].children[1].children[1] as HTMLElement
-        const assigneeElement = preferenceChildren[x].children[1].children[0] as HTMLElement
-        const assignee = assigneeElement.innerText
-
-        if (element.innerText === combo && assignee !== (target.previousElementSibling as HTMLElement)?.innerText) {
-            warning.value = `This key(s) is already assigned to: ${assignee}, press Enter to override.`
-            const editElement = document.getElementById('edit')
-            if (editElement) {
-                editElement.style.border = '1.5px solid #dc5656'
+    if (!preferenceChildren) return
+    
+    let x = 0
+    while (x < preferenceChildren.length) {
+        const keyChild = preferenceChildren[x]?.children[1]?.children[0]
+        const valueChild = preferenceChildren[x]?.children[1]?.children[1]
+        
+        if (keyChild instanceof HTMLElement && valueChild instanceof HTMLElement) {
+            const assignee = keyChild.innerText
+            if (valueChild.innerText === combo && 
+                assignee !== (target.previousElementSibling as HTMLElement)?.innerText) {
+                warning.value = `This key(s) is already assigned to: ${assignee}, press Enter to override.`
+                const editElement = document.getElementById('edit')
+                if (editElement) {
+                    editElement.style.border = '1.5px solid #dc5656'
+                }
+                return
             }
-            return
-        } else {
-            const editElement = document.getElementById('edit')
-            if (editElement) {
-                editElement.style.border = 'none'
-            }
+        }
+        
+        const editElement = document.getElementById('edit')
+        if (editElement) {
+            editElement.style.border = 'none'
         }
         x++
     }
