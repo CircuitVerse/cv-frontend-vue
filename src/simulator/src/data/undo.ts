@@ -28,7 +28,10 @@ export default function undo(scope: Scope = globalScope): void {
     const tempScope: Scope = new Scope(scope.name)
     loading = true
     
-    const undoData: string = scope.backups.pop()!
+    const lastBackup = scope.backups.pop()
+    if (!lastBackup) return
+    const undoData: string = lastBackup
+    
     scope.history.push(undoData)
     
     if (scope.backups.length !== 0) {
