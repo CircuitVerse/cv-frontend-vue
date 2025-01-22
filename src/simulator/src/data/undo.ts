@@ -35,11 +35,17 @@ export default function undo(scope: Scope = globalScope): void {
     scope.history.push(undoData)
     
     if (scope.backups.length !== 0) {
-        loadScope(
-            tempScope,
-            JSON.parse(scope.backups[scope.backups.length - 1])
-        )
+    try {
+         loadScope(
+             tempScope,
+             JSON.parse(scope.backups[scope.backups.length - 1])
+         )
+    } catch (error) {
+        console.error('Failed to parse backup data:', error)
+        loading = false
+        return
     }
+ }
     
     tempScope.backups = scope.backups
     tempScope.history = scope.history
