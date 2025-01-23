@@ -1,186 +1,180 @@
 /* eslint-disable no-param-reassign */
-import { backgroundArea } from './backgroundArea'
-import { simulationArea } from './simulationArea'
-import miniMapArea, { removeMiniMap, updatelastMinimapShown } from './minimap'
-import { colors } from './themer/themer'
-import { updateOrder } from './metadata'
+import { backgroundArea } from './backgroundArea';
+import { simulationArea } from './simulationArea';
+import miniMapArea, { removeMiniMap, updatelastMinimapShown } from './minimap';
+import { colors } from './themer/themer';
+import { updateOrder } from './metadata';
 
-var unit = 10
+// Define global types and interfaces
+interface Scope {
+    [key: string]: any;
+    ox: number;
+    oy: number;
+    scale: number;
+    prevScale?: number;
+    lastSelected?: { objectType: string; x: number; y: number };
+}
 
-export function findDimensions(scope = globalScope) {
-    var totalObjects = 0
-    simulationArea.minWidth = undefined
-    simulationArea.maxWidth = undefined
-    simulationArea.minHeight = undefined
-    simulationArea.maxHeight = undefined
-    for (var i = 0; i < updateOrder.length; i++) {
-        if (updateOrder[i] !== 'wires') {
-            for (var j = 0; j < scope[updateOrder[i]].length; j++) {
-                totalObjects += 1
-                var obj = scope[updateOrder[i]][j]
+interface BackgroundArea {
+    context: CanvasRenderingContext2D | null;
+    canvas: HTMLCanvasElement;
+    clear: () => void;
+}
+
+declare const globalScope: Scope;
+declare const DPR: number;
+declare const embed: boolean;
+declare const lightMode: boolean;
+declare const width: number;
+declare const height: number;
+
+let unit = 10;
+
+// Function to find dimensions of the simulation area
+export function findDimensions(scope: Scope = globalScope): void {
+    let totalObjects = 0;
+    simulationArea.minWidth = undefined;
+    simulationArea.maxWidth = undefined;
+    simulationArea.minHeight = undefined;
+    simulationArea.maxHeight = undefined;
+
+    for (const key of updateOrder) {
+        if (key !== 'wires') {
+            for (const obj of scope[key]) {
+                totalObjects += 1;
+
                 if (totalObjects === 1) {
-                    simulationArea.minWidth = obj.absX()
-                    simulationArea.minHeight = obj.absY()
-                    simulationArea.maxWidth = obj.absX()
-                    simulationArea.maxHeight = obj.absY()
+                    simulationArea.minWidth = obj.absX();
+                    simulationArea.minHeight = obj.absY();
+                    simulationArea.maxWidth = obj.absX();
+                    simulationArea.maxHeight = obj.absY();
                 }
+
                 if (obj.objectType !== 'Node') {
-                    if (obj.y - obj.upDimensionY < simulationArea.minHeight) {
-                        simulationArea.minHeight = obj.y - obj.upDimensionY
-                    }
-                    if (obj.y + obj.downDimensionY > simulationArea.maxHeight) {
-                        simulationArea.maxHeight = obj.y + obj.downDimensionY
-                    }
-                    if (obj.x - obj.leftDimensionX < simulationArea.minWidth) {
-                        simulationArea.minWidth = obj.x - obj.leftDimensionX
-                    }
-                    if (obj.x + obj.rightDimensionX > simulationArea.maxWidth) {
-                        simulationArea.maxWidth = obj.x + obj.rightDimensionX
-                    }
+                    simulationArea.minHeight = Math.min(simulationArea.minHeight, obj.y - obj.upDimensionY);
+                    simulationArea.maxHeight = Math.max(simulationArea.maxHeight, obj.y + obj.downDimensionY);
+                    simulationArea.minWidth = Math.min(simulationArea.minWidth, obj.x - obj.leftDimensionX);
+                    simulationArea.maxWidth = Math.max(simulationArea.maxWidth, obj.x + obj.rightDimensionX);
                 } else {
-                    if (obj.absY() < simulationArea.minHeight) {
-                        simulationArea.minHeight = obj.absY()
-                    }
-                    if (obj.absY() > simulationArea.maxHeight) {
-                        simulationArea.maxHeight = obj.absY()
-                    }
-                    if (obj.absX() < simulationArea.minWidth) {
-                        simulationArea.minWidth = obj.absX()
-                    }
-                    if (obj.absX() > simulationArea.maxWidth) {
-                        simulationArea.maxWidth = obj.absX()
-                    }
+                    simulationArea.minHeight = Math.min(simulationArea.minHeight, obj.absY());
+                    simulationArea.maxHeight = Math.max(simulationArea.maxHeight, obj.absY());
+                    simulationArea.minWidth = Math.min(simulationArea.minWidth, obj.absX());
+                    simulationArea.maxWidth = Math.max(simulationArea.maxWidth, obj.absX());
                 }
             }
         }
     }
-    simulationArea.objectList = updateOrder
+
+    simulationArea.objectList = updateOrder;
 }
 
-// Function used to change the zoom level wrt to a point
-// fn to change scale (zoom) - It also shifts origin so that the position
-// of the object in focus doesn't change
-export function changeScale(delta, xx, yy, method = 1) {
+// Function to change the zoom level with respect to a point
+export function changeScale(delta: number, xx?: number | string, yy?: number | string, method: number = 1): void {
     // method = 3/2 - Zoom wrt center of screen
     // method = 1 - Zoom wrt position of mouse
     // Otherwise zoom wrt to selected object
 
     if (method === 3) {
-        xx = (width / 2 - globalScope.ox) / globalScope.scale
-        yy = (height / 2 - globalScope.oy) / globalScope.scale
-    } else if (
-        xx === undefined ||
-        yy === undefined ||
-        xx === 'zoomButton' ||
-        yy === 'zoomButton'
-    ) {
-        if (
-            simulationArea.lastSelected &&
-            simulationArea.lastSelected.objectType !== 'Wire'
-        ) {
+        xx = (width / 2 - globalScope.ox) / globalScope.scale;
+        yy = (height / 2 - globalScope.oy) / globalScope.scale;
+    } else if (xx === undefined || yy === undefined || xx === 'zoomButton' || yy === 'zoomButton') {
+        if (simulationArea.lastSelected && simulationArea.lastSelected.objectType !== 'Wire') {
             // selected object
-            xx = simulationArea.lastSelected.x
-            yy = simulationArea.lastSelected.y
-        } else {
+            xx = simulationArea.lastSelected.x;
+            yy = simulationArea.lastSelected.y;
+        } else if (method === 1) {
             // mouse location
-            // eslint-disable-next-line no-lonely-if
-            if (method === 1) {
-                xx = simulationArea.mouseX
-                yy = simulationArea.mouseY
-            } else if (method === 2) {
-                xx = (width / 2 - globalScope.ox) / globalScope.scale
-                yy = (height / 2 - globalScope.oy) / globalScope.scale
-            }
+            xx = simulationArea.mouseX;
+            yy = simulationArea.mouseY;
+        } else if (method === 2) {
+            xx = (width / 2 - globalScope.ox) / globalScope.scale;
+            yy = (height / 2 - globalScope.oy) / globalScope.scale;
         }
     }
 
-    var oldScale = globalScope.scale
-    globalScope.scale = Math.max(
-        0.5,
-        Math.min(4 * DPR, globalScope.scale + delta)
-    )
-    globalScope.scale = Math.round(globalScope.scale * 10) / 10
-    globalScope.ox -= Math.round(xx * (globalScope.scale - oldScale)) // Shift accordingly, so that we zoom wrt to the selected point
-    globalScope.oy -= Math.round(yy * (globalScope.scale - oldScale))
-    // dots(true,false);
+    const oldScale = globalScope.scale;
+    globalScope.scale = Math.max(0.5, Math.min(4 * DPR, globalScope.scale + delta));
+    globalScope.scale = Math.round(globalScope.scale * 10) / 10;
+
+    if (typeof xx === 'number' && typeof yy === 'number') {
+        globalScope.ox -= Math.round(xx * (globalScope.scale - oldScale)); // Shift accordingly, so that we zoom wrt to the selected point
+        globalScope.oy -= Math.round(yy * (globalScope.scale - oldScale));
+    }
 
     // MiniMap
     if (!embed && !lightMode) {
-        findDimensions(globalScope)
-        miniMapArea.setup()
-        let miniMap = document.querySelector('#miniMap');
-        miniMap.style.display = 'block';
-        updatelastMinimapShown()
-        miniMap.style.display = 'block';
-        setTimeout(removeMiniMap, 2000)
+        findDimensions(globalScope);
+        miniMapArea.setup();
+        const miniMap = document.querySelector<HTMLDivElement>('#miniMap');
+        if (miniMap) {
+            miniMap.style.display = 'block';
+            updatelastMinimapShown();
+            setTimeout(removeMiniMap, 2000);
+        }
     }
 }
-// fn to draw Dots on screen
-// the function is called only when the zoom level or size of screen changes.
-// Otherwise for normal panning, the canvas itself is moved to give the illusion of movement
 
+// Function to draw dots on the background
+// The function is called only when the zoom level or size of the screen changes.
+// Otherwise, for normal panning, the canvas itself is moved to give the illusion of movement.
 export function dots(
-    dots = true,
-    transparentBackground = false,
-    force = false
-) {
-    const scale = unit * globalScope.scale
-    const ox = globalScope.ox % scale // offset
-    const oy = globalScope.oy % scale // offset
+    enableDots: boolean = true,
+    transparentBackground: boolean = false,
+    force: boolean = false
+): void {
+    const scale = unit * globalScope.scale;
+    const ox = globalScope.ox % scale; // offset
+    const oy = globalScope.oy % scale; // offset
 
-    const backgroundCtx = backgroundArea.context
-    if (!backgroundCtx) return
+    const backgroundCtx = backgroundArea.context;
+    if (!backgroundCtx) return;
 
-    const canvasWidth = backgroundArea.canvas.width // max X distance
-    const canvasHeight = backgroundArea.canvas.height // max Y distance
+    const canvasWidth = backgroundArea.canvas.width; // max X distance
+    const canvasHeight = backgroundArea.canvas.height; // max Y distance
 
-    backgroundArea.canvas.style.left = `${(ox - scale) / DPR}px` // adjust left position of canvas
-    backgroundArea.canvas.style.top = `${(oy - scale) / DPR}px` // adjust top position of canvas
+    // Adjust position of canvas for panning
+    backgroundArea.canvas.style.left = `${(ox - scale) / DPR}px`;
+    backgroundArea.canvas.style.top = `${(oy - scale) / DPR}px`;
 
-    if (globalScope.scale === simulationArea.prevScale && !force) return
+    if (globalScope.scale === simulationArea.prevScale && !force) return;
 
-    simulationArea.prevScale = globalScope.scale // set the previous scale to current scale
-
-    backgroundCtx.beginPath()
-    backgroundArea.clear()
+    simulationArea.prevScale = globalScope.scale; // set the previous scale to current scale
+    backgroundCtx.beginPath();
+    backgroundArea.clear();
 
     if (!transparentBackground) {
-        backgroundCtx.fillStyle = colors['canvas_fill']
-        backgroundCtx.fillRect(0, 0, canvasWidth, canvasHeight)
+        backgroundCtx.fillStyle = colors['canvas_fill'];
+        backgroundCtx.fillRect(0, 0, canvasWidth, canvasHeight);
     }
 
-    if (dots) {
-        backgroundCtx.fillStyle = colors['dot_fill']
+    if (enableDots) {
+        backgroundCtx.fillStyle = colors['dot_fill'];
         for (let i = 0; i < canvasWidth; i += scale) {
             for (let j = 0; j < canvasHeight; j += scale) {
-                backgroundCtx.beginPath()
-                backgroundCtx.arc(i, j, scale / 10, 0, Math.PI * 2)
-                backgroundCtx.fill()
+                backgroundCtx.beginPath();
+                backgroundCtx.arc(i, j, scale / 10, 0, Math.PI * 2);
+                backgroundCtx.fill();
             }
         }
     }
 
-    backgroundCtx.strokeStyle = colors['canvas_stroke']
-    backgroundCtx.lineWidth = 1
+    backgroundCtx.strokeStyle = colors['canvas_stroke'];
+    backgroundCtx.lineWidth = 1;
 
     if (!embed) {
-        const correction = 0.5 * (backgroundCtx.lineWidth % 2)
+        const correction = 0.5 * (backgroundCtx.lineWidth % 2);
         for (let i = 0; i < canvasWidth; i += scale) {
-            backgroundCtx.moveTo(Math.round(i + correction) - correction, 0)
-            backgroundCtx.lineTo(
-                Math.round(i + correction) - correction,
-                canvasHeight
-            )
+            backgroundCtx.moveTo(Math.round(i + correction) - correction, 0);
+            backgroundCtx.lineTo(Math.round(i + correction) - correction, canvasHeight);
         }
         for (let j = 0; j < canvasHeight; j += scale) {
-            backgroundCtx.moveTo(0, Math.round(j + correction) - correction)
-            backgroundCtx.lineTo(
-                canvasWidth,
-                Math.round(j + correction) - correction
-            )
+            backgroundCtx.moveTo(0, Math.round(j + correction) - correction);
+            backgroundCtx.lineTo(canvasWidth, Math.round(j + correction) - correction);
         }
-        backgroundCtx.stroke()
+        backgroundCtx.stroke();
     }
+
+
 
     // Old Code
     // function drawPixel(x, y, r, g, b, a) {
