@@ -1,8 +1,42 @@
-import { setup } from './setup'
+import { setup } from './setup';
 
 document.addEventListener('DOMContentLoaded', () => {
-    setup()
-    var js = {
+    setup();
+
+    type DeviceType = 'Input' | 'Output' | 'Memory';
+
+    interface Device {
+        type: DeviceType;
+        net?: string;
+        order?: number;
+        bits: number;
+        label?: string;
+        abits?: number;
+        words?: number;
+        offset?: number;
+        rdports?: Array<{clock_polarity?: boolean}>;
+        wrports?: Array<{clock_polarity?: boolean}>;
+        memdata?: (number | string)[];
+    }
+
+    interface Endpoint {
+        id: string;
+        port: string;
+    }
+
+    interface Connector {
+        to: Endpoint;
+        from: Endpoint;
+        name: string;
+    }
+
+    interface CircuitConfiguration {
+        devices: {[key: string]: Device};
+        connectors: Connector[];
+        subcircuits: Record<string, unknown>;
+    }
+
+    const js: CircuitConfiguration = {
         devices: {
             dev0: {
                 type: 'Input',
@@ -206,5 +240,5 @@ document.addEventListener('DOMContentLoaded', () => {
             },
         ],
         subcircuits: {},
-    }
-})
+    };
+});
