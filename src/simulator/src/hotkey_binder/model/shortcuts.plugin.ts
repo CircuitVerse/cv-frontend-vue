@@ -194,8 +194,17 @@ export const shortcut = {
     },
 
     removeAll: function (): void {
-        Object.keys(this.all_shortcuts).forEach(x => {
-            this.remove(x)
-        })
+        const failures: string[] = []
+    Object.keys(this.all_shortcuts).forEach(shortcut => {
+        try {
+            this.remove(shortcut)
+        } catch (error) {
+            failures.push(shortcut)
+            console.error(`Failed to remove shortcut ${shortcut}: ${error}`)
+        }
+    })
+    if (failures.length > 0) {
+        console.warn(`Failed to remove ${failures.length} shortcuts: ${failures.join(', ')}`)
+        }   
     }
 }
