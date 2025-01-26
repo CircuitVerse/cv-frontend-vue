@@ -317,3 +317,8 @@ function printBooleanTable() {
     z-index: 10000;
 }
 </style>
+
+<!--
+    some errors due to output.value
+    output.value == null not working
+-->
