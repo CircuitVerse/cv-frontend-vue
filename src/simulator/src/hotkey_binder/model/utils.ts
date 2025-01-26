@@ -5,14 +5,21 @@ interface Storage {
 }
 
 // Add type-safe set method to Storage prototype
-Storage.prototype.set = function(key: string, obj: any): void {
+Storage.prototype.set = function<T>(key: string, obj: T): void {
     this.setItem(key, JSON.stringify(obj));
 }
 
 // Add type-safe get method to Storage prototype
-Storage.prototype.get = function(key: string): any {
+Storage.prototype.get = function<T>(key: string): T | null {
     const item = this.getItem(key);
-    return item ? JSON.parse(item) : null;
+    if (!item) return null;
+    try {
+        return JSON.parse(item) as T;
+    } catch (e) {
+        console.error(`Failed to parse stored item ${key}:`, e);
+        return null;
+    }
+
 }
 
 // Type-safe object size function
