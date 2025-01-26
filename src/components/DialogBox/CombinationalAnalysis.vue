@@ -23,8 +23,7 @@
 import { stripTags } from '#/simulator/src/utils'
 import { useState } from '#/store/SimulatorStore/state'
 import messageBox from '@/MessageBox/messageBox.vue'
-import { ref } from 'vue'
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 
 /* imports from combinationalAnalysis.js */
 import { GenerateCircuit, solveBooleanFunction } from '#/simulator/src/combinationalAnalysis'
@@ -119,8 +118,6 @@ function clearData() {
 }
 
 function dialogBoxConformation(selectedOption, circuitItem) {
-    // SimulatorState.dialogBox.combinationalanalysis_dialog = false
-    // use the above value to show tables and later clear it all
     if (selectedOption == 'showLogicTable') {
         createLogicTable()
     }
@@ -176,16 +173,13 @@ function createLogicTable() {
         outputList.length > 0 &&
         booleanInputVariables.length == 0
     ) {
-        // $(this).dialog('close')
         SimulatorState.dialogBox.combinationalanalysis_dialog = false
-
         createBooleanPrompt(inputList, outputList, null)
     } else if (
         booleanInputVariables.length > 0 &&
         inputList.length == 0 &&
         outputList.length == 0
     ) {
-        // $(this).dialog('close')
         SimulatorState.dialogBox.combinationalanalysis_dialog = false
         output.value = []
         solveBooleanFunction(booleanInputVariables, booleanExpression)
@@ -286,16 +280,19 @@ function createBooleanPrompt(inputList, outputList, scope = globalScope) {
 }
 
 function printBooleanTable() {
-    var sTable = $('.messageBox .v-card-text')[0].innerHTML
+    const messageBoxElement = document.querySelector('.messageBox .v-card-text')
+    if (!messageBoxElement) return
 
-    var style =
+    const sTable = messageBoxElement.innerHTML
+
+    const style =
         `<style>
         table {font: 40px Calibri;}
         table, th, td {border: solid 1px #DDD;border-collapse: 0;}
         tbody {padding: 2px 3px;text-align: center;}
         </style>`.replace(/\n/g, "")
-    var win = window.open('', '', 'height=700,width=700')
-    var htmlBody = `
+    const win = window.open('', '', 'height=700,width=700')
+    const htmlBody = `
                        <html><head>\
                        <title>Boolean Logic Table</title>\
                        ${style}\
@@ -320,8 +317,3 @@ function printBooleanTable() {
     z-index: 10000;
 }
 </style>
-
-<!--
-    some errors due to output.value
-    output.value == null not working
--->
