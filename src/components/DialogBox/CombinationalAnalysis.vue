@@ -24,6 +24,7 @@ import { stripTags } from '#/simulator/src/utils'
 import { useState } from '#/store/SimulatorStore/state'
 import messageBox from '@/MessageBox/messageBox.vue'
 import { ref, onMounted } from 'vue'
+import DOMPurify from 'dompurify';
 
 /* imports from combinationalAnalysis.js */
 import { GenerateCircuit, solveBooleanFunction } from '#/simulator/src/combinationalAnalysis'
@@ -281,6 +282,7 @@ function createBooleanPrompt(inputList, outputList, scope = globalScope) {
 
 function printBooleanTable() {
     const messageBoxElement = document.querySelector('.messageBox .v-card-text')
+    const sanitizedTable = DOMPurify.sanitize(sTable);
     if (!messageBoxElement) return
 
     const sTable = messageBoxElement.innerHTML
