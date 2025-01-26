@@ -1,7 +1,7 @@
 // Extend Storage interface to add type-safe set and get methods
 interface Storage {
-    set(key: string, obj: any): void;
-    get(key: string): any;
+    set<T>(key: string, obj: T): void;
+    get<T>(key: string): T | null;
 }
 
 // Add type-safe set method to Storage prototype
