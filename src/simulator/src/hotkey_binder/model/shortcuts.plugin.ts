@@ -180,16 +180,22 @@ export const shortcut = {
         
         if (binding) {
             const { target, callback, event } = binding
-            
-            if (target.removeEventListener) {
-                target.removeEventListener(event, callback)
-            } else if ((target as any).detachEvent) {
-                (target as any).detachEvent('on' + event, callback)
-            } else {
-                (target as any)['on' + event] = null
+
+            try{
+                if (target.removeEventListener) {
+                    target.removeEventListener(event, callback)
+                } else if ((target as any).detachEvent) {
+                    (target as any).detachEvent('on' + event, callback)
+                } else {
+                    (target as any)['on' + event] = null
+                }
+            } catch (error) {
+                console.warn('Failed to remove event Listener:  ${error}'  )
             }
             
             delete this.all_shortcuts[shortcut_combination]
+        }   else {
+            console.warn('No binding found for shortcut: ${shortcut_combination}')
         }
     },
 
