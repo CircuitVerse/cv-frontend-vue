@@ -1,3 +1,4 @@
+import Vue from 'vue';
 import { fullView } from './ux';
 import { createSubCircuitPrompt } from './subcircuit';
 import save from './data/save';
@@ -69,11 +70,15 @@ const logixFunction: LogixFunction = {
 
 export default logixFunction;
 
-// Hack to restart tour guide
+/**
+ * Initializes the tour guide with a slight delay to ensure DOM is ready.
+ * @todo Refactor to use proper lifecycle hooks or event-based initialization
+ */
 function showTourGuideHelper(): void {
-    setTimeout(() => {
-        showTourGuide();
-    }, 100);
+    // Consider using Vue's nextTick or proper event listeners
+    Vue.nextTick(() => {
+            showTourGuide();
+        });
 }
 
 // Hack to call createNewCircuitScope with keyboard shortcut
