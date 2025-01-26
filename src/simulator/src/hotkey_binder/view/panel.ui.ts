@@ -70,10 +70,15 @@ export const closeEdit = (): void => {
 /**
  * Submit user key configurations
  */
-export const submit = (): void => {
+export const submit = async (): Promise<void> => {
     const editElement = document.getElementById('edit')
     if (editElement) editElement.style.display = 'none'
     
-    setUserKeys()
-    updateHTML('user')
+    try {
+                await setUserKeys()
+                updateHTML('user')
+            } catch (error) {
+                console.error('Failed to save user keys:', error)
+                // TODO: Add user feedback for failure case
+            }
 }
