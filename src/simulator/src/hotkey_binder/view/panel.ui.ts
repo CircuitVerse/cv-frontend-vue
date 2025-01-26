@@ -8,31 +8,31 @@ export const updateHTML = (mode: 'user' | 'default'): void => {
     const preferenceContainer = document.getElementById('preference')
     if (!preferenceContainer) return
 
-    if (mode === 'user') {
-        const userKeys = localStorage.get('userKeys') as Record<string, string>
-        const children = preferenceContainer.children
+    const storageKey = mode === 'user' ? 'userKeys' : 'defaultKeys'
+    let keys: Record<string, string> = {}
 
-        for (let x = 0; x < children.length; x++) {
-            const child = children[x] as HTMLElement
-            const keyElement = child.querySelector('.key-name') as HTMLElement
-            const valueElement = child.querySelector('.key-value') as HTMLElement
-            
-            if (keyElement && valueElement) {
-                valueElement.innerText = userKeys[keyElement.innerText] || ''
-            }
+    try {
+        const storedData = localStorage.getItem(storageKey)
+        if (storedData) {
+            keys = JSON.parse(storedData)
         }
-    } else if (mode === 'default') {
-        const defaultKeys = localStorage.get('defaultKeys') as Record<string, string>
-        const children = preferenceContainer.children
+    } catch (error) {
+        console.error(`Failed to parse ${storageKey} from localStorage:`, error)
+        return
+    }
 
-        for (let x = 0; x < children.length; x++) {
-            const child = children[x] as HTMLElement
-            const keyElement = child.querySelector('.key-name') as HTMLElement
-            const valueElement = child.querySelector('.key-value') as HTMLElement
-            
-            if (keyElement && valueElement) {
-                valueElement.innerText = defaultKeys[keyElement.innerText] || ''
-            }
+    // Update the key values in the preference container    
+    const children = preferenceContainer.children
+    for (let x = 0; x < children.length; x++) {
+        const child = children[x]
+        if (!(child instanceof HTMLElement)) continue
+
+        const keyElement = child.querySelector('.key-name')
+        const valueElement = child.querySelector('.key-value')
+        
+        if (keyElement instanceof HTMLElement && 
+            valueElement instanceof HTMLElement) {
+            valueElement.innerText = keys[keyElement.innerText] || ''
         }
     }
 }
@@ -75,10 +75,19 @@ export const submit = async (): Promise<void> => {
     if (editElement) editElement.style.display = 'none'
     
     try {
-                await setUserKeys()
-                updateHTML('user')
-            } catch (error) {
-                console.error('Failed to save user keys:', error)
-                // TODO: Add user feedback for failure case
-            }
+        await setUserKeys()
+        updateHTML('user')
+    } catch (error) {
+        console.error('Failed to save user keys:', error)
+        const errorMessageElement = document.getElementById('error-message')
+        if (errorMessageElement) {
+            errorMessageElement.textContent = 'Failed to save hotkey configuration. Please try again.'
+            errorMessageElement.style.display = 'block'
+            
+            // Optional: Automatically hide error after 5 seconds
+            setTimeout(() => {
+                errorMessageElement.style.display = 'none'
+            }, 5000)
+        }
+    }
 }
