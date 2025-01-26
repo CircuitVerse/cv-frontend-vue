@@ -1,6 +1,35 @@
 import { setUserKeys } from '../model/actions'
 
 /**
+ * Get keys from localStorage
+ * @param storageKey Key to retrieve from localStorage
+ * @returns Parsed keys or an empty object if parsing fails
+ */
+const getKeysFromStorage = (storageKey: string): Record<string, string> => {
+    try {
+        const storedData = localStorage.getItem(storageKey)
+        return storedData ? JSON.parse(storedData) : {}
+    } catch (error) {
+        console.error(`Failed to parse ${storageKey} from localStorage:`, error)
+        return {}
+    }
+}
+
+/**
+ * Update a single key-value pair in the UI
+ * @param child Container element for the key-value pair
+ * @param keys Object containing key-value mappings
+ */
+const updateKeyValuePair = (child: HTMLElement, keys: Record<string, string>): void => {
+    const keyElement = child.querySelector('.key-name')
+    const valueElement = child.querySelector('.key-value')
+
+    if (keyElement instanceof HTMLElement && valueElement instanceof HTMLElement) {
+        valueElement.innerText = keys[keyElement.innerText] || ''
+    }
+}
+
+/**
  * Update the hotkey panel UI with the currently set configuration
  * @param mode User preferred configuration or default keys
  */
@@ -9,32 +38,13 @@ export const updateHTML = (mode: 'user' | 'default'): void => {
     if (!preferenceContainer) return
 
     const storageKey = mode === 'user' ? 'userKeys' : 'defaultKeys'
-    let keys: Record<string, string> = {}
+    const keys = getKeysFromStorage(storageKey)
 
-    try {
-        const storedData = localStorage.getItem(storageKey)
-        if (storedData) {
-            keys = JSON.parse(storedData)
+    Array.from(preferenceContainer.children).forEach((child) => {
+        if (child instanceof HTMLElement) {
+            updateKeyValuePair(child, keys)
         }
-    } catch (error) {
-        console.error(`Failed to parse ${storageKey} from localStorage:`, error)
-        return
-    }
-
-    // Update the key values in the preference container    
-    const children = preferenceContainer.children
-    for (let x = 0; x < children.length; x++) {
-        const child = children[x]
-        if (!(child instanceof HTMLElement)) continue
-
-        const keyElement = child.querySelector('.key-name')
-        const valueElement = child.querySelector('.key-value')
-        
-        if (keyElement instanceof HTMLElement && 
-            valueElement instanceof HTMLElement) {
-            valueElement.innerText = keys[keyElement.innerText] || ''
-        }
-    }
+    })
 }
 
 /**
@@ -45,15 +55,12 @@ export const override = (combo: string): void => {
     const preferenceContainer = document.getElementById('preference')
     if (!preferenceContainer) return
 
-    const children = preferenceContainer.children
-    for (let x = 0; x < children.length; x++) {
-        const child = children[x] as HTMLElement
-        const valueElement = child.querySelector('.key-value') as HTMLElement
-        
-        if (valueElement && valueElement.innerText === combo) {
+    Array.from(preferenceContainer.children).forEach((child) => {
+        const valueElement = (child as HTMLElement).querySelector('.key-value')
+        if (valueElement instanceof HTMLElement && valueElement.innerText === combo) {
             valueElement.innerText = ''
         }
-    }
+    })
 }
 
 /**
@@ -62,9 +69,26 @@ export const override = (combo: string): void => {
 export const closeEdit = (): void => {
     const pressedKeysElement = document.getElementById('pressedKeys')
     const editElement = document.getElementById('edit')
-    
+
     if (pressedKeysElement) pressedKeysElement.textContent = ''
     if (editElement) editElement.style.display = 'none'
+}
+
+/**
+ * Display an error message to the user
+ * @param message Error message to display
+ */
+const showErrorMessage = (message: string): void => {
+    const errorMessageElement = document.getElementById('error-message')
+    if (!errorMessageElement) return
+
+    errorMessageElement.textContent = message
+    errorMessageElement.style.display = 'block'
+
+    // Automatically hide error after 5 seconds
+    setTimeout(() => {
+        errorMessageElement.style.display = 'none'
+    }, 5000)
 }
 
 /**
@@ -73,21 +97,12 @@ export const closeEdit = (): void => {
 export const submit = async (): Promise<void> => {
     const editElement = document.getElementById('edit')
     if (editElement) editElement.style.display = 'none'
-    
+
     try {
         await setUserKeys()
         updateHTML('user')
     } catch (error) {
         console.error('Failed to save user keys:', error)
-        const errorMessageElement = document.getElementById('error-message')
-        if (errorMessageElement) {
-            errorMessageElement.textContent = 'Failed to save hotkey configuration. Please try again.'
-            errorMessageElement.style.display = 'block'
-            
-            // Optional: Automatically hide error after 5 seconds
-            setTimeout(() => {
-                errorMessageElement.style.display = 'none'
-            }, 5000)
-        }
+        showErrorMessage('Failed to save hotkey configuration. Please try again.')
     }
 }
