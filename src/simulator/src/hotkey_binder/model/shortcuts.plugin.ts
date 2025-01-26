@@ -61,7 +61,11 @@ export const shortcut = {
 
             if (options.disable_in_input) {
                 let element = e.target as HTMLElement
-                if (element.nodeType === 3) element = element.parentNode as HTMLElement
+                if (element.nodeType === 3 && element.parentNode) {
+                        element = element.parentNode as HTMLElement
+                    } else if (element.nodeType === 3) {
+                        return
+                    }
 
                 if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
                     return
