@@ -27,11 +27,19 @@ export function getKey<T extends Record<string, any>>(obj: T, val: any): string 
 
 // Detect operating system
 export function getOS(): string {
-    const userAgent = navigator.appVersion.toLowerCase();
-    if (userAgent.includes('win')) return 'Windows';
-    if (userAgent.includes('mac')) return 'MacOS';
-    if (userAgent.includes('x11')) return 'UNIX';
-    if (userAgent.includes('linux')) return 'Linux';
+        // Use modern API with fallback
+    if (navigator.platform) {
+        const platform = navigator.platform.toLowerCase();
+        if (platform.includes('windows')) return 'Windows';
+        if (platform.includes('mac')) return 'MacOS';
+        if (platform.includes('linux')) return 'Linux';
+    }
+    // Fallback to platform
+    const platform = navigator.platform.toLowerCase();
+    if (navigator.userAgent.includes('win')) return 'Windows';
+    if (navigator.userAgent.includes('mac')) return 'MacOS';
+    if (navigator.userAgent.includes('x11')) return 'UNIX';
+    if (navigator.userAgent.includes('linux')) return 'Linux';
     return '';
 }
 
