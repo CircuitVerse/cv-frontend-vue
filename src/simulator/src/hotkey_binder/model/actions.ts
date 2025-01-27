@@ -157,6 +157,23 @@ export const warnOverride = (
     const preferenceChildren = document.getElementById('preference')?.children
     if (!preferenceChildren) return
 
+    const isComboAssigned = checkIfComboIsAssigned(combo, target, preferenceChildren)
+    if (isComboAssigned) {
+        warning.value = `This key(s) is already assigned to: ${isComboAssigned}, press Enter to override.`
+        setEditElementBorder('#dc5656')
+    } else {
+        setEditElementBorder('none')
+    }
+}
+
+/**
+ * Check if the key combo is already assigned to another key
+ */
+const checkIfComboIsAssigned = (
+    combo: string,
+    target: HTMLElement,
+    preferenceChildren: HTMLCollection
+): string | undefined => {
     for (let x = 0; x < preferenceChildren.length; x++) {
         const keyChild = preferenceChildren[x]?.children[1]?.children[0]
         const valueChild = preferenceChildren[x]?.children[1]?.children[1]
@@ -165,13 +182,11 @@ export const warnOverride = (
             const assignee = keyChild.innerText
             if (valueChild.innerText === combo && 
                 assignee !== (target.previousElementSibling as HTMLElement)?.innerText) {
-                warning.value = `This key(s) is already assigned to: ${assignee}, press Enter to override.`
-                setEditElementBorder('#dc5656')
-                return
+                return assignee
             }
         }
     }
-    setEditElementBorder('none')
+    return undefined
 }
 
 /**
@@ -220,17 +235,24 @@ const updateSelectElement = (selector: string, value: string): void => {
  * Insert label into input field
  */
 export const insertLabel = (): void => {
-    if (simulationArea.lastSelected) {
-        const labelInput = document.querySelector<HTMLInputElement>("input[name^='setLabel']")
-        if (labelInput) {
-            labelInput.focus()
-            if (!labelInput.value) {
-                labelInput.value = 'Untitled'
-            }
-            labelInput.select()
-            updateSystem()
-        }
+    if (!simulationArea.lastSelected) return
+
+    const labelInput = document.querySelector<HTMLInputElement>("input[name^='setLabel']")
+    if (!labelInput) return
+
+    focusAndSetLabel(labelInput)
+    updateSystem()
+}
+
+/**
+ * Focus on the label input and set a default value if empty
+ */
+const focusAndSetLabel = (labelInput: HTMLInputElement): void => {
+    labelInput.focus()
+    if (!labelInput.value) {
+        labelInput.value = 'Untitled'
     }
+    labelInput.select()
 }
 
 /**
