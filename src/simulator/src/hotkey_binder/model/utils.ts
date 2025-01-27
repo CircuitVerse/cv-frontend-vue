@@ -38,7 +38,6 @@ export function getKey<T extends Record<string, any>>(obj: T, val: any): string 
             });
 }
 
-
 // OS detection patterns
 const OS_PATTERNS: Record<string, RegExp> = {
     'Windows': /windows/i,
