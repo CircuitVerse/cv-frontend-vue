@@ -29,7 +29,13 @@ export function objectSize(obj: Record<string, any>): number {
 
 // Find key by value in an object
 export function getKey<T extends Record<string, any>>(obj: T, val: any): string | undefined {
-    return Object.keys(obj).find(key => obj[key] === val);
+        return Object.keys(obj).find(key => {
+                const value = obj[key];
+                if (typeof value === 'object' && value !== null) {
+                    return JSON.stringify(value) === JSON.stringify(val);
+                }
+                return value === val;
+            });
 }
 
 
