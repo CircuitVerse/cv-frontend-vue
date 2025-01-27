@@ -32,21 +32,34 @@ export function getKey<T extends Record<string, any>>(obj: T, val: any): string 
     return Object.keys(obj).find(key => obj[key] === val);
 }
 
+
 // Detect operating system
 export function getOS(): string {
-        // Use modern API with fallback
-    if (navigator.platform) {
-        const platform = navigator.platform.toLowerCase();
-        if (platform.includes('windows')) return 'Windows';
-        if (platform.includes('mac')) return 'MacOS';
-        if (platform.includes('linux')) return 'Linux';
-    }
-    // Fallback to platform
     const platform = navigator.platform.toLowerCase();
-    if (navigator.userAgent.includes('win')) return 'Windows';
-    if (navigator.userAgent.includes('mac')) return 'MacOS';
-    if (navigator.userAgent.includes('x11')) return 'UNIX';
-    if (navigator.userAgent.includes('linux')) return 'Linux';
+    const userAgent = navigator.userAgent.toLowerCase();
+
+    const osMap: Record<string, string> = {
+        windows: 'Windows',
+        mac: 'MacOS',
+        linux: 'Linux',
+        x11: 'UNIX',
+    };
+
+    // Check platform first
+    for (const [key, value] of Object.entries(osMap)) {
+        if (platform.includes(key)) {
+            return value;
+        }
+    }
+
+    // Fallback to user agent
+    for (const [key, value] of Object.entries(osMap)) {
+        if (userAgent.includes(key)) {
+            return value;
+        }
+    }
+
+    // Default return if no match is found
     return '';
 }
 
