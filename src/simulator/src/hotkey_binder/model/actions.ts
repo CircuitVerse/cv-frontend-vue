@@ -37,93 +37,116 @@ type DirectionType = 'up' | 'down' | 'left' | 'right'
  */
 export const addKeys = (mode: 'user' | 'default'): void => {
     shortcut.removeAll()
-    if (mode === 'user') {
-        localStorage.removeItem('defaultKeys')
-        const userKeys: KeyMap = JSON.parse(localStorage.getItem('userKeys') || '{}')
-        for (const pref in userKeys) {
-            let key = userKeys[pref]
-            key = key.split(' ').join('')
-            addShortcut(key, pref)
-        }
-        updateHTML('user')
-    } else if (mode === 'default') {
-        if (localStorage.userKeys) localStorage.removeItem('userKeys')
-        const defaultKeys: KeyMap = JSON.parse(localStorage.getItem('defaultKeys') || '{}')
-        for (const pref in defaultKeys) {
-            let key = defaultKeys[pref]
-            key = key.split(' ').join('')
-            addShortcut(key, pref)
-        }
-        updateHTML('default')
+    const keys = mode === 'user' ? getUserKeys() : getDefaultKeys()
+    bindKeys(keys, mode)
+}
+
+/**
+ * Get user keys from localStorage
+ */
+const getUserKeys = (): KeyMap => {
+    localStorage.removeItem('defaultKeys')
+    return JSON.parse(localStorage.getItem('userKeys') || '{}')
+}
+
+/**
+ * Get default keys from localStorage
+ */
+const getDefaultKeys = (): KeyMap => {
+    if (localStorage.userKeys) localStorage.removeItem('userKeys')
+    return JSON.parse(localStorage.getItem('defaultKeys') || '{}')
+}
+
+/**
+ * Bind keys to shortcuts
+ */
+const bindKeys = (keys: KeyMap, mode: 'user' | 'default'): void => {
+    for (const pref in keys) {
+        const key = keys[pref].split(' ').join('')
+        addShortcut(key, pref)
     }
+    updateHTML(mode)
 }
 
 /**
  * Function used to check if new keys are added, adds missing keys if added
  */
 export const checkUpdate = (): void => {
-    const userK: KeyMap = localStorage.get('userKeys')
+    const userK: KeyMap = JSON.parse(localStorage.getItem('userKeys') || '{}')
     if (Object.keys(userK).length !== Object.keys(defaultKeys).length) {
-        for (const [key, value] of Object.entries(defaultKeys)) {
-            if (!Object.keys(userK).includes(key)) {
-                userK[key] = value
-            }
+        addMissingKeys(userK)
+        localStorage.setItem('userKeys', JSON.stringify(userK))
+    }
+}
+
+/**
+ * Add missing keys to user keys
+ */
+const addMissingKeys = (userK: KeyMap): void => {
+    for (const [key, value] of Object.entries(defaultKeys)) {
+        if (!Object.keys(userK).includes(key)) {
+            userK[key] = value
         }
-        localStorage.set('userKeys', userK)
     }
 }
 
 /**
  * Function used to set userKeys, grabs the keycombo from the panel UI
- * sets it to the localStorage & cals addKeys
+ * sets it to the localStorage & calls addKeys
  * removes the defaultkeys from localStorage
  */
 export const setUserKeys = (): void => {
     if (localStorage.defaultKeys) localStorage.removeItem('defaultKeys')
-    const userKeys: KeyMap = {}
-    
-    const preferenceChildren = document.getElementById('preference')?.children
-    if (!preferenceChildren) return
-    
-    let x = 0
-    while (x < preferenceChildren.length) {
-        const keyChild = preferenceChildren[x]?.children[1]?.children[0]
-        const valueChild = preferenceChildren[x]?.children[1]?.children[1]
-        
-        if (keyChild instanceof HTMLElement && valueChild instanceof HTMLElement) {
-            userKeys[keyChild.innerText] = valueChild.innerText
-        }
-        x++
-    }
-    
-    localStorage.set('userKeys', userKeys)
+    const userKeys = getUserKeysFromUI()
+    localStorage.setItem('userKeys', JSON.stringify(userKeys))
     addKeys('user')
 }
 
 /**
+ * Get user keys from the UI
+ */
+const getUserKeysFromUI = (): KeyMap => {
+    const userKeys: KeyMap = {}
+    const preferenceChildren = document.getElementById('preference')?.children
+    if (!preferenceChildren) return userKeys
+
+    for (let x = 0; x < preferenceChildren.length; x++) {
+        const keyChild = preferenceChildren[x]?.children[1]?.children[0]
+        const valueChild = preferenceChildren[x]?.children[1]?.children[1]
+
+        if (keyChild instanceof HTMLElement && valueChild instanceof HTMLElement) {
+            userKeys[keyChild.innerText] = valueChild.innerText
+        }
+    }
+    return userKeys
+}
+
+/**
  * Function used to set defaultKeys, grabs the keycombo from the defaultkeys metadata
- * sets it to the localStorage & cals addKeys
+ * sets it to the localStorage & calls addKeys
  * removes the userkeys from localStorage if present
  * also checks for OS type
  */
 export const setDefault = (): void => {
     if (localStorage.userKeys) localStorage.removeItem('userKeys')
-    if (getOS() === 'MacOS') {
-        const macDefaultKeys: KeyMap = {}
-        for (const [key, value] of Object.entries(defaultKeys)) {
-            macDefaultKeys[key] = value.split(' + ')[0] === 'Ctrl'
-                ? value.replace('Ctrl', 'Meta')
-                : value
-            localStorage.set('defaultKeys', macDefaultKeys)
-        }
-    } else {
-        localStorage.set('defaultKeys', defaultKeys)
-    }
+    const keys = getOS() === 'MacOS' ? getMacDefaultKeys() : defaultKeys
+    localStorage.setItem('defaultKeys', JSON.stringify(keys))
     addKeys('default')
 }
 
 /**
- * function to check if user entered keys are already assigned to other key
+ * Get default keys for MacOS
+ */
+const getMacDefaultKeys = (): KeyMap => {
+    const macDefaultKeys: KeyMap = {}
+    for (const [key, value] of Object.entries(defaultKeys)) {
+        macDefaultKeys[key] = value.split(' + ')[0] === 'Ctrl' ? value.replace('Ctrl', 'Meta') : value
+    }
+    return macDefaultKeys
+}
+
+/**
+ * Function to check if user entered keys are already assigned to other key
  * gives a warning message if keys already assigned
  */
 export const warnOverride = (
@@ -133,57 +156,69 @@ export const warnOverride = (
 ): void => {
     const preferenceChildren = document.getElementById('preference')?.children
     if (!preferenceChildren) return
-    
-    let x = 0
-    while (x < preferenceChildren.length) {
+
+    for (let x = 0; x < preferenceChildren.length; x++) {
         const keyChild = preferenceChildren[x]?.children[1]?.children[0]
         const valueChild = preferenceChildren[x]?.children[1]?.children[1]
-        
+
         if (keyChild instanceof HTMLElement && valueChild instanceof HTMLElement) {
             const assignee = keyChild.innerText
             if (valueChild.innerText === combo && 
                 assignee !== (target.previousElementSibling as HTMLElement)?.innerText) {
                 warning.value = `This key(s) is already assigned to: ${assignee}, press Enter to override.`
-                const editElement = document.getElementById('edit')
-                if (editElement) {
-                    editElement.style.border = '1.5px solid #dc5656'
-                }
+                setEditElementBorder('#dc5656')
                 return
             }
         }
-        
-        const editElement = document.getElementById('edit')
-        if (editElement) {
-            editElement.style.border = 'none'
-        }
-        x++
+    }
+    setEditElementBorder('none')
+}
+
+/**
+ * Set border style for edit element
+ */
+const setEditElementBorder = (color: string): void => {
+    const editElement = document.getElementById('edit')
+    if (editElement) {
+        editElement.style.border = color === 'none' ? 'none' : `1.5px solid ${color}`
     }
 }
 
+/**
+ * Update element direction
+ */
 export const elementDirection = (direct: string) => (): void => {
     if (simulationArea.lastSelected) {
         simulationArea.lastSelected.newDirection(direct.toUpperCase())
-
-        const selectElement = document.querySelector<HTMLSelectElement>("select[name^='newDirection']")
-        if (selectElement) {
-            selectElement.value = direct.toUpperCase()
-        }
-
+        updateSelectElement("select[name^='newDirection']", direct.toUpperCase())
         updateSystem()
     }
 }
 
+/**
+ * Update label direction
+ */
 export const labelDirection = (direct: string) => (): void => {
     if (simulationArea.lastSelected && !simulationArea.lastSelected.labelDirectionFixed) {
         simulationArea.lastSelected.labelDirection = direct.toUpperCase()
-        const selectElement = document.querySelector<HTMLSelectElement>("select[name^='newLabelDirection']")
-        if (selectElement) {
-            selectElement.value = direct.toUpperCase()
-        }
+        updateSelectElement("select[name^='newLabelDirection']", direct.toUpperCase())
         updateSystem()
     }
 }
 
+/**
+ * Update select element value
+ */
+const updateSelectElement = (selector: string, value: string): void => {
+    const selectElement = document.querySelector<HTMLSelectElement>(selector)
+    if (selectElement) {
+        selectElement.value = value
+    }
+}
+
+/**
+ * Insert label into input field
+ */
 export const insertLabel = (): void => {
     if (simulationArea.lastSelected) {
         const labelInput = document.querySelector<HTMLInputElement>("input[name^='setLabel']")
@@ -198,44 +233,49 @@ export const insertLabel = (): void => {
     }
 }
 
+/**
+ * Move element in a specific direction
+ */
 export const moveElement = (direct: DirectionType) => (): void => {
     if (simulationArea.lastSelected) {
-        switch (direct) {
-            case 'up':
-                simulationArea.lastSelected.y -= 10
-                break
-            case 'down':
-                simulationArea.lastSelected.y += 10
-                break
-            case 'left':
-                simulationArea.lastSelected.x -= 10
-                break
-            case 'right':
-                simulationArea.lastSelected.x += 10
-                break
-        }
+        const { x, y } = simulationArea.lastSelected
+        const newPosition = calculateNewPosition(direct, x, y)
+        simulationArea.lastSelected.x = newPosition.x
+        simulationArea.lastSelected.y = newPosition.y
         updateSystem()
     }
 }
 
+/**
+ * Calculate new position based on direction
+ */
+const calculateNewPosition = (direct: DirectionType, x: number, y: number): { x: number; y: number } => {
+    switch (direct) {
+        case 'up': return { x, y: y - 10 }
+        case 'down': return { x, y: y + 10 }
+        case 'left': return { x: x - 10, y }
+        case 'right': return { x: x + 10, y }
+    }
+}
+
+/**
+ * Open hotkey settings
+ */
 export const openHotkey = (): void => {
-    const customShortcutElement = document.getElementById('customShortcut')
-    if (customShortcutElement) {
-        customShortcutElement.click()
-    }
+    document.getElementById('customShortcut')?.click()
 }
 
+/**
+ * Open documentation
+ */
 export const openDocumentation = (): void => {
-    if (
-        simulationArea.lastSelected === undefined ||
-        simulationArea.lastSelected.helplink === undefined
-    ) {
-        window.open('https://docs.circuitverse.org/', '_blank')
-    } else {
-        window.open(simulationArea.lastSelected.helplink, '_blank')
-    }
+    const url = simulationArea.lastSelected?.helplink || 'https://docs.circuitverse.org/'
+    window.open(url, '_blank')
 }
 
+/**
+ * Update system state
+ */
 function updateSystem(): void {
     updateCanvasSet(true)
     wireToBeCheckedSet(1)
