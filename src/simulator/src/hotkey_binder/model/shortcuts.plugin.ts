@@ -148,6 +148,28 @@ export const shortcut = {
     },
 
     checkKeysMatch: function (keys: string[], character: string, e: KeyboardEvent, options: ShortcutOptions): boolean {
+        let kp = 0;
+
+        keys.forEach(k => {
+            if (this.isModifierKey(k)) {
+                kp++;
+            } else if (this.isSpecialKeyMatch(k, e)) {
+                kp++;
+            } else if (options.keycode && this.isKeyCodeMatch(options.keycode, e)) {
+                kp++;
+            } else if (this.isCharacterMatch(k, character, e)) {
+                kp++;
+            }
+        });
+
+        return kp === keys.length;
+    },
+
+    isModifierKey: function (key: string): boolean {
+        return key === 'ctrl' || key === 'control' || key === 'shift' || key === 'alt' || key === 'meta';
+    },
+
+    isSpecialKeyMatch: function (key: string, e: KeyboardEvent): boolean {
         const special_keys: Record<string, number> = {
             esc: 27, escape: 27, tab: 9, space: 32, return: 13, enter: 13, backspace: 8,
             scrolllock: 145, scroll_lock: 145, scroll: 145, capslock: 20, caps_lock: 20, caps: 20,
@@ -157,30 +179,26 @@ export const shortcut = {
             f6: 117, f7: 118, f8: 119, f9: 120, f10: 121, f11: 122, f12: 123
         };
 
+        return special_keys[key] === (e.keyCode || e.which);
+    },
+
+    isKeyCodeMatch: function (keycode: number | false, e: KeyboardEvent): boolean {
+        return keycode === (e.keyCode || e.which);
+    },
+
+    isCharacterMatch: function (key: string, character: string, e: KeyboardEvent): boolean {
         const shift_nums: Record<string, string> = {
             '`': '~', 1: '!', 2: '@', 3: '#', 4: '$', 5: '%', 6: '^', 7: '&', 8: '*', 9: '(', 0: ')',
             '-': '_', '=': '+', ';': ':', "'": '"', ',': '<', '.': '>', '/': '?', '\\': '|'
         };
 
-        let kp = 0;
+        if (character === key) {
+            return true;
+        } else if (shift_nums[character] && e.shiftKey) {
+            return shift_nums[character] === key;
+        }
 
-        keys.forEach(k => {
-            if (k === 'ctrl' || k === 'control' || k === 'shift' || k === 'alt' || k === 'meta') {
-                kp++;
-            } else if (k.length > 1) {
-                if (special_keys[k] === (e.keyCode || e.which)) kp++;
-            } else if (options.keycode) {
-                if (options.keycode === (e.keyCode || e.which)) kp++;
-            } else {
-                if (character === k) kp++;
-                else if (shift_nums[character] && e.shiftKey) {
-                    character = shift_nums[character];
-                    if (character === k) kp++;
-                }
-            }
-        });
-
-        return kp === keys.length;
+        return false;
     },
 
     checkModifiersMatch: function (modifiers: Record<string, ModifierState>): boolean {
