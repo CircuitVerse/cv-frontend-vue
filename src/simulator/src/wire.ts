@@ -1,5 +1,4 @@
 /* eslint-disable no-multi-assign */
-// wire object
 import { drawLine } from './canvasApi';
 import { simulationArea } from './simulationArea';
 import Node from './node';
@@ -12,15 +11,6 @@ interface Scope {
     timeStamp: number;
 }
 
-/**
- * Wire - To connect two nodes.
- * @class
- * @memberof module:wire
- * @param {Node} node1
- * @param {Node} node2
- * @param {Scope} scope - The circuit in which wire has to be drawn
- * @category wire
- */
 export default class Wire {
     objectType: string;
     node1: Node;
@@ -43,11 +33,12 @@ export default class Wire {
         this.y1 = this.node1.absY();
         this.x2 = this.node2.absX();
         this.y2 = this.node2.absY();
+        this.updateData();
         this.scope.wires.push(this);
         forceResetNodesSet(true);
     }
 
-    // if data changes
+    // Update wire coordinates
     updateData(): void {
         this.x1 = this.node1.absX();
         this.y1 = this.node1.absY();
@@ -56,12 +47,13 @@ export default class Wire {
         if (this.x1 === this.x2) this.type = 'vertical';
     }
 
+    // Update scope and check connections
     updateScope(scope: Scope): void {
         this.scope = scope;
         this.checkConnections();
     }
 
-    // to check if nodes are disconnected
+    // Check if nodes are disconnected
     checkConnections(): boolean {
         const check =
             this.node1.deleted ||
@@ -72,6 +64,7 @@ export default class Wire {
         return check;
     }
 
+    // Handle double-click event
     dblclick(): void {
         if (
             this.node1.parent == globalScope.root &&
@@ -82,10 +75,105 @@ export default class Wire {
         }
     }
 
+    // Update wire state
     update(): boolean {
         let updated = false;
         if (embed) return updated;
 
+        this.updateWireType();
+        updated = this.handleMouseInteraction() || updated;
+
+        if (this.node1.deleted || this.node2.deleted) {
+            this.delete();
+            return updated;
+        }
+
+        if (!simulationArea.mouseDown) {
+            updated = this.handleNodeAlignment() || updated;
+        }
+
+        return updated;
+    }
+
+    // Draw the wire
+    draw(): void {
+        const ctx = simulationArea.context;
+        const color = this.getWireColor();
+        drawLine(
+            ctx,
+            this.node1.absX(),
+            this.node1.absY(),
+            this.node2.absX(),
+            this.node2.absY(),
+            color,
+            3
+        );
+    }
+
+    // Check if a node lies on the wire
+    checkConvergence(n: Node): boolean {
+        return this.checkWithin(n.absX(), n.absY());
+    }
+
+    // Check if a coordinate lies on the wire
+    checkWithin(x: number, y: number): boolean {
+        const isHorizontal = this.type === 'horizontal';
+        const isVertical = this.type === 'vertical';
+
+        if (isHorizontal) {
+            return (
+                (this.node1.absX() < this.node2.absX() &&
+                    x > this.node1.absX() &&
+                    x < this.node2.absX() &&
+                    y === this.node2.absY()) ||
+                (this.node1.absX() > this.node2.absX() &&
+                    x < this.node1.absX() &&
+                    x > this.node2.absX() &&
+                    y === this.node2.absY())
+            );
+        }
+
+        if (isVertical) {
+            return (
+                (this.node1.absY() < this.node2.absY() &&
+                    y > this.node1.absY() &&
+                    y < this.node2.absY() &&
+                    x === this.node2.absX()) ||
+                (this.node1.absY() > this.node2.absY() &&
+                    y < this.node1.absY() &&
+                    y > this.node2.absY() &&
+                    x === this.node2.absX())
+            );
+        }
+
+        return false;
+    }
+
+    // Add intermediate node between these two nodes
+    converge(n: Node): void {
+        this.node1.connect(n);
+        this.node2.connect(n);
+        this.delete();
+    }
+
+    // Delete the wire
+    delete(): void {
+        forceResetNodesSet(true);
+        updateSimulationSet(true);
+        if (this.node1.connections) {
+            this.node1.connections = this.node1.connections.filter(x => x !== this.node2);
+        }
+        if (this.node2.connections) {
+            this.node2.connections = this.node2.connections.filter(x => x !== this.node1);
+        }
+        this.scope.wires = this.scope.wires.filter(x => x !== this);
+        this.node1.checkDeleted();
+        this.node2.checkDeleted();
+        this.scope.timeStamp = new Date().getTime();
+    }
+
+    // Helper: Update wire type based on node positions
+    private updateWireType(): void {
         if (this.node1.absX() === this.node2.absX()) {
             this.x1 = this.x2 = this.node1.absX();
             this.type = 'vertical';
@@ -93,19 +181,22 @@ export default class Wire {
             this.y1 = this.y2 = this.node1.absY();
             this.type = 'horizontal';
         }
+    }
+
+    // Helper: Handle mouse interactions
+    private handleMouseInteraction(): boolean {
         if (
-            simulationArea.shiftDown === false &&
-            simulationArea.mouseDown === true &&
-            simulationArea.selected === false &&
-            this.checkWithin(
-                simulationArea.mouseDownX,
-                simulationArea.mouseDownY
-            )
+            !simulationArea.shiftDown &&
+            simulationArea.mouseDown &&
+            !simulationArea.selected &&
+            this.checkWithin(simulationArea.mouseDownX, simulationArea.mouseDownY)
         ) {
             simulationArea.selected = true;
             simulationArea.lastSelected = this;
-            updated = true;
-        } else if (
+            return true;
+        }
+
+        if (
             simulationArea.mouseDown &&
             simulationArea.lastSelected === this &&
             !this.checkWithin(simulationArea.mouseX, simulationArea.mouseY)
@@ -121,139 +212,54 @@ export default class Wire {
             simulationArea.lastSelected = n;
             this.converge(n);
         }
-        // eslint-disable-next-line no-empty
-        if (simulationArea.lastSelected === this) {
-        }
 
-        if (this.node1.deleted || this.node2.deleted) {
-            this.delete();
-            return updated;
-        } // if either of the nodes are deleted
+        return false;
+    }
 
-        if (simulationArea.mouseDown === false) {
-            if (this.type === 'horizontal') {
-                if (this.node1.absY() !== this.y1) {
-                    // if(this.checkConnections()){this.delete();return;}
-                    const n = new Node(this.node1.absX(), this.y1, 2, this.scope.root);
-                    this.converge(n);
-                    updated = true;
-                } else if (this.node2.absY() !== this.y2) {
-                    // if(this.checkConnections()){this.delete();return;}
-                    const n = new Node(this.node2.absX(), this.y2, 2, this.scope.root);
-                    this.converge(n);
-                    updated = true;
-                }
-            } else if (this.type === 'vertical') {
-                if (this.node1.absX() !== this.x1) {
-                    // if(this.checkConnections()){this.delete();return;}
-                    const n = new Node(this.x1, this.node1.absY(), 2, this.scope.root);
-                    this.converge(n);
-                    updated = true;
-                } else if (this.node2.absX() !== this.x2) {
-                    // if(this.checkConnections()){this.delete();return;}
-                    const n = new Node(this.x2, this.node2.absY(), 2, this.scope.root);
-                    this.converge(n);
-                    updated = true;
-                }
+    // Helper: Handle node alignment
+    private handleNodeAlignment(): boolean {
+        let updated = false;
+
+        if (this.type === 'horizontal') {
+            if (this.node1.absY() !== this.y1) {
+                const n = new Node(this.node1.absX(), this.y1, 2, this.scope.root);
+                this.converge(n);
+                updated = true;
+            } else if (this.node2.absY() !== this.y2) {
+                const n = new Node(this.node2.absX(), this.y2, 2, this.scope.root);
+                this.converge(n);
+                updated = true;
+            }
+        } else if (this.type === 'vertical') {
+            if (this.node1.absX() !== this.x1) {
+                const n = new Node(this.x1, this.node1.absY(), 2, this.scope.root);
+                this.converge(n);
+                updated = true;
+            } else if (this.node2.absX() !== this.x2) {
+                const n = new Node(this.x2, this.node2.absY(), 2, this.scope.root);
+                this.converge(n);
+                updated = true;
             }
         }
+
         return updated;
     }
 
-    draw(): void {
-        // for calculating min-max Width,min-max Height
-        const ctx = simulationArea.context;
-
-        let color: string;
+    // Helper: Get wire color based on state
+    private getWireColor(): string {
         if (simulationArea.lastSelected == this) {
-            color = colors['color_wire_sel'];
-        } else if (
-            this.node1.value == undefined ||
-            this.node2.value == undefined
-        ) {
-            color = colors['color_wire_lose'];
-        } else if (this.node1.bitWidth == 1) {
-            color = [
+            return colors['color_wire_sel'];
+        }
+        if (this.node1.value == undefined || this.node2.value == undefined) {
+            return colors['color_wire_lose'];
+        }
+        if (this.node1.bitWidth == 1) {
+            return [
                 colors['color_wire_lose'],
                 colors['color_wire_con'],
                 colors['color_wire_pow'],
             ][this.node1.value + 1];
-        } else {
-            color = colors['color_wire'];
         }
-        drawLine(
-            ctx,
-            this.node1.absX(),
-            this.node1.absY(),
-            this.node2.absX(),
-            this.node2.absY(),
-            color,
-            3
-        );
-    }
-
-    // checks if node lies on wire
-    checkConvergence(n: Node): boolean {
-        return this.checkWithin(n.absX(), n.absY());
-    }
-
-    // fn checks if coordinate lies on wire
-    checkWithin(x: number, y: number): boolean {
-        if (
-            this.type === 'horizontal' &&
-            this.node1.absX() < this.node2.absX() &&
-            x > this.node1.absX() &&
-            x < this.node2.absX() &&
-            y === this.node2.absY()
-        )
-            return true;
-        if (
-            this.type === 'horizontal' &&
-            this.node1.absX() > this.node2.absX() &&
-            x < this.node1.absX() &&
-            x > this.node2.absX() &&
-            y === this.node2.absY()
-        )
-            return true;
-        if (
-            this.type === 'vertical' &&
-            this.node1.absY() < this.node2.absY() &&
-            y > this.node1.absY() &&
-            y < this.node2.absY() &&
-            x === this.node2.absX()
-        )
-            return true;
-        if (
-            this.type === 'vertical' &&
-            this.node1.absY() > this.node2.absY() &&
-            y < this.node1.absY() &&
-            y > this.node2.absY() &&
-            x === this.node2.absX()
-        )
-            return true;
-        return false;
-    }
-
-    // add intermediate node between these 2 nodes
-    converge(n: Node): void {
-        this.node1.connect(n);
-        this.node2.connect(n);
-        this.delete();
-    }
-
-    delete(): void {
-        forceResetNodesSet(true);
-        updateSimulationSet(true);
-        if (this.node1.connections) {
-            this.node1.connections = this.node1.connections.filter(x => x !== this.node2);
-        }
-        if (this.node2.connections) {
-        this.node2.connections = this.node2.connections.filter(x => x !== this.node1);
-        }
-        this.scope.wires = this.scope.wires.filter(x => x !== this);
-        this.node1.checkDeleted();
-        this.node2.checkDeleted();
-
-        this.scope.timeStamp = new Date().getTime();
+        return colors['color_wire'];
     }
 }
