@@ -45,24 +45,31 @@ export function getOS(): string {
         x11: 'UNIX',
     };
 
-    // Check platform first
-    for (const [key, value] of Object.entries(osMap)) {
-        if (platform.includes(key)) {
-            return value;
+    // Helper function to find OS based on a string (platform or userAgent)
+    const findOS = (str: string): string | undefined => {
+        for (const [key, value] of Object.entries(osMap)) {
+            if (str.includes(key)) {
+                return value;
+            }
         }
+        return undefined;
+    };
+
+    // Check platform first
+    const osFromPlatform = findOS(platform);
+    if (osFromPlatform) {
+        return osFromPlatform;
     }
 
     // Fallback to user agent
-    for (const [key, value] of Object.entries(osMap)) {
-        if (userAgent.includes(key)) {
-            return value;
-        }
+    const osFromUserAgent = findOS(userAgent);
+    if (osFromUserAgent) {
+        return osFromUserAgent;
     }
 
     // Default return if no match is found
     return '';
 }
-
 // Check for restricted key combinations
 export function checkRestricted(key: string): boolean {
     const restrictedKeys: string[] = [
