@@ -121,32 +121,19 @@ export default class Wire {
         const isVertical = this.type === 'vertical';
 
         if (isHorizontal) {
-            return (
-                (this.node1.absX() < this.node2.absX() &&
-                    x > this.node1.absX() &&
-                    x < this.node2.absX() &&
-                    y === this.node2.absY()) ||
-                (this.node1.absX() > this.node2.absX() &&
-                    x < this.node1.absX() &&
-                    x > this.node2.absX() &&
-                    y === this.node2.absY())
-            );
+            return y === this.node1.absY() && this.isBetween(x, this.node1.absX(), this.node2.absX());
         }
 
         if (isVertical) {
-            return (
-                (this.node1.absY() < this.node2.absY() &&
-                    y > this.node1.absY() &&
-                    y < this.node2.absY() &&
-                    x === this.node2.absX()) ||
-                (this.node1.absY() > this.node2.absY() &&
-                    y < this.node1.absY() &&
-                    y > this.node2.absY() &&
-                    x === this.node2.absX())
-            );
+            return x === this.node1.absX() && this.isBetween(y, this.node1.absY(), this.node2.absY());
         }
 
         return false;
+    }
+
+
+    private isBetween(value: number, a: number, b: number): boolean {
+        return value >= Math.min(a, b) && value <= Math.max(a, b);
     }
 
     // Add intermediate node between these two nodes
@@ -160,89 +147,135 @@ export default class Wire {
     delete(): void {
         forceResetNodesSet(true);
         updateSimulationSet(true);
-        if (this.node1.connections) {
-            this.node1.connections = this.node1.connections.filter(x => x !== this.node2);
-        }
-        if (this.node2.connections) {
-            this.node2.connections = this.node2.connections.filter(x => x !== this.node1);
-        }
+        this.removeMutualConnections();
         this.scope.wires = this.scope.wires.filter(x => x !== this);
         this.node1.checkDeleted();
         this.node2.checkDeleted();
-        this.scope.timeStamp = new Date().getTime();
+        this.scope.timeStamp = Date.now();
+    }
+    
+    // Add these helper methods
+    private removeMutualConnections(): void {
+        this.removeConnection(this.node1, this.node2);
+        this.removeConnection(this.node2, this.node1);
+    }
+    
+    private removeConnection(node: Node, otherNode: Node): void {
+        if (node.connections) {
+            node.connections = node.connections.filter(x => x !== otherNode);
+        }
     }
 
     // Helper: Update wire type based on node positions
     private updateWireType(): void {
-        if (this.node1.absX() === this.node2.absX()) {
-            this.x1 = this.x2 = this.node1.absX();
-            this.type = 'vertical';
-        } else if (this.node1.absY() === this.node2.absY()) {
-            this.y1 = this.y2 = this.node1.absY();
-            this.type = 'horizontal';
-        }
+    const x1 = this.node1.absX();
+    const x2 = this.node2.absX();
+    const y1 = this.node1.absY();
+    const y2 = this.node2.absY();
+
+    if (x1 === x2) {
+        this.x1 = this.x2 = x1;
+        this.type = 'vertical';
+    } else if (y1 === y2) {
+        this.y1 = this.y2 = y1;
+        this.type = 'horizontal';
     }
+}
 
     // Helper: Handle mouse interactions
     private handleMouseInteraction(): boolean {
-        if (
-            !simulationArea.shiftDown &&
-            simulationArea.mouseDown &&
-            !simulationArea.selected &&
-            this.checkWithin(simulationArea.mouseDownX, simulationArea.mouseDownY)
-        ) {
+        if (this.checkWireSelection()) {
             simulationArea.selected = true;
             simulationArea.lastSelected = this;
             return true;
         }
-
-        if (
-            simulationArea.mouseDown &&
-            simulationArea.lastSelected === this &&
-            !this.checkWithin(simulationArea.mouseX, simulationArea.mouseY)
-        ) {
-            const n = new Node(
-                simulationArea.mouseDownX,
-                simulationArea.mouseDownY,
-                2,
-                this.scope.root
-            );
-            n.clicked = true;
-            n.wasClicked = true;
-            simulationArea.lastSelected = n;
-            this.converge(n);
+    
+        if (this.checkWireDrag()) {
+            this.createIntermediateNode();
+            return true;
         }
-
+    
         return false;
+    }
+    
+    // Add these helper methods
+    private checkWireSelection(): boolean {
+        return !simulationArea.shiftDown &&
+            simulationArea.mouseDown &&
+            !simulationArea.selected &&
+            this.checkWithin(simulationArea.mouseDownX, simulationArea.mouseDownY);
+    }
+    
+    private checkWireDrag(): boolean {
+        return simulationArea.mouseDown &&
+            simulationArea.lastSelected === this &&
+            !this.checkWithin(simulationArea.mouseX, simulationArea.mouseY);
+    }
+    
+    private createIntermediateNode(): void {
+        const n = new Node(
+            simulationArea.mouseDownX,
+            simulationArea.mouseDownY,
+            2,
+            this.scope.root
+        );
+        n.clicked = true;
+        n.wasClicked = true;
+        simulationArea.lastSelected = n;
+        this.converge(n);
     }
 
     // Helper: Handle node alignment
     private handleNodeAlignment(): boolean {
-        let updated = false;
-
         if (this.type === 'horizontal') {
-            if (this.node1.absY() !== this.y1) {
-                const n = new Node(this.node1.absX(), this.y1, 2, this.scope.root);
-                this.converge(n);
-                updated = true;
-            } else if (this.node2.absY() !== this.y2) {
-                const n = new Node(this.node2.absX(), this.y2, 2, this.scope.root);
-                this.converge(n);
-                updated = true;
-            }
-        } else if (this.type === 'vertical') {
-            if (this.node1.absX() !== this.x1) {
-                const n = new Node(this.x1, this.node1.absY(), 2, this.scope.root);
-                this.converge(n);
-                updated = true;
-            } else if (this.node2.absX() !== this.x2) {
-                const n = new Node(this.x2, this.node2.absY(), 2, this.scope.root);
-                this.converge(n);
-                updated = true;
-            }
+            return this.alignNodesAlongYAxis();
         }
+        if (this.type === 'vertical') {
+            return this.alignNodesAlongXAxis();
+        }
+        return false;
+    }
 
-        return updated;
+    // Add these helper methods
+    private alignNodesAlongYAxis(): boolean {
+        return this.checkAndCreateNode(
+            this.node1.absY(),
+            this.y1,
+            () => new Node(this.node1.absX(), this.y1, 2, this.scope.root),
+            this.node2.absY(),
+            this.y2,
+            () => new Node(this.node2.absX(), this.y2, 2, this.scope.root)
+        );
+    }
+
+    private alignNodesAlongXAxis(): boolean {
+        return this.checkAndCreateNode(
+            this.node1.absX(),
+            this.x1,
+            () => new Node(this.x1, this.node1.absY(), 2, this.scope.root),
+            this.node2.absX(),
+            this.x2,
+            () => new Node(this.x2, this.node2.absY(), 2, this.scope.root)
+        );
+    }
+
+    private checkAndCreateNode(
+        current1: number,
+        expected1: number,
+        createNode1: () => Node,
+        current2: number,
+        expected2: number,
+        createNode2: () => Node
+    ): boolean {
+        if (current1 !== expected1) {
+            this.converge(createNode1());
+            return true;
+        }
+        if (current2 !== expected2) {
+            this.converge(createNode2());
+            return true;
+        }
+        return false;
     }
 
     // Helper: Get wire color based on state
