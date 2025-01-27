@@ -21,6 +21,13 @@ export const shortcut = {
     all_shortcuts: {} as Record<string, ShortcutBinding>,
 
     add: function (shortcut_combination: string, callback: (e: KeyboardEvent) => void, opt?: ShortcutOptions): void {
+        if (!shortcut_combination || typeof shortcut_combination !== 'string') {
+            throw new Error('Shortcut combination must be a non-empty string');
+            }
+                if (!callback || typeof callback !== 'function') {
+                    throw new Error('Callback must be a function');
+                }
+                    
         const options = this.getOptions(opt);
         const ele = this.getTargetElement(options.target);
         shortcut_combination = shortcut_combination.toLowerCase();
