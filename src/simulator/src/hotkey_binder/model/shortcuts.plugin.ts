@@ -78,19 +78,27 @@ export const shortcut = {
         return (evt: Event): void => {
             const e = evt as KeyboardEvent;
 
-            if (options.disable_in_input && this.isInputElement(e.target as HTMLElement)) {
+            if (this.shouldIgnoreEvent(e, options)) {
                 return;
             }
 
             if (this.isShortcutMatch(shortcut_combination, e, options)) {
-                callback(e);
-
-                if (!options.propagate) {
-                    e.stopPropagation();
-                    e.preventDefault();
-                }
+                this.handleShortcutMatch(e, callback, options);
             }
         };
+    },
+
+    shouldIgnoreEvent: function (e: KeyboardEvent, options: ShortcutOptions): boolean {
+        return (options.disable_in_input ?? true) && this.isInputElement(e.target as HTMLElement);
+    },
+
+    handleShortcutMatch: function (e: KeyboardEvent, callback: (e: KeyboardEvent) => void, options: ShortcutOptions): void {
+        callback(e);
+
+        if (!options.propagate) {
+            e.stopPropagation();
+            e.preventDefault();
+        }
     },
 
     isInputElement: function (element: HTMLElement): boolean {
