@@ -175,15 +175,30 @@ const checkIfComboIsAssigned = (
     preferenceChildren: HTMLCollection
 ): string | undefined => {
     for (let x = 0; x < preferenceChildren.length; x++) {
-        const keyChild = preferenceChildren[x]?.children[1]?.children[0]
-        const valueChild = preferenceChildren[x]?.children[1]?.children[1]
+        const assignee = getAssigneeFromPreference(preferenceChildren[x], combo, target)
+        if (assignee) {
+            return assignee
+        }
+    }
+    return undefined
+}
 
-        if (keyChild instanceof HTMLElement && valueChild instanceof HTMLElement) {
-            const assignee = keyChild.innerText
-            if (valueChild.innerText === combo && 
-                assignee !== (target.previousElementSibling as HTMLElement)?.innerText) {
-                return assignee
-            }
+/**
+ * Get the assignee from a preference element if the combo matches
+ */
+const getAssigneeFromPreference = (
+    preferenceElement: Element | null,
+    combo: string,
+    target: HTMLElement
+): string | undefined => {
+    const keyChild = preferenceElement?.children[1]?.children[0]
+    const valueChild = preferenceElement?.children[1]?.children[1]
+
+    if (keyChild instanceof HTMLElement && valueChild instanceof HTMLElement) {
+        const assignee = keyChild.innerText
+        if (valueChild.innerText === combo && 
+            assignee !== (target.previousElementSibling as HTMLElement)?.innerText) {
+            return assignee
         }
     }
     return undefined
