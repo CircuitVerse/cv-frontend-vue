@@ -61,10 +61,10 @@ const getDefaultKeys = (): KeyMap => {
  * Bind keys to shortcuts
  */
 const bindKeys = (keys: KeyMap, mode: 'user' | 'default'): void => {
-    for (const pref in keys) {
-        const key = keys[pref].split(' ').join('')
-        addShortcut(key, pref)
-    }
+    Object.entries(keys).forEach(([pref, key]) => {
+        const normalizedKey = key.split(' ').join('')
+        addShortcut(normalizedKey, pref)
+    })
     updateHTML(mode)
 }
 
@@ -83,11 +83,11 @@ export const checkUpdate = (): void => {
  * Add missing keys to user keys
  */
 const addMissingKeys = (userK: KeyMap): void => {
-    for (const [key, value] of Object.entries(defaultKeys)) {
-        if (!Object.keys(userK).includes(key)) {
+    Object.entries(defaultKeys).forEach(([key, value]) => {
+        if (!userK[key]) {
             userK[key] = value
         }
-    }
+    })
 }
 
 /**
@@ -110,14 +110,14 @@ const getUserKeysFromUI = (): KeyMap => {
     const preferenceChildren = document.getElementById('preference')?.children
     if (!preferenceChildren) return userKeys
 
-    for (let x = 0; x < preferenceChildren.length; x++) {
-        const keyChild = preferenceChildren[x]?.children[1]?.children[0]
-        const valueChild = preferenceChildren[x]?.children[1]?.children[1]
+    Array.from(preferenceChildren).forEach((child) => {
+        const keyChild = child?.children[1]?.children[0]
+        const valueChild = child?.children[1]?.children[1]
 
         if (keyChild instanceof HTMLElement && valueChild instanceof HTMLElement) {
             userKeys[keyChild.innerText] = valueChild.innerText
         }
-    }
+    })
     return userKeys
 }
 
@@ -139,9 +139,9 @@ export const setDefault = (): void => {
  */
 const getMacDefaultKeys = (): KeyMap => {
     const macDefaultKeys: KeyMap = {}
-    for (const [key, value] of Object.entries(defaultKeys)) {
+    Object.entries(defaultKeys).forEach(([key, value]) => {
         macDefaultKeys[key] = value.split(' + ')[0] === 'Ctrl' ? value.replace('Ctrl', 'Meta') : value
-    }
+    })
     return macDefaultKeys
 }
 
@@ -174,13 +174,10 @@ const checkIfComboIsAssigned = (
     target: HTMLElement,
     preferenceChildren: HTMLCollection
 ): string | undefined => {
-    for (let x = 0; x < preferenceChildren.length; x++) {
-        const assignee = getAssigneeFromPreference(preferenceChildren[x], combo, target)
-        if (assignee) {
-            return assignee
-        }
-    }
-    return undefined
+    return Array.from(preferenceChildren).reduce<string | undefined>((acc, child) => {
+        if (acc) return acc
+        return getAssigneeFromPreference(child, combo, target)
+    }, undefined)
 }
 
 /**
