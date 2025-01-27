@@ -33,41 +33,22 @@ export function getKey<T extends Record<string, any>>(obj: T, val: any): string 
 }
 
 
-// Detect operating system
+// OS detection patterns
+const OS_PATTERNS: Record<string, RegExp> = {
+    'Windows': /windows/i,
+    'MacOS': /mac/i,
+    'Linux': /linux/i,
+    'UNIX': /x11/i
+};
 export function getOS(): string {
-    const platform = navigator.platform.toLowerCase();
-    const userAgent = navigator.userAgent.toLowerCase();
-
-    const osMap: Record<string, string> = {
-        windows: 'Windows',
-        mac: 'MacOS',
-        linux: 'Linux',
-        x11: 'UNIX',
-    };
-
-    // Helper function to find OS based on a string (platform or userAgent)
-    const findOS = (str: string): string | undefined => {
-        for (const [key, value] of Object.entries(osMap)) {
-            if (str.includes(key)) {
-                return value;
-            }
+    const userInput = `${navigator.platform} ${navigator.userAgent}`.toLowerCase();
+    
+    for (const [os, pattern] of Object.entries(OS_PATTERNS)) {
+        if (pattern.test(userInput)) {
+            return os;
         }
-        return undefined;
-    };
-
-    // Check platform first
-    const osFromPlatform = findOS(platform);
-    if (osFromPlatform) {
-        return osFromPlatform;
     }
-
-    // Fallback to user agent
-    const osFromUserAgent = findOS(userAgent);
-    if (osFromUserAgent) {
-        return osFromUserAgent;
-    }
-
-    // Default return if no match is found
+    
     return '';
 }
 // Check for restricted key combinations
