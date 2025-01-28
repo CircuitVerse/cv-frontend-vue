@@ -15,12 +15,16 @@ interface Scope {
 export default class Wire {
     objectType = 'Wire';
     type = 'horizontal';
-    x1!: number;
-    y1!: number;
-    x2!: number;
-    y2!: number;
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
 
     constructor(public node1: Node, public node2: Node, public scope: Scope) {
+        this.x1 = this.node1.absX();
+        this.y1 = this.node1.absY();
+        this.x2 = this.node2.absX();
+        this.y2 = this.node2.absY();
         this.updateData();
         this.scope.wires.push(this);
         forceResetNodesSet(true);
