@@ -4,10 +4,11 @@ import { simulationArea } from './simulationArea';
 import Node from './node';
 import { updateSimulationSet, forceResetNodesSet } from './engine';
 import { colors } from './themer/themer';
+import CircuitElement from './circuitElement';
 
 interface Scope {
     wires: Wire[];
-    root: any;
+    root: CircuitElement;
     timeStamp: number;
 }
 
