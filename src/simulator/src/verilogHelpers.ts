@@ -43,6 +43,31 @@ export function sanitizeLabel(name: string): string {
 }
 
 /**
+ * Generates the base node name based on the node's label or a default value.
+ * @param node - The node object.
+ * @param currentCount - The current count of nodes.
+ * @param totalCount - The total count of nodes.
+ * @returns The base node name.
+ */
+function getBaseNodeName(node: Node, currentCount: number, totalCount: number): string {
+    return node.label ? sanitizeLabel(node.label) : totalCount > 1 ? `out_${currentCount}` : 'out';
+}
+
+/**
+ * Constructs the final node name based on the parent's label and the base node name.
+ * @param parentVerilogLabel - The parent's label.
+ * @param nodeName - The base node name.
+ * @returns The final node name.
+ */
+function constructFinalNodeName(parentVerilogLabel: string, nodeName: string): string {
+    if (parentVerilogLabel.substring(0, 1).search(/\\/g) < 0) {
+        return `${parentVerilogLabel}_${nodeName}`;
+    } else {
+        return `${parentVerilogLabel.substring(0, parentVerilogLabel.length - 1)}_${nodeName} `;
+    }
+}
+
+/**
  * Generates a node name based on the node's properties and context.
  * @param node - The node object.
  * @param currentCount - The current count of nodes.
@@ -55,11 +80,6 @@ export function generateNodeName(node: Node, currentCount: number, totalCount: n
     }
 
     const parentVerilogLabel = node.parent.verilogLabel;
-    const nodeName = node.label ? sanitizeLabel(node.label) : totalCount > 1 ? `out_${currentCount}` : 'out';
-
-    if (parentVerilogLabel.substring(0, 1).search(/\\/g) < 0) {
-        return `${parentVerilogLabel}_${nodeName}`;
-    } else {
-        return `${parentVerilogLabel.substring(0, parentVerilogLabel.length - 1)}_${nodeName} `;
-    }
+    const nodeName = getBaseNodeName(node, currentCount, totalCount);
+    return constructFinalNodeName(parentVerilogLabel, nodeName);
 }
