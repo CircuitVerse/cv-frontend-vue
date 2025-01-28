@@ -23,11 +23,15 @@ function replaceSpaces(str: string): string {
  * @param str - The input string.
  * @returns The escaped string.
  */
+const NON_WORD_REGEX = /[\W]/g;
+const NUMERIC_START_REGEX = /^[0-9]/;
+
 function escapeString(str: string): string {
-    if (str.substring(0, 1).search(/\\/g) < 0) {
-        if (str.search(/[\W]/g) > -1 || str.substring(0, 1).search(/[0-9]/g) > -1) {
-            return `\\${str} `;
-        }
+        if (!str.startsWith('\\') && (
+                NON_WORD_REGEX.test(str) || 
+                NUMERIC_START_REGEX.test(str)
+            )) {
+                return `\\${str}`;
     }
     return str;
 }
