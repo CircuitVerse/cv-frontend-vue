@@ -91,14 +91,11 @@ export default class Wire {
     }
 
     checkWithin(x: number, y: number): boolean {
-        const isHorizontal = this.type === 'horizontal';
-        const isVertical = this.type === 'vertical';
-
-        if (isHorizontal) {
+        if (this.type === 'horizontal') {
             return y === this.node1.absY() && this.isBetween(x, this.node1.absX(), this.node2.absX());
         }
 
-        if (isVertical) {
+        if (this.type === 'vertical') {
             return x === this.node1.absX() && this.isBetween(y, this.node1.absY(), this.node2.absY());
         }
 
@@ -242,6 +239,11 @@ export default class Wire {
         }
         return false;
     }
+    const enum WireValue {
+            LOOSE = -1,
+            LOW = 0,
+            HIGH = 1
+        }
 
     private getWireColor(): string {
         if (simulationArea.lastSelected === this) {
@@ -255,7 +257,7 @@ export default class Wire {
                 colors['color_wire_lose'],
                 colors['color_wire_con'],
                 colors['color_wire_pow'],
-            ][this.node1.value + 1];
+            ][this.node1.value - WireValue.LOOSE];
         }
         return colors['color_wire'];
     }
