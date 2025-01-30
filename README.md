@@ -47,7 +47,7 @@ To access the Vue Simulator from the [CircuitVerse main repo](https://github.com
 
 ### Accessing Vue Simulator
   1. Start the CircuitVerse Main Repo dev server.
-  2. go to the `/vuesimulator` path in the dev server.
+  2. go to the `/simulatorvue` path in the dev server.
   3. You would be accessing the Vue Simulator.
 
 ### Setting Vue Simulator as Default
