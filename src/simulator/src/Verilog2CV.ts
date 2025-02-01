@@ -48,22 +48,23 @@ let editor: CodeMirror.Editor;
 let verilogMode: boolean = false;
 
 export async function createVerilogCircuit(): Promise<void> {
-    const returned = await createNewCircuitScope(
-        undefined,
-        undefined,
-        true,
-        true
-    );
+    try {
+        const returned = await createNewCircuitScope(
+            undefined,
+            undefined,
+            true,
+            true
+        );
 
-    if (returned) {
-        verilogModeSet(true);
+        if (returned) {
+            verilogModeSet(true);
 
-        try {
             const simulatorMobileStore = toRefs(useSimulatorMobileStore()) as SimulatorMobileStore;
             simulatorMobileStore.isVerilog.value = true;
-        } catch (error) {
-            console.error('Failed to update simulatorMobileStore:', error);
         }
+    } catch (error) {
+        console.error('Failed to create Verilog circuit:', error);
+        showError('Failed to create Verilog circuit. Please try again.');
     }
 }
 
