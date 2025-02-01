@@ -2,12 +2,15 @@ import { Node } from './verilogInterfaces'
 
 /**
  * Replaces spaces in the string with underscores, except for the last space.
+ * Special cases:
+ * - Replaces " Inverse" with "_inv"
  * @param str - The input string.
  * @returns The string with spaces replaced by underscores.
  */
 function replaceSpaces(str: string): string {
-    if (str.search(/ /g) < str.length - 1 && str.search(/ /g) >= 0) {
-        return str.replace(/ Inverse/g, '_inv').replace(/ /g, '_');
+    const lastSpaceIndex = str.lastIndexOf(' ');
+    if (lastSpaceIndex >= 0 && lastSpaceIndex < str.length - 1) {
+        return str.replace(/ Inverse/g, '_inv').replace(/ (?!$)/g, '_');
     }
     return str;
 }
@@ -21,11 +24,11 @@ const NON_WORD_REGEX = /[\W]/g;
 const NUMERIC_START_REGEX = /^[0-9]/;
 
 function escapeString(str: string): string {
-        if (!str.startsWith('\\') && (
-                NON_WORD_REGEX.test(str) || 
-                NUMERIC_START_REGEX.test(str)
-            )) {
-                return `\\${str}`;
+    if (!str.startsWith('\\') && (
+        NON_WORD_REGEX.test(str) ||
+        NUMERIC_START_REGEX.test(str)
+    )) {
+        return `\\${str}`;
     }
     return str;
 }
@@ -58,11 +61,12 @@ function getBaseNodeName(node: Node, currentCount: number, totalCount: number): 
  * @returns The final node name.
  */
 function constructFinalNodeName(parentVerilogLabel: string, nodeName: string): string {
-    if (parentVerilogLabel.substring(0, 1).search(/\\/g) < 0) {
-        return `${parentVerilogLabel}_${nodeName}`;
-    } else {
-        return `${parentVerilogLabel.substring(0, parentVerilogLabel.length - 1)}_${nodeName} `;
+    if (parentVerilogLabel.startsWith('\\')) {
+        // Remove trailing space if present
+        const cleanParentLabel = parentVerilogLabel.trimEnd();
+        return `${cleanParentLabel}_${nodeName}`;
     }
+    return `${parentVerilogLabel}_${nodeName}`;
 }
 
 /**
