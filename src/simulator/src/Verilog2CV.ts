@@ -194,24 +194,37 @@ async function processSubCircuits(json: YosysJSON, subScope: GlobalScope, subCir
 
 function processDevices(json: YosysJSON, circuitDevices: { [key: string]: VerilogSubCircuit | unknown }, subCircuitScope: { [key: string]: string }): void {
     for (const device in json.devices) {
-        const deviceType = json.devices[device].type;
-        if (deviceType === 'Subcircuit') {
-            const subCircuitName = json.devices[device].celltype!;
-            if (subCircuitScope[subCircuitName] === undefined) {
-                throw new Error(`subCircuitScope[${subCircuitName}] is undefined`);
-            }
-            circuitDevices[device] = new VerilogSubCircuit(
-                new SubCircuit(
-                    500,
-                    500,
-                    null,
-                    subCircuitScope[subCircuitName]
-                )
-            );
-        } else {
-            circuitDevices[device] = new yosysTypeMap[deviceType](json.devices[device]);
-        }
+        processDevice(device, json.devices[device], circuitDevices, subCircuitScope);
     }
+}
+
+function processDevice(device: string, deviceData: any, circuitDevices: { [key: string]: VerilogSubCircuit | unknown }, subCircuitScope: { [key: string]: string }): void {
+    const deviceType = deviceData.type;
+    if (deviceType === 'Subcircuit') {
+        processSubCircuitDevice(device, deviceData, circuitDevices, subCircuitScope);
+    } else {
+        processStandardDevice(device, deviceData, circuitDevices);
+    }
+}
+
+function processSubCircuitDevice(device: string, deviceData: any, circuitDevices: { [key: string]: VerilogSubCircuit | unknown }, subCircuitScope: { [key: string]: string }): void {
+    const subCircuitName = deviceData.celltype!;
+    if (subCircuitScope[subCircuitName] === undefined) {
+        throw new Error(`subCircuitScope[${subCircuitName}] is undefined`);
+    }
+    circuitDevices[device] = new VerilogSubCircuit(
+        new SubCircuit(
+            500,
+            500,
+            null,
+            subCircuitScope[subCircuitName]
+        )
+    );
+}
+
+function processStandardDevice(device: string, deviceData: any, circuitDevices: { [key: string]: VerilogSubCircuit | unknown }): void {
+    const deviceType = deviceData.type;
+    circuitDevices[device] = new yosysTypeMap[deviceType](deviceData);
 }
 
 function processConnectors(json: YosysJSON, circuitDevices: { [key: string]: VerilogSubCircuit | unknown }): void {
