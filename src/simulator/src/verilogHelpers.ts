@@ -1,10 +1,4 @@
-interface Node {
-    verilogLabel?: string;
-    parent: {
-        verilogLabel: string;
-    };
-    label?: string;
-}
+import { Node } from './verilogInterfaces'
 
 /**
  * Replaces spaces in the string with underscores, except for the last space.
