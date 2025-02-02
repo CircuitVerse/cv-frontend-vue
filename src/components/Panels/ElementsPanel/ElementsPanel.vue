@@ -40,6 +40,7 @@
                     @mouseleave="tooltipText = 'null'"
                 >
                     <img :src="element.imgURL" :alt="element.name" />
+                     
                 </div>
             </div>
             <v-expansion-panels
@@ -77,6 +78,7 @@
                                     :src="element.imgURL"
                                     :alt="element.name"
                                 />
+                                 
                             </div>
                         </div>
                     </v-expansion-panel-text>
@@ -123,6 +125,10 @@
                                     :src="element.imgURL"
                                     :alt="element.name"
                                 />
+                                <div class="overflow-hidden text-nowrap position-relative">
+                                    <p class=" d-inline-block">{{ element.name }}</p>
+                                </div>
+
                             </div>
                         </div>
                     </v-expansion-panel-text>

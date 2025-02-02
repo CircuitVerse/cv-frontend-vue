@@ -1,8 +1,46 @@
-import { setup } from './setup'
+import { setup } from './setup';
+
+// Define interfaces for the structure
+interface Device {
+    type: 'Input' | 'Output' | 'Memory';
+    net: string;
+    order?: number;
+    bits: number;
+    label?: string;
+    abits?: number;
+    words?: number;
+    offset?: number;
+    rdports?: Array<{
+        clock_polarity?: boolean;
+    }>;
+    wrports?: Array<{
+        clock_polarity?: boolean;
+    }>;
+    memdata?: (number | string)[];
+}
+
+interface Connector {
+    to: {
+        id: string;
+        port: string;
+    };
+    from: {
+        id: string;
+        port: string;
+    };
+    name: string;
+}
+
+interface Circuit {
+    devices: Record<string, Device>;
+    connectors: Connector[];
+    subcircuits: Record<string, unknown>;
+}
 
 document.addEventListener('DOMContentLoaded', () => {
-    setup()
-    var js = {
+    setup();
+
+    const js: Circuit = {
         devices: {
             dev0: {
                 type: 'Input',
@@ -206,5 +244,5 @@ document.addEventListener('DOMContentLoaded', () => {
             },
         ],
         subcircuits: {},
-    }
-})
+    };
+});
