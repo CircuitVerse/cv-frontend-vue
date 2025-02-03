@@ -25,13 +25,6 @@ export interface Storage {
     get<T>(key: string): T | null;
 }
 
-export interface SimulationArea {
-    lastSelected?: {
-        newDirection: (direction: string) => void
-        labelDirection: string
-        labelDirectionFixed?: boolean
-        x: number
-        y: number
-        helplink?: string
-    }
+interface KeyMap {
+    [key: string]: string
 }
