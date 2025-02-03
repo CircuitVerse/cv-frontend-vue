@@ -34,11 +34,11 @@ import { showProperties } from './ux';
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore';
 import { toRefs } from 'vue';
 
-import {GlobalScope} from './types/verilog.types';
-import {CircuitElement} from './types/verilog.types';
-import {YosysJSON} from './types/verilog.types';
-import {SimulatorMobileStore} from './types/verilog.types';
-import {Node} from './types/verilog.types';
+import { GlobalScope } from './types/verilog.types';
+import { CircuitElement } from './types/verilog.types';
+import { YosysJSON } from './types/verilog.types';
+import { SimulatorMobileStore } from './types/verilog.types';
+import { Node } from './types/verilog.types';
 
 declare var globalScope: GlobalScope;
 declare var embed: boolean;
@@ -126,8 +126,8 @@ function disableVerilogMode(): void {
 }
 
 function setElementDisplay(selector: string, display: string): void {
-    const element = selector.startsWith('.') || selector.startsWith('#') 
-        ? document.querySelector(selector) 
+    const element = selector.startsWith('.') || selector.startsWith('#')
+        ? document.querySelector(selector)
         : document.getElementById(selector);
     if (element) (element as HTMLElement).style.display = display;
 }
@@ -280,16 +280,15 @@ export default function generateVerilogCircuit(
             const verilogOutput = document.getElementById('verilogOutput');
             if (verilogOutput) verilogOutput.innerHTML = '';
         })
-        .catch((error: Response) => {
-            if (error.status === 500) {
-                showError('Could not connect to Yosys');
-            } else {
-                showError('There is some issue with the code');
-                error.json().then((errorMessage: { message: string }) => {
-                    const verilogOutput = document.getElementById('verilogOutput');
-                    if (verilogOutput) verilogOutput.innerHTML = errorMessage.message;
-                });
-            }
+        .catch(async (error: Response) => {
+            const errorMessage = error.status === 500
+                ? 'Could not connect to Yosys server. Please try again later.'
+                : await error.json().then((e: { message: string }) => e.message)
+                    .catch(() => 'An unexpected error occurred');
+
+            showError(errorMessage);
+            const verilogOutput = document.getElementById('verilogOutput');
+            if (verilogOutput) verilogOutput.innerHTML = errorMessage;
         });
 }
 
