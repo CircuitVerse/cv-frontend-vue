@@ -1,4 +1,4 @@
-import { Node } from './verilogInterfaces'
+import { Node } from './types/verilog.types'
 
 /**
  * Replaces spaces in the string with underscores, except for the last space.
