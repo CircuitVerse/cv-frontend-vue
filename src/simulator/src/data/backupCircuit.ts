@@ -1,144 +1,87 @@
 import { projectSavedSet } from './project';
 import { moduleList, updateOrder } from '../metadata';
+import { Scope, SaveableObject } from './data.types';
+declare const globalScope: Scope;
 
-
-// Define interfaces for the core types
-interface Node {
-   saveObject(): any;
+// Helper function to extract data from an object
+function extract(obj: SaveableObject): any {
+    return obj.saveObject();
 }
-
-
-interface SubCircuit {
-   removeConnections(): void;
-   makeConnections(): void;
-}
-
-
-interface VerilogMetadata {
-   [key: string]: any;
-}
-
-
-interface Layout {
-   [key: string]: any;
-}
-
-
-interface TestbenchData {
-   [key: string]: any;
-}
-
-
-interface Scope {
-   layout: Layout;
-   verilogMetadata: VerilogMetadata;
-   allNodes: Node[];
-   testbenchData: TestbenchData;
-   id: string | number;
-   name: string;
-   SubCircuit: SubCircuit[];
-   nodes: Node[];
-   restrictedCircuitElementsUsed: string[];
-   backups: string[];
-   history: any[];
-   timeStamp: number;
-   [key: string]: any; // For dynamic module access
-}
-
-
-interface BackupData {
-   layout: Layout;
-   verilogMetadata: VerilogMetadata;
-   allNodes: any[];
-   testbenchData: TestbenchData;
-   id: string | number;
-   name: string;
-   nodes: number[];
-   restrictedCircuitElementsUsed: string[];
-   [key: string]: any; // For dynamic module properties
-}
-
-
-/* eslint-disable no-param-reassign */
-function extract(obj: { saveObject: () => any }): any {
-   return obj.saveObject();
-}
-
 
 // Check if there is anything to backup - to be deprecated
 /**
-* Check if backup is available
-* @param {Scope} scope - The scope to check for backup
-* @return {boolean} - Whether backup is available
-* @category data
-*/
+ * Check if backup is available
+ * @param {Scope} scope
+ * @return {boolean}
+ * @category data
+ */
 export function checkIfBackup(scope: Scope): boolean {
-   for (let i = 0; i < updateOrder.length; i++) {
-      if (scope[updateOrder[i]] && scope[updateOrder[i]].length) return true;
-   }
-   return false;
+    for (let i = 0; i < updateOrder.length; i++) {
+        if (scope[updateOrder[i]].length) return true;
+    }
+    return false;
 }
 
+export function backUp(scope: Scope = globalScope): any {
+    // Disconnection of subcircuits are needed because these are the connections between nodes
+    // in current scope and those in the subcircuit's scope
+    for (let i = 0; i < scope.SubCircuit.length; i++) {
+        scope.SubCircuit[i].removeConnections();
+    }
 
-export function backUp(scope: Scope = globalScope): BackupData {
-   // Disconnection of subcircuits are needed because these are the connections between nodes
-   // in current scope and those in the subcircuit's scope
-   for (let i = 0; i < scope.SubCircuit.length; i++) {
-       scope.SubCircuit[i].removeConnections();
-   }
+    const data: any = {};
 
+    // Storing layout
+    data.layout = scope.layout;
 
-   const data: BackupData = {
-       layout: scope.layout,
-       verilogMetadata: scope.verilogMetadata,
-       allNodes: scope.allNodes.map(extract),
-       testbenchData: scope.testbenchData,
-       id: scope.id,
-       name: scope.name,
-       nodes: [],
-       restrictedCircuitElementsUsed: scope.restrictedCircuitElementsUsed
-   };
+    // Storing Verilog Properties
+    data.verilogMetadata = scope.verilogMetadata;
 
+    // Storing all nodes
+    data.allNodes = scope.allNodes.map(extract);
 
-   // Storing details of all module objects
-   for (let i = 0; i < moduleList.length; i++) {
-      if (scope[moduleList[i]] && scope[moduleList[i]].length) {
-           data[moduleList[i]] = scope[moduleList[i]].map(extract);
-       }
-   }
+    // Storing test attached to scope
+    data.testbenchData = scope.testbenchData;
 
+    // Storing other details
+    data.id = scope.id;
+    data.name = scope.name;
 
-   // Storing intermediate nodes (nodes in wires)
-   data.nodes = scope.nodes.map(node => scope.allNodes.indexOf(node));
+    // Storing details of all module objects
+    for (let i = 0; i < moduleList.length; i++) {
+        if (scope[moduleList[i]].length) {
+            data[moduleList[i]] = scope[moduleList[i]].map(extract);
+        }
+    }
 
+    // Adding restricted circuit elements used in the save data
+    data.restrictedCircuitElementsUsed = scope.restrictedCircuitElementsUsed;
 
-   // Restoring the connections
-   for (let i = 0; i < scope.SubCircuit.length; i++) {
-       scope.SubCircuit[i].makeConnections();
-   }
+    // Storing intermediate nodes (nodes in wires)
+    data.nodes = [];
+    for (let i = 0; i < scope.nodes.length; i++) {
+        data.nodes.push(scope.allNodes.indexOf(scope.nodes[i]));
+    }
 
+    // Restoring the connections
+    for (let i = 0; i < scope.SubCircuit.length; i++) {
+        scope.SubCircuit[i].makeConnections();
+    }
 
-   return data;
+    return data;
 }
-
 
 export function scheduleBackup(scope: Scope = globalScope): string {
-   const backup = JSON.stringify(backUp(scope));
-   if (
-       scope.backups.length === 0 ||
-       scope.backups[scope.backups.length - 1] !== backup
-   ) {
-       scope.backups.push(backup);
-       scope.history = [];
-       scope.timeStamp = new Date().getTime();
-       projectSavedSet(false);
-   }
+    const backup = JSON.stringify(backUp(scope));
+    if (
+        scope.backups.length === 0 ||
+        scope.backups[scope.backups.length - 1] !== backup
+    ) {
+        scope.backups.push(backup);
+        scope.history = [];
+        scope.timeStamp = new Date().getTime();
+        projectSavedSet(false);
+    }
 
-
-   return backup;
+    return backup;
 }
-
-
-// Add global type declaration
-declare const globalScope: Scope;
-
