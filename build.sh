@@ -1,6 +1,6 @@
 #!/bin/bash
 
-versions=($(jq -r '.[].version' version.json))
+versions=($(jq -r '.[].version' version.json | tr -d '\r'))
 
 for version in "${versions[@]}"; do
   echo "Building for version: $version"
