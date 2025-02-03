@@ -59,10 +59,30 @@ const bindKeys = (keys: KeyMap, mode: 'user' | 'default'): void => {
  * Function used to check if new keys are added, adds missing keys if added
  */
 export const checkUpdate = (): void => {
-    const userK: KeyMap = JSON.parse(localStorage.getItem('userKeys') || '{}')
-    if (Object.keys(userK).length !== Object.keys(defaultKeys).length) {
-        addMissingKeys(userK)
-        localStorage.setItem('userKeys', JSON.stringify(userK))
+    const userK: KeyMap = JSON.parse(localStorage.getItem('userKeys') || '{}');
+    const defaultK: KeyMap = defaultKeys;
+
+    let hasChanges = false;
+
+    // Add missing keys or update existing ones
+    for (const key in defaultK) {
+        if (!userK.hasOwnProperty(key) || userK[key] !== defaultK[key]) {
+            userK[key] = defaultK[key];
+            hasChanges = true;
+        }
+    }
+
+    // Remove keys that are no longer in defaultKeys
+    for (const key in userK) {
+        if (!defaultK.hasOwnProperty(key)) {
+            delete userK[key];
+            hasChanges = true;
+        }
+    }
+
+    // Save changes back to localStorage if any changes were made
+    if (hasChanges) {
+        localStorage.setItem('userKeys', JSON.stringify(userK));
     }
 }
 
@@ -115,7 +135,7 @@ const getUserKeysFromUI = (): KeyMap => {
  * also checks for OS type
  */
 export const setDefault = (): void => {
-    if (localStorage.userKeys) localStorage.removeItem('userKeys')
+    if (localStorage.getItem('userKeys')) localStorage.removeItem('userKeys')
     const keys = getOS() === 'MacOS' ? getMacDefaultKeys() : defaultKeys
     localStorage.setItem('defaultKeys', JSON.stringify(keys))
     addKeys('default')
