@@ -3,16 +3,22 @@ module.exports = {
         node: true,
         browser: true,
         commonjs: true,
-        es6: true,
+        es2020: true,
         jquery: true,
     },
-    extends: ['eslint:recommended', 'plugin:vue/vue3-recommended', 'prettier'],
-    rules: {
-        // override/add rules settings here, such as:
-        // 'vue/no-unused-vars': 'error'
+    extends: [
+        'eslint:recommended',
+        'plugin:vue/vue3-recommended',
+        'plugin:@typescript-eslint/recommended',
+        'prettier',
+    ],
+    parser: '@typescript-eslint/parser',
+    parserOptions: {
+        ecmaVersion: 2020,
+        sourceType: 'module',
     },
-    // true -> writable global variables
-    // false -> readable global variables
+    plugins: ['@typescript-eslint'],
+    rules: {},
     globals: {
         lightMode: true,
         Array: true,

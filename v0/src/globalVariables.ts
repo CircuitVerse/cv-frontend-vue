@@ -1,12 +1,11 @@
 /*global ...*/
 /*eslint no-undef: "error"*/
 
-declare const window: any
-
 import jQuery from 'jquery'
+import Array from './simulator/src/arrayHelpers.js'
+
 window.$ = window.jQuery = jQuery
 
-import Array from './simulator/src/arrayHelpers.js'
 window.Array = Array
 window.isUserLoggedIn = false
 window.logixProjectId = undefined
