@@ -12,20 +12,7 @@ import {
 import { getOS } from './utils'
 import { shortcut } from './shortcuts.plugin'
 
-interface KeyMap {
-    [key: string]: string
-}
-
-interface SimulationArea {
-    lastSelected?: {
-        newDirection: (direction: string) => void
-        labelDirection: string
-        labelDirectionFixed?: boolean
-        x: number
-        y: number
-        helplink?: string
-    }
-}
+import { KeyMap } from './modelInterfaces'
 
 type DirectionType = 'up' | 'down' | 'left' | 'right'
 
