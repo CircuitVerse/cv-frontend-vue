@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build && mkdir -p ./dist && cp -r ../public/* ./dist/"
+  command = "bun run build && mkdir -p ./dist && cp -r ../public/* ./dist/"
 
 [[redirects]]
   from = "/"
