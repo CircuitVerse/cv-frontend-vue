@@ -72,15 +72,54 @@ export function backUp(scope: Scope = globalScope): BackupData {
 }
 
 export function scheduleBackup(scope: Scope = globalScope): string {
-    const backup = JSON.stringify(backUp(scope));
-    if (
-        scope.backups.length === 0 ||
-        scope.backups[scope.backups.length - 1] !== backup
-    ) {
-        scope.backups.push(backup);
-        scope.history = [];
-        scope.timeStamp = new Date().getTime();
-        projectSavedSet(false);
-    }
-    return backup;
+   const backup = JSON.stringify(backUp(scope));
+
+   // Check if the backup is valid and doesn't contain malicious properties
+   if (isValidBackup(backup)) {
+       if (
+           scope.backups.length === 0 ||
+           scope.backups[scope.backups.length - 1] !== backup
+       ) {
+           // Safely assign the backup to scope.backups
+           scope.backups = [...scope.backups, backup];
+
+           // Safely assign an empty array to scope.history
+           scope.history = [];
+
+           // Safely assign the current timestamp
+           scope.timeStamp = new Date().getTime();
+
+           // Mark the project as unsaved
+           projectSavedSet(false);
+       }
+   } else {
+       console.error("Invalid backup data detected. Backup aborted.");
+   }
+
+   return backup;
+}
+
+/**
+ * Validate the backup data to prevent prototype pollution.
+ * @param backup The backup data to validate.
+ * @returns True if the backup is valid, false otherwise.
+ */
+function isValidBackup(backup: string): boolean {
+   try {
+       const parsedBackup = JSON.parse(backup);
+
+       // Check if the parsed backup contains any malicious properties
+       if (parsedBackup && typeof parsedBackup === "object") {
+           for (const key in parsedBackup) {
+               if (key === "__proto__" || key === "constructor" || key === "prototype") {
+                   return false; // Malicious property detected
+               }
+           }
+       }
+
+       return true; // Backup is valid
+   } catch (error) {
+       console.error("Failed to parse backup data:", error);
+       return false; // Backup is invalid
+   }
 }
