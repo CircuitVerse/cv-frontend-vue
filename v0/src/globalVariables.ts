@@ -15,8 +15,8 @@ declare global {
         id: any
         loading: boolean
         embed: boolean
-        width: any
-        height: any
+        width?: number
+        height?: number
         DPR: number
         isUserLoggedIn: boolean
         logixProjectId: any
