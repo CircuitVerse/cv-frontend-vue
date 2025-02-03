@@ -1,15 +1,16 @@
 import { projectSavedSet } from './project';
 import { moduleList, updateOrder } from '../metadata';
-import { Scope, SaveableObject } from './data.types';
+import { LayoutData,VerilogMetadata,TestbenchData,Scope,
+   RestrictedCircuitElements,SaveableObject } from './data.types'
+
 declare const globalScope: Scope;
 
 // Helper function to extract data from an object
-function extract(obj: SaveableObject): any {
+function extract(obj: SaveableObject): unknown {
     return obj.saveObject();
 }
 
-// Check if there is anything to backup - to be deprecated
-/**
+/** 
  * Check if backup is available
  * @param {Scope} scope
  * @return {boolean}
@@ -17,51 +18,50 @@ function extract(obj: SaveableObject): any {
  */
 export function checkIfBackup(scope: Scope): boolean {
     for (let i = 0; i < updateOrder.length; i++) {
-        if (scope[updateOrder[i]].length) return true;
+        if ((scope[updateOrder[i]] as unknown[]).length) return true;
     }
     return false;
 }
 
-export function backUp(scope: Scope = globalScope): any {
+interface BackupData {
+    layout: LayoutData;
+    verilogMetadata: VerilogMetadata;
+    allNodes: unknown[];
+    testbenchData: TestbenchData;
+    id: string;
+    name: string;
+    nodes: number[];
+    restrictedCircuitElementsUsed: RestrictedCircuitElements;
+    [key: string]: unknown;
+}
+
+export function backUp(scope: Scope = globalScope): BackupData {
     // Disconnection of subcircuits are needed because these are the connections between nodes
     // in current scope and those in the subcircuit's scope
     for (let i = 0; i < scope.SubCircuit.length; i++) {
         scope.SubCircuit[i].removeConnections();
     }
 
-    const data: any = {};
-
-    // Storing layout
-    data.layout = scope.layout;
-
-    // Storing Verilog Properties
-    data.verilogMetadata = scope.verilogMetadata;
-
-    // Storing all nodes
-    data.allNodes = scope.allNodes.map(extract);
-
-    // Storing test attached to scope
-    data.testbenchData = scope.testbenchData;
-
-    // Storing other details
-    data.id = scope.id;
-    data.name = scope.name;
+    const data: BackupData = {
+        layout: scope.layout,
+        verilogMetadata: scope.verilogMetadata,
+        allNodes: scope.allNodes.map(extract),
+        testbenchData: scope.testbenchData,
+        id: scope.id,
+        name: scope.name,
+        nodes: [],
+        restrictedCircuitElementsUsed: scope.restrictedCircuitElementsUsed
+    };
 
     // Storing details of all module objects
     for (let i = 0; i < moduleList.length; i++) {
-        if (scope[moduleList[i]].length) {
-            data[moduleList[i]] = scope[moduleList[i]].map(extract);
+        if ((scope[moduleList[i]] as unknown[]).length) {
+            data[moduleList[i]] = (scope[moduleList[i]] as SaveableObject[]).map(extract);
         }
     }
 
-    // Adding restricted circuit elements used in the save data
-    data.restrictedCircuitElementsUsed = scope.restrictedCircuitElementsUsed;
-
     // Storing intermediate nodes (nodes in wires)
-    data.nodes = [];
-    for (let i = 0; i < scope.nodes.length; i++) {
-        data.nodes.push(scope.allNodes.indexOf(scope.nodes[i]));
-    }
+    data.nodes = scope.nodes.map(node => scope.allNodes.indexOf(node));
 
     // Restoring the connections
     for (let i = 0; i < scope.SubCircuit.length; i++) {
@@ -82,6 +82,5 @@ export function scheduleBackup(scope: Scope = globalScope): string {
         scope.timeStamp = new Date().getTime();
         projectSavedSet(false);
     }
-
     return backup;
 }
