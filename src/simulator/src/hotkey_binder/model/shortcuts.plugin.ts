@@ -1,21 +1,7 @@
-interface ShortcutOptions {
-    type?: string
-    propagate?: boolean
-    disable_in_input?: boolean
-    target?: Document | string
-    keycode?: number | false
-}
+import { ShortcutOptions } from './modelInterfaces'
+import { ShortcutBinding } from './modelInterfaces'
+import { ModifierState } from './modelInterfaces';
 
-interface ShortcutBinding {
-    callback: EventListener
-    target: Document | HTMLElement
-    event: string
-}
-
-interface ModifierState {
-    wanted: boolean
-    pressed: boolean
-}
 
 export const shortcut = {
     all_shortcuts: {} as Record<string, ShortcutBinding>,
