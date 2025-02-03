@@ -34,11 +34,11 @@ import { showProperties } from './ux';
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore';
 import { toRefs } from 'vue';
 
-import {GlobalScope} from './types/verilog.types.';
-import {CircuitElement} from './types/verilog.types.';
-import {YosysJSON} from './types/verilog.types.';
-import {SimulatorMobileStore} from './types/verilog.types.';
-import {Node} from './types/verilog.types.';
+import {GlobalScope} from './types/verilog.types';
+import {CircuitElement} from './types/verilog.types';
+import {YosysJSON} from './types/verilog.types';
+import {SimulatorMobileStore} from './types/verilog.types';
+import {Node} from './types/verilog.types';
 
 declare var globalScope: GlobalScope;
 declare var embed: boolean;
