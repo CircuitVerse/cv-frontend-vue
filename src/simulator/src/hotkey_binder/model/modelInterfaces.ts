@@ -25,6 +25,6 @@ export interface Storage {
     get<T>(key: string): T | null;
 }
 
-interface KeyMap {
+export interface KeyMap {
     [key: string]: string
 }
