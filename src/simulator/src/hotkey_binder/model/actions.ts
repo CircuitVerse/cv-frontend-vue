@@ -62,29 +62,45 @@ export const checkUpdate = (): void => {
     const userK: KeyMap = JSON.parse(localStorage.getItem('userKeys') || '{}');
     const defaultK: KeyMap = defaultKeys;
 
+    const hasChanges = syncKeys(userK, defaultK);
+
+    if (hasChanges) {
+        localStorage.setItem('userKeys', JSON.stringify(userK));
+    }
+};
+
+const syncKeys = (userK: KeyMap, defaultK: KeyMap): boolean => {
+    const hasAddedOrUpdated = addOrUpdateKeys(userK, defaultK);
+    const hasRemoved = removeObsoleteKeys(userK, defaultK);
+
+    return hasAddedOrUpdated || hasRemoved;
+};
+
+const addOrUpdateKeys = (userK: KeyMap, defaultK: KeyMap): boolean => {
     let hasChanges = false;
 
-    // Add missing keys or update existing ones
-    for (const key in defaultK) {
-        if (!userK.hasOwnProperty(key) || userK[key] !== defaultK[key]) {
+    for (const key of Object.keys(defaultK)) {
+        if (!Object.hasOwn(userK, key) || userK[key] !== defaultK[key]) {
             userK[key] = defaultK[key];
             hasChanges = true;
         }
     }
 
-    // Remove keys that are no longer in defaultKeys
-    for (const key in userK) {
-        if (!defaultK.hasOwnProperty(key)) {
+    return hasChanges;
+};
+
+const removeObsoleteKeys = (userK: KeyMap, defaultK: KeyMap): boolean => {
+    let hasChanges = false;
+
+    for (const key of Object.keys(userK)) {
+        if (!Object.hasOwn(defaultK, key)) {
             delete userK[key];
             hasChanges = true;
         }
     }
 
-    // Save changes back to localStorage if any changes were made
-    if (hasChanges) {
-        localStorage.setItem('userKeys', JSON.stringify(userK));
-    }
-}
+    return hasChanges;
+};
 
 /**
  * Add missing keys to user keys
