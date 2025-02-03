@@ -5,7 +5,7 @@ versions=($(jq -r '.[].version' version.json | tr -d '\r'))
 for version in "${versions[@]}"; do
   echo "Building for version: $version"
   
-  bunx vite build --config vite.config."$version".ts
+  bunx --bun vite build --config vite.config."$version".ts
   
   if [ $? -ne 0 ]; then
     echo "Build failed for version: $version"
