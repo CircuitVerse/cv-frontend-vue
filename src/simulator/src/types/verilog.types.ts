@@ -45,7 +45,7 @@ export interface SimulatorMobileStore {
 export interface Node {
     verilogLabel?: string;
     parent: {
-        verilogLabel: string;
+        verilogLabel?: string;
     };
     label?: string;
     connect(node: Node): void;

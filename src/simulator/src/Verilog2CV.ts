@@ -24,6 +24,8 @@ import 'codemirror/theme/monokai.css';
 import 'codemirror/theme/midnight.css';
 
 import 'codemirror/addon/hint/show-hint.css';
+import 'codemirror/addon/hint/show-hint.js';
+import 'codemirror/addon/hint/anyword-hint.js';
 import 'codemirror/mode/verilog/verilog.js';
 import 'codemirror/addon/edit/closebrackets.js';
 import 'codemirror/addon/hint/anyword-hint.js';
@@ -69,7 +71,15 @@ export async function createVerilogCircuit(): Promise<void> {
 }
 
 export function saveVerilogCode(): void {
+    if (!editor) {
+        showError('Editor not initialized');
+        return;
+    }
     const code: string = editor.getValue();
+    if (!globalScope?.verilogMetadata) {
+        showError('Circuit scope not initialized');
+        return;
+    }
     globalScope.verilogMetadata.code = code;
     generateVerilogCircuit(code);
 }
@@ -200,6 +210,12 @@ function processDevices(json: YosysJSON, circuitDevices: { [key: string]: Verilo
 }
 
 function processDevice(device: string, deviceData: any, circuitDevices: { [key: string]: VerilogSubCircuit | unknown }, subCircuitScope: { [key: string]: string }): void {
+    function processDevice(
+            device: string,
+            deviceData: YosysDevice,
+            circuitDevices: Record<string, VerilogSubCircuit | unknown>,
+            subCircuitScope: Record<string, string>
+        ): void {
     const deviceType = deviceData.type;
     if (deviceType === 'Subcircuit') {
         processSubCircuitDevice(device, deviceData, circuitDevices, subCircuitScope);
@@ -294,6 +310,10 @@ export default function generateVerilogCircuit(
 
 export function setupCodeMirrorEnvironment(): void {
     const myTextarea = document.getElementById('codeTextArea') as HTMLTextAreaElement;
+    if (!myTextarea) {
+        showError('Code editor textarea not found');
+        return;
+    }
 
     CodeMirror.commands.autocomplete = function (cm: CodeMirror.Editor) {
         cm.showHint({ hint: CodeMirror.hint.anyword });
