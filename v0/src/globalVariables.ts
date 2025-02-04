@@ -1,5 +1,5 @@
 import jQuery from 'jquery'
-import Array from './simulator/src/arrayHelpers.js'
+import ArrayHelpers from './simulator/src/arrayHelpers.js'
 import type { Window as CustomWindow } from '../../types/window'
 
 declare global {
@@ -8,7 +8,7 @@ declare global {
 
 window.$ = window.jQuery = jQuery
 
-window.Array = Array
+window.Array = ArrayHelpers
 window.isUserLoggedIn = false
 window.logixProjectId = undefined
 window.restrictedElements = []
