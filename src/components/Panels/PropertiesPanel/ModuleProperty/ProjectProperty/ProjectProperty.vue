@@ -15,14 +15,13 @@
     <p>
         <span>Circuit:</span>
         <input
-            :ref="circnameInput"
             id="circname"
             :key="SimulatorState.activeCircuit?.id"
             class="objectPropertyAttribute"
             type="text"
             autocomplete="off"
             name="changeCircuitName"
-            :value="SimulatorState.activeCircuit?.name"
+            v-model="name"
         />
     </p>
 
@@ -96,27 +95,35 @@
 </template>
 
 <script lang="ts" setup>
-import { toggleLayoutMode } from '#/simulator/src/layoutMode'
 // import {
 //     deleteCurrentCircuit,
 //     getDependenciesList,
 //     scopeList,
 // } from '#/simulator/src/circuit'
 // import { showMessage } from '#/simulator/src/utils'
-import { simulationArea } from '#/simulator/src/simulationArea'
-import InputGroups from '#/components/Panels/Shared/InputGroups.vue'
 // import MessageBox from '#/components/MessageBox/messageBox.vue'
 // import { ref, Ref, onMounted, watch } from 'vue'
+// import DeleteCircuit from '#/components/helpers/deleteCircuit/DeleteCircuit.vue'
+import { toggleLayoutMode } from '#/simulator/src/layoutMode'
+import { simulationArea } from '#/simulator/src/simulationArea'
+import InputGroups from '#/components/Panels/Shared/InputGroups.vue'
 import { useState } from '#/store/SimulatorStore/state'
 import { useProjectStore } from '#/store/projectStore'
-// import DeleteCircuit from '#/components/helpers/deleteCircuit/DeleteCircuit.vue'
 import { closeCircuit } from '#/components/helpers/deleteCircuit/DeleteCircuit.vue'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { watch } from 'vue'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 const projectStore = useProjectStore()
-const SimulatorState = <SimulatorStateType>useState()
+const SimulatorState = useState()
+const name = computed({
+    get:() => SimulatorState.activeCircuit?.name,
+    set:(newValue:string | undefined) => { 
+        if (SimulatorState.activeCircuit) {
+      SimulatorState.activeCircuit.name = newValue; // Update the store's state
+    }
+    }
+})
 const circnameInput = ref<HTMLInputElement | null>(null)
 const simulatorMobileStore = useSimulatorMobileStore()
 
@@ -127,14 +134,6 @@ watch(() => SimulatorState.circuit_name_clickable, () => {
         }
     }, 100)
 })
-// const circuitId: Ref<string | number> = ref(0)
-// const circuitName: Ref<string> = ref('Untitled-Cirucit')
-// const ifPersistentShow: Ref<boolean> = ref(false)
-// const messageValue: Ref<string> = ref('')
-// const buttonArray: Ref<Array<buttonArrType>> = ref([
-//     { text: '', emitOption: '' },
-// ])
-// const circuitToDelete: Ref<Object> = ref({})
 
 type SimulatorStateType = {
     activeCircuit: {
@@ -147,7 +146,14 @@ type SimulatorStateType = {
     }
     circuit_name_clickable: boolean
 }
-
+// const circuitId: Ref<string | number> = ref(0)
+// const circuitName: Ref<string> = ref('Untitled-Cirucit')
+// const ifPersistentShow: Ref<boolean> = ref(false)
+// const messageValue: Ref<string> = ref('')
+// const buttonArray: Ref<Array<buttonArrType>> = ref([
+//     { text: '', emitOption: '' },
+// ])
+// const circuitToDelete: Ref<Object> = ref({})
 // type CircuitItem = {
 //     id: string | number
 //     name: string

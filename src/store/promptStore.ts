@@ -6,7 +6,8 @@ interface promptStoreType {
     // resolvePromise: (value?: string | undefined) => void
     prompt: {
         activate: boolean
-        messageText: string
+        messageText: string,
+        inputText:string,
         isPersistent: boolean
         buttonList: Array<{
             text: string
@@ -61,6 +62,7 @@ export const usePromptStore = defineStore({
             isPersistent: false,
             buttonList: [],
             inputList: [],
+            inputText:'Untitled-circuit'
         },
         confirm: {
             activate: false,

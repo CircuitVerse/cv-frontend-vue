@@ -10,15 +10,15 @@
                 <ProjectProperty v-if="panelType == 1" />
                 <ElementProperty
                     v-else-if="panelType == 2"
-                    :key="panleBodyData"
-                    :obj="panleBodyData"
+                    :key="panelBodyData"
+                    :obj="panelBodyData"
                 />
                 <SubcircuitProperty
                     v-else-if="panelType == 3"
-                    :key="panleBodyData"
-                    :obj="panleBodyData"
+                    :key="panelBodyData"
+                    :obj="panelBodyData"
                 />
-                <HelpButton :key="panleBodyData" :obj="panleBodyData" />
+                <HelpButton :key="panelBodyData" :obj="panelBodyData" />
             </div>
         </div>
     </div>
@@ -34,10 +34,10 @@ import { ref, toRefs } from 'vue'
 import { onMounted } from 'vue'
 
 const props = defineProps({
-    panleBodyData: { type: Object, default: undefined },
+    panelBodyData: { type: Object, default: undefined },
     panelType: { type: Number, default: 1 },
     panelBodyHeader: { type: String, default: 'Properties' },
 })
 
-const { panleBodyData, panelType, panelBodyHeader } = toRefs(props)
+const { panelBodyData, panelType, panelBodyHeader } = toRefs(props)
 </script>

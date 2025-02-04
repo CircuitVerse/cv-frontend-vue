@@ -6,14 +6,17 @@
         :buttonList="promptStore.prompt.buttonList"
         :inputList="promptStore.prompt.inputList"
         :input-class="inputClass"
-        @buttonClick="(selectedOption) => confirmation(selectedOption)"
+        @buttonClick="(selectedOption,circuitItem) => confirmation(selectedOption,circuitItem)"
     />
 </template>
 
 <script lang="ts">
 import messageBox from '#/components/MessageBox/messageBox.vue'
 import { usePromptStore } from '#/store/promptStore'
-import { ref } from 'vue'
+import { useState } from '#/store/SimulatorStore/state'
+import { createApp, ref } from 'vue'
+import App from '#/App.vue'
+import { createPinia } from 'pinia'
 
 interface ButtonListType
     extends Array<{
@@ -53,7 +56,7 @@ const promptActivator = async (
     const promptStore = usePromptStore()
     promptStore.prompt.activate = true
     promptStore.prompt.isPersistent = true
-    promptStore.prompt.messageText = messageText
+    promptStore.prompt.messageText = messageText 
     promptStore.prompt.buttonList = buttonList
     promptStore.prompt.inputList = inputList
 
@@ -63,6 +66,11 @@ const promptActivator = async (
 
     return promptInput
 }
+
+const app = createApp(App)
+const pinia =   createPinia()
+app.use(pinia)
+const projectStore = useState();
 
 export const provideProjectName = async (): Promise<string | Error> => {
     inputClass.value = 'project-name-input'
@@ -83,7 +91,7 @@ export const provideProjectName = async (): Promise<string | Error> => {
         {
             text: 'Enter Project Name:',
             val: '',
-            placeholder: 'Untitled',
+            placeholder: 'Untitled-circuit',
             id: 'projectName',
             class: 'inputField',
             style: '',
@@ -96,7 +104,6 @@ export const provideProjectName = async (): Promise<string | Error> => {
         buttonList,
         inputList
     )
-
     return projectName
 }
 
@@ -132,7 +139,6 @@ export const provideCircuitName = async (): Promise<string | Error> => {
         buttonList,
         inputList
     )
-
     return circuitName
 }
 </script>
@@ -140,10 +146,12 @@ export const provideCircuitName = async (): Promise<string | Error> => {
 <script lang="ts" setup>
 const promptStore = usePromptStore()
 
-const confirmation = (selectedOption: string): void => {
+const confirmation = (selectedOption: string, circuitItem:any): void => {
     promptStore.prompt.activate = false
     if (selectedOption === 'save') {
         promptStore.resolvePromise(promptStore.prompt.inputList[0].val)
+        projectStore.circuit_list.push(circuitItem);
+        projectStore.activeCircuit = circuitItem;
     } else {
         promptStore.resolvePromise(new Error('cancel'))
     }

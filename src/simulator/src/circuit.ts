@@ -39,6 +39,7 @@ import { provideCircuitName } from '#/components/helpers/promptComponent/PromptC
 import { deleteCurrentCircuit } from '#/components/helpers/deleteCircuit/DeleteCircuit.vue'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { inputList, moduleList } from './metadata'
+import { usePromptStore } from '#/store/promptStore'
 
 export const circuitProperty = {
     toggleLayoutMode,
@@ -74,6 +75,7 @@ export function switchCircuit(id: string) {
     const { circuit_list } = toRefs(simulatorStore)
     const { activeCircuit } = toRefs(simulatorStore)
     const simulatorMobileStore = toRefs(useSimulatorMobileStore())
+    console.log("switched",id)
 
     if (layoutModeGet()) {
         toggleLayoutMode()
@@ -185,10 +187,11 @@ export async function createNewCircuitScope(
     isVerilog = false,
     isVerilogMain = false
 ) {
-    name = name ?? (await provideCircuitName())
+    const promptStore = usePromptStore()
+    name = await provideCircuitName();
     if (name instanceof Error) return // if user cancels the prompt
     if (name.trim() == '') {
-        name = 'Untitled-Circuit'
+        name = promptStore.prompt.inputText;
     }
     simulationArea.lastSelected = undefined
     newCircuit(name, id, isVerilog, isVerilogMain)
@@ -196,6 +199,7 @@ export async function createNewCircuitScope(
         showProperties(simulationArea.lastSelected)
         plotArea.reset()
     }
+    promptStore.prompt.inputText = 'Untitled-circuit'
     return true
 }
 
@@ -220,7 +224,6 @@ export function newCircuit(name: string | undefined, id: string | undefined, isV
         verilogModeSet(false)
         simulatorMobileStore.isVerilog.value = false
     }
-    name = name || 'Untitled-Circuit'
     name = stripTags(name)
     if (!name) return
     const scope = new Scope(name)
@@ -230,6 +233,7 @@ export function newCircuit(name: string | undefined, id: string | undefined, isV
         id: scope.id,
         name: scope.name, // fix for tab name issue - vue - to be reviewed @devartstar
     }
+    activeCircuit.value = currCircuit;
 
     circuit_list.value.push(currCircuit)
     if (isVerilog) {

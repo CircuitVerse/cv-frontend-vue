@@ -5,7 +5,7 @@ export interface State {
     title: string
     activeCircuit: {
         id: number | string
-        name: string
+        name: string | undefined
     } | undefined;
     circuit_list: {
         id: number | string
@@ -45,7 +45,7 @@ export const useState = defineStore({
     state: (): State => {
         return {
             title: 'Welcome to CircuitVerse Simulator',
-            activeCircuit: undefined,
+            activeCircuit: {id:"",name:""},
             circuit_list: [],
             errorMessages: [],
             successMessages: [],
@@ -72,5 +72,5 @@ export const useState = defineStore({
             subCircuitElementList: [],
             isEmptySubCircuitElementList: true,
         }
-    },
+    }
 })

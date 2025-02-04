@@ -1,7 +1,7 @@
 <template>
     <ModuleProperty
         v-if="!propertiesPanelStore.inLayoutMode"
-        :panle-body-data="toRaw(propertiesPanelStore.propertiesPanelObj)"
+        :panel-body-data="toRaw(propertiesPanelStore.propertiesPanelObj)"
         :panel-type="propertiesPanelStore.panelType"
         :panel-body-header="propertiesPanelStore.panelBodyHeader"
     />
