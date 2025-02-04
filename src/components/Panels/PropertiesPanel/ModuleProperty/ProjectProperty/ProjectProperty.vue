@@ -124,16 +124,8 @@ const name = computed({
     }
     }
 })
-// const circnameInput = ref<HTMLInputElement | null>(null)
-const simulatorMobileStore = useSimulatorMobileStore()
 
-// watch(() => SimulatorState.circuit_name_clickable, () => {
-//     setTimeout(() => {
-//         if (circnameInput.value && SimulatorState.circuit_name_clickable) {
-//             circnameInput.value.select()
-//         }
-//     }, 100)
-// })
+const simulatorMobileStore = useSimulatorMobileStore()
 
 // const circuitId: Ref<string | number> = ref(0)
 // const circuitName: Ref<string> = ref('Untitled-Cirucit')
