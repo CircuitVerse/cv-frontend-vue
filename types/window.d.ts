@@ -1,6 +1,6 @@
 import jQuery from 'jquery'
 
-type Window = {
+export type Window = {
     $: typeof jQuery
     jQuery: typeof jQuery
     isUserLoggedIn: boolean
