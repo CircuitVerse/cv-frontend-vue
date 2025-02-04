@@ -124,28 +124,17 @@ const name = computed({
     }
     }
 })
-const circnameInput = ref<HTMLInputElement | null>(null)
+// const circnameInput = ref<HTMLInputElement | null>(null)
 const simulatorMobileStore = useSimulatorMobileStore()
 
-watch(() => SimulatorState.circuit_name_clickable, () => {
-    setTimeout(() => {
-        if (circnameInput.value && SimulatorState.circuit_name_clickable) {
-            circnameInput.value.select()
-        }
-    }, 100)
-})
+// watch(() => SimulatorState.circuit_name_clickable, () => {
+//     setTimeout(() => {
+//         if (circnameInput.value && SimulatorState.circuit_name_clickable) {
+//             circnameInput.value.select()
+//         }
+//     }, 100)
+// })
 
-type SimulatorStateType = {
-    activeCircuit: {
-        id: string | number
-        name: string
-    }
-    circuit_list: Array<Object>
-    dialogBox: {
-        delete_circuit: boolean
-    }
-    circuit_name_clickable: boolean
-}
 // const circuitId: Ref<string | number> = ref(0)
 // const circuitName: Ref<string> = ref('Untitled-Cirucit')
 // const ifPersistentShow: Ref<boolean> = ref(false)

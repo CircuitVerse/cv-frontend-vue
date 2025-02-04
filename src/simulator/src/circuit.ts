@@ -75,7 +75,6 @@ export function switchCircuit(id: string) {
     const { circuit_list } = toRefs(simulatorStore)
     const { activeCircuit } = toRefs(simulatorStore)
     const simulatorMobileStore = toRefs(useSimulatorMobileStore())
-    console.log("switched",id)
 
     if (layoutModeGet()) {
         toggleLayoutMode()

@@ -14,9 +14,7 @@
 import messageBox from '#/components/MessageBox/messageBox.vue'
 import { usePromptStore } from '#/store/promptStore'
 import { useState } from '#/store/SimulatorStore/state'
-import { createApp, ref } from 'vue'
-import App from '#/App.vue'
-import { createPinia } from 'pinia'
+import { ref } from 'vue'
 
 interface ButtonListType
     extends Array<{
@@ -67,9 +65,6 @@ const promptActivator = async (
     return promptInput
 }
 
-const app = createApp(App)
-const pinia =   createPinia()
-app.use(pinia)
 const projectStore = useState();
 
 export const provideProjectName = async (): Promise<string | Error> => {
