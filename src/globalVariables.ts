@@ -1,9 +1,10 @@
-/*global ...*/
-/*eslint no-undef: "error"*/
-
-declare const window: any
-
 import jQuery from 'jquery'
+import type { Window as CustomWindow } from '..//types/window'
+
+declare global {
+    interface Window extends CustomWindow {}
+}
+
 window.$ = window.jQuery = jQuery
 
 window.isUserLoggedIn = false
