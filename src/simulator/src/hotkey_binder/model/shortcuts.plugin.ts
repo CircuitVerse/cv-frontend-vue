@@ -1,6 +1,6 @@
-import { ShortcutOptions } from './modelInterfaces'
-import { ShortcutBinding } from './modelInterfaces'
-import { ModifierState } from './modelInterfaces';
+import { ShortcutOptions } from './model.types'
+import { ShortcutBinding } from './model.types'
+import { ModifierState } from './model.types';
 
 
 export const shortcut = {
