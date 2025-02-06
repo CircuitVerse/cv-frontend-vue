@@ -1,4 +1,4 @@
-// Add type-safe set method to Storage prototype
+// Add type-safe set method to Storage Prototype
 Storage.prototype.set = function<T>(key: string, obj: T): void {
     this.setItem(key, JSON.stringify(obj));
 }
