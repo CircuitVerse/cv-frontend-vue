@@ -12,7 +12,7 @@ import {
 import { getOS } from './utils'
 import { shortcut } from './shortcuts.plugin'
 
-import { KeyMap } from './modelInterfaces'
+import { KeyMap } from './model.types'
 
 type DirectionType = 'up' | 'down' | 'left' | 'right'
 
