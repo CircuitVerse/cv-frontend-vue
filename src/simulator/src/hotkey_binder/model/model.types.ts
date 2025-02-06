@@ -20,11 +20,6 @@ export interface ModifierState {
     pressed: boolean
 }
 
-export interface Storage {
-    set<T>(key: string, obj: T): void;
-    get<T>(key: string): T | null;
-}
-
 export interface KeyMap {
     [key: string]: string
 }
