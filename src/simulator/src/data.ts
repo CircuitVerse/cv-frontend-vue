@@ -77,11 +77,6 @@ export default logixFunction;
 function showTourGuideHelper(): void {
     // Consider using Vue's nextTick or proper event listeners
     Vue.nextTick(() => {
-            showTourGuide();
-        });
-}
-
-// Hack to call createNewCircuitScope with keyboard shortcut
-function createNewCircuit(): void {
-    createNewCircuitScope();
+        showTourGuide();
+    });
 }
