@@ -1,16 +1,5 @@
 import Driver from 'driver.js';
-
-interface TourStep {
-    element: string;
-    className?: string;
-    popover: {
-        className?: string;
-        title: string;
-        description: string;
-        position: 'left' | 'right' | 'top' | 'bottom';
-        offset?: number;
-    };
-}
+import { TourStep } from './types/tutorial.types'
 
 export const tour: TourStep[] = [
     {
@@ -98,12 +87,11 @@ export const tutorialWrapper = (): void => {
         if (localStorage.tutorials === 'next') {
             panelHighlight.highlight({
                 element: '#guide_1',
-                showButtons: false,
                 popover: {
                     title: 'Here are the elements',
                     description: 'Select any element by clicking on it & then click anywhere on the grid to place the element.',
                     position: 'right',
-                    offset: (e.target as HTMLElement).nextElementSibling?.offsetHeight + (e.target as HTMLElement).offsetTop - 45,
+                    offset: ((e.target as HTMLElement).nextElementSibling as HTMLElement)?.offsetHeight + (e.target as HTMLElement).offsetTop - 45,
                 },
             });
             localStorage.setItem('tutorials', 'done');
@@ -123,7 +111,7 @@ const animatedTourDriver = new Driver({
 });
 
 export function showTourGuide(): void {
-    document.querySelector('.draggable-panel .maximize')?.click();
+    (document.querySelector('.draggable-panel .maximize') as HTMLElement)?.click();
     animatedTourDriver.defineSteps(tour);
     animatedTourDriver.start();
     localStorage.setItem('tutorials_tour_done', 'true');
