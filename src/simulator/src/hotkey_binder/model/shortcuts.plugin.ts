@@ -1,7 +1,4 @@
-import { ShortcutOptions } from './model.types'
-import { ShortcutBinding } from './model.types'
-import { ModifierState } from './model.types';
-
+import { ShortcutOptions,ShortcutBinding,ModifierState } from './model.types'
 
 export const shortcut = {
     all_shortcuts: {} as Record<string, ShortcutBinding>,
