@@ -229,7 +229,6 @@ function processSubCircuitDevice(
         throw new Error(`subCircuitScope[${subCircuitName}] is undefined`);
     }
 
-    // Pass undefined explicitly if required
     circuitDevices[device] = new VerilogSubCircuit(
         new SubCircuit(
             500, // x
