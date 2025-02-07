@@ -36,7 +36,7 @@
 import { defineComponent, ref, reactive, watch, Ref } from 'vue'
 import { checkRestricted } from './model/utils'
 import { KeyCode } from './model/normalize/normalizer.plugin.js'
-import { KeyBindings } from './keyBinding';
+import { KeyBindings } from './keyBinding.types';
 
 export default defineComponent({
   name: 'KeyBinder',
