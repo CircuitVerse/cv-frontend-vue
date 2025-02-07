@@ -47,10 +47,21 @@ export default defineComponent({
     const warning = ref<string>('')
     
     const keyBindings = reactive<KeyBindings>(
-      JSON.parse(localStorage.getItem('userKeys') || '{}') || {
+      +  (() => {
+    try {
+      const stored = localStorage.getItem('userKeys');
+      return stored ? JSON.parse(stored) : {
         togglePanel: { default: 'Ctrl+P', custom: '' },
         saveFile: { default: 'Ctrl+S', custom: '' }
-      }
+      };
+    } catch (e) {
+      console.error('Failed to parse stored key bindings:', e);
+      return {
+        togglePanel: { default: 'Ctrl+P', custom: '' },
+        saveFile: { default: 'Ctrl+S', custom: '' }
+      };
+    }
+  })()
     )
 
     watch(keyBindings, (newVal: KeyBindings) => {
