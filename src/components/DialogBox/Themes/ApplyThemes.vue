@@ -7,55 +7,28 @@
                     <v-btn size="x-small" icon class="dialogClose" @click="closeThemeDialog()">
                         <v-icon>mdi-close</v-icon>
                     </v-btn>
-                    <div id="colorThemesDialog" class="customScroll colorThemesDialog" tabindex="0" title="Select Theme">
-                        <div
-                            v-for="theme in themes"
-                            :id="theme"
-                            :key="theme"
-                            class="theme"
-                            :class="{ selected: theme === selectedTheme, set: theme === selectedTheme }"
-                        >
+                    <div id="colorThemesDialog" class="customScroll colorThemesDialog" tabindex="0"
+                        title="Select Theme">
+                        <div v-for="theme in themes" :id="theme" :key="theme" class="theme"
+                            :class="{ selected: theme === selectedTheme, set: theme === selectedTheme }">
                             <div class="themeSel" @click="changeTheme(theme)"></div>
                             <span>
-                                <img
-                                    v-if="theme === 'Default Theme'"
-                                    src="../../../assets/themes/DefaultTheme.svg"
-                                    style="display: block"
-                                />
-                                <img
-                                    v-if="theme === 'Night Sky'"
-                                    src="../../../assets/themes/NightSky.svg"
-                                    style="display: block"
-                                />
-                                <img
-                                    v-if="theme === 'Lite-born Spring'"
-                                    src="../../../assets/themes/LitebornSpring.svg"
-                                    style="display: block"
-                                />
-                                <img
-                                    v-if="theme === 'G&W'"
-                                    src="../../../assets/themes/GnW.svg"
-                                    style="display: block"
-                                />
-                                <img
-                                    v-if="theme === 'High Contrast'"
-                                    src="../../../assets/themes/HighContrast.svg"
-                                    style="display: block"
-                                />
-                                <img
-                                    v-if="theme === 'Color Blind'"
-                                    src="../../../assets/themes/ColorBlind.svg"
-                                    style="display: block"
-                                />
+                                <img v-if="theme === 'Default Theme'" src="../../../assets/themes/DefaultTheme.svg"
+                                    style="display: block" />
+                                <img v-if="theme === 'Night Sky'" src="../../../assets/themes/NightSky.svg"
+                                    style="display: block" />
+                                <img v-if="theme === 'Lite-born Spring'" src="../../../assets/themes/LitebornSpring.svg"
+                                    style="display: block" />
+                                <img v-if="theme === 'G&W'" src="../../../assets/themes/GnW.svg"
+                                    style="display: block" />
+                                <img v-if="theme === 'High Contrast'" src="../../../assets/themes/HighContrast.svg"
+                                    style="display: block" />
+                                <img v-if="theme === 'Color Blind'" src="../../../assets/themes/ColorBlind.svg"
+                                    style="display: block" />
                             </span>
                             <span id="themeNameBox" class="themeNameBox">
-                                <input
-                                    :id="theme.replace(' ', '')"
-                                    type="radio"
-                                    value="theme"
-                                    name="theme"
-                                    :checked="theme === selectedTheme || theme === 'Default Theme'"
-                                />
+                                <input :id="theme.replace(' ', '')" type="radio" value="theme" name="theme"
+                                    :checked="theme === selectedTheme || theme === 'Default Theme'" />
                                 <label :for="theme.replace(' ', '')">{{ theme }}</label>
                             </span>
                         </div>
@@ -71,13 +44,8 @@
                             <label :for="customTheme" class="customColorLabel">
                                 {{ customTheme }} ({{ customThemesList[customTheme]?.description }})
                             </label>
-                            <input
-                                type="color"
-                                :name="customTheme"
-                                :value="customThemesList[customTheme]?.color"
-                                class="customColorInput"
-                                @input="changeCustomTheme($event)"
-                            />
+                            <input type="color" :name="customTheme" :value="customThemesList[customTheme]?.color"
+                                class="customColorInput" @input="changeCustomTheme($event)" />
                         </div>
                         <a id="downloadThemeFile" style="display: none"></a>
                     </form>
@@ -142,18 +110,22 @@ function changeCustomTheme(e: Event): void {
 }
 
 function applyTheme(): void {
-    if (!iscustomTheme.value) {
-        const selectedThemeLabel = document.querySelector('.selected label')?.textContent;
-        if (selectedThemeLabel) {
-            localStorage.removeItem('Custom Theme');
-            localStorage.setItem('theme', selectedThemeLabel);
+    try {
+        if (!iscustomTheme.value) {
+            const selectedThemeLabel = document.querySelector('.selected label')?.textContent;
+            if (selectedThemeLabel) {
+                localStorage.removeItem('Custom Theme');
+                localStorage.setItem('theme', selectedThemeLabel);
+            }
+        } else {
+            localStorage.setItem('theme', 'Custom Theme');
+            localStorage.setItem('Custom Theme', JSON.stringify(themeOptions['Custom Theme']));
         }
-    } else {
-        localStorage.setItem('theme', 'Custom Theme');
-        localStorage.setItem('Custom Theme', JSON.stringify(themeOptions['Custom Theme']));
+        SimulatorState.dialogBox.theme_dialog = false;
+        setTimeout(() => (iscustomTheme.value = false), 1000);
+    } catch (error) {
+        console.error('Failed to save theme settings:', error);
     }
-    SimulatorState.dialogBox.theme_dialog = false;
-    setTimeout(() => (iscustomTheme.value = false), 1000);
 }
 
 function applyCustomTheme(): void {
