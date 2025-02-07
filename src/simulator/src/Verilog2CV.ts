@@ -209,13 +209,12 @@ function processDevices(json: YosysJSON, circuitDevices: { [key: string]: Verilo
     }
 }
 
-function processDevice(device: string, deviceData: any, circuitDevices: { [key: string]: VerilogSubCircuit | unknown }, subCircuitScope: { [key: string]: string }): void {
-    function processDevice(
-            device: string,
-            deviceData: YosysDevice,
-            circuitDevices: Record<string, VerilogSubCircuit | unknown>,
-            subCircuitScope: Record<string, string>
-        ): void {
+function processDevice(
+    device: string,
+    deviceData: YosysDevice,
+    circuitDevices: Record<string, VerilogSubCircuit | unknown>,
+    subCircuitScope: Record<string, string>
+): void {
     const deviceType = deviceData.type;
     if (deviceType === 'Subcircuit') {
         processSubCircuitDevice(device, deviceData, circuitDevices, subCircuitScope);
@@ -259,7 +258,7 @@ function processConnectors(json: YosysJSON, circuitDevices: { [key: string]: Ver
     }
 }
 
-export default function generateVerilogCircuit(
+function generateVerilogCircuit(
     verilogCode: string,
     scope: GlobalScope = globalScope
 ): void {
@@ -308,7 +307,7 @@ export default function generateVerilogCircuit(
         });
 }
 
-export function setupCodeMirrorEnvironment(): void {
+function setupCodeMirrorEnvironment(): void {
     const myTextarea = document.getElementById('codeTextArea') as HTMLTextAreaElement;
     if (!myTextarea) {
         showError('Code editor textarea not found');
@@ -342,3 +341,5 @@ export function setupCodeMirrorEnvironment(): void {
         editor.refresh();
     }, 1);
 }
+
+export { generateVerilogCircuit as default, setupCodeMirrorEnvironment };
