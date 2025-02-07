@@ -1,4 +1,3 @@
-import { scheduleUpdate, play, updateCanvasSet } from './engine';
 import { simulationArea } from './simulationArea';
 
 /**
