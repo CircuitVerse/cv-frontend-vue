@@ -28,8 +28,6 @@ import 'codemirror/addon/hint/show-hint.js';
 import 'codemirror/addon/hint/anyword-hint.js';
 import 'codemirror/mode/verilog/verilog.js';
 import 'codemirror/addon/edit/closebrackets.js';
-import 'codemirror/addon/hint/anyword-hint.js';
-import 'codemirror/addon/hint/show-hint.js';
 import 'codemirror/addon/display/autorefresh.js';
 import { showError, showMessage } from './utils';
 import { showProperties } from './ux';
@@ -228,11 +226,25 @@ function processSubCircuitDevice(
     if (!subCircuitName || subCircuitScope[subCircuitName] === undefined) {
         throw new Error(`subCircuitScope[${subCircuitName}] is undefined`);
     }
+    const GRID_SIZE = 100;
+    let lastX = 0;
+    let lastY = 0;
 
+    function getNextPosition(): { x: number, y: number } {
+        const position = { x: lastX, y: lastY };
+        lastX += GRID_SIZE;
+        if (lastX > 1500) { // max width
+            lastX = 0;
+            lastY += GRID_SIZE;
+        }
+        return position;
+    }
+
+    const { x, y } = getNextPosition();
     circuitDevices[device] = new VerilogSubCircuit(
         new SubCircuit(
-            500, // x
-            500, // y
+            x,
+            y,
             null, // someParam
             undefined // subCircuitId (explicitly undefined)
         )
