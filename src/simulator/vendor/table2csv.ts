@@ -37,7 +37,18 @@ function tableToCSV(
 
   // Transform `&gt;` and `&lt;` if required
   const result = csvData.join("\n");
-  return transformGtLt ? result.replace(/&gt;/g, ">").replace(/&lt;/g, "<") : result;
+    if (transformGtLt) {
+        const entities: Record<string, string> = {
+          '&gt;': '>',
+          '&lt;': '<',
+          '&amp;': '&',
+          '&quot;': '"',
+          '&#39;': "'",
+          // Add more common entities as needed
+        };
+        return result.replace(/&[^;]+;/g, (entity) => entities[entity] || entity);
+      }
+      return result;
 
   function formatData(input: string): string {
     return `"${input.replace(/"/g, '""').trim()}"`;
