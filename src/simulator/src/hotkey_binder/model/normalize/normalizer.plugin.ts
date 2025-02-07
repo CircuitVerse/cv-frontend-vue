@@ -66,49 +66,51 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+import { IKeyCode } from "./normalizer.plugin.types"
 
-var modifiers = ['ctrl', 'alt', 'shift', 'meta'],
-    KEY_MAP = {},
-    shifted_symbols = {
-        58: 59, // : -> ;
-        43: 61, // = -> +
-        60: 44, // < -> ,
-        95: 45, // _ -> -
-        62: 46, // > -> .
-        63: 47, // ? -> /
-        96: 192, // ` -> ~
-        124: 92, // | -> \
-        39: 222, // ' -> 222
-        34: 222, // " -> 222
-        33: 49, // ! -> 1
-        64: 50, // @ -> 2
-        35: 51, // # -> 3
-        36: 52, // $ -> 4
-        37: 53, // % -> 5
-        94: 54, // ^ -> 6
-        38: 55, // & -> 7
-        42: 56, // * -> 8
-        40: 57, // ( -> 9
-        41: 58, // ) -> 0
-        123: 91, // { -> [
-        125: 93, // } -> ]
-    }
+const modifiers: string[] = ['ctrl', 'alt', 'shift', 'meta'];
+const KEY_MAP: { [key: number]: number } = {};
+const shifted_symbols: { [key: number]: number } = {
+    58: 59, // : -> ;
+    43: 61, // = -> +
+    60: 44, // < -> ,
+    95: 45, // _ -> -
+    62: 46, // > -> .
+    63: 47, // ? -> /
+    96: 192, // ` -> ~
+    124: 92, // | -> \
+    39: 222, // ' -> 222
+    34: 222, // " -> 222
+    33: 49, // ! -> 1
+    64: 50, // @ -> 2
+    35: 51, // # -> 3
+    36: 52, // $ -> 4
+    37: 53, // % -> 5
+    94: 54, // ^ -> 6
+    38: 55, // & -> 7
+    42: 56, // * -> 8
+    40: 57, // ( -> 9
+    41: 58, // ) -> 0
+    123: 91, // { -> [
+    125: 93, // } -> ]
+};
 
-function isLower(ascii) {
-    return ascii >= 97 && ascii <= 122
-}
-function capitalize(str) {
-    return str.substr(0, 1).toUpperCase() + str.substr(1).toLowerCase()
+function isLower(ascii: number): boolean {
+    return ascii >= 97 && ascii <= 122;
 }
 
-var is_gecko = navigator.userAgent.indexOf('Gecko') != -1,
-    is_ie = navigator.userAgent.indexOf('MSIE') != -1,
-    is_windows = navigator.platform.indexOf('Win') != -1,
-    is_opera = window.opera && window.opera.version() < 9.5,
-    is_konqueror = navigator.vendor && navigator.vendor.indexOf('KDE') != -1,
-    is_icab = navigator.vendor && navigator.vendor.indexOf('iCab') != -1
+function capitalize(str: string): string {
+    return str.substr(0, 1).toUpperCase() + str.substr(1).toLowerCase();
+}
 
-var GECKO_IE_KEYMAP = {
+const is_gecko: boolean = navigator.userAgent.indexOf('Gecko') !== -1;
+const is_ie: boolean = navigator.userAgent.indexOf('MSIE') !== -1;
+const is_windows: boolean = navigator.platform.indexOf('Win') !== -1;
+const is_opera: boolean = (window as any).opera && (window as any).opera.version() < 9.5;
+const is_konqueror: boolean = typeof navigator.vendor === 'string' && navigator.vendor.indexOf('KDE') !== -1;
+const is_icab: boolean = typeof navigator.vendor === 'string' && navigator.vendor.indexOf('iCab') !== -1;
+
+const GECKO_IE_KEYMAP: { [key: number]: number } = {
     186: 59, // ;: in IE
     187: 61, // =+ in IE
     188: 44, // ,<
@@ -121,35 +123,35 @@ var GECKO_IE_KEYMAP = {
     219: 91, // {[
     220: 92, // \|
     221: 93, // }]
-}
+};
 
-var OPERA_KEYMAP = {}
+const OPERA_KEYMAP: { [key: number]: number } = {};
 
 // Browser detection taken from quirksmode.org
 if (is_opera && is_windows) {
-    KEY_MAP = OPERA_KEYMAP
+    Object.assign(KEY_MAP, OPERA_KEYMAP);
 } else if (is_opera || is_konqueror || is_icab) {
-    var unshift = [
+    const unshift: number[] = [
         33, 64, 35, 36, 37, 94, 38, 42, 40, 41, 58, 43, 60, 95, 62, 63, 124, 34,
-    ]
-    KEY_MAP = OPERA_KEYMAP
-    for (var i = 0; i < unshift.length; ++i) {
-        KEY_MAP[unshift[i]] = shifted_symbols[unshift[i]]
+    ];
+    Object.assign(KEY_MAP, OPERA_KEYMAP);
+    for (let i = 0; i < unshift.length; ++i) {
+        KEY_MAP[unshift[i]] = shifted_symbols[unshift[i]];
     }
 } else {
     // IE and Gecko are close enough that we can use the same map for both,
     // and the rest of the world (eg. Opera 9.50) seems to be standardizing
     // on them
-    KEY_MAP = GECKO_IE_KEYMAP
+    Object.assign(KEY_MAP, GECKO_IE_KEYMAP);
 }
 
 if (is_konqueror) {
-    KEY_MAP[0] = 45
-    KEY_MAP[127] = 46
-    KEY_MAP[45] = 95
+    KEY_MAP[0] = 45;
+    KEY_MAP[127] = 46;
+    KEY_MAP[45] = 95;
 }
 
-var key_names = {
+const key_names: { [key: number]: string } = {
     32: 'SPACE',
     13: 'ENTER',
     9: 'TAB',
@@ -174,62 +176,71 @@ var key_names = {
     19: 'PAUSE',
     222: "'",
     91: 'META',
+};
+
+function fn_name(code: number): string | false {
+    if (code >= 112 && code <= 123) return 'F' + (code - 111);
+    return false;
 }
-function fn_name(code) {
-    if (code >= 112 && code <= 123) return 'F' + (code - 111)
-    return false
-}
-function num_name(code) {
-    if (code >= 96 && code < 106) return 'Num' + (code - 96)
+
+function num_name(code: number): string | false {
+    if (code >= 96 && code < 106) return 'Num' + (code - 96);
     switch (code) {
         case 106:
-            return 'Num*'
+            return 'Num*';
         case 111:
-            return 'Num/'
+            return 'Num/';
         case 110:
-            return 'Num.'
+            return 'Num.';
         default:
-            return false
+            return false;
     }
 }
 
-var current_keys = {
+const current_keys: {
+    codes: { [key: number]: number };
+    ctrl: boolean;
+    alt: boolean;
+    shift: boolean;
+    meta: boolean;
+} = {
     codes: {},
     ctrl: false,
     alt: false,
     shift: false,
     meta: false,
+};
+
+function update_current_modifiers(key: { ctrl: boolean; alt: boolean; shift: boolean; meta: boolean }): void {
+    current_keys.ctrl = key.ctrl;
+    current_keys.alt = key.alt;
+    current_keys.shift = key.shift;
+    current_keys.meta = key.meta;
 }
 
-function update_current_modifiers(key) {
-    current_keys.ctrl = key.ctrl
-    current_keys.alt = key.alt
-    current_keys.shift = key.shift
-    current_keys.meta = key.meta
-}
-
-function same_modifiers(key1, key2) {
+function same_modifiers(key1: { ctrl: boolean; alt: boolean; shift: boolean; meta: boolean }, key2: { ctrl: boolean; alt: boolean; shift: boolean; meta: boolean }): boolean {
     return (
         key1.ctrl === key2.ctrl &&
         key1.alt === key2.alt &&
         key1.shift === key2.shift &&
         key1.meta === key2.meta
-    )
+    );
 }
 
-if (typeof window.KeyCode != 'undefined') {
-    var _KeyCode = window.KeyCode
+let _KeyCode: IKeyCode;
+if (typeof window.KeyCode !== 'undefined') {
+    _KeyCode = window.KeyCode;
 }
 
-export const KeyCode = {
-    no_conflict: function () {
-        window.KeyCode = _KeyCode
-        return KeyCode
+export const KeyCode: IKeyCode = {
+    no_conflict: function (): typeof KeyCode {
+        window.KeyCode = _KeyCode;
+        return KeyCode;
     },
 
     /** Generates a function key code from a number between 1 and 12 */
-    fkey: function (num) {
-        return 111 + num
+    fkey: function (num: number): number {
+        return 111 + num;
     },
 
     /**
@@ -242,16 +253,16 @@ export const KeyCode = {
      * conflict with the non-keypad codes.  The same applies to all the
      * arithmetic keypad keys on Konqueror and early Opera.
      */
-    numkey: function (num) {
+    numkey: function (num: number | string): number {
         switch (num) {
             case '*':
-                return 106
+                return 106;
             case '/':
-                return 111
+                return 111;
             case '.':
-                return 110
+                return 110;
             default:
-                return 96 + num
+                return 96 + Number(num);
         }
     },
 
@@ -259,20 +270,20 @@ export const KeyCode = {
      * Generates a key code from the ASCII code of (the first character of) a
      * string.
      */
-    key: function (str) {
-        var c = str.charCodeAt(0)
-        if (isLower(c)) return c - 32
-        return shifted_symbols[c] || c
+    key: function (str: string): number {
+        const c = str.charCodeAt(0);
+        if (isLower(c)) return c - 32;
+        return shifted_symbols[c] || c;
     },
 
     /** Checks if two key objects are equal. */
-    key_equals: function (key1, key2) {
-        return key1.code == key2.code && same_modifiers(key1, key2)
+    key_equals: function (key1: { code: number; ctrl: boolean; alt: boolean; shift: boolean; meta: boolean }, key2: { code: number; ctrl: boolean; alt: boolean; shift: boolean; meta: boolean }): boolean {
+        return key1.code === key2.code && same_modifiers(key1, key2);
     },
 
     /** Translates a keycode to its normalized value. */
-    translate_key_code: function (code) {
-        return KEY_MAP[code] || code
+    translate_key_code: function (code: number): number {
+        return KEY_MAP[code] || code;
     },
 
     /**
@@ -280,81 +291,80 @@ export const KeyCode = {
      * object has the following fields:
      * { int code; boolean shift, boolean alt, boolean ctrl }
      */
-    translate_event: function (e) {
-        e = e || window.event
-        var code = e.which || e.keyCode
+    translate_event: function (e: KeyboardEvent): { code: number; shift: boolean; alt: boolean; ctrl: boolean; meta: boolean } {
+        e = e || window.event as KeyboardEvent;
+        const code = e.which || e.keyCode;
         return {
             code: KeyCode.translate_key_code(code),
             shift: e.shiftKey,
             alt: e.altKey,
             ctrl: e.ctrlKey,
             meta: e.metaKey,
-        }
+        };
     },
 
     /**
      * Keydown event listener to update internal state of which keys are
      * currently pressed.
      */
-
-    key_down: function (e) {
-        var key = KeyCode.translate_event(e)
-        current_keys.codes[key.code] = key.code
-        update_current_modifiers(key)
+    key_down: function (e: KeyboardEvent): void {
+        const key = KeyCode.translate_event(e);
+        current_keys.codes[key.code] = key.code;
+        update_current_modifiers(key);
     },
 
     /**
      * Keyup event listener to update internal state.
      */
-    key_up: function (e) {
-        var key = KeyCode.translate_event(e)
-        delete current_keys.codes[key.code]
-        update_current_modifiers(key)
+    key_up: function (e: KeyboardEvent): void {
+        const key = KeyCode.translate_event(e);
+        delete current_keys.codes[key.code];
+        update_current_modifiers(key);
     },
 
     /**
      * Returns true if the key spec (as returned by translate_event) is
      * currently held down.
      */
-    is_down: function (key) {
-        var code = key.code
-        if (code == KeyCode.CTRL) return current_keys.ctrl
-        if (code == KeyCode.ALT) return current_keys.alt
-        if (code == KeyCode.SHIFT) return current_keys.shift
+    is_down: function (key: { code: number; ctrl: boolean; alt: boolean; shift: boolean; meta: boolean }): boolean {
+        const code = key.code;
+        if (code === KeyCode.CTRL) return current_keys.ctrl;
+        if (code === KeyCode.ALT) return current_keys.alt;
+        if (code === KeyCode.SHIFT) return current_keys.shift;
 
         return (
             current_keys.codes[code] !== undefined &&
             same_modifiers(key, current_keys)
-        )
+        );
     },
 
     /**
      * Returns a string representation of a key event suitable for the
      * shortcut.js or JQuery HotKeys plugins.  Also makes a decent UI display.
      */
-    hot_key: function (key) {
-        var pieces = []
-        for (var i = 0; i < modifiers.length; ++i) {
-            var modifier = modifiers[i]
+    hot_key: function (key: { code: number; ctrl: boolean; alt: boolean; shift: boolean; meta: boolean }): string {
+        const pieces: string[] = [];
+        for (let i = 0; i < modifiers.length; ++i) {
+            const modifier = modifiers[i];
             if (
-                key[modifier] &&
-                modifier.toUpperCase() != key_names[key.code]
+                key[modifier as keyof typeof key] &&
+                modifier.toUpperCase() !== key_names[key.code]
             ) {
-                pieces.push(capitalize(modifier))
+                pieces.push(capitalize(modifier));
             }
         }
 
-        var c = key.code
-        var key_name =
-            key_names[c] || fn_name(c) || num_name(c) || String.fromCharCode(c)
-        pieces.push(capitalize(key_name))
-        return pieces.join('+')
+        const c = key.code;
+        const key_name =
+            key_names[c] || fn_name(c) || num_name(c) || String.fromCharCode(c);
+        pieces.push(capitalize(key_name));
+        return pieces.join('+');
     },
-}
+};
 
 // Add key constants
-for (var code in key_names) {
-    KeyCode[key_names[code]] = code
+for (const code in key_names) {
+    KeyCode[key_names[code]] = Number(code);
 }
 
 // var fields = ['charCode', 'keyCode', 'which', 'type', 'timeStamp',
