@@ -36,11 +36,7 @@ import { showProperties } from './ux';
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore';
 import { toRefs } from 'vue';
 
-import { GlobalScope } from './types/verilog.types';
-import { CircuitElement } from './types/verilog.types';
-import { YosysJSON } from './types/verilog.types';
-import { SimulatorMobileStore } from './types/verilog.types';
-import { Node } from './types/verilog.types';
+import { GlobalScope, YosysDevice, CircuitElement, YosysJSON, SimulatorMobileStore, Node } from './types/verilog.types';
 
 declare var globalScope: GlobalScope;
 declare var embed: boolean;
@@ -142,7 +138,6 @@ function setElementDisplay(selector: string, display: string): void {
     if (element) (element as HTMLElement).style.display = display;
 }
 
-
 import yosysTypeMap from './VerilogClasses';
 
 class VerilogSubCircuit {
@@ -180,7 +175,7 @@ export async function YosysJSON2CV(
     const subScope = root ? parentScope : (await createNewCircuitScope(name, undefined, true, false)) as unknown as GlobalScope;
     const circuitDevices: { [key: string]: VerilogSubCircuit | unknown } = {};
 
-    processSubCircuits(json, subScope, subCircuitScope);
+    await processSubCircuits(json, subScope, subCircuitScope);
     processDevices(json, circuitDevices, subCircuitScope);
     processConnectors(json, circuitDevices);
 
@@ -223,23 +218,30 @@ function processDevice(
     }
 }
 
-function processSubCircuitDevice(device: string, deviceData: any, circuitDevices: { [key: string]: VerilogSubCircuit | unknown }, subCircuitScope: { [key: string]: string }): void {
-    const subCircuitName = deviceData.celltype!;
-    if (subCircuitScope[subCircuitName] === undefined) {
+function processSubCircuitDevice(
+    device: string,
+    deviceData: YosysDevice,
+    circuitDevices: { [key: string]: VerilogSubCircuit | unknown },
+    subCircuitScope: { [key: string]: string }
+): void {
+    const subCircuitName = deviceData.celltype; // This is a string
+    if (!subCircuitName || subCircuitScope[subCircuitName] === undefined) {
         throw new Error(`subCircuitScope[${subCircuitName}] is undefined`);
     }
+
+    // Pass undefined explicitly if required
     circuitDevices[device] = new VerilogSubCircuit(
         new SubCircuit(
-            500,
-            500,
-            null,
-            subCircuitScope[subCircuitName]
+            500, // x
+            500, // y
+            null, // someParam
+            undefined // subCircuitId (explicitly undefined)
         )
     );
 }
 
-function processStandardDevice(device: string, deviceData: any, circuitDevices: { [key: string]: VerilogSubCircuit | unknown }): void {
-    const deviceType = deviceData.type;
+function processStandardDevice(device: string, deviceData: YosysDevice, circuitDevices: { [key: string]: VerilogSubCircuit | unknown }): void {
+    const deviceType = deviceData.type as keyof typeof yosysTypeMap;
     circuitDevices[device] = new yosysTypeMap[deviceType](deviceData);
 }
 
@@ -329,12 +331,8 @@ function setupCodeMirrorEnvironment(): void {
         extraKeys: { 'Ctrl-Space': 'autocomplete' },
     });
 
-    if (!localStorage.getItem('verilog-theme')) {
-        localStorage.setItem('verilog-theme', 'default');
-    } else {
-        const prevtheme = localStorage.getItem('verilog-theme');
-        editor.setOption('theme', prevtheme);
-    }
+    const theme = localStorage.getItem('verilog-theme') || 'default';
+    editor.setOption('theme', theme);
 
     editor.setValue('// Write Some Verilog Code Here!');
     setTimeout(function () {
