@@ -2,7 +2,7 @@
   <div v-if="showDialog" class="custom-shortcut-dialog">
     <div class="dialog-content">
       <h2>Custom Shortcuts</h2>
-      
+
       <div class="key-bindings">
         <div v-for="(binding, key) in keyBindings" :key="key" class="binding-row">
           <label>{{ key }}</label>
@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive, watch, Ref } from 'vue'
+import { defineComponent, ref, reactive, watch, Ref, onUnmounted } from 'vue'
 import { checkRestricted } from './model/utils'
 import { KeyCode } from './model/normalize/normalizer.plugin.js'
 import { KeyBindings } from './keyBinding.types';
@@ -45,23 +45,23 @@ export default defineComponent({
     const editingKey = ref<string | null>(null)
     const pressedKeys = ref<string[]>([])
     const warning = ref<string>('')
-    
+
     const keyBindings = reactive<KeyBindings>(
       +  (() => {
-    try {
-      const stored = localStorage.getItem('userKeys');
-      return stored ? JSON.parse(stored) : {
-        togglePanel: { default: 'Ctrl+P', custom: '' },
-        saveFile: { default: 'Ctrl+S', custom: '' }
-      };
-    } catch (e) {
-      console.error('Failed to parse stored key bindings:', e);
-      return {
-        togglePanel: { default: 'Ctrl+P', custom: '' },
-        saveFile: { default: 'Ctrl+S', custom: '' }
-      };
-    }
-  })()
+        try {
+          const stored = localStorage.getItem('userKeys');
+          return stored ? JSON.parse(stored) : {
+            togglePanel: { default: 'Ctrl+P', custom: '' },
+            saveFile: { default: 'Ctrl+S', custom: '' }
+          };
+        } catch (e) {
+          console.error('Failed to parse stored key bindings:', e);
+          return {
+            togglePanel: { default: 'Ctrl+P', custom: '' },
+            saveFile: { default: 'Ctrl+S', custom: '' }
+          };
+        }
+      })()
     )
 
     watch(keyBindings, (newVal: KeyBindings) => {
@@ -78,7 +78,7 @@ export default defineComponent({
     const handleKeyDown = (e: KeyboardEvent): void => {
       e.preventDefault()
       const key = KeyCode.hot_key(KeyCode.translate_event(e))
-      
+
       if (key === 'Escape') {
         cancelEdit()
         return
@@ -96,7 +96,7 @@ export default defineComponent({
 
       const keys = [...new Set([...pressedKeys.value, key])]
         .sort((a, b) => a.localeCompare(b))
-        
+
       pressedKeys.value = keys
     }
 
@@ -117,6 +117,10 @@ export default defineComponent({
       pressedKeys.value = []
       window.removeEventListener('keydown', handleKeyDown)
     }
+
+    onUnmounted(() => {
+        window.removeEventListener('keydown', handleKeyDown);
+      })
 
     const resetToDefault = (): void => {
       if (confirm('Reset all to default?')) {
