@@ -103,12 +103,10 @@ function capitalize(str: string): string {
     return str.substr(0, 1).toUpperCase() + str.substr(1).toLowerCase();
 }
 
-const is_gecko: boolean = navigator.userAgent.indexOf('Gecko') !== -1;
-const is_ie: boolean = navigator.userAgent.indexOf('MSIE') !== -1;
-const is_windows: boolean = navigator.platform.indexOf('Win') !== -1;
-const is_opera: boolean = (window as any).opera && (window as any).opera.version() < 9.5;
-const is_konqueror: boolean = typeof navigator.vendor === 'string' && navigator.vendor.indexOf('KDE') !== -1;
-const is_icab: boolean = typeof navigator.vendor === 'string' && navigator.vendor.indexOf('iCab') !== -1;
+const is_windows: boolean = navigator.platform.toLowerCase().includes('win');
+const is_opera: boolean = 'OLink' in document.documentElement.style;
+const is_konqueror: boolean = false; 
+const is_icab: boolean = false; 
 
 const GECKO_IE_KEYMAP: { [key: number]: number } = {
     186: 59, // ;: in IE
