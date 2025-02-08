@@ -3,13 +3,8 @@
     <form ref="propertiesContainer">
       <div v-for="(property, key) in customTheme" :key="key" class="property">
         <label :for="String(key)">{{ key }} ({{ property.description }})</label>
-        <input
-          type="color"
-          :name="String(key)"
-          v-model="customTheme[key]?.color"
-          class="customColorInput"
-          @input="updateTheme"
-        />
+        <input type="color" :name="String(key)" v-model="customTheme[key]?.color" class="customColorInput"
+          @input="updateTheme" />
       </div>
       <a id="downloadThemeFile" style="display: none"></a>
     </form>
@@ -18,17 +13,12 @@
     <button @click="importTheme">Import Theme</button>
     <button @click="exportTheme">Export Theme</button>
 
-    <input
-      type="file"
-      id="importThemeFile"
-      style="display: none"
-      @change="handleFileImport"
-    />
+    <input type="file" id="importThemeFile" style="display: none" @change="handleFileImport" />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from "vue";
+import { defineComponent, reactive, ref, onMounted } from "vue";
 import { dots } from "../canvasApi";
 import themeOptions from "./themes";
 import { updateThemeForStyle } from "./themer";
@@ -50,20 +40,38 @@ export default defineComponent({
     const updateTheme = (event: Event) => {
       const target = event.target as HTMLInputElement;
       const key = target.name;
+      if (!customTheme[key]) {
+        console.error(`Theme property ${key} not found`);
+        return;
+      }
       (customTheme[key] as { color: string; description: string; ref: string[] }).color = target.value;
-      customTheme[key].ref.forEach((property: string) => {
-        themeOptions["Custom Theme"][property] = target.value;
-      });
-      updateThemeForStyle("Custom Theme");
-      updateBG();
+      try {
+        customTheme[key].ref.forEach((property: string) => {
+          themeOptions["Custom Theme"][property] = target.value;
+        });
+        updateThemeForStyle("Custom Theme");
+        updateBG();
+      } catch (error) {
+        console.error('Failed to update theme:', error);
+      }
     };
 
     // Apply the custom theme
     const applyTheme = () => {
-      localStorage.setItem("theme", "Custom Theme");
-      localStorage.setItem("Custom Theme", JSON.stringify(themeOptions["Custom Theme"]));
-      updateThemeForStyle("Custom Theme");
-      updateBG();
+      try {
+        if (typeof localStorage === 'undefined') {
+          throw new Error('localStorage is not available');
+        }
+        localStorage.setItem("theme", "Custom Theme");
+        localStorage.setItem("Custom Theme", JSON.stringify(themeOptions["Custom Theme"]));
+        updateThemeForStyle("Custom Theme");
+        updateBG();
+      } catch (error) {
+        console.error('Failed to save theme:', error);
+        // Fallback: Apply theme without saving
+        updateThemeForStyle("Custom Theme");
+        updateBG();
+      }
     };
 
     // Import the custom theme from a JSON file
@@ -89,27 +97,58 @@ export default defineComponent({
     const handleFileImport = (event: Event) => {
       const target = event.target as HTMLInputElement;
       const file = target.files?.[0];
-      if (file && file.name.split(".")[1] === "json") {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const lines = JSON.parse(e.target?.result as string);
+      if (!file) {
+        alert("No file selected!");
+        return;
+      }
+
+      if (!file.name.toLowerCase().endsWith('.json')) {
+        alert("Please select a JSON file!");
+        target.value = "";
+        return;
+      }
+
+      if (file.size > 1024 * 1024) {  // 1MB limit
+        alert("File is too large!");
+        target.value = "";
+        return;
+      }
+
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        try {
+          if (!e.target?.result) {
+            throw new Error("Failed to read file");
+          }
+          const lines = JSON.parse(e.target.result as string);
+          if (!lines || typeof lines !== 'object') {
+            throw new Error("Invalid theme format");
+          }
           Object.assign(customTheme, CreateAbstraction(lines));
           themeOptions["Custom Theme"] = lines;
           updateThemeForStyle("Custom Theme");
           updateBG();
-        };
-        reader.readAsText(file);
-        target.value = ""; // Reset file input
-      } else {
-        alert("File Not Supported!");
-      }
+        } catch (error) {
+          console.error('Failed to parse theme:', error);
+          alert("Invalid theme file!");
+        }
+      };
+
+      reader.onerror = () => {
+        console.error('Failed to read file');
+        alert("Failed to read file!");
+      };
+
+      reader.readAsText(file);
+      target.value = ""; // Reset file input
     };
 
     // Simulate a delay to update the theme on component mount
-    setTimeout(() => {
+    onMounted(() => {
       updateThemeForStyle("Custom Theme");
       updateBG();
-    }, 50);
+    });
 
     return {
       customTheme,
