@@ -214,64 +214,114 @@ function createLogicTable() {
     }
 }
 
+function printBooleanTable() {
+    // Create a new div to hold the table content
+    const tableContent = document.createElement('div')
+    tableContent.innerHTML = tableHeader.value.map((header, index) => `
+        <tr>
+            <th>${header}</th>
+        </tr>
+    `).join('') + 
+    tableBody.value.map(row => `
+        <tr>
+            ${row.map(cell => `<td>${cell}</td>`).join('')}
+        </tr>
+    `).join('')
+
+    const style = `
+        <style>
+            table {font: 40px Calibri;}
+            table, th, td {border: solid 1px #DDD; border-collapse: collapse;}
+            tbody {padding: 2px 3px; text-align: center;}
+        </style>
+    `.replace(/\n/g, '')
+
+    const win = window.open('', '', 'height=700,width=700')
+    if (win) {
+        const htmlBody = `
+            <html>
+                <head>
+                    <title>Boolean Logic Table</title>
+                    ${style}
+                </head>
+                <body>
+                    <center>
+                        <table>
+                            ${tableContent.innerHTML}
+                        </table>
+                    </center>
+                </body>
+            </html>
+        `
+        win.document.write(htmlBody)
+        win.document.close()
+        win.print()
+    }
+}
+
 function createBooleanPrompt(inputList, outputList, scope = globalScope) {
-    inputListNames.value =
-        inputList || prompt('Enter inputs separated by commas').split(',')
-    outputListNames.value =
-        outputList || prompt('Enter outputs separated by commas').split(',')
+    inputListNames.value = inputList || prompt('Enter inputs separated by commas')?.split(',') || []
+    outputListNames.value = outputList || prompt('Enter outputs separated by commas')?.split(',') || []
+    
     if (output.value == null) {
-        for (var i = 0; i < outputListNames.value.length; i++) {
-            outputListNamesInteger.value[i] = 7 * i + 13
-        } // assigning an integer to the value, 7*i + 13 is random
+        outputListNamesInteger.value = outputListNames.value.map((_, i) => 7 * i + 13)
     } else {
         outputListNamesInteger.value = [13]
     }
+
+    // Reset table data
     tableBody.value = []
     tableHeader.value = []
-    let fw = 0
-    if (inputArr.value[4].val == true) {
-        fw = 1
+
+    // Add decimal column if checkbox is checked
+    let columnOffset = 0
+    if (inputArr.value[4].val === true) {
+        columnOffset = 1
         tableHeader.value.push('dec')
     }
-    for (var i = 0; i < inputListNames.value.length; i++) {
-        tableHeader.value.push(inputListNames.value[i])
-    }
+
+    // Add input headers
+    inputListNames.value.forEach(name => {
+        tableHeader.value.push(name)
+    })
+
+    // Add output headers
     if (output.value == null) {
-        for (var i = 0; i < outputListNames.value.length; i++) {
-            tableHeader.value.push(outputListNames.value[i])
-        }
+        outputListNames.value.forEach(name => {
+            tableHeader.value.push(name)
+        })
     } else {
         tableHeader.value.push(outputListNames.value)
     }
 
-    for (var i = 0; i < 1 << inputListNames.value.length; i++) {
-        tableBody.value[i] = new Array(tableHeader.value.length)
-    }
-    for (var i = 0; i < inputListNames.value.length; i++) {
-        for (var j = 0; j < 1 << inputListNames.value.length; j++) {
-            tableBody.value[j][i + fw] = +(
-                (j & (1 << (inputListNames.value.length - i - 1))) !=
-                0
-            )
+    // Generate table body
+    const rowCount = 1 << inputListNames.value.length
+    tableBody.value = Array(rowCount).fill(null).map((_, rowIndex) => {
+        const row = new Array(tableHeader.value.length).fill(null)
+        
+        // Add decimal column if needed
+        if (columnOffset) {
+            row[0] = rowIndex
         }
-    }
-    if (inputArr.value[4].val == true) {
-        for (var j = 0; j < 1 << inputListNames.value.length; j++) {
-            tableBody.value[j][0] = j
+
+        // Add input columns
+        inputListNames.value.forEach((_, colIndex) => {
+            row[colIndex + columnOffset] = +((rowIndex & (1 << (inputListNames.value.length - colIndex - 1))) !== 0)
+        })
+
+        // Add output columns
+        if (output.value == null) {
+            outputListNamesInteger.value.forEach((_, i) => {
+                row[inputListNames.value.length + columnOffset + i] = 'x'
+            })
+        } else {
+            row[inputListNames.value.length + columnOffset] = output.value[rowIndex]
         }
-    }
-    for (var j = 0; j < 1 << inputListNames.value.length; j++) {
-        for (var i = 0; i < outputListNamesInteger.value.length; i++) {
-            if (output.value == null) {
-                tableBody.value[j][inputListNames.value.length + fw + i] = 'x'
-            }
-        }
-        if (output.value != null) {
-            tableBody.value[j][inputListNames.value.length + fw] =
-                output.value[j]
-        }
-    }
-    // display Message Box
+
+        return row
+    })
+
+    // Update UI
     SimulatorState.dialogBox.combinationalanalysis_dialog = true
     buttonArr.value = [
         {
@@ -283,30 +333,6 @@ function createBooleanPrompt(inputList, outputList, scope = globalScope) {
             emitOption: 'printTruthTable',
         },
     ]
-}
-
-function printBooleanTable() {
-    var sTable = $('.messageBox .v-card-text')[0].innerHTML
-
-    var style =
-        `<style>
-        table {font: 40px Calibri;}
-        table, th, td {border: solid 1px #DDD;border-collapse: 0;}
-        tbody {padding: 2px 3px;text-align: center;}
-        </style>`.replace(/\n/g, "")
-    var win = window.open('', '', 'height=700,width=700')
-    var htmlBody = `
-                       <html><head>\
-                       <title>Boolean Logic Table</title>\
-                       ${style}\
-                       </head>\
-                       <body>\
-                       <center>${sTable}</center>\
-                       </body></html>
-                     `
-    win.document.write(htmlBody)
-    win.document.close()
-    win.print()
 }
 </script>
 
