@@ -103,14 +103,27 @@ export function updateThemeForStyle(themeName: string): void {
  * @returns {string} - SVG HTML as a string
  */
 export const getThemeCardSvg = (themeName: string): string => {
+    if (!themeOptions[themeName]) {
+                console.error(`Theme "${themeName}" not found`);
+                return '';
+            }
+
     const colors = themeOptions[themeName];
     const parser = new DOMParser();
     const svgDoc = parser.parseFromString(themeCardSvg, 'image/svg+xml');
+
+    // Check for parsing errors
+    const parserError = svgDoc.querySelector('parsererror');
+    if (parserError) {
+        console.error('Failed to parse SVG:', parserError);
+        return '';
+    }
+    
     const svgElement = svgDoc.documentElement;
 
     // Dynamically set the colors according to the theme
     svgElement.querySelectorAll('.svgText').forEach((el) => {
-        el.setAttribute('fill', colors['--text-panel']);
+        el.setAttribute('fill', colors['--text-panel'] || '#000000');
     });
     svgElement.querySelectorAll('.svgNav').forEach((el) => {
         el.setAttribute('fill', colors['--bg-tab']);
@@ -142,9 +155,18 @@ export const getThemeCardSvg = (themeName: string): string => {
  * @param {boolean} selected - Flag variable for currently selected theme
  * @return {string} - Theme card HTML as a string
  */
+const escapeHtml = (unsafe: string): string => {
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    };
+    
 export const getThemeCard = (themeName: string, selected: boolean): string => {
     if (themeName === 'Custom Theme') return '<div></div>';
-    const themeId = themeName.replace(' ', '');
+    const themeId = escapeHtml(themeName.replace(' ', ''));
     const selectedClass = selected ? 'selected set' : '';
     // themeSel is the hit area
     return `
@@ -152,8 +174,8 @@ export const getThemeCard = (themeName: string, selected: boolean): string => {
               <div class='themeSel'></div>
               <span>${getThemeCardSvg(themeName)}</span>
               <span id='themeNameBox' class='themeNameBox'>
-                <input type='radio' id='${themeId}' value='${themeName}' name='theme'>
-                <label for='${themeId}'>${themeName}</label>
+                <input type='radio' id='${themeId}' value='${escapeHtml(themeName)}' name='theme'>
+                <label for='${themeId}'>${escapeHtml(themeName)}</label>
               </span>
             </div>
             `;
@@ -164,54 +186,7 @@ export const getThemeCard = (themeName: string, selected: boolean): string => {
  */
 export const colorThemes = (): void => {
     const simulatorStore = SimulatorStore();
-    simulatorStore.dialogBox.theme_dialog = true;
-
-    // const selectedTheme = localStorage.getItem('theme');
-    // $('#colorThemesDialog').empty();
-    // const themes = Object.keys(themeOptions);
-    // themes.forEach((theme) => {
-    //     if (theme === selectedTheme) {
-    //         $('#colorThemesDialog').append(getThemeCard(theme, true));
-    //     } else {
-    //         $('#colorThemesDialog').append(getThemeCard(theme, false));
-    //     }
-    // });
-
-    // $('.selected label').trigger('click');
-    // $('#colorThemesDialog').dialog({
-    //     resizable: false,
-    //     close() {
-    //         // Rollback to previous theme
-    //         updateThemeForStyle(localStorage.getItem('theme'));
-    //         updateBG();
-    //     },
-    //     buttons: [
-    //         {
-    //             text: 'Apply Theme',
-    //             click() {
-    //                 // check if any theme is selected or not
-    //                 if ($('.selected label').text()) {
-    //                     localStorage.removeItem('Custom Theme');
-    //                     localStorage.setItem(
-    //                         'theme',
-    //                         $('.selected label').text()
-    //                     );
-    //                 }
-    //                 $('.set').removeClass('set');
-    //                 $('.selected').addClass('set');
-    //                 $(this).dialog('close');
-    //             },
-    //         },
-    //         {
-    //             text: 'Custom Theme',
-    //             click() {
-    //                  CustomColorThemes();
-    //                 $(this).dialog('close');
-    //             },
-    //         },
-    //     ],
-    // });
-
+    simulatorStore.dialogBox.theme_dialog = true;    
     const colorThemesDialog = document.getElementById('colorThemesDialog');
     if (colorThemesDialog) {
         colorThemesDialog.focus();
