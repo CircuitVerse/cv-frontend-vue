@@ -229,8 +229,9 @@ export const colorThemes = (): void => {
         element.addEventListener('mousedown', mousedownHandler as EventListener);
         cleanupListeners.push(() => element.removeEventListener('mousedown', mousedownHandler as EventListener));
     });
-    // Add cleanup method to store
-    simulatorStore.cleanupThemeDialog = () => {
+    
+    // Add cleanup method to store dynamically
+    (simulatorStore as any).cleanupThemeDialog = () => {
         cleanupListeners.forEach(cleanup => cleanup());
     };
 };
