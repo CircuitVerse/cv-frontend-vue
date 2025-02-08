@@ -186,21 +186,28 @@ export const getThemeCard = (themeName: string, selected: boolean): string => {
  */
 export const colorThemes = (): void => {
     const simulatorStore = SimulatorStore();
+    const cleanupListeners: (() => void)[] = [];
+    
     simulatorStore.dialogBox.theme_dialog = true;    
     const colorThemesDialog = document.getElementById('colorThemesDialog');
     if (colorThemesDialog) {
         colorThemesDialog.focus();
     }
-
-    document.querySelector('.ui-dialog[aria-describedby="colorThemesDialog"]')?.addEventListener('click', () => {
+    
+    const dialogClickHandler = () => {
         const colorThemesDialog = document.getElementById('colorThemesDialog');
         if (colorThemesDialog) {
             colorThemesDialog.focus();
         }
-    }); // hack for losing focus
-
+    };
+    
+    const dialog = document.querySelector('.ui-dialog[aria-describedby="colorThemesDialog"]');
+    if (dialog) {
+        dialog.addEventListener('click', dialogClickHandler);
+        cleanupListeners.push(() => dialog.removeEventListener('click', dialogClickHandler));
+    }
     document.querySelectorAll('.themeSel').forEach((element) => {
-        element.addEventListener('mousedown', (e) => {
+        const mousedownHandler = (e: MouseEvent) => {
             e.preventDefault();
             document.querySelectorAll('.selected').forEach((el) => {
                 el.classList.remove('selected');
@@ -218,8 +225,14 @@ export const colorThemes = (): void => {
                 }
                 updateBG();
             }
-        });
+        };
+        element.addEventListener('mousedown', mousedownHandler as EventListener);
+        cleanupListeners.push(() => element.removeEventListener('mousedown', mousedownHandler as EventListener));
     });
+    // Add cleanup method to store
+    simulatorStore.cleanupThemeDialog = () => {
+        cleanupListeners.forEach(cleanup => cleanup());
+    };
 };
 
 export const updateBG = (): void => dots(true, false, true);
