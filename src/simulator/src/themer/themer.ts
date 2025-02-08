@@ -129,26 +129,41 @@ export const getThemeCard = (themeName: string, selected: boolean): string => {
 };
 
 /**
+ * Handles theme selection logic.
+ */
+const handleThemeSelection = (e: MouseEvent): void => {
+    e.preventDefault();
+
+    // Remove 'selected' class from all theme cards
+    document.querySelectorAll('.selected').forEach((el) => el.classList.remove('selected'));
+
+    const themeCard = (e.target as HTMLElement).parentElement;
+    if (!themeCard) return;
+
+    // Add 'selected' class to the clicked theme card
+    themeCard.classList.add('selected');
+
+    // Find the radio button and label within the theme card
+    const radioButton = themeCard.querySelector('input[type=radio]') as HTMLInputElement;
+    const label = themeCard.querySelector('label');
+
+    if (radioButton) {
+        radioButton.click(); // Mark the radio button as selected
+    }
+
+    if (label) {
+        updateThemeForStyle(label.textContent || ''); // Update the theme based on the label text
+    }
+
+    updateBG(); // Update the background
+};
+
+/**
  * Sets up event listeners for theme selection.
  */
 const setupThemeSelectionHandlers = (cleanupListeners: (() => void)[]): void => {
     document.querySelectorAll('.themeSel').forEach((element) => {
-        const mousedownHandler = (e: MouseEvent) => {
-            e.preventDefault();
-            document.querySelectorAll('.selected').forEach((el) => el.classList.remove('selected'));
-
-            const themeCard = (e.target as HTMLElement).parentElement;
-            if (themeCard) {
-                themeCard.classList.add('selected');
-                const radioButton = themeCard.querySelector('input[type=radio]') as HTMLInputElement;
-                if (radioButton) radioButton.click();
-
-                const label = themeCard.querySelector('label');
-                if (label) updateThemeForStyle(label.textContent || '');
-
-                updateBG();
-            }
-        };
+        const mousedownHandler = (e: MouseEvent) => handleThemeSelection(e);
 
         element.addEventListener('mousedown', mousedownHandler as EventListener);
         cleanupListeners.push(() => element.removeEventListener('mousedown', mousedownHandler as EventListener));
