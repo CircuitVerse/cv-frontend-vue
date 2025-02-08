@@ -284,6 +284,8 @@ export function changeCircuitName(name: string, id = globalScope.id) {
     circuit_list.value[index].name = name
 }
 
+type State = 'normal' | 'error'
+
 /**
  * Class representing a Scope
  * @class
@@ -316,6 +318,8 @@ export default class Scope {
     Splitter?: any[];
     SubCircuit?: any[];
     Clock?: any[];
+    states: { NORMAL: State; ERROR: State; };
+    currentState: State;
     constructor(name = 'localScope', id = undefined) {
         this.restrictedCircuitElementsUsed = []
         this.id = id || Math.floor(Math.random() * 100000000000 + 1)
@@ -351,6 +355,15 @@ export default class Scope {
             title_y: 13,
             titleEnabled: true,
         }
+
+        // Defining all the possible states of simulator
+        this.states = {
+            NORMAL: 'normal',
+            ERROR: 'error',
+        };
+
+        // Setting current state of simulator
+        this.currentState = this.states.NORMAL;
     }
 
     isVisible() {

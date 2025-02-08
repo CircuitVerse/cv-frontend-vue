@@ -7,7 +7,8 @@ import { layoutModeGet } from './layoutMode'
 import {
     scheduleUpdate,
     wireToBeCheckedSet,
-    updateCanvasSet
+    updateCanvasSet,
+    errorDetectedSet
 } from './engine'
 import { simulationArea } from './simulationArea'
 import logixFunction from './data'
@@ -292,6 +293,10 @@ export function deleteSelected() {
     updateCanvasSet(true)
     scheduleUpdate()
     updateRestrictedElementsInScope()
+
+    if (globalScope.currentState === globalScope.states.ERROR) {
+        errorDetectedSet(false);
+    }
 }
 
 /**
