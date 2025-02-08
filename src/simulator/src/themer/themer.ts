@@ -1,112 +1,83 @@
 import { dots } from '../canvasApi';
 import importedThemeOptions from './themes';
-import{ ThemeOptions } from './themer.types'
-
-const themeOptions: ThemeOptions = importedThemeOptions;
+import { ThemeOptions } from './themer.types';
 import themeCardSvg from './themeCardSvg';
 import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore';
 
+const themeOptions: ThemeOptions = importedThemeOptions;
+
 /**
- * Extracts canvas theme colors from CSS-Variables and returns a JSON Object
- * @returns {Object.<string, string>}
+ * Helper function to set CSS variable values into a colors object.
+ */
+const setColor = (colors: Record<string, string>, key: string, cssVar: string): void => {
+    colors[key] = getComputedStyle(document.documentElement).getPropertyValue(cssVar);
+};
+
+/**
+ * Extracts canvas theme colors from CSS variables and returns a JSON object.
  */
 const getCanvasColors = (): Record<string, string> => {
     const colors: Record<string, string> = {};
-    colors['hover_select'] = getComputedStyle(
-        document.documentElement
-    ).getPropertyValue('--hover-and-sel');
-    colors['fill'] = getComputedStyle(
-        document.documentElement
-    ).getPropertyValue('--fill');
-    colors['mini_fill'] = getComputedStyle(
-        document.documentElement
-    ).getPropertyValue('--mini-map');
-    colors['mini_stroke'] = getComputedStyle(
-        document.documentElement
-    ).getPropertyValue('--mini-map-stroke');
-    colors['stroke'] = getComputedStyle(
-        document.documentElement
-    ).getPropertyValue('--stroke');
-    colors['stroke_alt'] = getComputedStyle(
-        document.documentElement
-    ).getPropertyValue('--secondary-stroke');
-    colors['input_text'] = getComputedStyle(
-        document.documentElement
-    ).getPropertyValue('--input-text');
-    colors['color_wire_draw'] = getComputedStyle(
-        document.documentElement
-    ).getPropertyValue('--wire-draw');
-    colors['color_wire_con'] = getComputedStyle(
-        document.documentElement
-    ).getPropertyValue('--wire-cnt');
-    colors['color_wire_pow'] = getComputedStyle(
-        document.documentElement
-    ).getPropertyValue('--wire-pow');
-    colors['color_wire_sel'] = getComputedStyle(
-        document.documentElement
-    ).getPropertyValue('--wire-sel');
-    colors['color_wire_lose'] = getComputedStyle(
-        document.documentElement
-    ).getPropertyValue('--wire-lose');
-    colors['color_wire'] = getComputedStyle(
-        document.documentElement
-    ).getPropertyValue('--wire-norm');
-    colors['text'] = getComputedStyle(
-        document.documentElement
-    ).getPropertyValue('--text');
-    colors['node'] = getComputedStyle(
-        document.documentElement
-    ).getPropertyValue('--node');
-    colors['node_norm'] = getComputedStyle(
-        document.documentElement
-    ).getPropertyValue('--node-norm');
-    colors['splitter'] = getComputedStyle(
-        document.documentElement
-    ).getPropertyValue('--splitter');
-    colors['out_rect'] = getComputedStyle(
-        document.documentElement
-    ).getPropertyValue('--output-rect');
-    colors['canvas_stroke'] = getComputedStyle(
-        document.documentElement
-    ).getPropertyValue('--canvas-stroke');
-    colors['canvas_fill'] = getComputedStyle(
-        document.documentElement
-    ).getPropertyValue('--canvas-fill');
+    setColor(colors, 'hover_select', '--hover-and-sel');
+    setColor(colors, 'fill', '--fill');
+    setColor(colors, 'mini_fill', '--mini-map');
+    setColor(colors, 'mini_stroke', '--mini-map-stroke');
+    setColor(colors, 'stroke', '--stroke');
+    setColor(colors, 'stroke_alt', '--secondary-stroke');
+    setColor(colors, 'input_text', '--input-text');
+    setColor(colors, 'color_wire_draw', '--wire-draw');
+    setColor(colors, 'color_wire_con', '--wire-cnt');
+    setColor(colors, 'color_wire_pow', '--wire-pow');
+    setColor(colors, 'color_wire_sel', '--wire-sel');
+    setColor(colors, 'color_wire_lose', '--wire-lose');
+    setColor(colors, 'color_wire', '--wire-norm');
+    setColor(colors, 'text', '--text');
+    setColor(colors, 'node', '--node');
+    setColor(colors, 'node_norm', '--node-norm');
+    setColor(colors, 'splitter', '--splitter');
+    setColor(colors, 'out_rect', '--output-rect');
+    setColor(colors, 'canvas_stroke', '--canvas-stroke');
+    setColor(colors, 'canvas_fill', '--canvas-fill');
     return colors;
 };
 
 /**
- * Common canvas theme color object, used for rendering canvas elements
+ * Common canvas theme color object, used for rendering canvas elements.
  */
 export let colors: Record<string, string> = getCanvasColors();
 
 /**
- * Updates theme
- * 1) Sets CSS Variables for UI elements
- * 2) Sets color variable for Canvas elements
- * @param {string} themeName - Name of the theme to apply
+ * Updates theme by setting CSS variables and updating the colors object.
  */
 export function updateThemeForStyle(themeName: string): void {
     const selectedTheme = themeOptions[themeName];
     if (selectedTheme === undefined) return;
-    const html = document.getElementsByTagName('html')[0];
+
+    const html = document.documentElement;
     Object.keys(selectedTheme).forEach((property) => {
         html.style.setProperty(property, selectedTheme[property]);
     });
+
     colors = getCanvasColors();
 }
 
 /**
- * Theme Preview Card SVG
- * Sets the SVG colors according to theme
- * @param {string} themeName - Name of theme
- * @returns {string} - SVG HTML as a string
+ * Helper function to set attributes for SVG elements.
+ */
+const setAttributes = (element: Element, attributes: Record<string, string>): void => {
+    Object.entries(attributes).forEach(([attr, value]) => {
+        element.setAttribute(attr, value);
+    });
+};
+
+/**
+ * Generates a theme preview card SVG with colors based on the selected theme.
  */
 export const getThemeCardSvg = (themeName: string): string => {
     if (!themeOptions[themeName]) {
-                console.error(`Theme "${themeName}" not found`);
-                return '';
-            }
+        console.error(`Theme "${themeName}" not found`);
+        return '';
+    }
 
     const colors = themeOptions[themeName];
     const parser = new DOMParser();
@@ -118,130 +89,115 @@ export const getThemeCardSvg = (themeName: string): string => {
         console.error('Failed to parse SVG:', parserError);
         return '';
     }
-    
+
     const svgElement = svgDoc.documentElement;
 
-    // Dynamically set the colors according to the theme
-    svgElement.querySelectorAll('.svgText').forEach((el) => {
-        el.setAttribute('fill', colors['--text-panel'] || '#000000');
-    });
-    svgElement.querySelectorAll('.svgNav').forEach((el) => {
-        el.setAttribute('fill', colors['--bg-tab']);
-        el.setAttribute('stroke', colors['--br-primary']);
-    });
-    svgElement.querySelectorAll('.svgGridBG').forEach((el) => {
-        el.setAttribute('fill', colors['--canvas-fill']);
-    });
-    svgElement.querySelectorAll('.svgGrid').forEach((el) => {
-        el.setAttribute('fill', colors['--canvas-stroke']);
-    });
-    svgElement.querySelectorAll('.svgPanel').forEach((el) => {
-        el.setAttribute('fill', colors['--primary']);
-        el.setAttribute('stroke', colors['--br-primary']);
-    });
-    svgElement.querySelectorAll('.svgChev').forEach((el) => {
-        el.setAttribute('stroke', colors['--br-secondary']);
-    });
-    svgElement.querySelectorAll('.svgHeader').forEach((el) => {
-        el.setAttribute('fill', colors['--primary']);
-    });
+    const applyStyles = (selector: string, attributes: Record<string, string>): void => {
+        svgElement.querySelectorAll(selector).forEach((el) => setAttributes(el, attributes));
+    };
+
+    applyStyles('.svgText', { fill: colors['--text-panel'] || '#000000' });
+    applyStyles('.svgNav', { fill: colors['--bg-tab'], stroke: colors['--br-primary'] });
+    applyStyles('.svgGridBG', { fill: colors['--canvas-fill'] });
+    applyStyles('.svgGrid', { fill: colors['--canvas-stroke'] });
+    applyStyles('.svgPanel', { fill: colors['--primary'], stroke: colors['--br-primary'] });
+    applyStyles('.svgChev', { stroke: colors['--br-secondary'] });
+    applyStyles('.svgHeader', { fill: colors['--primary'] });
 
     return svgElement.outerHTML;
 };
 
 /**
- * Generates theme card HTML
- * @param {string} themeName - Name of theme
- * @param {boolean} selected - Flag variable for currently selected theme
- * @return {string} - Theme card HTML as a string
+ * Generates theme card HTML.
  */
-const escapeHtml = (unsafe: string): string => {
-        return unsafe
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-    };
-    
 export const getThemeCard = (themeName: string, selected: boolean): string => {
     if (themeName === 'Custom Theme') return '<div></div>';
-    const themeId = escapeHtml(themeName.replace(' ', ''));
+
+    const themeId = themeName.replace(' ', '');
     const selectedClass = selected ? 'selected set' : '';
-    // themeSel is the hit area
+
     return `
-            <div id="theme" class="theme ${selectedClass}">
-              <div class='themeSel'></div>
-              <span>${getThemeCardSvg(themeName)}</span>
-              <span id='themeNameBox' class='themeNameBox'>
-                <input type='radio' id='${themeId}' value='${escapeHtml(themeName)}' name='theme'>
-                <label for='${themeId}'>${escapeHtml(themeName)}</label>
-              </span>
-            </div>
-            `;
+        <div id="theme" class="theme ${selectedClass}">
+            <div class='themeSel'></div>
+            <span>${getThemeCardSvg(themeName)}</span>
+            <span id='themeNameBox' class='themeNameBox'>
+                <input type='radio' id='${themeId}' value='${themeName}' name='theme'>
+                <label for='${themeId}'>${themeName}</label>
+            </span>
+        </div>
+    `;
 };
 
 /**
- * Create Color Themes Dialog
+ * Sets up event listeners for theme selection.
  */
-export const colorThemes = (): void => {
-    const simulatorStore = SimulatorStore();
-    const cleanupListeners: (() => void)[] = [];
-    
-    simulatorStore.dialogBox.theme_dialog = true;    
-    const colorThemesDialog = document.getElementById('colorThemesDialog');
-    if (colorThemesDialog) {
-        colorThemesDialog.focus();
-    }
-    
-    const dialogClickHandler = () => {
-        const colorThemesDialog = document.getElementById('colorThemesDialog');
-        if (colorThemesDialog) {
-            colorThemesDialog.focus();
-        }
-    };
-    
-    const dialog = document.querySelector('.ui-dialog[aria-describedby="colorThemesDialog"]');
-    if (dialog) {
-        dialog.addEventListener('click', dialogClickHandler);
-        cleanupListeners.push(() => dialog.removeEventListener('click', dialogClickHandler));
-    }
+const setupThemeSelectionHandlers = (cleanupListeners: (() => void)[]): void => {
     document.querySelectorAll('.themeSel').forEach((element) => {
         const mousedownHandler = (e: MouseEvent) => {
             e.preventDefault();
-            document.querySelectorAll('.selected').forEach((el) => {
-                el.classList.remove('selected');
-            });
+            document.querySelectorAll('.selected').forEach((el) => el.classList.remove('selected'));
+
             const themeCard = (e.target as HTMLElement).parentElement;
             if (themeCard) {
                 themeCard.classList.add('selected');
                 const radioButton = themeCard.querySelector('input[type=radio]') as HTMLInputElement;
-                if (radioButton) {
-                    radioButton.click(); // Mark as selected
-                }
+                if (radioButton) radioButton.click();
+
                 const label = themeCard.querySelector('label');
-                if (label) {
-                    updateThemeForStyle(label.textContent || ''); // Extract theme name and set
-                }
+                if (label) updateThemeForStyle(label.textContent || '');
+
                 updateBG();
             }
         };
+
         element.addEventListener('mousedown', mousedownHandler as EventListener);
         cleanupListeners.push(() => element.removeEventListener('mousedown', mousedownHandler as EventListener));
     });
-    
-    // Add cleanup method to store dynamically
+};
+
+/**
+ * Initializes the color themes dialog.
+ */
+export const colorThemes = (): void => {
+    const simulatorStore = SimulatorStore();
+    const cleanupListeners: (() => void)[] = [];
+
+    simulatorStore.dialogBox.theme_dialog = true;
+
+    const dialog = document.querySelector('.ui-dialog[aria-describedby="colorThemesDialog"]');
+    if (dialog) {
+        const dialogClickHandler = () => {
+            const colorThemesDialog = document.getElementById('colorThemesDialog');
+            if (colorThemesDialog) colorThemesDialog.focus();
+        };
+
+        dialog.addEventListener('click', dialogClickHandler);
+        cleanupListeners.push(() => dialog.removeEventListener('click', dialogClickHandler));
+    }
+
+    setupThemeSelectionHandlers(cleanupListeners);
+
+    // Add cleanup method to store
     (simulatorStore as any).cleanupThemeDialog = () => {
         cleanupListeners.forEach(cleanup => cleanup());
     };
 };
 
+/**
+ * Updates the background of the canvas.
+ */
 export const updateBG = (): void => dots(true, false, true);
 
-// Initialize theme on load
-(() => {
+/**
+ * Initializes the theme on load.
+ */
+const initializeTheme = (): void => {
+    const theme = localStorage.getItem('theme') || 'Default Theme';
     if (!localStorage.getItem('theme')) {
-        localStorage.setItem('theme', 'Default Theme');
+        localStorage.setItem('theme', theme);
     }
-    updateThemeForStyle(localStorage.getItem('theme') || 'Default Theme');
-})();
+    updateThemeForStyle(theme);
+};
+
+// Initialize theme on load
+initializeTheme();
