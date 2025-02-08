@@ -1,15 +1,3 @@
-export interface VerilogMetadata {
-    code: string;
-    subCircuitScopeIds: string[];
-}
-
-export interface GlobalScope {
-    verilogMetadata: VerilogMetadata;
-    id: string;
-    root: CircuitElement;
-    initialize(): void;
-}
-
 export interface CircuitElement {
     inputNodes: Node[];
     outputNodes: Node[];
@@ -50,3 +38,20 @@ export interface Node {
     label?: string;
     connect(node: Node): void;
 }
+
+export interface VerilogMetadata {
+    code: string;
+    subCircuitScopeIds: string[];
+}
+
+export interface GlobalScope {
+    id: string;
+    verilogMetadata: VerilogMetadata;
+    root: CircuitElement;
+    initialize: () => void;
+}
+
+export interface ScopeList {
+    [key: string]: GlobalScope;
+}
+

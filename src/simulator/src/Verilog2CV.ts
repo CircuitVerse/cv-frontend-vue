@@ -34,11 +34,19 @@ import { showProperties } from './ux';
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore';
 import { toRefs } from 'vue';
 
-import { GlobalScope, YosysDevice, CircuitElement, YosysJSON, SimulatorMobileStore, Node } from './types/verilog.types';
+import { CircuitElement,YosysDevice,YosysJSON,SimulatorMobileStore,Node,GlobalScope,ScopeList } from './types/verilog.types';
 
-declare var globalScope: GlobalScope;
-declare var embed: boolean;
-declare var scopeList: { [key: string]: unknown };
+const globalScope: GlobalScope = {
+    id: 'global',
+    verilogMetadata: {
+        code: '',
+        subCircuitScopeIds: [],
+    },
+    root: {} as CircuitElement,
+    initialize: () => {},
+};
+const embed: boolean = false;
+const scopeList: ScopeList = {};
 
 let editor: CodeMirror.Editor;
 let verilogMode: boolean = false;
