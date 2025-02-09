@@ -142,8 +142,19 @@ function handleButtonClick(selectedOption: string, circuitItem: any) {
 }
 
 function createLogicTable() {
-    const inputList = stripTags(inputArr.value[0].val).split(',').map((x) => x.trim()).filter(Boolean);
-    const outputList = stripTags(inputArr.value[1].val).split(',').map((x) => x.trim()).filter(Boolean);
+    // Validate input format
+    const inputValue = stripTags(inputArr.value[0].val);
+    const outputValue = stripTags(inputArr.value[1].val);
+    if (!/^[A-Za-z]+(,[A-Za-z]+)*$/.test(inputValue) && inputValue !== '') {
+        showAlertMessage('error', 'Invalid input format. Use comma-separated letters.');
+        return;
+    }
+    if (!/^[A-Za-z]+(,[A-Za-z]+)*$/.test(outputValue) && outputValue !== '') {
+        showAlertMessage('error', 'Invalid output format. Use comma-separated letters.');
+        return;
+    }
+    const inputList = inputValue.split(',').map((x) => x.trim()).filter(Boolean);
+    const outputList = outputValue.split(',').map((x) => x.trim()).filter(Boolean);
     let booleanExpression = inputArr.value[3].val.replace(/ /g, '').toUpperCase();
 
     const booleanInputVariables = extractBooleanInputVariables(booleanExpression);
@@ -166,6 +177,13 @@ function createLogicTable() {
 }
 
 function extractBooleanInputVariables(expression: string): string[] {
+    const validOperators = ['(', ')', '+', '*', '!'];
+    for (const char of expression) {
+        if (!/[A-Z]/.test(char) && !validOperators.includes(char)) {
+            showAlertMessage('error', `Invalid character in expression: ${char}`);
+            return [];
+        }
+    }
     const variables = new Set<string>();
     for (const char of expression) {
         if (/[A-Z]/.test(char)) {
@@ -250,7 +268,11 @@ function printBooleanTable() {
     `.replace(/\n/g, '');
 
     const win = window.open('', '', 'height=700,width=700');
-    if (win) {
+    if (!win) {
+        showAlertMessage('error', 'Popup was blocked. Please allow popups for this site.');
+        return;
+    }
+    try {
         win.document.write(`
             <html>
                 <head>
@@ -264,6 +286,9 @@ function printBooleanTable() {
         `);
         win.document.close();
         win.print();
+    } catch (error) {
+        showAlertMessage('error', 'Failed to print table. Please try again.');
+        win.close();
     }
 }
 </script>
