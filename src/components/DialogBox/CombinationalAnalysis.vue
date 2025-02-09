@@ -9,264 +9,221 @@
         :table-header="tableHeader"
         :table-body="tableBody"
         message-text="Boolean Logic Table"
-        @button-click="
-            (selectedOption, circuitItem, circuitNameVal) =>
-                dialogBoxConformation(selectedOption)
-        "
+        @button-click="handleButtonClick"
     />
-    <v-alert v-if="showAlert" :type="alertType" class="alertStyle">{{
-        alertMessage
-    }}</v-alert>
+    <v-alert v-if="showAlert" :type="alertType" class="alertStyle">
+        {{ alertMessage }}
+    </v-alert>
 </template>
 
 <script lang="ts" setup>
-import { stripTags } from '#/simulator/src/utils'
-import { useState } from '#/store/SimulatorStore/state'
-import messageBox from '@/MessageBox/messageBox.vue'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted } from 'vue';
+import { stripTags } from '#/simulator/src/utils';
+import { useState } from '#/store/SimulatorStore/state';
+import messageBox from '@/MessageBox/messageBox.vue';
+import { GenerateCircuit, solveBooleanFunction } from '#/simulator/src/combinationalAnalysis';
 
-/* imports from combinationalAnalysis.js */
-import { GenerateCircuit, solveBooleanFunction } from '#/simulator/src/combinationalAnalysis'
+const SimulatorState = useState();
+const inputArr = ref(createInitialInputArr());
+const buttonArr = ref(createInitialButtonArr());
+const showAlert = ref(false);
+const alertType = ref('error');
+const alertMessage = ref('');
+const outputListNamesInteger = ref<number[]>([]);
+const inputListNames = ref<string[]>([]);
+const outputListNames = ref<string[]>([]);
+const tableHeader = ref<string[]>([]);
+const tableBody = ref<Array<Array<string | number>>>([]);
+const output = ref<number[]>([]);
 
-const SimulatorState = useState()
 onMounted(() => {
-    SimulatorState.dialogBox.combinationalanalysis_dialog = false
-})
-const inputArr = ref([{}])
-const buttonArr = ref([{}])
-const showAlert = ref(false)
-const alertType = ref('error')
-const alertMessage = ref('')
-const outputListNamesInteger = ref([])
-const inputListNames = ref([])
-const outputListNames = ref([])
-const tableHeader = ref([])
-const tableBody = ref([])
-const output = ref([])
+    SimulatorState.dialogBox.combinationalanalysis_dialog = false;
+});
 
-inputArr.value = [
-    {
-        text: 'Enter Input names separated by commas: ',
-        val: '',
-        placeholder: 'eg. In A, In B',
-        id: 'inputNameList',
-        style: '',
-        class: 'cAinput',
-        type: 'text',
-    },
-    {
-        text: 'Enter Output names separated by commas: ',
-        val: '',
-        placeholder: 'eg. Out X, Out Y',
-        id: 'outputNameList',
-        style: '',
-        class: 'cAinput',
-        type: 'text',
-    },
-    {
-        text: 'OR',
-        placeholder: '',
-        id: '',
-        style: 'text-align:center;',
-        class: 'cAinput',
-        type: 'nil',
-    },
-    {
-        text: 'Enter Boolean Function:',
-        val: '',
-        placeholder: 'Example: (AB)',
-        id: 'booleanExpression',
-        style: '',
-        class: 'cAinput',
-        type: 'text',
-    },
-    {
-        text: 'I need a decimal column.',
-        val: '',
-        placeholder: '',
-        id: 'decimalColumnBox',
-        style: '',
-        class: 'cAinput',
-        type: 'checkbox',
-    },
-]
-
-const buttonArray = [
-    {
-        text: 'Next',
-        emitOption: 'showLogicTable',
-    },
-    {
-        text: 'Close',
-        emitOption: 'closeMessageBox',
-    },
-]
-buttonArr.value = buttonArray
-
-function clearData() {
-    inputArr.value[0].val = ''
-    inputArr.value[1].val = ''
-    inputArr.value[3].val = ''
-    inputArr.value[4].val = ''
-    buttonArr.value = buttonArray
-    outputListNamesInteger.value = []
-    inputListNames.value = []
-    outputListNames.value = []
-    tableHeader.value = []
-    tableBody.value = []
-    output.value = []
+function createInitialInputArr() {
+    return [
+        {
+            text: 'Enter Input names separated by commas: ',
+            val: '',
+            placeholder: 'eg. In A, In B',
+            id: 'inputNameList',
+            style: '',
+            class: 'cAinput',
+            type: 'text',
+        },
+        {
+            text: 'Enter Output names separated by commas: ',
+            val: '',
+            placeholder: 'eg. Out X, Out Y',
+            id: 'outputNameList',
+            style: '',
+            class: 'cAinput',
+            type: 'text',
+        },
+        {
+            text: 'OR',
+            val: '',
+            placeholder: '',
+            id: '',
+            style: 'text-align:center;',
+            class: 'cAinput',
+            type: 'nil',
+        },
+        {
+            text: 'Enter Boolean Function:',
+            val: '',
+            placeholder: 'Example: (AB)',
+            id: 'booleanExpression',
+            style: '',
+            class: 'cAinput',
+            type: 'text',
+        },
+        {
+            text: 'I need a decimal column.',
+            val: '',
+            placeholder: '',
+            id: 'decimalColumnBox',
+            style: '',
+            class: 'cAinput',
+            type: 'checkbox',
+        },
+    ];
 }
 
-function dialogBoxConformation(selectedOption, circuitItem) {
-    if (selectedOption == 'showLogicTable') {
-        createLogicTable()
-    }
-    if (selectedOption == 'closeMessageBox') {
-        for (var ind = 0; ind < inputArr.value.length; ind++) {
-            if (inputArr.value[ind].type == 'text') {
-                inputArr.value[ind].val = ''
-            }
-            if (inputArr.value[ind].type == 'checkbox') {
-                inputArr.value[ind].val = false
-            }
-        }
-        clearData()
-        SimulatorState.dialogBox.combinationalanalysis_dialog = false
-    }
-    if (selectedOption == 'generateCircuit') {
-        SimulatorState.dialogBox.combinationalanalysis_dialog = false
-        GenerateCircuit()
-        clearData()
-        SimulatorState.dialogBox.combinationalanalysis_dialog = false
-    }
-    if (selectedOption == 'printTruthTable') {
-        printBooleanTable()
-        clearData()
-        SimulatorState.dialogBox.combinationalanalysis_dialog = false
+function createInitialButtonArr() {
+    return [
+        {
+            text: 'Next',
+            emitOption: 'showLogicTable',
+        },
+        {
+            text: 'Close',
+            emitOption: 'closeMessageBox',
+        },
+    ];
+}
+
+function clearData() {
+    inputArr.value.forEach((input) => {
+        if (input.type === 'text') input.val = '';
+        if (input.type === 'checkbox') input.val = '';
+    });
+    buttonArr.value = createInitialButtonArr();
+    outputListNamesInteger.value = [];
+    inputListNames.value = [];
+    outputListNames.value = [];
+    tableHeader.value = [];
+    tableBody.value = [];
+    output.value = [];
+}
+
+function handleButtonClick(selectedOption: string, circuitItem: any) {
+    switch (selectedOption) {
+        case 'showLogicTable':
+            createLogicTable();
+            break;
+        case 'closeMessageBox':
+            clearData();
+            SimulatorState.dialogBox.combinationalanalysis_dialog = false;
+            break;
+        case 'generateCircuit':
+            GenerateCircuit();
+            clearData();
+            SimulatorState.dialogBox.combinationalanalysis_dialog = false;
+            break;
+        case 'printTruthTable':
+            printBooleanTable();
+            clearData();
+            SimulatorState.dialogBox.combinationalanalysis_dialog = false;
+            break;
+        default:
+            console.warn('Unknown button option:', selectedOption);
     }
 }
 
 function createLogicTable() {
-    let inputList = stripTags(inputArr.value[0].val).split(',')
-    let outputList = stripTags(inputArr.value[1].val).split(',')
-    let booleanExpression = inputArr.value[3].val
+    const inputList = stripTags(inputArr.value[0].val).split(',').map((x) => x.trim()).filter(Boolean);
+    const outputList = stripTags(inputArr.value[1].val).split(',').map((x) => x.trim()).filter(Boolean);
+    let booleanExpression = inputArr.value[3].val.replace(/ /g, '').toUpperCase();
 
-    inputList = inputList.map((x) => x.trim())
-    inputList = inputList.filter((e) => e)
-    outputList = outputList.map((x) => x.trim())
-    outputList = outputList.filter((e) => e)
-    booleanExpression = booleanExpression.replace(/ /g, '')
-    booleanExpression = booleanExpression.toUpperCase()
+    const booleanInputVariables = extractBooleanInputVariables(booleanExpression);
 
-    var booleanInputVariables = []
-    for (var i = 0; i < booleanExpression.length; i++) {
-        if (booleanExpression[i] >= 'A' && booleanExpression[i] <= 'Z') {
-            if (booleanExpression.indexOf(booleanExpression[i]) == i) {
-                booleanInputVariables.push(booleanExpression[i])
-            }
+    if (inputList.length > 0 && outputList.length > 0 && booleanInputVariables.length === 0) {
+        SimulatorState.dialogBox.combinationalanalysis_dialog = false;
+        createBooleanPrompt(inputList, outputList);
+    } else if (booleanInputVariables.length > 0 && inputList.length === 0 && outputList.length === 0) {
+        SimulatorState.dialogBox.combinationalanalysis_dialog = false;
+        solveBooleanFunction(booleanInputVariables, booleanExpression);
+        output.value = output.value || [];
+        if (output.value.length > 0) {
+            createBooleanPrompt(booleanInputVariables, booleanInputVariables);
         }
-    }
-    booleanInputVariables.sort()
-
-    if (
-        inputList.length > 0 &&
-        outputList.length > 0 &&
-        booleanInputVariables.length == 0
-    ) {
-        SimulatorState.dialogBox.combinationalanalysis_dialog = false
-        createBooleanPrompt(inputList, outputList, null)
-    } else if (
-        booleanInputVariables.length > 0 &&
-        inputList.length == 0 &&
-        outputList.length == 0
-    ) {
-        SimulatorState.dialogBox.combinationalanalysis_dialog = false
-        output.value = []
-        solveBooleanFunction(booleanInputVariables, booleanExpression)
-        if (output.value != null) {
-            createBooleanPrompt(booleanInputVariables, booleanExpression)
-        }
-    } else if (
-        (inputList.length == 0 || outputList.length == 0) &&
-        booleanInputVariables == 0
-    ) {
-        showAlert.value = true
-        alertType.value = 'info'
-        alertMessage.value =
-            'Enter Input / Output Variable(s) OR Boolean Function!'
-        setTimeout(() => {
-            showAlert.value = false
-        }, 2000)
+    } else if ((inputList.length === 0 || outputList.length === 0) && booleanInputVariables.length === 0) {
+        showAlertMessage('info', 'Enter Input / Output Variable(s) OR Boolean Function!');
     } else {
-        showAlert.value = true
-        alertType.value = 'warning'
-        alertMessage.value =
-            'Use Either Combinational Analysis Or Boolean Function To Generate Circuit!'
-        setTimeout(() => {
-            showAlert.value = false
-        }, 2000)
+        showAlertMessage('warning', 'Use Either Combinational Analysis Or Boolean Function To Generate Circuit!');
     }
 }
 
-function createBooleanPrompt(inputList, outputList, scope = globalScope) {
-    inputListNames.value =
-        inputList || prompt('Enter inputs separated by commas').split(',')
-    outputListNames.value =
-        outputList || prompt('Enter outputs separated by commas').split(',')
-    if (output.value == null) {
-        for (var i = 0; i < outputListNames.value.length; i++) {
-            outputListNamesInteger.value[i] = 7 * i + 13
-        } // assigning an integer to the value, 7*i + 13 is random
-    } else {
-        outputListNamesInteger.value = [13]
-    }
-    tableBody.value = []
-    tableHeader.value = []
-    let fw = 0
-    if (inputArr.value[4].val == true) {
-        fw = 1
-        tableHeader.value.push('dec')
-    }
-    for (var i = 0; i < inputListNames.value.length; i++) {
-        tableHeader.value.push(inputListNames.value[i])
-    }
-    if (output.value == null) {
-        for (var i = 0; i < outputListNames.value.length; i++) {
-            tableHeader.value.push(outputListNames.value[i])
+function extractBooleanInputVariables(expression: string): string[] {
+    const variables = new Set<string>();
+    for (const char of expression) {
+        if (/[A-Z]/.test(char)) {
+            variables.add(char);
         }
-    } else {
-        tableHeader.value.push(outputListNames.value)
+    }
+    return Array.from(variables).sort();
+}
+
+function showAlertMessage(type: string, message: string) {
+    showAlert.value = true;
+    alertType.value = type;
+    alertMessage.value = message;
+    setTimeout(() => {
+        showAlert.value = false;
+    }, 2000);
+}
+
+function createBooleanPrompt(inputList: string[], outputList: string[]) {
+    inputListNames.value = inputList;
+    outputListNames.value = outputList;
+    outputListNamesInteger.value = outputList.map((_, i) => 7 * i + 13); // Assigning random integers
+
+    tableBody.value = [];
+    tableHeader.value = [];
+
+    const includeDecimalColumn = inputArr.value[4].val === 'true';
+    if (includeDecimalColumn) {
+        tableHeader.value.push('dec');
     }
 
-    for (var i = 0; i < 1 << inputListNames.value.length; i++) {
-        tableBody.value[i] = new Array(tableHeader.value.length)
+    tableHeader.value.push(...inputListNames.value);
+    tableHeader.value.push(...outputListNames.value);
+
+    const rowCount = 1 << inputListNames.value.length;
+    for (let i = 0; i < rowCount; i++) {
+        tableBody.value[i] = new Array(tableHeader.value.length);
     }
-    for (var i = 0; i < inputListNames.value.length; i++) {
-        for (var j = 0; j < 1 << inputListNames.value.length; j++) {
-            tableBody.value[j][i + fw] = +(
-                (j & (1 << (inputListNames.value.length - i - 1))) !=
-                0
-            )
+
+    for (let i = 0; i < inputListNames.value.length; i++) {
+        for (let j = 0; j < rowCount; j++) {
+            tableBody.value[j][i + (includeDecimalColumn ? 1 : 0)] = +((j & (1 << (inputListNames.value.length - i - 1))) !== 0);
         }
     }
-    if (inputArr.value[4].val == true) {
-        for (var j = 0; j < 1 << inputListNames.value.length; j++) {
-            tableBody.value[j][0] = j
+
+    if (includeDecimalColumn) {
+        for (let j = 0; j < rowCount; j++) {
+            tableBody.value[j][0] = j;
         }
     }
-    for (var j = 0; j < 1 << inputListNames.value.length; j++) {
-        for (var i = 0; i < outputListNamesInteger.value.length; i++) {
-            if (output.value == null) {
-                tableBody.value[j][inputListNames.value.length + fw + i] = 'x'
-            }
-        }
-        if (output.value != null) {
-            tableBody.value[j][inputListNames.value.length + fw] =
-                output.value[j]
+
+    for (let j = 0; j < rowCount; j++) {
+        for (let i = 0; i < outputListNamesInteger.value.length; i++) {
+            tableBody.value[j][inputListNames.value.length + (includeDecimalColumn ? 1 : 0) + i] = output.value?.[j] ?? 'x';
         }
     }
-    // display Message Box
-    SimulatorState.dialogBox.combinationalanalysis_dialog = true
+
+    SimulatorState.dialogBox.combinationalanalysis_dialog = true;
     buttonArr.value = [
         {
             text: 'Generate Circuit',
@@ -276,41 +233,44 @@ function createBooleanPrompt(inputList, outputList, scope = globalScope) {
             text: 'Print Truth Table',
             emitOption: 'printTruthTable',
         },
-    ]
+    ];
 }
 
 function printBooleanTable() {
-    const messageBoxElement = document.querySelector('.messageBox .v-card-text')
-    if (!messageBoxElement) return
+    const messageBoxElement = document.querySelector('.messageBox .v-card-text');
+    if (!messageBoxElement) return;
 
-    const sTable = messageBoxElement.innerHTML
+    const sTable = messageBoxElement.innerHTML;
+    const style = `
+        <style>
+            table { font: 40px Calibri; }
+            table, th, td { border: solid 1px #DDD; border-collapse: 0; }
+            tbody { padding: 2px 3px; text-align: center; }
+        </style>
+    `.replace(/\n/g, '');
 
-    const style =
-        `<style>
-        table {font: 40px Calibri;}
-        table, th, td {border: solid 1px #DDD;border-collapse: 0;}
-        tbody {padding: 2px 3px;text-align: center;}
-        </style>`.replace(/\n/g, "")
-    const win = window.open('', '', 'height=700,width=700')
-    const htmlBody = `
-                       <html><head>\
-                       <title>Boolean Logic Table</title>\
-                       ${style}\
-                       </head>\
-                       <body>\
-                       <center>${sTable}</center>\
-                       </body></html>
-                     `
-    win.document.write(htmlBody)
-    win.document.close()
-    win.print()
+    const win = window.open('', '', 'height=700,width=700');
+    if (win) {
+        win.document.write(`
+            <html>
+                <head>
+                    <title>Boolean Logic Table</title>
+                    ${style}
+                </head>
+                <body>
+                    <center>${sTable}</center>
+                </body>
+            </html>
+        `);
+        win.document.close();
+        win.print();
+    }
 }
 </script>
 
 <style scoped>
 .alertStyle {
     position: absolute;
-    /* top: 50%; */
     top: 100px;
     left: 50%;
     transform: translate(-50%, -50%);
