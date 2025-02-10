@@ -1,60 +1,6 @@
 /* eslint-disable import/no-cycle */
 import { simulationArea } from './simulationArea';
 
-// Define interfaces for the scope and its properties
-interface LayoutProperties {
-    x: number;
-    y: number;
-}
-
-interface InputOutputElement {
-    layoutProperties: LayoutProperties;
-}
-
-interface Scope {
-    Input: InputOutputElement[];
-    Output: InputOutputElement[];
-    layout: {
-        height: number;
-    };
-}
-
-interface GlobalScope extends Scope {
-    // Add any additional properties or methods specific to GlobalScope here
-}
-
-interface Module {
-    new (
-        x: number,
-        y: number,
-        scope: GlobalScope,
-        direction: string,
-        size: number,
-        bitWidth: number
-    ): ModuleInstance;
-}
-
-interface ModuleInstance {
-    delete(): void;
-}
-
-// Define the type for the modules object
-interface Modules {
-    [key: string]: Module;
-}
-
-// Define the type for the changeInputSize function's context
-interface ChangeInputSizeContext {
-    inputSize: number;
-    objectType: string;
-    x: number;
-    y: number;
-    scope: GlobalScope;
-    direction: string;
-    bitWidth: number;
-    delete(): void;
-}
-
 /**
  * Helper function to mark occupied Y positions in the `done` object.
  */
