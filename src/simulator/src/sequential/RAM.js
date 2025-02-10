@@ -182,6 +182,8 @@ export default class RAM extends CircuitElement {
 
         this.dataOut.value = this.data[this.address.value] || 0
         simulationArea.simulationQueue.add(this.dataOut)
+
+        this.setOutputsUpstream(true);
     }
 
     customDraw() {
@@ -325,9 +327,9 @@ export default class RAM extends CircuitElement {
         input dmp;
         input rst;
         reg [WIDTH-1:0] mem [2**ADDR-1:0];
-    
+
         assign dout = mem[addr];
-    
+
         always @ (*) begin
         if (!we)
             mem[addr] = din;
