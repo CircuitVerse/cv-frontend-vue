@@ -1,42 +1,112 @@
 /* eslint-disable import/no-cycle */
 import { simulationArea } from './simulationArea';
 
-export function getNextPosition(x: number = 0, scope: GlobalScope): number {
-    let possibleY: number = 20;
-    const done: { [key: number]: number } = {};
+// Define interfaces for the scope and its properties
+interface LayoutProperties {
+    x: number;
+    y: number;
+}
 
-    for (let i = 0; i < scope.Input.length - 1; i++) {
-        if (scope.Input[i].layoutProperties.x === x) {
-            done[scope.Input[i].layoutProperties.y] = 1;
+interface InputOutputElement {
+    layoutProperties: LayoutProperties;
+}
+
+interface Scope {
+    Input: InputOutputElement[];
+    Output: InputOutputElement[];
+    layout: {
+        height: number;
+    };
+}
+
+interface GlobalScope extends Scope {
+    // Add any additional properties or methods specific to GlobalScope here
+}
+
+interface Module {
+    new (
+        x: number,
+        y: number,
+        scope: GlobalScope,
+        direction: string,
+        size: number,
+        bitWidth: number
+    ): ModuleInstance;
+}
+
+interface ModuleInstance {
+    delete(): void;
+}
+
+// Define the type for the modules object
+interface Modules {
+    [key: string]: Module;
+}
+
+// Define the type for the changeInputSize function's context
+interface ChangeInputSizeContext {
+    inputSize: number;
+    objectType: string;
+    x: number;
+    y: number;
+    scope: GlobalScope;
+    direction: string;
+    bitWidth: number;
+    delete(): void;
+}
+
+/**
+ * Helper function to mark occupied Y positions in the `done` object.
+ */
+function markOccupiedYPositions(elements: InputOutputElement[], x: number, done: { [key: number]: number }): void {
+    for (const element of elements) {
+        if (element.layoutProperties.x === x) {
+            done[element.layoutProperties.y] = 1;
         }
     }
+}
 
-    for (let i = 0; i < scope.Output.length; i++) {
-        if (scope.Output[i].layoutProperties.x === x) {
-            done[scope.Output[i].layoutProperties.y] = 1;
-        }
-    }
-
+/**
+ * Helper function to find the next available Y position.
+ */
+function findNextAvailableY(done: { [key: number]: number }, startY: number): number {
+    let possibleY = startY;
     while (done[possibleY] || done[possibleY + 10] || done[possibleY - 10]) {
         possibleY += 10;
     }
+    return possibleY;
+}
 
-    const height: number = possibleY + 20;
+/**
+ * Helper function to update element positions when the layout height changes.
+ */
+function updateElementPositions(elements: InputOutputElement[], oldHeight: number, newHeight: number): void {
+    for (const element of elements) {
+        if (element.layoutProperties.y === oldHeight) {
+            element.layoutProperties.y = newHeight;
+        }
+    }
+}
+
+export function getNextPosition(x: number = 0, scope: GlobalScope): number {
+    const done: { [key: number]: number } = {};
+
+    // Mark occupied Y positions for Input and Output elements
+    markOccupiedYPositions(scope.Input, x, done);
+    markOccupiedYPositions(scope.Output, x, done);
+
+    // Find the next available Y position
+    const possibleY = findNextAvailableY(done, 20);
+
+    // Calculate the new height and update the layout if necessary
+    const height = possibleY + 20;
     if (height > scope.layout.height) {
-        const oldHeight: number = scope.layout.height;
+        const oldHeight = scope.layout.height;
         scope.layout.height = height;
 
-        for (let i = 0; i < scope.Input.length; i++) {
-            if (scope.Input[i].layoutProperties.y === oldHeight) {
-                scope.Input[i].layoutProperties.y = scope.layout.height;
-            }
-        }
-
-        for (let i = 0; i < scope.Output.length; i++) {
-            if (scope.Output[i].layoutProperties.y === oldHeight) {
-                scope.Output[i].layoutProperties.y = scope.layout.height;
-            }
-        }
+        // Update positions of Input and Output elements
+        updateElementPositions(scope.Input, oldHeight, scope.layout.height);
+        updateElementPositions(scope.Output, oldHeight, scope.layout.height);
     }
 
     return possibleY;
