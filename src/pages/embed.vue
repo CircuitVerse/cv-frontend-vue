@@ -48,7 +48,7 @@
                 ></canvas>
             </div>
             <div id="elementName"></div>
-            <div id="zoom-in-out-embed" class="zoom-wrapper">
+            <div v-if="hasZoomInOut" id="zoom-in-out-embed" class="zoom-wrapper">
                 <div class="noSelect">
                     <button
                         id="zoom-in-embed"
@@ -85,13 +85,14 @@
             >
                 <div id="clockProperty">
                     <input
+                        v-if="hasFullscreen"
                         type="button"
                         class="objectPropertyAttributeEmbed custom-btn--secondary embed-fullscreen-btn"
                         name="toggleFullScreen"
                         value="Full Screen"
                         @click="toggleFullScreen"
                     />
-                    <div>
+                    <div v-if="hasClockTime">
                         Time:
                         <input
                             v-model="timePeriod"
@@ -103,7 +104,7 @@
                             name="changeClockTime"
                         />
                     </div>
-                    <div>
+                    <div v-if="hasClockTime">
                         Clock:
                         <label class="switch">
                             <input
@@ -134,7 +135,7 @@
             </div>
 
             <!-- <% if @external_embed  == true %> -->
-            <div id="bottom_right_circuit_heading">
+            <div v-if="hasDisplayTitle" id="bottom_right_circuit_heading">
                 project Name
                 <!-- <h5><%= @project.name %></h5> -->
             </div>
@@ -163,7 +164,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onBeforeMount, onMounted, watch } from 'vue'
+import { ref, onBeforeMount, onMounted, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { simulationArea, changeClockTime } from '#/simulator/src/simulationArea'
 import {
@@ -178,6 +179,8 @@ import { ZoomIn, ZoomOut } from '#/simulator/src/listeners'
 import { setup } from '#/simulator/src/setup'
 import startListeners from '#/simulator/src/embedListeners'
 import TabsBar from '#/components/TabsBar/TabsBar.vue'
+import { updateThemeForStyle } from '#/simulator/src/themer/themer'
+import { THEME, ThemeType } from '#/assets/constants/theme'
 // import { time } from 'console'
 // __logix_project_id = "<%= @logix_project_id %>";
 // embed=true;
@@ -189,6 +192,15 @@ import TabsBar from '#/components/TabsBar/TabsBar.vue'
 const route = useRoute()
 const timePeriod = ref(simulationArea.timePeriod)
 const clockEnabled = ref(simulationArea.clockEnabled)
+
+// Embed user preferences
+const theme = computed(() => route.query.theme);
+const hasDisplayTitle = computed(() => route.query.display_title ? route.query.display_title === 'true' : false);
+const hasClockTime = computed(() => route.query.clock_time ? route.query.clock_time === 'true' : true);
+const hasFullscreen = computed(() => route.query.fullscreen ? route.query.fullscreen === 'true' : true);
+const hasZoomInOut = computed(() => route.query.zoom_in_out ? route.query.zoom_in_out === 'true' : true);
+
+const selectedTheme = computed(() => localStorage.getItem('theme'));
 
 // watch(timePeriod, function (val) {
 //     simulationArea.timePeriod = val
@@ -226,6 +238,11 @@ watch(clockEnabled, (val) => {
 onBeforeMount(() => {
     window.embed = true
     window.logixProjectId = route.params.projectId
+})
+
+onMounted(() => {
+    const themeValue = theme?.value as string;
+    updateThemeForStyle(THEME[themeValue as keyof ThemeType]);
 })
 
 onMounted(() => {
