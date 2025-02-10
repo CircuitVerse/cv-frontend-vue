@@ -1,8 +1,9 @@
-import { setup } from './setup'
+import { setup } from './setup';
+import { JsConfig } from './types/app.types'
 
 document.addEventListener('DOMContentLoaded', () => {
-    setup()
-    var js = {
+    setup();
+    const js: JsConfig = {
         devices: {
             dev0: {
                 type: 'Input',
@@ -206,5 +207,5 @@ document.addEventListener('DOMContentLoaded', () => {
             },
         ],
         subcircuits: {},
-    }
-})
+    };
+});
