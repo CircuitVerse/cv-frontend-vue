@@ -67,7 +67,7 @@
 
 <script lang="ts" setup>
 import { useState } from '#/store/SimulatorStore/state';
-import { onMounted, ref, reactive } from 'vue';
+import { onMounted, ref, reactive, watch } from 'vue';
 import themeOptions from '#/simulator/src/themer/themes';
 import { getThemeCardSvg, updateBG, updateThemeForStyle } from '#/simulator/src/themer/themer';
 import { CreateAbstraction, Themes } from '#/simulator/src/themer/customThemeAbstraction';
@@ -79,6 +79,16 @@ const customThemes = ref<(keyof typeof customThemesList)[]>([]);
 const customThemesList: Themes = reactive({});
 const selectedTheme = ref<string>(localStorage.getItem('theme') || 'default-theme');
 const iscustomTheme = ref<boolean>(false);
+
+// Watch for dialog close to reset custom theme state
+watch(
+    () => SimulatorState.dialogBox.theme_dialog,
+    (newValue) => {
+        if (!newValue) {
+            iscustomTheme.value = false;
+        }
+    }
+);
 
 onMounted(() => {
     SimulatorState.dialogBox.theme_dialog = false;
@@ -122,7 +132,6 @@ function applyTheme(): void {
             localStorage.setItem('Custom Theme', JSON.stringify(themeOptions['Custom Theme']));
         }
         SimulatorState.dialogBox.theme_dialog = false;
-        setTimeout(() => (iscustomTheme.value = false), 1000);
     } catch (error) {
         console.error('Failed to save theme settings:', error);
     }
@@ -185,14 +194,12 @@ function exportCustomTheme(): void {
 
 function closeThemeDialog(): void {
     SimulatorState.dialogBox.theme_dialog = false;
-    setTimeout(() => (iscustomTheme.value = false), 1000);
     updateThemeForStyle(localStorage.getItem('theme') || 'default-theme');
     updateBG();
 }
 
 function closeCustomThemeDialog(): void {
     SimulatorState.dialogBox.theme_dialog = false;
-    setTimeout(() => (iscustomTheme.value = false), 1000);
     const customTheme = localStorage.getItem('Custom Theme');
     if (customTheme) {
         themeOptions['Custom Theme'] = JSON.parse(customTheme);
