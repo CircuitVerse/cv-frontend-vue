@@ -667,7 +667,7 @@ div.icon img {
     transition: background 0.5s ease-out;
     position: fixed;
     cursor: pointer;
-    left: 300px;
+    left: 380px;
     top: 90px;
 }
 
@@ -680,6 +680,7 @@ div.icon img {
     text-transform: uppercase;
     text-align: left;
     cursor: move;
+
 }
 
 /* Testbench UI Styling begin */
@@ -690,8 +691,8 @@ div.icon img {
     transition: background 0.5s ease-out;
     position: fixed;
     cursor: pointer;
-    left: 10px;
-    top: 470px;
+    left: 260px;
+    top: 90px;
 }
 
 .testbench-manual-panel .panel-header {
@@ -1890,7 +1891,7 @@ canvas {
 .messageBoxContent {
     height: auto;
     width: 760px;
-    justify-content: center;
+    justify-content: start;
     margin: auto;
     backdrop-filter: blur(5px);
     border-radius: 5px;
@@ -1916,11 +1917,15 @@ canvas {
     min-width: 50px;
     border: 1px solid #c5c5c5;
     padding: 5px 5px;
+    margin-inline-start: 9px;
 }
 
 .messageBtn:hover {
     background: #c5c5c5;
     color: black;
+}
+.messageBtn:focus {
+    border: 1px solid #c5c5c5;
 }
 
 .dialogHeader {
