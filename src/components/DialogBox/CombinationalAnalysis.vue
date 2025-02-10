@@ -23,7 +23,8 @@
 import { stripTags } from '#/simulator/src/utils'
 import { useState } from '#/store/SimulatorStore/state'
 import messageBox from '@/MessageBox/messageBox.vue'
-import { ref, onMounted, watch } from 'vue'
+import { ref } from 'vue'
+import { onMounted } from 'vue'
 
 /* imports from combinationalAnalysis.js */
 import { GenerateCircuit, solveBooleanFunction } from '#/simulator/src/combinationalAnalysis'
@@ -199,83 +200,78 @@ function createLogicTable() {
         alertType.value = 'info'
         alertMessage.value =
             'Enter Input / Output Variable(s) OR Boolean Function!'
-        watch(showAlert, () => {
+        setTimeout(() => {
             showAlert.value = false
-        }, { timeout: 2000 })
+        }, 2000)
     } else {
         showAlert.value = true
         alertType.value = 'warning'
         alertMessage.value =
             'Use Either Combinational Analysis Or Boolean Function To Generate Circuit!'
-        watch(showAlert, () => {
+        setTimeout(() => {
             showAlert.value = false
-        }, { timeout: 2000 })
+        }, 2000)
     }
 }
 
 function createBooleanPrompt(inputList, outputList, scope = globalScope) {
-    inputListNames.value = inputList || prompt('Enter inputs separated by commas')?.split(',') || []
-    outputListNames.value = outputList || prompt('Enter outputs separated by commas')?.split(',') || []
-    
+    inputListNames.value =
+        inputList || prompt('Enter inputs separated by commas').split(',')
+    outputListNames.value =
+        outputList || prompt('Enter outputs separated by commas').split(',')
     if (output.value == null) {
-        outputListNamesInteger.value = outputListNames.value.map((_, i) => 7 * i + 13)
+        for (var i = 0; i < outputListNames.value.length; i++) {
+            outputListNamesInteger.value[i] = 7 * i + 13
+        } // assigning an integer to the value, 7*i + 13 is random
     } else {
         outputListNamesInteger.value = [13]
     }
-
-    // Reset table data
     tableBody.value = []
     tableHeader.value = []
-
-    // Add decimal column if checkbox is checked
-    let columnOffset = 0
-    if (inputArr.value[4].val === true) {
-        columnOffset = 1
+    let fw = 0
+    if (inputArr.value[4].val == true) {
+        fw = 1
         tableHeader.value.push('dec')
     }
-
-    // Add input headers
-    inputListNames.value.forEach(name => {
-        tableHeader.value.push(name)
-    })
-
-    // Add output headers
+    for (var i = 0; i < inputListNames.value.length; i++) {
+        tableHeader.value.push(inputListNames.value[i])
+    }
     if (output.value == null) {
-        outputListNames.value.forEach(name => {
-            tableHeader.value.push(name)
-        })
+        for (var i = 0; i < outputListNames.value.length; i++) {
+            tableHeader.value.push(outputListNames.value[i])
+        }
     } else {
         tableHeader.value.push(outputListNames.value)
     }
 
-    // Generate table body
-    const rowCount = 1 << inputListNames.value.length
-    tableBody.value = Array(rowCount).fill(null).map((_, rowIndex) => {
-        const row = new Array(tableHeader.value.length).fill(null)
-        
-        // Add decimal column if needed
-        if (columnOffset) {
-            row[0] = rowIndex
+    for (var i = 0; i < 1 << inputListNames.value.length; i++) {
+        tableBody.value[i] = new Array(tableHeader.value.length)
+    }
+    for (var i = 0; i < inputListNames.value.length; i++) {
+        for (var j = 0; j < 1 << inputListNames.value.length; j++) {
+            tableBody.value[j][i + fw] = +(
+                (j & (1 << (inputListNames.value.length - i - 1))) !=
+                0
+            )
         }
-
-        // Add input columns
-        inputListNames.value.forEach((_, colIndex) => {
-            row[colIndex + columnOffset] = +((rowIndex & (1 << (inputListNames.value.length - colIndex - 1))) !== 0)
-        })
-
-        // Add output columns
-        if (output.value == null) {
-            outputListNamesInteger.value.forEach((_, i) => {
-                row[inputListNames.value.length + columnOffset + i] = 'x'
-            })
-        } else {
-            row[inputListNames.value.length + columnOffset] = output.value[rowIndex]
+    }
+    if (inputArr.value[4].val == true) {
+        for (var j = 0; j < 1 << inputListNames.value.length; j++) {
+            tableBody.value[j][0] = j
         }
-
-        return row
-    })
-
-    // Update UI
+    }
+    for (var j = 0; j < 1 << inputListNames.value.length; j++) {
+        for (var i = 0; i < outputListNamesInteger.value.length; i++) {
+            if (output.value == null) {
+                tableBody.value[j][inputListNames.value.length + fw + i] = 'x'
+            }
+        }
+        if (output.value != null) {
+            tableBody.value[j][inputListNames.value.length + fw] =
+                output.value[j]
+        }
+    }
+    // display Message Box
     SimulatorState.dialogBox.combinationalanalysis_dialog = true
     buttonArr.value = [
         {
@@ -290,50 +286,27 @@ function createBooleanPrompt(inputList, outputList, scope = globalScope) {
 }
 
 function printBooleanTable() {
-    // Get the table content using Vue refs
-    const messageBoxContent = document.querySelector('.messageBox .v-card-text')?.innerHTML || ''
+    var sTable = $('.messageBox .v-card-text')[0].innerHTML
 
-    const style = `
-        <style>
-            table { font: 40px Calibri; }
-            table, th, td { border: solid 1px #DDD; border-collapse: collapse; }
-            tbody { padding: 2px 3px; text-align: center; }
-        </style>
-    `.replace(/\n\s*/g, '')
-
-    const htmlBody = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Boolean Logic Table</title>
-            ${style}
-        </head>
-        <body>
-            <center>${messageBoxContent}</center>
-        </body>
-        </html>
-    `
-
-    // Create a new window for printing
-    const printWindow = window.open('', '_blank', 'height=700,width=700')
-    if (printWindow) {
-        printWindow.document.write(htmlBody)
-        printWindow.document.close()
-        // Wait for resources to load before printing
-        printWindow.onload = () => {
-            printWindow.print()
-            printWindow.onafterprint = () => {
-                printWindow.close()
-            }
-        }
-    } else {
-        showAlert.value = true
-        alertType.value = 'error'
-        alertMessage.value = 'Please allow popups to print the truth table'
-        watch(showAlert, () => {
-            showAlert.value = false
-        }, { timeout: 3000 })
-    }
+    var style =
+        `<style>
+        table {font: 40px Calibri;}
+        table, th, td {border: solid 1px #DDD;border-collapse: 0;}
+        tbody {padding: 2px 3px;text-align: center;}
+        </style>`.replace(/\n/g, "")
+    var win = window.open('', '', 'height=700,width=700')
+    var htmlBody = `
+                       <html><head>\
+                       <title>Boolean Logic Table</title>\
+                       ${style}\
+                       </head>\
+                       <body>\
+                       <center>${sTable}</center>\
+                       </body></html>
+                     `
+    win.document.write(htmlBody)
+    win.document.close()
+    win.print()
 }
 </script>
 
