@@ -23,8 +23,7 @@
 import { stripTags } from '#/simulator/src/utils'
 import { useState } from '#/store/SimulatorStore/state'
 import messageBox from '@/MessageBox/messageBox.vue'
-import { ref } from 'vue'
-import { onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 
 /* imports from combinationalAnalysis.js */
 import { GenerateCircuit, solveBooleanFunction } from '#/simulator/src/combinationalAnalysis'
@@ -200,62 +199,17 @@ function createLogicTable() {
         alertType.value = 'info'
         alertMessage.value =
             'Enter Input / Output Variable(s) OR Boolean Function!'
-        setTimeout(() => {
+        watch(showAlert, () => {
             showAlert.value = false
-        }, 2000)
+        }, { timeout: 2000 })
     } else {
         showAlert.value = true
         alertType.value = 'warning'
         alertMessage.value =
             'Use Either Combinational Analysis Or Boolean Function To Generate Circuit!'
-        setTimeout(() => {
+        watch(showAlert, () => {
             showAlert.value = false
-        }, 2000)
-    }
-}
-
-function printBooleanTable() {
-    // Create a new div to hold the table content
-    const tableContent = document.createElement('div')
-    tableContent.innerHTML = tableHeader.value.map((header, index) => `
-        <tr>
-            <th>${header}</th>
-        </tr>
-    `).join('') + 
-    tableBody.value.map(row => `
-        <tr>
-            ${row.map(cell => `<td>${cell}</td>`).join('')}
-        </tr>
-    `).join('')
-
-    const style = `
-        <style>
-            table {font: 40px Calibri;}
-            table, th, td {border: solid 1px #DDD; border-collapse: collapse;}
-            tbody {padding: 2px 3px; text-align: center;}
-        </style>
-    `.replace(/\n/g, '')
-
-    const win = window.open('', '', 'height=700,width=700')
-    if (win) {
-        const htmlBody = `
-            <html>
-                <head>
-                    <title>Boolean Logic Table</title>
-                    ${style}
-                </head>
-                <body>
-                    <center>
-                        <table>
-                            ${tableContent.innerHTML}
-                        </table>
-                    </center>
-                </body>
-            </html>
-        `
-        win.document.write(htmlBody)
-        win.document.close()
-        win.print()
+        }, { timeout: 2000 })
     }
 }
 
@@ -333,6 +287,53 @@ function createBooleanPrompt(inputList, outputList, scope = globalScope) {
             emitOption: 'printTruthTable',
         },
     ]
+}
+
+function printBooleanTable() {
+    // Get the table content using Vue refs
+    const messageBoxContent = document.querySelector('.messageBox .v-card-text')?.innerHTML || ''
+
+    const style = `
+        <style>
+            table { font: 40px Calibri; }
+            table, th, td { border: solid 1px #DDD; border-collapse: collapse; }
+            tbody { padding: 2px 3px; text-align: center; }
+        </style>
+    `.replace(/\n\s*/g, '')
+
+    const htmlBody = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Boolean Logic Table</title>
+            ${style}
+        </head>
+        <body>
+            <center>${messageBoxContent}</center>
+        </body>
+        </html>
+    `
+
+    // Create a new window for printing
+    const printWindow = window.open('', '_blank', 'height=700,width=700')
+    if (printWindow) {
+        printWindow.document.write(htmlBody)
+        printWindow.document.close()
+        // Wait for resources to load before printing
+        printWindow.onload = () => {
+            printWindow.print()
+            printWindow.onafterprint = () => {
+                printWindow.close()
+            }
+        }
+    } else {
+        showAlert.value = true
+        alertType.value = 'error'
+        alertMessage.value = 'Please allow popups to print the truth table'
+        watch(showAlert, () => {
+            showAlert.value = false
+        }, { timeout: 3000 })
+    }
 }
 </script>
 
