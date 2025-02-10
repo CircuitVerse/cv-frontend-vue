@@ -61,8 +61,10 @@ export default class DflipFlop extends CircuitElement {
      * and input of the clock. We flip the bits to find qInvOutput
      */
     resolve() {
-        if (this.reset.value == 1) {
-            this.masterState = this.slaveState = this.preset.value || 0
+        if (this.reset.value == 1 && this.preset.value == 0) {
+            this.masterState = this.slaveState = 0;
+        } else if(this.preset.value == 1 && this.reset.value == 0){
+            this.masterState = this.slaveState = 1; //accomodates better for race condition. Keeps the state in previous state if both async preset and reset are 1 just like how S=1 and R=1 case is being handled currently
         } else if (this.en.value == 0) {
             this.prevClockState = this.clockInp.value
         } else if (this.en.value == 1 || this.en.connections.length == 0) {
