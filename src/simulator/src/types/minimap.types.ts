@@ -21,6 +21,7 @@ export interface GlobalScope {
     [key: string]: Wire[] | CircuitElement[] | number | unknown;
 }
 
+
 export interface MiniMapArea {
     canvas: HTMLCanvasElement;
     pageY: number;
@@ -33,7 +34,16 @@ export interface MiniMapArea {
     maxX: number;
     ctx: CanvasRenderingContext2D;
     setup(): void;
+    initializeCanvas(): void;
+    calculateBounds(): void;
+    calculateBound(simulationBound: number | undefined, defaultBound: number): number;
+    adjustCanvasSize(): void;
+    initializeContext(): void;
     play(ratio: number): void;
     resolve(ratio: number): void;
+    drawBackground(ratio: number): void;
+    drawCircuitElements(ratio: number): void;
+    drawWires(ratio: number): void;
+    drawComponents(item: string, ratio: number): void;
     clear(): void;
 }

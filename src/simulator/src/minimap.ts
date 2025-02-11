@@ -4,7 +4,7 @@ declare const lightMode: boolean;
 import { colors } from './themer/themer';
 import { layoutModeGet } from './layoutMode';
 import { updateOrder } from './metadata';
-import { CircuitElement,GlobalScope,MiniMapArea} from './types/minimap.types' 
+import { CircuitElement, GlobalScope, MiniMapArea } from './types/minimap.types';
 
 declare const globalScope: GlobalScope;
 
@@ -22,32 +22,38 @@ const miniMapArea: MiniMapArea = {
 
     setup() {
         if (lightMode) return;
+        this.initializeCanvas();
+        this.calculateBounds();
+        this.adjustCanvasSize();
+        this.initializeContext();
+    },
+
+    initializeCanvas() {
         this.canvas = document.getElementById('miniMapArea') as HTMLCanvasElement;
         this.pageHeight = window.innerHeight;
         this.pageWidth = window.innerWidth;
         this.pageY = this.pageHeight - globalScope.oy;
         this.pageX = this.pageWidth - globalScope.ox;
+    },
 
-        this.minY = simulationArea.minHeight !== undefined
-            ? Math.min(simulationArea.minHeight, -globalScope.oy / globalScope.scale)
-            : -globalScope.oy / globalScope.scale;
+    calculateBounds() {
+        this.minY = this.calculateBound(simulationArea.minHeight, -globalScope.oy / globalScope.scale);
+        this.maxY = this.calculateBound(simulationArea.maxHeight, this.pageY / globalScope.scale);
+        this.minX = this.calculateBound(simulationArea.minWidth, -globalScope.ox / globalScope.scale);
+        this.maxX = this.calculateBound(simulationArea.maxWidth, this.pageX / globalScope.scale);
+    },
 
-        this.maxY = simulationArea.maxHeight !== undefined
-            ? Math.max(simulationArea.maxHeight, this.pageY / globalScope.scale)
-            : this.pageY / globalScope.scale;
+    calculateBound(simulationBound: number | undefined, defaultBound: number): number {
+        return simulationBound !== undefined
+            ? Math[simulationBound === simulationArea.minHeight || simulationBound === simulationArea.minWidth ? 'min' : 'max'](simulationBound, defaultBound)
+            : defaultBound;
+    },
 
-        this.minX = simulationArea.minWidth !== undefined
-            ? Math.min(simulationArea.minWidth, -globalScope.ox / globalScope.scale)
-            : -globalScope.ox / globalScope.scale;
-
-        this.maxX = simulationArea.maxWidth !== undefined
-            ? Math.max(simulationArea.maxWidth, this.pageX / globalScope.scale)
-            : this.pageX / globalScope.scale;
-
+    adjustCanvasSize() {
         const h = this.maxY - this.minY;
         const w = this.maxX - this.minX;
-
         const ratio = Math.min(250 / h, 250 / w);
+
         if (h > w) {
             this.canvas.height = 250.0;
             this.canvas.width = (250.0 * w) / h;
@@ -64,8 +70,11 @@ const miniMapArea: MiniMapArea = {
             miniMapElement.style.height = `${this.canvas.height}px`;
             miniMapElement.style.width = `${this.canvas.width}px`;
         }
+    },
+
+    initializeContext() {
         this.ctx = this.canvas.getContext('2d') as CanvasRenderingContext2D;
-        this.play(ratio);
+        this.play(Math.min(250 / (this.maxY - this.minY), 250 / (this.maxX - this.minX)));
     },
 
     play(ratio: number) {
@@ -80,6 +89,11 @@ const miniMapArea: MiniMapArea = {
     resolve(ratio: number) {
         if (lightMode) return;
 
+        this.drawBackground(ratio);
+        this.drawCircuitElements(ratio);
+    },
+
+    drawBackground(ratio: number) {
         this.ctx.fillStyle = '#ddd';
         this.ctx.beginPath();
         this.ctx.rect(
@@ -89,42 +103,53 @@ const miniMapArea: MiniMapArea = {
             (this.pageHeight * ratio) / globalScope.scale
         );
         this.ctx.fill();
+    },
 
+    drawCircuitElements(ratio: number) {
         const lst = updateOrder;
         const miniFill = colors['mini_fill'];
         const miniStroke = colors['mini_stroke'];
 
         this.ctx.strokeStyle = miniStroke;
         this.ctx.fillStyle = miniFill;
+
         for (const item of lst) {
             if (item === 'wires') {
-                for (const wire of globalScope[item]) {
-                    this.ctx.beginPath();
-                    this.ctx.moveTo(
-                        2.5 + (wire.node1.absX() - this.minX) * ratio,
-                        2.5 + (wire.node1.absY() - this.minY) * ratio
-                    );
-                    this.ctx.lineTo(
-                        2.5 + (wire.node2.absX() - this.minX) * ratio,
-                        2.5 + (wire.node2.absY() - this.minY) * ratio
-                    );
-                    this.ctx.stroke();
-                }
+                this.drawWires(ratio);
             } else if (item !== 'nodes') {
-                const ledY = ['DigitalLed', 'VariableLed', 'RGBLed'].includes(item) ? 20 : 0;
-
-                for (const obj of globalScope[item] as CircuitElement[]) {
-                    this.ctx.beginPath();
-                    this.ctx.rect(
-                        2.5 + (obj.x - obj.leftDimensionX - this.minX) * ratio,
-                        2.5 + (obj.y - obj.upDimensionY - this.minY) * ratio,
-                        (obj.rightDimensionX + obj.leftDimensionX) * ratio,
-                        (obj.downDimensionY + obj.upDimensionY + ledY) * ratio
-                    );
-                    this.ctx.fill();
-                    this.ctx.stroke();
-                }
+                this.drawComponents(item, ratio);
             }
+        }
+    },
+
+    drawWires(ratio: number) {
+        for (const wire of globalScope['wires']) {
+            this.ctx.beginPath();
+            this.ctx.moveTo(
+                2.5 + (wire.node1.absX() - this.minX) * ratio,
+                2.5 + (wire.node1.absY() - this.minY) * ratio
+            );
+            this.ctx.lineTo(
+                2.5 + (wire.node2.absX() - this.minX) * ratio,
+                2.5 + (wire.node2.absY() - this.minY) * ratio
+            );
+            this.ctx.stroke();
+        }
+    },
+
+    drawComponents(item: string, ratio: number) {
+        const ledY = ['DigitalLed', 'VariableLed', 'RGBLed'].includes(item) ? 20 : 0;
+
+        for (const obj of globalScope[item] as CircuitElement[]) {
+            this.ctx.beginPath();
+            this.ctx.rect(
+                2.5 + (obj.x - obj.leftDimensionX - this.minX) * ratio,
+                2.5 + (obj.y - obj.upDimensionY - this.minY) * ratio,
+                (obj.rightDimensionX + obj.leftDimensionX) * ratio,
+                (obj.downDimensionY + obj.upDimensionY + ledY) * ratio
+            );
+            this.ctx.fill();
+            this.ctx.stroke();
         }
     },
 
