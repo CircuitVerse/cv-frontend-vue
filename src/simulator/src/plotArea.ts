@@ -1,12 +1,13 @@
 import { simulationArea } from './simulationArea'
+import { globalScope } from './globalScope'
 import { convertors } from './utils'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { toRefs } from 'vue'
 
-var DPR = window.devicePixelRatio || 1
+const DPR = window.devicePixelRatio || 1
 
 // Helper function to scale to display
-function sh(x) {
+function sh(x: number): number {
     return x * DPR
 }
 
@@ -18,59 +19,94 @@ function sh(x) {
  *  - Support for color themes
  *  - Replace constants with functions? - Can support Zoom in and Zoom out of canvas then
  */
-var frameInterval = 100 // Refresh rate
-var timeLineHeight = sh(20)
-var padding = sh(2)
-var plotHeight = sh(20)
-var waveFormPadding = sh(5)
-var waveFormHeight = plotHeight - 2 * waveFormPadding
-var flagLabelWidth = sh(75)
-var cycleWidth = sh(30)
-var backgroundColor = 'black'
-var foregroundColor = '#eee'
-var textColor = 'black'
-var waveFormColor = 'cyan'
-var timeLineStartX = flagLabelWidth + padding
+const frameInterval = 100 // Refresh rate
+let timeLineHeight = sh(20)
+let padding = sh(2)
+let plotHeight = sh(20)
+let waveFormPadding = sh(5)
+let waveFormHeight = plotHeight - 2 * waveFormPadding
+let flagLabelWidth = sh(75)
+let cycleWidth = sh(30)
+const backgroundColor = 'black'
+const foregroundColor = '#eee'
+const textColor = 'black'
+const waveFormColor = 'cyan'
+const timeLineStartX = flagLabelWidth + padding
 
 // Helper functions for canvas
 
-function getFullHeight(flagCount) {
+function getFullHeight(flagCount: number): number {
     return timeLineHeight + (plotHeight + padding) * flagCount
 }
 
-function getFlagStartY(flagIndex) {
+function getFlagStartY(flagIndex: number): number {
     return getFullHeight(flagIndex) + padding
 }
 
-function getCycleStartX(cycleNumber) {
+function getCycleStartX(cycleNumber: number): number {
     return timeLineStartX + (cycleNumber - plotArea.cycleOffset) * cycleWidth
 }
 
-/**
- * @type {Object} plotArea
- * @category plotArea
- */
-const plotArea = {
-    cycleOffset: 0, // Determines timeline offset
+interface PlotArea {
+    cycleOffset: number
+    DPR: number
+    canvas: HTMLCanvasElement | null
+    cycleCount: number
+    cycleTime: number
+    executionStartTime: number
+    autoScroll: boolean
+    width: number
+    height: number
+    unitUsed: number
+    cycleUnit: number
+    mouseDown: boolean
+    mouseX: number
+    mouseDownX: number
+    mouseDownTime: number
+    ctx?: CanvasRenderingContext2D | null
+    timeOutPlot?: ReturnType<typeof setInterval>
+    scrollAcc?: number
+    reset(): void
+    resume(): void
+    pause(): void
+    nextCycle(): void
+    setExecutionTime(): void
+    zoomIn(): void
+    zoomOut(): void
+    download(): void
+    resize(): void
+    setup(): void
+    getPlotTime(timeUnit: number): number
+    calibrate(): void
+    getCurrentTime(): number
+    update(): void
+    render(): void
+    plot(): void
+    clear(): void
+}
+
+const embed = false; // Define the embed variable
+
+const plotArea: PlotArea = {
+    cycleOffset: 0,
     DPR: window.devicePixelRatio || 1,
-    canvas: document.getElementById('plotArea'),
-    cycleCount: 0, // Number of clock cycles passed
-    cycleTime: 0, // Time of last clock tick (in ms)
-    executionStartTime: 0, // Last time play() function ran in engine.js (in ms)
-    autoScroll: true, // if true, timeline will scroll to keep current time in display
-    width: 0, // canvas width
-    height: 0, // canvas height
-    unitUsed: 0, // Number of simulation units used by the engine
-    cycleUnit: 1000, // Number of simulation units per cycle
+    canvas: document.getElementById('plotArea') as HTMLCanvasElement,
+    cycleCount: 0,
+    cycleTime: 0,
+    executionStartTime: 0,
+    autoScroll: true,
+    width: 0,
+    height: 0,
+    unitUsed: 0,
+    cycleUnit: 1000,
     mouseDown: false,
-    mouseX: 0, // Current mouse position
-    mouseDownX: 0, // position of mouse when clicked
-    mouseDownTime: 0, // time when mouse clicked (in ms)
-    // Reset timeline to 0 and resume autoscroll
+    mouseX: 0,
+    mouseDownX: 0,
+    mouseDownTime: 0,
     reset() {
         this.cycleCount = 0
         this.cycleTime = new Date().getTime()
-        for (var i = 0; i < globalScope.Flag.length; i++) {
+        for (let i = 0; i < globalScope.Flag.length; i++) {
             globalScope.Flag[i].plotValues = [
                 [0, globalScope.Flag[i].inp1.value],
             ]
@@ -80,54 +116,47 @@ const plotArea = {
         this.resume()
         this.resize()
     },
-    // Resume autoscroll
     resume() {
         this.autoScroll = true
     },
-    // pause autoscroll
     pause() {
         this.autoScroll = false
         plotArea.scrollAcc = 0
     },
-    // Called every time clock is ticked
     nextCycle() {
         this.cycleCount++
         this.cycleTime = new Date().getTime()
     },
-    // Called everytime play() function is execute in engine.js
     setExecutionTime() {
         this.executionStartTime = new Date().getTime()
     },
-    // Scale timeline up
     zoomIn() {
         cycleWidth += sh(2)
     },
-    // Scale timeline down
     zoomOut() {
         cycleWidth -= sh(2)
     },
-    // download as image
     download() {
-        var img = this.canvas.toDataURL(`image/png`)
+        if (!this.canvas) return
+        const img = this.canvas.toDataURL('image/png')
         const anchor = document.createElement('a')
         anchor.href = img
-        anchor.download = `waveform.png`
+        anchor.download = 'waveform.png'
         anchor.click()
     },
-    // update canvas size to use full screen
     resize() {
-        var oldHeight = this.height
-        var oldWidth = this.width
-        this.width = document.getElementById('plot').clientWidth * this.DPR
+        if (!this.canvas) return
+        const oldHeight = this.height
+        const oldWidth = this.width
+        this.width = document.getElementById('plot')!.clientWidth * this.DPR
         this.height = getFullHeight(globalScope.Flag.length)
-        if (oldHeight == this.height && oldWidth == this.width) return
+        if (oldHeight === this.height && oldWidth === this.width) return
         this.canvas.width = this.width
         this.canvas.height = this.height
         this.plot()
     },
-    // Setup function, called on page load
     setup() {
-        this.canvas = document.getElementById('plotArea')
+        this.canvas = document.getElementById('plotArea') as HTMLCanvasElement
         if (!embed) {
             this.ctx = this.canvas.getContext('2d')
         }
@@ -136,50 +165,45 @@ const plotArea = {
         }, frameInterval)
         this.reset()
     },
-    // Used to resolve analytical time in clock cycles
-    getPlotTime(timeUnit) {
-        var time = this.cycleCount // Current cycle count
-        time += timeUnit / this.cycleUnit // Add propagation delay
-        // For user interactions like buttons - calculate time since clock tick
-        var timePeriod = simulationArea.timePeriod
-        var executionDelay = this.executionStartTime - this.cycleTime
-        var delayFraction = executionDelay / timePeriod
-        // Add time since clock tick
+    getPlotTime(timeUnit: number): number {
+        let time = this.cycleCount
+        time += timeUnit / this.cycleUnit
+        const timePeriod = simulationArea.timePeriod
+        const executionDelay = this.executionStartTime - this.cycleTime
+        const delayFraction = executionDelay / timePeriod
         time += delayFraction
         return time
     },
-    // Auto calibrate clock simulation units based on usage
     calibrate() {
-        var recommendedUnit = Math.max(20, Math.round(this.unitUsed * 3))
+        const recommendedUnit = Math.max(20, Math.round(this.unitUsed * 3))
         this.cycleUnit = recommendedUnit
         $('#timing-diagram-units').val(recommendedUnit)
         this.reset()
     },
-    // Get current time in clock cycles
-    getCurrentTime() {
-        var time = this.cycleCount
-        var timePeriod = simulationArea.timePeriod
-        var delay = new Date().getTime() - this.cycleTime
-        var delayFraction = delay / timePeriod
+    getCurrentTime(): number {
+        let time = this.cycleCount
+        const timePeriod = simulationArea.timePeriod
+        const delay = new Date().getTime() - this.cycleTime
+        const delayFraction = delay / timePeriod
         time += delayFraction
         return time
     },
     update() {
         this.resize()
-        var dangerColor = '#dc5656'
-        var normalColor = '#42b983'
+        const dangerColor = '#dc5656'
+        const normalColor = '#42b983'
         this.unitUsed = Math.max(
             this.unitUsed,
             simulationArea.simulationQueue.time
         )
-        var unitUsed = this.unitUsed
-        var units = this.cycleUnit
-        var utilization = Math.round((unitUsed * 10000) / units) / 100
+        const unitUsed = this.unitUsed
+        const units = this.cycleUnit
+        const utilization = Math.round((unitUsed * 10000) / units) / 100
         $('#timing-diagram-log').html(
             `Utilization: ${Math.round(unitUsed)} Units (${utilization}%)`
         )
         if (utilization >= 90 || utilization <= 10) {
-            var recommendedUnit = Math.max(20, Math.round(unitUsed * 3))
+            const recommendedUnit = Math.max(20, Math.round(unitUsed * 3))
             $('#timing-diagram-log').append(
                 ` Recommended Units: ${recommendedUnit}`
             )
@@ -192,38 +216,30 @@ const plotArea = {
             $('#timing-diagram-log').css('background-color', normalColor)
         }
 
-        var width = this.width
-        var endTime = this.getCurrentTime()
+        const width = this.width
+        const endTime = this.getCurrentTime()
 
         if (this.autoScroll) {
-            // Formula used:
-            // (endTime - x) * cycleWidth = width - timeLineStartX;
-            // x = endTime - (width - timeLineStartX) / cycleWidth
             this.cycleOffset = Math.max(
                 0,
                 endTime - (width - timeLineStartX) / cycleWidth
             )
         } else if (!plotArea.mouseDown) {
-            // Scroll
-            this.cycleOffset -= plotArea.scrollAcc
-            // Friction
-            plotArea.scrollAcc *= 0.95
-            // No negative numbers allowed, so negative scroll to 0
-            if (this.cycleOffset < 0) plotArea.scrollAcc = this.cycleOffset / 5
-            // Set position to 0, to avoid infinite scrolling
+            this.cycleOffset -= plotArea.scrollAcc!
+            plotArea.scrollAcc! *= 0.95
+            if (this.cycleOffset < 0) plotArea.scrollAcc! = this.cycleOffset / 5
             if (Math.abs(this.cycleOffset) < 0.01) this.cycleOffset = 0
         }
     },
     render() {
-        var { width, height } = this
+        if (!this.canvas || !this.ctx) return
+        const { width, height } = this
         this.canvas.height = height
         this.canvas.width = width
-        var endTime = this.getCurrentTime()
-        // Reset canvas
+        const endTime = this.getCurrentTime()
         this.clear()
-        var ctx = this.ctx
+        const ctx = this.ctx
 
-        // Background Color
         ctx.fillStyle = backgroundColor
         ctx.fillRect(0, 0, width, height)
 
@@ -231,25 +247,21 @@ const plotArea = {
         ctx.font = `${sh(15)}px Raleway`
         ctx.textAlign = 'left'
 
-        // Timeline
         ctx.fillStyle = foregroundColor
         ctx.fillRect(timeLineStartX, 0, this.canvas.width, timeLineHeight)
         ctx.fillRect(0, 0, flagLabelWidth, timeLineHeight)
         ctx.fillStyle = textColor
         ctx.fillText('Time', sh(5), timeLineHeight * 0.7)
 
-        // Timeline numbers
         ctx.font = `${sh(9)}px Times New Roman`
         ctx.strokeStyle = textColor
         ctx.textAlign = 'center'
         for (
-            var i = Math.floor(plotArea.cycleOffset);
+            let i = Math.floor(plotArea.cycleOffset);
             getCycleStartX(i) <= width;
             i++
         ) {
-            var x = getCycleStartX(i)
-            // Large ticks + number
-            // @TODO - collapse number if it doesn't fit
+            const x = getCycleStartX(i)
             if (x >= timeLineStartX) {
                 ctx.fillText(`${i}`, x, timeLineHeight - sh(15) / 2)
                 ctx.beginPath()
@@ -257,9 +269,8 @@ const plotArea = {
                 ctx.lineTo(x, timeLineHeight)
                 ctx.stroke()
             }
-            // Small ticks
-            for (var j = 1; j < 5; j++) {
-                var x1 = x + Math.round((j * cycleWidth) / 5)
+            for (let j = 1; j < 5; j++) {
+                const x1 = x + Math.round((j * cycleWidth) / 5)
                 if (x1 >= timeLineStartX) {
                     ctx.beginPath()
                     ctx.moveTo(x1, timeLineHeight - sh(2))
@@ -269,10 +280,9 @@ const plotArea = {
             }
         }
 
-        // Flag Labels
         ctx.textAlign = 'left'
-        for (var i = 0; i < globalScope.Flag.length; i++) {
-            var startHeight = getFlagStartY(i)
+        for (let i = 0; i < globalScope.Flag.length; i++) {
+            const startHeight = getFlagStartY(i)
             ctx.fillStyle = foregroundColor
             ctx.fillRect(0, startHeight, flagLabelWidth, plotHeight)
             ctx.fillStyle = textColor
@@ -283,72 +293,61 @@ const plotArea = {
             )
         }
 
-        // Waveform Status Flags
         const WAVEFORM_NOT_STARTED = 0
         const WAVEFORM_STARTED = 1
         const WAVEFORM_OVER = 3
 
-        // Waveform
         ctx.strokeStyle = waveFormColor
         ctx.textAlign = 'center'
-        var endX = Math.min(getCycleStartX(endTime), width)
+        const endX = Math.min(getCycleStartX(endTime), width)
 
-        for (var i = 0; i < globalScope.Flag.length; i++) {
-            var plotValues = globalScope.Flag[i].plotValues
-            var startHeight = getFlagStartY(i) + waveFormPadding
-            var yTop = startHeight
-            var yMid = startHeight + waveFormHeight / 2
-            var yBottom = startHeight + waveFormHeight
-            var state = WAVEFORM_NOT_STARTED
-            var prevY
+        for (let i = 0; i < globalScope.Flag.length; i++) {
+            const plotValues = globalScope.Flag[i].plotValues
+            const startHeight = getFlagStartY(i) + waveFormPadding
+            const yTop = startHeight
+            const yMid = startHeight + waveFormHeight / 2
+            const yBottom = startHeight + waveFormHeight
+            let state = WAVEFORM_NOT_STARTED
+            let prevY: number = yMid
 
-            // Find correct index to start plotting from
-            var j = 0
-            // Using caching for optimal performance
+            let j = 0
             if (globalScope.Flag[i].cachedIndex) {
                 j = globalScope.Flag[i].cachedIndex
             }
-            // Move to beyond timeLineStartX
             while (
                 j + 1 < plotValues.length &&
                 getCycleStartX(plotValues[j][0]) < timeLineStartX
             ) {
                 j++
             }
-            // Move to just before timeLineStartX
             while (j > 0 && getCycleStartX(plotValues[j][0]) > timeLineStartX) {
                 j--
             }
-            // Cache index
             globalScope.Flag[i].cachedIndex = j
 
-            // Plot
             for (; j < plotValues.length; j++) {
-                var x = getCycleStartX(plotValues[j][0])
+                let x = getCycleStartX(plotValues[j][0])
 
-                // Handle out of bound
                 if (x < timeLineStartX) {
-                    if (j + 1 != plotValues.length) {
-                        // Next one also is out of bound, so skip this one completely
-                        var x1 = getCycleStartX(plotValues[j + 1][0])
+                    if (j + 1 !== plotValues.length) {
+                        const x1 = getCycleStartX(plotValues[j + 1][0])
                         if (x1 < timeLineStartX) continue
                     }
                     x = timeLineStartX
                 }
 
-                var value = plotValues[j][1]
+                const value = plotValues[j][1]
                 if (value === undefined) {
-                    if (state == WAVEFORM_STARTED) {
+                    if (state === WAVEFORM_STARTED) {
                         ctx.stroke()
                     }
                     state = WAVEFORM_NOT_STARTED
                     continue
                 }
-                if (globalScope.Flag[i].bitWidth == 1) {
+                if (globalScope.Flag[i].bitWidth === 1) {
                     if (x > endX) break
-                    var y = value == 1 ? yTop : yBottom
-                    if (state == WAVEFORM_NOT_STARTED) {
-                        // Start new plot
+                    const y = value === 1 ? yTop : yBottom
+                    if (state === WAVEFORM_NOT_STARTED) {
                         state = WAVEFORM_STARTED
                         ctx.beginPath()
                         ctx.moveTo(x, y)
@@ -358,13 +357,13 @@ const plotArea = {
                     }
                     prevY = y
                 } else {
-                    var endX
-                    if (j + 1 == plotValues.length) {
+                    let endX
+                    if (j + 1 === plotValues.length) {
                         endX = getCycleStartX(endTime)
                     } else {
                         endX = getCycleStartX(plotValues[j + 1][0])
                     }
-                    var smallOffset = waveFormHeight / 2
+                    const smallOffset = waveFormHeight / 2
                     ctx.beginPath()
                     ctx.moveTo(endX, yMid)
                     ctx.lineTo(endX - smallOffset, yTop)
@@ -375,11 +374,9 @@ const plotArea = {
                     ctx.closePath()
                     ctx.stroke()
 
-                    // Text position
-                    // Clamp start and end are within the screen
-                    var x1 = Math.max(x, timeLineStartX)
-                    var x2 = Math.min(endX, width)
-                    var textPositionX = (x1 + x2) / 2
+                    const x1 = Math.max(x, timeLineStartX)
+                    const x2 = Math.min(endX, width)
+                    const textPositionX = (x1 + x2) / 2
 
                     ctx.font = `${sh(9)}px Times New Roman`
                     ctx.fillStyle = 'white'
@@ -395,45 +392,46 @@ const plotArea = {
                     break
                 }
             }
-            if (state == WAVEFORM_STARTED) {
-                if (globalScope.Flag[i].bitWidth == 1) {
+            if (state === WAVEFORM_STARTED) {
+                if (globalScope.Flag[i].bitWidth === 1) {
                     ctx.lineTo(endX, prevY)
                 }
                 ctx.stroke()
             }
         }
     },
-    // Driver function to render and update
     plot() {
         const simulatorMobileStore = useSimulatorMobileStore()
         const { showCanvas } = toRefs(simulatorMobileStore)
         if (embed) return
         if (globalScope.Flag.length === 0) {
-            this.canvas.width = 0
-            this.canvas.height = 0
+            if (this.canvas) {
+                this.canvas.width = 0
+                this.canvas.height = 0
+            }
             showCanvas.value = false
             return
         }
-       showCanvas.value = true
+        showCanvas.value = true
 
         this.update()
         this.render()
     },
     clear() {
-        this.ctx.clearRect(0, 0, plotArea.canvas.width, plotArea.canvas.height)
+        if (this.ctx && this.canvas) {
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
+        }
     },
 }
+
 export default plotArea
 
-/**
- * type {Object} timingDiagramButtonActions
- * @category plotArea
- * @description Actions for buttons in timing diagram
- * @property {function} smallHeight - Decrease waveform height
- * @property {function} largeHeight - Increase waveform height
- */
+interface TimingDiagramButtonActions {
+    smallHeight(): void
+    largeHeight(): void
+}
 
-const timingDiagramButtonActions = {
+const timingDiagramButtonActions: TimingDiagramButtonActions = {
     smallHeight() {
         if (plotHeight >= sh(20)) {
             plotHeight -= sh(5)
@@ -451,9 +449,9 @@ const timingDiagramButtonActions = {
 export { timingDiagramButtonActions }
 
 export function setupTimingListeners() {
-    document.getElementById('plotArea').addEventListener('mousedown', (e) => {
-        var rect = plotArea.canvas.getBoundingClientRect()
-        var x = sh(e.clientX - rect.left)
+    document.getElementById('plotArea')!.addEventListener('mousedown', (e) => {
+        const rect = plotArea.canvas!.getBoundingClientRect()
+        const x = sh(e.clientX - rect.left)
         plotArea.scrollAcc = 0
         plotArea.autoScroll = false
         plotArea.mouseDown = true
@@ -461,16 +459,16 @@ export function setupTimingListeners() {
         plotArea.mouseDownX = x
         plotArea.mouseDownTime = new Date().getTime()
     })
-    document.getElementById('plotArea').addEventListener('mouseup', (e) => {
+    document.getElementById('plotArea')!.addEventListener('mouseup', (e) => {
         plotArea.mouseDown = false
-        var time = new Date().getTime() - plotArea.mouseDownTime
-        var offset = (plotArea.mouseX - plotArea.mouseDownX) / cycleWidth
+        const time = new Date().getTime() - plotArea.mouseDownTime
+        const offset = (plotArea.mouseX - plotArea.mouseDownX) / cycleWidth
         plotArea.scrollAcc = (offset * frameInterval) / time
     })
 
-    document.getElementById('plotArea').addEventListener('mousemove', (e) => {
-        var rect = plotArea.canvas.getBoundingClientRect()
-        var x = sh(e.clientX - rect.left)
+    document.getElementById('plotArea')!.addEventListener('mousemove', (e) => {
+        const rect = plotArea.canvas!.getBoundingClientRect()
+        const x = sh(e.clientX - rect.left)
         if (plotArea.mouseDown) {
             plotArea.cycleOffset -= (x - plotArea.mouseX) / cycleWidth
             plotArea.mouseX = x
