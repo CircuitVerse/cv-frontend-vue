@@ -112,15 +112,17 @@
                     <tr id="tb-manual-table-labels">
                         <th>LABELS</th>
                     </tr>
-                    <tr id="tb-manual-table-bitwidths">
-                        <td>Bitwidth</td>
-                    </tr>
-                    <tr id="tb-manual-table-current-case">
-                        <td>Current Case</td>
-                    </tr>
-                    <tr id="tb-manual-table-test-result">
-                        <td>Result</td>
-                    </tr>
+                    <tbody>
+                        <tr id="tb-manual-table-bitwidths">
+                            <td>Bitwidth</td>
+                        </tr>
+                        <tr id="tb-manual-table-current-case">
+                            <td>Current Case</td>
+                        </tr>
+                        <tr id="tb-manual-table-test-result">
+                            <td>Result</td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
             <div style="display: table; margin-top: 20px; margin-left: 8px">
