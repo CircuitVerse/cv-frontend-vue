@@ -29,7 +29,11 @@ const miniMapArea: MiniMapArea = {
     },
 
     initializeCanvas() {
-        this.canvas = document.getElementById('miniMapArea') as HTMLCanvasElement;
+        const canvas = document.getElementById('miniMapArea');
+        if (!canvas) {
+            throw new Error('MiniMap canvas element not found');
+        }
+        this.canvas = canvas as HTMLCanvasElement;
         this.pageHeight = window.innerHeight;
         this.pageWidth = window.innerWidth;
         this.pageY = this.pageHeight - globalScope.oy;
