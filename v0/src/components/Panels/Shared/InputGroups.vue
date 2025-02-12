@@ -1,42 +1,3 @@
-<template>
-    <div>
-        <span>{{ propertyName }}</span>
-        <div class="input-group">
-            <div class="input-group-prepend">
-                <button
-                    style="border: none; min-width: 2.5rem"
-                    class="btnDecrement"
-                    type="button"
-                    @click="decreaseValue"
-                >
-                    <strong>-</strong>
-                </button>
-            </div>
-            <input
-                ref="inputRef"
-                style="text-align: center"
-                class="objectPropertyAttribute form-control"
-                :type="propertyValueType"
-                :name="propertyInputName"
-                :min="Number(valueMin)"
-                :max="Number(valueMax)"
-                :value="propertyValue"
-                @input="updateValue"
-            />
-            <div class="input-group-append">
-                <button
-                    style="border: none; min-width: 2.5rem"
-                    class="btnIncrement"
-                    type="button"
-                    @click="increaseValue"
-                >
-                    <strong>+</strong>
-                </button>
-            </div>
-        </div>
-    </div>
-</template>
-
 <script lang="ts" setup>
 import { ref, defineProps, defineEmits } from "vue";
 
@@ -56,7 +17,21 @@ const inputRef = ref<HTMLInputElement | null>(null);
 
 function updateValue(event) {
     const target = event.target as unknown as HTMLInputElement;
-    emit("update:propertyValue", Number(target.value));
+    const value = Number(target.value);
+    if (isNaN(value)) {
+        // Reset to previous valid value or min value
+        emit("update:propertyValue", props.propertyValue || Number(props.valueMin));
+        return;
+    }
+    const min = Number(props.valueMin);
+    const max = Number(props.valueMax);
+    if (value < min) {
+        emit("update:propertyValue", min);
+    } else if (value > max) {
+        emit("update:propertyValue", max);
+    } else {
+        emit("update:propertyValue", value);
+    }
 }
 
 function increaseValue() {
