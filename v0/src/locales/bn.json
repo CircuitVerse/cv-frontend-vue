@@ -1,0 +1,162 @@
+{
+    "simulator": {
+        "save_online": "অনলাইনে সংরক্ষণ করুন",
+        "save_offline": "অফলাইনে সংরক্ষণ করুন",
+        "preview_circuit": "সার্কিট প্রিভিউ করুন",
+        "export_verilog": "ভেরিলগ এক্সপোর্ট করুন",
+        "insert_subcircuit": "সাব-সার্কিট যুক্ত করুন",
+        "undo": "আনডু করুন",
+        "report_issue": "সমস্যা রিপোর্ট করুন",
+        "restricted_elements_used": "ব্যবহৃত নিষিদ্ধ উপাদানগুলি:",
+        "made_with_circuitverse": "সার্কিটভার্সে তৈরি",
+        "nav": {
+            "untitled_project": "শিরোনামহীন",
+            "sign_out": "সাইন আউট",
+            "sign_in": "সাইন ইন করুন",
+            "user_dropdown": {
+                "dashboard": "ড্যাশবোর্ড",
+                "my_groups": "আমার গ্রুপসমূহ",
+                "notifications": "বিজ্ঞপ্তিসমূহ"
+            },
+            "project": {
+                "heading": "প্রকল্প",
+                "project_page": "প্রকল্পের পৃষ্ঠা",
+                "new_project": "নতুন প্রকল্প",
+                "open_offline": "অফলাইনে খুলুন",
+                "save_online": "অনলাইনে সংরক্ষণ করুন",
+                "save_offline": "অফলাইনে সংরক্ষণ করুন",
+                "export_as_file": "ফাইল হিসাবে এক্সপোর্ট করুন",
+                "import_project": "ফাইল থেকে ইম্পোর্ট করুন",
+                "preview_circuit": "সার্কিট প্রিভিউ করুন",
+                "clear_project": "প্রকল্প পরিষ্কার করুন",
+                "recover_project": "প্রকল্প পুনরুদ্ধার করুন",
+                "view_previous_ui": "আগের UI দেখুন"
+            },
+            "circuit": {
+                "heading": "সার্কিট",
+                "new_circuit": "নতুন সার্কিট +",
+                "insert_subcircuit": "সাব-সার্কিট যুক্ত করুন",
+                "new_verilog_module_html": "নতুন ভেরিলগ\nমডিউল"
+            },
+            "tools": {
+                "heading": "টুলস",
+                "combinational_analysis_html": "কম্বিনেশনাল\nবিশ্লেষণ",
+                "hex_bin_dec_converter_html": "Hex-Bin-Dec\nরূপান্তরকারী",
+                "download_image": "ছবি ডাউনলোড করুন",
+                "themes": "থিমসমূহ",
+                "export_verilog": "ভেরিলগ এক্সপোর্ট করুন",
+                "custom_shortcut": "কাস্টম শর্টকাট"
+            },
+            "help": {
+                "heading": "সহায়তা",
+                "tutorial_guide": "টিউটোরিয়াল গাইড",
+                "user_manual": "ব্যবহারকারী ম্যানুয়াল",
+                "learn_digital_logic": "ডিজিটাল লজিক শিখুন",
+                "discussion_forum": "আলোচনা ফোরাম"
+            }
+        },
+        "panel_header": {
+            "circuit_elements": "সার্কিটের উপাদানসমূহ",
+            "layout_elements": "লেআউটের উপাদানসমূহ",
+            "timing_diagram": "টাইমিং ডায়াগ্রাম",
+            "verilog_module": "ভেরিলগ মডিউল",
+            "properties": "বৈশিষ্ট্যসমূহ",
+            "layout": "লেআউট",
+            "keybinding_preference": "কীবাইন্ডিং পছন্দ",
+            "render_image": "ছবি রেন্ডার করুন",
+            "select_theme": "থিম নির্বাচন করুন",
+            "boolean_logic_table": "বুলিয়ান লজিক টেবিল",
+            "open_project": "প্রকল্প খুলুন",
+            "bit_converter": "Dec-Bin-Hex-রূপান্তরকারী"
+        },
+        "panel_body": {
+            "circuit_elements": {
+                "search": "অনুসন্ধান করুন...",
+                "search_result": "কোনো উপাদান পাওয়া যায়নি...",
+                "expansion_panel_title": {
+                    "Input": "ইনপুট",
+                    "Output": "আউটপুট",
+                    "Gates": "গেটসমূহ",
+                    "Decoders & Plexers": "ডিকোডার এবং প্লেক্সার",
+                    "Sequential Elements": "সিকোয়েনশিয়াল উপাদানসমূহ",
+                    "Annotation": "টীকা",
+                    "Misc": "বিবিধ"
+                }
+            },
+            "timing_diagram": {
+                "one_cycle": "1 সাইকেল =",
+                "units": "একক"
+            },
+            "verilog_module": {
+                "reset_code": "কোড রিসেট করুন",
+                "save_code": "কোড সংরক্ষণ করুন",
+                "module_in_experiment_notice": "এটি একটি পরীক্ষামূলক মডিউল। \"কোড সংরক্ষণ করুন\" বোতামে ক্লিক না করা পর্যন্ত কোড সংরক্ষিত হবে না।",
+                "apply_themes": "থিম প্রয়োগ করুন",
+                "select_theme": "থিম নির্বাচন করুন:"
+            },
+            "layout": {
+                "width": "প্রস্থ",
+                "height": "উচ্চতা",
+                "reset_all_nodes": "সমস্ত নোড রিসেট করুন:",
+                "title": "শিরোনাম",
+                "title_enabled": "শিরোনাম সক্রিয় করুন:",
+                "save": "সংরক্ষণ করুন",
+                "cancel": "বাতিল করুন"
+            },
+            "render_image": {
+                "full_circuit_view": "সম্পূর্ণ সার্কিট দেখুন",
+                "current_view": "বর্তমান দৃশ্য",
+                "transparent_background": "পারদর্শী পটভূমি",
+                "resolution": "রেজোলিউশন"
+            },
+            "context_menu": {
+                "paste": "পেস্ট করুন",
+                "copy": "কপি করুন",
+                "cut": "কাটুন",
+                "delete": "মুছুন",
+                "new_circuit": "নতুন সার্কিট",
+                "center_focus": "কেন্দ্রে ফোকাস করুন"
+            },
+            "bit_converter": {
+                "decimal_value": "দশমিক মান",
+                "binary_value": "বাইনারি মান",
+                "octal_value": "অক্টাল মান",
+                "hexadecimal_value": "হেক্সাডেসিমাল মান"
+            },
+            "custom_shortcut": {
+                "esc_cancel": "আকাঙ্ক্ষিত কী সংমিশ্রণ টিপুন এবং সংরক্ষণের জন্য এন্টার টিপুন",
+                "command": "কমান্ড",
+                "keymapping": "কীম্যাপিং",
+                "reset_to_default": "ডিফল্টে রিসেট করুন",
+                "save": "সংরক্ষণ করুন"
+            },
+            "report_issue": {
+                "describe_issue": "আপনার সমস্যার বর্ণনা দিন:",
+                "email": "ইমেল",
+                "optional": " [ঐচ্ছিক]",
+                "report_btn": "রিপোর্ট করুন",
+                "cancel_btn": "বাতিল করুন",
+                "close_btn": "বন্ধ করুন"
+            }
+        },
+        "tooltip": {
+            "delete_selected": "নির্বাচিত মুছুন",
+            "download_as_image": "ছবি হিসাবে ডাউনলোড করুন",
+            "fit_to_screen": "স্ক্রিনে ফিট করুন",
+            "redo": "আবার করুন",
+            "decrease_size": "আকার কমান",
+            "increase_size": "আকার বাড়ান",
+            "decrease_height": "উচ্চতা কমান",
+            "increase_height": "উচ্চতা বাড়ান",
+            "reset_timing_diagram": "টাইমিং ডায়াগ্রাম রিসেট করুন",
+            "autocalibrate_cycle_units": "সাইকেল একক অটোক্যালিব্রেট করুন",
+            "zoom_in": "জুম ইন করুন",
+            "zoom_out": "জুম আউট করুন",
+            "resume_timing_diagram": "টাইমিং ডায়াগ্রাম পুনরায় শুরু করুন",
+            "pause_timing_diagram": "টাইমিং ডায়াগ্রাম বিরতি দিন",
+            "decrease_width": "প্রস্থ কমান",
+            "increase_width": "প্রস্থ বাড়ান",
+            "reset": "রিসেট করুন"
+        }
+    }
+}

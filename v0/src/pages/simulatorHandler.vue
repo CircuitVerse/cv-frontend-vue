@@ -21,7 +21,10 @@ export function getToken(name: string) {
 import simulator from './simulator.vue'
 import { onBeforeMount, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { useAuthStore } from '#/store/authStore'
+import { Window } from '@/../../types/window'
+import { useAuthStore } from '../store/authStore'
+
+const wd = window as unknown as Window
 
 const route = useRoute()
 const hasAccess = ref(true)
@@ -30,7 +33,7 @@ const authStore = useAuthStore()
 
 // check if user has edit access to the project
 async function checkEditAccess() {
-    await fetch(`/api/v1/projects/${window.logixProjectId}/check_edit_access`, {
+    await fetch(`/api/v1/projects/${wd.logixProjectId}/check_edit_access`, {
         method: 'GET',
         headers: {
             Accept: 'application/json',
@@ -41,7 +44,7 @@ async function checkEditAccess() {
         if (res.ok) {
             res.json().then((data) => {
                 authStore.setUserInfo(data.data)
-                ;(window as any).isUserLoggedIn = true
+                wd.isUserLoggedIn = true
                 isLoading.value = false
             })
         } else if (res.status === 403) {
@@ -71,9 +74,9 @@ async function getLoginData() {
         if (response.ok) {
             const data = await response.json()
             authStore.setUserInfo(data.data)
-            ;(window as any).isUserLoggedIn = true
+            wd.isUserLoggedIn = true
         } else if (response.status === 401) {
-            ;(window as any).isUserLoggedIn = false
+            wd.isUserLoggedIn = false
         }
     } catch (err) {
         console.error(err)
@@ -83,9 +86,9 @@ async function getLoginData() {
 onBeforeMount(() => {
     // set project id if /edit/:projectId route is used
 
-    ;(window as any).logixProjectId = route.params.projectId
+    wd.logixProjectId = route.params.projectId
     // only execute if projectId is defined
-    if ((window as any).logixProjectId) {
+    if (wd.logixProjectId) {
         checkEditAccess()
     } else {
         // if projectId is not defined open blank simulator

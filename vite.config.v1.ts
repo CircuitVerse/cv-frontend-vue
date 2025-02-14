@@ -3,23 +3,18 @@ import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'url'
 import vueI18n from '@intlify/vite-plugin-vue-i18n'
 
-// https://github.com/vuetifyjs/vuetify-loader/tree/next/packages/vite-plugin
 import vuetify from 'vite-plugin-vuetify'
 import { createHtmlPlugin } from 'vite-plugin-html'
 
-const proxyUrl: string = 'http://localhost:3000'
+const PROXY_URL = 'http://localhost:3000'
+const PORT = 4000
+const CHANGE_ORIGIN = true
 
-
-// https://vitejs.dev/config/
 export default defineConfig({
     plugins: [
         vue(),
         vuetify({ autoImport: true }),
         vueI18n({
-            // if you want to use Vue I18n Legacy API, you need to set `compositionOnly: false`
-            // compositionOnly: false,
-
-            // you need to set i18n resource including paths !
             include: fileURLToPath(
                 new URL(`./v1/src/locales/**`, import.meta.url)
             ),
@@ -27,11 +22,12 @@ export default defineConfig({
         createHtmlPlugin({
             minify: true,
             inject: {
-              data: {
-                injectScript: '<script type="module" src="/v1/src/main.ts"></script>',
-              },
+                data: {
+                    injectScript:
+                        '<script type="module" src="/v1/src/main.ts"></script>',
+                },
             },
-          }),
+        }),
     ],
     resolve: {
         alias: {
@@ -46,23 +42,20 @@ export default defineConfig({
         chunkSizeWarningLimit: 1600,
         rollupOptions: {
             input: {
-                main: fileURLToPath(new URL('index-cv.html', import.meta.url))
-            }
-        }
-
+                main: fileURLToPath(new URL('index-cv.html', import.meta.url)),
+            },
+        },
     },
     server: {
-        port: 4000,
+        port: PORT,
         proxy: {
-            // ...(process.env.NODE_ENV === 'development' && {
             '^/(?!(simulatorvue)).*': {
-                target: proxyUrl,
-                changeOrigin: true,
+                target: PROXY_URL,
+                changeOrigin: CHANGE_ORIGIN,
                 headers: {
-                    origin: proxyUrl,
+                    origin: PROXY_URL,
                 },
             },
-            // }),
         },
     },
 })

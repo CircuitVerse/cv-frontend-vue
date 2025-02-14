@@ -1,27 +1,24 @@
-/*global ...*/
-/*eslint no-undef: "error"*/
-
-declare const window: any
-
 import jQuery from 'jquery'
+import ArrayHelpers from './simulator/src/arrayHelpers.js'
+import type { Window as CustomWindow } from '../../types/window'
+
+declare global {
+    interface Window extends CustomWindow {}
+}
+
 window.$ = window.jQuery = jQuery
 
-import Array from './simulator/src/arrayHelpers.js'
-window.Array = Array
+window.Array = ArrayHelpers
 window.isUserLoggedIn = false
 window.logixProjectId = undefined
-
 window.restrictedElements = []
 window.globalScope = undefined
-window.lightMode = false // To be deprecated
+window.lightMode = false
 window.projectId = undefined
 window.id = undefined
-window.loading = false // Flag - all assets are loaded
-
+window.loading = false
 window.embed = false
-
 window.width = undefined
 window.height = undefined
-window.DPR = window.devicePixelRatio || 1 // devicePixelRatio, 2 for retina displays, 1 for low resolution displays
-
+window.DPR = window.devicePixelRatio || 1
 window.elementHierarchy = []

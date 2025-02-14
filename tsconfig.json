@@ -12,16 +12,18 @@
         "esModuleInterop": true,
         "lib": ["esnext", "dom"],
         "skipLibCheck": true,
-        "baseUrl": "./",
+        "baseUrl": ".",
         "paths": {
             "#/*": ["./src/*"],
-            "@/*": ["./src/components/*"]
+            "@/*": ["./src/components/*"],
+            "~/*": ["./."]
         },
         "allowJs": true,
         "declaration": true,
         "emitDeclarationOnly": true,
         "outDir": "dist",
-        "declarationMap": true
+        "declarationMap": true,
+        "allowSyntheticDefaultImports": true
     },
     "include": [
         "src/**/*.ts",
