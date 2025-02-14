@@ -1,5 +1,5 @@
 <template>
-    <p>
+    <div class="input-group-wrapper">
         <span>{{ propertyName }}</span>
         <div class="input-group">
             <div class="input-group-prepend">
@@ -33,7 +33,7 @@
                 </button>
             </div>
         </div>
-    </p>
+    </div>
 </template>
 
 <script lang="ts" setup>
@@ -79,3 +79,10 @@ function decreaseValue() {
     ele.dispatchEvent(e)
 }
 </script>
+
+<style scoped>
+.input-group-wrapper {
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+}
+</style>
