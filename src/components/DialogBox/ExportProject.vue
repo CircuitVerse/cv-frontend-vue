@@ -36,8 +36,8 @@
     </v-dialog>
 </template>
 
-<script lang="ts">
-import { ref } from 'vue'
+<script lang="ts" setup >
+import { ref , watch,nextTick } from 'vue'
 import { useState } from '#/store/SimulatorStore/state'
 import { useProjectStore } from '#/store/projectStore'
 import { generateSaveData } from '#/simulator/src/data/save'
@@ -47,12 +47,13 @@ import { escapeHtml } from '#/simulator/src/utils'
 export function ExportProject() {
     const SimulatorState = useState()
     SimulatorState.dialogBox.export_project_dialog = true
-    setTimeout(() => {
+    nextTick(() => {
         const fileNameInputField = document.getElementById(
             'fileNameInputField'
         ) as HTMLInputElement
+        fileNameInputField?.focus()
         fileNameInputField?.select()
-    }, 100)
+    })
 }
 </script>
 
