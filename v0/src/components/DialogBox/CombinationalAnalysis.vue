@@ -303,9 +303,17 @@ function generateBooleanTableData(outputListNames) {
         let outputName = outputListNames[i];
         data[outputName] = { x: [], 1: [], 0: [] };
         
-        let tableDiv = document.querySelector("body > div.v-overlay-container > div > div.v-overlay__content > div > div.v-card-text");
-        let table = tableDiv?.querySelector(".content-table");
-        let rows = table?.querySelectorAll("tbody tr") || [];
+        let tableDiv = document.querySelector("[data-test-id='combinational-analysis-table']");
+        if (!tableDiv) {
+            console.error('Table container not found');
+            return {};
+        }
+        let table = tableDiv.querySelector("[data-test-id='content-table']");
+        if (!table) {
+            console.error('Table not found');
+            return {};
+        }
+        let rows = table.querySelectorAll("tbody tr");
         
         [...rows].forEach((row, index) => {
             if (index === 0) return;
