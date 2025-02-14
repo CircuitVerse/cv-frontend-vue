@@ -312,9 +312,21 @@ function generateBooleanTableData(outputListNames) {
             let columns = [...row.querySelectorAll("th")];
             let lastColumnValue = columns.pop()?.innerText.trim();
             
-            ((lastColumnValue === '0') && data[outputName]['0'].push(String(index - 1))) || 
-            ((lastColumnValue === '1') && data[outputName]['1'].push(String(index - 1))) || 
-            data[outputName]['x'].push(String(index - 1));
+            if (!lastColumnValue) {
+                console.error(`Missing value in row ${index}`);
+                continue;
+            }
+            
+            switch(lastColumnValue) {
+                case '0':
+                    data[outputName]['0'].push(String(index - 1));
+                    break;
+                case '1':
+                    data[outputName]['1'].push(String(index - 1));
+                    break;
+                default:
+                    data[outputName]['x'].push(String(index - 1));
+            }
         });
     }
     
