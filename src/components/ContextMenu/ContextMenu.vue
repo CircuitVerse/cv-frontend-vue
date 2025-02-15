@@ -14,11 +14,13 @@
 </template>
 
 <script>
+import { nextTick } from 'vue'
 import undo from '../../simulator/src/data/undo'
 import { paste } from '../../simulator/src/events'
 import { deleteSelected } from '../../simulator/src/ux'
 import { createNewCircuitScope } from '../../simulator/src/circuit'
 import logixFunction from '../../simulator/src/data'
+import { globalScope } from '../../simulator/src/scope' 
 
 export default {
     name: 'ContextMenu',
@@ -47,36 +49,55 @@ export default {
         this.hideContextMenu()
     },
     methods: {
-        hideContextMenu() {
-            var el = document.getElementById('contextMenu')
-            el.style = 'opacity:0;'
-            setTimeout(() => {
-                el.style = 'visibility:hidden;'
+       async hideContextMenu() {
+            const el = document.getElementById('contextMenu')
+            if(el){
+            el.style.opacity='0'
+            await nextTick()
+                el.style.visibility = 'hidden'
                 this.ctxPos.visible = false
-            }, 200) // Hide after 2 sec
+                }
         },
         menuItemClicked(event) {
             this.hideContextMenu()
-            const id = event.target.dataset.index
-            if (id == 0) {
+            const id = parseInt(event.target.dataset.index,10)
+            if (isNaN(id)) {
+              console.warn(`[ContextMenu] Invalid menu option: ${event.target.dataset.index}`)
+            return
+             }
+            switch (id) {
+              case 0:
                 document.execCommand('copy')
-            } else if (id == 1) {
+                break
+            case 1:
                 document.execCommand('cut')
-            } else if (id == 2) {
-                // document.execCommand('paste'); it is restricted to sove this problem we use dataPasted variable
+                break
+              case 2:
+              // document.execCommand('paste'); it is restricted to sove this problem we use dataPasted variable
                 paste(localStorage.getItem('clipboardData'))
-            } else if (id == 3) {
+                break
+          case 3:
                 deleteSelected()
-            } else if (id == 4) {
+                break
+            case 4:
                 undo()
-            } else if (id == 5) {
+                break
+           case 5:
                 createNewCircuitScope()
-            } else if (id == 6) {
+                break
+            case 6:
                 logixFunction.createSubCircuitPrompt()
-            } else if (id == 7) {
-                globalScope.centerFocus(false)
-            }
-        },
+                break
+            case 7:
+                  if (globalScope && typeof globalScope.centerFocus === 'function') {
+                        globalScope.centerFocus(false)
+                    } else {
+                        console.warn(`[ContextMenu] globalScope.centerFocus is not available.`)
+                    }
+                break
+                default:
+                console.warn(`[ContextMenu] Unknown menu option selected: ${id}`)
+        }
     },
 }
 </script>
