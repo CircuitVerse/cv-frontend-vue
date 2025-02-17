@@ -1,11 +1,11 @@
 <template>
-    <div id="contextMenu" oncontextmenu="return false;">
+    <div id="contextMenu" oncontextmenu="return false;" v-show="ctxPos.visible" :style="contextMenuStyle">
         <ul>
             <li
                 v-for="(menuOption, index) in contextMenuOptions"
                 :key="index"
                 :data-index="index"
-                @click="menuItemClicked($event)"
+                @click="menuItemClicked(index)"
             >
                 {{ menuOption }}
             </li>
@@ -35,11 +35,18 @@ export default {
                 'Center Focus',
             ],
             ctxPos: {
-                x: 0,
-                y: 0,
                 visible: false,
             },
         }
+    },
+    computed: {
+        contextMenuStyle() {
+            return {
+                opacity: this.ctxPos.visible ? '1' : '0',
+                visibility: this.ctxPos.visible ? 'visible' : 'hidden',
+                transition: 'opacity 0.2s ease-in-out',
+            };
+        },
     },
 
     // Lifecycle hook on mounted - dont initially display the context menu
@@ -48,34 +55,25 @@ export default {
     },
     methods: {
         hideContextMenu() {
-            var el = document.getElementById('contextMenu')
-            el.style = 'opacity:0;'
-            setTimeout(() => {
-                el.style = 'visibility:hidden;'
-                this.ctxPos.visible = false
-            }, 200) // Hide after 2 sec
+             this.ctxPos.visible = false;
         },
-        menuItemClicked(event) {
+        showContextMenu() {
+            this.ctxPos.visible = true;
+        },
+        menuItemClicked(index) {
             this.hideContextMenu()
-            const id = event.target.dataset.index
-            if (id == 0) {
-                document.execCommand('copy')
-            } else if (id == 1) {
-                document.execCommand('cut')
-            } else if (id == 2) {
-                // document.execCommand('paste'); it is restricted to sove this problem we use dataPasted variable
-                paste(localStorage.getItem('clipboardData'))
-            } else if (id == 3) {
-                deleteSelected()
-            } else if (id == 4) {
-                undo()
-            } else if (id == 5) {
-                createNewCircuitScope()
-            } else if (id == 6) {
-                logixFunction.createSubCircuitPrompt()
-            } else if (id == 7) {
-                globalScope.centerFocus(false)
-            }
+           const actions = [
+                () => document.execCommand('copy'),
+                () => document.execCommand('cut'),
+                () => paste(localStorage.getItem('clipboardData')),
+                deleteSelected,
+                undo,
+                createNewCircuitScope,
+                logixFunction.createSubCircuitPrompt,
+                () => globalScope.centerFocus(false),
+            ];
+            if (actions[index]) actions[index]();
+            
         },
     },
 }
