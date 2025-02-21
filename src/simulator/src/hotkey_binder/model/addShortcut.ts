@@ -1,8 +1,4 @@
-// import { shortcut } from './Shortcuts.plugin';
-// import createSaveAsImgPrompt from '../../data/saveImage';
-//Assign the callback func for the keymap here
 import {
-    // createNewCircuitScopeCall,
     elementDirection,
     insertLabel,
     labelDirection,
@@ -18,11 +14,43 @@ import { createCombinationalAnalysisPrompt } from '../../combinationalAnalysis'
 import { shortcut } from './shortcuts.plugin'
 import logixFunction from '../../data'
 
-export const addShortcut = (keys, action) => {
-    let callback
+type ActionType = 
+    | 'New Circuit'
+    | 'Save Online'
+    | 'Save Offline'
+    | 'Download as Image'
+    | 'Open Offline'
+    | 'Insert Sub-circuit'
+    | 'Combinational Analysis'
+    | 'Direction Up'
+    | 'Direction Down'
+    | 'Direction Left'
+    | 'Direction Right'
+    | 'Insert Label'
+    | 'Label Direction Up'
+    | 'Label Direction Down'
+    | 'Label Direction Left'
+    | 'Label Direction Right'
+    | 'Move Element Up'
+    | 'Move Element Down'
+    | 'Move Element Left'
+    | 'Move Element Right'
+    | 'Hotkey Preference'
+    | 'Open Documentation'
+
+interface ShortcutOptions {
+    type: string
+    propagate: boolean
+    target: Document
+    disable_in_input: boolean
+}
+
+export const addShortcut = (keys: string, action: ActionType): void => {
+    let callback: () => void
+
     switch (action) {
         case 'New Circuit':
-            callback = logixFunction.createNewCircuitScope // TODO: directly call rather than using dom click
+            callback = logixFunction.createNewCircuitScope
             break
         case 'Save Online':
             callback = save
@@ -89,12 +117,14 @@ export const addShortcut = (keys, action) => {
             break
         default:
             callback = () => console.error('No shortcut found..')
-            break
     }
-    shortcut.add(keys, callback, {
+
+    const options: ShortcutOptions = {
         type: 'keydown',
         propagate: false,
         target: document,
         disable_in_input: true,
-    })
+    }
+
+    shortcut.add(keys, callback, options)
 }
