@@ -1,25 +1,26 @@
-// import { shortcut } from './Shortcuts.plugin';
-// import createSaveAsImgPrompt from '../../data/saveImage';
-//Assign the callback func for the keymap here
 import {
-    // createNewCircuitScopeCall,
     elementDirection,
     insertLabel,
     labelDirection,
     openHotkey,
     moveElement,
     openDocumentation,
-} from './actions'
-import save from '../../data/save'
-import { saveOffline, openOffline } from '../../data/project'
-import createSaveAsImgPrompt from '../../data/saveImage'
-import { createSubCircuitPrompt } from '../../subcircuit'
-import { createCombinationalAnalysisPrompt } from '../../combinationalAnalysis'
-import { shortcut } from './shortcuts.plugin'
-import logixFunction from '../../data'
+} from './actions.js'
+import save from '../../data/save.js'
+import { saveOffline, openOffline } from '../../data/project.js'
+import createSaveAsImgPrompt from '../../data/saveImage.js'
+import { createSubCircuitPrompt } from '../../subcircuit.js'
+import { createCombinationalAnalysisPrompt } from '../../combinationalAnalysis.js'
+import { shortcut } from './shortcuts.plugin.js'
+import logixFunction from '../../data.js'
+import { ActionType, ShortcutOptions } from './model.types.js'
 
-export const addShortcut = (keys, action) => {
-    let callback
+// Add space after comment as per linter rule
+// Assign the callback func for the keymap here
+
+export default function addShortcut(keys: string, action: ActionType): void {
+    let callback: () => void = () => console.error('No shortcut found..')
+    
     switch (action) {
         case 'New Circuit':
             callback = logixFunction.createNewCircuitScope // TODO: directly call rather than using dom click
@@ -87,14 +88,14 @@ export const addShortcut = (keys, action) => {
         case 'Open Documentation':
             callback = openDocumentation
             break
-        default:
-            callback = () => console.error('No shortcut found..')
-            break
     }
-    shortcut.add(keys, callback, {
+
+    const options: ShortcutOptions = {
         type: 'keydown',
         propagate: false,
         target: document,
         disable_in_input: true,
-    })
-}
+    }
+
+    shortcut.add(keys, callback, options)
+} 
