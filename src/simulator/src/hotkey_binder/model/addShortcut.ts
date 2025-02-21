@@ -13,8 +13,9 @@ import { createSubCircuitPrompt } from '../../subcircuit'
 import { createCombinationalAnalysisPrompt } from '../../combinationalAnalysis'
 import { shortcut } from './shortcuts.plugin'
 import logixFunction from '../../data'
+import { ShortcutOptions } from './model.types'
 
-type ActionType = 
+export type ActionType =
     | 'New Circuit'
     | 'Save Online'
     | 'Save Offline'
@@ -38,15 +39,12 @@ type ActionType =
     | 'Hotkey Preference'
     | 'Open Documentation'
 
-interface ShortcutOptions {
-    type: string
-    propagate: boolean
-    target: Document
-    disable_in_input: boolean
-}
-
-export const addShortcut = (keys: string, action: ActionType): void => {
-    let callback: () => void
+export const addShortcut = (
+    keys: string,
+    action: ActionType,
+    customOptions?: Partial<ShortcutOptions>
+): void => {
+    let callback: (() => void) | (() => Promise<void>)
 
     switch (action) {
         case 'New Circuit':
@@ -124,6 +122,7 @@ export const addShortcut = (keys: string, action: ActionType): void => {
         propagate: false,
         target: document,
         disable_in_input: true,
+        ...customOptions
     }
 
     shortcut.add(keys, callback, options)
