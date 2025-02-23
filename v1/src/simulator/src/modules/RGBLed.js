@@ -1,8 +1,7 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { correctWidth, lineTo, moveTo, arc, drawCircle2 } from '../canvasApi'
-import { changeInputSize } from '../modules'
 /**
  * @class
  * RGBLed
@@ -18,12 +17,10 @@ export default class RGBLed extends CircuitElement {
     constructor(x, y, scope = globalScope) {
         // Calling base class constructor
         super(x, y, scope, 'UP', 8)
-        /* this is done in this.baseSetup() now
-        this.scope['RGBLed'].push(this);
-        */
         this.rectangleObject = false
         this.inp = []
         this.setDimensions(10, 10)
+        this.downDimensionY = 40;
         this.inp1 = new Node(-40, -10, 0, this, 8)
         this.inp2 = new Node(-40, 0, 0, this, 8)
         this.inp3 = new Node(-40, 10, 0, this, 8)
@@ -89,7 +86,6 @@ export default class RGBLed extends CircuitElement {
             `rgba(${a}, ${b}, ${c}, 0.8)`,
             'rgba(227, 228, 229, 0.8)',
         ][(a === undefined || b === undefined || c === undefined) + 0]
-        // ctx.fillStyle = ["rgba(200, 200, 200, 0.3)","rgba(227, 228, 229, 0.8)"][((a === undefined || b === undefined || c === undefined) || (a === 0 && b === 0 && c === 0)) + 0];
         ctx.lineWidth = correctWidth(1)
 
         ctx.beginPath()
@@ -115,7 +111,7 @@ export default class RGBLed extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         )
             ctx.fillStyle = colors['hover_select']
         ctx.fill()
@@ -145,7 +141,7 @@ export default class RGBLed extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected == this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         )
             ctx.fillStyle = 'rgba(255, 255, 32,0.8)'
         ctx.fill()

@@ -121,11 +121,10 @@ function openProjectOffline() {
     
     // Handle version mismatch logic
     if (!simulatorVersion) {
-        // If no version, proceed directly
+        // If no version, proceed directly to legacy simulator
         targetVersion.value = "Legacy"
         SimulatorState.dialogBox.version_mismatch_dialog = true           
     } else if (simulatorVersion && simulatorVersion != "v0") {
-        // Set the targetVersion and show the version mismatch dialog
         targetVersion.value = simulatorVersion
         SimulatorState.dialogBox.version_mismatch_dialog = true
     } else {
