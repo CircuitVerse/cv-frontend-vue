@@ -44,7 +44,7 @@ export default defineConfig(() => ({
                 inline: ['vuetify'],
             },
         },
-        setupFiles: './src/simulator/spec/vitestSetup.ts',
+        setupFiles: './v0/src/simulator/spec/vitestSetup.ts',
     },
     server: {
         port: 4000,
