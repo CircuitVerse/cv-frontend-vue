@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { correctWidth, lineTo, moveTo, rect2 } from '../canvasApi'
 
 /**
@@ -17,9 +17,6 @@ import { correctWidth, lineTo, moveTo, rect2 } from '../canvasApi'
 export default class SquareRGBLed extends CircuitElement {
     constructor(x, y, scope = globalScope, dir = 'UP', pinLength = 1) {
         super(x, y, scope, dir, 8)
-        /* this is done in this.baseSetup() now
-        this.scope['SquareRGBLed'].push(this);
-        */
         this.rectangleObject = false
         this.setDimensions(15, 15)
         this.pinLength = pinLength === undefined ? 1 : pinLength
@@ -146,7 +143,7 @@ export default class SquareRGBLed extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         ) {
             ctx.fillStyle = 'rgba(255, 255, 32)'
         }
@@ -175,7 +172,7 @@ export default class SquareRGBLed extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected == this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         ) {
             ctx.fillStyle = 'rgba(255, 255, 32)'
         }

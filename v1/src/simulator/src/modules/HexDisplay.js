@@ -1,16 +1,14 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import {
     correctWidth,
     lineTo,
     moveTo,
-    arc,
     rect2,
     validColor,
     colorToRGBA,
 } from '../canvasApi'
-import { changeInputSize } from '../modules'
 /**
  * @class
  * HexDisplay
@@ -25,9 +23,6 @@ import { colors } from '../themer/themer'
 export default class HexDisplay extends CircuitElement {
     constructor(x, y, scope = globalScope, color = 'Red') {
         super(x, y, scope, 'RIGHT', 4)
-        /* this is done in this.baseSetup() now
-        this.scope['HexDisplay'].push(this);
-        */
         this.directionFixed = true
         this.fixedBitWidth = true
         this.setDimensions(30, 50)
@@ -95,9 +90,6 @@ export default class HexDisplay extends CircuitElement {
      */
     customDraw() {
         var ctx = simulationArea.context
-
-        const xx = this.x
-        const yy = this.y
 
         ctx.strokeStyle = colors['stroke']
         ctx.lineWidth = correctWidth(3)
@@ -366,7 +358,7 @@ export default class HexDisplay extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected == this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         ) {
             ctx.fillStyle = 'rgba(255, 255, 32,0.6)'
             ctx.fill()

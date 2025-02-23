@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { correctWidth, rect2, rotate, lineTo, moveTo } from '../canvasApi'
 
 /**
@@ -28,9 +28,6 @@ export default class RGBLedMatrix extends CircuitElement {
         } = {}
     ) {
         super(x, y, scope, 'RIGHT', 8)
-        /* this is done in this.baseSetup() now
-        this.scope['RGBLedMatrix'].push(this);
-        */
         this.fixedBitWidth = true
         this.directionFixed = true
         this.rectangleObject = true

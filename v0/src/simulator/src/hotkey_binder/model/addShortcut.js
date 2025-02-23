@@ -2,7 +2,7 @@
 // import createSaveAsImgPrompt from '../../data/saveImage';
 //Assign the callback func for the keymap here
 import {
-    createNewCircuitScopeCall,
+    // createNewCircuitScopeCall,
     elementDirection,
     insertLabel,
     labelDirection,
@@ -15,13 +15,14 @@ import { saveOffline, openOffline } from '../../data/project'
 import createSaveAsImgPrompt from '../../data/saveImage'
 import { createSubCircuitPrompt } from '../../subcircuit'
 import { createCombinationalAnalysisPrompt } from '../../combinationalAnalysis'
-import { shortcut } from './shortcuts.plugin.js'
+import { shortcut } from './shortcuts.plugin'
+import logixFunction from '../../data'
 
 export const addShortcut = (keys, action) => {
     let callback
     switch (action) {
         case 'New Circuit':
-            callback = createNewCircuitScopeCall // TODO: directly call rather than using dom click
+            callback = logixFunction.createNewCircuitScope // TODO: directly call rather than using dom click
             break
         case 'Save Online':
             callback = save
@@ -40,10 +41,7 @@ export const addShortcut = (keys, action) => {
             break
         case 'Combinational Analysis':
             callback = createCombinationalAnalysisPrompt
-            break //bug
-        // case "Start Plot":
-        // 	callback = startPlot;
-        // 	break;
+            break
         case 'Direction Up':
             callback = elementDirection('up')
             break
@@ -90,7 +88,7 @@ export const addShortcut = (keys, action) => {
             callback = openDocumentation
             break
         default:
-            callback = () => console.log('No shortcut found..')
+            callback = () => console.error('No shortcut found..')
             break
     }
     shortcut.add(keys, callback, {
