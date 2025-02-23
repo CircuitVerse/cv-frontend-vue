@@ -1,4 +1,3 @@
-import { useActions } from './store/SimulatorStore/actions'
 import { createApp } from 'vue'
 import App from './App.vue'
 import vuetify from './plugins/vuetify'
@@ -12,7 +11,7 @@ import 'bootstrap'
 import './globalVariables'
 
 import './styles/css/main.stylesheet.css'
-import '../../node_modules/bootstrap/scss/bootstrap.scss'
+import '../node_modules/bootstrap/scss/bootstrap.scss'
 import './styles/color_theme.scss'
 import './styles/simulator.scss'
 import './styles/tutorials.scss'

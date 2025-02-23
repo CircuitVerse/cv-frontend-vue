@@ -1,5 +1,4 @@
 <template>
-    <!-- Existing Open Project Dialog -->
     <v-dialog
         v-model="SimulatorState.dialogBox.open_project_dialog"
         :persistent="false"
@@ -27,11 +26,12 @@
                             type="radio"
                             name="projectId"
                             :value="projectId"
+                            v-model="selectedProjectId"
                         />
                         {{ projectName }}<span></span>
                         <i
                             class="fa fa-trash deleteOfflineProject"
-                            @click="deleteOfflineProject(projectId)"
+                            @click="deleteOfflineProject(projectId.toString())"
                         ></i>
                     </label>
                     <p v-if="JSON.stringify(projectList) == '{}'">
@@ -88,23 +88,24 @@
 <script lang="ts" setup>
 import load from '#/simulator/src/data/load'
 import { useState } from '#/store/SimulatorStore/state'
-import { onMounted, onUpdated, ref, toRaw } from '@vue/runtime-core'
+import { onMounted, onUpdated, ref } from '@vue/runtime-core'
 const SimulatorState = useState()
-const projectList = ref({})
-const targetVersion = ref('') 
-let projectName = '' 
+const projectList = ref<{ [key: string]: string }>({})
+const selectedProjectId = ref<string | null>(null)
+
 onMounted(() => {
     SimulatorState.dialogBox.open_project_dialog = false
 })
 
 onUpdated(() => {
-    var data = localStorage.getItem('projectList')
-    projectList.value = JSON.parse(localStorage.getItem('projectList')) || {}
+    const data = localStorage.getItem('projectList')
+    projectList.value = data ? JSON.parse(data) : {}
 })
 
-function deleteOfflineProject(id) {
+function deleteOfflineProject(id: string) {
     localStorage.removeItem(id)
-    const temp = JSON.parse(localStorage.getItem('projectList')) || {}
+    const data = localStorage.getItem('projectList')
+    const temp = data ? JSON.parse(data) : {}
     delete temp[id]
     projectList.value = temp
     localStorage.setItem('projectList', JSON.stringify(temp))
