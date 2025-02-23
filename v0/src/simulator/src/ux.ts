@@ -4,7 +4,7 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable guard-for-in */
 
-import { reactive, ref } from 'vue';
+import { reactive } from 'vue';
 import { layoutModeGet } from './layoutMode';
 import {
   scheduleUpdate,
@@ -70,6 +70,114 @@ const ctxPos = reactive<ContextPosition>({
 let prevPropertyObj: any = undefined;
 
 /* =====================================================
+   Helper Functions
+===================================================== */
+
+/**
+ * Computes the CSS style values for positioning the context menu.
+ * @param x - The x coordinate.
+ * @param y - The y coordinate.
+ * @param simRect - The bounding rect of the simulation area.
+ * @param menuRect - The bounding rect of the context menu.
+ */
+function getContextMenuStyles(
+  x: number,
+  y: number,
+  simRect: DOMRect,
+  menuRect: DOMRect
+): Partial<CSSStyleDeclaration> {
+  const styles: Partial<CSSStyleDeclaration> = {};
+  const availableHeight = simRect.height - menuRect.height - 10;
+  const availableWidth = simRect.width - menuRect.width - 10;
+
+  if (y > availableHeight && x <= availableWidth) {
+    // When user clicks on bottom-left part of window
+    styles.left = `${x}px`;
+    styles.bottom = `${simRect.height - y}px`;
+    styles.top = '';
+    styles.right = '';
+  } else if (y > availableHeight && x > availableWidth) {
+    // When user clicks on bottom-right part of window
+    styles.right = `${simRect.width - x}px`;
+    styles.bottom = `${simRect.height - y}px`;
+    styles.left = '';
+    styles.top = '';
+  } else if (y <= availableHeight && x <= availableWidth) {
+    // When user clicks on top-left part of window
+    styles.left = `${x}px`;
+    styles.top = `${y}px`;
+    styles.right = '';
+    styles.bottom = '';
+  } else {
+    // When user clicks on top-right part of window
+    styles.right = `${simRect.width - x}px`;
+    styles.top = `${y}px`;
+    styles.left = '';
+    styles.bottom = '';
+  }
+  return styles;
+}
+
+/**
+ * Binds (and rebinds) a set of events to all elements matching a selector.
+ * @param selector - The CSS selector.
+ * @param handler - The event handler function.
+ */
+function bindEventListenersForSelector(selector: string, handler: EventListener): void {
+  document.querySelectorAll(selector).forEach((el) => {
+    ['change', 'keyup', 'paste', 'click'].forEach((evt) => {
+      el.removeEventListener(evt, handler);
+      el.addEventListener(evt, handler);
+    });
+  });
+}
+
+/**
+ * Toggles panel visibility by setting display properties.
+ * @param body - The panel body element.
+ * @param minimizeBtn - The minimize button element.
+ * @param maximizeBtn - The maximize button element.
+ * @param minimize - Whether to minimize (true) or maximize (false).
+ */
+function togglePanel(
+  body: HTMLElement,
+  minimizeBtn: HTMLElement,
+  maximizeBtn: HTMLElement,
+  minimize: boolean
+): void {
+  if (minimize) {
+    body.style.display = 'none';
+    minimizeBtn.style.display = 'none';
+    maximizeBtn.style.display = '';
+  } else {
+    body.style.display = '';
+    minimizeBtn.style.display = '';
+    maximizeBtn.style.display = 'none';
+  }
+}
+
+/**
+ * Builds the HTML string for a subcircuit panel.
+ * @param el - The element type.
+ * @param elements - Array of circuit elements.
+ */
+function buildSubcircuitPanel(el: string, elements: any[]): string {
+  let html = `<div class="panelHeader">${el}s</div><div class="panel">`;
+  let available = false;
+  elements.forEach((element, index) => {
+    if (!element.subcircuitMetadata.showInSubcircuit) {
+      html += `<div class="icon subcircuitModule" id="${el}-${index}" data-element-id="${index}" data-element-name="${el}">
+        <img src="/img/${el}.svg">
+        <p class="img__description">${element.label !== '' ? element.label : 'unlabeled'}</p>
+      </div>`;
+      available = true;
+    }
+  });
+  html += '</div>';
+  return available ? html : '';
+}
+
+/* =====================================================
    Context Menu Functions
 ===================================================== */
 
@@ -92,61 +200,20 @@ export function hideContextMenu(): void {
  * @category ux
  */
 export function showContextMenu(e: MouseEvent): boolean {
-  if (layoutModeGet()) return false; // Hide context menu when it is in Layout Mode
+  if (layoutModeGet()) return false; // Hide context menu when in Layout Mode
 
   const contextMenu = document.getElementById('contextMenu');
   const simulationAreaEl = document.getElementById('simulationArea');
   if (!contextMenu || !simulationAreaEl) return false;
 
-  // Set context menu to be visible and fully opaque.
   contextMenu.style.visibility = 'visible';
   contextMenu.style.opacity = '1';
 
-  // Get dimensions using native DOM APIs
   const simRect = simulationAreaEl.getBoundingClientRect();
   const menuRect = contextMenu.getBoundingClientRect();
-  const windowHeight = simRect.height - menuRect.height - 10;
-  const windowWidth = simRect.width - menuRect.width - 10;
+  const styles = getContextMenuStyles(ctxPos.x, ctxPos.y, simRect, menuRect);
+  Object.assign(contextMenu.style, styles);
 
-  // for top, left, right, bottom
-  let topPosition: string = '';
-  let leftPosition: string = '';
-  let rightPosition: string = '';
-  let bottomPosition: string = '';
-
-  if (ctxPos.y > windowHeight && ctxPos.x <= windowWidth) {
-    // When user clicks on bottom-left part of window
-    leftPosition = `${ctxPos.x}px`;
-    bottomPosition = `${simRect.height - ctxPos.y}px`;
-    contextMenu.style.left = leftPosition;
-    contextMenu.style.bottom = bottomPosition;
-    contextMenu.style.right = '';
-    contextMenu.style.top = '';
-  } else if (ctxPos.y > windowHeight && ctxPos.x > windowWidth) {
-    // When user clicks on bottom-right part of window
-    bottomPosition = `${simRect.height - ctxPos.y}px`;
-    rightPosition = `${simRect.width - ctxPos.x}px`;
-    contextMenu.style.right = rightPosition;
-    contextMenu.style.bottom = bottomPosition;
-    contextMenu.style.left = '';
-    contextMenu.style.top = '';
-  } else if (ctxPos.y <= windowHeight && ctxPos.x <= windowWidth) {
-    // When user clicks on top-left part of window
-    leftPosition = `${ctxPos.x}px`;
-    topPosition = `${ctxPos.y}px`;
-    contextMenu.style.left = leftPosition;
-    contextMenu.style.top = topPosition;
-    contextMenu.style.right = '';
-    contextMenu.style.bottom = '';
-  } else {
-    // When user clicks on top-right part of window
-    rightPosition = `${simRect.width - ctxPos.x}px`;
-    topPosition = `${ctxPos.y}px`;
-    contextMenu.style.right = rightPosition;
-    contextMenu.style.top = topPosition;
-    contextMenu.style.left = '';
-    contextMenu.style.bottom = '';
-  }
   ctxPos.visible = true;
   return false;
 }
@@ -156,6 +223,40 @@ export function showContextMenu(e: MouseEvent): boolean {
 ===================================================== */
 
 /**
+ * Sets up a global mousedown event that hides the context menu when clicking outside it.
+ */
+function setupGlobalMousedown(contextMenu: HTMLElement): void {
+  document.addEventListener('mousedown', (e: MouseEvent) => {
+    const rect = contextMenu.getBoundingClientRect();
+    const inside =
+      e.clientX >= rect.left &&
+      e.clientX <= rect.right &&
+      e.clientY >= rect.top &&
+      e.clientY <= rect.bottom;
+    if (ctxPos.visible && e.button !== 2 && !inside) {
+      hideContextMenu();
+    }
+    // Update context menu position coordinates
+    ctxPos.x = e.clientX;
+    ctxPos.y = e.clientY;
+  });
+}
+
+/**
+ * Binds click events to all logix buttons.
+ */
+function bindLogixButtons(): void {
+  document.querySelectorAll<HTMLButtonElement>('.logixButton').forEach((button) => {
+    button.addEventListener('click', () => {
+      const fn = logixFunction[button.id];
+      if (typeof fn === 'function') {
+        fn();
+      }
+    });
+  });
+}
+
+/**
  * Adds some UI elements to side bar and menu,
  * also attaches listeners to sidebar.
  * @category ux
@@ -163,30 +264,12 @@ export function showContextMenu(e: MouseEvent): boolean {
 export function setupUI(): void {
   const contextMenu = document.getElementById('contextMenu');
   if (!contextMenu) {
-    console.error("Context menu element not found");
+    console.error('Context menu element not found');
     return;
   }
 
-  // Global mousedown event: hide context menu if clicking outside it.
-  document.addEventListener('mousedown', (e: MouseEvent) => {
-    const rect = contextMenu.getBoundingClientRect();
-    // Check if mouse is not inside the context menu and menu is visible
-    if (
-      ctxPos.visible &&
-      e.button !== 2 && // ignore right-click
-      !(e.clientX >= rect.left &&
-        e.clientX <= rect.right &&
-        e.clientY >= rect.top &&
-        e.clientY <= rect.bottom)
-    ) {
-      hideContextMenu();
-    }
-    // Change the position of context whenever mouse is clicked
-    ctxPos.x = e.clientX;
-    ctxPos.y = e.clientY;
-  });
+  setupGlobalMousedown(contextMenu);
 
-  // Bind context menu event to canvas area
   const canvasArea = document.getElementById('canvasArea');
   if (canvasArea) {
     canvasArea.addEventListener('contextmenu', (e: MouseEvent) => {
@@ -196,26 +279,9 @@ export function setupUI(): void {
     });
   }
 
-  // Bind click events for all buttons with the "logixButton" class.
-  document.querySelectorAll<HTMLButtonElement>('.logixButton').forEach((button) => {
-    button.addEventListener('click', () => {
-      const fn = logixFunction[button.id];
-      if (typeof fn === 'function') {
-        fn();
-      }
-    });
-  });
-
-  // Commented jQuery UI code (not working):
-  // $('#sideBar').resizable({ handles: 'e', // minWidth:270, });
-  // $('#menu, #subcircuitMenu').accordion({ collapsible: true, active: false, heightStyle: 'content', });
-
-  // calling apply on select theme in dropdown
-  // $('#saveAsImg').on('click',function(){ saveAsImg(); });
-  // $('#Save').on('click',function(){ Save(); });
-  // $('#moduleProperty').draggable();
+  bindLogixButtons();
   setupPanels();
-  // setupVerilogExportCodeWindow(); // Uncomment if Verilog export window is needed
+  // Uncomment if needed: setupVerilogExportCodeWindow();
 }
 
 /* =====================================================
@@ -244,7 +310,7 @@ function checkValidBitWidth(): void {
   if (!selector) return;
   const val = Number(selector.value);
   if (!selector.value || val > 32 || val < 1 || isNaN(val)) {
-    // fallback to previously saved state
+    // Fallback to previously saved state
     selector.value = selector.getAttribute('old-val') || '';
   } else {
     selector.setAttribute('old-val', selector.value);
@@ -295,27 +361,8 @@ export function objectPropertyAttributeCheckedUpdate(event: Event): void {
  * Attaches event listeners to property attribute elements.
  */
 export function checkPropertiesUpdate(): void {
-  document.querySelectorAll('.objectPropertyAttribute').forEach((el) => {
-    el.removeEventListener('change', objectPropertyAttributeUpdate);
-    el.removeEventListener('keyup', objectPropertyAttributeUpdate);
-    el.removeEventListener('paste', objectPropertyAttributeUpdate);
-    el.removeEventListener('click', objectPropertyAttributeUpdate);
-    el.addEventListener('change', objectPropertyAttributeUpdate);
-    el.addEventListener('keyup', objectPropertyAttributeUpdate);
-    el.addEventListener('paste', objectPropertyAttributeUpdate);
-    el.addEventListener('click', objectPropertyAttributeUpdate);
-  });
-
-  document.querySelectorAll('.objectPropertyAttributeChecked').forEach((el) => {
-    el.removeEventListener('change', objectPropertyAttributeCheckedUpdate);
-    el.removeEventListener('keyup', objectPropertyAttributeCheckedUpdate);
-    el.removeEventListener('paste', objectPropertyAttributeCheckedUpdate);
-    el.removeEventListener('click', objectPropertyAttributeCheckedUpdate);
-    el.addEventListener('change', objectPropertyAttributeCheckedUpdate);
-    el.addEventListener('keyup', objectPropertyAttributeCheckedUpdate);
-    el.addEventListener('paste', objectPropertyAttributeCheckedUpdate);
-    el.addEventListener('click', objectPropertyAttributeCheckedUpdate);
-  });
+  bindEventListenersForSelector('.objectPropertyAttribute', objectPropertyAttributeUpdate);
+  bindEventListenersForSelector('.objectPropertyAttributeChecked', objectPropertyAttributeCheckedUpdate);
 }
 
 /**
@@ -387,8 +434,12 @@ export function deleteSelected(): void {
   }
 
   for (let i = 0; i < simulationArea.multipleObjectSelections.length; i++) {
-    if (!(simulationArea.multipleObjectSelections[i].objectType === 'Node' && simulationArea.multipleObjectSelections[i].type !== 2))
+    if (
+      !(simulationArea.multipleObjectSelections[i].objectType === 'Node' &&
+        simulationArea.multipleObjectSelections[i].type !== 2)
+    ) {
       simulationArea.multipleObjectSelections[i].cleanDelete();
+    }
   }
 
   simulationArea.multipleObjectSelections = [];
@@ -407,7 +458,6 @@ export function setupPanels(): void {
   // Setup dragging for quick buttons (using our imported dragging function)
   dragging('#dragQPanel', '.quick-btn');
 
-  // Setup panel listeners for multiple UI panels
   const panelSelectors = [
     '.elementPanel',
     '.layoutElementPanel',
@@ -462,28 +512,21 @@ function setupPanelListeners(panelSelector: string): void {
   const minimizeBtn = panel.querySelector('.minimize') as HTMLElement;
   const maximizeBtn = panel.querySelector('.maximize') as HTMLElement;
   const body = panel.querySelector('.panel-body') as HTMLElement;
-
   if (!header) return;
 
   // Make the panel draggable using our imported "dragging" function.
   dragging(header, panelSelector);
-  // Double-click on header toggles minimize/maximize
+
   let minimized = false;
   header.addEventListener('dblclick', () => {
     minimized ? maximizeBtn?.click() : minimizeBtn?.click();
   });
-  // Minimize panel
   minimizeBtn?.addEventListener('click', () => {
-    if (body) body.style.display = 'none';
-    minimizeBtn.style.display = 'none';
-    if (maximizeBtn) maximizeBtn.style.display = '';
+    togglePanel(body, minimizeBtn, maximizeBtn, true);
     minimized = true;
   });
-  // Maximize panel
   maximizeBtn?.addEventListener('click', () => {
-    if (body) body.style.display = '';
-    minimizeBtn.style.display = '';
-    maximizeBtn.style.display = 'none';
+    togglePanel(body, minimizeBtn, maximizeBtn, false);
     minimized = false;
   });
 }
@@ -499,13 +542,13 @@ export function exitFullView(): void {
   const exitViewBtn = document.getElementById('exitViewBtn');
   if (exitViewBtn) exitViewBtn.remove();
 
-  document.querySelectorAll('.navbar, .modules, .report-sidebar, #tabsBar, #moduleProperty, .timing-diagram-panel, .testbench-manual-panel, .quick-btn').forEach(
-    (element) => {
-      if (element instanceof HTMLElement) {
-        element.style.display = '';
-      }
+  document.querySelectorAll(
+    '.navbar, .modules, .report-sidebar, #tabsBar, #moduleProperty, .timing-diagram-panel, .testbench-manual-panel, .quick-btn'
+  ).forEach((element) => {
+    if (element instanceof HTMLElement) {
+      element.style.display = '';
     }
-  );
+  });
 }
 
 /**
@@ -519,13 +562,13 @@ export function fullView(): void {
   exitViewEl.id = 'exitViewBtn';
   exitViewEl.textContent = 'Exit Full Preview';
 
-  document.querySelectorAll('.navbar, .modules, .report-sidebar, #tabsBar, #moduleProperty, .timing-diagram-panel, .testbench-manual-panel, .quick-btn').forEach(
-    (element) => {
-      if (element instanceof HTMLElement) {
-        element.style.display = 'none';
-      }
+  document.querySelectorAll(
+    '.navbar, .modules, .report-sidebar, #tabsBar, #moduleProperty, .timing-diagram-panel, .testbench-manual-panel, .quick-btn'
+  ).forEach((element) => {
+    if (element instanceof HTMLElement) {
+      element.style.display = 'none';
     }
-  );
+  });
 
   app.appendChild(exitViewEl);
   exitViewEl.addEventListener('click', exitFullView);
@@ -547,28 +590,11 @@ export function fillSubcircuitElements(): void {
   for (const el of circuitElementList) {
     if (globalScope[el].length === 0) continue;
     if (!globalScope[el][0].canShowInSubcircuit) continue;
-    let tempHTML = '';
-
-    // add a panel for each existing group
-    tempHTML += `<div class="panelHeader">${el}s</div>`;
-    tempHTML += `<div class="panel">`;
-
-    let available = false;
-    // add an SVG for each element
-    for (let i = 0; i < globalScope[el].length; i++) {
-      if (!globalScope[el][i].subcircuitMetadata.showInSubcircuit) {
-        tempHTML += `<div class="icon subcircuitModule" id="${el}-${i}" data-element-id="${i}" data-element-name="${el}">`;
-        tempHTML += `<img src="/img/${el}.svg">`;
-        tempHTML += `<p class="img__description">${
-          globalScope[el][i].label !== '' ? globalScope[el][i].label : 'unlabeled'
-        }</p>`;
-        tempHTML += '</div>';
-        available = true;
-      }
+    const panelHtml = buildSubcircuitPanel(el, globalScope[el]);
+    if (panelHtml) {
+      subCircuitElementExists = true;
+      subcircuitMenu.innerHTML += panelHtml;
     }
-    tempHTML += '</div>';
-    subCircuitElementExists = subCircuitElementExists || available;
-    if (available) subcircuitMenu.innerHTML += tempHTML;
   }
 
   if (!subCircuitElementExists) {
