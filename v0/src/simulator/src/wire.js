@@ -1,7 +1,7 @@
 /* eslint-disable no-multi-assign */
 // wire object
 import { drawLine } from './canvasApi'
-import simulationArea from './simulationArea'
+import { simulationArea } from './simulationArea'
 import Node from './node'
 import { updateSimulationSet, forceResetNodesSet } from './engine'
 import { colors } from './themer/themer'
@@ -47,8 +47,8 @@ export default class Wire {
         var check =
             this.node1.deleted ||
             this.node2.deleted ||
-            !this.node1.connections.contains(this.node2) ||
-            !this.node2.connections.contains(this.node1)
+            !this.node1.connections.includes(this.node2) ||
+            !this.node2.connections.includes(this.node1)
         if (check) this.delete()
         return check
     }
@@ -74,11 +74,6 @@ export default class Wire {
             this.y1 = this.y2 = this.node1.absY()
             this.type = 'horizontal'
         }
-
-        // if (wireToBeChecked && this.checkConnections()) {
-        //     this.delete();
-        //     return updated;
-        // } // SLOW , REMOVE
         if (
             simulationArea.shiftDown === false &&
             simulationArea.mouseDown === true &&
@@ -148,7 +143,6 @@ export default class Wire {
 
     draw() {
         // for calculating min-max Width,min-max Height
-        //
         const ctx = simulationArea.context
 
         var color
@@ -231,10 +225,12 @@ export default class Wire {
     delete() {
         forceResetNodesSet(true)
         updateSimulationSet(true)
-        this.node1.connections.clean(this.node2)
-        this.node2.connections.clean(this.node1)
-        this.scope.wires.clean(this)
+        this.node1.connections = this.node1.connections.filter(x => x !== this.node2);
+        this.node2.connections = this.node2.connections.filter(x => x !== this.node1)
+        this.scope.wires = this.scope.wires.filter(x => x !== this)
         this.node1.checkDeleted()
         this.node2.checkDeleted()
+
+        this.scope.timeStamp = new Date().getTime();
     }
 }
