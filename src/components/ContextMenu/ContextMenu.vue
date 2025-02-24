@@ -60,20 +60,56 @@ export default {
         showContextMenu() {
             this.ctxPos.visible = true;
         },
-        menuItemClicked(index) {
+         async menuItemClicked(index) {
             this.hideContextMenu()
-           const actions = [
-                () => document.execCommand('copy'),
-                () => document.execCommand('cut'),
-                () => paste(localStorage.getItem('clipboardData')),
-                deleteSelected,
-                undo,
-                createNewCircuitScope,
-                logixFunction.createSubCircuitPrompt,
-                () => globalScope.centerFocus(false),
-            ];
-            if (actions[index]) actions[index]();
-            
+            try {  
+            switch (index) {
+            case 0: // Copy
+                if (navigator.clipboard) {
+                    const text = window.getSelection().toString();
+                    if (text) {
+                        await navigator.clipboard.writeText(text);
+                        console.log("Copied:", text);
+                    } else {
+                        console.warn("No text selected for copying.");
+                    }
+                } else {
+                    console.error("Clipboard API not available.");
+                }
+                break;
+
+            case 1: // Cut
+                if (navigator.clipboard) {
+                    const text = window.getSelection().toString();
+                    if (text) {
+                        await navigator.clipboard.writeText(text);
+                        document.execCommand('delete'); 
+                        console.log("Cut:", text);
+                    } else {
+                        console.warn("No text selected for cutting.");
+                    }
+                } else {
+                    console.error("Clipboard API not available.");
+                }
+                break;
+
+            case 2: // Paste
+                const clipboardData = await navigator.clipboard.readText();
+                if (clipboardData) {
+                    paste(clipboardData);
+                    console.log("Pasted:", clipboardData);
+                } else {
+                    console.warn("No clipboard data available.");
+                }
+                break;
+
+            default:
+                console.warn("No action defined for this menu option.");
+        }
+    } catch (error) {
+        console.error("Error executing menu action:", error);
+    }
+}
         },
     },
 }
