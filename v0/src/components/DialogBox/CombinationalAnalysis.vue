@@ -295,21 +295,52 @@ function createBooleanPrompt(inputList, outputList, scope = globalScope) {
     ]
 }
 
+
 function generateBooleanTableData(outputListNames) {
-    var data = {}
-    for (var i = 0; i < outputListNames.length; i++) {
-        data[outputListNames[i]] = {
-            x: [],
-            1: [],
-            0: [],
+    let data = {};
+    
+    for (let i = 0; i < outputListNames.length; i++) {
+        let outputName = outputListNames[i];
+        data[outputName] = { x: [], 1: [], 0: [] };
+        
+        let tableDiv = document.querySelector("[data-test-id='combinational-analysis-table']");
+        if (!tableDiv) {
+            console.error('Table container not found');
+            return {};
         }
-        var rows = $(`.${outputListNames[i]}`)
-        for (let j = 0; j < rows.length; j++) {
-            data[outputListNames[i]][rows[j].innerHTML].push(rows[j].id)
+        let table = tableDiv.querySelector("[data-test-id='content-table']");
+        if (!table) {
+            console.error('Table not found');
+            return {};
         }
+        let rows = table.querySelectorAll("tbody tr");
+        
+        [...rows].forEach((row, index) => {
+            if (index === 0) return;
+            let columns = [...row.querySelectorAll("th")];
+            let lastColumnValue = columns.pop()?.innerText.trim();
+            
+            if (!lastColumnValue) {
+                console.error(`Missing value in row ${index}`);
+                continue;
+            }
+            
+            switch(lastColumnValue) {
+                case '0':
+                    data[outputName]['0'].push(String(index - 1));
+                    break;
+                case '1':
+                    data[outputName]['1'].push(String(index - 1));
+                    break;
+                default:
+                    data[outputName]['x'].push(String(index - 1));
+            }
+        });
     }
-    return data
+    
+    return data;
 }
+
 
 function drawCombinationalAnalysis(
     combinationalData,
@@ -627,6 +658,7 @@ function solveBooleanFunction(inputListNames, booleanExpression) {
 }
 
 function generateCircuit() {
+    
     var data = generateBooleanTableData(outputListNamesInteger.value)
     var minimizedCircuit = []
     let inputCount = inputListNames.value.length
@@ -649,6 +681,7 @@ function generateCircuit() {
             minimizedCircuit.push(temp.result)
         }
     }
+   
     if (output.value == null) {
         drawCombinationalAnalysis(
             minimizedCircuit,
