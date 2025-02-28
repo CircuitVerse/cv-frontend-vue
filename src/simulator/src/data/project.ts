@@ -166,7 +166,7 @@ export async function newProject(verify: boolean) {
         clearProject()
         localStorage.removeItem('recover')
         const baseUrl = window.location.origin !== 'null' ? window.location.origin : 'http://localhost:4000';
-        window.location.assign(`${baseUrl}/simulatorvue/`);
+        window.location.assign(`${baseUrl}/`);
 
         setProjectName(undefined)
         projectId = generateId()

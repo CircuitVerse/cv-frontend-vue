@@ -5,10 +5,6 @@ import Embed from '../pages/embed.vue'
 export const routes = [
     {
         path: '/',
-        redirect: '/simulatorvue', // @TODO: update later back to /simulator
-    },
-    {
-        path: '/simulatorvue', // @TODO: update later back to /simulator
         name: 'simulator',
         component: simulatorHandler,
         children: [
@@ -21,13 +17,13 @@ export const routes = [
         ],
     },
     {
-        path: '/simulatorvue/:projectId',
+        path: '/:projectId',
         name: 'simulator-view',
         component: Embed,
         props: true,
     },
     {
-        path: '/simulatorvue/embed/:projectId',
+        path: '/embed/:projectId',
         name: 'simulator-embed',
         component: Embed,
         props: true,
