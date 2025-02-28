@@ -33,7 +33,7 @@ To set up the project on your local machine, follow these steps:
 ## Setting up on cloud with Stackblitz
 [StackBlitz](https://developer.stackblitz.com/guides/user-guide/what-is-stackblitz) is an instant fullstack web IDE for the JavaScript ecosystem.
 
-  1. Initiate the setup process by clicking on the following button:
+  Initiate the setup process by clicking on the following button:
 
   [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/~/github.com/CircuitVerse/cv-frontend-vue)
 
