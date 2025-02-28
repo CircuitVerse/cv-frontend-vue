@@ -3,7 +3,7 @@
 </div>
 
 # CircuitVerse Frontend Vue
-[CircuitVerse Frontend Vue](https://circuitverse.netlify.app/simulatorvue) is dedicated to enhancing the CircuitVerse platform in several key ways. Our primary focus is on decoupling the [CircuitVerse Simulator](https://circuitverse.org/simulator) from the backend, allowing it to function independently and with greater flexibility. Additionally, we're working to remove the reliance on jQueryUI, opting for cleaner and more contemporary code practices. To improve performance and code readability, we're transitioning from traditional DOM mutations to string-based manipulation. Furthermore, we're actively integrating internationalization features to ensure the platform is accessible to users worldwide. In summary, our repository aims to elevate the capabilities and user experience of CircuitVerse through targeted improvements and optimizations.
+[CircuitVerse Frontend Vue](https://circuitverse.netlify.app/) is dedicated to enhancing the CircuitVerse platform in several key ways. Our primary focus is on decoupling the [CircuitVerse Simulator](https://circuitverse.org/simulator) from the backend, allowing it to function independently and with greater flexibility. Additionally, we're working to remove the reliance on jQueryUI, opting for cleaner and more contemporary code practices. To improve performance and code readability, we're transitioning from traditional DOM mutations to string-based manipulation. Furthermore, we're actively integrating internationalization features to ensure the platform is accessible to users worldwide. In summary, our repository aims to elevate the capabilities and user experience of CircuitVerse through targeted improvements and optimizations.
 
 ## Community
 We would love to hear from you! We communicate on Slack:
@@ -37,11 +37,6 @@ To set up the project on your local machine, follow these steps:
 
   [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/~/github.com/CircuitVerse/cv-frontend-vue)
 
-  2. Once the setup is complete, a Preview URL will be displayed in the browser window. Append `/simulatorvue/` to your URL to access the simulator.
-  ```
-  https://<preview_url>/simulatorvue/
-  ```
-
 ## How to Use Vue Simulator with CircuitVerse Main Repo
 To access the Vue Simulator from the [CircuitVerse main repo](https://github.com/CircuitVerse/CircuitVerse) dev server, you can follow one of the following methods:
 
@@ -67,8 +62,8 @@ See [`CONTRIBUTING.md`](https://github.com/CircuitVerse/CircuitVerse/blob/master
 This project is licensed under the [MIT License](LICENSE).
 
 ## To Dos -
-1. **Creating the mobile version of the vue simulator** 
+1. **Creating the mobile version of the vue simulator**
 2. **Testing and bug fixing**
 3. **Typescript integration & style Refactoring**
-4. **Creating the desktop application** 
+4. **Creating the desktop application**
 5. **Removing JQuery**
