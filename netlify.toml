@@ -1,10 +1,16 @@
 [build]
-  command = "npm run build && mkdir -p ./dist && cp -r ./public/* ./dist/ && mv ./dist/output/index.html ./dist/"
+  command = "npm run build && mkdir -p ./dist && cp -r ./public/* ./dist/ && mv ./dist/output/* ./dist/ && rm -rf ./dist/output"
+  publish = "dist"
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Content-Type = "application/javascript"
 
 [[headers]]
   for = "/*.js"
@@ -13,5 +19,10 @@
 
 [[headers]]
   for = "/*.css"
+  [headers.values]
+    Content-Type = "text/css"
+
+[[headers]]
+  for = "/assets/*.css"
   [headers.values]
     Content-Type = "text/css"
