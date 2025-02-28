@@ -30,7 +30,7 @@ export default defineConfig(() => ({
             '@': fileURLToPath(new URL('./src/components', import.meta.url)),
         },
     },
-    base: './',
+    base: '/',
     build: {
         outDir: './public/output',
         assetsDir: 'assets',
