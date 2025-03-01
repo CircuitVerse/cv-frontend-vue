@@ -8,21 +8,36 @@
   status = 200
 
 [[headers]]
-  for = "/assets/*"
+  for = "/*.(js|mjs)"
   [headers.values]
-    Content-Type = "application/javascript"
+    Content-Type = "application/javascript; charset=utf-8"
 
 [[headers]]
-  for = "/*.js"
+  for = "/*.(css)"
   [headers.values]
-    Content-Type = "application/javascript"
+    Content-Type = "text/css; charset=utf-8"
 
 [[headers]]
-  for = "/*.css"
+  for = "/*.(woff|woff2)"
   [headers.values]
-    Content-Type = "text/css"
+    Content-Type = "font/woff2"
 
 [[headers]]
-  for = "/assets/*.css"
+  for = "/*.(ttf|otf)"
   [headers.values]
-    Content-Type = "text/css"
+    Content-Type = "font/ttf"
+
+[[headers]]
+  for = "/*.(svg)"
+  [headers.values]
+    Content-Type = "image/svg+xml"
+
+[[headers]]
+  for = "/*.(png|jpg|jpeg)"
+  [headers.values]
+    Content-Type = "image/png"
+
+[[headers]]
+  for = "/*.(eot)"
+  [headers.values]
+    Content-Type = "application/vnd.ms-fontobject"
