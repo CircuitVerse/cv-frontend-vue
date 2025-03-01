@@ -32,7 +32,7 @@ export default defineConfig(() => ({
     },
     base: '/simulatorvue/',
     build: {
-        outDir: '../public/simulatorvue',
+        outDir: './public/simulatorvue',
         assetsDir: 'assets',
         chunkSizeWarningLimit: 1600,
     },
@@ -47,6 +47,10 @@ export default defineConfig(() => ({
         setupFiles: './src/simulator/spec/vitestSetup.ts',
     },
     server: {
+        mimeTypes: {
+            '.css': 'text/css',
+            '.js': 'application/javascript'
+        },
         port: 4000,
         proxy: {
             // ...(process.env.NODE_ENV === 'development' && {
