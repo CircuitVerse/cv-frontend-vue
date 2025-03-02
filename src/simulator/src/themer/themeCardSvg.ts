@@ -1,4 +1,4 @@
-export default `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="202.9" height="106" viewBox="0 0 202.9 106">
+const svgString: string = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="202.9" height="106" viewBox="0 0 202.9 106">
 <defs>
   <clipPath id="clip">
     <use xlink:href="#fill"/>
@@ -98,5 +98,6 @@ export default `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.
     <path class='svgChev' id="chevron-down-8" data-name="chevron-down" d="M6,9l1.881,1.881L9.762,9" transform="translate(-6 -9)" fill="none" stroke="#bbb" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
   </g>
 </g>
-</svg>
-`
+</svg>`;
+
+export default svgString;
