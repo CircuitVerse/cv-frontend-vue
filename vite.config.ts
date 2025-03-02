@@ -30,9 +30,9 @@ export default defineConfig(() => ({
             '@': fileURLToPath(new URL('./src/components', import.meta.url)),
         },
     },
-    base: '/simulatorvue/',
+    base: process.env.DESKTOP_MODE ? '/' : '/simulatorvue/',
     build: {
-        outDir: './public/simulatorvue',
+        outDir: process.env.DESKTOP_MODE ? './dist' : './public/simulatorvue',
         assetsDir: 'assets',
         chunkSizeWarningLimit: 1600,
     },
@@ -48,8 +48,10 @@ export default defineConfig(() => ({
     },
     server: {
         mimeTypes: {
-            '.css': 'text/css',
-            '.js': 'application/javascript'
+            '.js': 'application/javascript; charset=utf-8',
+            '.mjs': 'application/javascript; charset=utf-8',
+            '.css': 'text/css; charset=utf-8',
+            '.html': 'text/html; charset=utf-8',
         },
         port: 4000,
         proxy: {
