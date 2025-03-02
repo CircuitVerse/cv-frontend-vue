@@ -12,6 +12,12 @@ interface Scope {
     timeStamp: number;
 }
 
+enum WireValue {
+    LOOSE = -1,
+    LOW = 0,
+    HIGH = 1
+}
+
 export default class Wire {
     objectType = 'Wire';
     type = 'horizontal';
@@ -239,11 +245,6 @@ export default class Wire {
         }
         return false;
     }
-    const enum WireValue {
-            LOOSE = -1,
-            LOW = 0,
-            HIGH = 1
-        }
 
     private getWireColor(): string {
         if (simulationArea.lastSelected === this) {
