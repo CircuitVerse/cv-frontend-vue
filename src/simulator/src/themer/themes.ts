@@ -1,4 +1,6 @@
-export default {
+import { Themes } from './themer.types'
+
+const themes: Themes = {
     'Default Theme': {
         '--text-navbar--alt': '#000',
         '--br-secondary': '#7d7d7d',
@@ -326,7 +328,7 @@ export default {
         '--disable': '#956c6a',
         '--table-head-dark': '#2e2b21',
     },
-    'Custom Theme': JSON.parse(localStorage.getItem('Custom Theme')) || {
+    'Custom Theme': JSON.parse(localStorage.getItem('Custom Theme') || '{}') || {
         '--text-navbar--alt': '#000',
         '--br-secondary': '#7d7d7d',
         '--br-circuit-cur': '#ffffff',
@@ -380,3 +382,5 @@ export default {
         '--output-rect': '#0000ff',
     },
 }
+
+export default themes;
