@@ -1,8 +1,11 @@
 /**Add more elements here, along with a valid value for key
  * Elements keys must have the same name as their ID
  **/
+export interface DefaultKeysType {
+    [key: string]: string;
+}
 
-export const defaultKeys = {
+export const defaultKeys: DefaultKeysType = {
     'New Circuit': 'Shift + N',
     'Save Online': 'Ctrl + S',
     'Save Offline': 'Ctrl + Alt + S',
