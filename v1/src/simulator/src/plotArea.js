@@ -1,5 +1,7 @@
-import simulationArea from './simulationArea'
+import { simulationArea } from './simulationArea'
 import { convertors } from './utils'
+import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
+import { toRefs } from 'vue'
 
 var DPR = window.devicePixelRatio || 1
 
@@ -403,12 +405,16 @@ const plotArea = {
     },
     // Driver function to render and update
     plot() {
+        const simulatorMobileStore = useSimulatorMobileStore()
+        const { showCanvas } = toRefs(simulatorMobileStore)
         if (embed) return
         if (globalScope.Flag.length === 0) {
             this.canvas.width = 0
             this.canvas.height = 0
+            showCanvas.value = false
             return
         }
+       showCanvas.value = true
 
         this.update()
         this.render()
@@ -445,52 +451,6 @@ const timingDiagramButtonActions = {
 export { timingDiagramButtonActions }
 
 export function setupTimingListeners() {
-    // $('.timing-diagram-smaller').on('click', () => {
-    //     $('#plot').width(Math.max($('#plot').width() - 20, 560))
-    //     plotArea.resize()
-    // })
-    // $('.timing-diagram-larger').on('click', () => {
-    //     $('#plot').width($('#plot').width() + 20)
-    //     plotArea.resize()
-    // })
-    // $('.timing-diagram-small-height').on('click', () => {
-    //     if (plotHeight >= sh(20)) {
-    //         plotHeight -= sh(5)
-    //         waveFormHeight = plotHeight - 2 * waveFormPadding
-    //     }
-    // })
-    // $('.timing-diagram-large-height').on('click', () => {
-    //     if (plotHeight < sh(50)) {
-    //         plotHeight += sh(5)
-    //         waveFormHeight = plotHeight - 2 * waveFormPadding
-    //     }
-    // })
-    // $('.timing-diagram-reset').on('click', () => {
-    //     plotArea.reset()
-    // })
-    // $('.timing-diagram-calibrate').on('click', () => {
-    //     plotArea.calibrate()
-    // })
-    // $('.timing-diagram-resume').on('click', () => {
-    //     plotArea.resume()
-    // })
-    // $('.timing-diagram-pause').on('click', () => {
-    //     plotArea.pause()
-    // })
-    // $('.timing-diagram-download').on('click', () => {
-    //     plotArea.download()
-    // })
-    // $('.timing-diagram-zoom-in').on('click', () => {
-    //     plotArea.zoomIn()
-    // })
-    // $('.timing-diagram-zoom-out').on('click', () => {
-    //     plotArea.zoomOut()
-    // })
-    // $('#timing-diagram-units').on('change paste keyup', function () {
-    //     var timeUnits = parseInt($(this).val(), 10)
-    //     if (isNaN(timeUnits) || timeUnits < 1) return
-    //     plotArea.cycleUnit = timeUnits
-    // })
     document.getElementById('plotArea').addEventListener('mousedown', (e) => {
         var rect = plotArea.canvas.getBoundingClientRect()
         var x = sh(e.clientX - rect.left)
