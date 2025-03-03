@@ -23,36 +23,36 @@
   status = 200
 
 [[headers]]
-  for = "/*.(js|mjs)"
+  for = "/simulatorvue-v0/*.(js|mjs)"
   [headers.values]
     Content-Type = "application/javascript; charset=utf-8"
 
 [[headers]]
-  for = "/*.(css)"
+  for = "/simulatorvue-v0/*.(css)"
   [headers.values]
     Content-Type = "text/css; charset=utf-8"
 
 [[headers]]
-  for = "/*.(woff|woff2)"
+  for = "/simulatorvue-v0/*.(woff|woff2)"
   [headers.values]
     Content-Type = "font/woff2"
 
 [[headers]]
-  for = "/*.(ttf|otf)"
+  for = "/simulatorvue-v0/*.(ttf|otf)"
   [headers.values]
     Content-Type = "font/ttf"
 
 [[headers]]
-  for = "/*.(svg)"
+  for = "/simulatorvue-v0/*.(svg)"
   [headers.values]
     Content-Type = "image/svg+xml"
 
 [[headers]]
-  for = "/*.(png|jpg|jpeg)"
+  for = "/simulatorvue-v0/*.(png|jpg|jpeg)"
   [headers.values]
     Content-Type = "image/png"
 
 [[headers]]
-  for = "/*.(eot)"
+  for = "/simulatorvue-v0/*.(eot)"
   [headers.values]
     Content-Type = "application/vnd.ms-fontobject"
