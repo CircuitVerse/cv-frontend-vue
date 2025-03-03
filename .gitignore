@@ -11,8 +11,6 @@ node_modules
 dist
 dist-ssr
 public/simulatorvue/*
-public/simulatorvue-v0/*
-public/simulatorvue-v1/*
 *.local
 
 # Editor directories and files

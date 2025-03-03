@@ -39,9 +39,9 @@ export default defineConfig({
             '@': fileURLToPath(new URL(`./v0/src/components`, import.meta.url)),
         },
     },
-    base: process.env.DESKTOP_MODE ? '/' : '/simulatorvue/',
+    base: process.env.DESKTOP_MODE ? '/' : '/simulatorvue/v0/',
     build: {
-        outDir: process.env.DESKTOP_MODE ? './dist' : './public/simulatorvue/',
+        outDir: process.env.DESKTOP_MODE ? './dist' : '../public/simulatorvue/v0/',
         assetsDir: 'assets',
         chunkSizeWarningLimit: 1600,
         rollupOptions: {
@@ -52,12 +52,6 @@ export default defineConfig({
 
     },
     server: {
-        headers: {
-            '.js': 'application/javascript; charset=utf-8',
-            '.mjs': 'application/javascript; charset=utf-8',
-            '.css': 'text/css; charset=utf-8',
-            '.html': 'text/html; charset=utf-8',
-        },
         port: 4000,
         proxy: {
             // ...(process.env.NODE_ENV === 'development' && {
