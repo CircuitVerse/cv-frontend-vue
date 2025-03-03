@@ -2,7 +2,7 @@
   command = "npm run build && mkdir -p ./dist && cp -r ./public/* ./dist/ && cp ./dist/simulatorvue-v0/index-cv.html ./dist/simulatorvue-v0/index.html && mv ./dist/simulatorvue-v0/* ./dist/"
 
 [[redirects]]
-  from = "/simulatorvue/*"
+  from = "/*"
   to = "/index.html"
   status = 200
 
