@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build && mkdir -p ./dist && cp -r ../public/* ./dist/"
+  command = "curl https://bun.sh/install | bash && bun run build && mkdir -p ./dist && cp -r ../public/* ./dist/"
 
 [[redirects]]
   from = "/"
