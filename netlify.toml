@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build && mkdir -p ./dist && cp -r ./public/* ./dist/ && cp ./dist/simulatorvue-v0/index-cv.html ./dist/simulatorvue-v0/index.html && mv ./dist/simulatorvue-v0/* ./dist/"
+  command = "npm run build && mkdir -p ./dist && cp -r ./public/* ./dist/ && cp ./dist/simulatorvue/index-cv.html ./dist/simulatorvue/index.html && mv ./dist/simulatorvue/index.html ./dist/"
 
 [[redirects]]
   from = "/*"
@@ -7,8 +7,8 @@
   status = 200
 
 [[redirects]]
-  from = "/simulatorvue/v0/*"
-  to = "/simulatorvue-v0/index-cv.html"
+  from = "/simulatorvue/*"
+  to = "/simulatorvue/index-cv.html"
   status = 200
 
 [[redirects]]

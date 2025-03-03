@@ -32,7 +32,7 @@ export default defineConfig(() => ({
     },
     base: process.env.DESKTOP_MODE ? '/' : '/simulatorvue/',
     build: {
-        outDir: process.env.DESKTOP_MODE ? './dist' : './public/simulatorvue-v0/',
+        outDir: process.env.DESKTOP_MODE ? './dist' : './public/simulatorvue/',
         assetsDir: 'assets',
         chunkSizeWarningLimit: 1600,
     },
