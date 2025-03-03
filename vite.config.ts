@@ -32,7 +32,7 @@ export default defineConfig(() => ({
     },
     base: process.env.DESKTOP_MODE ? '/' : '/simulatorvue/',
     build: {
-        outDir: process.env.DESKTOP_MODE ? './dist' : './public/simulatorvue/',
+        outDir: process.env.DESKTOP_MODE ? './dist' : '../public/simulatorvue/v0/',
         assetsDir: 'assets',
         chunkSizeWarningLimit: 1600,
     },
@@ -47,12 +47,6 @@ export default defineConfig(() => ({
         setupFiles: './src/simulator/spec/vitestSetup.ts',
     },
     server: {
-        mimeTypes: {
-            '.js': 'application/javascript; charset=utf-8',
-            '.mjs': 'application/javascript; charset=utf-8',
-            '.css': 'text/css; charset=utf-8',
-            '.html': 'text/html; charset=utf-8',
-        },
         port: 4000,
         proxy: {
             // ...(process.env.NODE_ENV === 'development' && {
