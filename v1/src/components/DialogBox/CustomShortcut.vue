@@ -50,6 +50,14 @@
                         }}</span>
                     </div>
                     <!-- Markup -->
+                    <v-text-field
+                    v-model="searchQuery"
+                    label="Search Shortcuts"
+                    outlined
+                     dense
+                     class="search-input"
+                     />
+                
                     <div
                         id="preference"
                         class="customScroll"
@@ -57,7 +65,7 @@
                     >
                         <!-- Elements -->
                         <div
-                            v-for="(keyOption, index) in keyOptions"
+                            v-for="(keyOption, index) in filteredShortcuts"
                             :key="index"
                         >
                             <span id="edit-icon"></span>
@@ -119,6 +127,14 @@ interface KeyOption {
 
 const SimulatorState = useState()
 const keyOptions = ref<KeyOption[]>([])
+const searchQuery = ref('');
+
+const filteredShortcuts = computed(() => {
+    if (!searchQuery.value) return keyOptions.value;
+    return keyOptions.value.filter(([command]) =>
+        command.toLowerCase().includes(searchQuery.value.toLowerCase())
+    );
+});
 const targetPref = ref<HTMLSpanElement | null>(null)
 const pressedKeys: Ref<string> = ref('')
 const warning: Ref<string> = ref('')
@@ -265,6 +281,10 @@ function closeAllDialog() {
     background-color: var(--bg-primary-chr) !important;
     color: white;
 }
+.search-input {
+    margin-bottom: 10px;
+}
+
 
 /* media query for .customShortcutBox */
 @media screen and (max-width: 991px) {
