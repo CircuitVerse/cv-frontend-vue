@@ -41,7 +41,7 @@ export default defineConfig({
     },
     base: '/simulatorvue/v0/',
     build: {
-        outDir: `../public/simulatorvue/v0/`,
+        outDir: `./public/simulatorvue/v0/`,
         assetsDir: 'assets',
         chunkSizeWarningLimit: 1600,
         rollupOptions: {
