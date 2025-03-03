@@ -2,11 +2,27 @@
   command = "npm run build && mkdir -p ./dist && cp -r ./public/* ./dist/ && mv ./dist/simulatorvue/index.html ./dist/"
 
 [[redirects]]
-  from = "/simulatorvue/*"
-  to = "/index.html"
+  from = "/"
+  to = "/simulatorvue"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/simulatorvue/v0/*"
+  to = "/simulatorvue/v0/index-cv.html"
   status = 200
 
-  [[headers]]
+[[redirects]]
+  from = "/simulatorvue/v1/*"
+  to = "/simulatorvue/v1/index-cv.html"
+  status = 200
+
+[[redirects]]
+  from = "/simulatorvue/*"
+  to = "/simulatorvue/v0/index-cv.html"
+  status = 200
+
+[[headers]]
   for = "/*.(js|mjs)"
   [headers.values]
     Content-Type = "application/javascript; charset=utf-8"

@@ -20,19 +20,19 @@ export default defineConfig(() => ({
 
             // you need to set i18n resource including paths !
             include: fileURLToPath(
-                new URL('./src/locales/**', import.meta.url)
+                new URL(`./v0/src/locales/**`, import.meta.url)
             ),
         }),
     ],
     resolve: {
         alias: {
-            '#': fileURLToPath(new URL('./src', import.meta.url)),
-            '@': fileURLToPath(new URL('./src/components', import.meta.url)),
+            '#': fileURLToPath(new URL(`./v0/src`, import.meta.url)),
+            '@': fileURLToPath(new URL(`./v0/src/components`, import.meta.url)),
         },
     },
     base: process.env.DESKTOP_MODE ? '/' : '/simulatorvue/',
     build: {
-        outDir: process.env.DESKTOP_MODE ? './dist' : './public/simulatorvue',
+        outDir: process.env.DESKTOP_MODE ? './dist' : './public/simulatorvue/v0/',
         assetsDir: 'assets',
         chunkSizeWarningLimit: 1600,
     },

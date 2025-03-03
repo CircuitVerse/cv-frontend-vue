@@ -4,7 +4,7 @@
     "private": true,
     "scripts": {
         "serve": "vite preview",
-        "build": "vite build",
+        "build": "bash build.sh",
         "dev": "vite",
         "tauri": "tauri",
         "preview": "vite preview",
@@ -62,6 +62,7 @@
         "sass": "^1.77.6",
         "typescript": "^4.5.4",
         "vite": "^2.9.18",
+        "vite-plugin-html": "^3.2.2",
         "vite-plugin-vuetify": "^1.0.0-alpha.0",
         "vitest": "^2.0.5",
         "vue-cli-plugin-vuetify": "~2.5.1",
