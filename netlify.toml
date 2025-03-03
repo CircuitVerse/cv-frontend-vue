@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build && mkdir -p ./dist && cp -r ./public/* ./dist/ && mv ./dist/simulatorvue/v0/index-cv.html ./dist/"
+  command = "npm run build && mkdir -p ./dist && cp -r ./public/* ./dist/ && mv ./dist/simulatorvue-v0/index-cv.html ./dist/"
 
 [[redirects]]
   from = "/"
