@@ -6,6 +6,15 @@
     "main"
   ],
   "permissions": [
-    "core:default"
+    "core:default",
+    "fs:default",
+    {
+      "identifier": "fs:allow-download-read-recursive",
+      "allow": [{ "path": "$DOWNLOAD/*" }]
+    },
+    {
+      "identifier": "fs:allow-download-write-recursive",
+      "allow": [{ "path": "$DOWNLOAD/*", "write": true }]
+    }
   ]
 }
