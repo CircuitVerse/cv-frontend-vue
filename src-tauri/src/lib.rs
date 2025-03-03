@@ -74,51 +74,97 @@ pub fn run() {
 
                 app.on_menu_event(move |app, event| {
                     if event.id() == "new-project" {
-                        app.emit("new-project", ()).unwrap();
+                        if let Err(e) = app.emit("new-project", ()) {
+                            eprintln!("Error emitting event: {}", e);
+                        }
                     } else if event.id() == "save-online" {
-                        app.emit("save-online", ()).unwrap();
+                        if let Err(e) = app.emit("save-online", ()) {
+                            eprintln!("Error emitting event: {}", e);
+                        }
                     } else if event.id() == "save-offline" {
-                        app.emit("save-offline", ()).unwrap();
+                        if let Err(e) = app.emit("save-offline", ()) {
+                            eprintln!("Error emitting event: {}", e);
+                        }
                     } else if event.id() == "open-offline" {
-                        app.emit("open-offline", ()).unwrap();
+                        if let Err(e) = app.emit("open-offline", ()) {
+                            eprintln!("Error emitting event: {}", e);
+                        }
                     } else if event.id() == "export" {
-                        app.emit("export", ()).unwrap();
+                        if let Err(e) = app.emit("export", ()) {
+                            eprintln!("Error emitting event: {}", e);
+                        }
                     } else if event.id() == "import" {
-                        app.emit("import", ()).unwrap();
+                        if let Err(e) = app.emit("import", ()) {
+                            eprintln!("Error emitting event: {}", e);
+                        }
                     } else if event.id() == "clear" {
-                        app.emit("clear", ()).unwrap();
+                        if let Err(e) = app.emit("clear", ()) {
+                            eprintln!("Error emitting event: {}", e);
+                        }
                     } else if event.id() == "recover" {
-                        app.emit("recover", ()).unwrap();
+                        if let Err(e) = app.emit("recover", ()) {
+                            eprintln!("Error emitting event: {}", e);
+                        }
                     } else if event.id() == "preview-circuit" {
-                        app.emit("preview-circuit", ()).unwrap();
+                        if let Err(e) = app.emit("preview-circuit", ()) {
+                            eprintln!("Error emitting event: {}", e);
+                        }
                     } else if event.id() == "previous-ui" {
-                        app.emit("previous-ui", ()).unwrap();
+                        if let Err(e) = app.emit("previous-ui", ()) {
+                            eprintln!("Error emitting event: {}", e);
+                        }
                     } else if event.id() == "new-circuit" {
-                        app.emit("new-circuit", ()).unwrap();
+                        if let Err(e) = app.emit("new-circuit", ()) {
+                            eprintln!("Error emitting event: {}", e);
+                        }
                     } else if event.id() == "new-verilog-module" {
-                        app.emit("new-verilog-module", ()).unwrap();
+                        if let Err(e) = app.emit("new-verilog-module", ()) {
+                            eprintln!("Error emitting event: {}", e);
+                        }
                     } else if event.id() == "insert-sub-circuit" {
-                        app.emit("insert-sub-circuit", ()).unwrap();
+                        if let Err(e) = app.emit("insert-sub-circuit", ()) {
+                            eprintln!("Error emitting event: {}", e);
+                        }
                     } else if event.id() == "combinational-analysis" {
-                        app.emit("combinational-analysis", ()).unwrap();
+                        if let Err(e) = app.emit("combinational-analysis", ()) {
+                            eprintln!("Error emitting event: {}", e);
+                        }
                     } else if event.id() == "hex-bin-dec" {
-                        app.emit("hex-bin-dec", ()).unwrap();
+                        if let Err(e) = app.emit("hex-bin-dec", ()) {
+                            eprintln!("Error emitting event: {}", e);
+                        }
                     } else if event.id() == "download-image" {
-                        app.emit("download-image", ()).unwrap();
+                        if let Err(e) = app.emit("download-image", ()) {
+                            eprintln!("Error emitting event: {}", e);
+                        }
                     } else if event.id() == "themes" {
-                        app.emit("themes", ()).unwrap();
+                        if let Err(e) = app.emit("themes", ()) {
+                            eprintln!("Error emitting event: {}", e);
+                        }
                     } else if event.id() == "custom-shortcut" {
-                        app.emit("custom-shortcut", ()).unwrap();
+                        if let Err(e) = app.emit("custom-shortcut", ()) {
+                            eprintln!("Error emitting event: {}", e);
+                        }
                     } else if event.id() == "export-verilog" {
-                        app.emit("export-verilog", ()).unwrap();
+                        if let Err(e) = app.emit("export-verilog", ()) {
+                            eprintln!("Error emitting event: {}", e);
+                        }
                     } else if event.id() == "tutorial" {
-                        app.emit("tutorial", ()).unwrap();
+                        if let Err(e) = app.emit("tutorial", ()) {
+                            eprintln!("Error emitting event: {}", e);
+                        }
                     } else if event.id() == "user-manual" {
-                        app.emit("user-manual", ()).unwrap();
+                        if let Err(e) = app.emit("user-manual", ()) {
+                            eprintln!("Error emitting event: {}", e);
+                        }
                     } else if event.id() == "learn-digital-logic" {
-                        app.emit("learn-digital-logic", ()).unwrap();
+                        if let Err(e) = app.emit("learn-digital-logic", ()) {
+                            eprintln!("Error emitting event: {}", e);
+                        }
                     } else if event.id() == "discussion-forum" {
-                        app.emit("discussion-forum", ()).unwrap();
+                        if let Err(e) = app.emit("discussion-forum", ()) {
+                            eprintln!("Error emitting event: {}", e);
+                        }
                     }
                 });
             }
