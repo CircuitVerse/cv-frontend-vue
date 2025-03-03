@@ -296,20 +296,32 @@ function createBooleanPrompt(inputList, outputList, scope = globalScope) {
 }
 
 function generateBooleanTableData(outputListNames) {
-    var data = {}
-    for (var i = 0; i < outputListNames.length; i++) {
-        data[outputListNames[i]] = {
-            x: [],
-            1: [],
-            0: [],
-        }
-        var rows = $(`.${outputListNames[i]}`)
-        for (let j = 0; j < rows.length; j++) {
-            data[outputListNames[i]][rows[j].innerHTML].push(rows[j].id)
-        }
+    let data = {};
+    
+    for (let i = 0; i < outputListNames.length; i++) {
+        let outputName = outputListNames[i];
+        data[outputName] = { x: [], 1: [], 0: [] };
+        
+        let tableDiv = document.querySelector("body > div.v-overlay-container > div > div.v-overlay__content > div > div.v-card-text");
+        let table = tableDiv?.querySelector(".content-table");
+        let rows = table?.querySelectorAll("tbody tr") || [];
+        
+        [...rows].forEach((row, index) => {
+            if (index === 0) return;
+            let columns = [...row.querySelectorAll("th")];
+            let lastColumnValue = columns.pop()?.innerText.trim();
+            
+            ((lastColumnValue === '0') && data[outputName]['0'].push(String(index - 1))) || 
+            ((lastColumnValue === '1') && data[outputName]['1'].push(String(index - 1))) || 
+            data[outputName]['x'].push(String(index - 1));
+        });
     }
-    return data
+    
+    return data;
 }
+
+
+
 
 function drawCombinationalAnalysis(
     combinationalData,
