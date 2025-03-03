@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build && mkdir -p ./dist && cp -r ./public/* ./dist/"
+  command = "npm run build && mkdir -p ./dist && cp -r ./public/* ./dist/ && cp ./dist/simulatorvue-v0/index-cv.html ./dist/simulatorvue-v0/index.html"
 
 [[redirects]]
   from = "/"
@@ -17,42 +17,37 @@
   to = "/simulatorvue-v1/index-cv.html"
   status = 200
 
-[[redirects]]
-  from = "/simulatorvue/*"
-  to = "/simulatorvue-v0/index-cv.html"
-  status = 200
-
 [[headers]]
-  for = "/simulatorvue-v0/*.(js|mjs)"
+  for = "/*.(js|mjs)"
   [headers.values]
     Content-Type = "application/javascript; charset=utf-8"
 
 [[headers]]
-  for = "/simulatorvue-v0/*.(css)"
+  for = "/*.(css)"
   [headers.values]
     Content-Type = "text/css; charset=utf-8"
 
 [[headers]]
-  for = "/simulatorvue-v0/*.(woff|woff2)"
+  for = "/*.(woff|woff2)"
   [headers.values]
     Content-Type = "font/woff2"
 
 [[headers]]
-  for = "/simulatorvue-v0/*.(ttf|otf)"
+  for = "/*.(ttf|otf)"
   [headers.values]
     Content-Type = "font/ttf"
 
 [[headers]]
-  for = "/simulatorvue-v0/*.(svg)"
+  for = "/*.(svg)"
   [headers.values]
     Content-Type = "image/svg+xml"
 
 [[headers]]
-  for = "/simulatorvue-v0/*.(png|jpg|jpeg)"
+  for = "/*.(png|jpg|jpeg)"
   [headers.values]
     Content-Type = "image/png"
 
 [[headers]]
-  for = "/simulatorvue-v0/*.(eot)"
+  for = "/*.(eot)"
   [headers.values]
     Content-Type = "application/vnd.ms-fontobject"

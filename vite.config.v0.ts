@@ -39,7 +39,7 @@ export default defineConfig({
             '@': fileURLToPath(new URL(`./v0/src/components`, import.meta.url)),
         },
     },
-    base: process.env.DESKTOP_MODE ? '/' : '/simulatorvue/v0/',
+    base: process.env.DESKTOP_MODE ? '/' : '/simulatorvue/',
     build: {
         outDir: process.env.DESKTOP_MODE ? './dist' : './public/simulatorvue-v0/',
         assetsDir: 'assets',
