@@ -1,81 +1,60 @@
-<template>
-    <p>
-        <span>{{ propertyName }}</span>
-        <div class="input-group">
-            <div class="input-group-prepend">
-                <button
-                    style="border: none; min-width: 2.5rem"
-                    class="btnDecrement"
-                    type="button"
-                    @click="decreaseValue()"
-                >
-                    <strong>-</strong>
-                </button>
-            </div>
-            <input
-                :id="propertyInputId"
-                style="text-align: center"
-                class="objectPropertyAttribute form-control"
-                :type="propertyValueType"
-                :name="propertyInputName"
-                :min="valueMin"
-                :max="valueMax"
-                :value="propertyValue"
-            />
-            <div class="input-group-append">
-                <button
-                    style="border: none; min-width: 2.5rem"
-                    class="btnIncrement"
-                    type="button"
-                    @click="increaseValue()"
-                >
-                    <strong>+</strong>
-                </button>
-            </div>
-        </div>
-    </p>
-</template>
-
 <script lang="ts" setup>
-const props = defineProps({
-    propertyName: { type: String, default: 'Property Name' },
-    propertyValue: { type: Number, default: 0 },
-    propertyValueType: { type: String, default: 'number' },
-    valueMin: { type: String, default: '0' },
-    valueMax: { type: String, default: '100000000000000' },
-    stepSize: { type: String, default: '1' },
-    propertyInputName: { type: String, default: 'Property_Input_Name' },
-    propertyInputId: { type: String, default: 'Property_Input_Id' },
-})
+import { ref, defineProps, defineEmits } from "vue";
 
-// can be modified if required
+const props = defineProps({
+    propertyName: { type: String, default: "Property Name" },
+    propertyValue: { type: Number, default: 0 },
+    propertyValueType: { type: String, default: "number" },
+    valueMin: { type: [String, Number], default: "0" },
+    valueMax: { type: [String, Number], default: "100000000000000" },
+    stepSize: { type: [String, Number], default: "1" },
+    propertyInputName: { type: String, default: "Property_Input_Name" },
+    propertyInputId: { type: String, default: "Property_Input_Id" },
+});
+
+const emit = defineEmits(["update:propertyValue"]);
+const inputRef = ref<HTMLInputElement | null>(null);
+
+function updateValue(event) {
+    const target = event.target as unknown as HTMLInputElement;
+    const value = Number(target.value);
+    if (isNaN(value)) {
+        // Reset to previous valid value or min value
+        emit("update:propertyValue", props.propertyValue || Number(props.valueMin));
+        return;
+    }
+    const min = Number(props.valueMin);
+    const max = Number(props.valueMax);
+    if (value < min) {
+        emit("update:propertyValue", min);
+    } else if (value > max) {
+        emit("update:propertyValue", max);
+    } else {
+        emit("update:propertyValue", value);
+    }
+}
+
 function increaseValue() {
-    const ele = document.getElementById(props.propertyInputId)
-    var value = parseInt(ele.value, 10)
-    var step = parseInt(props.stepSize, 10)
-    value = isNaN(value) ? 0 : value
-    step = isNaN(step) ? 1 : step
-    if (value + step <= props.valueMax) value = value + step
-    else return
-    props.propertyValue = value
-    ele.value = value
-    // manually triggering on change event
-    const e = new Event('change')
-    ele.dispatchEvent(e)
+    if (!inputRef.value) return;
+    let value = Number(inputRef.value.value) || 0;
+    const step = Number(props.stepSize) || 1;
+    const max = Number(props.valueMax);
+
+    if (value + step <= max) {
+        value += step;
+        emit("update:propertyValue", value);
+    }
 }
 
 function decreaseValue() {
-    const ele = document.getElementById(props.propertyInputId)
-    var value = parseInt(ele.value, 10)
-    var step = parseInt(props.stepSize, 10)
-    value = isNaN(value) ? 0 : value
-    step = isNaN(step) ? 1 : step
-    if (value - step >= props.valueMin) value = value - step
-    else return
-    props.propertyValue = value
-    ele.value = value
-    // manually triggering on change event
-    const e = new Event('change')
-    ele.dispatchEvent(e)
+    if (!inputRef.value) return;
+    let value = Number(inputRef.value.value) || 0;
+    const step = Number(props.stepSize) || 1;
+    const min = Number(props.valueMin);
+
+    if (value - step >= min) {
+        value -= step;
+        emit("update:propertyValue", value);
+    }
 }
 </script>
