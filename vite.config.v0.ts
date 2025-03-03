@@ -52,6 +52,12 @@ export default defineConfig({
 
     },
     server: {
+        headers: {
+            '.js': 'application/javascript; charset=utf-8',
+            '.mjs': 'application/javascript; charset=utf-8',
+            '.css': 'text/css; charset=utf-8',
+            '.html': 'text/html; charset=utf-8',
+        },
         port: 4000,
         proxy: {
             // ...(process.env.NODE_ENV === 'development' && {
