@@ -1,52 +1,23 @@
 [build]
-  command = "npm run build && mkdir -p ./dist && cp -r ./public/* ./dist/ && cp ./dist/simulatorvue/index-cv.html ./dist/simulatorvue/index.html && mv ./dist/simulatorvue/index.html ./dist/"
+  command = "npm run build && mkdir -p ./dist && cp -r ../public/* ./dist/"
 
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+  from = "/"
+  to = "/simulatorvue"
+  status = 301
+  force = true
 
 [[redirects]]
-  from = "/simulatorvue/*"
-  to = "/simulatorvue/index-cv.html"
+  from = "/simulatorvue/v0/*"
+  to = "/simulatorvue/v0/index-cv.html"
   status = 200
 
 [[redirects]]
   from = "/simulatorvue/v1/*"
-  to = "/simulatorvue-v1/index-cv.html"
+  to = "/simulatorvue/v1/index-cv.html"
   status = 200
 
-[[headers]]
-  for = "/*.(js|mjs)"
-  [headers.values]
-    Content-Type = "application/javascript; charset=utf-8"
-
-[[headers]]
-  for = "/*.(css)"
-  [headers.values]
-    Content-Type = "text/css; charset=utf-8"
-
-[[headers]]
-  for = "/*.(woff|woff2)"
-  [headers.values]
-    Content-Type = "font/woff2"
-
-[[headers]]
-  for = "/*.(ttf|otf)"
-  [headers.values]
-    Content-Type = "font/ttf"
-
-[[headers]]
-  for = "/*.(svg)"
-  [headers.values]
-    Content-Type = "image/svg+xml"
-
-[[headers]]
-  for = "/*.(png|jpg|jpeg)"
-  [headers.values]
-    Content-Type = "image/png"
-
-[[headers]]
-  for = "/*.(eot)"
-  [headers.values]
-    Content-Type = "application/vnd.ms-fontobject"
+[[redirects]]
+  from = "/simulatorvue/*"
+  to = "/simulatorvue/v0/index-cv.html"
+  status = 200
