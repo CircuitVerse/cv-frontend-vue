@@ -11,14 +11,27 @@
 <script lang="ts" setup>
 import ModuleProperty from '#/components/Panels/PropertiesPanel/ModuleProperty/ModuleProperty.vue'
 import LayoutProperty from '#/components/Panels/PropertiesPanel/LayoutProperty/LayoutProperty.vue'
-import { toRaw, onMounted } from 'vue'
-import { showPropertiesPanel } from './PropertiesPanel';
-import { usePropertiesPanelStore } from '#/store/propertiesPanelStore';
+import { toRaw, onMounted, watch } from 'vue'
+import { showPropertiesPanel } from './PropertiesPanel'
+import { usePropertiesPanelStore } from '#/store/propertiesPanelStore'
 
-const propertiesPanelStore = usePropertiesPanelStore();
+const propertiesPanelStore = usePropertiesPanelStore()
 
+// Run showPropertiesPanel initially when component mounts
 onMounted(() => {
-    // checks for which type of properties panel to show
-    setInterval(showPropertiesPanel, 100)
+    showPropertiesPanel()
 })
+
+// Watch for relevant state changes that would require updating the properties panel
+watch(
+    () => [
+        propertiesPanelStore.panelType,
+        propertiesPanelStore.inLayoutMode,
+        propertiesPanelStore.propertiesPanelObj
+    ],
+    () => {
+        showPropertiesPanel()
+    },
+    { deep: true }
+)
 </script>
