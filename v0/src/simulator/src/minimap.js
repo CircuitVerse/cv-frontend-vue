@@ -2,8 +2,7 @@ import simulationArea from './simulationArea'
 import { colors } from './themer/themer'
 import { layoutModeGet } from './layoutMode'
 
-// Ensure lightMode is defined somewhere. Adding a placeholder here.
-const lightMode = false // Replace this with actual logic from your app.
+const lightMode = false // isLightMode()
 
 var miniMapArea
 
@@ -18,7 +17,8 @@ var miniMapArea
  * @property {function} resolve - used to resolve all objects and draw them on minimap
  * @property {function} clear - used to clear minimap
  * @category minimap
- */
+ * global updateOrder 
+ * */
 miniMapArea = {
     canvas: document.getElementById('miniMapArea'),
 
@@ -107,8 +107,8 @@ miniMapArea = {
 
         this.ctx.strokeStyle = miniStroke
         this.ctx.fillStyle = miniFill
-
-        const lst = updateOrder
+        //  to show the area of current canvas
+        const lst = window.updateOrder || []
         for (let i = 0; i < lst.length; i++) {
             if (lst[i] === 'wires') {
                 for (let wire of globalScope[lst[i]]) {
