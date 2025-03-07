@@ -1,0 +1,61 @@
+name: Vue Simulator Desktop Release
+
+on:
+  push:
+    branches: [ "main" ]
+  release:
+    types: [created]
+
+jobs:
+  build-tauri:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+# node 22 is been used in circuitverse primary code base.
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Dependencies (Vue + Tauri CLI)
+        run: |
+          npm install
+          npm install -g @tauri-apps/cli
+        working-directory: ./src  
+
+      - name: Build Frontend (Vue)
+        run: |
+          npm run build
+        working-directory: ./src  
+
+      - name: Setup Rust
+        if: matrix.os != 'windows-latest'
+        run: |
+          rustup update stable
+          rustup default stable
+
+      - name: Cache Rust Dependencies
+        uses: Swatinem/rust-cache@v2
+
+      - name: Build Tauri App
+        uses: tauri-apps/tauri-action@v0
+        with:
+          projectPath: ./src-tauri 
+          tagName: ${{ github.ref_name }}
+          releaseName: "Tauri Desktop Release ${{ github.ref_name }}"
+          releaseBody: "See the assets below to download this release."
+          releaseDraft: false
+          prerelease: false
+
+      - name: Upload Tauri Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Tauri Build Artifacts (${{ matrix.os }})
+          path: |
+            src-tauri/target/release/bundle
