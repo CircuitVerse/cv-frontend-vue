@@ -1,0 +1,53 @@
+name: Simulator Tests
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
+
+jobs:
+  run-simulator-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18 # Node 22 is unstable, 18 or 20 recommended
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Simulator Tests with JUnit Output
+        run: |
+          npm run test -- src/simulator/spec --reporter=junit --outputFile=./test-results/simulator-tests.xml
+        continue-on-error: true
+
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: simulator-test-results
+          path: ./test-results/simulator-tests.xml
+          if-no-files-found: error
+
+      - name: Display Test Summary (Optional)
+        run: |
+          if [ -f ./test-results/simulator-tests.xml ]; then
+            cat ./test-results/simulator-tests.xml
+          fi
