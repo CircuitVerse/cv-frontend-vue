@@ -141,7 +141,7 @@
 </template>
 
 <script lang="ts" setup>
-import { toRaw, onMounted, computed } from 'vue'
+import { toRaw, onMounted, computed, watch } from 'vue'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import ProjectProperty from './ModuleProperty/ProjectProperty/ProjectProperty.vue'
 import ElementProperty from './ModuleProperty/ElementProperty/ElementProperty.vue'
@@ -149,7 +149,6 @@ import SubcircuitProperty from './ModuleProperty/SubcircuitProperty/SubcircuitPr
 import HelpButton from '../Shared/HelpButton.vue'
 import { showPropertiesPanel } from './PropertiesPanel'
 import { layoutFunction } from './PropertiesPanel'
-import { watch } from 'vue'
 import { useLayoutStore } from '#/store/layoutStore'
 import { usePropertiesPanelStore } from '#/store/propertiesPanelStore'
 
@@ -159,10 +158,13 @@ const propertiesPanelStore = usePropertiesPanelStore()
 
 const objProperties = computed(() => toRaw(propertiesPanelStore.propertiesPanelObj))
 
+// Initialize layout dialog reference
 onMounted(() => {
-    layoutStore.layoutDialogRef = propertiesPanelStore.layoutDialogRef;
+    layoutStore.layoutDialogRef = propertiesPanelStore.layoutDialogRef
+    showPropertiesPanel()
 })
 
+// Watch for title enable changes
 watch(
     () => propertiesPanelStore.titleEnable,
     () => {
@@ -170,8 +172,17 @@ watch(
     }
 )
 
-onMounted(() => {
-  // checks for which type of properties panel to show
-  setInterval(showPropertiesPanel, 100)
-})
+// Watch for properties panel state changes
+watch(
+    () => [
+        propertiesPanelStore.panelType,
+        propertiesPanelStore.inLayoutMode,
+        propertiesPanelStore.propertiesPanelObj,
+        simulatorMobileStore.showPropertiesPanel
+    ],
+    () => {
+        showPropertiesPanel()
+    },
+    { deep: true }
+)
 </script>
