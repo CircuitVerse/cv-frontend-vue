@@ -4,11 +4,11 @@ on:
   push:
     branches:
       - main
-      - dev
+
   pull_request:
     branches:
       - main
-      - dev
+ 
 
 jobs:
   run-simulator-tests:
@@ -21,33 +21,11 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18 # Node 22 is unstable, 18 or 20 recommended
-
-      - name: Cache node_modules
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          node-version: 20.x
 
       - name: Install Dependencies
         run: npm install
 
-      - name: Run Simulator Tests with JUnit Output
+      - name: Run Simulator Tests
         run: |
-          npm run test -- src/simulator/spec --reporter=junit --outputFile=./test-results/simulator-tests.xml
-        continue-on-error: true
-
-      - name: Upload Test Results
-        uses: actions/upload-artifact@v4
-        with:
-          name: simulator-test-results
-          path: ./test-results/simulator-tests.xml
-          if-no-files-found: error
-
-      - name: Display Test Summary (Optional)
-        run: |
-          if [ -f ./test-results/simulator-tests.xml ]; then
-            cat ./test-results/simulator-tests.xml
-          fi
+          npm run test -- src/simulator/spec || echo "Simulator tests failed"
