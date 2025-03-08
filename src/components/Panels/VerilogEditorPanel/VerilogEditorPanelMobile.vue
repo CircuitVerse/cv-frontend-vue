@@ -70,7 +70,7 @@ import {
   resetVerilogCode,
   applyVerilogTheme,
 } from '#/simulator/src/Verilog2CV'
-import { useSimulatorMobileStore } from '#/store/simulatorMobileStore';
+import { useSimulatorMobileStore } from '../../store/simulatorMobileStore';
 import { ref, Ref, watch, onMounted } from 'vue'
 // import logixFunction from '#/simulator/src/data'
 
