@@ -4,11 +4,11 @@ on:
   push:
     branches:
       - main
-      - dev
+
   pull_request:
     branches:
       - main
-      - dev
+
 
 jobs:
   run-simulator-tests:
@@ -21,7 +21,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20
 
       - name: Install Dependencies
         run: npm install
