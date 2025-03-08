@@ -21,6 +21,7 @@
         "declaration": true,
         "emitDeclarationOnly": true,
         "outDir": "dist",
+        "rootDir": "src", 
         "declarationMap": true
     },
     "include": [
@@ -29,7 +30,8 @@
         "src/**/*.tsx",
         "src/**/*.vue",
         "src/**/*",
-        "commitlint.config.js"
+        "commitlint.config.js",
+        "types/**/*.d.ts"
     ],
     "references": [{ "path": "./tsconfig.node.json" }]
 }
