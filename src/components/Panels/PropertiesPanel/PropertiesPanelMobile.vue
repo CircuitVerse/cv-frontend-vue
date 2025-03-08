@@ -142,7 +142,7 @@
 
 <script lang="ts" setup>
 import { toRaw, onMounted, computed } from 'vue'
-import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
+import { useSimulatorMobileStore } from '../../store/simulatorMobileStore'
 import ProjectProperty from './ModuleProperty/ProjectProperty/ProjectProperty.vue'
 import ElementProperty from './ModuleProperty/ElementProperty/ElementProperty.vue'
 import SubcircuitProperty from './ModuleProperty/SubcircuitProperty/SubcircuitProperty.vue'

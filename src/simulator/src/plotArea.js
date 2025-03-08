@@ -3,7 +3,7 @@ import { convertors } from './utils'
 import { join, downloadDir } from '@tauri-apps/api/path';
 import { writeFile } from '@tauri-apps/plugin-fs';
 import { isTauri } from '@tauri-apps/api/core'
-import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
+import { useSimulatorMobileStore } from '../../store/simulatorMobileStore'
 import { toRefs } from 'vue'
 
 var DPR = window.devicePixelRatio || 1

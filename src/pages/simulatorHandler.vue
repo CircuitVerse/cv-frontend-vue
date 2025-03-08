@@ -22,7 +22,7 @@ import simulator from './simulator.vue'
 import { onBeforeMount, ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '#/store/authStore'
-import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
+import { useSimulatorMobileStore } from '../../store/simulatorMobileStore'
 
 const route = useRoute()
 const hasAccess = ref(true)

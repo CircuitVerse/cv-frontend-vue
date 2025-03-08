@@ -19,8 +19,8 @@ import {
 import miniMapArea from './minimap'
 import { showMessage } from './utils'
 import { verilogModeSet } from './Verilog2CV'
-import { useLayoutStore } from '#/store/layoutStore'
-import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
+import { useLayoutStore } from '../../store/layoutStore'
+import { useSimulatorMobileStore } from '../../store/simulatorMobileStore'
 import { toRefs } from 'vue'
 import { circuitElementList } from './metadata'
 

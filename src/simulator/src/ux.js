@@ -17,8 +17,7 @@ import { dragging } from './drag'
 import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
 import { toRefs } from 'vue'
 import { circuitElementList } from './metadata'
-import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
-
+import { useSimulatorMobileStore } from '../../store/simulatorMobileStore'
 export const uxvar = {
     smartDropXX: 50,
     smartDropYY: 80,

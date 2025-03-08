@@ -37,7 +37,7 @@ import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
 import { toRefs } from 'vue'
 import { provideCircuitName } from '#/components/helpers/promptComponent/PromptComponent.vue'
 import { deleteCurrentCircuit } from '#/components/helpers/deleteCircuit/DeleteCircuit.vue'
-import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
+import { useSimulatorMobileStore } from '../../store/simulatorMobileStore'
 import { inputList, moduleList } from './metadata'
 
 export const circuitProperty = {
