@@ -38,6 +38,13 @@ export default defineConfig(() => ({
     },
     test:{
         globals: true,
+        include: ['./src/simulator/spec/**/*.spec.js'],
+        exclude: [
+      '**/node_modules/**',
+      '**/v0/**',
+      '**/v1/**',
+      'dist/**'
+    ],
         environment: 'jsdom',
         server: {
             deps: {
