@@ -1,5 +1,6 @@
 import modules from './modules'
 import Adder from './modules/Adder'
+import Subtractor from './modules/Subtractor'
 import ALU from './modules/ALU'
 import AndGate from './modules/AndGate'
 import Arrow from './modules/Arrow'
@@ -84,6 +85,7 @@ export default function setupModules() {
         Buffer,
         ControlledInverter,
         Adder,
+        Subtractor,
         verilogMultiplier,
         verilogDivider,
         verilogPower,
