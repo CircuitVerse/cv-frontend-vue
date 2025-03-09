@@ -31,9 +31,9 @@ export const CreateAbstraction = (themeOptions) => {
             ref: ['--canvas-stroke'],
         },
         Text: {
-            color: themeOptions['--text-lite'],
+            color: themeOptions['--text'],
             description: 'text color',
-            ref: ['--text-lite', '--text-panel', '--text-dark'],
+            ref: ['--text', '--text-panel', '--input-text'],
         },
         Borders: {
             color: themeOptions['--br-secondary'],

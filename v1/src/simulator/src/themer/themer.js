@@ -69,6 +69,9 @@ const getCanvasColors = () => {
     colors['canvas_fill'] = getComputedStyle(
         document.documentElement
     ).getPropertyValue('--canvas-fill')
+    colors['text'] = getComputedStyle(
+        document.documentElement
+    ).getPropertyValue('--text')
     return colors
 }
 
@@ -84,12 +87,28 @@ export let colors = getCanvasColors()
  */
 export function updateThemeForStyle(themeName) {
     const selectedTheme = themeOptions[themeName]
-    if (selectedTheme === undefined) return
-    const html = document.getElementsByTagName('html')[0]
-    Object.keys(selectedTheme).forEach((property, i) => {
+    if (!selectedTheme) return
+    
+    const html = document.documentElement
+    
+    // Set all theme properties
+    Object.keys(selectedTheme).forEach((property) => {
         html.style.setProperty(property, selectedTheme[property])
     })
+    
+    // Special handling for text color in all themes
+    if (selectedTheme['--text']) {
+        // Ensure text color is explicitly set
+        html.style.setProperty('--text', selectedTheme['--text'])
+    }
+    
+    // Update colors object for canvas elements
     colors = getCanvasColors()
+    
+    // Force a redraw of the canvas to apply the new colors
+    if (window.globalScope && window.globalScope.renderCanvas) {
+        setTimeout(() => window.globalScope.renderCanvas(), 10)
+    }
 }
 
 /**

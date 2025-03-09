@@ -33,7 +33,7 @@ export const CreateAbstraction = (themeOptions) => {
         Text: {
             color: themeOptions['--text-lite'],
             description: 'text color',
-            ref: ['--text-lite', '--text-panel', '--text-dark'],
+            ref: ['--text-lite', '--text-panel', '--text-dark', '--text'],
         },
         Borders: {
             color: themeOptions['--br-secondary'],

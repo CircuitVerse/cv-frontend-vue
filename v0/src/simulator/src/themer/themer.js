@@ -84,12 +84,29 @@ export let colors = getCanvasColors()
  */
 export function updateThemeForStyle(themeName) {
     const selectedTheme = themeOptions[themeName]
-    if (selectedTheme === undefined) return
-    const html = document.getElementsByTagName('html')[0]
-    Object.keys(selectedTheme).forEach((property, i) => {
+    if (!selectedTheme) return
+    
+    const html = document.documentElement
+    
+    // Set all theme properties
+    Object.keys(selectedTheme).forEach((property) => {
         html.style.setProperty(property, selectedTheme[property])
     })
+    
+    // Ensure text color is properly set for custom themes
+    if (themeName === 'Custom Theme' && selectedTheme['--text']) {
+        html.style.setProperty('--text', selectedTheme['--text'])
+    }
+    
+    // Update colors object with current CSS variables
     colors = getCanvasColors()
+    
+    // Force canvas refresh to apply new colors
+    if (window.globalScope && window.globalScope.renderCanvas) {
+        setTimeout(() => {
+            window.globalScope.renderCanvas()
+        }, 10)
+    }
 }
 
 /**
