@@ -1,14 +1,27 @@
 <template>
     <nav class="navbar navbar-expand-lg navbar-dark header">
         <Logo :cvlogo="navbarLogo" />
-        <Hamburger v-if="showSidebar" />
+
+        <!-- Toggle Button for Mobile -->
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#bs-example-navbar-collapse-1"
+          aria-controls="bs-example-navbar-collapse-1"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+          v-if="showSidebar"
+        >
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
         <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse">
             <NavbarLinks :navbar-data="navbarData" />
 
             <span
-                id="projectName"
-                class="projectName noSelect defaultCursor font-weight-bold"
+              id="projectName"
+              class="projectName noSelect defaultCursor font-weight-bold"
             >
                 {{ projectStore.getProjectName }}
             </span>
@@ -17,6 +30,7 @@
     </nav>
     <QuickButton />
 </template>
+
 
 <script lang="ts" setup>
 import QuickButton from '@/Navbar/QuickButton/QuickButton.vue'
