@@ -2,12 +2,11 @@ name: Vue Simulator Desktop Release
 
 on:
   push:
-    branches: [ "main" ]
-  release:
-    types: [created]
+    tags:
+      - 'v*'
 
 jobs:
-  build-tauri:
+  build-and-release:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -15,24 +14,30 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v3
-# node 22 is been used in circuitverse primary code base.
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      - name: Install Dependencies (Vue + Tauri CLI)
-        run: |
-          npm install
-          npm install -g @tauri-apps/cli
-        working-directory: ./src  
+      - name: Cache Node.js Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-node-
 
-      - name: Build Frontend (Vue)
+      - name: Install Dependencies
         run: |
-          npm run build
-        working-directory: ./src  
+          npm ci
+          npm install -g @tauri-apps/cli
+        working-directory: ./src
+
+      - name: Build Frontend
+        run: npm run build
+        working-directory: ./src
 
       - name: Setup Rust
         if: matrix.os != 'windows-latest'
@@ -43,19 +48,25 @@ jobs:
       - name: Cache Rust Dependencies
         uses: Swatinem/rust-cache@v2
 
-      - name: Build Tauri App
+      - name: Build and Release Tauri App
         uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          projectPath: ./src-tauri 
+          projectPath: ./src-tauri
           tagName: ${{ github.ref_name }}
-          releaseName: "Tauri Desktop Release ${{ github.ref_name }}"
-          releaseBody: "See the assets below to download this release."
+          releaseName: "CircuitVerse Desktop ${{ github.ref_name }}"
+          releaseBody: "Official CircuitVerse desktop app release. Download below!"
           releaseDraft: false
           prerelease: false
+          releaseIdOutput: release_id # Store release ID for artifact upload
 
-      - name: Upload Tauri Build Artifacts
-        uses: actions/upload-artifact@v4
+      - name: Upload Tauri Artifacts to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: Tauri Build Artifacts (${{ matrix.os }})
-          path: |
-            src-tauri/target/release/bundle
+          upload_url: ${{ steps.build-and-release-tauri-app.outputs.release_upload_url }}
+          asset_path: src-tauri/target/release/bundle
+          asset_name: circuitverse-desktop-${{ matrix.os }}-${{ github.ref_name }}
+          asset_content_type: application/octet-stream
