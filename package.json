@@ -7,6 +7,7 @@
         "build": "bash build.sh",
         "dev": "vite",
         "tauri": "tauri",
+        "desktop": "bash build-desktop.sh",
         "preview": "vite preview",
         "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src",
         "format": "prettier .  --write",

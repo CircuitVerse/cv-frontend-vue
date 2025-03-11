@@ -31,7 +31,7 @@ jobs:
 
       - name: Build Frontend (Vue)
         run: |
-          npm run build
+          npm run desktop
         working-directory: ./src  
 
       - name: Setup Rust
