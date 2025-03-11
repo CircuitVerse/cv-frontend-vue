@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch: # Allows manual execution
 
 jobs:
   build-and-release:
@@ -38,7 +39,7 @@ jobs:
         working-directory: ./v0/src
 
       - name: Build Frontend
-        run: npm run build
+        run: npm run desktop
         working-directory: ./v0/src
 
       - name: Install Rust
@@ -55,8 +56,7 @@ jobs:
 
       - name: Install macOS Dependencies
         if: matrix.os == 'macos-latest'
-        run: |
-          brew install gtk+3 webkitgtk glib
+        run: brew install gtk+3 webkitgtk glib
 
       - name: Cache Rust Dependencies
         uses: Swatinem/rust-cache@v2
@@ -72,8 +72,8 @@ jobs:
         with:
           projectPath: ./src-tauri
           tagName: ${{ github.ref_name }}
-          releaseName: "CircuitVerse Desktop ${{ github.ref_name }}"
-          releaseBody: "Official CircuitVerse desktop app release. Download the binaries below!"
+          releaseName: "Vue Simulator Desktop ${{ github.ref_name }}"
+          releaseBody: "Official Vue Simulator desktop release. Download the binaries below!"
           releaseDraft: false
           prerelease: false
           beforeBuildCommand: |
@@ -91,6 +91,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.tauri-build.outputs.release_upload_url }}
-          asset_path: ${{ matrix.os == 'ubuntu-latest' && './src-tauri/target/release/bundle/appimage/circuitverse-desktop.AppImage' || matrix.os == 'windows-latest' && './src-tauri/target/release/bundle/msi/circuitverse-desktop_0.0.0_x64_en-US.msi' || './src-tauri/target/release/bundle/macos/circuitverse-desktop.app.tar.gz' }}
-          asset_name: circuitverse-desktop-${{ matrix.os }}-${{ github.ref_name }}.${{ matrix.os == 'ubuntu-latest' && 'AppImage' || matrix.os == 'windows-latest' && 'msi' || 'tar.gz' }}
+          asset_path: ${{ matrix.os == 'ubuntu-latest' && './src-tauri/target/release/bundle/appimage/vue-simulator-desktop.AppImage' || matrix.os == 'windows-latest' && './src-tauri/target/release/bundle/msi/vue-simulator-desktop_0.0.0_x64_en-US.msi' || './src-tauri/target/release/bundle/macos/vue-simulator-desktop.app.tar.gz' }}
+          asset_name: vue-simulator-desktop-${{ matrix.os }}-${{ github.ref_name }}.${{ matrix.os == 'ubuntu-latest' && 'AppImage' || matrix.os == 'windows-latest' && 'msi' || 'tar.gz' }}
           asset_content_type: application/octet-stream
