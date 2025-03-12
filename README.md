@@ -66,6 +66,30 @@ See [`CONTRIBUTING.md`](https://github.com/CircuitVerse/CircuitVerse/blob/master
 ## License
 This project is licensed under the [MIT License](LICENSE).
 
+## Desktop Application Development
+> **Note**: Desktop application support is currently a planned feature (see To-Dos item #4).
+
+This section provides preliminary information for future desktop application development using a framework like Electron.
+
+### Prerequisites (Planned)
+- Node.js v16 or higher
+- npm v8 or higher
+- Desktop application framework (Tauri)
+
+### Future Implementation
+Once desktop application support is added, the following workflow is anticipated:
+
+```bash
+# Install dependencies including desktop framework
+npm install
+
+# Run in development mode
+npm run desktop:dev
+
+# Build for distribution
+npm run desktop:build
+```
+
 ## To Dos -
 1. **Creating the mobile version of the vue simulator** 
 2. **Testing and bug fixing**
