@@ -48,13 +48,13 @@ jobs:
       - name: Copy Index File (Cross-Platform)
         run: |
           if [ "$RUNNER_OS" == "Windows" ]; then
-            copy dist/index-cv.html dist/index.html
+            cp dist/index-cv.html dist/index.html
           else
             cp dist/index-cv.html dist/index.html
           fi
         shell: bash
 
-              - name: Setup Rust
+      - name: Setup Rust
         if: matrix.os != 'windows-latest'
         run: |
           rustup update stable
