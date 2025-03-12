@@ -59,19 +59,7 @@ jobs:
         run: |
           rustup update stable
           rustup default stable
-        shell: bash
-
-      - name: Install Linux Dependencies
-        if: matrix.os == 'Ubuntu-latest'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y
-
-      - name: Install macOS Dependencies
-        if: matrix.os == 'macos-latest'
-        run: |
-          brew install 
- 
+        shell: bash 
 
       - name: Cache Rust Dependencies
         uses: Swatinem/rust-cache@v2
