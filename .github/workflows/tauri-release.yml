@@ -40,23 +40,8 @@ jobs:
           npm install @tauri-apps/cli @tauri-apps/api @tauri-apps/plugin-fs --save-dev
         shell: bash
 
-      - name: Build Frontend with Vite
-        run: |
-          if [[ "${{ matrix.os }}" == "Windows" ]]; then
-            set DESKTOP_MODE=true
-          else
-            export DESKTOP_MODE=true
-          fi
-          npm run build
-        shell: bash
-
-      - name: Copy Index File (Cross-Platform)
-        run: |
-          if [[ "${{ matrix.os }}" == "Windows" ]]; then
-            copy dist\\index-cv.html dist\\index.html
-          else
-            cp dist/index-cv.html dist/index.html
-          fi
+      - name: Run Cross-Platform Build Script
+        run: node build-desktop.js
         shell: bash
 
       - name: Setup Rust
