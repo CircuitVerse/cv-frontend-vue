@@ -64,30 +64,14 @@ jobs:
       - name: Install Linux Dependencies (Ubuntu)
         if: matrix.os == 'Ubuntu-latest'
         run: |
-          sudo apt-get update && sudo apt-get install -y \
-            libgtk-3-dev \
-            libglib2.0-dev \
-            libwebkit2gtk-4.0-dev \
-            libappindicator3-dev \
-            librsvg2-dev \
-            patchelf \
-            curl \
-            wget \
-            pkg-config \
-            build-essential
+          sudo apt-get update && sudo apt-get install -y
         shell: bash
 
       - name: Install macOS Dependencies
         if: matrix.os == 'macos-latest'
         run: |
           brew update
-          brew install \
-            gtk+3 \
-            glib \
-            webkit2gtk \
-            librsvg \
-            appindicator-gtk3 \
-            pkg-config
+          brew install 
         shell: bash
 
       - name: Setup Rust
