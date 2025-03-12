@@ -41,7 +41,22 @@ jobs:
         shell: bash
 
       - name: Build Frontend with Vite
-        run: npm run build
+        run: |
+          if [[ "${{ matrix.os }}" == "Windows" ]]; then
+            set DESKTOP_MODE=true
+          else
+            export DESKTOP_MODE=true
+          fi
+          npm run build
+        shell: bash
+
+      - name: Copy Index File (Cross-Platform)
+        run: |
+          if [[ "${{ matrix.os }}" == "Windows" ]]; then
+            copy dist\\index-cv.html dist\\index.html
+          else
+            cp dist/index-cv.html dist/index.html
+          fi
         shell: bash
 
       - name: Setup Rust
