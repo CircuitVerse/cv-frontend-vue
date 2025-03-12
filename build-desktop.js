@@ -1,5 +1,4 @@
 // build-desktop.js
-const { exec } = require('child_process');
 const os = require('os');
 
 // Set DESKTOP_MODE environment variable
