@@ -31,24 +31,32 @@ jobs:
           restore-keys: ${{ runner.os }}-node-
 
       - name: Install Dependencies (Vue + Tauri CLI)
-        run: |
-          npm ci
-          npm install -g @tauri-apps/cli
-        working-directory: ./src
+        run: npm ci
+        working-directory: ./v0/src
 
-      - name: Build Frontend (Vue)
-        run: npm run build
-        working-directory: ./src
+      - name: Install Tauri CLI
+        run: npm install -g @tauri-apps/cli
+        working-directory: ./v0/src
+        shell: bash
+
+      - name: Build Frontend (Vue) with DESKTOP_MODE
+        run: |
+          if [ "$RUNNER_OS" == "Windows" ]; then
+            set DESKTOP_MODE=true && npm run build
+          else
+            DESKTOP_MODE=true npm run build
+          fi
+        working-directory: ./v0/src
         shell: bash
 
       - name: Copy Index File (Cross-Platform)
         run: |
           if [ "$RUNNER_OS" == "Windows" ]; then
-            copy src/dist/index-cv.html src/dist/index.html
+            copy dist/index-cv.html dist/index.html
           else
-            cp src/dist/index-cv.html src/dist/index.html
+            cp dist/index-cv.html dist/index.html
           fi
-        working-directory: ./src
+        working-directory: ./v0/src
         shell: bash
 
       - name: Setup Rust
@@ -78,7 +86,7 @@ jobs:
 
       - name: Build Tauri App
         run: npm run tauri build
-        working-directory: ./src
+        working-directory: ./v0/src
         shell: bash
 
       - name: Upload Tauri Build Artifacts
