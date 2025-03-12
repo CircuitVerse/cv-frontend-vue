@@ -21,7 +21,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20
 
       - name: Cache Node.js Dependencies
         uses: actions/cache@v3
@@ -64,13 +64,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y
-        shell: bash
 
       - name: Install macOS Dependencies
         if: matrix.os == 'macos-latest'
         run: |
-          brew install
-        shell: bash
+          brew install 
+ 
 
       - name: Cache Rust Dependencies
         uses: Swatinem/rust-cache@v2
