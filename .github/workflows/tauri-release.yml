@@ -91,11 +91,22 @@ jobs:
           path: |
             src-tauri/target/release/bundle
 
-      - name: Create GitHub Release and Upload Assets
+      - name: Install GitHub CLI and Create Release
         if: github.event_name == 'release' && github.event.action == 'created'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Install GitHub CLI
+          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
+            curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+            echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+            sudo apt update
+            sudo apt install gh
+          elif [ "${{ matrix.os }}" == "macos-latest" ]; then
+            brew install gh
+          elif [ "${{ matrix.os }}" == "windows-latest" ]; then
+            choco install gh
+          fi
           # Determine the asset paths based on OS
           ASSET_PATH=""
           ASSET_NAME=""
@@ -109,7 +120,6 @@ jobs:
             ASSET_PATH="src-tauri/target/release/bundle/macos/circuitverse-desktop.app.tar.gz"
             ASSET_NAME="circuitverse-desktop-macos-latest-${{ github.ref_name }}.tar.gz"
           fi
-
           # Check if asset exists
           if [ -f "$ASSET_PATH" ]; then
             gh release upload ${{ github.ref_name }} "$ASSET_PATH" --clobber --repo ${{ github.repository }} -t "Release ${{ github.ref_name }}" -n "Official CircuitVerse desktop app release. Download the binaries below!"
