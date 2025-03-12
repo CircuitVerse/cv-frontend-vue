@@ -2,12 +2,12 @@ name: Vue Simulator Desktop Release
 
 on:
   push:
-    tags:
-      - 'v*'
-  workflow_dispatch: # Allows manual execution
+    branches: [ "main" ]
+  release:
+    types: [created]
 
 jobs:
-  build-and-release:
+  build-tauri:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -15,82 +15,47 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v3
-
+# node 22 is been used in circuitverse primary code base.
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      - name: Cache Node.js Dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: ${{ runner.os }}-node-
+      - name: Install Dependencies (Vue + Tauri CLI)
+        run: |
+          npm install
+          npm install -g @tauri-apps/cli
+        working-directory: ./src  
 
-      - name: Install Frontend Dependencies
-        run: npm ci
-        working-directory: ./v0/src
+      - name: Build Frontend (Vue)
+        run: |
+          npm run build
+        working-directory: ./src  
 
-      - name: Install Tauri CLI
-        run: npm install -g @tauri-apps/cli
-        working-directory: ./v0/src
-
-      - name: Build Frontend
-        run: npm run desktop
-        working-directory: ./v0/src
-
-      - name: Install Rust
+      - name: Setup Rust
         if: matrix.os != 'windows-latest'
         run: |
           rustup update stable
           rustup default stable
 
-      - name: Install Linux Dependencies
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libglib2.0-dev
-
-      - name: Install macOS Dependencies
-        if: matrix.os == 'macos-latest'
-        run: brew install gtk+3 webkitgtk glib
-
       - name: Cache Rust Dependencies
         uses: Swatinem/rust-cache@v2
-        with:
-          prefix-key: "v0"
-          workspaces: "./src-tauri"
 
-      - name: Build and Release Tauri App
-        id: tauri-build
+      - name: Build Tauri App
         uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          projectPath: ./src-tauri
+          projectPath: ./src-tauri 
           tagName: ${{ github.ref_name }}
-          releaseName: "Vue Simulator Desktop ${{ github.ref_name }}"
-          releaseBody: "Official Vue Simulator desktop release. Download the binaries below!"
+          releaseName: "Tauri Desktop Release ${{ github.ref_name }}"
+          releaseBody: "See the assets below to download this release."
           releaseDraft: false
           prerelease: false
-          beforeBuildCommand: |
-            if [ "$RUNNER_OS" == "Windows" ]; then
-              npm run build && copy v0/src/dist/index-cv.html v0/src/dist/index.html
-            else
-              npm run build && cp v0/src/dist/index-cv.html v0/src/dist/index.html
-            fi
-          working-directory: ./v0/src
 
-      - name: Upload Release Assets
-        if: success()
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload Tauri Build Artifacts
+        uses: actions/upload-artifact@v4
         with:
-          upload_url: ${{ steps.tauri-build.outputs.release_upload_url }}
-          asset_path: ${{ matrix.os == 'ubuntu-latest' && './src-tauri/target/release/bundle/appimage/vue-simulator-desktop.AppImage' || matrix.os == 'windows-latest' && './src-tauri/target/release/bundle/msi/vue-simulator-desktop_0.0.0_x64_en-US.msi' || './src-tauri/target/release/bundle/macos/vue-simulator-desktop.app.tar.gz' }}
-          asset_name: vue-simulator-desktop-${{ matrix.os }}-${{ github.ref_name }}.${{ matrix.os == 'ubuntu-latest' && 'AppImage' || matrix.os == 'windows-latest' && 'msi' || 'tar.gz' }}
-          asset_content_type: application/octet-stream
+          name: Tauri Build Artifacts (${{ matrix.os }})
+          path: |
+            src-tauri/target/release/bundle
