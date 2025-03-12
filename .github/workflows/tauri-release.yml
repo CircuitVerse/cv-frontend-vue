@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [Ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
       - name: Checkout repository
@@ -30,28 +30,18 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: ${{ runner.os }}-node-
 
-      - name: Install Dependencies (Vue + Tauri CLI)
+      - name: Install Dependencies
         run: npm install
         shell: bash
-  
 
       - name: Install Tauri CLI
         run: |
-            npm install -g @tauri-apps/cli
-            npm install @tauri-apps/cli --save-dev
+          npm install -g @tauri-apps/cli
+          npm install @tauri-apps/cli --save-dev
         shell: bash
 
-      - name: Build Desktop Frontend
-        run: npm run desktop
-        shell: bash
-
-      - name: Copy Index File (Cross-Platform)
-        run: |
-          if [ "$RUNNER_OS" == "Windows" ]; then
-            cp dist/index-cv.html dist/index.html
-          else
-            cp dist/index-cv.html dist/index.html
-          fi
+      - name: Build Frontend with Vite
+        run: npm run build
         shell: bash
 
       - name: Setup Rust
@@ -59,27 +49,20 @@ jobs:
         run: |
           rustup update stable
           rustup default stable
-        shell: bash 
+        shell: bash
 
       - name: Install Linux Dependencies (Ubuntu)
-        if: matrix.os == 'Ubuntu-latest'
+        if: matrix.os == 'ubuntu-latest'
         run: |
-          sudo apt-get update && sudo apt-get install -y
+          sudo apt-get update && sudo apt-get install -y libwebkit2gtk-4.0-dev build-essential curl wget libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev
         shell: bash
 
       - name: Install macOS Dependencies
         if: matrix.os == 'macos-latest'
         run: |
           brew update
-          brew install 
+          brew install pkg-config
         shell: bash
-
-      - name: Setup Rust
-        if: matrix.os != 'windows-latest'
-        run: |
-          rustup update stable
-          rustup default stable
-        shell: bash 
 
       - name: Cache Rust Dependencies
         uses: Swatinem/rust-cache@v2
@@ -105,7 +88,7 @@ jobs:
           # Determine the asset paths based on OS
           ASSET_PATH=""
           ASSET_NAME=""
-          if [ "${{ matrix.os }}" == "Ubuntu-latest" ]; then
+          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
             ASSET_PATH="src-tauri/target/release/bundle/appimage/circuitverse-desktop.AppImage"
             ASSET_NAME="circuitverse-desktop-ubuntu-latest-${{ github.ref_name }}.AppImage"
           elif [ "${{ matrix.os }}" == "windows-latest" ]; then
