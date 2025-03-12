@@ -54,6 +54,42 @@ jobs:
           fi
         shell: bash
 
+              - name: Setup Rust
+        if: matrix.os != 'windows-latest'
+        run: |
+          rustup update stable
+          rustup default stable
+        shell: bash 
+
+      - name: Install Linux Dependencies (Ubuntu)
+        if: matrix.os == 'Ubuntu-latest'
+        run: |
+          sudo apt-get update && sudo apt-get install -y \
+            libgtk-3-dev \
+            libglib2.0-dev \
+            libwebkit2gtk-4.0-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            curl \
+            wget \
+            pkg-config \
+            build-essential
+        shell: bash
+
+      - name: Install macOS Dependencies
+        if: matrix.os == 'macos-latest'
+        run: |
+          brew update
+          brew install \
+            gtk+3 \
+            glib \
+            webkit2gtk \
+            librsvg \
+            appindicator-gtk3 \
+            pkg-config
+        shell: bash
+
       - name: Setup Rust
         if: matrix.os != 'windows-latest'
         run: |
