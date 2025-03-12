@@ -31,7 +31,8 @@ jobs:
           restore-keys: ${{ runner.os }}-node-
 
       - name: Install Dependencies (Vue + Tauri CLI)
-        run: npm ci
+        run: npm install
+        shell: bash
   
 
       - name: Install Tauri CLI
