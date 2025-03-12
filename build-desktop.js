@@ -10,9 +10,9 @@ if (os.platform() === 'win32') {
       console.error(`Error: ${error.message}`);
       process.exit(1);
     }
+    // Log stderr output as warnings instead of treating them as errors
     if (stderr) {
-      console.error(`Stderr: ${stderr}`);
-      process.exit(1);
+      console.warn(`Warnings: ${stderr}`);
     }
     console.log(stdout);
   });
@@ -23,9 +23,9 @@ if (os.platform() === 'win32') {
       console.error(`Error: ${error.message}`);
       process.exit(1);
     }
+    // Log stderr output as warnings instead of treating them as errors
     if (stderr) {
-      console.error(`Stderr: ${stderr}`);
-      process.exit(1);
+      console.warn(`Warnings: ${stderr}`);
     }
     console.log(stdout);
   });

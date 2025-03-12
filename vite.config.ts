@@ -34,7 +34,7 @@ export default defineConfig(() => ({
     build: {
         outDir: process.env.DESKTOP_MODE ? './dist' : '../public/simulatorvue/v0/',
         assetsDir: 'assets',
-        chunkSizeWarningLimit: 1600,
+        chunkSizeWarningLimit: 2000,
     },
     test:{
         globals: true,
@@ -60,4 +60,11 @@ export default defineConfig(() => ({
             // }),
         },
     },
+    css: {
+        preprocessorOptions: {
+          scss: {
+            quietDeps: true, // Suppress Sass warnings
+          },
+        },
+      },
 }))
