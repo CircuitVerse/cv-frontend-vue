@@ -145,6 +145,19 @@ function layoutFunction(func: string) {
     border: 2px solid white;
 }
 
+.layout-title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px; 
+}
+
+.layout-title span{
+    display: block;
+    font-weight: 700;
+    margin: 1px;
+}
+
 .layout--btn-group {
     margin-right: 0;
 }
