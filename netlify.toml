@@ -6,7 +6,7 @@
   to = "/simulatorvue"
   status = 301
   force = true
-  
+
 [[redirects]]
   from = "/simulatorvue/v0/*"
   to = "/simulatorvue/v0/index-cv.html"
