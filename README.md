@@ -8,7 +8,7 @@
 ## Community
 We would love to hear from you! We communicate on Slack:
 
-[![Slack](https://circuitverse.org/slack)
+[![Slack](https://img.shields.io/badge/chat-on_slack-purple.svg?style=for-the-badge&logo=slack)](https://circuitverse.org/slack)
 
 ## Installation
 To set up the project on your local machine, follow these steps:
