@@ -30,6 +30,26 @@ To set up the project on your local machine, follow these steps:
   npm run dev
   ```
 
+## Desktop Application Development
+> **Note**: Desktop application support is currently a planned feature (see To-Dos item #4).
+This section provides preliminary information for future desktop application development using tauri framework.
+
+### Prerequisites (Planned)
+- Node.js v16 or higher
+- npm v8 or higher
+- Desktop application framework (Tauri)
+
+### Future Implementation
+Once desktop application support is added, the following workflow is anticipated:
+
+```bash
+# Run desktop app in development mode
+npm run tauri dev
+
+# Build desktop application
+npm run tauri build
+```
+
 ## Setting up on cloud with Stackblitz
 [StackBlitz](https://developer.stackblitz.com/guides/user-guide/what-is-stackblitz) is an instant fullstack web IDE for the JavaScript ecosystem.
 
