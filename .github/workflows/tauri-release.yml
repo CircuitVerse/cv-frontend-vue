@@ -89,40 +89,32 @@ jobs:
           path: |
             src-tauri/target/release/bundle
 
-      - name: Install GitHub CLI and Create Release
-        if: github.event_name == 'release' && github.event.action == 'created'
+  create-release:
+    runs-on: ubuntu-latest
+    needs: build-tauri
+    if: github.event_name == 'release' && github.event.action == 'created'
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Install GitHub CLI
+        run: |
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+          sudo apt update
+          sudo apt install gh
+        shell: bash
+
+      - name: Create GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Install GitHub CLI
-          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
-            curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-            echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-            sudo apt update
-            sudo apt install gh
-          elif [ "${{ matrix.os }}" == "macos-latest" ]; then
-            brew install gh
-          elif [ "${{ matrix.os }}" == "windows-latest" ]; then
-            choco install gh
-          fi
-          # Determine the asset paths based on OS
-          ASSET_PATH=""
-          ASSET_NAME=""
-          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
-            ASSET_PATH="src-tauri/target/release/bundle/appimage/circuitverse-desktop.AppImage"
-            ASSET_NAME="circuitverse-desktop-ubuntu-latest-${{ github.ref_name }}.AppImage"
-          elif [ "${{ matrix.os }}" == "windows-latest" ]; then
-            ASSET_PATH="src-tauri/target/release/bundle/msi/circuitverse-desktop_0.1.0_x64_en-US.msi"
-            ASSET_NAME="circuitverse-desktop-windows-latest-${{ github.ref_name }}.msi"
-          elif [ "${{ matrix.os }}" == "macos-latest" ]; then
-            ASSET_PATH="src-tauri/target/release/bundle/macos/circuitverse-desktop.app.tar.gz"
-            ASSET_NAME="circuitverse-desktop-macos-latest-${{ github.ref_name }}.tar.gz"
-          fi
-          # Check if asset exists
-          if [ -f "$ASSET_PATH" ]; then
-            gh release upload ${{ github.ref_name }} "$ASSET_PATH" --clobber --repo ${{ github.repository }} -t "Release ${{ github.ref_name }}" -n "Official CircuitVerse desktop app release. Download the binaries below!"
-          else
-            echo "Error: Asset not found at $ASSET_PATH"
-            exit 1
-          fi
+          gh release create ${{ github.ref_name }} \
+            --title "Release ${{ github.ref_name }}" \
+            --notes "Official CircuitVerse desktop app release. Download the binaries below!" \
+            artifacts/Tauri\ Build\ Artifacts\ (ubuntu-latest)/* \
+            artifacts/Tauri\ Build\ Artifacts\ (windows-latest)/* \
+            artifacts/Tauri\ Build\ Artifacts\ (macos-latest)/*
         shell: bash
