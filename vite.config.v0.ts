@@ -39,9 +39,9 @@ export default defineConfig({
             '@': fileURLToPath(new URL(`./v0/src/components`, import.meta.url)),
         },
     },
-    base: '/simulatorvue/v0/',
+    base: process.env.DESKTOP_MODE ? '/' : '/simulatorvue/v0/',
     build: {
-        outDir: `../public/simulatorvue/v0/`,
+        outDir: process.env.DESKTOP_MODE ? './dist' : '../public/simulatorvue/v0/',
         assetsDir: 'assets',
         chunkSizeWarningLimit: 1600,
         rollupOptions: {
