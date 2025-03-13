@@ -10,6 +10,9 @@ import { layoutModeGet } from './layoutMode'
 import plotArea from './plotArea'
 import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
 import { useActions } from '#/store/SimulatorStore/actions'
+import { writeTextFile } from '@tauri-apps/plugin-fs';
+import { join, downloadDir } from '@tauri-apps/api/path';
+import { isTauri } from '@tauri-apps/api/core'
 
 window.globalScope = undefined
 window.lightMode = false // To be deprecated
@@ -117,7 +120,16 @@ export function gateGenerateVerilog(gate, invert = false) {
 }
 
 // Helper function to download text
-export function download(filename: string, text: string | number | boolean) {
+export function downloadFile(filename: string, text: string | number | boolean | JSON) {
+    if (isTauri()) {
+        return downloadFileDesktop(filename, text);
+    } else {
+        return downloadFileWeb(filename, text);
+    }
+}
+
+// For Web Application
+export function downloadFileWeb(filename: string, text: string | number | boolean) {
     const pom = document.createElement('a')
     pom.setAttribute(
         'href',
@@ -132,6 +144,18 @@ export function download(filename: string, text: string | number | boolean) {
     } else {
         pom.click()
     }
+}
+
+// For Desktop Application
+export async function downloadFileDesktop(filename: string, text: string | number | boolean | JSON) {
+    const downloadsDirectory = await downloadDir();
+    let path = filename;
+
+    if (!filename.startsWith('/')) {
+        path = await join(downloadsDirectory, filename);
+    }
+
+    await writeTextFile(path, text.toString());
 }
 
 // Helper function to open a new tab
