@@ -1,0 +1,97 @@
+name: CircuitVerse Simulator Desktop Release
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build-tauri:
+    name: Build Tauri App
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # Node 22 is used in CircuitVerse's primary code base
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Cache Node.js Dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-node-
+
+      - name: Install npm Dependencies
+        run: npm install
+
+      - name: Run Pre-Build Script
+        run: node build-desktop.js
+
+      - name: Setup Rust (Non-Windows)
+        if: matrix.os != 'windows-latest'
+        run: |
+          rustup update stable
+          rustup default stable
+
+      - name: Install OS-Specific Dependencies (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt update
+          sudo apt install -y libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev
+
+      - name: Install OS-Specific Dependencies (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          brew update
+          brew install pkg-config
+
+      - name: Cache Rust Dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri"
+
+      - name: Build Tauri App
+        run: npm run tauri build
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Tauri Build Artifacts (${{ matrix.os }})
+          path: src-tauri/target/release/bundle
+
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: build-tauri
+    steps:
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Install GitHub CLI
+        run: |
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+          sudo apt update
+          sudo apt install gh -y
+
+      - name: Create GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ github.ref_name }}" \
+            --title "Release ${{ github.ref_name }}" \
+            --notes "Official CircuitVerse Simulator Desktop Release ${{ github.ref_name }}. Download the binaries below." \
+            artifacts/Tauri\ Build\ Artifacts\ \(ubuntu-latest\)/* \
+            artifacts/Tauri\ Build\ Artifacts\ \(windows-latest\)/* \
+            artifacts/Tauri\ Build\ Artifacts\ \(macos-latest\)/*
