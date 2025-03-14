@@ -101,6 +101,40 @@ jobs:
         with:
           path: artifacts
 
+      - name: Prepare Release Assets
+        run: |
+          mkdir -p release-assets
+          
+          # For Ubuntu (Linux)
+          if [ -d "artifacts/Tauri Build Artifacts (ubuntu-latest)/deb" ]; then
+            cp artifacts/Tauri\ Build\ Artifacts\ \(ubuntu-latest\)/deb/*.deb release-assets/ || true
+          fi
+          if [ -d "artifacts/Tauri Build Artifacts (ubuntu-latest)/appimage" ]; then
+            cp artifacts/Tauri\ Build\ Artifacts\ \(ubuntu-latest\)/appimage/*.AppImage release-assets/ || true
+          fi
+          
+          # For Windows
+          if [ -d "artifacts/Tauri Build Artifacts (windows-latest)/msi" ]; then
+            cp artifacts/Tauri\ Build\ Artifacts\ \(windows-latest\)/msi/*.msi release-assets/ || true
+          fi
+          
+          # For macOS
+          if [ -d "artifacts/Tauri Build Artifacts (macos-latest)/dmg" ]; then
+            cp artifacts/Tauri\ Build\ Artifacts\ \(macos-latest\)/dmg/*.dmg release-assets/ || true
+          fi
+          if [ -d "artifacts/Tauri Build Artifacts (macos-latest)/app" ]; then
+            # For macOS app bundles, we need to zip them
+            cd artifacts/Tauri\ Build\ Artifacts\ \(macos-latest\)/app
+            for app in *.app; do
+              zip -r "../../../release-assets/${app%.app}.zip" "$app"
+            done
+            cd -
+          fi
+          
+          # List what we've collected
+          ls -la release-assets/
+        shell: bash
+
       - name: Install GitHub CLI
         run: |
           curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
@@ -113,11 +147,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Using the branch name (e.g., "main") for the release tag.
-          gh release create "main" \
-            --title "Release main" \
-            --notes "Official CircuitVerse desktop app release. Download the binaries below:" \
-            artifacts/Tauri\ Build\ Artifacts\ \(ubuntu-latest\)/* \
-            artifacts/Tauri\ Build\ Artifacts\ \(windows-latest\)/* \
-            artifacts/Tauri\ Build\ Artifacts\ \(macos-latest\)/*
+          # Get version from package.json or use "latest" if not found
+          VERSION=$(grep -oP '"version": "\K[^"]+' package.json 2>/dev/null || echo "latest")
+          
+          # Create release
+          gh release create "v$VERSION" \
+            --title "CircuitVerse Desktop v$VERSION" \
+            --notes "Official CircuitVerse desktop app release. Download the binaries below for your platform." \
+            release-assets/*
         shell: bash
