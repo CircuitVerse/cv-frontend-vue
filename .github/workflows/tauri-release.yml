@@ -123,15 +123,13 @@ jobs:
             cp artifacts/Tauri\ Build\ Artifacts\ \(macos-latest\)/dmg/*.dmg release-assets/ || true
           fi
           if [ -d "artifacts/Tauri Build Artifacts (macos-latest)/app" ]; then
-            # For macOS app bundles, we need to zip them
             cd artifacts/Tauri\ Build\ Artifacts\ \(macos-latest\)/app
             for app in *.app; do
               zip -r "../../../release-assets/${app%.app}.zip" "$app"
             done
-            cd -
+            cd - || exit
           fi
           
-          # List what we've collected
           ls -la release-assets/
         shell: bash
 
@@ -143,16 +141,30 @@ jobs:
           sudo apt install gh -y
         shell: bash
 
-      - name: Create GitHub Release
+      - name: Auto-increment version and create GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Get version from package.json or use "latest" if not found
-          VERSION=$(grep -oP '"version": "\K[^"]+' package.json 2>/dev/null || echo "latest")
+          # Fetch latest tag
+          LATEST_TAG=$(git tag --sort=-v:refname | head -n 1)
           
+          # Extract major, minor, patch versions
+          if [[ "$LATEST_TAG" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+            MAJOR=${BASH_REMATCH[1]}
+            MINOR=${BASH_REMATCH[2]}
+            PATCH=${BASH_REMATCH[3]}
+          else
+            MAJOR=0
+            MINOR=0
+            PATCH=0
+          fi
+
+          # Increment patch version
+          NEW_VERSION="v$MAJOR.$MINOR.$((PATCH + 1))"
+
           # Create release
-          gh release create "v$VERSION" \
-            --title "CircuitVerse Desktop v$VERSION" \
+          gh release create "$NEW_VERSION" \
+            --title "CircuitVerse Desktop $NEW_VERSION" \
             --notes "Official CircuitVerse desktop app release. Download the binaries below for your platform." \
             release-assets/*
         shell: bash
