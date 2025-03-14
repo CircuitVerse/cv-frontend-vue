@@ -67,7 +67,7 @@ jobs:
         shell: bash
 
       - name: Run Pre-Build Script
-        run: node build-desktop.js
+        run: node tauri-build.js
         shell: bash
 
       - name: Setup Rust (Non-Windows)
