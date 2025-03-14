@@ -34,6 +34,12 @@ jobs:
         run: npm install
         shell: bash
 
+      - name: Install Tauri CLI and API
+        run: |
+          npm install -g @tauri-apps/cli
+          npm install @tauri-apps/cli @tauri-apps/api @tauri-apps/plugin-fs --save-dev
+        shell: bash
+
       - name: Run Cross-Platform Build Script
         run: node tauri-build.js
         shell: bash
