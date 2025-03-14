@@ -24,3 +24,16 @@ log = "0.4"
 tauri = { version = "2.3.1", features = ["devtools"] }
 tauri-plugin-log = "2.0.0-rc"
 tauri-plugin-fs = "2"
+
+[profile.dev]
+incremental = true  # Fast rebuilds during development
+
+[profile.release]
+incremental = false         
+codegen-units = 1           # Use one code generation unit to improve cross-module optimization
+lto = true                  # Enable Link Time Optimization to optimize across the entire binary
+opt-level = "z"             # Optimize aggressively for binary size (use "s" if you prefer a balance with speed)
+panic = "abort"             
+strip = true                
+debug = false               
+debug-assertions = false   
