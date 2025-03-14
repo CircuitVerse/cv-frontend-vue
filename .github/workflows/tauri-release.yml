@@ -95,3 +95,4 @@ jobs:
             artifacts/Tauri\ Build\ Artifacts\ \(ubuntu-latest\)/* \
             artifacts/Tauri\ Build\ Artifacts\ \(windows-latest\)/* \
             artifacts/Tauri\ Build\ Artifacts\ \(macos-latest\)/*
+            
