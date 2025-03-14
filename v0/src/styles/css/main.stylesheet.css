@@ -1729,12 +1729,12 @@ canvas {
 
 .code-window .CodeMirror {
     height: calc(100vh - 78px);
-    overflow: scroll;
+    overflow: hidden;
 }
 
 .code-window-embed .CodeMirror {
     height: 100%;
-    overflow: scroll;
+    overflow: hidden;
 }
 
 .code-window-embed {
