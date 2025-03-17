@@ -111,8 +111,13 @@ jobs:
       - name: Install Tauri CLI
         run: cargo install tauri-cli
 
-      - name: Build Tauri App
-        run: npm run tauri build -- --debug
+      - name: Build Tauri App using build-desktop.js
+        run: |
+          # Run the build-desktop.js script
+          node build-desktop.js
+
+          # Build the Tauri app
+          npm run tauri build -- --debug
 
       - name: Run Desktop App Tests with Vitest
         run: |
