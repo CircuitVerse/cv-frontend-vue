@@ -102,11 +102,13 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Install Rust and Tauri CLI
+      - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           override: true
+
+      - name: Install Tauri CLI
         run: cargo install tauri-cli
 
       - name: Build Tauri App
