@@ -111,12 +111,19 @@ jobs:
       - name: Install Tauri CLI
         run: cargo install tauri-cli
 
+      - name: Debug Environment
+        run: |
+          echo "Node.js version: $(node -v)"
+          echo "npm version: $(npm -v)"
+          echo "Rust version: $(rustc --version)"
+          echo "Tauri CLI version: $(tauri --version)"
+
       - name: Build Tauri App using build-desktop.js
         run: |
-          # Run the build-desktop.js script
           node build-desktop.js
 
-          # Build the Tauri app
+      - name: Build Tauri App
+        run: |
           npm run tauri build -- --debug
 
       - name: Run Desktop App Tests with Vitest
