@@ -1,0 +1,64 @@
+name: Tauri Desktop Release
+
+on:
+  release:
+    types: [published]  # Trigger only when a release is published
+
+jobs:
+  build-tauri:
+    name: Build Tauri App
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]  # Build for Linux, Windows, and macOS
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22  # Use Node.js 22
+
+      - name: Install Dependencies (Vue + Tauri CLI)
+        run: |
+          npm install
+          npm install -g @tauri-apps/cli
+        working-directory: ./src
+
+      - name: Build Frontend (Vue)
+        run: |
+          npm run build
+        working-directory: ./src
+
+      - name: Setup Rust
+        if: matrix.os != 'windows-latest'  # Skip Rust setup on Windows (handled by Tauri Action)
+        run: |
+          rustup update stable
+          rustup default stable
+
+      - name: Cache Rust Dependencies
+        uses: Swatinem/rust-cache@v2
+
+      - name: Build Tauri App using build-desktop.js
+        run: |
+          node build-desktop.js
+
+      - name: Build Tauri App with Tauri Distribute
+        uses: tauri-apps/tauri-action@v0
+        with:
+          projectPath: ./src-tauri
+          tagName: ${{ github.ref_name }}  # Use the release tag name
+          releaseName: "Tauri Desktop Release ${{ github.ref_name }}"
+          releaseBody: "See the assets below to download this release."
+          releaseDraft: false
+          prerelease: false
+
+      - name: Upload Tauri Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Tauri Build Artifacts (${{ matrix.os }})
+          path: |
+            src-tauri/target/release/bundle
