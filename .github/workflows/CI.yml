@@ -85,3 +85,44 @@ jobs:
       - name: Run Simulator Tests
         run: |
           npm run test -- src/simulator/spec || echo "Simulator tests failed"
+
+  desktop-app-tests:
+    name: Desktop App Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22  # Use Node.js 22
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Install Rust and Tauri CLI
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+        run: cargo install tauri-cli
+
+      - name: Build Tauri App
+        run: npm run tauri build -- --debug
+
+      - name: Run Desktop App Tests with Vitest
+        run: |
+          # Start the Tauri app in the background
+          npm run tauri build -- --debug &
+          TAURI_PID=$!
+
+          # Wait for the app to start (adjust sleep time as needed)
+          sleep 10
+
+          # Run Vitest tests
+          npx vitest run --reporter=dot
+
+          # Kill the Tauri app process
+          kill $TAURI_PID
