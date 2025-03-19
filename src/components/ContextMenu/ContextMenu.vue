@@ -53,7 +53,7 @@ export default {
             setTimeout(() => {
                 el.style = 'visibility:hidden;'
                 this.ctxPos.visible = false
-            }, 200) // Hide after 2 sec
+            }, 200) // Hide after 0.2 sec
         },
         menuItemClicked(event) {
             this.hideContextMenu()
