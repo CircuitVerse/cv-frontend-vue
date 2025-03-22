@@ -1,5 +1,8 @@
 <template>
-    <nav v-if="!simulatorMobileStore.showMobileView" class="navbar navbar-expand-lg navbar-dark header">
+    <nav
+        v-if="!simulatorMobileStore.showMobileView"
+        class="navbar navbar-expand-lg navbar-dark header"
+    >
         <Logo :cvlogo="navbarLogo" />
 
         <div
@@ -25,7 +28,7 @@
 import QuickButton from '@/Navbar/QuickButton/QuickButton.vue'
 import User from '@/Navbar/User/User.vue'
 import NavbarLinks from '@/Navbar/NavbarLinks/NavbarLinks.vue'
-import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
+import { useSimulatorMobileStore } from '../../store/simulatorMobileStore'
 
 import navbarData from '#/assets/constants/Navbar/NAVBAR_DATA.json'
 import userDropdownItems from '#/assets/constants/Navbar/USER_DATA.json'
