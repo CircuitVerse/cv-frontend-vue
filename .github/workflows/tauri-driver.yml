@@ -42,10 +42,12 @@ jobs:
       # we run our rust tests before the webdriver tests to avoid testing a broken application
       - name: Cargo test
         run: cargo test
+        working-directory: src-tauri
 
       # build a release build of our application to be used during our WebdriverIO tests
       - name: Cargo build
         run: cargo build --release
+        working-directory: src-tauri
 
       # install the latest stable node version at the time of writing
       - name: Node 20
