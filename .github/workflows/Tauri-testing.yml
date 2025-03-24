@@ -1,4 +1,4 @@
-name: Desktop Simulator Tests (Tauri Mock APIs)
+name: Desktop Simulator Tests
 
 on:
   push:
