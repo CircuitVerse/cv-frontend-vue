@@ -34,7 +34,6 @@ function dec2bin(dec, bitWidth = undefined) {
     if (dec === undefined) return 'X'
     const bin = (dec >>> 0).toString(2)
     if (!bitWidth) return bin
-
     return '0'.repeat(bitWidth - bin.length) + bin
 }
 
@@ -56,21 +55,20 @@ export class TestbenchData {
      */
     isCaseValid() {
         if (
-            this.currentGroup >= this.data.groups.length ||
+            this.currentGroup >= this.testData.groups.length ||
             this.currentGroup < 0
         )
             return false
         const caseCount =
-            this.testData.groups[this.currentGroup].inputs[0].values.length
+            this.testData.groups[this.currentGroup].inputs[0]?.values?.length || 0
         if (this.currentCase >= caseCount || this.currentCase < 0) return false
-
         return true
     }
 
     /**
      * Validate and set case and group in the test
      * @param {number} groupIndex - Group index to set
-     * @param {number} caseIndex -  Case index to set
+     * @param {number} caseIndex - Case index to set
      */
     setCase(groupIndex, caseIndex) {
         const newCase = new TestbenchData(this.testData, groupIndex, caseIndex)
@@ -79,7 +77,6 @@ export class TestbenchData {
             this.currentCase = caseIndex
             return true
         }
-
         return false
     }
 
@@ -90,16 +87,12 @@ export class TestbenchData {
     groupNext() {
         const newCase = new TestbenchData(this.testData, this.currentGroup, 0)
         const groupCount = newCase.testData.groups.length
-        let caseCount =
-            newCase.testData.groups[newCase.currentGroup].inputs[0].values
-                .length
+        let caseCount = newCase.testData.groups[newCase.currentGroup]?.inputs[0]?.values?.length || 0
 
         while (caseCount === 0 || this.currentGroup === newCase.currentGroup) {
             newCase.currentGroup++
             if (newCase.currentGroup >= groupCount) return false
-            caseCount =
-                newCase.testData.groups[newCase.currentGroup].inputs[0].values
-                    .length
+            caseCount = newCase.testData.groups[newCase.currentGroup]?.inputs[0]?.values?.length || 0
         }
 
         this.currentGroup = newCase.currentGroup
@@ -114,16 +107,12 @@ export class TestbenchData {
     groupPrev() {
         const newCase = new TestbenchData(this.testData, this.currentGroup, 0)
         const groupCount = newCase.testData.groups.length
-        let caseCount =
-            newCase.testData.groups[newCase.currentGroup].inputs[0].values
-                .length
+        let caseCount = newCase.testData.groups[newCase.currentGroup]?.inputs[0]?.values?.length || 0
 
         while (caseCount === 0 || this.currentGroup === newCase.currentGroup) {
             newCase.currentGroup--
             if (newCase.currentGroup < 0) return false
-            caseCount =
-                newCase.testData.groups[newCase.currentGroup].inputs[0].values
-                    .length
+            caseCount = newCase.testData.groups[newCase.currentGroup]?.inputs[0]?.values?.length || 0
         }
 
         this.currentGroup = newCase.currentGroup
@@ -136,7 +125,7 @@ export class TestbenchData {
      */
     caseNext() {
         const caseCount =
-            this.testData.groups[this.currentGroup].inputs[0].values.length
+            this.testData.groups[this.currentGroup]?.inputs[0]?.values?.length || 0
         if (this.currentCase >= caseCount - 1) return this.groupNext()
         this.currentCase++
         return true
@@ -149,33 +138,28 @@ export class TestbenchData {
         if (this.currentCase <= 0) {
             if (!this.groupPrev()) return false
             const caseCount =
-                this.testData.groups[this.currentGroup].inputs[0].values.length
+                this.testData.groups[this.currentGroup]?.inputs[0]?.values?.length || 0
             this.currentCase = caseCount - 1
             return true
         }
-
         this.currentCase--
         return true
     }
 
     /**
-     * Finds and switches to the first non empty group to start the test from
+     * Finds and switches to the first non-empty group to start the test from
      */
     goToFirstValidGroup() {
         const newCase = new TestbenchData(this.testData, 0, 0)
         const caseCount =
-            newCase.testData.groups[this.currentGroup].inputs[0].values.length
+            newCase.testData.groups[newCase.currentGroup]?.inputs[0]?.values?.length || 0
 
-        // If the first group is not empty, do nothing
         if (caseCount > 0) return true
 
-        // Otherwise go next until non empty group
         const validExists = newCase.groupNext()
 
-        // If all groups empty return false
         if (!validExists) return false
 
-        // else set case to the non empty group
         this.currentGroup = newCase.currentGroup
         this.currentCase = newCase.currentCase
         return true
@@ -239,6 +223,7 @@ export function runTestBench(
         showMessage(
             'Testbench: Some elements missing from circuit. Click Validate to know more'
         )
+        return
     }
 
     if (runContext === CONTEXT.CONTEXT_SIMULATOR) {
@@ -489,7 +474,6 @@ export function runAll(data, scope = globalScope) {
     let passedCases = 0
 
     data.groups.forEach((group) => {
-        // for (const output of group.outputs) output.results = [];
         group.outputs.forEach((output) => (output.results = []))
         for (let case_i = 0; case_i < group.n; case_i++) {
             totalCases++
@@ -504,14 +488,16 @@ export function runAll(data, scope = globalScope) {
             let casePassed = true // Tracks if current case passed or failed
 
             caseResult.forEach((_, outName) => {
-                // TODO: find() is not the best idea because of O(n)
                 const output = group.outputs.find(
                     (dataOutput) => dataOutput.label === outName
                 )
-                output.results.push(caseResult.get(outName))
-
-                if (output.values[case_i] !== caseResult.get(outName))
-                    casePassed = false
+                if (output) {
+                    output.results.push(caseResult.get(outName))
+                    if (output.values[case_i] !== caseResult.get(outName))
+                        casePassed = false
+                } else {
+                    console.warn(`Output ${outName} not found in group`)
+                }
             })
 
             // If current case passed, then increment passedCases
@@ -616,7 +602,7 @@ function runSingleSequential(testbenchData, scope) {
 }
 
 /**
- * Set and propogate the input values according to the testcase.
+ * Set and propagate the input values according to the testcase.
  * Called by runSingle() and runAll()
  * @param {Object} inputs - Object with keys as input names and values as inputs
  * @param {Object} group - Test group
@@ -625,7 +611,11 @@ function runSingleSequential(testbenchData, scope) {
  */
 function setInputValues(inputs, group, caseIndex, scope) {
     group.inputs.forEach((input) => {
-        inputs[input.label].state = parseInt(input.values[caseIndex], 2)
+        if (inputs[input.label]) {
+            inputs[input.label].state = parseInt(input.values[caseIndex], 2)
+        } else {
+            console.warn(`Input ${input.label} not found in circuit`)
+        }
     })
 
     // Propagate inputs
@@ -640,10 +630,15 @@ function getOutputValues(data, outputs) {
     const values = new Map()
 
     data.groups[0].outputs.forEach((dataOutput) => {
-        // Using node value because output state only changes on rendering
-        const resultValue = outputs[dataOutput.label].nodeList[0].value
-        const resultBW = outputs[dataOutput.label].nodeList[0].bitWidth
-        values.set(dataOutput.label, dec2bin(resultValue, resultBW))
+        const output = outputs[dataOutput.label]
+        if (output && output.nodeList && output.nodeList.length > 0) {
+            const resultValue = output.nodeList[0].value
+            const resultBW = output.nodeList[0].bitWidth
+            values.set(dataOutput.label, dec2bin(resultValue, resultBW))
+        } else {
+            values.set(dataOutput.label, 'X') // Indicate undefined output
+            console.warn(`Output ${dataOutput.label} has no valid nodes`)
+        }
     })
 
     return values
@@ -918,21 +913,34 @@ function bindIO(data, scope) {
     let reset
 
     data.groups[0].inputs.forEach((dataInput) => {
-        inputs[dataInput.label] = scope.Input.find(
+        const input = scope.Input.find(
             (simulatorInput) => simulatorInput.label === dataInput.label
         )
+        if (input) {
+            inputs[dataInput.label] = input
+        } else {
+            console.error(`Input ${dataInput.label} not found in scope`)
+        }
     })
 
     data.groups[0].outputs.forEach((dataOutput) => {
-        outputs[dataOutput.label] = scope.Output.find(
+        const output = scope.Output.find(
             (simulatorOutput) => simulatorOutput.label === dataOutput.label
         )
+        if (output) {
+            outputs[dataOutput.label] = output
+        } else {
+            console.error(`Output ${dataOutput.label} not found in scope`)
+        }
     })
 
     if (data.type === 'seq') {
         reset = scope.Input.find(
-            (simulatorOutput) => simulatorOutput.label === 'RST'
+            (simulatorInput) => simulatorInput.label === 'RST'
         )
+        if (!reset) {
+            console.error('Reset (RST) not found in scope for sequential test')
+        }
     }
 
     return { inputs, outputs, reset }
@@ -955,10 +963,14 @@ function tickClock(scope) {
  * @param {Scope} scope - the circuit
  */
 function triggerReset(reset, scope) {
-    reset.state = 1
-    play(scope)
-    reset.state = 0
-    play(scope)
+    if (reset) {
+        reset.state = 1
+        play(scope)
+        reset.state = 0
+        play(scope)
+    } else {
+        console.warn('Reset not found, skipping reset trigger')
+    }
 }
 
 /**
@@ -1057,7 +1069,7 @@ function setUIResult(testbenchData, result) {
         const resultValue = result.get(output)
         const expectedValue = data.groups[groupIndex].outputs.find(
             (dataOutput) => dataOutput.label === output
-        ).values[caseIndex]
+        )?.values[caseIndex]
         const color = resultValue === expectedValue ? '#17FC12' : '#FF1616'
         resultElement.append(
             `<td style="color: ${color}">${escapeHtml(resultValue)}</td>`
@@ -1106,20 +1118,31 @@ function openCreator(type, dataString) {
     if (type === 'create') {
         const url = `${TESTBENCH_CREATOR_PATH}?scopeID=${globalScope.id}&popUp=true`
         popUp = window.open(url, 'popupWindow', POPUP_STYLE_STRING)
-        creatorOpenPrompt(popUp)
-        window.addEventListener('message', dataListener)
+        if (!popUp) {
+            showMessage('Popup blocked. Please allow popups for this site.')
+        } else {
+            creatorOpenPrompt(popUp)
+            window.addEventListener('message', dataListener)
+        }
     }
 
     if (type === 'edit') {
         const url = `${TESTBENCH_CREATOR_PATH}?scopeID=${globalScope.id}&data=${dataString}&popUp=true`
         popUp = window.open(url, 'popupWindow', POPUP_STYLE_STRING)
-        creatorOpenPrompt(popUp)
-        window.addEventListener('message', dataListener)
+        if (!popUp) {
+            showMessage('Popup blocked. Please allow popups for this site.')
+        } else {
+            creatorOpenPrompt(popUp)
+            window.addEventListener('message', dataListener)
+        }
     }
 
     if (type === 'result') {
         const url = `${TESTBENCH_CREATOR_PATH}?scopeID=${globalScope.id}&result=${dataString}&popUp=true`
         popUp = window.open(url, 'popupWindow', POPUP_STYLE_STRING)
+        if (!popUp) {
+            showMessage('Popup blocked. Please allow popups for this site.')
+        }
     }
 
     // Check if popup was closed (in case it was closed by window's X button),

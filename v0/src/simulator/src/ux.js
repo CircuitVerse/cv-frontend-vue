@@ -768,8 +768,8 @@ export function fillSubcircuitElements() {
         for (let i = 0; i < globalScope[el].length; i++) {
             if (!globalScope[el][i].subcircuitMetadata.showInSubcircuit) {
                 tempHTML += `<div class="icon subcircuitModule" id="${el}-${i}" data-element-id="${i}" data-element-name="${el}">`
-                tempHTML += `<img src= "/img/${el}.svg">`
-                tempHTML += `<p class="img__description">${
+                tempHTML += `<img src= "v0/src/assets/img/${el}.svg">`
+                tempHTML += `<p>${
                     globalScope[el][i].label !== ''
                         ? globalScope[el][i].label
                         : 'unlabeled'
@@ -801,3 +801,4 @@ export function fillSubcircuitElements() {
         this.parentElement.removeChild(this)
     })
 }
+

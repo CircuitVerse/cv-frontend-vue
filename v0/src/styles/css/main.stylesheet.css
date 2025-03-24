@@ -487,7 +487,7 @@ input[type='text']:focus {
     right: 15px;
     position: absolute;
     border-radius: 5px;
-    top: 50%;
+    top: 11%;
     transform: translateY(-50%) rotate(132deg);
     transition: 0.2s ease-out;
     background-color: white;
@@ -495,6 +495,7 @@ input[type='text']:focus {
 
 .panelHeader:after {
     transform: translate(260%, -50%) rotate(226deg);
+    transition: 0.2s ease-out;
 }
 
 .ui-accordion-header-active:before {
