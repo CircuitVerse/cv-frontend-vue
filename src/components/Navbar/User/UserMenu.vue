@@ -31,9 +31,9 @@
               ></v-list-item>
               <v-list-item>
                   <v-select
+                      v-model="locale"
                       :items="availableLocale"
                       label="Locale"
-                      v-model="locale"
                       density="compact"
                       outlined
                       dense
@@ -45,16 +45,16 @@
               <div v-if="!authStore.getIsLoggedIn">
                   <v-list dense class="userMenuList1" nav>
                       <v-list-item
-                          @click.stop="signin"
                           prepend-icon="mdi-login"
                           title="Sign In"
-                          value="sign_in"
+                          value="sign_in"    
+                          @click.stop="signin"
                       ></v-list-item>
                       <v-list-item
-                          @click.stop="register"
                           prepend-icon="mdi-account-plus"
                           title="Register"
-                          value="register"
+                          value="register"    
+                          @click.stop="register"
                       ></v-list-item>
                   </v-list>
               </div>
@@ -62,30 +62,31 @@
               <div v-if="authStore.getIsLoggedIn">
                   <v-list density="compact" class="userMenuList1" nav>
                       <v-list-item
-                          @click.stop="dashboard"
                           prepend-icon="mdi-view-dashboard-outline"
                           title="Dashboard"
-                          value="dashboard"
+                          value="dashboard"    
+                          @click.stop="dashboard"
                       ></v-list-item>
                       <v-list-item
-                          @click.stop="my_groups"
-                          prepend-icon="mdi-account-group-outline"
+                      prepend-icon="mdi-account-group-outline"
                           title="My Groups"
                           value="my_groups"
+                          @click.stop="my_groups"
+
                       ></v-list-item>
                       <v-list-item
-                          @click.stop="notifications"
                           prepend-icon="mdi-bell-outline"
                           title="Notifications"
-                          value="notifications"
+                          value="notifications"    
+                          @click.stop="notifications"
                       ></v-list-item>
                   </v-list>
                   <v-divider></v-divider>
                   <v-list-item
-                      @click.stop="signout"
                       prepend-icon="mdi-logout"
                       title="Logout"
-                      value="logout"
+                      value="logout"    
+                      @click.stop="signout"
                   ></v-list-item>
               </div>
           </v-navigation-drawer>
