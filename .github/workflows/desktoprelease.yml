@@ -41,7 +41,7 @@ jobs:
         shell: bash
 
       - name: Run Cross-Platform Build Script
-        run: node tauri-build.js
+        run: node build-desktop.js
         shell: bash
 
       - name: Setup Rust
