@@ -86,8 +86,7 @@ jobs:
           name: Tauri Build Artifacts (${{ matrix.os }})
           path: |
             src-tauri/target/release/bundle
-
-  upload-release-assets:
+  create-release:
     runs-on: ubuntu-latest
     needs: build-tauri
     steps:
@@ -131,20 +130,36 @@ jobs:
           ls -la release-assets/
         shell: bash
 
-      - name: Upload Release Assets
-        uses: actions/upload-release-asset@v1
+      - name: Install GitHub CLI
+        run: |
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+          sudo apt update
+          sudo apt install gh -y
+        shell: bash
+
+      - name: Auto-increment version and create GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./release-assets/${{ matrix.asset }}
-          asset_name: ${{ matrix.asset }}
-          asset_content_type: application/octet-stream
-        strategy:
-          matrix:
-            asset:
-              - *.deb
-              - *.AppImage
-              - *.msi
-              - *.dmg
-              - *.zip
+        run: |
+          # Fetch latest tag
+          LATEST_TAG=$(git tag --sort=-v:refname | head -n 1)
+          
+          # Extract major, minor, patch versions
+          if [[ "$LATEST_TAG" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+            MAJOR=${BASH_REMATCH[1]}
+            MINOR=${BASH_REMATCH[2]}
+            PATCH=${BASH_REMATCH[3]}
+          else
+            MAJOR=0
+            MINOR=0
+            PATCH=0
+          fi
+          # Increment patch version
+          NEW_VERSION="v$MAJOR.$MINOR.$((PATCH + 1))"
+          # Create release
+          gh release create "$NEW_VERSION" \
+            --title "CircuitVerse Desktop $NEW_VERSION" \
+            --notes "Official CircuitVerse desktop app release. Download the binaries below for your platform." \
+            release-assets/*
+        shell: bash
