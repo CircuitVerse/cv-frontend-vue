@@ -1,60 +1,86 @@
-name: Tauri Desktop Release
+name: Desktop Release
 
 on:
+  push:
+    branches: [ "main" ]
   release:
-    types: [published]  # Trigger only when a release is published
+    types: [created]
 
 jobs:
   build-tauri:
-    name: Build Tauri App
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]  # Build for Linux, Windows, and macOS
+        os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22  # Use Node.js 22
+          node-version: 22
 
-      - name: Install Dependencies (Vue + Tauri CLI)
+      - name: Cache Node.js Dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-node-
+
+      - name: Install Dependencies
+        run: npm install
+        shell: bash
+
+      - name: Install Tauri CLI and API
         run: |
-          npm install
           npm install -g @tauri-apps/cli
-        working-directory: ./src
+          npm install @tauri-apps/cli @tauri-apps/api @tauri-apps/plugin-fs --save-dev
+        shell: bash
 
-      - name: Build Frontend (Vue)
-        run: |
-          npm run build
-        working-directory: ./src
+      - name: Run Cross-Platform Build Script
+        run: node tauri-build.js
+        shell: bash
 
       - name: Setup Rust
-        if: matrix.os != 'windows-latest'  # Skip Rust setup on Windows (handled by Tauri Action)
+        if: matrix.os != 'windows-latest'
         run: |
           rustup update stable
           rustup default stable
+        shell: bash
+
+      - name: Install Linux Dependencies (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt update
+          sudo apt install libwebkit2gtk-4.1-dev \
+          build-essential \
+          curl \
+          wget \
+          file \
+          libxdo-dev \
+          libssl-dev \
+          libayatana-appindicator3-dev \
+          librsvg2-dev
+        shell: bash
+
+      - name: Install macOS Dependencies
+        if: matrix.os == 'macos-latest'
+        run: |
+          brew update
+          brew install pkg-config
+        shell: bash
 
       - name: Cache Rust Dependencies
         uses: Swatinem/rust-cache@v2
-
-      - name: Build Tauri App using build-desktop.js
-        run: |
-          node build-desktop.js
-
-      - name: Build Tauri App with Tauri Distribute
-        uses: tauri-apps/tauri-action@v0
         with:
-          projectPath: ./src-tauri
-          tagName: ${{ github.ref_name }}  # Use the release tag name
-          releaseName: "Tauri Desktop Release ${{ github.ref_name }}"
-          releaseBody: "See the assets below to download this release."
-          releaseDraft: false
-          prerelease: false
+          workspaces: "./src-tauri"
+
+      - name: Build Tauri App
+        run: npm run tauri build
+        shell: bash
 
       - name: Upload Tauri Build Artifacts
         uses: actions/upload-artifact@v4
@@ -62,3 +88,80 @@ jobs:
           name: Tauri Build Artifacts (${{ matrix.os }})
           path: |
             src-tauri/target/release/bundle
+  create-release:
+    runs-on: ubuntu-latest
+    needs: build-tauri
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Prepare Release Assets
+        run: |
+          mkdir -p release-assets
+          
+          # For Ubuntu (Linux)
+          if [ -d "artifacts/Tauri Build Artifacts (ubuntu-latest)/deb" ]; then
+            cp artifacts/Tauri\ Build\ Artifacts\ \(ubuntu-latest\)/deb/*.deb release-assets/ || true
+          fi
+          if [ -d "artifacts/Tauri Build Artifacts (ubuntu-latest)/appimage" ]; then
+            cp artifacts/Tauri\ Build\ Artifacts\ \(ubuntu-latest\)/appimage/*.AppImage release-assets/ || true
+          fi
+          
+          # For Windows
+          if [ -d "artifacts/Tauri Build Artifacts (windows-latest)/msi" ]; then
+            cp artifacts/Tauri\ Build\ Artifacts\ \(windows-latest\)/msi/*.msi release-assets/ || true
+          fi
+          
+          # For macOS
+          if [ -d "artifacts/Tauri Build Artifacts (macos-latest)/dmg" ]; then
+            cp artifacts/Tauri\ Build\ Artifacts\ \(macos-latest\)/dmg/*.dmg release-assets/ || true
+          fi
+          if [ -d "artifacts/Tauri Build Artifacts (macos-latest)/app" ]; then
+            cd artifacts/Tauri\ Build\ Artifacts\ \(macos-latest\)/app
+            for app in *.app; do
+              zip -r "../../../release-assets/${app%.app}.zip" "$app"
+            done
+            cd - || exit
+          fi
+          
+          ls -la release-assets/
+        shell: bash
+
+      - name: Install GitHub CLI
+        run: |
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+          sudo apt update
+          sudo apt install gh -y
+        shell: bash
+
+      - name: Auto-increment version and create GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Fetch latest tag
+          LATEST_TAG=$(git tag --sort=-v:refname | head -n 1)
+          
+          # Extract major, minor, patch versions
+          if [[ "$LATEST_TAG" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+            MAJOR=${BASH_REMATCH[1]}
+            MINOR=${BASH_REMATCH[2]}
+            PATCH=${BASH_REMATCH[3]}
+          else
+            MAJOR=0
+            MINOR=0
+            PATCH=0
+          fi
+          # Increment patch version
+          NEW_VERSION="v$MAJOR.$MINOR.$((PATCH + 1))"
+          # Create release
+          gh release create "$NEW_VERSION" \
+            --title "CircuitVerse Desktop $NEW_VERSION" \
+            --notes "Official CircuitVerse desktop app release. Download the binaries below for your platform." \
+            release-assets/*
+        shell: bash

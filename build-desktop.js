@@ -1,38 +1,37 @@
-// build-desktop.js
-const os = require('os');
 
-// Set DESKTOP_MODE environment variable
-// Set DESKTOP_MODE environment variable
-if (os.platform() === 'win32') {
-    try {
-        // Windows
-        console.log('Building for Windows...');
-        const { stdout, stderr } = require('child_process').execSync(
-            'set DESKTOP_MODE=true && npm run build && copy dist\\index-cv.html dist\\index.html',
-            { encoding: 'utf8' }
-        );
-        console.log(stdout);
-        if (stderr) {
-            console.warn(`Warnings: ${stderr}`);
-        }
-    } catch (error) {
-        console.error(`Error: ${error.message}`);
-        process.exit(1);
+const os = require('os');
+const { execSync } = require('child_process');
+
+
+function runCommand(command) {
+  try {
+    const output = execSync(command, { encoding: 'utf8', stdio: 'pipe' });
+    if (output) {
+      console.log(output);
     }
+  } catch (error) {
+    console.error(`Error executing command: ${command}`);
+    if (error.stdout) {
+      console.error(`Stdout: ${error.stdout}`);
+    }
+    if (error.stderr) {
+      console.error(`Stderr: ${error.stderr}`);
+    }
+    process.exit(1);
+  }
+}
+
+
+process.env.DESKTOP_MODE = "true";
+
+const platform = os.platform();
+console.log(`Building for ${platform === 'win32' ? 'Windows' : 'Unix-based system'}...`);
+
+
+runCommand('npm run build');
+
+if (platform === 'win32') {
+  runCommand('copy dist\\index-cv.html dist\\index.html');
 } else {
-    try {
-        // Unix-based systems (Linux, macOS)
-        console.log('Building for Unix-based system...');
-        const { stdout, stderr } = require('child_process').execSync(
-            'DESKTOP_MODE=true npm run build && cp dist/index-cv.html dist/index.html',
-            { encoding: 'utf8' }
-        );
-        console.log(stdout);
-        if (stderr) {
-            console.warn(`Warnings: ${stderr}`);
-        }
-    } catch (error) {
-        console.error(`Error: ${error.message}`);
-        process.exit(1);
-    }
+  runCommand('cp dist/index-cv.html dist/index.html');
 }
