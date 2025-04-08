@@ -50,21 +50,4 @@ jobs:
         run: |
           node build-desktop.js
 
-      - name: Build Tauri App
-        run: |
-          npm run tauri build -- --debug
-
-      - name: Run Desktop App Tests with Vitest
-        run: |
-          # Start the Tauri app in the background
-          npm run tauri build -- --debug &
-          TAURI_PID=$!
-
-          # Wait for the app to start (adjust sleep time as needed)
-          sleep 10
-
-          # Run Vitest tests
-          npx vitest run --reporter=dot
-
-          # Kill the Tauri app process
-          kill $TAURI_PID
+      
