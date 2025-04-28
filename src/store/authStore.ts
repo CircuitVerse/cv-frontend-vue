@@ -30,6 +30,14 @@ export const useAuthStore = defineStore({
         isAdmin: false,
     }),
     actions: {
+        setToken(token: string): void {
+            const payload = JSON.parse(atob(token.split('.')[1]))
+            if(payload)
+            this.isLoggedIn = true
+            this.userId = payload.user_id
+            this.username = payload.username ?? 'Guest'
+
+        },
         setUserInfo(userInfo: UserInfo): void {
             this.isLoggedIn = true
             this.userId = userInfo.id ?? ''
@@ -41,6 +49,14 @@ export const useAuthStore = defineStore({
             this.locale = userInfo.attributes.locale ?? 'en'
             this.isAdmin = userInfo.attributes.admin
         },
+        signOut(): void {
+            this.isLoggedIn = false
+            this.userId = ''
+            this.username = 'Guest'
+            this.userAvatar = 'default'
+            this.locale = 'en'
+            this.isAdmin = false
+        }
     },
     getters: {
         getIsLoggedIn(): boolean {
