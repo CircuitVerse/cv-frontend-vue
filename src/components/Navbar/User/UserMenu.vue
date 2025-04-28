@@ -249,8 +249,9 @@ async function handleAuthSubmit() {
     })
 
     if (!response.ok) {
-      const errorData = await response.json()
-      handleLoginError(response.status, errorData)
+      const text = await response.text()
+      let errorData: any = {}
+      try { errorData = JSON.parse(text) } catch { errorData = { message: text } }      handleLoginError(response.status, errorData)
       return
     }
 
