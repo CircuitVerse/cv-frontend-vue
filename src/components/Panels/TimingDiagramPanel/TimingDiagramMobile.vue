@@ -34,7 +34,7 @@ import { onMounted } from 'vue'
 import _plotArea from '#/simulator/src/plotArea'
 import TimingDiagramButtons from './TimingDiagramButtons.vue'
 import { useLayoutStore } from '#/store/layoutStore'
-import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
+import { useSimulatorMobileStore } from '../../store/simulatorMobileStore'
 import { useTimingDiagramPanelStore } from '#/store/timingDiagramPanelStore'
 import { handleButtonClick, handleUnitsChange } from './TimingDiagramPanel'
 

@@ -36,7 +36,7 @@ import { verilogModeGet } from './Verilog2CV'
 import { setupTimingListeners } from './plotArea'
 import logixFunction from './data'
 import { listen } from '@tauri-apps/api/event'
-import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
+import { useSimulatorMobileStore } from '../../store/simulatorMobileStore'
 import { toRefs } from 'vue'
 
 const unit = 10

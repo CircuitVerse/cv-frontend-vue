@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useSimulatorMobileStore } from '#/store/simulatorMobileStore';
+import { useSimulatorMobileStore } from '../../store/simulatorMobileStore';
 import { computed, ref, onMounted, onUnmounted } from 'vue';
 
 const simulatorMobileStore = useSimulatorMobileStore()

@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useSimulatorMobileStore } from '#/store/simulatorMobileStore';
+import { useSimulatorMobileStore } from '../../store/simulatorMobileStore';
 
 const simulatorMobileStore = useSimulatorMobileStore();
 
