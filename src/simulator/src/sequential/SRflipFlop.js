@@ -54,8 +54,12 @@ export default class SRflipFlop extends CircuitElement {
      * set this.state to value S.
      */
     resolve() {
-        if (this.reset.value == 1) {
-            this.state = this.preset.value || 0
+        // if (this.reset.value == 1) {
+        //     this.state = this.preset.value || 0 possibility of reset =1 and preset = 1 which leads to race
+        if (this.reset.value == 1 && this.preset.value == 0) {
+            this.state = 0;
+        } else if(this.preset.value == 1 && this.reset.value == 0){
+            this.state = 1; //accomodates better for race condition. Keeps the state in previous state if both async preset and reset are 1 just like how S=1 and R=1 case is being handled currently
         } else if (
             (this.en.value == 1 || this.en.connections == 0) &&
             this.S.value ^ this.R.value
