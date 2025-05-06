@@ -46,7 +46,8 @@
     border-radius: 6px;
     opacity: 0.1;
     transition: 0.4s;
-    height: 109px;
+    height: auto;
+    gap: 1rem;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -258,4 +259,16 @@ button:focus {
 
 .embed-fullscreen-btn {
     border-radius: 20px;
+}
+
+#bottom_right_circuit_heading {
+    text-decoration: none;
+    position: fixed;
+    bottom: 1.5rem;
+    right: 2rem;
+    padding: 8px;
+    font-family: Verdana;
+    font-size: 12px;
+    color: var(--text-panel);
+    z-index: 2;
 }
