@@ -295,6 +295,7 @@ function createBooleanPrompt(inputList, outputList, scope = globalScope) {
     ]
 }
 
+
 const generateBooleanTableData = (outputListNames) => {
   const data = {};
 
@@ -302,8 +303,8 @@ const generateBooleanTableData = (outputListNames) => {
   const rows = table?.querySelectorAll('tbody tr') || [];
 
   const rowData = [...rows].slice(1).map((row, index) => {
-    const columns = row.querySelectorAll('th');
-    const lastValue = columns[columns.length - 1]?.innerText.trim();
+    const cells = row.cells;
+    const lastValue = cells[cells.length - 1]?.textContent.trim();
     return { index, value: lastValue };
   });
 
