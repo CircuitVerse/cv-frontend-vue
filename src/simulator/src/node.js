@@ -13,6 +13,7 @@ import {
 } from './engine'
 import Wire from './wire'
 import { colors } from './themer/themer'
+import ContentionMeta from './contention'
 
 /**
  * Constructs all the connections of Node node
@@ -23,7 +24,7 @@ import { colors } from './themer/themer'
 export function constructNodeConnections(node, data) {
     for (var i = 0; i < data.connections.length; i++) {
         if (
-            !node.connections.contains(node.scope.allNodes[data.connections[i]])
+            !node.connections.includes(node.scope.allNodes[data.connections[i]])
         )
             node.connect(node.scope.allNodes[data.connections[i]])
     }
@@ -41,12 +42,13 @@ export function replace(node, index) {
     }
     var { scope } = node
     var { parent } = node
-    parent.nodeList.clean(node)
+    parent.nodeList = parent.nodeList.filter(x=> x !== node);
     node.delete()
     node = scope.allNodes[index]
     node.parent = parent
     parent.nodeList.push(node)
     node.updateRotation()
+    node.scope.timeStamp = new Date().getTime()
     return node
 }
 function rotate(x1, y1, dir) {
@@ -161,7 +163,7 @@ export default class Node {
         this.id = `node${uniqueIdCounter}`
         uniqueIdCounter++
         this.parent = parent
-        if (type != 2 && this.parent.nodeList !== undefined) {
+        if (type != NODE_INTERMEDIATE && this.parent.nodeList !== undefined) {
             this.parent.nodeList.push(this)
         }
 
@@ -186,6 +188,7 @@ export default class Node {
         this.hover = false
         this.wasClicked = false
         this.scope = this.parent.scope
+        this.scope.timeStamp = new Date().getTime()
         /**
          * @type {string}
          * value of this.prev is
@@ -200,7 +203,7 @@ export default class Node {
         // This fn is called during rotations and setup
         this.refresh()
 
-        if (this.type == 2) {
+        if (this.type == NODE_INTERMEDIATE) {
             this.parent.scope.nodes.push(this)
         }
 
@@ -225,7 +228,7 @@ export default class Node {
      * function to convert a node to intermediate node
      */
     converToIntermediate() {
-        this.type = 2
+        this.type = NODE_INTERMEDIATE
         this.x = this.absX()
         this.y = this.absY()
         this.parent = this.scope.root
@@ -249,10 +252,10 @@ export default class Node {
     }
 
     /**
-     * Funciton for saving a node
+     * function for saving a node
      */
     saveObject() {
-        if (this.type == 2) {
+        if (this.type == NODE_INTERMEDIATE) {
             this.leftx = this.x
             this.lefty = this.y
         }
@@ -287,8 +290,9 @@ export default class Node {
     refresh() {
         this.updateRotation()
         for (var i = 0; i < this.connections.length; i++) {
-            this.connections[i].connections.clean(this)
+            this.connections[i].connections = this.connections[i].connections.filter(x => x !== this)
         }
+        this.scope.timeStamp = new Date().getTime()
         this.connections = []
     }
 
@@ -311,7 +315,7 @@ export default class Node {
      */
     updateScope(scope) {
         this.scope = scope
-        if (this.type == 2) this.parent = scope.root
+        if (this.type == NODE_INTERMEDIATE) this.parent = scope.root
     }
 
     /**
@@ -334,10 +338,14 @@ export default class Node {
      */
     connect(n) {
         if (n == this) return
-        if (n.connections.contains(this)) return
-        var w = new Wire(this, n, this.parent.scope)
+        if (n.connections.includes(this)) {
+            return
+        }
+        new Wire(this, n, this.parent.scope)
         this.connections.push(n)
         n.connections.push(this)
+
+        this.scope.timeStamp = new Date().getTime()
 
         updateCanvasSet(true)
         updateSimulationSet(true)
@@ -349,11 +357,13 @@ export default class Node {
      */
     connectWireLess(n) {
         if (n == this) return
-        if (n.connections.contains(this)) return
+        if (n.connections.includes(this)) return
         this.connections.push(n)
         n.connections.push(this)
 
-        updateCanvasSet(true)
+        this.scope.timeStamp = new Date().getTime()
+
+        // updateCanvasSet(true)
         updateSimulationSet(true)
         scheduleUpdate()
     }
@@ -362,14 +372,22 @@ export default class Node {
      * disconnecting two nodes connected wirelessly
      */
     disconnectWireLess(n) {
-        this.connections.clean(n)
-        n.connections.clean(this)
+        this.connections = this.connections.filter(x => x !== n)
+        n.connections = n.connections.filter(x => x !== this)
+
+        this.scope.timeStamp = new Date().getTime()
     }
 
     /**
      * function to resolve a node
      */
     resolve() {
+        if (this.type == NODE_OUTPUT) {
+            // Since output node forces its value on its neighbours, remove its contentions.
+            // An existing contention will now trickle to the other output node that was causing
+            // the contention.
+            simulationArea.contentionPending.removeAllContentionsForNode(this);
+        }
         // Remove Propogation of values (TriState)
         if (this.value == undefined) {
             for (var i = 0; i < this.connections.length; i++) {
@@ -394,7 +412,7 @@ export default class Node {
                     this.parent.isResolvable() &&
                     !this.parent.queueProperties.inQueue
                 ) {
-                    if (this.parent.objectType == 'TriState') {
+                    if (this.parent.objectType == 'TriState' || this.parent.objectType == 'ControlledInverter') {
                         if (this.parent.state.value) {
                             simulationArea.simulationQueue.add(this.parent)
                         }
@@ -407,52 +425,69 @@ export default class Node {
             return
         }
 
-        if (this.type == 0) {
+        // For input nodes, resolve its parents if they are resolvable at this point.
+        if (this.type == NODE_INPUT) {
             if (this.parent.isResolvable()) {
                 simulationArea.simulationQueue.add(this.parent)
             }
         }
+        else if (this.type == NODE_OUTPUT) {
+            // Since output node forces its value on its neighbours, remove its contentions.
+            // An existing contention will now trickle to the other output node that was causing
+            // the contention.
+            simulationArea.contentionPending.removeAllContentionsForNode(this);
+        }
 
         for (var i = 0; i < this.connections.length; i++) {
-            const node = this.connections[i]
+            const node = this.connections[i];
 
-            if (node.value != this.value || node.bitWidth != this.bitWidth) {
-                if (
-                    node.type == 1 &&
-                    node.value != undefined &&
-                    node.parent.objectType != 'TriState' &&
-                    !(node.subcircuitOverride && node.scope != this.scope) && // Subcircuit Input Node Output Override
-                    node.parent.objectType != 'SubCircuit'
-                ) {
-                    // Subcircuit Output Node Override
-                    this.highlighted = true
-                    node.highlighted = true
-                    var circuitName = node.scope.name
-                    var circuitElementName = node.parent.objectType
-                    showError(
-                        `Contention Error: ${this.value} and ${node.value} at ${circuitElementName} in ${circuitName}`
-                    )
-                } else if (node.bitWidth == this.bitWidth || node.type == 2) {
-                    if (
-                        node.parent.objectType == 'TriState' &&
-                        node.value != undefined &&
-                        node.type == 1
-                    ) {
-                        if (node.parent.state.value) {
-                            simulationArea.contentionPending.push(node.parent)
+            switch (node.type) {
+            // TODO: For an output node, a downstream value (value given by elements other than the parent)
+            // should be overwritten in contention check and should not cause contention.
+            case NODE_OUTPUT:
+                if (node.value != this.value || node.bitWidth != this.bitWidth) {
+                    // Check contentions
+                    if (node.value != undefined && node.parent.objectType != 'SubCircuit'
+                        && !(node.subcircuitOverride && node.scope != this.scope)) {
+                        // Tristate has always been a pain in the ass.
+                        if ((node.parent.objectType == 'TriState' || node.parent.objectType == 'ControlledInverter') && node.value != undefined) {
+                            if (node.parent.state.value) {
+                                simulationArea.contentionPending.add(node, this);
+                                break;
+                            }
+                        }
+                        else {
+                            simulationArea.contentionPending.add(node, this);
+                            break;
                         }
                     }
-
-                    node.bitWidth = this.bitWidth
-                    node.value = this.value
-                    simulationArea.simulationQueue.add(node)
                 } else {
-                    this.highlighted = true
-                    node.highlighted = true
-                    showError(
-                        `BitWidth Error: ${this.bitWidth} and ${node.bitWidth}`
-                    )
+                    // Output node was given an agreeing value, so remove any contention
+                    // entry between these two nodes if it exists.
+                    simulationArea.contentionPending.remove(node, this);
                 }
+
+            // Fallthrough. NODE_OUTPUT propagates like a contention checked NODE_INPUT
+            case NODE_INPUT:
+                // Check bitwidths
+                if (this.bitWidth != node.bitWidth) {
+                    this.highlighted = true;
+                    node.highlighted = true;
+                    showError(`BitWidth Error: ${this.bitWidth} and ${node.bitWidth}`);
+                    break;
+                }
+
+            // Fallthrough. NODE_INPUT propagates like a bitwidth checked NODE_INTERMEDIATE
+            case NODE_INTERMEDIATE:
+
+                if (node.value != this.value || node.bitWidth != this.bitWidth) {
+                    // Propagate
+                    node.bitWidth = this.bitWidth;
+                    node.value = this.value;
+                    simulationArea.simulationQueue.add(node);
+                }
+            default:
+                break;
             }
         }
     }
@@ -562,8 +597,8 @@ export default class Node {
         if (this.bitWidth == 1)
             colorNode = [colorNodeConnect, colorNodePow][this.value]
         if (this.value == undefined) colorNode = colorNodeLose
-        if (this.type == 2) this.checkHover()
-        if (this.type == 2) {
+        if (this.type == NODE_INTERMEDIATE) this.checkHover()
+        if (this.type == NODE_INTERMEDIATE) {
             drawCircle(ctx, this.absX(), this.absY(), 3, colorNode)
         } else {
             drawCircle(ctx, this.absX(), this.absY(), 3, colorNodeSelected)
@@ -575,7 +610,7 @@ export default class Node {
             (this.isHover() &&
                 !simulationArea.selected &&
                 !simulationArea.shiftDown) ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         ) {
             ctx.strokeStyle = colorNodeSelected
             ctx.beginPath()
@@ -599,7 +634,7 @@ export default class Node {
             if (this.showHover || simulationArea.lastSelected == this) {
                 canvasMessageData.x = this.absX()
                 canvasMessageData.y = this.absY() - 15
-                if (this.type == 2) {
+                if (this.type == NODE_INTERMEDIATE) {
                     var v = 'X'
                     if (this.value !== undefined) {
                         v = this.value.toString(16)
@@ -628,7 +663,7 @@ export default class Node {
      */
     checkDeleted() {
         if (this.deleted) this.delete()
-        if (this.connections.length == 0 && this.type == 2) this.delete()
+        if (this.connections.length == 0 && this.type == NODE_INTERMEDIATE) this.delete()
     }
 
     /**
@@ -669,10 +704,10 @@ export default class Node {
         if (!this.wasClicked && this.clicked) {
             this.wasClicked = true
             this.prev = 'a'
-            if (this.type == 2) {
+            if (this.type == NODE_INTERMEDIATE) {
                 if (
                     !simulationArea.shiftDown &&
-                    simulationArea.multipleObjectSelections.contains(this)
+                    simulationArea.multipleObjectSelections.includes(this)
                 ) {
                     for (
                         var i = 0;
@@ -688,9 +723,9 @@ export default class Node {
                 if (simulationArea.shiftDown) {
                     simulationArea.lastSelected = undefined
                     if (
-                        simulationArea.multipleObjectSelections.contains(this)
+                        simulationArea.multipleObjectSelections.includes(this)
                     ) {
-                        simulationArea.multipleObjectSelections.clean(this)
+                        simulationArea.multipleObjectSelections = simulationArea.multipleObjectSelections.filter(x=> x !== this);
                     } else {
                         simulationArea.multipleObjectSelections.push(this)
                     }
@@ -701,7 +736,7 @@ export default class Node {
         } else if (this.wasClicked && this.clicked) {
             if (
                 !simulationArea.shiftDown &&
-                simulationArea.multipleObjectSelections.contains(this)
+                simulationArea.multipleObjectSelections.includes(this)
             ) {
                 for (
                     var i = 0;
@@ -711,7 +746,7 @@ export default class Node {
                     simulationArea.multipleObjectSelections[i].drag()
                 }
             }
-            if (this.type == 2) {
+            if (this.type == NODE_INTERMEDIATE) {
                 if (
                     this.connections.length == 1 &&
                     this.connections[0].absX() == simulationArea.mouseX &&
@@ -880,7 +915,7 @@ export default class Node {
                 simulationArea.lastSelected = n2
         }
 
-        if (this.type == 2 && simulationArea.mouseDown == false) {
+        if (this.type == NODE_INTERMEDIATE && simulationArea.mouseDown == false) {
             if (this.connections.length == 2) {
                 if (
                     this.connections[0].absX() == this.connections[1].absX() ||
@@ -899,17 +934,20 @@ export default class Node {
     delete() {
         updateSimulationSet(true)
         this.deleted = true
-        this.parent.scope.allNodes.clean(this)
-        this.parent.scope.nodes.clean(this)
+        this.parent.scope.allNodes = this.parent.scope.allNodes.filter(x => x !== this)
+        this.parent.scope.nodes = this.parent.scope.nodes.filter(x => x !== this)
 
-        this.parent.scope.root.nodeList.clean(this) // Hope this works! - Can cause bugs
+        this.parent.scope.root.nodeList = this.parent.scope.root.nodeList.filter(x => x !== this) // Hope this works! - Can cause bugs
 
         if (simulationArea.lastSelected == this)
             simulationArea.lastSelected = undefined
         for (var i = 0; i < this.connections.length; i++) {
-            this.connections[i].connections.clean(this)
+            this.connections[i].connections = this.connections[i].connections.filter(x => x !== this)
             this.connections[i].checkDeleted()
         }
+
+        this.scope.timeStamp = new Date().getTime()
+
         wireToBeCheckedSet(1)
         forceResetNodesSet(true)
         scheduleUpdate()
@@ -946,7 +984,7 @@ export default class Node {
                 y == this.parent.scope.allNodes[i].absY()
             ) {
                 n = this.parent.scope.allNodes[i]
-                if (this.type == 2) {
+                if (this.type == NODE_INTERMEDIATE) {
                     for (var j = 0; j < this.connections.length; j++) {
                         n.connect(this.connections[j])
                     }
@@ -963,7 +1001,7 @@ export default class Node {
             for (var i = 0; i < this.parent.scope.wires.length; i++) {
                 if (this.parent.scope.wires[i].checkConvergence(this)) {
                     var n = this
-                    if (this.type != 2) {
+                    if (this.type != NODE_INTERMEDIATE) {
                         n = new Node(
                             this.absX(),
                             this.absY(),

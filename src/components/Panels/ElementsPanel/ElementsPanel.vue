@@ -1,6 +1,6 @@
 <template>
     <div
-        ref="ElementsPanel"
+        ref="elementsPanelRef"
         class="noSelect defaultCursor draggable-panel draggable-panel-css modules ce-panel elementPanel"
     >
         <PanelHeader
@@ -142,12 +142,15 @@
 <script lang="ts" setup>
 import PanelHeader from '../Shared/PanelHeader.vue'
 import { elementHierarchy } from '#/simulator/src/metadata'
-import { simulationArea } from '#/simulator/src/simulationArea'
-import { uxvar } from '#/simulator/src/ux'
+import { createElement, getImgUrl } from './ElementsPanel'
 import modules from '#/simulator/src/modules'
-import { onBeforeMount, ref } from 'vue'
+import { onBeforeMount, onMounted, ref } from 'vue'
+import { useLayoutStore } from '#/store/layoutStore'
 var panelData = []
 window.elementPanelList = []
+const layoutStore = useLayoutStore()
+
+const elementsPanelRef = ref<HTMLElement | null>(null);
 
 onBeforeMount(() => {
     for (const category in elementHierarchy) {
@@ -164,13 +167,9 @@ onBeforeMount(() => {
     }
 })
 
-function getImgUrl(elementName) {
-    const elementImg = new URL(
-        `../../../assets/img/${elementName}.svg`,
-        import.meta.url
-    ).href
-    return elementImg
-}
+onMounted(() => {
+    layoutStore.elementsPanelRef = elementsPanelRef.value
+})
 
 var elementInput = ref('')
 function searchElements() {
@@ -214,26 +213,14 @@ function searchCategories() {
     return result;
 }
 
-function createElement(elementName) {
-    if (simulationArea.lastSelected && simulationArea.lastSelected.newElement)
-        simulationArea.lastSelected.delete()
-    var obj = new modules[elementName]()
-    simulationArea.lastSelected = obj
-    uxvar.smartDropXX += 70
-    if (uxvar.smartDropXX / globalScope.scale > width) {
-        uxvar.smartDropXX = 50
-        uxvar.smartDropYY += 80
-    }
-}
-
 const tooltipText = ref('null')
-function getTooltipText(elementName) {
+function getTooltipText(elementName: string) {
     tooltipText.value = modules[elementName].prototype.tooltipText
 }
 </script>
 
-<style scoped>
+<style>
 .v-expansion-panel-title {
     min-height: 36px;
 }
-</style>#/simulator/src/metadata
+</style>

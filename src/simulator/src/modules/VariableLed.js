@@ -26,6 +26,7 @@ export default class VariableLed extends CircuitElement {
         super(x, y, scope, 'UP', 8)
         this.rectangleObject = false
         this.setDimensions(10, 20)
+        this.downDimensionY = 40;
         this.inp1 = new Node(-40, 0, 0, this, 8)
         this.directionFixed = true
         this.fixedBitWidth = true
@@ -119,7 +120,7 @@ export default class VariableLed extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         )
             ctx.fillStyle = colors['hover_select']
         ctx.fill()
@@ -147,7 +148,7 @@ export default class VariableLed extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected == this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         )
             ctx.fillStyle = 'rgba(255, 255, 32,0.8)'
         ctx.fill()

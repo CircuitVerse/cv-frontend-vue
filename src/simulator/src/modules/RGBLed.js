@@ -20,6 +20,7 @@ export default class RGBLed extends CircuitElement {
         this.rectangleObject = false
         this.inp = []
         this.setDimensions(10, 10)
+        this.downDimensionY = 40;
         this.inp1 = new Node(-40, -10, 0, this, 8)
         this.inp2 = new Node(-40, 0, 0, this, 8)
         this.inp3 = new Node(-40, 10, 0, this, 8)
@@ -110,7 +111,7 @@ export default class RGBLed extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         )
             ctx.fillStyle = colors['hover_select']
         ctx.fill()
@@ -140,7 +141,7 @@ export default class RGBLed extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected == this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         )
             ctx.fillStyle = 'rgba(255, 255, 32,0.8)'
         ctx.fill()

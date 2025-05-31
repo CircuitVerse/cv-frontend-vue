@@ -661,14 +661,6 @@ div.icon img {
     right: 10px;
 }
 
-.layoutElementPanel {
-    width: 220px;
-    font: inherit;
-    display: none;
-    top: 90px;
-    left: 10px;
-}
-
 .timing-diagram-panel {
     border-radius: 5px;
     z-index: 70;
@@ -799,10 +791,6 @@ div.icon img {
     right: 0px;
     text-align: left;
     width: 200px;
-}
-
-.testbench-runall-label {
-    display: none;
 }
 
 .tb-dialog-button {
@@ -1390,6 +1378,10 @@ input:checked + .slider:before {
         text-align: center;
         padding-top: 20px;
     }
+
+    #moduleProperty-inner {
+        padding: 1rem;
+    }
 }
 
 /*! download dialog styling end here */
@@ -1766,9 +1758,17 @@ canvas {
     width: 800px;
 }
 
+@media (max-width: 991px) {
+    #plot {
+        width: 100%;
+    }
+}
+
 .timing-diagram-toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
     padding-left: 4px;
-    padding: 2px;
     cursor: default;
 }
 

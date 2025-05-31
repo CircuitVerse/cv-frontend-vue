@@ -73,7 +73,7 @@ export default class TwoComplement extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         )
             ctx.fillStyle = colors['hover_select']
         ctx.fill()
@@ -94,5 +94,5 @@ export default class TwoComplement extends CircuitElement {
  * @category modules
  */
 TwoComplement.prototype.tooltipText =
-    "Two's Complement Tooltip : Calculates the two's complement"
+    "Two's Complement ToolTip : Calculates the two's complement"
 TwoComplement.prototype.objectType = 'TwoComplement'

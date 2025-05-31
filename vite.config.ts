@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'url'
@@ -9,7 +10,7 @@ import vuetify from 'vite-plugin-vuetify'
 const proxyUrl: string = 'http://localhost:3000'
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(() => ({
     plugins: [
         vue(),
         vuetify({ autoImport: true }),
@@ -19,21 +20,31 @@ export default defineConfig({
 
             // you need to set i18n resource including paths !
             include: fileURLToPath(
-                new URL('./src/locales/**', import.meta.url)
+                new URL(`./v0/src/locales/**`, import.meta.url)
             ),
         }),
     ],
     resolve: {
         alias: {
-            '#': fileURLToPath(new URL('./src', import.meta.url)),
-            '@': fileURLToPath(new URL('./src/components', import.meta.url)),
+            '#': fileURLToPath(new URL(`./v0/src`, import.meta.url)),
+            '@': fileURLToPath(new URL(`./v0/src/components`, import.meta.url)),
         },
     },
-    base: '/simulatorvue/',
+    base: process.env.DESKTOP_MODE ? '/' : '/simulatorvue/',
     build: {
-        outDir: '../public/simulatorvue',
+        outDir: process.env.DESKTOP_MODE ? './dist' : '../public/simulatorvue/v0/',
         assetsDir: 'assets',
         chunkSizeWarningLimit: 1600,
+    },
+    test:{
+        globals: true,
+        environment: 'jsdom',
+        server: {
+            deps: {
+                inline: ['vuetify'],
+            },
+        },
+        setupFiles: './src/simulator/spec/vitestSetup.ts',
     },
     server: {
         port: 4000,
@@ -49,4 +60,4 @@ export default defineConfig({
             // }),
         },
     },
-})
+}))

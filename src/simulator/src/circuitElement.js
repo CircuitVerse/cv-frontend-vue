@@ -1,5 +1,6 @@
 /* eslint-disable no-multi-assign */
 /* eslint-disable no-bitwise */
+/* eslint-disable */
 import { scheduleUpdate } from './engine'
 import { simulationArea } from './simulationArea'
 import {
@@ -332,7 +333,7 @@ export default class CircuitElement {
             this.drag()
             if (
                 !simulationArea.shiftDown &&
-                simulationArea.multipleObjectSelections.contains(this)
+                simulationArea.multipleObjectSelections.includes(this)
             ) {
                 for (
                     let i = 0;
@@ -348,7 +349,7 @@ export default class CircuitElement {
             this.startDragging()
             if (
                 !simulationArea.shiftDown &&
-                simulationArea.multipleObjectSelections.contains(this)
+                simulationArea.multipleObjectSelections.includes(this)
             ) {
                 for (
                     let i = 0;
@@ -376,9 +377,9 @@ export default class CircuitElement {
                 if (simulationArea.shiftDown) {
                     simulationArea.lastSelected = undefined
                     if (
-                        simulationArea.multipleObjectSelections.contains(this)
+                        simulationArea.multipleObjectSelections.includes(this)
                     ) {
-                        simulationArea.multipleObjectSelections.clean(this)
+                        simulationArea.multipleObjectSelections = simulationArea.multipleObjectSelections.filter(x => x !== this);
                     } else {
                         simulationArea.multipleObjectSelections.push(this)
                     }
@@ -479,8 +480,8 @@ export default class CircuitElement {
      * NOT OVERRIDABLE
      */
     isHover() {
-        var mX = simulationArea.mouseXf - this.x
-        var mY = this.y - simulationArea.mouseYf
+        var mX = simulationArea.touch ? simulationArea.mouseDownX - this.x : simulationArea.mouseXf - this.x;
+        var mY = simulationArea.touch ? this.y - simulationArea.mouseDownY : this.y - simulationArea.mouseYf;
 
         var rX = this.rightDimensionX
         var lX = this.leftDimensionX
@@ -578,7 +579,7 @@ export default class CircuitElement {
             if (
                 (this.hover && !simulationArea.shiftDown) ||
                 simulationArea.lastSelected === this ||
-                simulationArea.multipleObjectSelections.contains(this)
+                simulationArea.multipleObjectSelections.includes(this)
             )
                 ctx.fillStyle = colors['hover_select']
             ctx.fill()
@@ -646,7 +647,7 @@ export default class CircuitElement {
     /**
         Draws element in layout mode (inside the subcircuit)
         @param {number} xOffset - x position of the subcircuit
-        @param {number} yOffset - y position of the subcircuit 
+        @param {number} yOffset - y position of the subcircuit
 
         Called by subcirucit.js/customDraw() - for drawing as a part of another circuit
         and layoutMode.js/renderLayout() -  for drawing in layoutMode
@@ -734,7 +735,7 @@ export default class CircuitElement {
     // OVERRIDE WITH CAUTION
     delete() {
         simulationArea.lastSelected = undefined
-        this.scope[this.objectType].clean(this) // CHECK IF THIS IS VALID
+        this.scope[this.objectType] = this.scope[this.objectType].filter(x => x !== this)
         if (this.deleteNodesWhenDeleted) {
             this.deleteNodes()
         } else {
@@ -883,7 +884,7 @@ export default class CircuitElement {
                     if (
                         !this.scope.verilogWireList[
                             this.nodeList[i].bitWidth
-                        ].contains(this.nodeList[i].verilogLabel)
+                        ].includes(this.nodeList[i].verilogLabel)
                     )
                         this.scope.verilogWireList[
                             this.nodeList[i].bitWidth

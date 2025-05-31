@@ -91,7 +91,7 @@ export default class OrGate extends CircuitElement {
             if (
                 (this.hover && !simulationArea.shiftDown) ||
                 simulationArea.lastSelected === this ||
-                simulationArea.multipleObjectSelections.contains(this)
+                simulationArea.multipleObjectSelections.includes(this)
             ) {
                 ctx.fillStyle = colors['hover_select'];
             }
@@ -121,7 +121,7 @@ export default class OrGate extends CircuitElement {
 }
 
 OrGate.prototype.tooltipText =
-    'Or Gate Tooltip : Implements logical disjunction';
+    'Or Gate ToolTip : Implements logical disjunction';
 
 OrGate.prototype.changeInputSize = changeInputSize;
 
