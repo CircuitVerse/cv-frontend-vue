@@ -111,7 +111,7 @@ import { useState } from '#/store/SimulatorStore/state'
 import { useProjectStore } from '#/store/projectStore'
 // import DeleteCircuit from '#/components/helpers/deleteCircuit/DeleteCircuit.vue'
 import { closeCircuit } from '#/components/helpers/deleteCircuit/DeleteCircuit.vue'
-import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
+import { useSimulatorMobileStore } from '../../store/simulatorMobileStore'
 import { watch } from 'vue'
 import { ref } from 'vue'
 

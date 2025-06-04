@@ -31,7 +31,7 @@ import 'codemirror/addon/hint/show-hint.js'
 import 'codemirror/addon/display/autorefresh.js'
 import { showError, showMessage } from './utils'
 import { showProperties } from './ux'
-import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
+import { useSimulatorMobileStore } from '../../store/simulatorMobileStore'
 import { toRefs } from 'vue'
 
 var editor
