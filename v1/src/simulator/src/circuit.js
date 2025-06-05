@@ -196,9 +196,7 @@ export function newCircuit(name, id, isVerilog = false, isVerilogMain = false) {
     
     let currCircuit = {
         id: scope.id,
-        name: scope.name,
-        focussed: false,
-        isVerilog: false
+        name: scope.name, // fix for tab name issue - vue - to be reviewed @devartstar
     }
 
     circuit_list.value.push(currCircuit)
@@ -212,16 +210,50 @@ export function newCircuit(name, id, isVerilog = false, isVerilogMain = false) {
     }
     
     globalScope = scope
-    
-    // Update focus state reactively
+    // $('.circuits').removeClass('current')
     circuit_list.value.forEach((circuit) => (circuit.focussed = false))
     circuit_list.value[circuit_list.value.length - 1].focussed = true
     activeCircuit.value.id = scope.id
     activeCircuit.value.name = scope.name
 
     if (!isVerilog || isVerilogMain) {
-        // Circuit name click handler logic should be moved to Vue component
-        // This functionality should be handled in the Vue tab component
+        if (embed) {
+            // added calss - embed-tab using vue logic
+            // var html = `<div style='' class='circuits toolbarButton current' draggable='true' id='${
+            //     scope.id
+            // }'><span class='circuitName noSelect'>${truncateString(
+            //     name,
+            //     18
+            // )}</span></div>`
+            // $('#tabsBar').append(html)
+            // $('#tabsBar').addClass('embed-tabs')
+        } else {
+            // logic implemented in vue
+        }
+
+        // Remove listeners
+        //$('.circuits').off('click')
+        //$('.circuitName').off('click')
+        //$('.tabsCloseButton').off('click')
+
+        // switch circuit function moved inside vue component
+
+        if (!embed) {
+            // Circuit name click handler logic moved to Vue component
+            // $('.circuitName').on('click', () => {
+            //     simulationArea.lastSelected = globalScope.root
+            //     setTimeout(() => {
+            //         // here link with the properties panel
+            //         document.getElementById('circname').select()
+            //     }, 100)
+            // })
+        }
+        // moved inside vue - component
+        // $('.tabsCloseButton').on('click', function (e) {
+        //     e.stopPropagation()
+        //     deleteCurrentCircuit(this.id)
+        // })
+
         if (!embed) {
             showProperties(scope.root)
         }
@@ -245,9 +277,8 @@ export function changeCircuitName(name, id = globalScope.id) {
     scopeList[id].name = name
     
     const index = circuit_list.value.findIndex((circuit) => circuit.id === id)
-    if (index !== -1) {
-        circuit_list.value[index].name = name
-    }
+    circuit_list.value[index].name = name
+    // activeCircuit.value.name = name // add later if necessary at current stage not important handled by projectProperty on switching circuit
 }
 
 /**
