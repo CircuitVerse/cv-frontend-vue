@@ -13,6 +13,7 @@
             (selectedOption, circuitItem, circuitNameVal) =>
                 dialogBoxConformation(selectedOption)
         "
+        ref="messageBoxRef"
     />
     <v-alert v-if="showAlert" :type="alertType" class="alertStyle">{{
         alertMessage
@@ -30,6 +31,8 @@ import { onMounted } from 'vue'
 import { GenerateCircuit, solveBooleanFunction } from '#/simulator/src/combinationalAnalysis'
 
 const SimulatorState = useState()
+const messageBoxRef = ref(null)
+
 onMounted(() => {
     SimulatorState.dialogBox.combinationalanalysis_dialog = false
 })
@@ -286,7 +289,14 @@ function createBooleanPrompt(inputList, outputList, scope = globalScope) {
 }
 
 function printBooleanTable() {
-    var sTable = $('.messageBox .v-card-text')[0].innerHTML
+    // Get table HTML from the messageBox component using Vue ref instead of jQuery
+    let sTable = ''
+    if (messageBoxRef.value && messageBoxRef.value.$el) {
+        const tableElement = messageBoxRef.value.$el.querySelector('.v-card-text')
+        if (tableElement) {
+            sTable = tableElement.innerHTML
+        }
+    }
 
     var style =
         `<style>
