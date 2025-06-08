@@ -1,5 +1,5 @@
 <template>
-    <v-dialog :persistent="isPersistent">
+    <v-dialog :persistent="isPersistent"  @keydown.esc.prevent="$emit('buttonClick','cancel',circuitItem)">
         <v-card class="messageBoxContent">
             <v-card-text>
                 <!-- NOTE: Add v-ifs -->
@@ -21,6 +21,7 @@
                             :class="inputItem.class"
                             :placeholder="inputItem.placeholder"
                             :type="inputItem.type"
+                            @keydown.enter.prevent="$emit('buttonClick', 'save',circuitItem)"
                         />
                     </div>
                 </template>
