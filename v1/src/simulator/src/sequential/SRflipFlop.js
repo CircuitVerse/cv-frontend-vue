@@ -121,6 +121,37 @@ export default class SRflipFlop extends CircuitElement {
         fillText(ctx, this.state.toString(16), xx, yy + 5)
         ctx.fill()
     }
+
+    static moduleVerilog() {
+        return `
+module SRflipFlop(q,q_inv,s,r,clk,rst,pre,en);
+    output reg q,q_inv;
+    input wire s,r,clk,rst,pre,en;
+    
+    always @(posedge clk or posedge rst) begin
+        if (rst) begin
+            q     <= 'b0;
+            q_inv <= 'b1;
+        end else if (en) begin
+            if (s && !r) begin
+                q    <= 1'b1;
+                q_inv <= 1'b0;
+            end else if (!s && r) begin
+                q     <= 1'b0;
+                q_inv <= 1'b1;
+            end else if (!s && !r) begin
+                q     <= q;     // hold state
+                q_inv <= q_inv;
+            end else begin
+                // Invalid condition: S = 1, R = 1
+                q     <= 1'bx;
+                q_inv <= 1'bx;
+            end
+        end
+    end
+endmodule
+    `
+    }
 }
 
 SRflipFlop.prototype.tooltipText = 'SR FlipFlop ToolTip : SR FlipFlop Selected.'
