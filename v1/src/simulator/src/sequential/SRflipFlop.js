@@ -128,10 +128,15 @@ module SRflipFlop(q,q_inv,s,r,clk,rst,pre,en);
     output reg q,q_inv;
     input wire s,r,clk,rst,pre,en;
     
-    always @(posedge clk or posedge rst) begin
+    always @(posedge clk) begin
         if (rst) begin
-            q     <= 'b0;
-            q_inv <= 'b1;
+            if (pre) begin
+                q     <= 1'b1;
+                q_inv <= 1'b0;
+            end else begin
+                q     <= 1'b0;
+                q_inv <= 1'b1;
+            end
         end else if (en) begin
             if (s && !r) begin
                 q    <= 1'b1;
@@ -143,9 +148,9 @@ module SRflipFlop(q,q_inv,s,r,clk,rst,pre,en);
                 q     <= q;     // hold state
                 q_inv <= q_inv;
             end else begin
-                // Invalid condition: S = 1, R = 1
-                q     <= 1'bx;
-                q_inv <= 1'bx;
+                // Invalid condition: S = 1, R = 1 , the ideal output should be X(invalid state) but in this circuit model the state remains unchanged
+                q     <= q;
+                q_inv <= q_inv;
             end
         end
     end
