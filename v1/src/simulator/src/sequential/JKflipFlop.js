@@ -155,6 +155,37 @@ export default class JKflipFlop extends CircuitElement {
         fillText(ctx, this.slaveState.toString(16), xx, yy + 5)
         ctx.fill()
     }
+
+    static moduleVerilog() {
+        return `
+module JKflipFlop(q,q_inv,j,k,clk,rst,pre,en);
+    output reg q,q_inv;
+    input wire j,k,clk,rst,pre,en;
+    
+    always @(posedge clk) begin
+        if (rst) begin
+            if (pre) begin
+                q     <= 1'b1;
+            end else begin
+                q     <= 1'b0;
+            end
+        end else if (en) begin
+            if (j && !k) begin
+                q    <= 1'b1;
+            end else if (!j && k) begin
+                q     <= 1'b0;
+            end else if (!j && !k) begin
+                q     <= q;     // hold state
+            end else if (j && k) begin
+                    // toggling state
+                    q     <= ~q;
+            end
+        end
+    end
+    assign q_inv = ~q;
+endmodule
+    `
+    }
 }
 
 JKflipFlop.prototype.tooltipText =
