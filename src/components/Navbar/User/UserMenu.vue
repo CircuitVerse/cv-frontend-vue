@@ -1,166 +1,214 @@
 <template>
-  <v-card class="avatar-menu">
+  <v-card class="avatar-menu" flat>
     <v-layout>
       <v-navigation-drawer
         v-model="drawer"
         location="right"
         class="userMenu"
         temporary
+        width="270"
       >
         <div class="close-parent">
           <v-btn
             size="x-small"
             icon
             class="dialogClose"
-            @click="drawer = !drawer"
+            @click="drawer = false"
+            variant="text"
+            color="white"
           >
-            <v-icon style="font-size: 1.5rem;">mdi-arrow-right</v-icon>
+            <v-icon icon="mdi-arrow-right" size="large"></v-icon>
           </v-btn>
         </div>
+
         <v-list-item
           class="list-item-avatar"
           :prepend-avatar="authStore.getUserAvatar"
           :prepend-icon="
-            authStore.getUserAvatar === 'default'
-              ? 'mdi-account-circle-outline'
-              : ''
+            authStore.getUserAvatar === 'default' ? 'mdi-account-circle-outline' : undefined
           "
           :title="authStore.getUsername"
-        ></v-list-item>
+          lines="two"
+          color="white"
+        >
+          <template v-if="authStore.getIsLoggedIn" v-slot:subtitle>
+            <span class="text-caption text-white">Member since {{ authStore.getJoinDate }}</span>
+          </template>
+        </v-list-item>
+
         <v-list-item>
           <v-select
             :items="availableLocale"
             label="Locale"
             v-model="locale"
             density="compact"
-            outlined
-            dense
+            variant="outlined"
             hide-details
+            single-line
+            color="white"
+            bg-color="rgba(255, 255, 255, 0.1)"
           ></v-select>
         </v-list-item>
-        <v-divider></v-divider>
 
-        <!-- trigger the modal -->
-        <div v-if="!authStore.getIsLoggedIn">
-          <v-list dense class="userMenuList1" nav>
+        <v-divider class="my-2 bg-white"></v-divider>
+
+        <!-- Authentication Section -->
+        <template v-if="!authStore.getIsLoggedIn">
+          <v-list density="compact" nav>
             <v-list-item
               @click.stop="showAuthModal(true)"
               prepend-icon="mdi-login"
               title="Sign In"
               value="sign_in"
+              variant="text"
+              color="white"
             ></v-list-item>
             <v-list-item
               @click.stop="showAuthModal(false)"
               prepend-icon="mdi-account-plus"
               title="Register"
               value="register"
+              variant="text"
+              color="white"
             ></v-list-item>
           </v-list>
-        </div>
+        </template>
 
-        <div v-if="authStore.getIsLoggedIn">
-          <v-list density="compact" class="userMenuList1" nav>
+        <!-- User Menu Section -->
+        <template v-else>
+          <v-list density="compact" nav>
             <v-list-item
               @click.stop="dashboard"
               prepend-icon="mdi-view-dashboard-outline"
               title="Dashboard"
               value="dashboard"
+              variant="text"
+              color="white"
             ></v-list-item>
             <v-list-item
               @click.stop="my_groups"
               prepend-icon="mdi-account-group-outline"
               title="My Groups"
               value="my_groups"
+              variant="text"
+              color="white"
             ></v-list-item>
             <v-list-item
               @click.stop="notifications"
               prepend-icon="mdi-bell-outline"
               title="Notifications"
               value="notifications"
-            ></v-list-item>
+              variant="text"
+              color="white"
+            >
+              <template v-if="unreadCount > 0" v-slot:append>
+                <v-badge :content="unreadCount" color="error"></v-badge>
+              </template>
+            </v-list-item>
           </v-list>
-          <v-divider></v-divider>
+
+          <v-divider class="my-2 bg-white"></v-divider>
+
           <v-list-item
             @click.stop="signout"
             prepend-icon="mdi-logout"
             title="Logout"
             value="logout"
+            variant="text"
+            color="white"
           ></v-list-item>
-        </div>
+        </template>
       </v-navigation-drawer>
+
       <v-main>
         <v-btn
           class="avatar-btn"
-          color="transparent"
+          variant="text"
           @click.stop="drawer = !drawer"
+          rounded="xl"
+          color="white"
         >
-          <v-icon
-            v-if="authStore.getUserAvatar == 'default'"
-            class="avatar"
-            size="x-large"
-            >mdi-account</v-icon
-          >
           <v-avatar
-            v-else
-            class="avatar"
-            size="small"
+            v-if="authStore.getUserAvatar !== 'default'"
+            size="32"
             :image="authStore.getUserAvatar"
+            color="white"
           ></v-avatar>
-          {{ authStore.getUsername }}
+          <v-icon
+            v-else
+            icon="mdi-account"
+            size="large"
+            color="white"
+          ></v-icon>
+          <span class="ml-2 text-white" style="font-size: 1.2rem">{{ authStore.getUsername }}</span>
         </v-btn>
       </v-main>
     </v-layout>
 
-    <!-- Authentication Modal -->
-    <v-dialog v-model="authModal" max-width="500px">
-      <v-card class="auth-modal">
-        <v-card-title class="text-center auth-modal-title">
-          {{ isLoginMode ? 'Sign In' : 'Register' }}
-        </v-card-title>
-        <v-card-text>
-          <v-form @submit.prevent="handleAuthSubmit">
+    <!-- Authentication Dialog -->
+    <v-dialog v-model="authModal" max-width="500" persistent>
+      <v-card class="auth-modal" style="background-color: white">
+        <v-toolbar color="#4baf50">
+          <v-toolbar-title class="text-white">
+            {{ isLoginMode ? 'Sign In' : 'Register' }}
+          </v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-btn icon @click="authModal = false" color="white">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-toolbar>
+
+        <v-card-text class="pa-6">
+          <v-form @submit.prevent="handleAuthSubmit" ref="authForm">
             <v-text-field 
               v-if="!isLoginMode" 
               v-model="name" 
               label="Name" 
-              type="text" 
-              required 
-              outlined 
-              dense
-              class="auth-input"
+              type="text"
+              :rules="[requiredRule]"
+              variant="outlined"
+              class="mb-0"
+              bg-color="#f0eee6"
             ></v-text-field>
+
             <v-text-field
               v-model="email"
               label="Email"
               type="email"
-              required
-              outlined
-              dense
-              class="auth-input"
+              :rules="[requiredRule, emailRule]"
+              variant="outlined"
+              class="mb-0"
+              bg-color="#f0eee6"
             ></v-text-field>
+
             <v-text-field
               v-model="password"
               label="Password"
               type="password"
-              required
-              outlined
-              dense
-              class="auth-input"
+              :rules="[requiredRule, passwordRule]"
+              variant="outlined"
+              class="mb-0"
+              bg-color="#f0eee6"
             ></v-text-field>
-            <div class="d-flex justify-space-between mt-4">
+
+            <div class="d-flex flex-column">
               <v-btn
-              color="success"
-              type="submit"
-              class="auth-submit-btn"
-              :loading="isLoading"
-              :disabled="isLoading"
+                color="success"
+                type="submit"
+                :loading="isLoading"
+                :disabled="isLoading"
+                size="large"
+                block
+                class="mb-2"
               >
                 {{ isLoginMode ? 'Sign In' : 'Register' }}
               </v-btn>
+
               <v-btn
                 variant="text"
                 @click="toggleAuthMode"
-                class="auth-toggle-btn"
+                size="small"
+                color="success"
               >
                 {{ isLoginMode ? 'Need an account? Register' : 'Already have an account? Sign In' }}
               </v-btn>
@@ -175,15 +223,17 @@
       v-model="snackbar.visible"
       :color="snackbar.color"
       :timeout="3000"
+      location="bottom right"
     >
       {{ snackbar.message }}
+
       <template v-slot:actions>
         <v-btn
           variant="text"
           @click="snackbar.visible = false"
-        >
-          Close
-        </v-btn>
+          :icon="mdiClose"
+          color="white"
+        ></v-btn>
       </template>
     </v-snackbar>
   </v-card>
@@ -194,6 +244,8 @@ import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { availableLocale } from '#/locales/i18n'
 import { useAuthStore } from '#/store/authStore'
+import { mdiClose } from '@mdi/js'
+import './User.scss'
 
 const authStore = useAuthStore()
 const drawer = ref(false)
@@ -204,18 +256,28 @@ const password = ref('')
 const name = ref('')
 const { locale } = useI18n()
 const isLoading = ref(false)
+const authForm = ref()
+const unreadCount = ref(0)
+
+// Form validation rules
+const requiredRule = (v: string) => !!v || 'This field is required'
+const emailRule = (v: string) => /.+@.+\..+/.test(v) || 'E-mail must be valid'
+const passwordRule = (v: string) => v.length >= 6 || 'Password must be at least 6 characters'
 
 // Snackbar state
 const snackbar = ref({
   visible: false,
   message: '',
-  color: 'success' // can be 'success', 'error', 'warning', 'info'
+  color: 'success'
 })
 
 function showAuthModal(login: boolean) {
   isLoginMode.value = login
   authModal.value = true
   drawer.value = false
+  email.value = ''
+  password.value = ''
+  name.value = ''
 }
 
 function toggleAuthMode() {
@@ -223,10 +285,8 @@ function toggleAuthMode() {
 }
 
 async function handleAuthSubmit() {
-  if (!email.value || !password.value || (!isLoginMode.value && !name.value)) {
-    showSnackbar('Please fill in all fields', 'error')
-    return
-  }
+  const { valid } = await authForm.value.validate()
+  if (!valid) return
 
   isLoading.value = true
 
@@ -242,16 +302,14 @@ async function handleAuthSubmit() {
     const response = await fetch(url, {
       method: 'POST',
       headers: {
-        Accept: 'application/json',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
     })
 
     if (!response.ok) {
-      const text = await response.text()
-      let errorData: any = {}
-      try { errorData = JSON.parse(text) } catch { errorData = { message: text } }      handleLoginError(response.status, errorData)
+      const errorData = await response.json().catch(() => ({ message: 'An error occurred' }))
+      handleLoginError(response.status, errorData)
       return
     }
 
@@ -261,11 +319,6 @@ async function handleAuthSubmit() {
       isLoginMode.value ? 'Login successful!' : 'Registration successful!',
       'success'
     )
-
-    // Clear fields and close modal
-    email.value = ''
-    password.value = ''
-    name.value = ''
     authModal.value = false
   } catch (error) {
     console.error('Authentication error:', error)
@@ -278,7 +331,7 @@ async function handleAuthSubmit() {
 function handleLoginError(status: number, errorData: any) {
   switch (status) {
     case 401:
-      showSnackbar('Invalid password', 'error')
+      showSnackbar('Invalid credentials', 'error')
       break
     case 404:
       showSnackbar('User not found', 'error')
@@ -287,118 +340,35 @@ function handleLoginError(status: number, errorData: any) {
       showSnackbar('User already exists', 'error')
       break
     case 422:
-      showSnackbar('Invalid email format', 'error')
+      showSnackbar('Invalid input data', 'error')
       break
     default:
-      showSnackbar(errorData.message || 'Login failed', 'error')
+      showSnackbar(errorData.message || 'Authentication failed', 'error')
   }
 }
 
-function showSnackbar(message: string, type: string) {
+function showSnackbar(message: string, type: 'success' | 'error' | 'warning' | 'info') {
   snackbar.value = {
     visible: true,
     message,
-    color: type === 'error' ? 'error' : 'success'
+    color: type
   }
 }
 
 function dashboard() {
   window.location.href = `/users/${authStore.getUserId}`
 }
+
 function my_groups() {
   window.location.href = `/users/${authStore.getUserId}/groups`
 }
+
 function notifications() {
   window.location.href = `/users/${authStore.getUserId}/notifications`
 }
+
 function signout() {
   authStore.signOut()
+  showSnackbar('You have been logged out', 'info')
 }
 </script>
-
-<style>
-.userMenu {
-  backdrop-filter: blur(5px) !important;
-  border-radius: 5px !important;
-  border: 0.5px solid var(--br-primary) !important;
-  background: var(--bg-primary-moz) !important;
-  background-color: var(--bg-primary-chr) !important;
-  color: white !important;
-}
-
-.userMenuList1 {
-  background-color: transparent !important;
-  color: #fff !important;
-}
-
-.avatar-menu {
-  background-color: transparent !important;
-  box-shadow: none !important;
-}
-
-.avatar-btn {
-  color: #fff !important;
-  text-transform: none !important;
-  font-size: 1rem !important;
-}
-
-.list-item-avatar .v-list-item-title {
-  color: #fff !important;
-  font-size: 1.2rem !important;
-}
-
-.list-item-avatar img {
-  display: inline-block;
-}
-
-.avatar img {
-  cursor: pointer;
-  display: inline-block;
-}
-
-/* Auth Modal Styles */
-.auth-modal {
-  background-color: #424242 !important;
-  color: white !important;
-  border-radius: 8px;
-}
-
-.auth-modal-title {
-  color: white !important;
-  font-size: 1.5rem;
-  margin-bottom: 20px;
-  padding-top: 20px;
-}
-
-.auth-input .v-input__control,
-.auth-input .v-field {
-  background-color: #616161 !important;
-  color: white !important;
-  border-radius: 4px;
-}
-
-.auth-input .v-field__outline {
-  color: #9e9e9e !important;
-}
-
-.auth-input .v-label {
-  color: #bdbdbd !important;
-}
-
-.auth-submit-btn {
-  background-color: #4CAF50 !important;
-  color: white !important;
-  text-transform: none;
-  font-weight: bold;
-}
-
-.auth-toggle-btn {
-  color: white !important;
-  text-transform: none;
-}
-
-.v-field__input,
-.v-label.v-field-label--floating {
-  color: white !important;
-}
-</style>
