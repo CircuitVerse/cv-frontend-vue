@@ -179,6 +179,61 @@ export default class ALU extends CircuitElement {
             simulationArea.simulationQueue.add(this.carryOut)
         }
     }
+    static moduleVerilog() {
+        return `
+module ALU(cout, out, a, b, ctr);
+    input  a;
+    input  b;
+    input  [2:0] ctr;
+    output reg out;
+    output reg cout;
+
+    wire [1:0] sum = a + b;
+    wire notb = ~b;
+
+    always @(*) begin
+        case (ctr)
+            3'b000: begin // a & b
+                out = a & b;
+                cout = 0;
+            end
+            3'b001: begin // a | b
+                out = a | b;
+                cout = 0;
+            end
+            3'b010: begin // A + B
+                out = sum[0];
+                cout = sum[1];
+            end
+            3'b011: begin // Reserved: "ALU" no simulation results defined, outputs are made 0 
+                out = 0;
+                cout = 0;
+            end
+            3'b100: begin // a & ~b
+                out = a & notb;
+                cout = 0;
+            end
+            3'b101: begin // a | ~b
+                out = a | notb;
+                cout = 0;
+            end
+            3'b110: begin // a - b
+                out = a - b;
+                cout = 0;
+            end
+            3'b111: begin // a < b
+                out = (a < b) ? 1 : 0;
+                cout = 0;
+            end
+            default: begin
+                out = 0;
+                cout = 0;
+            end
+        endcase
+    end
+endmodule
+    `
+    }
 }
 
 /**
