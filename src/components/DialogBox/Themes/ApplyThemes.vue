@@ -181,16 +181,43 @@ function changeTheme(theme: string) {
 }
 
 function changeCustomTheme(e: InputEvent) {
-    const customTheme = customThemesList[(e.target as HTMLInputElement).name as keyof typeof customThemesList];
+    const target = e.target as HTMLInputElement;
+    const name = target.name as keyof typeof customThemesList;
+    const value = target.value;
+    
+    // Update the UI model
+    const customTheme = customThemesList[name];
     if (customTheme) {
-        customTheme.color = (e.target as HTMLInputElement).value;
+        customTheme.color = value;
+        
+        // Apply to all referenced CSS properties
         customTheme.ref.forEach((property: string) => {
-            themeOptions['Custom Theme'][property] = (e.target as HTMLInputElement).value
-        })
+            themeOptions['Custom Theme'][property] = value;
+        });
+        
+        // Extra handling for text color
+        if (name === 'Text') {
+            // Ensure the --text variable is always set
+            themeOptions['Custom Theme']['--text'] = value;
+        }
     }
-    customThemesList[(e.target as HTMLInputElement).name as keyof typeof customThemesList] = customTheme
-    updateThemeForStyle('Custom Theme')
-    updateBG()
+    
+    // Save back to the model
+    customThemesList[name] = customTheme;
+    
+    // Apply the theme
+    updateThemeForStyle('Custom Theme');
+    updateBG();
+    
+    // Force text elements to update
+    if (window.globalScope) {
+        setTimeout(() => {
+            // Re-render canvas with new colors
+            if (window.globalScope && window.globalScope.renderCanvas) {
+                window.globalScope.renderCanvas();
+            }
+        }, 10);
+    }
 }
 
 function applyTheme() {
