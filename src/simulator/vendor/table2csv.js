@@ -25,31 +25,25 @@ jQuery.fn.table2CSV = function (options) {
             tmpRow[tmpRow.length] = formatData(options.header[i])
         }
     } else {
-        $(el)
-            .filter(':visible')
-            .find(options.headerSelector)
-            .each(function () {
-                if ($(this).css('display') != 'none')
-                    tmpRow[tmpRow.length] = formatData($(this).html())
-            })
+        Array.from(el.querySelectorAll(options.headerSelector))
+            .filter(element => element.style.display !== 'none' && element.offsetParent !== null)
+            .forEach(element => {
+                if (element.style.display !== 'none') {
+                    tmpRow.push(formatData(element.innerHTML));
+                }
+            });
     }
 
     row2CSV(tmpRow)
 
     // actual data
-    $(el)
-        .find('tr')
-        .each(function () {
-            var tmpRow = []
-            $(this)
-                .filter(':visible')
-                .find(options.columnSelector)
-                .each(function () {
-                    if ($(this).css('display') != 'none')
-                        tmpRow[tmpRow.length] = formatData($(this).html())
-                })
-            row2CSV(tmpRow)
-        })
+    Array.from(el.querySelectorAll(options.headerSelector))
+        .filter(element => element.style.display !== 'none' && element.offsetParent !== null)
+        .forEach(element => {
+            if (element.style.display !== 'none') {
+                tmpRow.push(formatData(element.innerHTML));
+            }
+        });
     if (options.delivery == 'popup') {
         var mydata = csvData.join('\n')
         if (options.transform_gt_lt) {
