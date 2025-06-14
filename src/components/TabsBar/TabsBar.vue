@@ -1,7 +1,12 @@
 <template>
-    <div id="tabsBar" class="noSelect pointerCursor" :class="embedClass()">
+    <div
+        id="tabsBar"
+        class="noSelect pointerCursor"
+        :class="[embedClass(), { maxHeightStyle: showMaxHeight }]"
+    >
         <draggable
             :key="updateCount"
+            :item-key="updateCount.toString()"
             v-model="SimulatorState.circuit_list"
             class="list-group"
             tag="transition-group"
@@ -24,7 +29,7 @@
                     draggable="true"
                     @click="switchCircuit(element.id)"
                 >
-                    <span class="circuitName noSelect">
+                    <span class="circuitName noSelect" @mousedown="circuitNameClicked">
                         {{ truncateString(element.name, 18) }}
                     </span>
                     <span
@@ -40,6 +45,9 @@
         </draggable>
         <button v-if="!isEmbed()" @click="createNewCircuitScope()">
             &#43;
+        </button>
+        <button class="tabsbar-toggle" @click="toggleHeight">
+            <i :class="showMaxHeight ? 'fa fa-chevron-down' : 'fa fa-chevron-up'"></i>
         </button>
     </div>
     <!-- <MessageBox
@@ -71,10 +79,18 @@ import {
 // import MessageBox from '#/components/MessageBox/messageBox.vue'
 import { useState } from '#/store/SimulatorStore/state'
 import { closeCircuit } from '../helpers/deleteCircuit/DeleteCircuit.vue'
+import { circuitNameClicked } from '#/simulator/src/circuit'
 
-const SimulatorState = <SimulatorStateType>useState()
+const SimulatorState = useState()
 const drag: Ref<boolean> = ref(false)
 const updateCount: Ref<number> = ref(0)
+
+const showMaxHeight = ref(true)
+
+function toggleHeight() {
+    showMaxHeight.value = !showMaxHeight.value
+}
+
 // const persistentShow: Ref<boolean> = ref(false)
 // const messageVal: Ref<string> = ref('')
 // const buttonArr: Ref<Array<buttonArrType>> = ref([{ text: '', emitOption: '' }])
@@ -96,13 +112,6 @@ const updateCount: Ref<number> = ref(0)
 //     name: string
 //     focussed: boolean
 // }
-
-type SimulatorStateType = {
-    circuit_list: Array<Object>
-    dialogBox: {
-        create_circuit: boolean
-    }
-}
 
 // type InputArrType = {
 //     text: string
@@ -270,6 +279,14 @@ function isEmbed(): boolean {
 </script>
 
 <style scoped>
+#tabsBar {
+    padding-right: 50px;
+    position: relative;
+    overflow: hidden;
+    padding-bottom: 2.5px;
+    z-index: 1;
+}
+
 #tabsBar.embed-tabbar {
     background-color: transparent;
 }
@@ -290,6 +307,12 @@ function isEmbed(): boolean {
     /* border: 1px solid var(--br-circuit-cur); */
 }
 
+#tabsBar button {
+    font-size: 1rem;
+    height: 20px;
+    width: 20px;
+}
+
 #tabsBar.embed-tabbar button {
     color: var(--text-panel);
     background-color: var(--primary);
@@ -303,6 +326,35 @@ function isEmbed(): boolean {
 
 .list-group {
     display: inline;
+}
+
+.maxHeightStyle {
+    height: 30px;
+    max-height: 30px;
+}
+
+.toolbarButton {
+    height: 22px;
+}
+
+.tabsbar-toggle {
+    position: absolute;
+    right: 2.5px;
+    top: 2.5px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.tabsbar-toggle i {
+    margin-bottom: -5px;
+}
+
+
+.tabsbar-close {
+    font-size: 1rem;
 }
 </style>
 

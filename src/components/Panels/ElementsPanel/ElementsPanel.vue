@@ -1,6 +1,6 @@
 <template>
     <div
-        ref="ElementsPanel"
+        ref="elementsPanelRef"
         class="noSelect defaultCursor draggable-panel draggable-panel-css modules ce-panel elementPanel"
     >
         <PanelHeader
@@ -35,14 +35,55 @@
                     :title="element.label"
                     class="icon logixModules"
                     @click="createElement(element.name)"
+                    @mousedown="createElement(element.name)"
                     @mouseover="getTooltipText(element.name)"
                     @mouseleave="tooltipText = 'null'"
                 >
                     <img :src="element.imgURL" :alt="element.name" />
                 </div>
             </div>
+            <v-expansion-panels
+                v-if="elementInput && searchCategories().length"
+                id="menu"
+                class="accordion"
+                variant="accordion"
+            >
+                <v-expansion-panel
+                    v-for="category in searchCategories()"
+                    :key="category[0]"
+                >
+                    <v-expansion-panel-title>
+                        {{
+                            $t(
+                                'simulator.panel_body.circuit_elements.expansion_panel_title.' +
+                                    category[0]
+                            )
+                        }}
+                    </v-expansion-panel-title>
+                    <v-expansion-panel-text eager>
+                        <div class="panel customScroll">
+                            <div
+                                v-for="element in category[1]"
+                                :id="element.name"
+                                :key="element"
+                                :title="element.label"
+                                class="icon logixModules"
+                                @click="createElement(element.name)"
+                                @mousedown="createElement(element.name)"
+                                @mouseover="getTooltipText(element.name)"
+                                @mouseleave="tooltipText = 'null'"
+                            >
+                                <img
+                                    :src="element.imgURL"
+                                    :alt="element.name"
+                                />
+                            </div>
+                        </div>
+                    </v-expansion-panel-text>
+                </v-expansion-panel>
+            </v-expansion-panels>
             <div
-                v-if="elementInput && !searchElements().length"
+                v-if="elementInput && !searchElements().length && !searchCategories().length"
                 class="search-results"
             >
                 {{ $t('simulator.panel_body.circuit_elements.search_result') }}
@@ -74,6 +115,7 @@
                                 :title="element.label"
                                 class="icon logixModules"
                                 @click="createElement(element.name)"
+                                @mousedown="createElement(element.name)"
                                 @mouseover="getTooltipText(element.name)"
                                 @mouseleave="tooltipText = 'null'"
                             >
@@ -99,14 +141,16 @@
 
 <script lang="ts" setup>
 import PanelHeader from '../Shared/PanelHeader.vue'
-import metadata from '#/simulator/src/metadata.json'
-import simulationArea from '#/simulator/src/simulationArea'
-import { uxvar } from '#/simulator/src/ux'
+import { elementHierarchy } from '#/simulator/src/metadata'
+import { createElement, getImgUrl } from './ElementsPanel'
 import modules from '#/simulator/src/modules'
-import { onBeforeMount, ref } from 'vue'
+import { onBeforeMount, onMounted, ref } from 'vue'
+import { useLayoutStore } from '#/store/layoutStore'
 var panelData = []
-window.elementHierarchy = metadata.elementHierarchy
 window.elementPanelList = []
+const layoutStore = useLayoutStore()
+
+const elementsPanelRef = ref<HTMLElement | null>(null);
 
 onBeforeMount(() => {
     for (const category in elementHierarchy) {
@@ -123,17 +167,13 @@ onBeforeMount(() => {
     }
 })
 
-function getImgUrl(elementName) {
-    const elementImg = new URL(
-        `../../../assets/img/${elementName}.svg`,
-        import.meta.url
-    ).href
-    return elementImg
-}
+onMounted(() => {
+    layoutStore.elementsPanelRef = elementsPanelRef.value
+})
 
 var elementInput = ref('')
 function searchElements() {
-    if (!elementInput) return []
+    if (!elementInput.value) return []
     // logic imported from listener.js
     const result = elementPanelList.filter((ele) =>
         ele.toLowerCase().includes(elementInput.value.toLowerCase())
@@ -161,22 +201,26 @@ function searchElements() {
     return finalResult
 }
 
-function createElement(elementName) {
-    if (simulationArea.lastSelected && simulationArea.lastSelected.newElement)
-        simulationArea.lastSelected.delete()
-    var obj = new modules[elementName]()
-    simulationArea.lastSelected = obj
-    uxvar.smartDropXX += 70
-    if (uxvar.smartDropXX / globalScope.scale > width) {
-        uxvar.smartDropXX = 50
-        uxvar.smartDropYY += 80
-    }
+function searchCategories() {
+    const result = panelData.filter((category) => {
+        const categoryName = category[0];
+        const categoryNameWords = categoryName.split(' ');
+
+        return categoryNameWords.some((word) =>
+            word.toLowerCase().startsWith(elementInput.value.toLowerCase())
+        );
+    })
+    return result;
 }
 
 const tooltipText = ref('null')
-function getTooltipText(elementName) {
+function getTooltipText(elementName: string) {
     tooltipText.value = modules[elementName].prototype.tooltipText
 }
 </script>
 
-<style scoped></style>
+<style>
+.v-expansion-panel-title {
+    min-height: 36px;
+}
+</style>

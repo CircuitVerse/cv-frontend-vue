@@ -15,13 +15,14 @@
     <p>
         <span>Circuit:</span>
         <input
+            :ref="circnameInput"
             id="circname"
-            :key="SimulatorState.activeCircuit.id"
+            :key="SimulatorState.activeCircuit?.id"
             class="objectPropertyAttribute"
             type="text"
             autocomplete="off"
             name="changeCircuitName"
-            :value="SimulatorState.activeCircuit.name"
+            :value="SimulatorState.activeCircuit?.name"
         />
     </p>
 
@@ -41,7 +42,9 @@
             <input
                 type="checkbox"
                 class="objectPropertyAttributeChecked"
-                name="changeClockEnable" />
+                name="changeClockEnable"
+                checked
+            />
             <span class="slider"></span
         ></label>
     </p>
@@ -62,7 +65,11 @@
         <button
             type="button"
             class="panelButton btn btn-xs custom-btn--primary"
-            @click="toggleLayoutMode"
+            @click="() => {
+                toggleLayoutMode()
+                simulatorMobileStore.showPropertiesPanel = false
+                simulatorMobileStore.showCircuits = 'layout-elements'
+            }"
         >
             Edit Layout
         </button>
@@ -96,7 +103,7 @@ import { toggleLayoutMode } from '#/simulator/src/layoutMode'
 //     scopeList,
 // } from '#/simulator/src/circuit'
 // import { showMessage } from '#/simulator/src/utils'
-import simulationArea from '#/simulator/src/simulationArea'
+import { simulationArea } from '#/simulator/src/simulationArea'
 import InputGroups from '#/components/Panels/Shared/InputGroups.vue'
 // import MessageBox from '#/components/MessageBox/messageBox.vue'
 // import { ref, Ref, onMounted, watch } from 'vue'
@@ -104,9 +111,22 @@ import { useState } from '#/store/SimulatorStore/state'
 import { useProjectStore } from '#/store/projectStore'
 // import DeleteCircuit from '#/components/helpers/deleteCircuit/DeleteCircuit.vue'
 import { closeCircuit } from '#/components/helpers/deleteCircuit/DeleteCircuit.vue'
+import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
+import { watch } from 'vue'
+import { ref } from 'vue'
 
 const projectStore = useProjectStore()
 const SimulatorState = <SimulatorStateType>useState()
+const circnameInput = ref<HTMLInputElement | null>(null)
+const simulatorMobileStore = useSimulatorMobileStore()
+
+watch(() => SimulatorState.circuit_name_clickable, () => {
+    setTimeout(() => {
+        if (circnameInput.value && SimulatorState.circuit_name_clickable) {
+            circnameInput.value.select()
+        }
+    }, 100)
+})
 // const circuitId: Ref<string | number> = ref(0)
 // const circuitName: Ref<string> = ref('Untitled-Cirucit')
 // const ifPersistentShow: Ref<boolean> = ref(false)
@@ -125,6 +145,7 @@ type SimulatorStateType = {
     dialogBox: {
         delete_circuit: boolean
     }
+    circuit_name_clickable: boolean
 }
 
 // type CircuitItem = {
@@ -150,7 +171,6 @@ type SimulatorStateType = {
 //         () => {
 //             circuitName.value = SimulatorState.activeCircuit.name
 //             circuitId.value = SimulatorState.activeCircuit.id
-//             console.log(circuitName.value, circuitId.value)
 //         },
 //         { deep: true }
 //     )

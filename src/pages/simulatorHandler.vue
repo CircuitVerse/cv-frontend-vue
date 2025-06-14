@@ -19,14 +19,16 @@ export function getToken(name: string) {
 
 <script setup lang="ts">
 import simulator from './simulator.vue'
-import { onBeforeMount, ref } from 'vue'
+import { onBeforeMount, ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '#/store/authStore'
+import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 
 const route = useRoute()
 const hasAccess = ref(true)
 const isLoading = ref(true)
 const authStore = useAuthStore()
+const simulatorMobileStore = useSimulatorMobileStore()
 
 // check if user has edit access to the project
 async function checkEditAccess() {
@@ -40,14 +42,8 @@ async function checkEditAccess() {
         // if user has edit access load circuit data
         if (res.ok) {
             res.json().then((data) => {
-                console.log('all good to go')
                 authStore.setUserInfo(data.data)
                 ;(window as any).isUserLoggedIn = true
-                console.log(
-                    authStore.getIsLoggedIn,
-                    authStore.getUsername,
-                    authStore.getUserId
-                )
                 isLoading.value = false
             })
         } else if (res.status === 403) {
@@ -99,4 +95,11 @@ onBeforeMount(() => {
         isLoading.value = false
     }
 })
+
+onMounted(() => {
+    window.addEventListener('resize', checkShowSidebar)
+})
+function checkShowSidebar() {
+    simulatorMobileStore.showMobileView = window.innerWidth < simulatorMobileStore.minWidthToShowMobile ? true : false
+}
 </script>

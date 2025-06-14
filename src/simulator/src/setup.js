@@ -1,20 +1,15 @@
 /* eslint-disable import/no-cycle */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable guard-for-in */
-
-import { Tooltip } from 'bootstrap'
-import metadata from './metadata.json'
 import { generateId, showMessage } from './utils'
-import backgroundArea from './backgroundArea'
+import { backgroundArea } from './backgroundArea'
 import plotArea from './plotArea'
-import simulationArea from './simulationArea'
+import { simulationArea } from './simulationArea'
 import { dots } from './canvasApi'
 import { update, updateSimulationSet, updateCanvasSet } from './engine'
 import { setupUI } from './ux'
 import startMainListeners from './listeners'
-// import startEmbedListeners from './embedListeners'
-import './embed'
-import { newCircuit, scopeList } from './circuit'
+import { newCircuit } from './circuit'
 import load from './data/load'
 import save from './data/save'
 import { showTourGuide } from './tutorials'
@@ -26,7 +21,6 @@ import 'codemirror/addon/edit/closebrackets'
 import 'codemirror/addon/hint/anyword-hint'
 import 'codemirror/addon/hint/show-hint'
 import { setupCodeMirrorEnvironment } from './Verilog2CV'
-// import { keyBinder } from '#/components/DialogBox/CustomShortcut.vue'
 import '../vendor/jquery-ui.min.css'
 import '../vendor/jquery-ui.min'
 import { confirmSingleOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
@@ -39,7 +33,6 @@ import { getToken } from '#/pages/simulatorHandler.vue'
  * @category setup
  */
 export function resetup() {
-    console.log('hello from re setup')
     DPR = window.devicePixelRatio || 1
     if (lightMode) {
         DPR = 1
@@ -48,7 +41,7 @@ export function resetup() {
     if (!embed) {
         height =
             (document.body.clientHeight -
-                document.getElementById('toolbar').clientHeight) *
+                document.getElementById('toolbar')?.clientHeight) *
             DPR
     } else {
         height = document.getElementById('simulation').clientHeight * DPR
@@ -96,30 +89,6 @@ function setupEnvironment() {
     window.data = {}
     resetup()
     setupCodeMirrorEnvironment()
-}
-
-/**
- * It initializes some useful array which are helpful
- * while simulating, saving and loading project.
- * It also draws icons in the sidebar
- * @category setup
- */
-function setupElementLists() {
-    // console.log('hello from elements list panel setup')
-    // $('#menu').empty()
-
-    window.circuitElementList = metadata.circuitElementList
-    window.annotationList = metadata.annotationList
-    window.inputList = metadata.inputList
-    window.subCircuitInputList = metadata.subCircuitInputList
-    window.moduleList = [...circuitElementList, ...annotationList]
-    window.updateOrder = [
-        'wires',
-        ...circuitElementList,
-        'nodes',
-        ...annotationList,
-    ] // Order of update
-    window.renderOrder = [...moduleList.slice().reverse(), 'wires', 'allNodes'] // Order of render
 }
 
 /**
@@ -199,9 +168,6 @@ function showTour() {
  * @category setup
  */
 export function setup() {
-    // let embed = false
-    // const startListeners = embed ? startEmbedListeners : startMainListeners
-    setupElementLists()
     setupEnvironment()
     if (!embed) {
         setupUI()

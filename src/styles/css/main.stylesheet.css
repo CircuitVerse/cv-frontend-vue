@@ -661,14 +661,6 @@ div.icon img {
     right: 10px;
 }
 
-.layoutElementPanel {
-    width: 220px;
-    font: inherit;
-    display: none;
-    top: 90px;
-    left: 10px;
-}
-
 .timing-diagram-panel {
     border-radius: 5px;
     z-index: 70;
@@ -799,10 +791,6 @@ div.icon img {
     right: 0px;
     text-align: left;
     width: 200px;
-}
-
-.testbench-runall-label {
-    display: none;
 }
 
 .tb-dialog-button {
@@ -1390,6 +1378,10 @@ input:checked + .slider:before {
         text-align: center;
         padding-top: 20px;
     }
+
+    #moduleProperty-inner {
+        padding: 1rem;
+    }
 }
 
 /*! download dialog styling end here */
@@ -1517,12 +1509,14 @@ input:checked + .slider:before {
 #miniMap {
     position: fixed;
     z-index: 3;
-    bottom: 20px;
-    right: 40px;
+    bottom: -6rem;
+    right: 0.5rem;
     overflow-y: scroll;
     opacity: 0.5;
     overflow: hidden;
     border: none;
+    height: 15rem;
+    width: 18rem;
 }
 
 .disable::after {
@@ -1532,26 +1526,6 @@ input:checked + .slider:before {
     width: 100%;
     cursor: not-allowed;
     left: 0;
-}
-
-#bitconverterprompt {
-    text-align: center;
-    font: inherit;
-    border: none;
-    margin-top: 5px;
-    padding: 0;
-}
-
-#bitconverterprompt input {
-    background: transparent;
-    border: none;
-    outline: none;
-    text-align: center;
-    font: inherit;
-}
-
-#bitconverterprompt input:focus {
-    border: none;
 }
 
 .ui-dialog .ui-dialog-buttonpane button {
@@ -1784,9 +1758,17 @@ canvas {
     width: 800px;
 }
 
+@media (max-width: 991px) {
+    #plot {
+        width: 100%;
+    }
+}
+
 .timing-diagram-toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
     padding-left: 4px;
-    padding: 2px;
     cursor: default;
 }
 
@@ -1876,7 +1858,7 @@ canvas {
     margin-bottom: 0.5rem;
 }
 
-/* 
+/*
 .ProseMirror ul {
     list-style-type: disc;
 }

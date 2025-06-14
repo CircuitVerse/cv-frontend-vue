@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { correctWidth, lineTo, moveTo, fillText2 } from '../canvasApi'
 import { colors } from '../themer/themer'
 
@@ -30,9 +30,6 @@ export default class Splitter extends CircuitElement {
         bitWidthSplit = undefined
     ) {
         super(x, y, scope, dir, bitWidth)
-        /* this is done in this.baseSetup() now
-        this.scope['Splitter'].push(this);
-        */
         this.rectangleObject = false
 
         this.bitWidthSplit =
@@ -169,9 +166,6 @@ export default class Splitter extends CircuitElement {
                 this.inp1.value = n >>> 0
                 simulationArea.simulationQueue.add(this.inp1)
             }
-            // else if (this.inp1.value !== n) {
-            //     console.log("CONTENTION");
-            // }
         }
         this.prevInpValue = this.inp1.value
     }
@@ -186,57 +180,14 @@ export default class Splitter extends CircuitElement {
 
     /**
      * @memberof Splitter
-     * fn to process verilog of the element
-     * @return {JSON}
-     */
-    processVerilog() {
-        // console.log(this.inp1.verilogLabel +":"+ this.outputs[0].verilogLabel);
-        if (
-            this.inp1.verilogLabel !== '' &&
-            this.outputs[0].verilogLabel === ''
-        ) {
-            let bitCount = 0
-            for (let i = 0; i < this.splitCount; i++) {
-                // let bitSplitValue = extractBits(this.inp1.value, bitCount, bitCount + this.bitWidthSplit[i] - 1);
-                if (this.bitWidthSplit[i] > 1) {
-                    const label = `${this.inp1.verilogLabel}[ ${
-                        bitCount + this.bitWidthSplit[i] - 1
-                    }:${bitCount}]`
-                } else {
-                    const label = `${this.inp1.verilogLabel}[${bitCount}]`
-                }
-                if (this.outputs[i].verilogLabel !== label) {
-                    this.outputs[i].verilogLabel = label
-                    this.scope.stack.push(this.outputs[i])
-                }
-                bitCount += this.bitWidthSplit[i]
-            }
-        } else if (
-            this.inp1.verilogLabel === '' &&
-            this.outputs[0].verilogLabel !== ''
-        ) {
-            const label = `{${this.outputs
-                .map((x) => x.verilogLabel)
-                .join(',')}}`
-            // console.log("HIT",label)
-            if (this.inp1.verilogLabel !== label) {
-                this.inp1.verilogLabel = label
-                this.scope.stack.push(this.inp1)
-            }
-        }
-    }
-
-    /**
-     * @memberof Splitter
      * function to draw element
      */
     customDraw() {
         var ctx = simulationArea.context
-        //
         ctx.strokeStyle = [colors['splitter'], 'brown'][
             ((this.hover && !simulationArea.shiftDown) ||
                 simulationArea.lastSelected === this ||
-                simulationArea.multipleObjectSelections.contains(this)) + 0
+                simulationArea.multipleObjectSelections.includes(this)) + 0
         ]
         ctx.lineWidth = correctWidth(3)
         const xx = this.x
@@ -283,13 +234,18 @@ export default class Splitter extends CircuitElement {
         ctx.fill()
     }
 
+    /**
+     * @memberof Splitter
+     * fn to process verilog of the element
+     * @return {JSON}
+     */
     processVerilog() {
         // Combiner
         if (this.inp1.verilogLabel == '') {
             this.isSplitter = false
             this.inp1.verilogLabel = this.verilogLabel + '_cmb'
             if (
-                !this.scope.verilogWireList[this.bitWidth].contains(
+                !this.scope.verilogWireList[this.bitWidth].includes(
                     this.inp1.verilogLabel
                 )
             )

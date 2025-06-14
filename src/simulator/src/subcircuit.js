@@ -1,7 +1,7 @@
 /* eslint-disable import/no-cycle */
 import Scope, { scopeList, switchCircuit } from './circuit'
 import CircuitElement from './circuitElement'
-import simulationArea from './simulationArea'
+import { simulationArea } from './simulationArea'
 import { scheduleBackup, checkIfBackup } from './data/backupCircuit'
 import {
     scheduleUpdate,
@@ -20,6 +20,8 @@ import { layoutModeGet } from './layoutMode'
 import { verilogModeGet } from './Verilog2CV'
 import { sanitizeLabel } from './verilogHelpers'
 import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
+import { circuitElementList, subCircuitInputList } from './metadata'
+
 /**
  * Function to load a subcicuit
  * @category subcircuit
@@ -34,57 +36,12 @@ export function loadSubCircuit(savedData, scope) {
  * @category subcircuit
  */
 export function createSubCircuitPrompt(scope = globalScope) {
-    console.log('Hello')
     if (verilogModeGet() || layoutModeGet()) {
         showError('Subcircuit cannot be inserted in this mode')
         return
     }
     const simulatorStore = SimulatorStore()
     simulatorStore.dialogBox.insertsubcircuit_dialog = true
-    /*
-    $('#insertSubcircuitDialog').empty()
-    let flag = true
-    for (id in scopeList) {
-        if (
-            !scopeList[id].checkDependency(scope.id) &&
-            scopeList[id].isVisible()
-        ) {
-            flag = false
-            $('#insertSubcircuitDialog').append(
-                `<label class="option custom-radio inline"><input type="radio" name="subCircuitId" value="${id}" />${scopeList[id].name}<span></span></label>`
-            )
-        }
-    }
-    if (flag)
-        $('#insertSubcircuitDialog').append(
-            "<p>Looks like there are no other circuits which doesn't have this circuit as a dependency. Create a new one!</p>"
-        )
-    $('#insertSubcircuitDialog').dialog({
-        resizable: false,
-        maxHeight: 800,
-        width: 450,
-        maxWidth: 800,
-        minWidth: 250,
-        buttons: !flag
-            ? [
-                  {
-                      text: 'Insert SubCircuit',
-                      click() {
-                          if (!$('input[name=subCircuitId]:checked').val())
-                              return
-                          simulationArea.lastSelected = new SubCircuit(
-                              undefined,
-                              undefined,
-                              globalScope,
-                              $('input[name=subCircuitId]:checked').val()
-                          )
-                          $(this).dialog('close')
-                      },
-                  },
-              ]
-            : [],
-    })
-    */
 }
 
 /**
@@ -208,8 +165,8 @@ export default class SubCircuit extends CircuitElement {
                 this.downDimensionY = subcircuitScope.layout.height
             }
 
-            this.nodeList.extend(this.inputNodes)
-            this.nodeList.extend(this.outputNodes)
+            this.nodeList.push(...this.inputNodes)
+            this.nodeList.push(...this.outputNodes)
         } else {
             this.version = '2.0'
         }
@@ -298,14 +255,11 @@ export default class SubCircuit extends CircuitElement {
 
     // Needs to be deprecated, removed
     reBuild() {
-        // new SubCircuit(x = this.x, y = this.y, scope = this.scope, this.id);
-        // this.scope.backups = []; // Because all previous states are invalid now
-        // this.delete();
-        // showMessage('Subcircuit: ' + subcircuitScope.name + ' has been reloaded.');
     }
 
     /**
-     * rebuilds the subcircuit if any change to localscope is made
+     * If the circuit referenced by localscope is changed, then the localscope
+     * needs to be updated. This function does that.
      */
     reBuildCircuit() {
         this.data = JSON.parse(scheduleBackup(scopeList[this.id]))
@@ -366,7 +320,7 @@ export default class SubCircuit extends CircuitElement {
             } else {
                 this.scope.backups = []
                 this.inputNodes[i].delete()
-                this.nodeList.clean(this.inputNodes[i])
+                this.nodeList = this.nodeList.filter(x => x !== this.inputNodes[i])
             }
         }
 
@@ -382,7 +336,7 @@ export default class SubCircuit extends CircuitElement {
                 } else {
                     this.scope.backups = []
                     temp_map_inp[id][1].delete()
-                    this.nodeList.clean(temp_map_inp[id][1])
+                    this.nodeList = this.nodeList.filter(x => x !== temp_map_inp[id][1])
                     temp_map_inp[id][1] = new Node(
                         temp_map_inp[id][0].layoutProperties.x,
                         temp_map_inp[id][0].layoutProperties.y,
@@ -427,7 +381,7 @@ export default class SubCircuit extends CircuitElement {
                     this.outputNodes[i]
             } else {
                 this.outputNodes[i].delete()
-                this.nodeList.clean(this.outputNodes[i])
+                this.nodeList = this.nodeList.filter(x => x !== this.outputNodes[i])
             }
         }
 
@@ -442,7 +396,7 @@ export default class SubCircuit extends CircuitElement {
                     temp_map_out[id][1].bitWidth = temp_map_out[id][0].bitWidth
                 } else {
                     temp_map_out[id][1].delete()
-                    this.nodeList.clean(temp_map_out[id][1])
+                    this.nodeList = this.nodeList.filter(x => x !== temp_map_out[id][1])
                     temp_map_out[id][1] = new Node(
                         temp_map_out[id][0].layoutProperties.x,
                         temp_map_out[id][0].layoutProperties.y,
@@ -480,12 +434,9 @@ export default class SubCircuit extends CircuitElement {
             this.reBuildCircuit()
         }
 
-        // Should this be done here or only when this.reBuildCircuit() is called?
-        {
-            this.localScope.reset()
-            updateSimulationSet(true)
-            forceResetNodesSet(true)
-        }
+        this.localScope.reset()
+        updateSimulationSet(true)
+        forceResetNodesSet(true)
 
         this.makeConnections()
     }
@@ -659,7 +610,7 @@ export default class SubCircuit extends CircuitElement {
             if (
                 (this.hover && !simulationArea.shiftDown) ||
                 simulationArea.lastSelected === this ||
-                simulationArea.multipleObjectSelections.contains(this)
+                simulationArea.multipleObjectSelections.includes(this)
             )
                 ctx.fillStyle = colors['hover_select']
         }
@@ -689,7 +640,7 @@ export default class SubCircuit extends CircuitElement {
                 )
             }
         } else {
-            console.log('Unknown Version: ', this.version)
+            console.error('Unknown Version: ', this.version)
         }
 
         for (var i = 0; i < subcircuitScope.Input.length; i++) {
