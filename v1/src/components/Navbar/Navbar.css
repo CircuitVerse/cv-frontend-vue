@@ -1,4 +1,4 @@
-@import url('/src/styles/color_theme.scss');
+@import url('/v1/src/styles/color_theme.scss');
 
 .navbar {
     background-color: var(--white);
