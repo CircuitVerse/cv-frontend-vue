@@ -10,6 +10,9 @@ import { layoutModeGet } from './layoutMode'
 import plotArea from './plotArea'
 import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
 import { useActions } from '#/store/SimulatorStore/actions'
+import { writeTextFile } from '@tauri-apps/plugin-fs';
+import { join, downloadDir } from '@tauri-apps/api/path';
+import { isTauri } from '@tauri-apps/api/core'
 
 window.globalScope = undefined
 window.lightMode = false // To be deprecated
@@ -117,7 +120,16 @@ export function gateGenerateVerilog(gate, invert = false) {
 }
 
 // Helper function to download text
-export function download(filename: string, text: string | number | boolean) {
+export function downloadFile(filename: string, text: string | number | boolean | JSON) {
+    if (isTauri()) {
+        return downloadFileDesktop(filename, text);
+    } else {
+        return downloadFileWeb(filename, text);
+    }
+}
+
+// For Web Application
+export function downloadFileWeb(filename: string, text: string | number | boolean) {
     const pom = document.createElement('a')
     pom.setAttribute(
         'href',
@@ -132,6 +144,18 @@ export function download(filename: string, text: string | number | boolean) {
     } else {
         pom.click()
     }
+}
+
+// For Desktop Application
+export async function downloadFileDesktop(filename: string, text: string | number | boolean | JSON) {
+    const downloadsDirectory = await downloadDir();
+    let path = filename;
+
+    if (!filename.startsWith('/')) {
+        path = await join(downloadsDirectory, filename);
+    }
+
+    await writeTextFile(path, text.toString());
 }
 
 // Helper function to open a new tab
@@ -225,6 +249,15 @@ export const convertors = {
     dec2bcd: (x: number) => parseInt(x.toString(10), 16).toString(2),
 }
 
+export function setBaseValues(x) {
+    if (isNaN(x)) return;
+    $("#binaryInput").val(convertors.dec2bin(x));
+    $("#bcdInput").val(convertors.dec2bcd(x));
+    $("#octalInput").val(convertors.dec2octal(x));
+    $("#hexInput").val(convertors.dec2hex(x));
+    $("#decimalInput").val(x);
+}
+
 export function parseNumber(num: string | number) {
     if(typeof num === 'number') return num;
     if (num.slice(0, 2).toLocaleLowerCase() == '0b')
@@ -233,6 +266,51 @@ export function parseNumber(num: string | number) {
         return parseInt(num.slice(2), 16)
     if (num.slice(0, 1).toLocaleLowerCase() == '0') return parseInt(num, 8)
     return parseInt(num)
+}
+
+export function setupBitConvertor() {
+    $("#decimalInput").on('keyup', function () {
+        var x = parseInt($("#decimalInput").val(), 10);
+        setBaseValues(x);
+    })
+
+    $("#binaryInput").on('keyup', function () {
+        var inp = $("#binaryInput").val();
+        var x;
+        if (inp.slice(0, 2) == '0b')
+            x = parseInt(inp.slice(2), 2);
+        else
+            x = parseInt(inp, 2);
+        setBaseValues(x);
+    })
+    $("#bcdInput").on('keyup', function () {
+        var input = $("#bcdInput").val();
+        var num = 0;
+        while (input.length % 4 !== 0){
+            input = "0" + input;
+        }
+        if(input !== 0){
+            var i = 0;
+            while (i < input.length / 4){
+                if(parseInt(input.slice((4 * i), 4 * (i + 1)), 2) < 10)
+                    num = num * 10 + parseInt(input.slice((4 * i), 4 * (i + 1)), 2);
+                else
+                    return setBaseValues(NaN);
+                i++;
+            }
+        }
+        return setBaseValues(x);
+    })
+
+    $("#hexInput").on('keyup', function () {
+        var x = parseInt($("#hexInput").val(), 16);
+        setBaseValues(x);
+    })
+
+    $("#octalInput").on('keyup', function () {
+        var x = parseInt($("#octalInput").val(), 8);
+        setBaseValues(x);
+    })
 }
 
 export function promptFile(contentType: string, multiple: boolean) {

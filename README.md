@@ -8,7 +8,7 @@
 ## Community
 We would love to hear from you! We communicate on Slack:
 
-[![Slack](https://img.shields.io/badge/chat-on_slack-purple.svg?style=for-the-badge&logo=slack)](https://join.slack.com/t/circuitverse-team/shared_invite/zt-p6bgler9-~8vWvsKmL9lZeYg4pP9hwQ)
+[![Slack](https://img.shields.io/badge/chat-on_slack-purple.svg?style=for-the-badge&logo=slack)](https://circuitverse.org/slack)
 
 ## Installation
 To set up the project on your local machine, follow these steps:
@@ -47,7 +47,7 @@ To access the Vue Simulator from the [CircuitVerse main repo](https://github.com
 
 ### Accessing Vue Simulator
   1. Start the CircuitVerse Main Repo dev server.
-  2. go to the `/vuesimulator` path in the dev server.
+  2. go to the `/simulatorvue` path in the dev server.
   3. You would be accessing the Vue Simulator.
 
 ### Setting Vue Simulator as Default
