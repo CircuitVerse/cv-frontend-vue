@@ -1,5 +1,5 @@
 <template>
-    <div id="layoutDialog" class="draggable-panel draggable-panel-css">
+    <div id="layoutDialog" ref="layoutDialogRef" class="draggable-panel draggable-panel-css">
         <PanelHeader :header-title="$t('simulator.panel_header.layout')" />
         <div id="layout-body" class="layout-body panel-body">
             <div class="">
@@ -84,7 +84,7 @@
                 <label class="switch">
                     <input
                         id="toggleLayoutTitle"
-                        v-model="titleEnable"
+                        v-model="propertiesPanelStore.titleEnable"
                         type="checkbox"
                     />
                     <span class="slider"></span>
@@ -112,24 +112,25 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
-import { tempBuffer, layoutFunctions } from '#/simulator/src/layoutMode'
-import { scheduleUpdate } from '#/simulator/src/engine'
+import { onMounted, watch } from 'vue'
 import PanelHeader from '#/components/Panels/Shared/PanelHeader.vue'
+import { layoutFunction } from '../PropertiesPanel'
+import { useLayoutStore } from '#/store/layoutStore'
+import { usePropertiesPanelStore } from '#/store/propertiesPanelStore'
 
-const titleEnable = ref(tempBuffer.layout.titleEnabled)
+const layoutStore = useLayoutStore()
+const propertiesPanelStore = usePropertiesPanelStore()
+
+onMounted(() => {
+    layoutStore.layoutDialogRef = propertiesPanelStore.layoutDialogRef;
+})
 
 watch(
-    () => titleEnable.value,
+    () => propertiesPanelStore.titleEnable,
     () => {
         layoutFunction('toggleLayoutTitle')
     }
 )
-
-function layoutFunction(func: string) {
-    layoutFunctions[func]()
-    scheduleUpdate()
-}
 </script>
 
 <style scoped>

@@ -1,22 +1,23 @@
 import { scopeList } from '../circuit'
 import { resetup } from '../setup'
-import { update } from '../engine'
+import { update, updateSubcircuitSet } from '../engine'
 import { stripTags, showMessage } from '../utils'
 import { backUp } from './backupCircuit'
-import simulationArea from '../simulationArea'
-import backgroundArea from '../backgroundArea'
+import { simulationArea } from '../simulationArea'
+import { backgroundArea } from '../backgroundArea'
 import { findDimensions } from '../canvasApi'
 import { projectSavedSet } from './project'
 import { colors } from '../themer/themer'
 import { layoutModeGet, toggleLayoutMode } from '../layoutMode'
 import { verilogModeGet } from '../Verilog2CV'
 import domtoimage from 'dom-to-image'
-import '../../vendor/canvas2svg'
+import canvasToSvg from "canvas-to-svg"
 import { useProjectStore } from '#/store/projectStore'
 import { provideProjectName } from '#/components/helpers/promptComponent/PromptComponent.vue'
 import { UpdateProjectDetail } from '#/components/helpers/createNewProject/UpdateProjectDetail.vue'
 import { confirmOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
 import { getToken } from '#/pages/simulatorHandler.vue'
+import { renderOrder } from '../metadata'
 
 // var projectName = undefined
 
@@ -68,7 +69,7 @@ function downloadAsImg(name, imgType) {
 export function getTabsOrder() {
     var tabs = document.getElementById('tabsBar').firstChild.children
     var order = []
-    for (let i = 0; i < tabs.length; i++) {
+    for (let i = 0; i < tabs?.length; i++) {
         order.push(tabs[i].id)
     }
     return order
@@ -98,7 +99,6 @@ export async function generateSaveData(name, setName = true) {
     data.timePeriod = simulationArea.timePeriod
     data.clockEnabled = simulationArea.clockEnabled
     data.projectId = projectId
-    data.simulatorVersion = "v1"
     data.focussedCircuit = globalScope.id
     data.orderedTabs = getTabsOrder()
 
@@ -122,6 +122,13 @@ export async function generateSaveData(name, setName = true) {
         }
 
         completed[id] = true
+
+        // This update is very important.
+        // if a scope's input/output changes and the user saves without going
+        // to circuits where this circuit is used as a subcircuit. It will
+        // break the code since the Subcircuit will have different number of
+        // in/out nodes compared to the localscope input/output objects.
+        updateSubcircuitSet(true);
         update(scopeList[id], true) // For any pending integrity checks on subcircuits
         data.scopes.push(backUp(scopeList[id]))
     }
@@ -186,7 +193,7 @@ export function generateImage(
 
     // If SVG, create SVG context - using canvas2svg here
     if (imgType === 'svg') {
-        simulationArea.context = new C2S(width, height)
+        simulationArea.context = new canvasToSvg(width, height)
         resolution = 1
     } else if (imgType !== 'png') {
         transparent = false
@@ -237,7 +244,7 @@ export function generateImage(
         simulationArea.context.fill()
     }
 
-    // Draw circuits, why is it updateOrder and not renderOrder?
+    // Draw circuits
     for (let i = 0; i < renderOrder.length; i++) {
         for (let j = 0; j < scope[renderOrder[i]].length; j++) {
             scope[renderOrder[i]][j].draw()
@@ -309,16 +316,16 @@ async function generateImageForOnline() {
     if (verilogModeGet()) {
         var node = document.getElementsByClassName('CodeMirror')[0]
         // var node = document.getElementsByClassName('CodeMirror')[0];
-        var prevHeight = $(node).css('height')
-        var prevWidth = $(node).css('width')
+        var prevHeight = window.getComputedStyle(node).height
+        var prevWidth = window.getComputedStyle(node).width
         var baseWidth = 500
         var baseHeight = Math.round(baseWidth / ratio)
-        $(node).css('height', baseHeight)
-        $(node).css('width', baseWidth)
+        node.style.height = baseHeight + 'px'
+        node.style.width = baseWidth + 'px'
 
         var data = await domtoimage.toJpeg(node)
-        $(node).css('width', prevWidth)
-        $(node).css('height', prevHeight)
+        node.style.width = prevWidth
+        node.style.height = prevHeight
         data = await crop(data, baseWidth, baseHeight)
         return data
     }
@@ -359,14 +366,16 @@ export default async function save() {
 
     const data = await generateSaveData()
     if (data instanceof Error) return
-    $('.loadingIcon').fadeIn()
+    let loadingIcon = document.querySelector('.loadingIcon');
+    loadingIcon.style.transition = 'opacity 0.5s linear';
+    loadingIcon.style.opacity = '1';
 
     const projectName = getProjectName()
     var imageData = await generateImageForOnline()
 
     const headers = {
         'Content-Type': 'application/json',
-        'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content'),
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
         Authorization: `Token ${getToken('cvt')}`,
     }
 
@@ -380,7 +389,11 @@ export default async function save() {
             )
         )
             window.location.href = '/users/sign_in'
-        else $('.loadingIcon').fadeOut()
+        else {
+            let loadingIcon = document.querySelector('.loadingIcon')
+            loadingIcon.style.transition = 'opacity 0.2s';
+            loadingIcon.style.opacity = '0';
+        }
         // eslint-disable-next-line camelcase
     } else if ([0, undefined, null, '', '0'].includes(window.logixProjectId)) {
         // Create new project - this part needs to be improved and optimised
@@ -433,7 +446,11 @@ export default async function save() {
                     showMessage(
                         `We have Created a new project: ${projectName} in our servers.`
                     )
-                    $('.loadingIcon').fadeOut()
+
+                    let loadingIcon = document.querySelector('.loadingIcon')
+                    loadingIcon.style.transition = 'opacity 0.2s';
+                    loadingIcon.style.opacity = '0';
+
                     localStorage.removeItem('recover')
                     const responseJson = response.json()
                     responseJson.then((data) => {
@@ -503,7 +520,9 @@ export default async function save() {
                         "There was an error, we couldn't save to our servers"
                     )
                 }
-                $('.loadingIcon').fadeOut()
+                let loadingIcon = document.querySelector('.loadingIcon')
+                loadingIcon.style.transition = 'opacity 0.2s';
+                loadingIcon.style.opacity = '0';
             })
             .catch((error) => {
                 console.error('Error:', error)

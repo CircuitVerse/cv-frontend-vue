@@ -1,8 +1,7 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
-import { correctWidth, lineTo, moveTo, arc } from '../canvasApi'
-import { changeInputSize } from '../modules'
+import { simulationArea } from '../simulationArea'
+import { correctWidth, lineTo, moveTo } from '../canvasApi'
 /**
  * @class
  * TriState
@@ -19,9 +18,6 @@ import { colors } from '../themer/themer'
 export default class TriState extends CircuitElement {
     constructor(x, y, scope = globalScope, dir = 'RIGHT', bitWidth = 1) {
         super(x, y, scope, dir, bitWidth)
-        /* this is done in this.baseSetup() now
-        this.scope['TriState'].push(this);
-        */
         this.rectangleObject = false
         this.setDimensions(15, 15)
 
@@ -29,9 +25,6 @@ export default class TriState extends CircuitElement {
         this.output1 = new Node(20, 0, 1, this)
         this.state = new Node(0, 0, 0, this, 1, 'Enable')
     }
-
-    // TriState.prototype.propagationDelay=10000;
-
     /**
      * @memberof TriState
      * fn to create save Json Data of object
@@ -74,15 +67,14 @@ export default class TriState extends CircuitElement {
                 this.output1.value = this.inp1.value // >>>0)<<(32-this.bitWidth))>>>(32-this.bitWidth);
                 simulationArea.simulationQueue.add(this.output1)
             }
-            simulationArea.contentionPending.clean(this)
         } else if (
             this.output1.value !== undefined &&
-            !simulationArea.contentionPending.contains(this)
+            !simulationArea.contentionPending.has(this.output1)
         ) {
             this.output1.value = undefined
             simulationArea.simulationQueue.add(this.output1)
         }
-        simulationArea.contentionPending.clean(this)
+        simulationArea.contentionPending.removeAllContentionsForNode(this.output1);
     }
 
     /**
@@ -104,7 +96,7 @@ export default class TriState extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         )
             ctx.fillStyle = colors['hover_select']
         ctx.fill()

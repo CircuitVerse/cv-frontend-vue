@@ -1,8 +1,9 @@
 /* eslint-disable no-param-reassign */
-import backgroundArea from './backgroundArea'
-import simulationArea from './simulationArea'
+import { backgroundArea } from './backgroundArea'
+import { simulationArea } from './simulationArea'
 import miniMapArea, { removeMiniMap, updatelastMinimapShown } from './minimap'
 import { colors } from './themer/themer'
+import { updateOrder } from './metadata'
 
 var unit = 10
 
@@ -107,9 +108,10 @@ export function changeScale(delta, xx, yy, method = 1) {
     if (!embed && !lightMode) {
         findDimensions(globalScope)
         miniMapArea.setup()
-        $('#miniMap').show()
+        let miniMap = document.querySelector('#miniMap');
+        miniMap.style.display = 'block';
         updatelastMinimapShown()
-        $('#miniMap').show()
+        miniMap.style.display = 'block';
         setTimeout(removeMiniMap, 2000)
     }
 }
@@ -240,7 +242,10 @@ export function moveTo(ctx, x1, y1, xx, yy, dir, bypass = false) {
     xx *= globalScope.scale
     yy *= globalScope.scale
     if (bypass) {
-        ctx.moveTo(xx + globalScope.ox + newX, yy + globalScope.oy + newY)
+        ctx.moveTo(
+            Math.round(xx + globalScope.ox + newX),
+            Math.round(yy + globalScope.oy + newY)
+        )
     } else {
         ctx.moveTo(
             Math.round(xx + globalScope.ox + newX - correction) + correction,
@@ -437,9 +442,9 @@ export function drawLine(ctx, x1, y1, x2, y2, color, width) {
 
 // Checks if string color is a valid color using a hack
 export function validColor(color) {
-    var $div = $('<div>')
-    $div.css('border', `1px solid ${color}`)
-    return $div.css('border-color') !== ''
+    let newDiv = document.createElement('div')
+    newDiv.style.border = `1px solid ${color}`
+    return newDiv.style.borderColor !== ''
 }
 
 // Helper function to color "RED" to RGBA

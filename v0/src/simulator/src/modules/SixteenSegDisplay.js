@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import {
     colorToRGBA,
     correctWidth,
@@ -10,7 +10,6 @@ import {
     rect2,
     validColor,
 } from '../canvasApi'
-import { changeInputSize } from '../modules'
 /**
  * @class
  * SixteenSegDisplay
@@ -23,9 +22,6 @@ import { changeInputSize } from '../modules'
 export default class SixteenSegDisplay extends CircuitElement {
     constructor(x, y, scope = globalScope, color = 'Red') {
         super(x, y, scope, 'RIGHT', 16)
-        /* this is done in this.baseSetup() now
-        this.scope['SixteenSegDisplay'].push(this);
-        */
         this.fixedBitWidth = true
         this.directionFixed = true
         this.setDimensions(30, 50)
@@ -435,7 +431,7 @@ export default class SixteenSegDisplay extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected == this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         ) {
             ctx.fillStyle = 'rgba(255, 255, 32,0.6)'
             ctx.fill()

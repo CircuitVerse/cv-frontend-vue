@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode, dec2bin } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { correctWidth, rect, fillText } from '../canvasApi'
 /**
  * @class
@@ -18,16 +18,12 @@ import { colors } from '../themer/themer'
 export default class LSB extends CircuitElement {
     constructor(x, y, scope = globalScope, dir = 'RIGHT', bitWidth = 1) {
         super(x, y, scope, dir, bitWidth)
-        /* this is done in this.baseSetup() now
-        this.scope['LSB'].push(this);
-        */
         this.leftDimensionX = 10
         this.rightDimensionX = 20
         this.setHeight(30)
         this.directionFixed = true
         this.bitWidth = bitWidth || parseInt(prompt('Enter bitWidth'), 10)
         this.rectangleObject = false
-        // this.inputSize = 1 << this.bitWidth;
         this.intputSize = this.bitWidth
 
         this.inp1 = new Node(-10, 0, 0, this, this.inputSize)
@@ -58,7 +54,6 @@ export default class LSB extends CircuitElement {
      * @param {number} bitWidth - new bitwidth
      */
     newBitWidth(bitWidth) {
-        // this.inputSize = 1 << bitWidth
         this.inputSize = bitWidth
         this.inp1.bitWidth = this.inputSize
         this.bitWidth = bitWidth
@@ -104,9 +99,9 @@ export default class LSB extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         )
-            ctx.fillStyle = colors['hover_select']
+        ctx.fillStyle = colors['hover_select']
         ctx.fill()
         ctx.stroke()
 
