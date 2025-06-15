@@ -205,56 +205,95 @@ function dragover(): void {
 
 .zoom-slider {
     color: white;
-    font-size: 20px;
-    padding-top: 0.2rem;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    font-weight: 500;
 }
 
-.zoom-slider-decrement {
-    position: relative;
-    padding-right: 4px;
-    bottom: 0.3rem;
-}
+.zoom-slider-decrement,
 .zoom-slider-increment {
-    position: relative;
-    padding-left: 4px;
-    bottom: 0.3rem;
+    background: none;
+    color: white;
+    border: none;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.zoom-slider-decrement:hover,
+.zoom-slider-increment:hover {
+    opacity: 1;
 }
 
 .custom-range {
-    width: 80px !important;
+    width: 100px !important;
+    margin: 0 4px;
+    height: 16px;
 }
+
 .custom-range::-moz-range-track {
-    height: 1px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.4);
+    border: none;
+    border-radius: 1px;
 }
 
 .custom-range::-moz-range-thumb {
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
     background-color: white;
     border: 0;
     border-radius: 50%;
     cursor: pointer;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
 }
+
 .custom-range:focus::-moz-range-thumb {
-    box-shadow: 0 0 0 1px #fff, 0 0 0 0.2rem rgba(75, 86, 99, 0.25);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+    outline: none;
 }
 
 input[type='range'] {
     -webkit-appearance: none;
+    background: transparent;
+    cursor: pointer;
+    outline: none;
 }
 
 input[type='range']::-webkit-slider-runnable-track {
-    height: 1px;
+    height: 2px;
+    background: white;
+    border-radius: 1px;
+    border: none;
 }
 
 input[type='range']::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
     background-color: white;
     border: 0;
     border-radius: 50%;
     cursor: pointer;
+    margin-top: -5px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.2s;
+}
+
+input[type='range']:focus::-webkit-slider-thumb {
+    outline: none;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
 }
 
 @media (max-width: 991px) {
