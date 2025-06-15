@@ -13,6 +13,7 @@
             (selectedOption, circuitItem, circuitNameVal) =>
                 dialogBoxConformation(selectedOption)
         "
+        ref="messageBoxRef"
     />
     <v-alert v-if="showAlert" :type="alertType" class="alertStyle">{{
         alertMessage
@@ -23,7 +24,7 @@
 import { stripTags } from '#/simulator/src/utils'
 import { useState } from '#/store/SimulatorStore/state'
 import messageBox from '@/MessageBox/messageBox.vue'
-import { ref } from '@vue/reactivity'
+import { ref, computed, nextTick } from 'vue'
 import { onMounted, onUpdated } from '@vue/runtime-core'
 
 /* imports from combinationalAnalysis.js */
@@ -40,9 +41,12 @@ import { findDimensions } from '#/simulator/src/canvasApi'
 import { confirmSingleOption } from '../helpers/confirmComponent/ConfirmComponent.vue'
 
 const SimulatorState = useState()
+const messageBoxRef = ref(null)
+
 onMounted(() => {
     SimulatorState.dialogBox.combinationalanalysis_dialog = false
 })
+
 const inputArr = ref([{}])
 const buttonArr = ref([{}])
 const showAlert = ref(false)
@@ -54,6 +58,21 @@ const outputListNames = ref([])
 const tableHeader = ref([])
 const tableBody = ref([])
 const output = ref([])
+
+// Reactive computed property for table data extraction
+const currentTableData = computed(() => {
+    if (!tableBody.value || tableBody.value.length === 0) {
+        return []
+    }
+    
+    const fw = inputArr.value[4]?.val === true ? 1 : 0
+    return tableBody.value.map((row, index) => ({
+        index,
+        inputs: row.slice(fw, fw + inputListNames.value.length),
+        outputs: row.slice(fw + inputListNames.value.length),
+        decimal: fw > 0 ? row[0] : index
+    }))
+})
 
 inputArr.value = [
     {
@@ -93,7 +112,7 @@ inputArr.value = [
     },
     {
         text: 'I need a decimal column.',
-        val: '',
+        val: false,
         placeholder: '',
         id: 'decimalColumnBox',
         style: '',
@@ -118,7 +137,7 @@ function clearData() {
     inputArr.value[0].val = ''
     inputArr.value[1].val = ''
     inputArr.value[3].val = ''
-    inputArr.value[4].val = ''
+    inputArr.value[4].val = false
     buttonArr.value = buttonArray
     outputListNamesInteger.value = []
     inputListNames.value = []
@@ -129,8 +148,6 @@ function clearData() {
 }
 
 function dialogBoxConformation(selectedOption, circuitItem) {
-    // SimulatorState.dialogBox.combinationalanalysis_dialog = false
-    // use the above value to show tables and later clear it all
     if (selectedOption == 'showLogicTable') {
         createLogicTable()
     }
@@ -186,25 +203,22 @@ function createLogicTable() {
         outputList.length > 0 &&
         booleanInputVariables.length == 0
     ) {
-        // $(this).dialog('close')
         SimulatorState.dialogBox.combinationalanalysis_dialog = false
-
         createBooleanPrompt(inputList, outputList, null)
     } else if (
         booleanInputVariables.length > 0 &&
         inputList.length == 0 &&
         outputList.length == 0
     ) {
-        // $(this).dialog('close')
         SimulatorState.dialogBox.combinationalanalysis_dialog = false
         output.value = []
         solveBooleanFunction(booleanInputVariables, booleanExpression)
-        if (output != null) {
+        if (output.value !== null && output.value.length > 0) {
             createBooleanPrompt(booleanInputVariables, booleanExpression)
         }
     } else if (
         (inputList.length == 0 || outputList.length == 0) &&
-        booleanInputVariables == 0
+        booleanInputVariables.length == 0
     ) {
         showAlert.value = true
         alertType.value = 'info'
@@ -229,24 +243,26 @@ function createBooleanPrompt(inputList, outputList, scope = globalScope) {
         inputList || prompt('Enter inputs separated by commas').split(',')
     outputListNames.value =
         outputList || prompt('Enter outputs separated by commas').split(',')
-    if (output.value == null) {
+    
+    if (output.value === null || output.value.length === 0) {
         for (var i = 0; i < outputListNames.value.length; i++) {
             outputListNamesInteger.value[i] = 7 * i + 13
         } // assigning an integer to the value, 7*i + 13 is random
     } else {
         outputListNamesInteger.value = [13]
     }
+    
     tableBody.value = []
     tableHeader.value = []
     let fw = 0
-    if (inputArr.value[4].val == true) {
+    if (inputArr.value[4].val === true) {
         fw = 1
         tableHeader.value.push('dec')
     }
     for (var i = 0; i < inputListNames.value.length; i++) {
         tableHeader.value.push(inputListNames.value[i])
     }
-    if (output.value == null) {
+    if (output.value === null || output.value.length === 0) {
         for (var i = 0; i < outputListNames.value.length; i++) {
             tableHeader.value.push(outputListNames.value[i])
         }
@@ -265,18 +281,18 @@ function createBooleanPrompt(inputList, outputList, scope = globalScope) {
             )
         }
     }
-    if (inputArr.value[4].val == true) {
+    if (inputArr.value[4].val === true) {
         for (var j = 0; j < 1 << inputListNames.value.length; j++) {
             tableBody.value[j][0] = j
         }
     }
     for (var j = 0; j < 1 << inputListNames.value.length; j++) {
         for (var i = 0; i < outputListNamesInteger.value.length; i++) {
-            if (output.value == null) {
+            if (output.value === null || output.value.length === 0) {
                 tableBody.value[j][inputListNames.value.length + fw + i] = 'x'
             }
         }
-        if (output.value != null) {
+        if (output.value !== null && output.value.length > 0) {
             tableBody.value[j][inputListNames.value.length + fw] =
                 output.value[j]
         }
@@ -295,36 +311,32 @@ function createBooleanPrompt(inputList, outputList, scope = globalScope) {
     ]
 }
 
-
+// Replaced jQuery DOM manipulation with Vue reactive data extraction
 const generateBooleanTableData = (outputListNames) => {
-  const data = {};
-
-  const table = document.querySelector('.content-table');
-  const rows = table?.querySelectorAll('tbody tr') || [];
-
-  const rowData = [...rows].slice(1).map((row, index) => {
-    const cells = row.cells;
-    const lastValue = cells[cells.length - 1]?.textContent.trim();
-    return { index, value: lastValue };
-  });
-
-  for (const outputName of outputListNames) {
-    data[outputName] = { x: [], 1: [], 0: [] };
-
-    rowData.forEach(({ index, value }) => {
-      if (value === '0') {
-        data[outputName]['0'].push(String(index));
-      } else if (value === '1') {
-        data[outputName]['1'].push(String(index));
-      } else {
-        data[outputName]['x'].push(String(index));
-      }
-    });
-  }
-
-  return data;
-};
-
+    const data = {}
+    
+    // Use reactive table data instead of DOM manipulation
+    const fw = inputArr.value[4]?.val === true ? 1 : 0
+    const outputStartIndex = fw + inputListNames.value.length
+    
+    for (const outputName of outputListNames) {
+        data[outputName] = { x: [], 1: [], 0: [] }
+        
+        tableBody.value.forEach((row, index) => {
+            const outputValue = row[outputStartIndex]?.toString().trim()
+            
+            if (outputValue === '0') {
+                data[outputName]['0'].push(String(index))
+            } else if (outputValue === '1') {
+                data[outputName]['1'].push(String(index))
+            } else {
+                data[outputName]['x'].push(String(index))
+            }
+        })
+    }
+    
+    return data
+}
 
 function drawCombinationalAnalysis(
     combinationalData,
@@ -562,13 +574,11 @@ function solveBooleanFunction(inputListNames, booleanExpression) {
             /[^ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01+'() ]/g
         ) != null
     ) {
-        // alert('One of the characters is not allowed.')
         confirmSingleOption('One of the characters is not allowed.')
         return
     }
 
     if (inputListNames.length > 8) {
-        // alert('You can only have 8 variables at a time.')
         confirmSingleOption('You can only have 8 variables at a time.')
         return
     }
@@ -664,7 +674,7 @@ function generateCircuit() {
             minimizedCircuit.push(temp.result)
         }
     }
-    if (output.value == null) {
+    if (output.value === null || output.value.length === 0) {
         drawCombinationalAnalysis(
             minimizedCircuit,
             inputListNames.value,
@@ -681,25 +691,55 @@ function generateCircuit() {
     }
 }
 
-function printBooleanTable() {
-    var sTable = $('.messageBox .v-card-text')[0].innerHTML
-
-    var style =
-        `<style>
+// Replaced jQuery DOM manipulation with Vue reactive approach
+async function printBooleanTable() {
+    // Wait for DOM to be updated
+    await nextTick()
+    
+    // Generate table HTML from reactive data instead of DOM manipulation
+    const generateTableHTML = () => {
+        let tableHTML = '<table class="content-table"><thead><tr>'
+        
+        // Generate header
+        tableHeader.value.forEach(header => {
+            tableHTML += `<th>${header}</th>`
+        })
+        tableHTML += '</tr></thead><tbody>'
+        
+        // Generate body
+        tableBody.value.forEach(row => {
+            tableHTML += '<tr>'
+            row.forEach(cell => {
+                tableHTML += `<td>${cell}</td>`
+            })
+            tableHTML += '</tr>'
+        })
+        tableHTML += '</tbody></table>'
+        
+        return tableHTML
+    }
+    
+    const sTable = generateTableHTML()
+    
+    const style = `<style>
         table {font: 40px Calibri;}
-        table, th, td {border: solid 1px #DDD;border-collapse: 0;}
-        tbody {padding: 2px 3px;text-align: center;} 
-        </style>`.replace(/\n/g, "")
-    var win = window.open('', '', 'height=700,width=700')
-    var htmlBody = `
-                       <html><head>\
-                       <title>Boolean Logic Table</title>\
-                       ${style}\
-                       </head>\
-                       <body>\
-                       <center>${sTable}</center>\
-                       </body></html>
-                     `
+        table, th, td {border: solid 1px #DDD;border-collapse: collapse;}
+        th, td {padding: 8px; text-align: center;}
+        thead {background-color: #f2f2f2;}
+    </style>`
+    
+    const win = window.open('', '', 'height=700,width=700')
+    const htmlBody = `
+        <html>
+            <head>
+                <title>Boolean Logic Table</title>
+                ${style}
+            </head>
+            <body>
+                <center>${sTable}</center>
+            </body>
+        </html>
+    `
     win.document.write(htmlBody)
     win.document.close()
     win.print()
@@ -709,15 +749,9 @@ function printBooleanTable() {
 <style scoped>
 .alertStyle {
     position: absolute;
-    /* top: 50%; */
     top: 100px;
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 10000;
 }
 </style>
-
-<!-- 
-    some errors due to output.value 
-    output.value == null not working
--->
