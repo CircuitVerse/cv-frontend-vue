@@ -310,7 +310,7 @@ export default class TB_Output extends CircuitElement {
     }
     static moduleVerilog(){
         return `
-module TB_Output(clk);
+module TB_Output();
         // this circuit element is used for testbench, avoid using this in Verilog Testing and simulation
 endmodule
         `

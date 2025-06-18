@@ -319,7 +319,7 @@ export default class TB_Input extends CircuitElement {
     }
     static moduleVerilog(){
         return `
-module TB_Input(clk);
+module TB_Input(input clk);
         // this circuit element is used for testbench, avoid using this in Verilog Testing and simulation
 endmodule
         `
