@@ -81,7 +81,7 @@ export default class ForceGate extends CircuitElement {
         ctx.fill()
     }
     static moduleVerilog() {
-        return`
+        return `
 module ForceGate(out,inp1,inp2);
     //NOTE: This will work only in simulation tools like EDA Playground and CircuitVerse but not in FPGA boards and other hardware
     parameter WIDTH = 1;
@@ -97,6 +97,7 @@ module ForceGate(out,inp1,inp2);
     end
 endmodule
         `
+    }
 }
 
 /**
