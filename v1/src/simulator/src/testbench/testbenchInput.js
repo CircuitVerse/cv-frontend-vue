@@ -317,6 +317,13 @@ export default class TB_Input extends CircuitElement {
 
         ctx.stroke()
     }
+    static moduleVerilog(){
+        return `
+module TB_Input(clk);
+        // this circuit element is used for testbench, avoid using this in Verilog Testing and simulation
+endmodule
+        `
+    }
 }
 
 TB_Input.prototype.tooltipText = 'Test Bench Input Selected'

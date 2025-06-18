@@ -308,6 +308,13 @@ export default class TB_Output extends CircuitElement {
             }
         }
     }
+    static moduleVerilog(){
+        return `
+module TB_Output(clk);
+        // this circuit element is used for testbench, avoid using this in Verilog Testing and simulation
+endmodule
+        `
+    }
 }
 
 TB_Output.prototype.tooltipText = 'Test Bench Output Selected'
