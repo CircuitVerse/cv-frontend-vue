@@ -219,7 +219,7 @@ module ALU(cout, out, a, b, ctr);
                 cout = 0;
             end
             3'b110: begin // a - b
-                out = a - b;
+                out = (a - b) & {WIDTH{1'b1}};  // Masked to avoid truncation failure
                 cout = 0;
             end
             3'b111: begin // a < b
