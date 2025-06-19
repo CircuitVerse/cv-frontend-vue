@@ -1,7 +1,6 @@
 <template>
     <div class="quick-btn" id='quick-btn-id' @ondragover="dragover">
         <div id="dragQPanel" class="panel-drag">
-            <!-- <DragSvgDots /> -->
             <div class="drag-dot-svg"></div>
         </div>
         <div>
@@ -100,17 +99,11 @@ function dragover(): void {
 </script>
 
 <style>
-/* @import url('./QuickButton.css'); */
-
 .panel-drag {
     cursor: move;
     opacity: 0.6;
-    /* display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
-  padding: 6px 0;
-  width: 1px; */
 }
+
 .quick-btn {
     background: var(--bg-navbar);
     border-top: 1.5px solid var(--qp-br-tl);
@@ -236,8 +229,8 @@ function dragover(): void {
     opacity: 1;
 }
 
-.custom-range {
-    width: 100px !important;
+.quick-btn .zoom-slider .custom-range {
+    width: 100px;
     margin: 0 4px;
     height: 16px;
 }
@@ -257,18 +250,17 @@ function dragover(): void {
     border-radius: 50%;
     cursor: pointer;
     box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.2s ease;
 }
 
-.custom-range:focus::-moz-range-thumb {
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
-    outline: none;
+.custom-range:focus-visible::-moz-range-thumb {
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.6);
 }
 
 input[type='range'] {
     -webkit-appearance: none;
     background: transparent;
     cursor: pointer;
-    outline: none;
 }
 
 input[type='range']::-webkit-slider-runnable-track {
@@ -288,12 +280,11 @@ input[type='range']::-webkit-slider-thumb {
     cursor: pointer;
     margin-top: -5px;
     box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.2s;
+    transition: box-shadow 0.2s ease;
 }
 
-input[type='range']:focus::-webkit-slider-thumb {
-    outline: none;
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+input[type='range']:focus-visible::-webkit-slider-thumb {
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.6);
 }
 
 @media (max-width: 991px) {
