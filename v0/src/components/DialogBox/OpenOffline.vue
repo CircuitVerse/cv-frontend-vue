@@ -27,6 +27,7 @@
                             type="radio"
                             name="projectId"
                             :value="projectId"
+                            v-model="selectedProjectId"
                         />
                         {{ projectName }}<span></span>
                         <i
@@ -92,6 +93,7 @@ import { onMounted, onUpdated, ref, toRaw } from '@vue/runtime-core'
 const SimulatorState = useState()
 const projectList = ref({})
 const targetVersion = ref('') 
+const selectedProjectId = ref('')
 let projectName = '' 
 onMounted(() => {
     SimulatorState.dialogBox.open_project_dialog = false
@@ -112,9 +114,8 @@ function deleteOfflineProject(id) {
 
 function openProjectOffline() {
     SimulatorState.dialogBox.open_project_dialog = false
-    let ele = $('input[name=projectId]:checked')
-    if (!ele.val()) return
-    const projectData = JSON.parse(localStorage.getItem(ele.val()))
+    if (!selectedProjectId.value) return
+    const projectData = JSON.parse(localStorage.getItem(selectedProjectId.value))
     const simulatorVersion = projectData.simulatorVersion
     projectName = projectData.name
     
@@ -130,7 +131,7 @@ function openProjectOffline() {
     } else {
         // For other cases, proceed normally
         load(projectData)
-        window.projectId = ele.val()
+        window.projectId = selectedProjectId.value
     }
 }
 
