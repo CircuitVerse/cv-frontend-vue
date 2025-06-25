@@ -210,39 +210,31 @@ export default class Wire {
 
     private alignNodesAlongYAxis(): boolean {
         return this.checkAndCreateNode(
-            this.node1.absY(), this.y1,
-            () => new Node(this.node1.absX(), this.y1, 2, this.scope.root),
-            this.node2.absY(), this.y2,
-            () => new Node(this.node2.absX(), this.y2, 2, this.scope.root)
+            { current: this.node1.absY(), expected: this.y1, createNode: () => new Node(this.node1.absX(), this.y1, 2, this.scope.root) },
+            { current: this.node2.absY(), expected: this.y2, createNode: () => new Node(this.node2.absX(), this.y2, 2, this.scope.root) }
         );
     }
 
     private alignNodesAlongXAxis(): boolean {
         return this.checkAndCreateNode(
-            this.node1.absX(), this.x1,
-            () => new Node(this.x1, this.node1.absY(), 2, this.scope.root),
-            this.node2.absX(), this.x2,
-            () => new Node(this.x2, this.node2.absY(), 2, this.scope.root)
+            { current: this.node1.absX(), expected: this.x1, createNode: () => new Node(this.x1, this.node1.absY(), 2, this.scope.root) },
+            { current: this.node2.absX(), expected: this.x2, createNode: () => new Node(this.x2, this.node2.absY(), 2, this.scope.root) }
         );
     }
 
     private checkAndCreateNode(
-        current1: number,
-        expected1: number,
-        createNode1: () => Node,
-        current2: number,
-        expected2: number,
-        createNode2: () => Node
+        point1: { current: number, expected: number, createNode: () => Node },
+        point2: { current: number, expected: number, createNode: () => Node }
     ): boolean {
-        if (current1 !== expected1) {
-            const newNode = createNode1();
+        if (point1.current !== point1.expected) {
+            const newNode = point1.createNode();
             if (newNode.absX() !== this.node1.absX() || newNode.absY() !== this.node1.absY()) {
                 this.converge(newNode);
                 return true;
             }
         }
-        if (current2 !== expected2) {
-            const newNode = createNode2();
+        if (point2.current !== point2.expected) {
+            const newNode = point2.createNode();
             if (newNode.absX() !== this.node2.absX() || newNode.absY() !== this.node2.absY()) {
                 this.converge(newNode);
                 return true;
