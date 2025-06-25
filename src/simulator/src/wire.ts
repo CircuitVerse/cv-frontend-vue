@@ -20,7 +20,7 @@ enum WireValue {
 
 export default class Wire {
     objectType = 'Wire';
-    type = 'horizontal';
+    type: 'horizontal' | 'vertical' = 'horizontal';
     x1: number;
     y1: number;
     x2: number;
@@ -42,6 +42,7 @@ export default class Wire {
             this.node2.absX(), this.node2.absY()
         ];
         if (this.x1 === this.x2) this.type = 'vertical';
+        else if (this.y1 === this.y2) this.type = 'horizontal';
     }
 
     updateScope(scope: Scope): void {
@@ -53,7 +54,9 @@ export default class Wire {
         const disconnected = this.node1.deleted || this.node2.deleted ||
             !this.node1.connections?.includes(this.node2) ||
             !this.node2.connections?.includes(this.node1);
-        if (disconnected) this.delete();
+        if (disconnected) {
+            setTimeout(() => this.delete(), 0);
+        }
         return disconnected;
     }
 
@@ -97,14 +100,15 @@ export default class Wire {
     }
 
     checkWithin(x: number, y: number): boolean {
+        const threshold = 2;
         if (this.type === 'horizontal') {
-            return y === this.node1.absY() && this.isBetween(x, this.node1.absX(), this.node2.absX());
+            return Math.abs(y - this.node1.absY()) <= threshold &&
+                this.isBetween(x, this.node1.absX(), this.node2.absX());
         }
-
         if (this.type === 'vertical') {
-            return x === this.node1.absX() && this.isBetween(y, this.node1.absY(), this.node2.absY());
+            return Math.abs(x - this.node1.absX()) <= threshold &&
+                this.isBetween(y, this.node1.absY(), this.node2.absY());
         }
-
         return false;
     }
 
@@ -113,6 +117,7 @@ export default class Wire {
     }
 
     converge(n: Node): void {
+        if (n === this.node1 || n === this.node2) return;
         this.node1.connect(n);
         this.node2.connect(n);
         this.delete();
@@ -146,10 +151,8 @@ export default class Wire {
         const y2 = this.node2.absY();
 
         if (x1 === x2) {
-            this.x1 = this.x2 = x1;
             this.type = 'vertical';
         } else if (y1 === y2) {
-            this.y1 = this.y2 = y1;
             this.type = 'horizontal';
         }
     }
@@ -207,22 +210,18 @@ export default class Wire {
 
     private alignNodesAlongYAxis(): boolean {
         return this.checkAndCreateNode(
-            this.node1.absY(),
-            this.y1,
+            this.node1.absY(), this.y1,
             () => new Node(this.node1.absX(), this.y1, 2, this.scope.root),
-            this.node2.absY(),
-            this.y2,
+            this.node2.absY(), this.y2,
             () => new Node(this.node2.absX(), this.y2, 2, this.scope.root)
         );
     }
 
     private alignNodesAlongXAxis(): boolean {
         return this.checkAndCreateNode(
-            this.node1.absX(),
-            this.x1,
+            this.node1.absX(), this.x1,
             () => new Node(this.x1, this.node1.absY(), 2, this.scope.root),
-            this.node2.absX(),
-            this.x2,
+            this.node2.absX(), this.x2,
             () => new Node(this.x2, this.node2.absY(), 2, this.scope.root)
         );
     }
@@ -236,12 +235,18 @@ export default class Wire {
         createNode2: () => Node
     ): boolean {
         if (current1 !== expected1) {
-            this.converge(createNode1());
-            return true;
+            const newNode = createNode1();
+            if (newNode.absX() !== this.node1.absX() || newNode.absY() !== this.node1.absY()) {
+                this.converge(newNode);
+                return true;
+            }
         }
         if (current2 !== expected2) {
-            this.converge(createNode2());
-            return true;
+            const newNode = createNode2();
+            if (newNode.absX() !== this.node2.absX() || newNode.absY() !== this.node2.absY()) {
+                this.converge(newNode);
+                return true;
+            }
         }
         return false;
     }
