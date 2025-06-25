@@ -7,7 +7,7 @@
   >
     <template v-slot:activator="{ props }">
       <v-btn
-        :id="`navbarMenuButton_${navbarItem.text}`"
+        :id="`navbarMenuButton_${sanitizedText}`"
         :class="isMenuOpen ? 'activeMenuButton' : ''"
         class="navbarMenuButton"
         color="transparent"
@@ -36,14 +36,9 @@
           density="compact"
           :id="listItem.itemid"
           @click="handleItemClick(listItem.itemid)"
-          v-bind="
-            Object.fromEntries(
-              listItem.attributes.map((attr: AttrType) => [
-                attr.name,
-                attr.value,
-              ])
-            )
-          "
+          v-bind="Object.fromEntries(
+            listItem.attributes.map((attr: AttrType) => [attr.name, attr.value])
+          )"
         >
           <v-list-item-title>{{
             $t(
@@ -61,7 +56,7 @@
 
 <script lang="ts" setup>
 import logixFunction from '#/simulator/src/data'
-import { ref, nextTick } from 'vue'
+import { ref, computed } from 'vue'
 
 interface AttrType {
   name: string
@@ -69,52 +64,47 @@ interface AttrType {
 }
 
 const props = defineProps({
-  navbarItem: { type: Object, default: () => {} },
+  navbarItem: { type: Object, default: () => ({}) },
 })
-
 
 const emit = defineEmits(['menu-toggle', 'menu-click'])
 
 const isMenuOpen = ref(false)
-const hoverTimer = ref<NodeJS.Timeout | null>(null)
+const hoverTimer = ref<ReturnType<typeof setTimeout> | null>(null)
 const isHovering = ref(false)
 
-const handleMenuClick = () => {
+const sanitizedText = computed(() =>
+  props.navbarItem.text?.toString().replace(/\W+/g, '_')
+)
 
-  if (hoverTimer.value) {
-    clearTimeout(hoverTimer.value)
-    hoverTimer.value = null
-  }
+const handleMenuClick = () => {
+  if (hoverTimer.value) clearTimeout(hoverTimer.value)
+  hoverTimer.value = null
 
   const newState = !isMenuOpen.value
   isMenuOpen.value = newState
-  
+
   emit('menu-click', {
     itemText: props.navbarItem.text,
-    isOpen: newState
+    isOpen: newState,
   })
-  
+
   emit('menu-toggle', {
     itemText: props.navbarItem.text,
-    isOpen: newState
+    isOpen: newState,
   })
 }
 
 const handleMouseEnter = () => {
   isHovering.value = true
-  
-  
-  if (hoverTimer.value) {
-    clearTimeout(hoverTimer.value)
-  }
-  
- 
+  if (hoverTimer.value) clearTimeout(hoverTimer.value)
+
   hoverTimer.value = setTimeout(() => {
     if (isHovering.value) {
       isMenuOpen.value = true
       emit('menu-toggle', {
         itemText: props.navbarItem.text,
-        isOpen: true
+        isOpen: true,
       })
     }
   }, 150)
@@ -122,20 +112,14 @@ const handleMouseEnter = () => {
 
 const handleMouseLeave = () => {
   isHovering.value = false
-  
- 
-  if (hoverTimer.value) {
-    clearTimeout(hoverTimer.value)
-    hoverTimer.value = null
-  }
-  
-  
+  if (hoverTimer.value) clearTimeout(hoverTimer.value)
+
   hoverTimer.value = setTimeout(() => {
     if (!isHovering.value) {
       isMenuOpen.value = false
       emit('menu-toggle', {
         itemText: props.navbarItem.text,
-        isOpen: false
+        isOpen: false,
       })
     }
   }, 200)
@@ -143,8 +127,6 @@ const handleMouseLeave = () => {
 
 const handleMenuMouseEnter = () => {
   isHovering.value = true
-  
-  
   if (hoverTimer.value) {
     clearTimeout(hoverTimer.value)
     hoverTimer.value = null
@@ -153,36 +135,30 @@ const handleMenuMouseEnter = () => {
 
 const handleMenuMouseLeave = () => {
   isHovering.value = false
-  
-
   hoverTimer.value = setTimeout(() => {
     if (!isHovering.value) {
       isMenuOpen.value = false
       emit('menu-toggle', {
         itemText: props.navbarItem.text,
-        isOpen: false
+        isOpen: false,
       })
     }
   }, 200)
 }
 
 const handleItemClick = (itemId: string) => {
-
   logixFunction[itemId]()
-  
-  
   isMenuOpen.value = false
   isHovering.value = false
-  
-  
+
   if (hoverTimer.value) {
     clearTimeout(hoverTimer.value)
     hoverTimer.value = null
   }
-  
+
   emit('menu-toggle', {
     itemText: props.navbarItem.text,
-    isOpen: false
+    isOpen: false,
   })
 }
 </script>
