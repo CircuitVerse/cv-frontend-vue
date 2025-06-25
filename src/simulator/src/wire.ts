@@ -102,14 +102,18 @@ export default class Wire {
     checkWithin(x: number, y: number): boolean {
         const threshold = 2;
         if (this.type === 'horizontal') {
-            return Math.abs(y - this.node1.absY()) <= threshold &&
+            return this.checkCoordinate(y, this.node1.absY(), threshold) &&
                 this.isBetween(x, this.node1.absX(), this.node2.absX());
         }
         if (this.type === 'vertical') {
-            return Math.abs(x - this.node1.absX()) <= threshold &&
+            return this.checkCoordinate(x, this.node1.absX(), threshold) &&
                 this.isBetween(y, this.node1.absY(), this.node2.absY());
         }
         return false;
+    }
+
+    private checkCoordinate(coord: number, reference: number, threshold: number): boolean {
+        return Math.abs(coord - reference) <= threshold;
     }
 
     private isBetween(value: number, a: number, b: number): boolean {
