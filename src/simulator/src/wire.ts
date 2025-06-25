@@ -101,6 +101,10 @@ export default class Wire {
 
     checkWithin(x: number, y: number): boolean {
         const threshold = 2;
+        return this.checkCoordAndBetween(x, y, threshold);
+    }
+
+    private checkCoordAndBetween(x: number, y: number, threshold: number): boolean {
         if (this.type === 'horizontal') {
             return this.checkCoordinate(y, this.node1.absY(), threshold) &&
                 this.isBetween(x, this.node1.absX(), this.node2.absX());
@@ -212,18 +216,32 @@ export default class Wire {
         return false;
     }
 
+    private createAlignmentPoint(
+        current: number,
+        expected: number,
+        x: number,
+        y: number,
+        scopeRoot: CircuitElement,
+        referenceNode: Node
+    ): { current: number, expected: number, createNode: () => Node, referenceNode: Node } {
+        return {
+            current,
+            expected,
+            createNode: () => new Node(x, y, 2, scopeRoot),
+            referenceNode
+        };
+    }
+
     private alignNodesAlongYAxis(): boolean {
-        return this.checkAndCreateNode(
-            { current: this.node1.absY(), expected: this.y1, createNode: () => new Node(this.node1.absX(), this.y1, 2, this.scope.root), referenceNode: this.node1 },
-            { current: this.node2.absY(), expected: this.y2, createNode: () => new Node(this.node2.absX(), this.y2, 2, this.scope.root), referenceNode: this.node2 }
-        );
+        const p1 = this.createAlignmentPoint(this.node1.absY(), this.y1, this.node1.absX(), this.y1, this.scope.root, this.node1);
+        const p2 = this.createAlignmentPoint(this.node2.absY(), this.y2, this.node2.absX(), this.y2, this.scope.root, this.node2);
+        return this.checkAndCreateNode(p1, p2);
     }
 
     private alignNodesAlongXAxis(): boolean {
-        return this.checkAndCreateNode(
-            { current: this.node1.absX(), expected: this.x1, createNode: () => new Node(this.x1, this.node1.absY(), 2, this.scope.root), referenceNode: this.node1 },
-            { current: this.node2.absX(), expected: this.x2, createNode: () => new Node(this.x2, this.node2.absY(), 2, this.scope.root), referenceNode: this.node2 }
-        );
+        const p1 = this.createAlignmentPoint(this.node1.absX(), this.x1, this.x1, this.node1.absY(), this.scope.root, this.node1);
+        const p2 = this.createAlignmentPoint(this.node2.absX(), this.x2, this.x2, this.node2.absY(), this.scope.root, this.node2);
+        return this.checkAndCreateNode(p1, p2);
     }
 
     private checkNode(
