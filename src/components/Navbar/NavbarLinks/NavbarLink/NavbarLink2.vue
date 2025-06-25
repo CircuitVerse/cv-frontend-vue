@@ -13,6 +13,9 @@
         color="transparent"
         size="small"
         flat
+        :aria-expanded="String(isMenuOpen)"
+        :aria-haspopup="true"
+        :aria-controls="`navbarMenu_${sanitizedText}`"
         @click="handleMenuClick"
         @mouseenter="handleMouseEnter"
         @mouseleave="handleMouseLeave"
@@ -22,7 +25,7 @@
         {{ $t('simulator.nav.' + navbarItem.text + '.heading') }}
       </v-btn>
     </template>
-    
+
     <div 
       class="menuListContainer"
       @mouseenter="handleMenuMouseEnter"
@@ -37,17 +40,19 @@
           :id="listItem.itemid"
           @click="handleItemClick(listItem.itemid)"
           v-bind="Object.fromEntries(
-            listItem.attributes.map((attr: AttrType) => [attr.name, attr.value])
+            (listItem.attributes || []).map((attr: AttrType) => [attr.name, attr.value])
           )"
         >
-          <v-list-item-title>{{
-            $t(
-              'simulator.nav.' +
-                navbarItem.text +
-                '.' +
-                listItem.item
-            )
-          }}</v-list-item-title>
+          <v-list-item-title>
+            {{
+              $t(
+                'simulator.nav.' +
+                  navbarItem.text +
+                  '.' +
+                  listItem.item
+              )
+            }}
+          </v-list-item-title>
         </v-list-item>
       </v-list>
     </div>
@@ -56,7 +61,7 @@
 
 <script lang="ts" setup>
 import logixFunction from '#/simulator/src/data'
-import { ref, computed } from 'vue'
+import { ref, computed, onUnmounted } from 'vue'
 
 interface AttrType {
   name: string
@@ -76,6 +81,12 @@ const isHovering = ref(false)
 const sanitizedText = computed(() =>
   props.navbarItem.text?.toString().replace(/\W+/g, '_')
 )
+
+onUnmounted(() => {
+  if (hoverTimer.value) {
+    clearTimeout(hoverTimer.value)
+  }
+})
 
 const handleMenuClick = () => {
   if (hoverTimer.value) clearTimeout(hoverTimer.value)
@@ -147,7 +158,16 @@ const handleMenuMouseLeave = () => {
 }
 
 const handleItemClick = (itemId: string) => {
-  logixFunction[itemId]()
+  try {
+    if (typeof logixFunction[itemId] === 'function') {
+      logixFunction[itemId]()
+    } else {
+      console.error(`Function not found for itemId: ${itemId}`)
+    }
+  } catch (error) {
+    console.error(`Error executing function for itemId ${itemId}:`, error)
+  }
+
   isMenuOpen.value = false
   isHovering.value = false
 
