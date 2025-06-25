@@ -126,20 +126,21 @@ export const GenerateCircuit = (outputListNamesInteger, inputListNames, output, 
 };
 
 function generateBooleanTableDataFromDOM(outputListNames) {
-    var data = {};
-    for (var i = 0; i < outputListNames.length; i++) {
-        data[outputListNames[i]] = {
-            x: [],
-            1: [],
-            0: [],
-        };
-        var rows = $(`.${outputListNames[i]}`);
-        for (let j = 0; j < rows.length; j++) {
-            if (rows[j] && rows[j].innerHTML && rows[j].id) {
-                data[outputListNames[i]][rows[j].innerHTML].push(rows[j].id);
+    const data = {};
+
+    outputListNames.forEach((outputName) => {
+        data[outputName] = { x: [], 1: [], 0: [] };
+
+        const rows = document.querySelectorAll(`.${outputName}`);
+        rows.forEach((cell) => {
+            const val = cell?.innerHTML;
+            const id = cell?.id;
+            if (['0', '1', 'x'].includes(val) && id) {
+                data[outputName][val].push(id);
             }
-        }
-    }
+        });
+    });
+
     return data;
 }
 
