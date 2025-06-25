@@ -13,7 +13,7 @@ We would love to hear from you! We communicate on Slack:
 
 ## Development
 
-To get started, please refer to [`GETTING_STARTED.md`](./GETTING_STARTED.md) for full setup instructions.
+To get started, please refer to [`GETTING_STARTED.md`](https://github.com/blazethunderstorm/cv-frontend-vue/blob/docc/GETTING_STARTED.md) for full setup instructions.
 
 
 
