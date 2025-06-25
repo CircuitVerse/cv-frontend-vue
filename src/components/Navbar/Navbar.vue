@@ -18,7 +18,7 @@
             <UserMenu class="useMenuBtn" />
         </div>
         
-        <Hamburger2 v-if="simulatorMobileStore.showMobileView" :navbar-data="navbarData" class="d-block d-lg-none" />
+        
     </nav>
     
     <nav v-if="simulatorMobileStore.showMobileView" class="navbar navbar-dark header mobile-navbar">
@@ -63,7 +63,7 @@ const simulatorMobileStore = useSimulatorMobileStore()
     align-items: center;
 }
 
-/* Ensure hamburger is visible on mobile */
+
 @media (max-width: 991px) {
     .d-block.d-lg-none {
         display: block !important;
