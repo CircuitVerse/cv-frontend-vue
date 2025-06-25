@@ -1,14 +1,14 @@
 <template>
     <nav v-if="!simulatorMobileStore.showMobileView" class="navbar navbar-expand-lg navbar-dark header">
         <Logo :cvlogo="navbarLogo" />
-
+        
         <div
             v-if="!simulatorMobileStore.showMobileView"
             id="bs-example-navbar-collapse-1"
             class="collapse navbar-collapse"
         >
             <NavbarLinks :navbar-data="navbarData" />
-
+            
             <span
                 id="projectName"
                 class="projectName noSelect defaultCursor font-weight-bold"
@@ -17,7 +17,15 @@
             </span>
             <UserMenu class="useMenuBtn" />
         </div>
+        
+        <Hamburger2 v-if="simulatorMobileStore.showMobileView" :navbar-data="navbarData" class="d-block d-lg-none" />
     </nav>
+    
+    <nav v-if="simulatorMobileStore.showMobileView" class="navbar navbar-dark header mobile-navbar">
+        <Logo :cvlogo="navbarLogo" />
+        <Hamburger2 :navbar-data="navbarData" class="d-block d-lg-none" />
+    </nav>
+    
     <QuickButton v-if="!simulatorMobileStore.showMobileView" />
 </template>
 
@@ -47,5 +55,18 @@ const simulatorMobileStore = useSimulatorMobileStore()
 
 .useMenuBtn {
     margin: 0 2rem 0 auto;
+}
+
+.mobile-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Ensure hamburger is visible on mobile */
+@media (max-width: 991px) {
+    .d-block.d-lg-none {
+        display: block !important;
+    }
 }
 </style>
