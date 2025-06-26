@@ -110,6 +110,14 @@ async function fetchProjectData(projectId) {
         )
         if (response.ok) {
             const data = await response.json()
+            const simulatorVersion = data.simulatorVersion  
+            const projectName = data.name
+            if(!simulatorVersion){                 
+                window.location.href = `/simulator/edit/${projectName}`             
+            }           
+            if(simulatorVersion && simulatorVersion != "v0"){                 
+                window.location.href = `/simulatorvue/edit/${projectName}?simver=${simulatorVersion}`             
+            }
             await load(data)
             await simulationArea.changeClockTime(data.timePeriod || 500)
             $('.loadingIcon').fadeOut()
