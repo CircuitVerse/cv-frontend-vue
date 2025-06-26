@@ -101,6 +101,7 @@ export async function generateSaveData(name, setName = true) {
     data.projectId = projectId
     data.focussedCircuit = globalScope.id
     data.orderedTabs = getTabsOrder()
+    data.simulatorVersion = "v0" // Version of the simulator, used to identify the version of the simulator that created this project
 
     // Project Circuits, each scope is one circuit
     data.scopes = []
