@@ -80,24 +80,6 @@ export default class ForceGate extends CircuitElement {
         fillText4(ctx, 'O', 10, 0, xx, yy, this.direction, 10)
         ctx.fill()
     }
-    static moduleVerilog() {
-        return `
-module ForceGate(out,inp1,inp2);
-    //NOTE: This will work only in simulation tools like EDA Playground and CircuitVerse but not in FPGA boards and other hardware
-    parameter WIDTH = 1;
-    input wire [WIDTH-1:0]inp1;
-    input wire [WIDTH-1:0]inp2;
-    output reg [WIDTH-1:0]out;
-
-    always @(inp1 or inp2)
-    if (^inp2 !== 1'bx) begin
-        out = inp2;
-    end else begin
-        out = inp1;
-    end
-endmodule
-        `
-    }
 }
 
 /**
