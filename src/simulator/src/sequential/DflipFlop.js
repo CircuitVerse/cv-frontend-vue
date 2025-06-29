@@ -135,13 +135,18 @@ export default class DflipFlop extends CircuitElement {
 module DflipFlop(q, q_inv, clk, d, a_rst, pre, en);
     parameter WIDTH = 1;
     output reg [WIDTH-1:0] q, q_inv;
-    input clk, a_rst, pre, en;
-    input [WIDTH-1:0] d;
+    input clk, a_rst, en;
+    input [WIDTH-1:0] d, pre;
 
     always @ (posedge clk or posedge a_rst)
     if (a_rst) begin
-        q <= 'b0;
-        q_inv <= 'b1;
+        if (^pre === 1'bx) begin
+            q <= {WIDTH{1'b0}};
+            q_inv <= {WIDTH{1'b1}};
+        end else begin
+            q <= pre;
+            q_inv <= ~pre;
+        end
     end else if (en == 0) ;
     else begin
         q <= d;
