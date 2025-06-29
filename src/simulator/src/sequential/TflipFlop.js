@@ -151,8 +151,13 @@ export default class TflipFlop extends CircuitElement {
         
           always @ (posedge clk or posedge a_rst)
             if (a_rst) begin
-              q <= 'b0;
-              q_inv <= 'b1;
+              if (pre == 'bx) begin
+                q <= 'b0;
+                q_inv <= 'b1;
+              end else begin
+                q <= pre;
+                q_inv <= ~pre;
+              end
             end else if (en == 0) ;
             else if (t) begin
               q <= q ^ t;
