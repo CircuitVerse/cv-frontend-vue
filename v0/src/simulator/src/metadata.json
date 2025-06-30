@@ -60,7 +60,8 @@
         "Dlatch",
         "TB_Input",
         "TB_Output",
-        "ForceGate"
+        "ForceGate",
+        "PullResistor"
     ],
     "annotationList": ["Text", "Rectangle", "Arrow", "ImageAnnotation"],
     "inputList": [
@@ -78,7 +79,8 @@
         "Input",
         "Clock",
         "Button",
-        "Counter"
+        "Counter",
+        "PullResistor"
     ],
     "subCircuitInputList": [
         "Random",
@@ -94,10 +96,12 @@
         "ConstantVal",
         "Clock",
         "Button",
-        "Counter"
+        "Counter",
+        "PullResistor"
     ],
     "elementHierarchy": {
         "Input": [
+            { "name": "PullResistor", "label": "Pull Resistor" },
             { "name": "Input", "label": "Input" },
             { "name": "Button", "label": "Button" },
             { "name": "Power", "label": "Power" },
