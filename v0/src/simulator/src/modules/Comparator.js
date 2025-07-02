@@ -14,7 +14,7 @@ export default class Comparator extends CircuitElement {
         this.inpB = new Node(-20, +10, 0, this, this.bitWidth, 'B')
 
         this.less = new Node(20, 10, 1, this, 1, 'less')
-        this.equal = new Node(20, 0, 1, this, this.bitWidth, 'equal')
+        this.equal = new Node(20, 0, 1, this, 1, 'equal')
         this.greater = new Node(20, -10, 1, this, 1, 'greater')
 
     }
@@ -85,5 +85,4 @@ Comparator.prototype.tooltipText =
     'Comparator'
 Comparator.prototype.helplink =
     'https://docs.circuitverse.org/#/chapter4/<to be updated>'
-Comparator.prototype.objectType = 'Comparator'
 Comparator.prototype.objectType = 'Comparator'
