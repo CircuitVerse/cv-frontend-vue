@@ -3,6 +3,18 @@ import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
 import simulationArea from '../simulationArea'
 
+
+/**
+ * @class
+ * Comparator
+ * @extends CircuitElement
+ * @param {number} x - x coordinate of the element
+ * @param {number} y - y coordinate of the element
+ * @param {Scope=} scope - Circuit on which the element is drawn
+ * @param {string=} dir - Direction of the element (default: RIGHT)
+ * @param {number=} bitWidth - Bit width of the input nodes (default: 1)
+ * @category modules
+ */
 export default class Comparator extends CircuitElement {
     constructor(x, y, scope = globalScope, dir = 'RIGHT', bitWidth = 1) {
         super(x, y, scope, dir, bitWidth)
@@ -19,6 +31,10 @@ export default class Comparator extends CircuitElement {
 
     }
 
+    /**
+     * Creates JSON data for saving the component state
+     * @returns {Object} Save data including constructor parameters and nodes
+     */
     customSave() {
         const data = {
             constructorParamaters: [this.direction, this.bitWidth],
@@ -32,16 +48,27 @@ export default class Comparator extends CircuitElement {
         }
         return data
     }
-
+    
+    /**
+     * Checks whether the component is ready to be resolved
+     * @returns {boolean} True if inputs are defined
+     */
     isResolvable() {
         return this.inpA.value != undefined && this.inpB.value != undefined;
     }
 
+    /**
+     * Changes the bit width of the input nodes
+     * @param {number} bitWidth - New bit width
+     */
     newBitWidth(bitWidth) {
         this.inpA.bitWidth = bitWidth
         this.inpB.bitWidth = bitWidth
     }
 
+    /**
+     * Resolves the comparator outputs based on A and B
+     */
     resolve() {
 
         const a = this.inpA.value;
@@ -65,6 +92,9 @@ export default class Comparator extends CircuitElement {
         simulationArea.simulationQueue.add(this.less)
     }
 
+    /**
+     * Custom draw logic for displaying the comparator
+     */
     customDraw() {
         const ctx = simulationArea.context
         const xx = this.x
