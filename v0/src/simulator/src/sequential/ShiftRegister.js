@@ -5,6 +5,19 @@ import simulationArea from '../simulationArea'
 import { correctWidth, lineTo, moveTo, fillText4 } from '../canvasApi'
 import { colors } from '../themer/themer'
 
+/**
+ * @class
+ * ShiftRegister
+ * @extends CircuitElement
+ * @param {number} x - x coordinate of the element
+ * @param {number} y - y coordinate of the element
+ * @param {Scope=} scope - Circuit scope where the element exists
+ * @param {string=} dir - Direction of the element (default: DOWN)
+ * @param {number=} bitWidth - Bit width per data node (default: 1)
+ * @param {number=} noOfStages - Number of shift register stages (default: 4)
+ * @param {string=} isParallelLoad - If parallel loading is enabled ("Yes" or "No")
+ * @category modules
+ */
 export default class ShiftRegister extends CircuitElement {
 
     constructor(x, y, scope = globalScope, dir = 'DOWN', bitWidth = 1, noOfStages = 4, isParallelLoad = "Yes") {
@@ -60,6 +73,9 @@ export default class ShiftRegister extends CircuitElement {
         this.cell = new Array(this.noOfStages)
     }
 
+     /**
+     * Draw the ShiftRegister component
+     */
     customDraw() {
         const ctx = simulationArea.context
         const xx = this.x
@@ -127,6 +143,9 @@ export default class ShiftRegister extends CircuitElement {
         return true;
     }
 
+    /**
+     * Resolve logic based on clock edge and shift/load/reset signals
+     */
     resolve() {
         const clkValue = this.clk.value;
         // Rising edge detection
@@ -152,6 +171,10 @@ export default class ShiftRegister extends CircuitElement {
         this.lastClk = clkValue
     }
 
+    /**
+     * Change the bit width of all input/output nodes
+     * @param {number} bitWidth - New bit width
+     */
     newBitWidth(bitWidth) {
         for (let i = 0; i < this.noOfStages; i++) {
             this.inp[i].bitWidth = bitWidth;
@@ -159,6 +182,10 @@ export default class ShiftRegister extends CircuitElement {
         }
     }
 
+    /**
+     * Generate JSON save object for component
+     * @returns {Object}
+     */
     customSave() {
         const data = {
             nodes: {
@@ -175,6 +202,10 @@ export default class ShiftRegister extends CircuitElement {
         return data
     }
 
+/**
+     * Update the number of stages in the register
+     * @param {number} noOfStages - New number of stages (1–32)
+     */
     changeNumberofStages(noOfStages) {
         if (noOfStages == undefined || noOfStages < 1 || noOfStages > 32) return;
         if (this.noOfStages == noOfStages) return;
@@ -184,6 +215,10 @@ export default class ShiftRegister extends CircuitElement {
         return obj
     }
 
+     /**
+     * Update the parallel load configuration
+     * @param {string} parallelLoad - "Yes" or "No"
+     */
     changeParallelLoad(parallelLoad) {
         if (parallelLoad !== undefined && this.isParallelLoad !== parallelLoad) {
             this.isParallelLoad = parallelLoad;
