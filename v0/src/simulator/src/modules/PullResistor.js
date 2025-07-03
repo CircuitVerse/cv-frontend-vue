@@ -4,6 +4,18 @@ import Node, { findNode } from '../node'
 import simulationArea from '../simulationArea'
 import { colors } from '../themer/themer'
 
+
+/**
+ * @class
+ * PullResistor
+ * @extends CircuitElement
+ * @param {number} x - x coordinate of the element
+ * @param {number} y - y coordinate of the element
+ * @param {Scope=} scope - Circuit on which the element is drawn
+ * @param {string=} dir - Direction of the element (default: RIGHT)
+ * @param {string=} pullDirection - Pull direction: "Up" or "Down" (default: "Down")
+ * @category modules
+ */
 export default class PullResistor extends CircuitElement {
     constructor(x, y, scope = globalScope, dir = 'RIGHT', pullDirection = "Down") {
         super(x, y, scope, dir, 1)
@@ -15,6 +27,10 @@ export default class PullResistor extends CircuitElement {
         this.inp = new Node(0, -10, 0, this, 1, 'inp')
     }
 
+     /**
+     * Creates JSON data for saving the component state
+     * @returns {Object} Save data including constructor parameters and nodes
+     */
     customSave() {
         const data = {
             constructorParamaters: [this.direction, this.bitWidth],
@@ -29,6 +45,9 @@ export default class PullResistor extends CircuitElement {
         return true
     }
 
+    /**
+     * Resolve the input if it's floating (undefined) by assigning pull value
+     */
     resolve() {
         if (this.inp.value == undefined) {
             this.inp.value = this.pullDirection == "Up" ? 1 : 0;
@@ -36,6 +55,9 @@ export default class PullResistor extends CircuitElement {
         }
     }
 
+    /**
+     * Draw the zig-zag resistor and connection lines
+     */
     customDraw() {
         const ctx = simulationArea.context;
         ctx.fillStyle = colors['fill']
@@ -66,6 +88,10 @@ export default class PullResistor extends CircuitElement {
         ctx.stroke();
     }
 
+    /**
+     * Changes the pull direction property and redraws the component
+     * @param {string} pullDirection - New pull direction
+     */
     changePullDirection(pullDirection) {
         if (pullDirection !== undefined && this.pullDirection !== pullDirection) {
             this.pullDirection = pullDirection;
@@ -79,6 +105,12 @@ export default class PullResistor extends CircuitElement {
 
 }
 
+/**
+ * Mutable properties shown in the UI (for dropdown selection)
+ * @memberof PullResistor
+ * @type {Object}
+ * @category modules
+ */
 PullResistor.prototype.mutableProperties = {
     pullDirection: {
         name: 'Pull Direction: ',
