@@ -122,7 +122,7 @@ module SRflipFlop(q,q_inv,s,r,clk,rst,pre,en);
             end
         end else if (en) begin
             if (s && !r) begin
-                q    <= 1'b1;
+                q     <= 1'b1;
                 q_inv <= 1'b0;
             end else if (!s && r) begin
                 q     <= 1'b0;
