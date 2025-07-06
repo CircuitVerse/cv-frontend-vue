@@ -60,7 +60,8 @@
         "Dlatch",
         "TB_Input",
         "TB_Output",
-        "ForceGate"
+        "ForceGate",
+        "Comparator"
     ],
     "annotationList": ["Text", "Rectangle", "Arrow", "ImageAnnotation"],
     "inputList": [
@@ -157,6 +158,7 @@
             { "name": "Text", "label": "Text" }
         ],
         "Misc": [
+            { "name": "Comparator", "label": "Comparator" },
             { "name": "TwoComplement", "label": "Two Complement" },
             { "name": "Flag", "label": "Flag" },
             { "name": "Splitter", "label": "Splitter" },

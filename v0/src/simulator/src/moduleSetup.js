@@ -63,6 +63,7 @@ import verilogPower from './modules/verilogPower'
 import verilogShiftLeft from './modules/verilogShiftLeft'
 import verilogShiftRight from './modules/verilogShiftRight'
 import verilogRAM from './sequential/verilogRAM'
+import Comparator from './modules/Comparator'
 
 export default function setupModules() {
     var moduleSet = {
@@ -130,6 +131,7 @@ export default function setupModules() {
         TB_Input,
         TB_Output,
         ForceGate,
+        Comparator,
     }
     Object.assign(modules, moduleSet)
 }
