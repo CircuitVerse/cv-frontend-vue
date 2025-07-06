@@ -1,7 +1,7 @@
-import { fillText4 } from '../canvasApi'
-import CircuitElement from '../circuitElement'
-import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { fillText4 } from '../canvasApi';
+import CircuitElement from '../circuitElement';
+import Node, { findNode } from '../node';
+import simulationArea from '../simulationArea';
 
 
 /**
@@ -17,7 +17,7 @@ import simulationArea from '../simulationArea'
  */
 export default class Comparator extends CircuitElement {
     constructor(x, y, scope = globalScope, dir = 'RIGHT', bitWidth = 1) {
-        super(x, y, scope, dir, bitWidth)
+        super(x, y, scope, dir, bitWidth);
 
         this.fixedBitWidth = false;
         this.setDimensions(20, 20);
