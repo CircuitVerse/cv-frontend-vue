@@ -15,12 +15,12 @@ import { colors } from '../themer/themer'
  * @param {string=} dir - Direction of the element (default: DOWN)
  * @param {number=} bitWidth - Bit width per data node (default: 1)
  * @param {number=} noOfStages - Number of shift register stages (default: 4)
- * @param {string=} isParallelLoad - If parallel loading is enabled ("Yes" or "No")
+ * @param {string=} registerType - If parallel loading is enabled ("Yes" or "No")
  * @category modules
  */
 export default class ShiftRegister extends CircuitElement {
 
-    constructor(x, y, scope = globalScope, dir = 'DOWN', bitWidth = 1, noOfStages = 4, isParallelLoad = "Yes") {
+    constructor(x, y, scope = globalScope, dir = 'DOWN', bitWidth = 1, noOfStages = 4, registerType = "PIPO") {
         super(x, y, scope, dir, bitWidth)
 
         this.message = 'ShiftRegister'
@@ -30,7 +30,7 @@ export default class ShiftRegister extends CircuitElement {
         this.noOfStages = noOfStages || parseInt(prompt('Enter number of stages:'))
 
 
-        this.isParallelLoad = isParallelLoad ?? "Yes";
+        this.registerType = registerType ?? "PIPO";
 
         const baseHeight = 230;
         const extraHeight = this.noOfStages * 20;
@@ -48,23 +48,31 @@ export default class ShiftRegister extends CircuitElement {
 
 
         this.reset = new Node(30, -90, 0, this, 1, 'Reset')
-        this.shiftLoad = new Node(30, -70, 0, this, 1, 'Shift/Load')
+        const labelText = (this.registerType === "PIPO" || this.registerType === "PISO") ? "Shift/Load" : "Shift";
+        this.shiftLoad = new Node(30, -70, 0, this, 1, labelText);
         this.clk = new Node(30, -50, 0, this, 1, "Clock");
 
         let i = 0;
 
         while (i < this.noOfStages) {
-            if (this.isParallelLoad == "Yes") {
+            if (this.registerType == "PIPO") {
                 const a = new Node(30, 20 * (i + 1), 0, this, this.bitWidth)
                 this.inp.push(a)
 
                 const b = new Node(-30, 20 * (i + 1), 1, this, this.bitWidth)
                 b.value = 1;
                 this.out.push(b)
+            } else if (this.registerType == "PISO") {
+                const a = new Node(30, 20 * (i + 1), 0, this, this.bitWidth)
+                this.inp.push(a)
+            } else if (this.registerType == "SIPO") {
+                const b = new Node(-30, 20 * (i + 1), 1, this, this.bitWidth)
+                b.value = 1;
+                this.out.push(b)
             }
             ++i;
         }
-        if (this.isParallelLoad == "No") {
+        if (this.registerType !== "PIPO" && this.registerType != "SIPO") {
             const b = new Node(-30, 20 * i, 1, this, this.bitWidth)
             b.value = 1;
             this.out.push(b)
@@ -73,9 +81,9 @@ export default class ShiftRegister extends CircuitElement {
         this.cell = new Array(this.noOfStages)
     }
 
-     /**
-     * Draw the ShiftRegister component
-     */
+    /**
+    * Draw the ShiftRegister component
+    */
     customDraw() {
         const ctx = simulationArea.context
         const xx = this.x
@@ -88,7 +96,7 @@ export default class ShiftRegister extends CircuitElement {
         const partitionY = -30
 
         // Draw main rectangle
-                ctx.strokeStyle = colors['stroke']
+        ctx.strokeStyle = colors['stroke']
         ctx.fillStyle = colors['fill']
         ctx.beginPath();
 
@@ -127,7 +135,8 @@ export default class ShiftRegister extends CircuitElement {
 
         // ==== Label control inputs (inside component) ====
         fillText4(ctx, 'Reset', 16, -90, xx, yy, this.direction, 6)
-        fillText4(ctx, 'S/L', 16, -70, xx, yy, this.direction, 6)
+        const labelText = (this.registerType === "PIPO" || this.registerType === "PISO") ? "S/L" : "S";
+        fillText4(ctx, labelText, 16, -70, xx, yy, this.direction, 6)
         fillText4(ctx, 'Clock', 16, -50, xx, yy, this.direction, 6)
 
         // ==== Label data i/o ====
@@ -148,25 +157,38 @@ export default class ShiftRegister extends CircuitElement {
      */
     resolve() {
         const clkValue = this.clk.value;
+        let isShift = 0;
+        let isLoad = 0;
+        if (this.registerType == "SISO" || this.registerType == "SIPO") {
+            isShift = this.shiftLoad.value;
+        } else {
+            isShift = +!this.shiftLoad.value;
+            isLoad = this.shiftLoad.value;
+        }
         // Rising edge detection
         if (this.lastClk === 0 && clkValue === 1) {
             if (this.reset.value === 1) {
                 this.cell.fill(0);
             }
-            else if (this.shiftLoad.value === 1) {
+            else if (isLoad === 1) {
                 for (let i = 0; i < this.noOfStages; i++) {
                     this.cell[i] = this.inp[i].value;
                 }
             }
-            else {
+            else if (isShift === 1) {
                 this.cell.unshift(this.firstInput.value)
                 this.cell.length = this.noOfStages
             }
-
-            for (let i = 0; i < this.noOfStages; i++) {
-                this.out[i].value = this.cell[i];
-                simulationArea.simulationQueue.add(this.out[i])
+            if (this.registerType == 'SISO' || this.registerType == 'PISO') {
+                this.out[0].value = this.cell[this.cell.length - 1];
+                simulationArea.simulationQueue.add(this.out[0])
+            } else {
+                for (let i = 0; i < this.noOfStages; i++) {
+                    this.out[i].value = this.cell[i];
+                    simulationArea.simulationQueue.add(this.out[i])
+                }
             }
+
         }
         this.lastClk = clkValue
     }
@@ -202,27 +224,27 @@ export default class ShiftRegister extends CircuitElement {
         return data
     }
 
-/**
-     * Update the number of stages in the register
-     * @param {number} noOfStages - New number of stages (1–32)
-     */
+    /**
+         * Update the number of stages in the register
+         * @param {number} noOfStages - New number of stages (1–32)
+         */
     changeNumberofStages(noOfStages) {
         if (noOfStages == undefined || noOfStages < 1 || noOfStages > 32) return;
         if (this.noOfStages == noOfStages) return;
-        var obj = new ShiftRegister(this.x, this.y, this.scope, this.dir, this.bitWidth, noOfStages, this.isParallelLoad)
+        var obj = new ShiftRegister(this.x, this.y, this.scope, this.dir, this.bitWidth, noOfStages, this.registerType)
         this.delete()
         simulationArea.lastSelected = obj
         return obj
     }
 
-     /**
-     * Update the parallel load configuration
-     * @param {string} parallelLoad - "Yes" or "No"
-     */
-    changeParallelLoad(parallelLoad) {
-        if (parallelLoad !== undefined && this.isParallelLoad !== parallelLoad) {
-            this.isParallelLoad = parallelLoad;
-            var obj = new ShiftRegister(this.x, this.y, this.scope, this.dir, this.bitWidth, this.noOfStages, this.isParallelLoad)
+    /**
+    * Update the parallel load configuration
+    * @param {string} registerType - "Yes" or "No"
+    */
+    changeRegisterType(registerType) {
+        if (registerType !== undefined && this.registerType !== registerType) {
+            this.registerType = registerType;
+            var obj = new ShiftRegister(this.x, this.y, this.scope, this.dir, this.bitWidth, this.noOfStages, this.registerType)
             this.delete()
             simulationArea.lastSelected = obj
             return obj;
@@ -241,11 +263,11 @@ ShiftRegister.prototype.mutableProperties = {
         min: '1',
         func: 'changeNumberofStages',
     },
-    isParallelLoad: {
-        name: 'Parallel Load: ',
+    registerType: {
+        name: 'Register Type: ',
         type: 'dropdown',
-        func: 'changeParallelLoad',
-        dropdownArray: ['Yes', 'No']
+        func: 'changeRegisterType',
+        dropdownArray: ['SISO', 'SIPO', "PISO", 'PIPO']
     }
 }
 
