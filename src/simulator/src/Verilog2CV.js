@@ -26,6 +26,7 @@ import 'codemirror/theme/midnight.css'
 import 'codemirror/addon/hint/show-hint.css'
 import 'codemirror/mode/verilog/verilog.js'
 import 'codemirror/addon/edit/closebrackets.js'
+import 'codemirror/addon/edit/matchbrackets.js'
 import 'codemirror/addon/hint/anyword-hint.js'
 import 'codemirror/addon/hint/show-hint.js'
 import 'codemirror/addon/display/autorefresh.js'
@@ -286,6 +287,7 @@ export function setupCodeMirrorEnvironment() {
         styleActiveLine: true,
         lineNumbers: true,
         autoCloseBrackets: true,
+        matchBrackets: true,
         smartIndent: true,
         indentWithTabs: true,
         extraKeys: { 'Ctrl-Space': 'autocomplete' },

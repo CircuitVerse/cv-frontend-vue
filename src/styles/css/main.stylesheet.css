@@ -1731,6 +1731,17 @@ canvas {
     overflow: scroll;
 }
 
+.CodeMirror-sizer {
+    margin-left: 55px !important;
+    padding-left: 15px !important;
+    line-height: 1.35 !important;
+}
+
+.CodeMirror pre {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 18px !important;
+}
+
 .code-window-embed {
     position: absolute;
     top: 28px;
