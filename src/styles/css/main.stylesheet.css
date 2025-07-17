@@ -1732,9 +1732,8 @@ canvas {
 }
 
 .CodeMirror-sizer {
-    margin-left: 55px !important;
-    padding-left: 15px !important;
-    line-height: 1.35 !important;
+    padding-left: calc(var(--cm-gutter-width, 0px) + 15px);
+    line-height: 1.35;
 }
 
 .CodeMirror pre {
