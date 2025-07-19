@@ -125,4 +125,3 @@ PullResistor.prototype.tooltipText =
 PullResistor.prototype.helplink =
     'https://docs.circuitverse.org/#/chapter4/<to be updated>'
 PullResistor.prototype.objectType = 'PullResistor'
-PullResistor.prototype.objectType = 'PullResistor'
