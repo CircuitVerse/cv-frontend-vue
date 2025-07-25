@@ -64,6 +64,7 @@ import verilogShiftLeft from './modules/verilogShiftLeft'
 import verilogShiftRight from './modules/verilogShiftRight'
 import verilogRAM from './sequential/verilogRAM'
 import PullResistor from './modules/PullResistor'
+import Comparator from './modules/Comparator'
 
 export default function setupModules() {
     var moduleSet = {
@@ -112,7 +113,7 @@ export default function setupModules() {
         PriorityEncoder,
         Tunnel,
         ALU,
-        Rectangle,
+        Rectangle, 
         Arrow,
         ImageAnnotation,
         RGBLedMatrix,
@@ -131,6 +132,7 @@ export default function setupModules() {
         TB_Input,
         TB_Output,
         ForceGate,
+        Comparator,
         PullResistor
     }
     Object.assign(modules, moduleSet)
