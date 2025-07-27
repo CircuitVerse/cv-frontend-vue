@@ -61,7 +61,8 @@
         "TB_Input",
         "TB_Output",
         "ForceGate",
-        "Comparator"
+        "Comparator",
+        "PullResistor"
     ],
     "annotationList": ["Text", "Rectangle", "Arrow", "ImageAnnotation"],
     "inputList": [
@@ -79,7 +80,8 @@
         "Input",
         "Clock",
         "Button",
-        "Counter"
+        "Counter",
+        "PullResistor"
     ],
     "subCircuitInputList": [
         "Random",
@@ -95,7 +97,8 @@
         "ConstantVal",
         "Clock",
         "Button",
-        "Counter"
+        "Counter",
+        "PullResistor"
     ],
     "elementHierarchy": {
         "Input": [
@@ -106,7 +109,8 @@
             { "name": "ConstantVal", "label": "Constant Value" },
             { "name": "Stepper", "label": "Stepper" },
             { "name": "Random", "label": "Random" },
-            { "name": "Counter", "label": "Counter" }
+            { "name": "Counter", "label": "Counter" },
+            { "name": "PullResistor", "label": "Pull Resistor" }
         ],
         "Output": [
             { "name": "Output", "label": "Output" },
