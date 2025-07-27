@@ -102,7 +102,6 @@
     ],
     "elementHierarchy": {
         "Input": [
-            { "name": "PullResistor", "label": "Pull Resistor" },
             { "name": "Input", "label": "Input" },
             { "name": "Button", "label": "Button" },
             { "name": "Power", "label": "Power" },
@@ -110,7 +109,8 @@
             { "name": "ConstantVal", "label": "Constant Value" },
             { "name": "Stepper", "label": "Stepper" },
             { "name": "Random", "label": "Random" },
-            { "name": "Counter", "label": "Counter" }
+            { "name": "Counter", "label": "Counter" },
+            { "name": "PullResistor", "label": "Pull Resistor" }
         ],
         "Output": [
             { "name": "Output", "label": "Output" },
