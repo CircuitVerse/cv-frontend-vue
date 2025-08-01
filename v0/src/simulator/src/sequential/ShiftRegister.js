@@ -1,9 +1,9 @@
 /* eslint-disable no-bitwise */
-import CircuitElement from '../circuitElement'
-import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
-import { correctWidth, lineTo, moveTo, fillText4 } from '../canvasApi'
-import { colors } from '../themer/themer'
+import CircuitElement from '../circuitElement';
+import Node, { findNode } from '../node';
+import simulationArea from '../simulationArea';
+import { correctWidth, lineTo, moveTo, fillText4 } from '../canvasApi';
+import { colors } from '../themer/themer';
 
 /**
  * @class
@@ -23,11 +23,11 @@ export default class ShiftRegister extends CircuitElement {
     constructor(x, y, scope = globalScope, dir = 'DOWN', bitWidth = 1, noOfStages = 4, registerType = "PIPO") {
         super(x, y, scope, dir, bitWidth)
 
-        this.message = 'ShiftRegister'
+        this.message = 'ShiftRegister';
 
         this.width = 60;
 
-        this.noOfStages = noOfStages || parseInt(prompt('Enter number of stages:'))
+        this.noOfStages = noOfStages || parseInt(prompt('Enter number of stages:'));
 
 
         this.registerType = registerType ?? "PIPO";
@@ -37,18 +37,20 @@ export default class ShiftRegister extends CircuitElement {
         this.height = baseHeight + extraHeight;
 
         // Set half-width, half-height for bounding box
-        this.setDimensions(this.width / 2, baseHeight / 2)
+        this.setDimensions(this.width / 2, baseHeight / 2);
 
-        this.rectangleObject = false
+        this.rectangleObject = false;
 
-        this.inp = []
-        this.out = []
+        this.inp = [];
+        this.out = [];
 
-        this.firstInput = new Node(30, 0, 0, this, this.bitWidth, 'First Input')
+        this.firstInput = new Node(30, 0, 0, this, this.bitWidth, 'First Input');
 
 
-        this.reset = new Node(30, -90, 0, this, 1, 'Reset')
-        const labelText = (this.registerType === "PIPO" || this.registerType === "PISO") ? "Shift/Load" : "Shift";
+        this.reset = new Node(30, -90, 0, this, 1, 'Reset');
+        const labelText = (this.registerType === "PIPO" || this.registerType === "PISO")
+            ? "S/L (0=Shift, 1=Load)"
+            : "Shift (1=Shift)";
         this.shiftLoad = new Node(30, -70, 0, this, 1, labelText);
         this.clk = new Node(30, -50, 0, this, 1, "Clock");
 
@@ -56,48 +58,48 @@ export default class ShiftRegister extends CircuitElement {
 
         while (i < this.noOfStages) {
             if (this.registerType == "PIPO") {
-                const a = new Node(30, 20 * (i + 1), 0, this, this.bitWidth)
-                this.inp.push(a)
+                const a = new Node(30, 20 * (i + 1), 0, this, this.bitWidth);
+                this.inp.push(a);
 
-                const b = new Node(-30, 20 * (i + 1), 1, this, this.bitWidth)
+                const b = new Node(-30, 20 * (i + 1), 1, this, this.bitWidth);
                 b.value = 1;
-                this.out.push(b)
+                this.out.push(b);
             } else if (this.registerType == "PISO") {
-                const a = new Node(30, 20 * (i + 1), 0, this, this.bitWidth)
-                this.inp.push(a)
+                const a = new Node(30, 20 * (i + 1), 0, this, this.bitWidth);
+                this.inp.push(a);
             } else if (this.registerType == "SIPO") {
-                const b = new Node(-30, 20 * (i + 1), 1, this, this.bitWidth)
+                const b = new Node(-30, 20 * (i + 1), 1, this, this.bitWidth);
                 b.value = 1;
-                this.out.push(b)
+                this.out.push(b);
             }
             ++i;
         }
         if (this.registerType !== "PIPO" && this.registerType != "SIPO") {
-            const b = new Node(-30, 20 * i, 1, this, this.bitWidth)
+            const b = new Node(-30, 20 * i, 1, this, this.bitWidth);
             b.value = 1;
-            this.out.push(b)
+            this.out.push(b);
         }
-        this.lastClk = 0
-        this.cell = new Array(this.noOfStages)
+        this.lastClk = 0;
+        this.cell = new Array(this.noOfStages);
     }
 
     /**
     * Draw the ShiftRegister component
     */
     customDraw() {
-        const ctx = simulationArea.context
-        const xx = this.x
-        const yy = this.y
+        const ctx = simulationArea.context;
+        const xx = this.x;
+        const yy = this.y;
 
-        const width = this.width
+        const width = this.width;
         const baseHeight = 230; // fixed top height
         const extraHeight = this.noOfStages * 20; // dynamic growth below
 
-        const partitionY = -30
+        const partitionY = -30;
 
         // Draw main rectangle
-        ctx.strokeStyle = colors['stroke']
-        ctx.fillStyle = colors['fill']
+        ctx.strokeStyle = colors['stroke'];
+        ctx.fillStyle = colors['fill'];
         ctx.beginPath();
 
         // top-left
@@ -114,36 +116,50 @@ export default class ShiftRegister extends CircuitElement {
 
         ctx.closePath();
         ctx.fill();
-        ctx.strokeStyle = colors['stroke']
-        ctx.fillStyle = colors['fill']
-        ctx.lineWidth = correctWidth(3)
+        ctx.strokeStyle = colors['stroke'];
+        ctx.fillStyle = colors['fill'];
+        ctx.lineWidth = correctWidth(3);
         ctx.stroke();
 
         // Partition line
-        ctx.beginPath()
-        moveTo(ctx, -width / 2, partitionY, xx, yy, this.direction)
-        lineTo(ctx, width / 2, partitionY, xx, yy, this.direction)
+        ctx.beginPath();
+        moveTo(ctx, -width / 2, partitionY, xx, yy, this.direction);
+        lineTo(ctx, width / 2, partitionY, xx, yy, this.direction);
 
-        ctx.setLineDash([4, 2])
-        ctx.stroke()
-        ctx.setLineDash([])
+        ctx.setLineDash([4, 2]);
+        ctx.stroke();
+        ctx.setLineDash([]);
 
         // Section labels
-        ctx.fillStyle = 'black'
-        ctx.textAlign = 'center'
-        fillText4(ctx, '>>>', 0, 0, xx, yy, this.direction, 10)
+        ctx.fillStyle = 'black';
+        ctx.textAlign = 'center';
+        fillText4(ctx, '>>>', 0, 0, xx, yy, this.direction, 10);
 
         // ==== Label control inputs (inside component) ====
-        fillText4(ctx, 'Reset', 16, -90, xx, yy, this.direction, 6)
+        fillText4(ctx, 'Reset', 16, -90, xx, yy, this.direction, 6);
         const labelText = (this.registerType === "PIPO" || this.registerType === "PISO") ? "S/L" : "S";
-        fillText4(ctx, labelText, 16, -70, xx, yy, this.direction, 6)
-        fillText4(ctx, 'Clock', 16, -50, xx, yy, this.direction, 6)
+        fillText4(ctx, labelText, 16, -70, xx, yy, this.direction, 6);
+        fillText4(ctx, 'Clock', 16, -50, xx, yy, this.direction, 6);
 
         // ==== Label data i/o ====
-        for (let i = 0; i < this.noOfStages; i++) {
-            fillText4(ctx, `In${i}`, 20, 20 * (i + 1), xx, yy, this.direction, 6)
-            fillText4(ctx, `Out${i}`, -20, 20 * (i + 1), xx, yy, this.direction, 6)
-            fillText4(ctx, this.cell[i] == undefined ? 'x' : this.cell[i], 0, 20 * (i + 1), xx, yy, this.direction, 11)
+        let i = 0;
+        while (i < this.noOfStages) {
+            fillText4(ctx, this.cell[i] == undefined ? 'x' : this.cell[i], 0, 20 * (i + 1), xx, yy, this.direction, 11);
+            if (this.registerType == "PIPO") {
+
+                fillText4(ctx, `In${i}`, 20, 20 * (i + 1), xx, yy, this.direction, 6);
+                fillText4(ctx, `Out${i}`, -20, 20 * (i + 1), xx, yy, this.direction, 6);
+            } else if (this.registerType == "PISO") {
+
+                fillText4(ctx, `In${i}`, 20, 20 * (i + 1), xx, yy, this.direction, 6);
+            } else if (this.registerType == "SIPO") {
+
+                fillText4(ctx, `Out${i}`, -20, 20 * (i + 1), xx, yy, this.direction, 6);
+            }
+            ++i;
+        }
+        if (this.registerType !== "PIPO" && this.registerType != "SIPO") {
+            fillText4(ctx, `Out`, -20, 20 * i, xx, yy, this.direction, 6);
         }
 
     }
@@ -177,20 +193,20 @@ export default class ShiftRegister extends CircuitElement {
             }
             else if (isShift === 1) {
                 this.cell.unshift(this.firstInput.value)
-                this.cell.length = this.noOfStages
+                this.cell.length = this.noOfStages;
             }
             if (this.registerType == 'SISO' || this.registerType == 'PISO') {
                 this.out[0].value = this.cell[this.cell.length - 1];
-                simulationArea.simulationQueue.add(this.out[0])
+                simulationArea.simulationQueue.add(this.out[0]);
             } else {
                 for (let i = 0; i < this.noOfStages; i++) {
                     this.out[i].value = this.cell[i];
-                    simulationArea.simulationQueue.add(this.out[i])
+                    simulationArea.simulationQueue.add(this.out[i]);
                 }
             }
 
         }
-        this.lastClk = clkValue
+        this.lastClk = clkValue;
     }
 
     /**
@@ -220,8 +236,8 @@ export default class ShiftRegister extends CircuitElement {
                 cell: this.cell,
             },
             constructorParamaters: [this.direction, this.bitWidth, this.noOfStages],
-        }
-        return data
+        };
+        return data;
     }
 
     /**
@@ -231,10 +247,10 @@ export default class ShiftRegister extends CircuitElement {
     changeNumberofStages(noOfStages) {
         if (noOfStages == undefined || noOfStages < 1 || noOfStages > 32) return;
         if (this.noOfStages == noOfStages) return;
-        var obj = new ShiftRegister(this.x, this.y, this.scope, this.dir, this.bitWidth, noOfStages, this.registerType)
-        this.delete()
-        simulationArea.lastSelected = obj
-        return obj
+        var obj = new ShiftRegister(this.x, this.y, this.scope, this.dir, this.bitWidth, noOfStages, this.registerType);
+        this.delete();
+        simulationArea.lastSelected = obj;
+        return obj;
     }
 
     /**
@@ -244,9 +260,9 @@ export default class ShiftRegister extends CircuitElement {
     changeRegisterType(registerType) {
         if (registerType !== undefined && this.registerType !== registerType) {
             this.registerType = registerType;
-            var obj = new ShiftRegister(this.x, this.y, this.scope, this.dir, this.bitWidth, this.noOfStages, this.registerType)
-            this.delete()
-            simulationArea.lastSelected = obj
+            var obj = new ShiftRegister(this.x, this.y, this.scope, this.dir, this.bitWidth, this.noOfStages, this.registerType);
+            this.delete();
+            simulationArea.lastSelected = obj;
             return obj;
         }
 
@@ -269,11 +285,11 @@ ShiftRegister.prototype.mutableProperties = {
         func: 'changeRegisterType',
         dropdownArray: ['SISO', 'SIPO', "PISO", 'PIPO']
     }
-}
+};
 
 ShiftRegister.prototype.helplink =
-    'https://docs.circuitverse.org/#/chapter4/<to be updated>'
+    'https://docs.circuitverse.org/#/chapter4/<to be updated>';
 
-ShiftRegister.prototype.tooltipText = "ShiftRegister";
+ShiftRegister.prototype.tooltipText = "ShiftRegister: Stores and shifts data across multiple stages based on clock and control signals.";
 
-ShiftRegister.prototype.objectType = 'ShiftRegister'
+ShiftRegister.prototype.objectType = 'ShiftRegister';
