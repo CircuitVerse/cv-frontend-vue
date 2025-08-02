@@ -74,19 +74,24 @@ jobs:
           librsvg2-dev
         shell: bash
 
-      # Import the GPG key for signing on Linux.
-      - name: Import GPG Key (Linux Only)
+      # Import the GPG key and extract its fingerprint for signing.
+      - name: Import GPG Key and Set Key ID (Linux Only)
         if: matrix.os == 'ubuntu-latest'
         env:
           LINUX_SIGNING_KEY: ${{ secrets.LINUX_SIGNING_KEY }}
           LINUX_SIGNING_KEY_PASSPHRASE: ${{ secrets.LINUX_SIGNING_KEY_PASSPHRASE }}
+        id: import-key
         run: |
-          # Import the key securely by piping it directly to gpg.
-          # This avoids writing the private key to a file on the runner's disk.
+          # Import the key securely.
           echo "$LINUX_SIGNING_KEY" | gpg --batch --yes --passphrase "$LINUX_SIGNING_KEY_PASSPHRASE" --import -
-          # List the secret keys to confirm the import was successful.
-          gpg --list-secret-keys
 
+          # Extract the key fingerprint from the imported key.
+          KEY_ID=$(gpg --list-secret-keys --with-colons | grep "^sec" | cut -d: -f5)
+          echo "Extracted GPG Key ID: $KEY_ID"
+
+          # Export the KEY_ID as a step output for other steps to use.
+          echo "LINUX_SIGNING_KEY_ID=$KEY_ID" >> "$GITHUB_OUTPUT"
+          
       # Install macOS-specific dependencies.
       - name: Install macOS Dependencies
         if: matrix.os == 'macos-latest'
@@ -103,33 +108,36 @@ jobs:
 
       # Build the Tauri application, setting signing keys for Linux.
       - name: Build Tauri App
+        if: matrix.os == 'ubuntu-latest'
         env:
-          LINUX_SIGNING_KEY_ID: ${{ secrets.LINUX_SIGNING_KEY_ID }}
-          LINUX_SIGNING_KEY_PASSPHRASE: ${{ secrets.LINUX_SIGNING_KEY_PASSPHRASE }}
+          TAURI_SIGNING_KEY: ${{ steps.import-key.outputs.LINUX_SIGNING_KEY_ID }}
+          TAURI_SIGNING_PASSWORD: ${{ secrets.LINUX_SIGNING_KEY_PASSPHRASE }}
         run: |
-           if [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
-             echo "Using signing key ID: ${{ secrets.LINUX_SIGNING_KEY_ID }}"
-             export TAURI_SIGNING_KEY="${LINUX_SIGNING_KEY_ID}"
-             export TAURI_SIGNING_PASSWORD="${LINUX_SIGNING_KEY_PASSPHRASE}"
-           fi
+           echo "Using TAURI_SIGNING_KEY: $TAURI_SIGNING_KEY"
            npm run tauri build
+        shell: bash
+
+      # Build the Tauri app for non-Linux OSes.
+      - name: Build Tauri App (Non-Linux)
+        if: matrix.os != 'ubuntu-latest'
+        run: npm run tauri build
         shell: bash
   
       # A new step to remove the GPG key from the runner's keychain for security.
       - name: Remove GPG Key (Linux Only)
         if: matrix.os == 'ubuntu-latest'
         env:
-          LINUX_SIGNING_KEY_ID: ${{ secrets.LINUX_SIGNING_KEY_ID }}
+          LINUX_SIGNING_KEY_ID: ${{ steps.import-key.outputs.LINUX_SIGNING_KEY_ID }}
         run: |
           echo "Attempting to remove GPG key with ID: $LINUX_SIGNING_KEY_ID"
-          # Check if the variable is not empty before attempting to use it.
-          if [ -z "$LINUX_SIGNING_KEY_ID" ]; then
+          if [ -n "$LINUX_SIGNING_KEY_ID" ]; then
+            # Delete the secret key and the public key from the keyring.
+            gpg --batch --yes --delete-secret-keys "${LINUX_SIGNING_KEY_ID}"
+            gpg --batch --yes --delete-keys "${LINUX_SIGNING_KEY_ID}"
+          else
             echo "Error: LINUX_SIGNING_KEY_ID is not set. Cannot remove key."
             exit 1
           fi
-          # Delete the secret key and the public key from the keyring.
-          gpg --batch --yes --delete-secret-keys "${LINUX_SIGNING_KEY_ID}"
-          gpg --batch --yes --delete-keys "${LINUX_SIGNING_KEY_ID}"
         shell: bash
 
       # Upload the built artifacts to be used in the next job.
@@ -186,10 +194,10 @@ jobs:
             echo "🔍 Release Assets:"
             ls -la release-assets/
         shell: bash
-
+  
+      # Upload the prepared assets to the GitHub release.
       - name: Upload Assets to Release
         uses: softprops/action-gh-release@v1
         with:
-          files: |
-            release-assets/*
+          files: release-assets/*
           tag_name: ${{ github.event.release.tag_name }}
