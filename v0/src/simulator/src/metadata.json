@@ -60,7 +60,8 @@
         "Dlatch",
         "TB_Input",
         "TB_Output",
-        "ForceGate"
+        "ForceGate",
+        "FIFOQueue"
     ],
     "annotationList": ["Text", "Rectangle", "Arrow", "ImageAnnotation"],
     "inputList": [
@@ -148,7 +149,8 @@
             { "name": "Rom", "label": "ROM" },
             { "name": "RAM", "label": "RAM" },
             { "name": "verilogRAM", "label": "Verilog RAM" },
-            { "name": "EEPROM", "label": "EEPROM" }
+            { "name": "EEPROM", "label": "EEPROM" },
+            { "name": "FIFOQueue", "label": "FIFO Queue" }
         ],
         "Annotation": [
             { "name": "Rectangle", "label": "Rectangle" },
