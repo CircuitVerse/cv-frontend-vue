@@ -116,6 +116,23 @@ jobs:
            echo "Using TAURI_SIGNING_KEY: $TAURI_SIGNING_KEY"
            npm run tauri build
         shell: bash
+      
+      # Generate detached GPG signature files for the built Linux packages.
+      - name: Generate Detached GPG Signatures
+        if: matrix.os == 'ubuntu-latest'
+        env:
+          LINUX_SIGNING_KEY_ID: ${{ steps.import-key.outputs.LINUX_SIGNING_KEY_ID }}
+          LINUX_SIGNING_KEY_PASSPHRASE: ${{ secrets.LINUX_SIGNING_KEY_PASSPHRASE }}
+        run: |
+          # Sign the .deb file.
+          for deb_file in src-tauri/target/release/bundle/deb/*.deb; do
+            gpg --batch --yes --passphrase "$LINUX_SIGNING_KEY_PASSPHRASE" --armor --detach-sign --local-user "$LINUX_SIGNING_KEY_ID" "$deb_file"
+          done
+          # Sign the .AppImage file.
+          for appimage_file in src-tauri/target/release/bundle/appimage/*.AppImage; do
+            gpg --batch --yes --passphrase "$LINUX_SIGNING_KEY_PASSPHRASE" --armor --detach-sign --local-user "$LINUX_SIGNING_KEY_ID" "$appimage_file"
+          done
+        shell: bash
 
       # Build the Tauri app for non-Linux OSes.
       - name: Build Tauri App (Non-Linux)
