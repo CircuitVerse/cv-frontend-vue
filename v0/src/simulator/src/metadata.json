@@ -60,7 +60,8 @@
         "Dlatch",
         "TB_Input",
         "TB_Output",
-        "ForceGate"
+        "ForceGate",
+        "SerialPort"
     ],
     "annotationList": ["Text", "Rectangle", "Arrow", "ImageAnnotation"],
     "inputList": [
@@ -78,7 +79,8 @@
         "Input",
         "Clock",
         "Button",
-        "Counter"
+        "Counter",
+        "SerialPort"
     ],
     "subCircuitInputList": [
         "Random",
@@ -94,7 +96,8 @@
         "ConstantVal",
         "Clock",
         "Button",
-        "Counter"
+        "Counter",
+        "SerialPort"
     ],
     "elementHierarchy": {
         "Input": [
@@ -157,6 +160,7 @@
             { "name": "Text", "label": "Text" }
         ],
         "Misc": [
+            { "name": "SerialPort", "label": "Serial Port" },
             { "name": "TwoComplement", "label": "Two Complement" },
             { "name": "Flag", "label": "Flag" },
             { "name": "Splitter", "label": "Splitter" },

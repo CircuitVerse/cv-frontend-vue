@@ -63,6 +63,7 @@ import verilogPower from './modules/verilogPower'
 import verilogShiftLeft from './modules/verilogShiftLeft'
 import verilogShiftRight from './modules/verilogShiftRight'
 import verilogRAM from './sequential/verilogRAM'
+import SerialPort from './modules/SerialPort'
 
 export default function setupModules() {
     var moduleSet = {
@@ -130,6 +131,7 @@ export default function setupModules() {
         TB_Input,
         TB_Output,
         ForceGate,
+        SerialPort
     }
     Object.assign(modules, moduleSet)
 }
