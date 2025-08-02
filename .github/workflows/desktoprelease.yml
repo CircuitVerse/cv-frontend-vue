@@ -1,9 +1,11 @@
+# This workflow is triggered on a new release.
 name: Desktop Release
 
 on:
   release:
     types: [published]
 
+# A job to build the Tauri application for multiple operating systems.
 jobs:
   build-tauri:
     runs-on: ${{ matrix.os }}
@@ -13,14 +15,17 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
+      # Checkout the repository code.
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # Setup Node.js environment.
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
+      # Cache Node.js dependencies for faster builds.
       - name: Cache Node.js Dependencies
         uses: actions/cache@v4
         with:
@@ -28,20 +33,24 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: ${{ runner.os }}-node-
 
+      # Install project dependencies.
       - name: Install Dependencies
         run: npm install
         shell: bash
 
+      # Install Tauri CLI and API packages.
       - name: Install Tauri CLI and API
         run: |
           npm install -g @tauri-apps/cli
           npm install @tauri-apps/cli @tauri-apps/api @tauri-apps/plugin-fs --save-dev
         shell: bash
 
+      # Run a custom cross-platform build script.
       - name: Run Cross-Platform Build Script
         run: node build-desktop.js
         shell: bash
 
+      # Setup Rust toolchain, skipping for Windows as it's often pre-installed.
       - name: Setup Rust
         if: matrix.os != 'windows-latest'
         run: |
@@ -49,6 +58,7 @@ jobs:
           rustup default stable
         shell: bash
 
+      # Install Linux-specific dependencies.
       - name: Install Linux Dependencies (Ubuntu)
         if: matrix.os == 'ubuntu-latest'
         run: |
@@ -64,17 +74,17 @@ jobs:
           librsvg2-dev
         shell: bash
 
+      # Import the GPG key for signing on Linux.
       - name: Import GPG Key (Linux Only)
         if: matrix.os == 'ubuntu-latest'
         env:
           LINUX_SIGNING_KEY: ${{ secrets.LINUX_SIGNING_KEY }}
           LINUX_SIGNING_KEY_PASSPHRASE: ${{ secrets.LINUX_SIGNING_KEY_PASSPHRASE }}
         run: |
-          echo "$LINUX_SIGNING_KEY" > private.key
-          gpg --batch --yes --passphrase "$LINUX_SIGNING_KEY_PASSPHRASE" --import private.key
+          echo "$LINUX_SIGNING_KEY" | gpg --batch --yes --passphrase "$LINUX_SIGNING_KEY_PASSPHRASE" --import -
           gpg --list-secret-keys
 
-
+      # Install macOS-specific dependencies.
       - name: Install macOS Dependencies
         if: matrix.os == 'macos-latest'
         run: |
@@ -82,16 +92,18 @@ jobs:
           brew install pkg-config
         shell: bash
 
+      # Cache Rust build artifacts.
       - name: Cache Rust Dependencies
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: "./src-tauri"
 
+      # Build the Tauri application, setting signing keys for Linux.
       - name: Build Tauri App
         env:
-          # Only pass these if Linux
-           LINUX_SIGNING_KEY_ID: ${{ secrets.LINUX_SIGNING_KEY_ID }}
-           LINUX_SIGNING_KEY_PASSPHRASE: ${{ secrets.LINUX_SIGNING_KEY_PASSPHRASE }}
+          # These environment variables are used by Tauri for code signing.
+          LINUX_SIGNING_KEY_ID: ${{ secrets.LINUX_SIGNING_KEY_ID }}
+          LINUX_SIGNING_KEY_PASSPHRASE: ${{ secrets.LINUX_SIGNING_KEY_PASSPHRASE }}
         run: |
            if [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
              export TAURI_SIGNING_KEY="${LINUX_SIGNING_KEY_ID}"
@@ -100,7 +112,17 @@ jobs:
            npm run tauri build
         shell: bash
   
+      # A new step to remove the GPG key from the runner's keychain for security.
+      - name: Remove GPG Key (Linux Only)
+        if: matrix.os == 'ubuntu-latest'
+        env:
+          LINUX_SIGNING_KEY_ID: ${{ secrets.LINUX_SIGNING_KEY_ID }}
+        run: |
+          gpg --batch --yes --delete-secret-keys "${LINUX_SIGNING_KEY_ID}"
+          gpg --batch --yes --delete-keys "${LINUX_SIGNING_KEY_ID}"
+        shell: bash
 
+      # Upload the built artifacts to be used in the next job.
       - name: Upload Tauri Build Artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -108,20 +130,23 @@ jobs:
           path: |
             src-tauri/target/release/bundle
 
+  # A job to attach the artifacts to the GitHub release.
   attach-to-release:
     runs-on: ubuntu-latest
     needs: build-tauri
     steps:
+      # Download the artifacts from the build job.
       - name: Download Artifacts
         uses: actions/download-artifact@v4
         with:
           path: artifacts
 
+      # Prepare the release assets by moving them to a single directory.
       - name: Prepare Release Assets
         run: |
             mkdir -p release-assets
   
-            # For Ubuntu (Linux)
+            # For Ubuntu (Linux), copy the deb, appimage, and their corresponding sig files.
             if [ -d "artifacts/Tauri Build Artifacts (ubuntu-latest)/deb" ]; then
               cp artifacts/Tauri\ Build\ Artifacts\ \(ubuntu-latest\)/deb/*.deb release-assets/ || true
               cp artifacts/Tauri\ Build\ Artifacts\ \(ubuntu-latest\)/deb/*.sig release-assets/ || true
@@ -131,12 +156,12 @@ jobs:
               cp artifacts/Tauri\ Build\ Artifacts\ \(ubuntu-latest\)/appimage/*.sig release-assets/ || true
             fi
   
-            # For Windows
+            # For Windows, copy the msi file.
             if [ -d "artifacts/Tauri Build Artifacts (windows-latest)/msi" ]; then
               cp artifacts/Tauri\ Build\ Artifacts\ \(windows-latest\)/msi/*.msi release-assets/ || true
             fi
   
-            # For macOS
+            # For macOS, copy the dmg and create a zip of the app bundle.
             if [ -d "artifacts/Tauri Build Artifacts (macos-latest)/dmg" ]; then
               cp artifacts/Tauri\ Build\ Artifacts\ \(macos-latest\)/dmg/*.dmg release-assets/ || true
             fi
@@ -152,7 +177,6 @@ jobs:
             ls -la release-assets/
         shell: bash
   
-
       - name: Upload Assets to Release
         uses: softprops/action-gh-release@v1
         with:
