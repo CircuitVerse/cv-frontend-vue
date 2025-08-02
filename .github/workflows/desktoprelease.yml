@@ -123,23 +123,6 @@ jobs:
         run: npm run tauri build
         shell: bash
   
-      # A new step to remove the GPG key from the runner's keychain for security.
-      - name: Remove GPG Key (Linux Only)
-        if: matrix.os == 'ubuntu-latest'
-        env:
-          LINUX_SIGNING_KEY_ID: ${{ steps.import-key.outputs.LINUX_SIGNING_KEY_ID }}
-        run: |
-          echo "Attempting to remove GPG key with ID: $LINUX_SIGNING_KEY_ID"
-          if [ -n "$LINUX_SIGNING_KEY_ID" ]; then
-            # Delete the secret key and the public key from the keyring.
-            gpg --batch --yes --delete-secret-keys "${LINUX_SIGNING_KEY_ID}"
-            gpg --batch --yes --delete-keys "${LINUX_SIGNING_KEY_ID}"
-          else
-            echo "Error: LINUX_SIGNING_KEY_ID is not set. Cannot remove key."
-            exit 1
-          fi
-        shell: bash
-
       # Upload the built artifacts to be used in the next job.
       - name: Upload Tauri Build Artifacts
         uses: actions/upload-artifact@v4
