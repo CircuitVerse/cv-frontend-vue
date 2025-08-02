@@ -193,7 +193,7 @@ jobs:
   
             echo "🔍 Release Assets:"
             ls -la release-assets/
-          shell: bash
+        shell: bash
   
       # Upload the prepared assets to the GitHub release.
       - name: Upload Assets to Release
