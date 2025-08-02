@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { correctWidth, lineTo, moveTo } from '../canvasApi'
 import { colors } from '../themer/themer'
 /**
@@ -17,9 +17,6 @@ import { colors } from '../themer/themer'
 export default class Clock extends CircuitElement {
     constructor(x, y, scope = globalScope, dir = 'RIGHT') {
         super(x, y, scope, dir, 1)
-        /*
-        this.scope['Clock'].push(this);
-        */
         this.fixedBitWidth = true
         this.output1 = new Node(10, 0, 1, this, 1)
         this.state = 0
