@@ -108,41 +108,50 @@ jobs:
           path: |
             src-tauri/target/release/bundle
 
-            - name: Prepare Release Assets
-            run: |
-              mkdir -p release-assets
-    
-              # For Ubuntu (Linux)
-              if [ -d "artifacts/Tauri Build Artifacts (ubuntu-latest)/deb" ]; then
-                cp artifacts/Tauri\ Build\ Artifacts\ \(ubuntu-latest\)/deb/*.deb release-assets/ || true
-                cp artifacts/Tauri\ Build\ Artifacts\ \(ubuntu-latest\)/deb/*.sig release-assets/ || true
-              fi
-              if [ -d "artifacts/Tauri Build Artifacts (ubuntu-latest)/appimage" ]; then
-                cp artifacts/Tauri\ Build\ Artifacts\ \(ubuntu-latest\)/appimage/*.AppImage release-assets/ || true
-                cp artifacts/Tauri\ Build\ Artifacts\ \(ubuntu-latest\)/appimage/*.sig release-assets/ || true
-              fi
-    
-              # For Windows
-              if [ -d "artifacts/Tauri Build Artifacts (windows-latest)/msi" ]; then
-                cp artifacts/Tauri\ Build\ Artifacts\ \(windows-latest\)/msi/*.msi release-assets/ || true
-              fi
-    
-              # For macOS
-              if [ -d "artifacts/Tauri Build Artifacts (macos-latest)/dmg" ]; then
-                cp artifacts/Tauri\ Build\ Artifacts\ \(macos-latest\)/dmg/*.dmg release-assets/ || true
-              fi
-              if [ -d "artifacts/Tauri Build Artifacts (macos-latest)/app" ]; then
-                cd artifacts/Tauri\ Build\ Artifacts\ \(macos-latest\)/app
-                for app in *.app; do
-                  zip -r "../../../release-assets/${app%.app}.zip" "$app"
-                done
-                cd - || exit
-              fi
-    
-              echo "🔍 Release Assets:"
-              ls -la release-assets/
-            shell: bash
-    
+  attach-to-release:
+    runs-on: ubuntu-latest
+    needs: build-tauri
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Prepare Release Assets
+        run: |
+            mkdir -p release-assets
+  
+            # For Ubuntu (Linux)
+            if [ -d "artifacts/Tauri Build Artifacts (ubuntu-latest)/deb" ]; then
+              cp artifacts/Tauri\ Build\ Artifacts\ \(ubuntu-latest\)/deb/*.deb release-assets/ || true
+              cp artifacts/Tauri\ Build\ Artifacts\ \(ubuntu-latest\)/deb/*.sig release-assets/ || true
+            fi
+            if [ -d "artifacts/Tauri Build Artifacts (ubuntu-latest)/appimage" ]; then
+              cp artifacts/Tauri\ Build\ Artifacts\ \(ubuntu-latest\)/appimage/*.AppImage release-assets/ || true
+              cp artifacts/Tauri\ Build\ Artifacts\ \(ubuntu-latest\)/appimage/*.sig release-assets/ || true
+            fi
+  
+            # For Windows
+            if [ -d "artifacts/Tauri Build Artifacts (windows-latest)/msi" ]; then
+              cp artifacts/Tauri\ Build\ Artifacts\ \(windows-latest\)/msi/*.msi release-assets/ || true
+            fi
+  
+            # For macOS
+            if [ -d "artifacts/Tauri Build Artifacts (macos-latest)/dmg" ]; then
+              cp artifacts/Tauri\ Build\ Artifacts\ \(macos-latest\)/dmg/*.dmg release-assets/ || true
+            fi
+            if [ -d "artifacts/Tauri Build Artifacts (macos-latest)/app" ]; then
+              cd artifacts/Tauri\ Build\ Artifacts\ \(macos-latest\)/app
+              for app in *.app; do
+                zip -r "../../../release-assets/${app%.app}.zip" "$app"
+              done
+              cd - || exit
+            fi
+  
+            echo "🔍 Release Assets:"
+            ls -la release-assets/
+        shell: bash
+  
 
       - name: Upload Assets to Release
         uses: softprops/action-gh-release@v1
