@@ -64,6 +64,17 @@ jobs:
           librsvg2-dev
         shell: bash
 
+      - name: Import GPG Key (Linux Only)
+        if: matrix.os == 'ubuntu-latest'
+        env:
+          LINUX_SIGNING_KEY: ${{ secrets.LINUX_SIGNING_KEY }}
+          LINUX_SIGNING_KEY_PASSPHRASE: ${{ secrets.LINUX_SIGNING_KEY_PASSPHRASE }}
+        run: |
+          echo "$LINUX_SIGNING_KEY" > private.key
+          gpg --batch --yes --passphrase "$LINUX_SIGNING_KEY_PASSPHRASE" --import private.key
+          gpg --list-secret-keys
+
+
       - name: Install macOS Dependencies
         if: matrix.os == 'macos-latest'
         run: |
@@ -77,8 +88,18 @@ jobs:
           workspaces: "./src-tauri"
 
       - name: Build Tauri App
-        run: npm run tauri build
+        env:
+          # Only pass these if Linux
+           LINUX_SIGNING_KEY_ID: ${{ secrets.LINUX_SIGNING_KEY_ID }}
+           LINUX_SIGNING_KEY_PASSPHRASE: ${{ secrets.LINUX_SIGNING_KEY_PASSPHRASE }}
+        run: |
+           if [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
+             export TAURI_SIGNING_KEY="${LINUX_SIGNING_KEY_ID}"
+             export TAURI_SIGNING_PASSWORD="${LINUX_SIGNING_KEY_PASSPHRASE}"
+           fi
+           npm run tauri build
         shell: bash
+  
 
       - name: Upload Tauri Build Artifacts
         uses: actions/upload-artifact@v4
