@@ -126,11 +126,11 @@ jobs:
         run: |
           # Sign the .deb file.
           for deb_file in src-tauri/target/release/bundle/deb/*.deb; do
-            gpg --batch --yes --passphrase "$LINUX_SIGNING_KEY_PASSPHRASE" --armor --detach-sign --local-user "$LINUX_SIGNING_KEY_ID" "$deb_file"
+            gpg --batch --yes --pinentry-mode loopback --passphrase "$LINUX_SIGNING_KEY_PASSPHRASE" --armor --detach-sign --local-user "$LINUX_SIGNING_KEY_ID" "$deb_file"
           done
           # Sign the .AppImage file.
           for appimage_file in src-tauri/target/release/bundle/appimage/*.AppImage; do
-            gpg --batch --yes --passphrase "$LINUX_SIGNING_KEY_PASSPHRASE" --armor --detach-sign --local-user "$LINUX_SIGNING_KEY_ID" "$appimage_file"
+            gpg --batch --yes --pinentry-mode loopback --passphrase "$LINUX_SIGNING_KEY_PASSPHRASE" --armor --detach-sign --local-user "$LINUX_SIGNING_KEY_ID" "$appimage_file"
           done
         shell: bash
 
@@ -193,7 +193,7 @@ jobs:
   
             echo "🔍 Release Assets:"
             ls -la release-assets/
-        shell: bash
+          shell: bash
   
       # Upload the prepared assets to the GitHub release.
       - name: Upload Assets to Release
