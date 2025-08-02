@@ -81,7 +81,10 @@ jobs:
           LINUX_SIGNING_KEY: ${{ secrets.LINUX_SIGNING_KEY }}
           LINUX_SIGNING_KEY_PASSPHRASE: ${{ secrets.LINUX_SIGNING_KEY_PASSPHRASE }}
         run: |
+          # Import the key securely by piping it directly to gpg.
+          # This avoids writing the private key to a file on the runner's disk.
           echo "$LINUX_SIGNING_KEY" | gpg --batch --yes --passphrase "$LINUX_SIGNING_KEY_PASSPHRASE" --import -
+          # List the secret keys to confirm the import was successful.
           gpg --list-secret-keys
 
       # Install macOS-specific dependencies.
@@ -101,11 +104,11 @@ jobs:
       # Build the Tauri application, setting signing keys for Linux.
       - name: Build Tauri App
         env:
-          # These environment variables are used by Tauri for code signing.
           LINUX_SIGNING_KEY_ID: ${{ secrets.LINUX_SIGNING_KEY_ID }}
           LINUX_SIGNING_KEY_PASSPHRASE: ${{ secrets.LINUX_SIGNING_KEY_PASSPHRASE }}
         run: |
            if [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
+             echo "Using signing key ID: ${{ secrets.LINUX_SIGNING_KEY_ID }}"
              export TAURI_SIGNING_KEY="${LINUX_SIGNING_KEY_ID}"
              export TAURI_SIGNING_PASSWORD="${LINUX_SIGNING_KEY_PASSPHRASE}"
            fi
@@ -118,6 +121,13 @@ jobs:
         env:
           LINUX_SIGNING_KEY_ID: ${{ secrets.LINUX_SIGNING_KEY_ID }}
         run: |
+          echo "Attempting to remove GPG key with ID: $LINUX_SIGNING_KEY_ID"
+          # Check if the variable is not empty before attempting to use it.
+          if [ -z "$LINUX_SIGNING_KEY_ID" ]; then
+            echo "Error: LINUX_SIGNING_KEY_ID is not set. Cannot remove key."
+            exit 1
+          fi
+          # Delete the secret key and the public key from the keyring.
           gpg --batch --yes --delete-secret-keys "${LINUX_SIGNING_KEY_ID}"
           gpg --batch --yes --delete-keys "${LINUX_SIGNING_KEY_ID}"
         shell: bash
@@ -176,9 +186,10 @@ jobs:
             echo "🔍 Release Assets:"
             ls -la release-assets/
         shell: bash
-  
+
       - name: Upload Assets to Release
         uses: softprops/action-gh-release@v1
         with:
-          files: release-assets/*
+          files: |
+            release-assets/*
           tag_name: ${{ github.event.release.tag_name }}
