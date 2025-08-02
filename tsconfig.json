@@ -14,8 +14,8 @@
         "skipLibCheck": true,
         "baseUrl": "./",
         "paths": {
-            "#/*": ["./src/*"],
-            "@/*": ["./src/components/*"]
+            "#/*": ["./v0/src/*"],
+            "@/*": ["./v0/src/components/*"]
         },
         "allowJs": true,
         "declaration": true,
@@ -24,11 +24,11 @@
         "declarationMap": true
     },
     "include": [
-        "/src/**/*.ts",
-        "/src/**/*.d.ts",
-        "/src/**/*.tsx",
-        "/src/**/*.vue",
-        "/src/**/*",
+        "/v0/src/**/*.ts",
+        "/v0/src/**/*.d.ts",
+        "/v0/src/**/*.tsx",
+        "/v0/src/**/*.vue",
+        "/v0/src/**/*",
         "commitlint.config.js"
     ],
     "references": [{ "path": "./tsconfig.node.json" }]
