@@ -74,24 +74,16 @@ jobs:
           librsvg2-dev
         shell: bash
 
-      # Import the GPG key and extract its fingerprint for signing.
-      - name: Import GPG Key and Set Key ID (Linux Only)
+      # Import the GPG key (Linux Only).
+      - name: Import GPG Key
         if: matrix.os == 'ubuntu-latest'
         env:
           LINUX_SIGNING_KEY: ${{ secrets.LINUX_SIGNING_KEY }}
           LINUX_SIGNING_KEY_PASSPHRASE: ${{ secrets.LINUX_SIGNING_KEY_PASSPHRASE }}
-        id: import-key
         run: |
           # Import the key securely.
           echo "$LINUX_SIGNING_KEY" | gpg --batch --yes --passphrase "$LINUX_SIGNING_KEY_PASSPHRASE" --import -
 
-          # Extract the key fingerprint from the imported key.
-          KEY_ID=$(gpg --list-secret-keys --with-colons | grep "^sec" | cut -d: -f5)
-          echo "Extracted GPG Key ID: $KEY_ID"
-
-          # Export the KEY_ID as a step output for other steps to use.
-          echo "LINUX_SIGNING_KEY_ID=$KEY_ID" >> "$GITHUB_OUTPUT"
-          
       # Install macOS-specific dependencies.
       - name: Install macOS Dependencies
         if: matrix.os == 'macos-latest'
@@ -110,7 +102,7 @@ jobs:
       - name: Build Tauri App
         if: matrix.os == 'ubuntu-latest'
         env:
-          TAURI_SIGNING_KEY: ${{ steps.import-key.outputs.LINUX_SIGNING_KEY_ID }}
+          TAURI_SIGNING_KEY: ${{ secrets.LINUX_SIGNING_KEY_ID }}
           TAURI_SIGNING_PASSWORD: ${{ secrets.LINUX_SIGNING_KEY_PASSPHRASE }}
         run: |
            echo "Using TAURI_SIGNING_KEY: $TAURI_SIGNING_KEY"
@@ -121,7 +113,7 @@ jobs:
       - name: Generate Detached GPG Signatures
         if: matrix.os == 'ubuntu-latest'
         env:
-          LINUX_SIGNING_KEY_ID: ${{ steps.import-key.outputs.LINUX_SIGNING_KEY_ID }}
+          LINUX_SIGNING_KEY_ID: ${{ secrets.LINUX_SIGNING_KEY_ID }}
           LINUX_SIGNING_KEY_PASSPHRASE: ${{ secrets.LINUX_SIGNING_KEY_PASSPHRASE }}
         run: |
           set -e # Exit immediately if a command exits with a non-zero status.
