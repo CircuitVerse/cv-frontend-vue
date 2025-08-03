@@ -77,12 +77,10 @@ jobs:
       # Import the GPG key (Linux Only).
       - name: Import GPG Key
         if: matrix.os == 'ubuntu-latest'
+        run: |
+          echo "$LINUX_SIGNING_KEY" | gpg --batch --yes --import
         env:
           LINUX_SIGNING_KEY: ${{ secrets.LINUX_SIGNING_KEY }}
-          LINUX_SIGNING_KEY_PASSPHRASE: ${{ secrets.LINUX_SIGNING_KEY_PASSPHRASE }}
-        run: |
-          # Import the key securely.
-          echo "$LINUX_SIGNING_KEY" | gpg --batch --yes --passphrase "$LINUX_SIGNING_KEY_PASSPHRASE" --import -
 
       # Install macOS-specific dependencies.
       - name: Install macOS Dependencies
@@ -112,23 +110,19 @@ jobs:
       # Generate detached GPG signature files for the built Linux packages.
       - name: Generate Detached GPG Signatures
         if: matrix.os == 'ubuntu-latest'
-        env:
-          LINUX_SIGNING_KEY_ID: ${{ secrets.LINUX_SIGNING_KEY_ID }}
-          LINUX_SIGNING_KEY_PASSPHRASE: ${{ secrets.LINUX_SIGNING_KEY_PASSPHRASE }}
         run: |
-          set -e # Exit immediately if a command exits with a non-zero status.
-          
           # Sign the .deb file.
           for deb_file in src-tauri/target/release/bundle/deb/*.deb; do
-            echo "Signing deb file: $deb_file"
-            gpg --batch --yes --pinentry-mode loopback --passphrase "$LINUX_SIGNING_KEY_PASSPHRASE" --armor --detach-sign --local-user "$LINUX_SIGNING_KEY_ID" "$deb_file"
+            echo "$LINUX_SIGNING_PASSPHRASE" | gpg --batch --yes --pinentry-mode loopback \
+              --passphrase-fd 0 --armor --detach-sign --output "${deb_file}.asc" "$deb_file"
           done
           # Sign the .AppImage file.
           for appimage_file in src-tauri/target/release/bundle/appimage/*.AppImage; do
-            echo "Signing AppImage file: $appimage_file"
-            gpg --batch --yes --pinentry-mode loopback --passphrase "$LINUX_SIGNING_KEY_PASSPHRASE" --armor --detach-sign --local-user "$LINUX_SIGNING_KEY_ID" "$appimage_file"
+            echo "$LINUX_SIGNING_PASSPHRASE" | gpg --batch --yes --pinentry-mode loopback \
+              --passphrase-fd 0 --armor --detach-sign --output "${appimage_file}.asc" "$appimage_file"
           done
-        shell: bash
+        env:
+          LINUX_SIGNING_PASSPHRASE: ${{ secrets.LINUX_SIGNING_KEY_PASSPHRASE }}
 
       # Build the Tauri app for non-Linux OSes.
       - name: Build Tauri App (Non-Linux)
@@ -160,14 +154,14 @@ jobs:
         run: |
             mkdir -p release-assets
   
-            # For Ubuntu (Linux), copy the deb, appimage, and their corresponding sig files.
+            # For Ubuntu (Linux), copy the deb, appimage, and their corresponding asc files.
             if [ -d "artifacts/Tauri Build Artifacts (ubuntu-latest)/deb" ]; then
               cp artifacts/Tauri\ Build\ Artifacts\ \(ubuntu-latest\)/deb/*.deb release-assets/ || true
-              cp artifacts/Tauri\ Build\ Artifacts\ \(ubuntu-latest\)/deb/*.sig release-assets/ || true
+              cp artifacts/Tauri\ Build\ Artifacts\ \(ubuntu-latest\)/deb/*.asc release-assets/ || true
             fi
             if [ -d "artifacts/Tauri Build Artifacts (ubuntu-latest)/appimage" ]; then
               cp artifacts/Tauri\ Build\ Artifacts\ \(ubuntu-latest\)/appimage/*.AppImage release-assets/ || true
-              cp artifacts/Tauri\ Build\ Artifacts\ \(ubuntu-latest\)/appimage/*.sig release-assets/ || true
+              cp artifacts/Tauri\ Build\ Artifacts\ \(ubuntu-latest\)/appimage/*.asc release-assets/ || true
             fi
   
             # For Windows, copy the msi file.
