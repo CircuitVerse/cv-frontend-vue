@@ -5,61 +5,27 @@ on:
   release:
     types: [published]
 
-# A job to get the semantic version and release notes in a dry-run.
+# A job to build the Tauri application for multiple operating systems.
 jobs:
-  get-release-info:
-    runs-on: ubuntu-latest
-    outputs:
-      next_version: ${{ steps.dry-run.outputs.nextReleaseVersion }}
-      release_notes: ${{ steps.dry-run.outputs.releaseNotes }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          # Fetch all history for semantic-release to analyze
-          fetch-depth: 0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Install Dependencies
-        run: npm install
-
-      # Run semantic-release in dry-run mode to get the version and notes
-      - name: Dry-run semantic-release
-        id: dry-run
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          npx semantic-release --dry-run
-          
-          # Extract and set outputs from the dry-run output
-          VERSION=$(npx semantic-release --dry-run | grep 'The next release version is' | sed 's/.*is \([0-9.]*\).*/\1/')
-          NOTES=$(npx semantic-release --dry-run | grep -P '(?<=^\[semantic-release] › ℹ  The release notes are:\n\n).*' -o -s -P | sed 's/\\n/\n/g')
-          
-          echo "::set-output name=nextReleaseVersion::$VERSION"
-          echo "::set-output name=releaseNotes::$NOTES"
-
-  # A job to build the Tauri application for multiple operating systems.
   build-tauri:
     runs-on: ${{ matrix.os }}
-    needs: get-release-info
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
+      # Checkout the repository code.
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # Setup Node.js environment.
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
+      # Cache Node.js dependencies for faster builds.
       - name: Cache Node.js Dependencies
         uses: actions/cache@v4
         with:
@@ -67,20 +33,24 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: ${{ runner.os }}-node-
 
+      # Install project dependencies.
       - name: Install Dependencies
         run: npm install
         shell: bash
-        
+
+      # Install Tauri CLI and API packages.
       - name: Install Tauri CLI and API
         run: |
           npm install -g @tauri-apps/cli
           npm install @tauri-apps/cli @tauri-apps/api @tauri-apps/plugin-fs --save-dev
         shell: bash
 
+      # Run a custom cross-platform build script.
       - name: Run Cross-Platform Build Script
         run: node build-desktop.js
         shell: bash
 
+      # Setup Rust toolchain, skipping for Windows as it's often pre-installed.
       - name: Setup Rust
         if: matrix.os != 'windows-latest'
         run: |
@@ -88,6 +58,7 @@ jobs:
           rustup default stable
         shell: bash
 
+      # Install Linux-specific dependencies.
       - name: Install Linux Dependencies (Ubuntu)
         if: matrix.os == 'ubuntu-latest'
         run: |
@@ -103,6 +74,7 @@ jobs:
           librsvg2-dev
         shell: bash
 
+      # Import the GPG key (Linux Only).
       - name: Import GPG Key
         if: matrix.os == 'ubuntu-latest'
         run: |
@@ -110,6 +82,7 @@ jobs:
         env:
           LINUX_SIGNING_KEY: ${{ secrets.LINUX_SIGNING_KEY }}
 
+      # Install macOS-specific dependencies.
       - name: Install macOS Dependencies
         if: matrix.os == 'macos-latest'
         run: |
@@ -117,11 +90,13 @@ jobs:
           brew install pkg-config
         shell: bash
 
+      # Cache Rust build artifacts.
       - name: Cache Rust Dependencies
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: "./src-tauri"
 
+      # Build the Tauri application, setting signing keys for Linux.
       - name: Build Tauri App
         if: matrix.os == 'ubuntu-latest'
         env:
@@ -129,16 +104,19 @@ jobs:
           TAURI_SIGNING_PASSWORD: ${{ secrets.LINUX_SIGNING_KEY_PASSPHRASE }}
         run: |
            echo "Using TAURI_SIGNING_KEY: $TAURI_SIGNING_KEY"
-           npm run tauri build -- --version ${{ needs.get-release-info.outputs.next_version }}
+           npm run tauri build
         shell: bash
-
+      
+      # Generate detached GPG signature files for the built Linux packages.
       - name: Generate Detached GPG Signatures
         if: matrix.os == 'ubuntu-latest'
         run: |
+          # Sign the .deb file.
           for deb_file in src-tauri/target/release/bundle/deb/*.deb; do
             echo "$LINUX_SIGNING_PASSPHRASE" | gpg --batch --yes --pinentry-mode loopback \
               --passphrase-fd 0 --armor --detach-sign --output "${deb_file}.asc" "$deb_file"
           done
+          # Sign the .AppImage file.
           for appimage_file in src-tauri/target/release/bundle/appimage/*.AppImage; do
             echo "$LINUX_SIGNING_PASSPHRASE" | gpg --batch --yes --pinentry-mode loopback \
               --passphrase-fd 0 --armor --detach-sign --output "${appimage_file}.asc" "$appimage_file"
@@ -146,11 +124,13 @@ jobs:
         env:
           LINUX_SIGNING_PASSPHRASE: ${{ secrets.LINUX_SIGNING_KEY_PASSPHRASE }}
 
+      # Build the Tauri app for non-Linux OSes.
       - name: Build Tauri App (Non-Linux)
         if: matrix.os != 'ubuntu-latest'
-        run: npm run tauri build -- --version ${{ needs.get-release-info.outputs.next_version }}
+        run: npm run tauri build
         shell: bash
   
+      # Upload the built artifacts to be used in the next job.
       - name: Upload Tauri Build Artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -161,16 +141,20 @@ jobs:
   # A job to attach the artifacts to the GitHub release.
   attach-to-release:
     runs-on: ubuntu-latest
-    needs: [get-release-info, build-tauri]
+    needs: build-tauri
     steps:
+      # Download the artifacts from the build job.
       - name: Download Artifacts
         uses: actions/download-artifact@v4
         with:
           path: artifacts
 
+      # Prepare the release assets by moving them to a single directory.
       - name: Prepare Release Assets
         run: |
             mkdir -p release-assets
+  
+            # For Ubuntu (Linux), copy the deb, appimage, and their corresponding asc files.
             if [ -d "artifacts/Tauri Build Artifacts (ubuntu-latest)/deb" ]; then
               cp artifacts/Tauri\ Build\ Artifacts\ \(ubuntu-latest\)/deb/*.deb release-assets/ || true
               cp artifacts/Tauri\ Build\ Artifacts\ \(ubuntu-latest\)/deb/*.asc release-assets/ || true
@@ -179,9 +163,13 @@ jobs:
               cp artifacts/Tauri\ Build\ Artifacts\ \(ubuntu-latest\)/appimage/*.AppImage release-assets/ || true
               cp artifacts/Tauri\ Build\ Artifacts\ \(ubuntu-latest\)/appimage/*.asc release-assets/ || true
             fi
+  
+            # For Windows, copy the msi file.
             if [ -d "artifacts/Tauri Build Artifacts (windows-latest)/msi" ]; then
               cp artifacts/Tauri\ Build\ Artifacts\ \(windows-latest\)/msi/*.msi release-assets/ || true
             fi
+  
+            # For macOS, copy the dmg and create a zip of the app bundle.
             if [ -d "artifacts/Tauri Build Artifacts (macos-latest)/dmg" ]; then
               cp artifacts/Tauri\ Build\ Artifacts\ \(macos-latest\)/dmg/*.dmg release-assets/ || true
             fi
@@ -192,15 +180,14 @@ jobs:
               done
               cd - || exit
             fi
+  
             echo "🔍 Release Assets:"
             ls -la release-assets/
         shell: bash
   
       # Upload the prepared assets to the GitHub release.
-      - name: Update Release and Upload Assets
+      - name: Upload Assets to Release
         uses: softprops/action-gh-release@v1
         with:
           files: release-assets/*
           tag_name: ${{ github.event.release.tag_name }}
-          name: "v${{ needs.get-release-info.outputs.next_version }}"
-          body: ${{ needs.get-release-info.outputs.release_notes }}
