@@ -71,7 +71,6 @@ jobs:
         run: npm install
         shell: bash
         
-      # ... (the rest of your build steps are unchanged)
       - name: Install Tauri CLI and API
         run: |
           npm install -g @tauri-apps/cli
