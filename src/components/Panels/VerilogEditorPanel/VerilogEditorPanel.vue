@@ -24,6 +24,13 @@
                 >
                     {{ $t('simulator.panel_body.verilog_module.save_code') }}
                 </button>
+                <button
+                    class="largeButton btn btn-xs custom-btn--secondary"
+                    @click="toggleTerminal"
+                >
+                    <i class="fas fa-terminal"></i>
+                    {{ isTerminalVisible ? 'Hide' : 'Show' }} Terminal
+                </button>
                 <div id="verilogOutput">
                     {{
                         $t(
@@ -65,6 +72,7 @@
             </div>
         </div>
     </div>
+    <VerilogTerminal ref="verilogTerminal" />
 </template>
 
 <script lang="ts" setup>
@@ -75,22 +83,47 @@ import {
     applyVerilogTheme,
 } from '#/simulator/src/Verilog2CV'
 import PanelHeader from '../Shared/PanelHeader.vue'
+import VerilogTerminal from './VerilogTerminal.vue'
 import { ref, Ref, watch, onMounted } from 'vue'
-// import logixFunction from '#/simulator/src/data'
 
 const selectedTheme: Ref<string> = ref(
     localStorage.getItem('verilog-theme') || 'default'
 )
+const verilogTerminal = ref<InstanceType<typeof VerilogTerminal>>()
+const isTerminalVisible = ref(false)
+
+const toggleTerminal = () => {
+    verilogTerminal.value?.toggleTerminal()
+    isTerminalVisible.value = !isTerminalVisible.value
+}
 
 onMounted(() => {
     const savedTheme = localStorage.getItem('verilog-theme')
     if (savedTheme) {
         selectedTheme.value = savedTheme
     }
+    
+    setTimeout(() => {
+        if (typeof window !== 'undefined' && verilogTerminal.value) {
+            (window as any).verilogTerminal = verilogTerminal.value
+        }
+    }, 100)
 })
 
 watch(selectedTheme, (newTheme: string) => {
     applyVerilogTheme(newTheme)
+})
+
+defineExpose({
+    addTerminalMessage: (text: string, type: 'info' | 'error' | 'success' = 'info') => {
+        verilogTerminal.value?.addMessage(text, type)
+    },
+    clearTerminal: () => {
+        verilogTerminal.value?.clearOutput()
+    },
+    showTerminal: () => {
+        verilogTerminal.value?.showTerminal()
+    }
 })
 </script>
 
@@ -99,5 +132,49 @@ watch(selectedTheme, (newTheme: string) => {
     width: 90%;
     border: 1px solid #fff;
     padding: 8px;
+}
+
+.custom-btn--secondary {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.custom-btn--secondary i {
+    font-size: 12px;
+}
+
+.code-window .CodeMirror {
+    overflow: hidden !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.code-window .CodeMirror-scroll {
+    overflow: hidden !important;
+    max-width: 100% !important;
+}
+
+.code-window .CodeMirror pre {
+    white-space: pre-wrap !important;
+    word-wrap: break-word !important;
+    word-break: break-all !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+}
+
+.code-window .CodeMirror-line {
+    white-space: pre-wrap !important;
+    word-wrap: break-word !important;
+    word-break: break-all !important;
+}
+
+.code-window {
+    overflow: hidden !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
 }
 </style>
