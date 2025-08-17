@@ -1,11 +1,10 @@
-# This workflow is triggered on a new release.
-name: Desktop Release
+name: Tauri Simulator Desktop Release
 
 on:
+  workflow_dispatch:
   release:
     types: [published]
 
-# A job to build the Tauri application for multiple operating systems.
 jobs:
   build-tauri:
     runs-on: ${{ matrix.os }}
@@ -15,17 +14,14 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
-      # Checkout the repository code.
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      # Setup Node.js environment.
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      # Cache Node.js dependencies for faster builds.
       - name: Cache Node.js Dependencies
         uses: actions/cache@v4
         with:
@@ -33,24 +29,20 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: ${{ runner.os }}-node-
 
-      # Install project dependencies.
       - name: Install Dependencies
         run: npm install
         shell: bash
 
-      # Install Tauri CLI and API packages.
       - name: Install Tauri CLI and API
         run: |
           npm install -g @tauri-apps/cli
           npm install @tauri-apps/cli @tauri-apps/api @tauri-apps/plugin-fs --save-dev
         shell: bash
 
-      # Run a custom cross-platform build script.
       - name: Run Cross-Platform Build Script
         run: node build-desktop.js
         shell: bash
 
-      # Setup Rust toolchain, skipping for Windows as it's often pre-installed.
       - name: Setup Rust
         if: matrix.os != 'windows-latest'
         run: |
@@ -58,7 +50,6 @@ jobs:
           rustup default stable
         shell: bash
 
-      # Install Linux-specific dependencies.
       - name: Install Linux Dependencies (Ubuntu)
         if: matrix.os == 'ubuntu-latest'
         run: |
@@ -74,15 +65,6 @@ jobs:
           librsvg2-dev
         shell: bash
 
-      # Import the GPG key (Linux Only).
-      - name: Import GPG Key
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          echo "$LINUX_SIGNING_KEY" | gpg --batch --yes --import
-        env:
-          LINUX_SIGNING_KEY: ${{ secrets.LINUX_SIGNING_KEY }}
-
-      # Install macOS-specific dependencies.
       - name: Install macOS Dependencies
         if: matrix.os == 'macos-latest'
         run: |
@@ -90,47 +72,22 @@ jobs:
           brew install pkg-config
         shell: bash
 
-      # Cache Rust build artifacts.
       - name: Cache Rust Dependencies
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: "./src-tauri"
 
-      # Build the Tauri application, setting signing keys for Linux.
       - name: Build Tauri App
-        if: matrix.os == 'ubuntu-latest'
-        env:
-          TAURI_SIGNING_KEY: ${{ secrets.LINUX_SIGNING_KEY_ID }}
-          TAURI_SIGNING_PASSWORD: ${{ secrets.LINUX_SIGNING_KEY_PASSPHRASE }}
-        run: |
-           echo "Using TAURI_SIGNING_KEY: $TAURI_SIGNING_KEY"
-           npm run tauri build
-        shell: bash
-      
-      # Generate detached GPG signature files for the built Linux packages.
-      - name: Generate Detached GPG Signatures
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          # Sign the .deb file.
-          for deb_file in src-tauri/target/release/bundle/deb/*.deb; do
-            echo "$LINUX_SIGNING_PASSPHRASE" | gpg --batch --yes --pinentry-mode loopback \
-              --passphrase-fd 0 --armor --detach-sign --output "${deb_file}.asc" "$deb_file"
-          done
-          # Sign the .AppImage file.
-          for appimage_file in src-tauri/target/release/bundle/appimage/*.AppImage; do
-            echo "$LINUX_SIGNING_PASSPHRASE" | gpg --batch --yes --pinentry-mode loopback \
-              --passphrase-fd 0 --armor --detach-sign --output "${appimage_file}.asc" "$appimage_file"
-          done
-        env:
-          LINUX_SIGNING_PASSPHRASE: ${{ secrets.LINUX_SIGNING_KEY_PASSPHRASE }}
-
-      # Build the Tauri app for non-Linux OSes.
-      - name: Build Tauri App (Non-Linux)
-        if: matrix.os != 'ubuntu-latest'
         run: npm run tauri build
         shell: bash
-  
-      # Upload the built artifacts to be used in the next job.
+
+      - name: Install GitHub CLI
+        run: |
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+          sudo apt update
+          sudo apt install gh -y
+          
       - name: Upload Tauri Build Artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -138,56 +95,70 @@ jobs:
           path: |
             src-tauri/target/release/bundle
 
-  # A job to attach the artifacts to the GitHub release.
-  attach-to-release:
-    runs-on: ubuntu-latest
-    needs: build-tauri
-    steps:
-      # Download the artifacts from the build job.
-      - name: Download Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: artifacts
-
-      # Prepare the release assets by moving them to a single directory.
-      - name: Prepare Release Assets
-        run: |
-            mkdir -p release-assets
-  
-            # For Ubuntu (Linux), copy the deb, appimage, and their corresponding asc files.
-            if [ -d "artifacts/Tauri Build Artifacts (ubuntu-latest)/deb" ]; then
-              cp artifacts/Tauri\ Build\ Artifacts\ \(ubuntu-latest\)/deb/*.deb release-assets/ || true
-              cp artifacts/Tauri\ Build\ Artifacts\ \(ubuntu-latest\)/deb/*.asc release-assets/ || true
-            fi
-            if [ -d "artifacts/Tauri Build Artifacts (ubuntu-latest)/appimage" ]; then
-              cp artifacts/Tauri\ Build\ Artifacts\ \(ubuntu-latest\)/appimage/*.AppImage release-assets/ || true
-              cp artifacts/Tauri\ Build\ Artifacts\ \(ubuntu-latest\)/appimage/*.asc release-assets/ || true
-            fi
-  
-            # For Windows, copy the msi file.
-            if [ -d "artifacts/Tauri Build Artifacts (windows-latest)/msi" ]; then
-              cp artifacts/Tauri\ Build\ Artifacts\ \(windows-latest\)/msi/*.msi release-assets/ || true
-            fi
-  
-            # For macOS, copy the dmg and create a zip of the app bundle.
-            if [ -d "artifacts/Tauri Build Artifacts (macos-latest)/dmg" ]; then
-              cp artifacts/Tauri\ Build\ Artifacts\ \(macos-latest\)/dmg/*.dmg release-assets/ || true
-            fi
-            if [ -d "artifacts/Tauri Build Artifacts (macos-latest)/app" ]; then
-              cd artifacts/Tauri\ Build\ Artifacts\ \(macos-latest\)/app
-              for app in *.app; do
-                zip -r "../../../release-assets/${app%.app}.zip" "$app"
-              done
-              cd - || exit
-            fi
-  
-            echo "🔍 Release Assets:"
-            ls -la release-assets/
-        shell: bash
-  
-      # Upload the prepared assets to the GitHub release.
-      - name: Upload Assets to Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: release-assets/*
-          tag_name: ${{ github.event.release.tag_name }}
+            upload-assets:
+              needs: [build-tauri]
+              runs-on: ubuntu-latest
+              steps:
+                - name: Checkout repository
+                  uses: actions/checkout@v4
+          
+                - name: Download Artifacts
+                  uses: actions/download-artifact@v4
+                  with:
+                    path: artifacts
+          
+                - name: Prepare Release Assets
+                  run: |
+                    mkdir -p release-assets
+                    
+                    # For Ubuntu (Linux)
+                    if [ -d "artifacts/Tauri Build Artifacts (ubuntu-latest)/deb" ]; then
+                      cp artifacts/Tauri\ Build\ Artifacts\ \(ubuntu-latest\)/deb/*.deb release-assets/ || true
+                    fi
+                    if [ -d "artifacts/Tauri Build Artifacts (ubuntu-latest)/appimage" ]; then
+                      cp artifacts/Tauri\ Build\ Artifacts\ \(ubuntu-latest\)/appimage/*.AppImage release-assets/ || true
+                    fi
+                    
+                    # For Windows
+                    if [ -d "artifacts/Tauri Build Artifacts (windows-latest)/msi" ]; then
+                      cp artifacts/Tauri\ Build\ Artifacts\ \(windows-latest\)/msi/*.msi release-assets/ || true
+                    fi
+                    
+                    # For macOS
+                    if [ -d "artifacts/Tauri Build Artifacts (macos-latest)/dmg" ]; then
+                      cp artifacts/Tauri\ Build\ Artifacts\ \(macos-latest\)/dmg/*.dmg release-assets/ || true
+                    fi
+                    if [ -d "artifacts/Tauri Build Artifacts (macos-latest)/app" ]; then
+                      cd artifacts/Tauri\ Build\ Artifacts\ \(macos-latest\)/app
+                      for app in *.app; do
+                        zip -r "../../../release-assets/${app%.app}.zip" "$app"
+                      done
+                      cd - || exit
+                    fi
+                    
+                    ls -la release-assets/
+          
+                - name: Upload Assets to Release
+                  run: |
+                    for asset in release-assets/*; do
+                      echo "Uploading $asset"
+                      filename=$(basename "$asset")
+                      if [[ "$filename" == *.deb ]]; then
+                        asset_name="${GITHUB_REF_NAME}-linux.deb"
+                      elif [[ "$filename" == *.AppImage ]]; then
+                        asset_name="${GITHUB_REF_NAME}-linux.AppImage"
+                      elif [[ "$filename" == *.msi ]]; then
+                        asset_name="${GITHUB_REF_NAME}-windows.msi"
+                      elif [[ "$filename" == *.dmg ]]; then
+                        asset_name="${GITHUB_REF_NAME}-macos.dmg"
+                      elif [[ "$filename" == *.zip ]]; then
+                        asset_name="${GITHUB_REF_NAME}-macos.app.zip"
+                      else
+                        asset_name="${GITHUB_REF_NAME}-${filename}"
+                      fi
+                      
+                      gh release upload "${GITHUB_REF_NAME}" "$asset" --clobber --name "$asset_name"
+                    done
+                  env:
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  shell: bash
