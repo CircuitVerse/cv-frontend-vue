@@ -1,100 +1,32 @@
-name: Semantic Release
+name: Semantic Release (Changelog Only)
 
 on:
   push:
     branches: [ "main" ]
 
-permissions:
-  contents: write
-  issues: write
-  pull-requests: write
-
 jobs:
-  release:
-    name: Release
+  update-changelog:
     runs-on: ubuntu-latest
-    outputs:
-      new_release_published: ${{ steps.semantic.outputs.new_release_published }}
-      new_release_version: ${{ steps.semantic.outputs.new_release_version }}
-      
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "22"
-          
-      - name: Install semantic-release and plugins
+
+      - name: Install semantic-release (changelog only)
         run: |
           npm install -g semantic-release
-          npm install --no-save \
-            @semantic-release/commit-analyzer \
-            @semantic-release/release-notes-generator \
-            @semantic-release/changelog \
-            @semantic-release/github \
-            @semantic-release/git \
-            @semantic-release/exec \
-            conventional-changelog-conventionalcommits
-      
-      - name: Create semantic-release config file
-        run: |
-          echo '{
-            "branches": ["main"],
-            "plugins": [
-              ["@semantic-release/commit-analyzer", {
-                "preset": "conventionalcommits",
-                "releaseRules": [
-                  {"type": "feat", "release": "minor"},
-                  {"type": "fix", "release": "patch"},
-                  {"type": "docs", "release": "patch"},
-                  {"type": "style", "release": "patch"},
-                  {"type": "refactor", "release": "patch"},
-                  {"type": "perf", "release": "patch"},
-                  {"type": "test", "scope": "breaking", "release": "major"},
-                  {"type": "build", "release": "patch"},
-                  {"type": "ci", "release": "patch"},
-                  {"type": "chore", "release": false}
-                ]
-              }],
-              ["@semantic-release/release-notes-generator", {
-                "preset": "conventionalcommits",
-                "presetConfig": {
-                  "types": [
-                    {"type": "feat", "section": "Features"},
-                    {"type": "fix", "section": "Bug Fixes"},
-                    {"type": "docs", "section": "Documentation"},
-                    {"type": "style", "section": "Styles"},
-                    {"type": "refactor", "section": "Code Refactoring"},
-                    {"type": "perf", "section": "Performance Improvements"},
-                    {"type": "test", "section": "Tests"},
-                    {"type": "build", "section": "Build System"},
-                    {"type": "ci", "section": "Continuous Integration"}
-                  ]
-                }
-              }],
-              ["@semantic-release/changelog", {
-                "changelogFile": "CHANGELOG.md",
-                "changelogTitle": "# Changelog\n\nAll notable changes to this project will be documented in this file."
-              }],
-              ["@semantic-release/exec", {
-                "prepareCmd": "npm version ${nextRelease.version} --no-git-tag-version"
-              }],
-              ["@semantic-release/github", {
-                "assets": []
-              }],
-              ["@semantic-release/git", {
-                "assets": ["CHANGELOG.md", "package.json"],
-                "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
-              }]
-            ]
-          }' > .releaserc.json
-          
-      - name: Run Semantic Release
-        id: semantic
+          npm install --no-save @semantic-release/changelog @semantic-release/git
+
+      - name: Update CHANGELOG.md (without releasing)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release
+        run: |
+          npx semantic-release --dry-run --no-ci \
+            --plugins "@semantic-release/changelog,@semantic-release/git" \
+            --release-rules='[{"release": false}]'
