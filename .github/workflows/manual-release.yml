@@ -1,28 +1,24 @@
 name: Manual Release
 
-on:
-  workflow_dispatch:  # Manually triggered
+on: workflow_dispatch
 
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: '20'
 
-      - name: Install semantic-release
-        run: npm install -g semantic-release
+      - run: npm install -g semantic-release
 
       - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           npx semantic-release \
-            --plugins "@semantic-release/changelog,@semantic-release/git,@semantic-release/github"
+            --extends ./release.config.js
