@@ -1,4 +1,4 @@
-name: Changelog Updater
+name: Update Changelog
 
 on:
   push:
@@ -21,7 +21,7 @@ jobs:
           npm install -g semantic-release
           npm install @semantic-release/changelog @semantic-release/git
 
-      - name: Configure release rules
+      - name: Configure semantic-release
         run: |
           echo 'module.exports = {
             branches: ["main"],
@@ -29,22 +29,19 @@ jobs:
               ["@semantic-release/commit-analyzer", {
                 "preset": "conventionalcommits",
                 "releaseRules": [
-                  {"type": "feat", "release": false},
-                  {"type": "fix", "release": false},
-                  {"breaking": true, "release": "major"}
+                  {"type": "*", "release": false} # Never auto-release
                 ]
               }],
               "@semantic-release/changelog",
               ["@semantic-release/git", {
                 "assets": ["CHANGELOG.md"],
-                "message": "chore(changelog): Update for unreleased changes [skip ci]"
+                "message": "docs(changelog): Update for unreleased changes [skip ci]"
               }]
             ]
           }' > release.config.js
 
-      - name: Update CHANGELOG.md without releasing
+      - name: Update CHANGELOG.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          npx semantic-release --dry-run --no-ci \
-            --extends ./release.config.js
+          npx semantic-release --dry-run --no-ci --extends ./release.config.js

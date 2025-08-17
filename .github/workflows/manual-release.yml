@@ -1,6 +1,11 @@
 name: Manual Release
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (e.g., 1.2.3)'
+        required: true
 
 jobs:
   release:
@@ -10,15 +15,29 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - run: npm install -g semantic-release
-
-      - name: Create Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Verify tag doesn't exist
         run: |
-          npx semantic-release \
-            --extends ./release.config.js
+          if git rev-parse "${{ inputs.version }}" >/dev/null 2>&1; then
+            echo "Tag v${{ inputs.version }} already exists!"
+            exit 1
+          fi
+
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ inputs.version }}
+          name: Release v${{ inputs.version }}
+          body: |
+            ## Changes since last release:
+            $(sed -n '/## Unreleased/,/## /p' CHANGELOG.md | head -n -1)
+          draft: false
+          prerelease: false
+
+      - name: Update CHANGELOG.md header
+        run: |
+          sed -i "s/## Unreleased/## ${{ inputs.version }} - $(date +'%Y-%m-%d')/" CHANGELOG.md
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add CHANGELOG.md
+          git commit -m "docs(changelog): Finalize v${{ inputs.version }} release [skip ci]"
+          git push
