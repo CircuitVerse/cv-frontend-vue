@@ -21,24 +21,24 @@ jobs:
           npm install -g semantic-release
           npm install @semantic-release/changelog @semantic-release/git
 
-      - name: Configure semantic-release
+      - name: Create config file
         run: |
-          echo 'module.exports = {
+          cat << 'EOF' > release.config.js
+          module.exports = {
             branches: ["main"],
             plugins: [
               ["@semantic-release/commit-analyzer", {
-                "preset": "conventionalcommits",
-                "releaseRules": [
-                  {"type": "*", "release": false} # Never auto-release
-                ]
+                preset: "conventionalcommits",
+                releaseRules: [{release: false}] // Disable all automatic releases
               }],
               "@semantic-release/changelog",
               ["@semantic-release/git", {
-                "assets": ["CHANGELOG.md"],
-                "message": "docs(changelog): Update for unreleased changes [skip ci]"
+                assets: ["CHANGELOG.md"],
+                message: "docs(changelog): Update for unreleased changes [skip ci]"
               }]
             ]
-          }' > release.config.js
+          }
+          EOF
 
       - name: Update CHANGELOG.md
         env:
