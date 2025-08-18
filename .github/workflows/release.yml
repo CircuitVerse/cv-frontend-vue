@@ -1,92 +1,14 @@
-# Unified GitHub Actions workflow for creating a release, building multi-platform assets,
-# and attaching them to the new release.
+# This workflow is triggered on pushes to the main branch and when a new release is created.
+name: Vue + Tauri Simulator Desktop Release
 
-name: Unified Release and Deploy
-
-# This workflow is triggered manually.
-# It is designed to be run after a series of merged Pull Requests have accumulated.
 on:
-  workflow_dispatch:
-
-# The permissions required for the jobs.
-permissions:
-  contents: write # For creating releases and pushing tags/commits
-  issues: write # For managing issues and comments
-  pull-requests: write # For managing pull requests
-  id-token: write # For OIDC authentication, if needed
+  push:
+    branches: [ "main" ]
+  release:
+    types: [created]
 
 jobs:
-  # 1. This job handles the release creation and versioning using semantic-release.
-  #    It determines the next version, generates the changelog, and creates the
-  #    new GitHub Release.
-  release:
-    name: Create Release
-    runs-on: ubuntu-latest
-    outputs:
-      new_release_published: ${{ steps.semantic.outputs.new_release_published }}
-      new_release_version: ${{ steps.semantic.outputs.new_release_version }}
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Required for semantic-release to analyze history
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "lts/*"
-
-      - name: Install semantic-release and plugins
-        run: |
-          npm init -y
-          npm install --no-save \
-            semantic-release \
-            @semantic-release/commit-analyzer \
-            @semantic-release/release-notes-generator \
-            @semantic-release/changelog \
-            @semantic-release/github \
-            @semantic-release/git \
-            conventional-changelog-conventionalcommits
-          # semantic-release-pub plugin is specific to Dart/Flutter, we will not use it here
-          # as the user's goal is a Tauri app.
-
-      - name: Create semantic-release config file
-        run: |
-          echo '{
-            "branches": ["main"],
-            "plugins": [
-              ["@semantic-release/commit-analyzer", {
-                "preset": "conventionalcommits"
-              }],
-              ["@semantic-release/release-notes-generator", {
-                "preset": "conventionalcommits"
-              }],
-              ["@semantic-release/changelog", {
-                "changelogFile": "CHANGELOG.md"
-              }],
-              ["@semantic-release/git", {
-                "assets": ["CHANGELOG.md"],
-                "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
-              }],
-              ["@semantic-release/github", {
-                "assets": []
-              }]
-            ]
-          }' > .releaserc.json
-
-      - name: Run Semantic Release
-        id: semantic
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release
-
-  # 2. This job builds the Tauri application for multiple operating systems in parallel.
-  #    It depends on the 'release' job and only runs if a new release was published.
-  build_assets:
-    name: Build Multi-Platform Assets
-    needs: release
-    if: needs.release.outputs.new_release_published == 'true'
+  build-tauri:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -95,9 +17,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          ref: main # Ensure we are building the latest code from the main branch
+        uses: actions/checkout@v3
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -121,6 +41,10 @@ jobs:
           npm install @tauri-apps/cli @tauri-apps/api @tauri-apps/plugin-fs --save-dev
         shell: bash
 
+      - name: Run Cross-Platform Build Script
+        run: node build-desktop.js
+        shell: bash
+
       - name: Setup Rust
         if: matrix.os != 'windows-latest'
         run: |
@@ -132,7 +56,15 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt update
-          sudo apt install -y libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev
+          sudo apt install libwebkit2gtk-4.1-dev \
+          build-essential \
+          curl \
+          wget \
+          file \
+          libxdo-dev \
+          libssl-dev \
+          libayatana-appindicator3-dev \
+          librsvg2-dev
         shell: bash
 
       - name: Install macOS Dependencies
@@ -158,16 +90,24 @@ jobs:
           path: |
             src-tauri/target/release/bundle
 
-  # 3. This final job downloads all the built assets and uploads them to the
-  #    GitHub Release that was created in the first job.
-  upload_release_assets:
-    name: Upload to Release
+  create-release:
     runs-on: ubuntu-latest
-    needs: [release, build_assets]
-    if: needs.release.outputs.new_release_published == 'true'
-
+    needs: build-tauri
     steps:
-      - name: Download all build artifacts
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        # Fetch all history for conventional-changelog to work correctly
+        with:
+          fetch-depth: 0
+
+      # Corrected action name to TriPSs/conventional-changelog-action
+      - name: Generate Changelog
+        id: changelog
+        uses: TriPSs/conventional-changelog-action@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Download Artifacts
         uses: actions/download-artifact@v4
         with:
           path: artifacts
@@ -203,15 +143,43 @@ jobs:
           
           ls -la release-assets/
         shell: bash
-        
-      - name: Upload assets to GitHub Release
-        uses: softprops/action-gh-release@v2
+
+      - name: Install GitHub CLI
+        run: |
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+          sudo apt update
+          sudo apt install gh -y
+        shell: bash
+
+      - name: Auto-increment version and create GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          files: |
+        run: |
+          # Fetch latest tag
+          LATEST_TAG=$(git tag --sort=-v:refname | head -n 1)
+          
+          # Extract major, minor, patch versions
+          if [[ "$LATEST_TAG" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+            MAJOR=${BASH_REMATCH[1]}
+            MINOR=${BASH_REMATCH[2]}
+            PATCH=${BASH_REMATCH[3]}
+          else
+            MAJOR=0
+            MINOR=0
+            PATCH=0
+          fi
+
+          # Increment patch version
+          NEW_VERSION="v$MAJOR.$MINOR.$((PATCH + 1))"
+
+          # Use the generated changelog as the release notes
+          # The `changelog` step's output is accessed via `steps.changelog.outputs.changelog`
+          CHANGELOG_NOTES="${{ steps.changelog.outputs.changelog }}"
+          
+          # Create release
+          gh release create "$NEW_VERSION" \
+            --title "CircuitVerse Desktop $NEW_VERSION" \
+            --notes "$CHANGELOG_NOTES" \
             release-assets/*
-          tag_name: v${{ needs.release.outputs.new_release_version }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          draft: false
-          prerelease: false
+        shell: bash
