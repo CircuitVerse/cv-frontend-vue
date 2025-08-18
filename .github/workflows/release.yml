@@ -1,0 +1,217 @@
+# Unified GitHub Actions workflow for creating a release, building multi-platform assets,
+# and attaching them to the new release.
+
+name: Unified Release and Deploy
+
+# This workflow is triggered manually.
+# It is designed to be run after a series of merged Pull Requests have accumulated.
+on:
+  workflow_dispatch:
+
+# The permissions required for the jobs.
+permissions:
+  contents: write # For creating releases and pushing tags/commits
+  issues: write # For managing issues and comments
+  pull-requests: write # For managing pull requests
+  id-token: write # For OIDC authentication, if needed
+
+jobs:
+  # 1. This job handles the release creation and versioning using semantic-release.
+  #    It determines the next version, generates the changelog, and creates the
+  #    new GitHub Release.
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      new_release_published: ${{ steps.semantic.outputs.new_release_published }}
+      new_release_version: ${{ steps.semantic.outputs.new_release_version }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Required for semantic-release to analyze history
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+
+      - name: Install semantic-release and plugins
+        run: |
+          npm init -y
+          npm install --no-save \
+            semantic-release \
+            @semantic-release/commit-analyzer \
+            @semantic-release/release-notes-generator \
+            @semantic-release/changelog \
+            @semantic-release/github \
+            @semantic-release/git \
+            conventional-changelog-conventionalcommits
+          # semantic-release-pub plugin is specific to Dart/Flutter, we will not use it here
+          # as the user's goal is a Tauri app.
+
+      - name: Create semantic-release config file
+        run: |
+          echo '{
+            "branches": ["main"],
+            "plugins": [
+              ["@semantic-release/commit-analyzer", {
+                "preset": "conventionalcommits"
+              }],
+              ["@semantic-release/release-notes-generator", {
+                "preset": "conventionalcommits"
+              }],
+              ["@semantic-release/changelog", {
+                "changelogFile": "CHANGELOG.md"
+              }],
+              ["@semantic-release/git", {
+                "assets": ["CHANGELOG.md"],
+                "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+              }],
+              ["@semantic-release/github", {
+                "assets": []
+              }]
+            ]
+          }' > .releaserc.json
+
+      - name: Run Semantic Release
+        id: semantic
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
+
+  # 2. This job builds the Tauri application for multiple operating systems in parallel.
+  #    It depends on the 'release' job and only runs if a new release was published.
+  build_assets:
+    name: Build Multi-Platform Assets
+    needs: release
+    if: needs.release.outputs.new_release_published == 'true'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main # Ensure we are building the latest code from the main branch
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Cache Node.js Dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-node-
+
+      - name: Install Dependencies
+        run: npm install
+        shell: bash
+
+      - name: Install Tauri CLI and API
+        run: |
+          npm install -g @tauri-apps/cli
+          npm install @tauri-apps/cli @tauri-apps/api @tauri-apps/plugin-fs --save-dev
+        shell: bash
+
+      - name: Setup Rust
+        if: matrix.os != 'windows-latest'
+        run: |
+          rustup update stable
+          rustup default stable
+        shell: bash
+
+      - name: Install Linux Dependencies (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt update
+          sudo apt install -y libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev
+        shell: bash
+
+      - name: Install macOS Dependencies
+        if: matrix.os == 'macos-latest'
+        run: |
+          brew update
+          brew install pkg-config
+        shell: bash
+
+      - name: Cache Rust Dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri"
+
+      - name: Build Tauri App
+        run: npm run tauri build
+        shell: bash
+
+      - name: Upload Tauri Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Tauri Build Artifacts (${{ matrix.os }})
+          path: |
+            src-tauri/target/release/bundle
+
+  # 3. This final job downloads all the built assets and uploads them to the
+  #    GitHub Release that was created in the first job.
+  upload_release_assets:
+    name: Upload to Release
+    runs-on: ubuntu-latest
+    needs: [release, build_assets]
+    if: needs.release.outputs.new_release_published == 'true'
+
+    steps:
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Prepare Release Assets
+        run: |
+          mkdir -p release-assets
+          
+          # For Ubuntu (Linux)
+          if [ -d "artifacts/Tauri Build Artifacts (ubuntu-latest)/deb" ]; then
+            cp artifacts/Tauri\ Build\ Artifacts\ \(ubuntu-latest\)/deb/*.deb release-assets/ || true
+          fi
+          if [ -d "artifacts/Tauri Build Artifacts (ubuntu-latest)/appimage" ]; then
+            cp artifacts/Tauri\ Build\ Artifacts\ \(ubuntu-latest\)/appimage/*.AppImage release-assets/ || true
+          fi
+          
+          # For Windows
+          if [ -d "artifacts/Tauri Build Artifacts (windows-latest)/msi" ]; then
+            cp artifacts/Tauri\ Build\ Artifacts\ \(windows-latest\)/msi/*.msi release-assets/ || true
+          fi
+          
+          # For macOS
+          if [ -d "artifacts/Tauri Build Artifacts (macos-latest)/dmg" ]; then
+            cp artifacts/Tauri\ Build\ Artifacts\ \(macos-latest\)/dmg/*.dmg release-assets/ || true
+          fi
+          if [ -d "artifacts/Tauri Build Artifacts (macos-latest)/app" ]; then
+            cd artifacts/Tauri\ Build\ Artifacts\ \(macos-latest\)/app
+            for app in *.app; do
+              zip -r "../../../release-assets/${app%.app}.zip" "$app"
+            done
+            cd - || exit
+          fi
+          
+          ls -la release-assets/
+        shell: bash
+        
+      - name: Upload assets to GitHub Release
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: |
+            release-assets/*
+          tag_name: v${{ needs.release.outputs.new_release_version }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          draft: false
+          prerelease: false
