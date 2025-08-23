@@ -37,6 +37,20 @@
     />
 
     <p>
+        <span>Play/Pause:</span>
+        <label class="switch">
+            <input
+                type="checkbox"
+                class="objectPropertyAttributeChecked"
+                name="changeSimulationPlaying"
+                :checked="simulationArea.simulationPlaying"
+                @change="toggleSimulationPlaying"
+            />
+            <span class="slider"></span>
+        </label>
+    </p>
+
+    <p>
         <span>Clock Enabled:</span>
         <label class="switch">
             <input
@@ -104,6 +118,7 @@ import { toggleLayoutMode } from '#/simulator/src/layoutMode'
 // } from '#/simulator/src/circuit'
 // import { showMessage } from '#/simulator/src/utils'
 import { simulationArea } from '#/simulator/src/simulationArea'
+import { toggleSimulationPlaying } from '#/simulator/src/utils'
 import InputGroups from '#/components/Panels/Shared/InputGroups.vue'
 // import MessageBox from '#/components/MessageBox/messageBox.vue'
 // import { ref, Ref, onMounted, watch } from 'vue'
