@@ -112,6 +112,7 @@ const clearOutput = () => {
 }
 
 const startDragging = (e: MouseEvent) => {
+    if (isDragging) return
     isDragging = true
     startY = e.clientY
     document.addEventListener('mousemove', handleDragging)

@@ -29,7 +29,7 @@
                     @click="toggleTerminal"
                 >
                     <i class="fas fa-terminal"></i>
-                    {{ isTerminalVisible ? 'Hide' : 'Show' }} Terminal
+                    {{ verilogStore.isTerminalVisible ? 'Hide' : 'Show' }} Terminal
                 </button>
                 <div id="verilogOutput">
                     {{
@@ -54,7 +54,11 @@
                             )
                         }}
                     </p>
-                    <select v-model="selectedTheme" class="applyTheme">
+                    <select 
+                        v-model="verilogStore.selectedTheme" 
+                        class="applyTheme"
+                        @change="(e) => verilogStore.setTheme((e.target as HTMLSelectElement).value)"
+                    >
                         <optgroup
                             v-for="optgroup in Themes"
                             :key="optgroup.label"
@@ -81,36 +85,29 @@ import {
     saveVerilogCode,
     resetVerilogCode,
     applyVerilogTheme,
-} from '#/simulator/src/Verilog2CV'
+} from '../../../simulator/src/Verilog2CV'
 import PanelHeader from '../Shared/PanelHeader.vue'
 import VerilogTerminal from './VerilogTerminal.vue'
-import { ref, Ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, nextTick } from 'vue'
+import { useVerilogStore } from '../../../store/verilogStore'
 
-const selectedTheme: Ref<string> = ref(
-    localStorage.getItem('verilog-theme') || 'default'
-)
+const verilogStore = useVerilogStore()
 const verilogTerminal = ref<InstanceType<typeof VerilogTerminal>>()
-const isTerminalVisible = ref(false)
 
 const toggleTerminal = () => {
     verilogTerminal.value?.toggleTerminal()
-    isTerminalVisible.value = !isTerminalVisible.value
+    verilogStore.toggleTerminal()
 }
 
 onMounted(() => {
-    const savedTheme = localStorage.getItem('verilog-theme')
-    if (savedTheme) {
-        selectedTheme.value = savedTheme
-    }
-    
-    setTimeout(() => {
+    nextTick(() => {
         if (typeof window !== 'undefined' && verilogTerminal.value) {
             (window as any).verilogTerminal = verilogTerminal.value
         }
-    }, 100)
+    })
 })
 
-watch(selectedTheme, (newTheme: string) => {
+watch(() => verilogStore.selectedTheme, (newTheme: string) => {
     applyVerilogTheme(newTheme)
 })
 

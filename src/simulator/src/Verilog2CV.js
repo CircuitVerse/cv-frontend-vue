@@ -78,7 +78,7 @@ function setVerilogOutput(text, type = 'info') {
                 verilogOutputDiv.innerHTML = text
                 verilogOutputDiv.style.color = '#ff6b6b'
             } else if (type === 'success') {
-                verilogOutputDiv.innerHTML = ''
+                verilogOutputDiv.innerHTML = text
                 verilogOutputDiv.style.color = '#51cf66'
             } else {
                 verilogOutputDiv.innerHTML = text
