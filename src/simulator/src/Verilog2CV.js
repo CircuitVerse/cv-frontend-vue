@@ -89,6 +89,7 @@ function setVerilogOutput(text, type = 'info') {
 }
 
 function clearVerilogOutput() {
+    // TODO: It needs to be handled using pinia after moving it to vue components(Verilog2CV.js)
     if (typeof window !== 'undefined' && window.verilogTerminal) {
         window.verilogTerminal.clearOutput()
     } else {
