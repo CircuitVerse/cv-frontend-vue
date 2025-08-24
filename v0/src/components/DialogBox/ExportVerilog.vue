@@ -43,7 +43,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from '@vue/runtime-core'
+import { onMounted, ref } from 'vue'
 import { useState } from '#/store/SimulatorStore/state'
 const SimulatorState = useState()
 import Codemirror from 'codemirror-editor-vue3'
@@ -58,7 +58,7 @@ import 'codemirror/theme/eclipse.css'
 import { verilog } from '#/simulator/src/verilog'
 import {
     copyToClipboard,
-    download,
+    downloadFile,
     openInNewTab,
     showMessage,
 } from '#/simulator/src/utils'
@@ -82,7 +82,7 @@ onMounted(() => {
 
 function downloadVerilog() {
     let fileName = getProjectName() || 'Untitled'
-    download(fileName + '.v', code.value)
+    downloadFile(fileName + '.v', code.value)
     SimulatorState.dialogBox.exportverilog_dialog = false
 }
 function copyClipboard() {
