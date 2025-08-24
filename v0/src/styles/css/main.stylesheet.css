@@ -133,17 +133,17 @@ input[type='text']:focus {
 .navbar-menu {
     position: relative;
     transition: all 0.2s ease-in-out;
-}
+    }
 
 .navbar-menu > li > a {
-    border: 1px solid transparent;
+    border: 1px solid rgba(192, 187, 187, 0.775);
     border-radius: 1px;
     padding: 2px 8px;
     transition: all 0.2s ease-in-out;
     margin-right: 10px;
 }
 
-.navbar-menu > li > a span,
+/* .navbar-menu > li > a span,
 .acc-caret {
     content: '';
     background: url(./assets/small-components/chevron-down.svg) center/cover
@@ -157,21 +157,21 @@ input[type='text']:focus {
     transform: translateY(-66%);
     padding: 4px;
     margin: 0 5px;
-    transition: all 0.2s ease-in-out;
+    transition: all 0.5s fade-in;
 }
 
 .acc-caret {
     right: -17px;
-}
+} */
 .navbar-menu > li > a:hover {
     border-bottom: 1px solid white;
     text-decoration: none;
 }
 
-.navbar-menu > li > a:hover span,
+/* .navbar-menu > li > a:hover span,
 .acc-drop:hover .acc-caret {
     background: none;
-}
+} */
 
 .projectName {
     position: relative;
