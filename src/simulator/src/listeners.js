@@ -560,7 +560,8 @@ export default function startListeners() {
                 }
 
                 // Simulation play/pause with space key
-                if (e.key === ' ' || e.keyCode === 32) {
+                if (e.code === 'Space' || e.key === ' ' || e.keyCode === 32) {
+                    if (e.repeat) return
                     toggleSimulationPlaying()
                     e.preventDefault()
                     return
