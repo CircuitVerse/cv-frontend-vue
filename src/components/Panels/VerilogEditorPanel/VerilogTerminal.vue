@@ -1,6 +1,6 @@
 <template>
     <div
-        v-if="isVisible"
+        v-if="verilogStore.isTerminalVisible"
         class="verilog-terminal"
         :style="{ height: terminalHeight + 'px' }"
     >
@@ -30,7 +30,8 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted, nextTick, readonly } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick, readonly, watch } from 'vue'
+import { useVerilogStore } from '../../../store/verilogStore'
 
 interface Message {
     text: string
@@ -38,7 +39,7 @@ interface Message {
     timestamp: Date
 }
 
-const isVisible = ref(false)
+const verilogStore = useVerilogStore()
 const terminalHeight = ref(200)
 const messages = ref<Message[]>([])
 const terminalContent = ref<HTMLElement>()
@@ -46,27 +47,20 @@ const terminalContent = ref<HTMLElement>()
 let isDragging = false
 let startY = 0
 
-const showTerminal = () => {
-    isVisible.value = true
-    adjustCodeWindowHeight()
-}
-
-const closeTerminal = () => {
-    isVisible.value = false
-    adjustCodeWindowHeight()
-}
-
-const toggleTerminal = () => {
-    isVisible.value = !isVisible.value
-    adjustCodeWindowHeight()
-}
+// Watch store visibility to trigger side effects
+watch(
+    () => verilogStore.isTerminalVisible,
+    () => {
+        adjustCodeWindowHeight()
+    }
+)
 
 const adjustCodeWindowHeight = () => {
     const codeWindow = document.getElementById('code-window')
     const codeMirror = codeWindow?.querySelector('.CodeMirror')
     
     if (codeWindow && codeMirror) {
-        if (isVisible.value) {
+        if (verilogStore.isTerminalVisible) {
             const currentTerminalHeight = terminalHeight.value
             ;(codeMirror as HTMLElement).style.height = `calc(100vh - 78px - ${currentTerminalHeight}px)`
             ;(codeMirror as HTMLElement).style.width = '100%'
@@ -101,7 +95,7 @@ const addMessage = (text: string, type: 'info' | 'error' | 'success' = 'info') =
     })
     
     nextTick(() => {
-        if (terminalContent.value && isVisible.value) {
+        if (terminalContent.value && verilogStore.isTerminalVisible) {
             terminalContent.value.scrollTop = terminalContent.value.scrollHeight
         }
     })
@@ -148,10 +142,10 @@ const formatTime = (date: Date) => {
 defineExpose({
     addMessage,
     clearOutput,
-    showTerminal,
-    closeTerminal,
-    toggleTerminal,
-    isVisible: readonly(isVisible)
+    showTerminal: verilogStore.showTerminal,
+    closeTerminal: verilogStore.hideTerminal,
+    toggleTerminal: verilogStore.toggleTerminal,
+    isVisible: readonly(() => verilogStore.isTerminalVisible)
 })
 
 onUnmounted(() => {

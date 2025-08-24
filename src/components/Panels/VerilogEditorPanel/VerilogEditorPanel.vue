@@ -95,7 +95,6 @@ const verilogStore = useVerilogStore()
 const verilogTerminal = ref<InstanceType<typeof VerilogTerminal>>()
 
 const toggleTerminal = () => {
-    verilogTerminal.value?.toggleTerminal()
     verilogStore.toggleTerminal()
 }
 
@@ -119,7 +118,7 @@ defineExpose({
         verilogTerminal.value?.clearOutput()
     },
     showTerminal: () => {
-        verilogTerminal.value?.showTerminal()
+        verilogStore.showTerminal()
     }
 })
 </script>
