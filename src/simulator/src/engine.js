@@ -403,6 +403,7 @@ export function updateSelectionsAndPane(scope = globalScope) {
 export function play(scope = globalScope, resetNodes = false) {
     if (errorDetected) return // Don't simulate until error is fixed
     if (loading === true) return // Don't simulate until loaded
+    if (!simulationArea.simulationPlaying) return // Don't simulate when paused
 
     simulationArea.simulationQueue.reset()
     plotArea.setExecutionTime() // Waveform thing
