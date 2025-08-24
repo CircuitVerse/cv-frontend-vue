@@ -138,19 +138,15 @@ module DflipFlop(q, q_inv, clk, d, a_rst, pre, en);
     input clk, a_rst, en;
     input [WIDTH-1:0] d, pre;
 
-    always @ (posedge clk or posedge a_rst)
-    if (a_rst) begin
-        if (^pre === 1'bx) begin
-            q <= {WIDTH{1'b0}};
-            q_inv <= {WIDTH{1'b1}};
-        end else begin
+    always @ (posedge clk or posedge a_rst) begin
+        if (a_rst) begin
             q <= pre;
             q_inv <= ~pre;
+        end else if (en) begin
+            q <= d;
+            q_inv <= ~d;
         end
-    end else if (en == 0) ;
-    else begin
-        q <= d;
-        q_inv <= ~d;
+        // When en == 0, hold current state
     end
 endmodule
     `
