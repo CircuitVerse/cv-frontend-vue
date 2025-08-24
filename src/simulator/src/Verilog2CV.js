@@ -26,6 +26,7 @@ import 'codemirror/theme/midnight.css'
 import 'codemirror/addon/hint/show-hint.css'
 import 'codemirror/mode/verilog/verilog.js'
 import 'codemirror/addon/edit/closebrackets.js'
+import 'codemirror/addon/edit/matchbrackets.js'
 import 'codemirror/addon/hint/anyword-hint.js'
 import 'codemirror/addon/hint/show-hint.js'
 import 'codemirror/addon/display/autorefresh.js'
@@ -66,6 +67,38 @@ export function saveVerilogCode() {
 export function applyVerilogTheme(theme) {
     localStorage.setItem('verilog-theme', theme)
     editor.setOption('theme', theme)
+}
+
+function setVerilogOutput(text, type = 'info') {
+    if (typeof window !== 'undefined' && window.verilogTerminal) {
+        window.verilogTerminal.addMessage(text, type)
+    } else {
+        const verilogOutputDiv = document.getElementById('verilogOutput')
+        if (verilogOutputDiv) {
+            if (type === 'error') {
+                verilogOutputDiv.innerHTML = text
+                verilogOutputDiv.style.color = '#ff6b6b'
+            } else if (type === 'success') {
+                verilogOutputDiv.innerHTML = text
+                verilogOutputDiv.style.color = '#51cf66'
+            } else {
+                verilogOutputDiv.innerHTML = text
+                verilogOutputDiv.style.color = ''
+            }
+        }
+    }
+}
+
+function clearVerilogOutput() {
+    // TODO: It needs to be handled using pinia after moving it to vue components(Verilog2CV.js)
+    if (typeof window !== 'undefined' && window.verilogTerminal) {
+        window.verilogTerminal.clearOutput()
+    } else {
+        const verilogOutputDiv = document.getElementById('verilogOutput')
+        if (verilogOutputDiv) {
+            verilogOutputDiv.innerHTML = ''
+        }
+    }
 }
 
 export function resetVerilogCode() {
@@ -228,6 +261,9 @@ export default function generateVerilogCircuit(
     verilogCode,
     scope = globalScope
 ) {
+    clearVerilogOutput()
+    setVerilogOutput('Compiling Verilog code...', 'info')
+    
     var params = { code: verilogCode }
     fetch('/api/v1/simulator/verilogcv', {
         method: 'POST',
@@ -258,16 +294,16 @@ export default function generateVerilogCircuit(
             )
             changeCircuitName(circuitData.name)
             showMessage('Verilog Circuit Successfully Created')
-            document.getElementById('verilogOutput').innerHTML = ''
+            setVerilogOutput('Verilog Circuit Successfully Created', 'success')
         })
         .catch((error) => {
             if (error.status == 500) {
                 showError('Could not connect to Yosys')
+                setVerilogOutput('Could not connect to Yosys server', 'error')
             } else {
                 showError('There is some issue with the code')
                 error.json().then((errorMessage) => {
-                    document.getElementById('verilogOutput').innerHTML =
-                        errorMessage.message
+                    setVerilogOutput(errorMessage.message, 'error')
                 })
             }
         })
@@ -286,6 +322,7 @@ export function setupCodeMirrorEnvironment() {
         styleActiveLine: true,
         lineNumbers: true,
         autoCloseBrackets: true,
+        matchBrackets: true,
         smartIndent: true,
         indentWithTabs: true,
         extraKeys: { 'Ctrl-Space': 'autocomplete' },
