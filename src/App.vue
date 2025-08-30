@@ -1,21 +1,24 @@
 <template>
+  <div id="app">
+    <MobileHeader />
     <router-view />
+  </div>
 </template>
 
-<script lang="ts" setup>
-// import { defineComponent } from 'vue'
+<script>
+import MobileHeader from './components/MobileHeader.vue';
 
-// export default defineComponent({
-//   name: 'App',
-
-//   components: {
-//     HelloWorld,
-//   },
-
-//   data () {
-//     return {
-//       //
-//     }
-//   },
-// })
+export default {
+  name: 'App',
+  components: {
+    MobileHeader
+  }
+};
 </script>
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+</style>
