@@ -146,6 +146,8 @@ export default class PriorityEncoder extends CircuitElement {
                 this.output1[this.bitWidth - 1 - i]
             )
         }
+
+        this.setOutputsUpstream(true);
     }
 
     /**
