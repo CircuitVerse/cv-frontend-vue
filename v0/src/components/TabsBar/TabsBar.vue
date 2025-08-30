@@ -1,8 +1,9 @@
 <template>
     <div
         id="tabsBar"
+        ref="tabsBarRef"
         class="noSelect pointerCursor"
-        :class="[embedClass(), { maxHeightStyle: showMaxHeight }]"
+        :class="[embedClass() , {maxHeightStyle: showMaxHeight}]"
     >
         <draggable
             :key="updateCount"
@@ -43,10 +44,10 @@
                 </div>
             </template>
         </draggable>
-        <button v-if="!isEmbed()" @click="createNewCircuitScope()">
+        <button v-if="!isEmbed()" @click="createNewCircuitScope().then(updateTabsBarHeight)">
             &#43;
         </button>
-        <button class="tabsbar-toggle" @click="toggleHeight">
+        <button v-if="tabsBarHeight>=31" class="tabsbar-toggle" @click="toggleHeight">
             <i :class="showMaxHeight ? 'fa fa-chevron-down' : 'fa fa-chevron-up'"></i>
         </button>
     </div>
@@ -68,7 +69,7 @@
 <script lang="ts" setup>
 import draggable from 'vuedraggable'
 import { showMessage, truncateString } from '#/simulator/src/utils'
-import { ref, Ref } from 'vue'
+import { ref, Ref ,onMounted , onBeforeUnmount} from 'vue'
 import {
     createNewCircuitScope,
     // deleteCurrentCircuit,
@@ -85,11 +86,34 @@ const SimulatorState = useState()
 const drag: Ref<boolean> = ref(false)
 const updateCount: Ref<number> = ref(0)
 
-const showMaxHeight = ref(true)
+const showMaxHeight = ref(false)
+const tabsBarRef = ref<HTMLElement | null>(null)
+const tabsBarHeight = ref(0)
 
 function toggleHeight() {
     showMaxHeight.value = !showMaxHeight.value
 }
+
+function updateTabsBarHeight() {
+    if (tabsBarRef.value) {
+        tabsBarHeight.value = tabsBarRef.value.clientHeight
+    }
+}
+
+const userClickArrowUp = ({ code,altKey }) => {
+    if (altKey && code === 'KeyN') {
+        createNewCircuitScope().then(updateTabsBarHeight)
+    }
+};
+
+onMounted(() => {
+    updateTabsBarHeight() ;
+    document.addEventListener('keyup', userClickArrowUp, true);
+})
+
+onBeforeUnmount(() => {
+    document.removeEventListener('keyup', userClickArrowUp, true);
+})
 
 // const persistentShow: Ref<boolean> = ref(false)
 // const messageVal: Ref<string> = ref('')
@@ -329,8 +353,8 @@ function isEmbed(): boolean {
 }
 
 .maxHeightStyle {
-    height: 30px;
-    max-height: 30px;
+    height: 32px !important;
+    max-height: 32px !important;
 }
 
 .toolbarButton {
