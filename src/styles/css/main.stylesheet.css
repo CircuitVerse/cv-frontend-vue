@@ -392,6 +392,8 @@ input[type='text']:focus {
 
 .draggable-panel-css .panel-body {
     padding-top: 10px;
+    height: 400px;
+    overflow-y: scroll;
 }
 
 .draggable-panel-css .panel {
