@@ -1,14 +1,14 @@
-import Driver from 'driver.js'
+import Driver from 'driver.js';
+import { TourStep } from './types/tutorial.types'
 
-export const tour = [
+export const tour: TourStep[] = [
     {
         element: '#guide_1',
         className: 'guide_1',
         popover: {
             className: '',
             title: 'Circuit Elements panel',
-            description:
-                'This is where you can find all the circuit elements that are offered to build amazing circuits.',
+            description: 'This is where you can find all the circuit elements that are offered to build amazing circuits.',
             position: 'right',
             offset: 160,
         },
@@ -17,8 +17,7 @@ export const tour = [
         element: '.guide_2',
         popover: {
             title: 'Properties Panel',
-            description:
-                'This panel lets you change element properties as they are selected. When no elements are selected, the panel displays project properties.',
+            description: 'This panel lets you change element properties as they are selected. When no elements are selected, the panel displays project properties.',
             position: 'left',
             offset: 200,
         },
@@ -27,8 +26,7 @@ export const tour = [
         element: '.quick-btn',
         popover: {
             title: 'Quick Access Panel',
-            description:
-                'This movable panel offers to perform some actions like Save Online, Open, Download quickly. Hover over the icons and see for yourself',
+            description: 'This movable panel offers to perform some actions like Save Online, Open, Download quickly. Hover over the icons and see for yourself',
             position: 'bottom',
             // offset: 750,
         },
@@ -37,8 +35,7 @@ export const tour = [
         element: '#tabsBar',
         popover: {
             title: 'Circuit Tabs',
-            description:
-                'This section displays all the circuits you have in your project. You can easily add and delete circuits.',
+            description: 'This section displays all the circuits you have in your project. You can easily add and delete circuits.',
             position: 'bottom',
             offset: 250,
         },
@@ -47,8 +44,7 @@ export const tour = [
         element: '.timing-diagram-panel',
         popover: {
             title: 'Timing Diagram Panel (Waveform)',
-            description:
-                'This panel displays the waveform created by circuits and can be used for resolving race conditions and debugging circuits.',
+            description: 'This panel displays the waveform created by circuits and can be used for resolving race conditions and debugging circuits.',
             position: 'bottom',
             offset: 0,
         },
@@ -58,8 +54,7 @@ export const tour = [
         popover: {
             className: 'bug-guide',
             title: 'Report System',
-            description:
-                'You can report any issues/bugs you face through this issue reporting button there and then quickly.',
+            description: 'You can report any issues/bugs you face through this issue reporting button there and then quickly.',
             position: 'left',
             offset: -105,
         },
@@ -69,8 +64,7 @@ export const tour = [
         popover: {
             className: 'tourHelpStep',
             title: 'Restart tutorial anytime',
-            description:
-                'You can restart this tutorial anytime by clicking on "Tutorial Guide" under this dropdown.',
+            description: 'You can restart this tutorial anytime by clicking on "Tutorial Guide" under this dropdown.',
             position: 'right',
             offset: 0,
         },
@@ -84,49 +78,43 @@ export const tour = [
             offset: 0,
         },
     },
-]
+];
 
 // Not used currently
-export const tutorialWrapper = () => {
-    const panelHighlight = new Driver()
-    document.querySelector('.panelHeader').addEventListener('click', (e) => {
+export const tutorialWrapper = (): void => {
+    const panelHighlight = new Driver();
+    document.querySelector('.panelHeader')?.addEventListener('click', (e) => {
         if (localStorage.tutorials === 'next') {
             panelHighlight.highlight({
                 element: '#guide_1',
-                showButtons: false,
                 popover: {
                     title: 'Here are the elements',
-                    description:
-                        'Select any element by clicking on it & then click anywhere on the grid to place the element.',
+                    description: 'Select any element by clicking on it & then click anywhere on the grid to place the element.',
                     position: 'right',
-                    offset:
-                        e.target.nextElementSibling.offsetHeight +
-                        e.target.offsetTop -
-                        45,
+                    offset: ((e.target as HTMLElement).nextElementSibling as HTMLElement)?.offsetHeight + (e.target as HTMLElement).offsetTop - 45,
                 },
-            })
-            localStorage.setItem('tutorials', 'done')
+            });
+            localStorage.setItem('tutorials', 'done');
         }
-    }, {
-        once: true,
-      })
-    document.querySelector('.icon').addEventListener('click', () => {
-        panelHighlight.reset(true)
-    })
-}
+    }, { once: true });
+
+    document.querySelector('.icon')?.addEventListener('click', () => {
+        panelHighlight.reset(true);
+    });
+};
 
 const animatedTourDriver = new Driver({
     animate: true,
     opacity: 0.8,
     padding: 5,
     showButtons: true,
-})
+});
 
-export function showTourGuide() {
-    document.querySelector('.draggable-panel .maximize').click();
-    animatedTourDriver.defineSteps(tour)
-    animatedTourDriver.start()
-    localStorage.setItem('tutorials_tour_done', true)
+export function showTourGuide(): void {
+    (document.querySelector('.draggable-panel .maximize') as HTMLElement)?.click();
+    animatedTourDriver.defineSteps(tour);
+    animatedTourDriver.start();
+    localStorage.setItem('tutorials_tour_done', 'true');
 }
 
-export default showTourGuide
+export default showTourGuide;
