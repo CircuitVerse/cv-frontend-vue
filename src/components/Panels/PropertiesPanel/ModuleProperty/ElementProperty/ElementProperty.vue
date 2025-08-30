@@ -1,7 +1,7 @@
 <template>
     <InputGroups
         v-if="!obj.fixedBitWidth"
-        property-name="BitWidth:"
+        :property-name="$t('simulator.panel_body.element_property.bit_width')"
         :property-value="obj.bitWidth"
         property-value-type="number"
         value-min="1"
@@ -11,7 +11,7 @@
     />
     <InputGroups
         v-if="obj.changeInputSize"
-        property-name="Input Size:"
+        :property-name="$t('simulator.panel_body.element_property.input_size')"
         :property-value="obj.inputSize"
         property-value-type="number"
         value-min="2"
@@ -21,7 +21,7 @@
     />
     <InputGroups
         v-if="!obj.propagationDelayFixed"
-        property-name="Delay:"
+        :property-name="$t('simulator.panel_body.element_property.delay')"
         :property-value="obj.propagationDelay"
         property-value-type="number"
         value-min="0"
@@ -30,7 +30,9 @@
         property-input-id="delayValue"
     />
     <p v-if="!obj.disableLabel">
-        <span>Label:</span>
+        <span>
+            {{ $t('simulator.panel_body.element_property.label') }}
+        </span>
         <input
             class="objectPropertyAttribute"
             type="text"
@@ -44,7 +46,9 @@
         :dropdown-array="labelDirections"
         property-name="newLabelDirection"
         :property-value="obj.labelDirection"
-        property-input-name="Label Direction:"
+        :property-input-name="
+            $t('simulator.panel_body.element_property.label_direction')
+        "
         property-select-id="labelDirectionValue"
     />
     <DropdownSelect
@@ -52,7 +56,9 @@
         :dropdown-array="labelDirections"
         property-name="newDirection"
         :property-value="obj.direction"
-        property-input-name="Direction:"
+        :property-input-name="
+            $t('simulator.panel_body.element_property.direction')
+        "
         property-select-id="directionValue"
     />
     <DropdownSelect
@@ -60,7 +66,9 @@
         :dropdown-array="labelDirections"
         property-name="newDirection"
         :property-value="obj.direction"
-        property-input-name="Orientation:"
+        :property-input-name="
+            $t('simulator.panel_body.element_property.orientation')
+        "
         property-select-id="orientationValue"
     />
 
