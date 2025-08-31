@@ -30,6 +30,20 @@ export const useAuthStore = defineStore({
         isAdmin: false,
     }),
     actions: {
+        setToken(token: string): void {
+            try {
+                const payload = JSON.parse(globalThis.atob(token.split('.')[1] ?? ''))
+                if (!payload) throw new Error('Empty payload')
+                this.isLoggedIn = true
+                this.userId   = payload.user_id
+                this.username = payload.username ?? 'Guest'
+                // TODO: validate `exp`, `iat`, etc. – sign out if expired
+            } catch (err) {
+                console.error('[authStore] Invalid JWT:', err)
+                this.signOut()                // ensure clean state
+                return
+            }
+        },
         setUserInfo(userInfo: UserInfo): void {
             this.isLoggedIn = true
             this.userId = userInfo.id ?? ''
@@ -40,6 +54,14 @@ export const useAuthStore = defineStore({
             }
             this.locale = userInfo.attributes.locale ?? 'en'
             this.isAdmin = userInfo.attributes.admin
+        },
+        signOut(): void {
+            this.isLoggedIn = false
+            this.userId = ''
+            this.username = 'Guest'
+            this.userAvatar = 'default'
+            this.locale = 'en'
+            this.isAdmin = false
         },
     },
     getters: {
