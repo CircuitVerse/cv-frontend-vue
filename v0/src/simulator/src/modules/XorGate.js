@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { correctWidth, bezierCurveTo, moveTo, arc2 } from '../canvasApi'
 import { changeInputSize } from '../modules'
 import { gateGenerateVerilog } from '../utils'
@@ -29,9 +29,6 @@ export default class XorGate extends CircuitElement {
         bitWidth = 1
     ) {
         super(x, y, scope, dir, bitWidth)
-        /* this is done in this.baseSetup() now
-        this.scope['XorGate'].push(this);
-        */
         this.rectangleObject = false
         this.setDimensions(15, 20)
 
@@ -125,12 +122,11 @@ export default class XorGate extends CircuitElement {
             this.direction
         )
         bezierCurveTo(0, 0, 0, 0, -10, -20, xx, yy, this.direction)
-        // arc(ctx, 0, 0, -20, (-Math.PI / 2), (Math.PI / 2), xx, yy, this.direction);
         ctx.closePath()
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         )
             ctx.fillStyle = colors['hover_select']
         ctx.fill()
@@ -161,7 +157,7 @@ export default class XorGate extends CircuitElement {
  * @type {string}
  * @category modules
  */
-XorGate.prototype.tooltipText = 'Xor Gate Tooltip : Implements an exclusive OR.'
+XorGate.prototype.tooltipText = 'Xor Gate ToolTip : Implements an exclusive OR.'
 
 /**
  * @memberof XorGate

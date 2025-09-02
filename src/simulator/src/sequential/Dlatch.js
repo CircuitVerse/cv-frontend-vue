@@ -98,6 +98,28 @@ export default class Dlatch extends CircuitElement {
         fillText(ctx, this.state.toString(16), xx, yy + 5)
         ctx.fill()
     }
+    static moduleVerilog() {
+return `
+    module Dlatch(q,q_inv,clk,d);
+        // By default, the module is written for 1bit, but it can be changed by changing parameter
+        parameter WIDTH = 1;
+        output reg [WIDTH-1:0]q;
+        output reg [WIDTH-1:0]q_inv;
+        input wire [WIDTH-1:0]d;
+        input wire clk;
+
+        always @(d or clk)
+            begin
+                if (clk)
+                    begin
+                        q <= d;
+                        q_inv <= ~d; 
+                    end
+                // prev state is preserved in case of else or clk = 0 
+            end
+    endmodule
+`
+    }
 }
 
 Dlatch.prototype.tooltipText = 'D Latch : Single input Flip flop or D FlipFlop'
