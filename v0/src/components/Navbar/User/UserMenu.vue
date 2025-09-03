@@ -148,7 +148,7 @@
     <!-- Authentication Dialog -->
     <v-dialog v-model="authModal" max-width="500" persistent>
       <v-card class="auth-modal" style="background-color: white">
-        <v-toolbar color="#4baf50">
+        <v-toolbar color="#43b984">
           <v-toolbar-title class="text-white">
             {{ isLoginMode ? 'Sign In' : 'Register' }}
           </v-toolbar-title>
@@ -193,7 +193,7 @@
 
             <div class="d-flex flex-column">
               <v-btn
-                color="success"
+                color="#43b984"
                 type="submit"
                 :loading="isLoading"
                 :disabled="isLoading"
@@ -208,7 +208,7 @@
                 variant="text"
                 @click="toggleAuthMode"
                 size="small"
-                color="success"
+                color="#43b984"
               >
                 {{ isLoginMode ? 'Need an account? Register' : 'Already have an account? Sign In' }}
               </v-btn>
@@ -268,7 +268,7 @@ const passwordRule = (v: string) => v.length >= 6 || 'Password must be at least 
 const snackbar = ref({
   visible: false,
   message: '',
-  color: 'success'
+  color: '#43b984'
 })
 
 function showAuthModal(login: boolean) {
