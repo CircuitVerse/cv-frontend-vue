@@ -41,7 +41,7 @@
                 <!-- Test Data Table -->
                 <div v-else class="data-table-container">
                     <!-- Table Header -->
-                    <div class="data-grid header-grid">
+                    <div class="data-grid header-grid" :class="{ 'with-results': testBenchStore.showResults }">
                         <div class="grid-cell header-cell label-col"></div>
                         <div class="grid-cell header-cell inputs-col">
                             <span>Inputs</span>
@@ -57,7 +57,7 @@
                     </div>
 
                     <!-- Labels Row -->
-                    <div class="data-grid labels-grid">
+                    <div class="data-grid labels-grid" :class="{ 'with-results': testBenchStore.showResults }">
                         <div class="grid-cell label-col">Label</div>
                         <div class="grid-cell inputs-col">
                             <div v-for="(name, i) in inputsName" :key="`in-name-${i}`" class="io-cell">
@@ -74,7 +74,7 @@
                     </div>
 
                      <!-- Bitwidth Row -->
-                    <div class="data-grid bitwidth-grid">
+                    <div class="data-grid bitwidth-grid" :class="{ 'with-results': testBenchStore.showResults }">
                         <div class="grid-cell label-col">Bitwidth</div>
                         <div class="grid-cell inputs-col">
                             <div v-for="(_, i) in inputsBandWidth" :key="`in-bw-${i}`" class="io-cell">
@@ -98,7 +98,7 @@
                             </v-btn>
                         </div>
 
-                        <div v-for="(_, testIndex) in group.inputs[0]" class="data-grid data-row" :key="testIndex">
+                        <div v-for="(_, testIndex) in group.inputs[0]" class="data-grid data-row" :key="testIndex" :class="{ 'with-results': testBenchStore.showResults }">
                              <div class="grid-cell label-col action-col">
                                  <v-btn icon size="x-small" variant="text" class="delete-io-btn" @click="deleteTestFromGroup(groupIndex, testIndex)"><v-icon size="small">mdi-close</v-icon></v-btn>
                              </div>
@@ -124,18 +124,14 @@
 
             <!-- Action Buttons Footer -->
             <v-card-actions class="footer-actions">
-                <div class="left-actions">
-                    <v-btn class="action-btn new-group-btn" @click="addNewGroup">
-                        <v-icon left>mdi-plus</v-icon>
-                        New Group
-                    </v-btn>
-                    <v-btn class="action-btn reset-btn" @click="resetData">Reset</v-btn>
-                </div>
-                <div class="right-actions">
-                    <v-btn class="action-btn secondary-btn" @click="importFromCSV">Import CSV</v-btn>
-                    <v-btn class="action-btn secondary-btn" @click="exportAsCSV">Export CSV</v-btn>
-                    <v-btn class="action-btn attach-btn" @click="sendData">Attach</v-btn>
-                </div>
+                <v-btn class="action-btn new-group-btn" @click="addNewGroup">
+                    <v-icon left>mdi-plus</v-icon>
+                    New Group
+                </v-btn>
+                <v-btn class="action-btn reset-btn" @click="resetData">Reset</v-btn>
+                <v-btn class="action-btn secondary-btn" @click="importFromCSV">Import CSV</v-btn>
+                <v-btn class="action-btn secondary-btn" @click="exportAsCSV">Export CSV</v-btn>
+                <v-btn class="action-btn attach-btn" @click="sendData">Attach</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -553,21 +549,16 @@ const importFromCSV = () => {
 }
 .data-grid {
     display: grid;
-    grid-template-columns: 120px 1fr 1fr 120px;
     gap: 16px;
     align-items: center;
     padding: 8px 0;
 }
-.data-grid.data-row {
-    grid-template-columns: 40px 1fr 1fr 120px;
-}
-.data-grid:not(.data-row) { /* Header, Labels, Bitwidth don't have results column unless shown */
-    grid-template-columns: 120px 1fr 1fr;
-}
-.data-grid .results-col ~ .results-col,
-.data-grid .results-col { /* Adjust columns when results are visible */
-     grid-template-columns: 120px 1fr 1fr 120px;
-}
+/* Grid column definitions */
+.data-grid:not(.data-row) { grid-template-columns: 120px 1fr 1fr; }
+.data-grid.data-row { grid-template-columns: 40px 1fr 1fr; }
+.data-grid.with-results:not(.data-row) { grid-template-columns: 120px 1fr 1fr 120px; }
+.data-grid.data-row.with-results { grid-template-columns: 40px 1fr 1fr 120px; }
+
 .data-row {
      border-top: 1px solid var(--cv-border);
 }
@@ -582,6 +573,7 @@ const importFromCSV = () => {
     font-weight: 600;
     color: var(--cv-text-primary);
     font-size: 1rem;
+    justify-content: center;
 }
 .action-icon {
     background-color: #e0e0e0;
@@ -683,15 +675,11 @@ const importFromCSV = () => {
 /* Footer Actions */
 .footer-actions {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     padding: 16px 24px;
     border-top: 1px solid var(--cv-border);
     background-color: var(--cv-surface);
-}
-
-.left-actions, .right-actions {
-    display: flex;
     gap: 12px;
 }
 
