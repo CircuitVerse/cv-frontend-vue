@@ -4,7 +4,7 @@
             <!-- Header Section -->
             <v-card-title class="headline-container">
                 <h1 class="headline-title">{{ dialogTitle }}</h1>
-                <v-btn icon size="small" variant="text" @click="testBenchStore.showTestBenchCreator = false" class="close-button">
+                <v-btn icon size="small" variant="text" @click="testBenchStore.showTestBenchCreator.value = false" class="close-button">
                     <v-icon>mdi-close</v-icon>
                 </v-btn>
             </v-card-title>
@@ -139,18 +139,7 @@
 
 <script lang="ts" setup>
 import { computed, ref, reactive, watch } from 'vue';
-// Assuming the store is set up correctly in your project
-// import { useTestBenchStore } from '#/store/testBenchStore';
-
-// Mock store for standalone component viability
-const useTestBenchStore = () => ({
-    showTestBenchCreator: ref(true),
-    testbenchData: reactive({ testData: { groups: [] } }),
-    readOnly: ref(false),
-    showResults: ref(false),
-    sendData: (data: any) => console.log('Data to attach:', data),
-});
-
+import { useTestBenchStore } from '#/store/testBenchStore';
 
 const testBenchStore = useTestBenchStore();
 
