@@ -152,8 +152,8 @@ const testType = ref<string>('comb');
 
 const inputsBandWidth = ref([1]);
 const outputsBandWidth = ref([1]);
-const inputsName = ref<string[]>(["A"]);
-const outputsName = ref<string[]>(["X"]);
+const inputsName = ref<string[]>(["inp1"]);
+const outputsName = ref<string[]>(["out1"]);
 
 interface Group {
     title: string;
@@ -161,39 +161,18 @@ interface Group {
     outputs: string[][];
 }
 
-const initialGroupState = (): Group[] => [
+const groups = reactive<Group[]>([
     {
         title: 'Group 1',
         inputs: [],
         outputs: [],
     }
-];
+]);
 
-const groups = reactive<Group[]>(initialGroupState());
+watch(() => testBenchStore.testbenchData.testData.groups, () => {
+    const { groups: newGroups } = testBenchStore.testbenchData.testData;
 
-const resetData = () => {
-    testTitle.value = 'Untitled';
-    testType.value = 'comb';
-    inputsBandWidth.value = [1];
-    outputsBandWidth.value = [1];
-    inputsName.value = ["A"];
-    outputsName.value = ["X"];
-    groups.splice(0, groups.length, ...initialGroupState());
-};
-
-
-watch(() => testBenchStore.testbenchData.testData.groups, (newGroupsData) => {
-    if (!newGroupsData || newGroupsData.length === 0) {
-         // If store is empty, reset to a default empty state instead of a single group
-        groups.splice(0, groups.length);
-        inputsBandWidth.value = [1];
-        outputsBandWidth.value = [1];
-        inputsName.value = ["A"];
-        outputsName.value = ["X"];
-        return;
-    }
-
-    const values = newGroupsData.map(group => ({
+    const values = newGroups.map(group => ({
         title: group.label,
         inputs: group.inputs.map(input => input.values),
         outputs: group.outputs.map(output => output.values),
@@ -201,60 +180,76 @@ watch(() => testBenchStore.testbenchData.testData.groups, (newGroupsData) => {
 
     groups.splice(0, groups.length, ...values);
 
-    if (newGroupsData[0]) {
-        const { inputs, outputs } = newGroupsData[0];
-        inputsBandWidth.value = inputs.map(input => input.bitWidth);
-        outputsBandWidth.value = outputs.map(output => output.bitWidth);
-        inputsName.value = inputs.map(input => input.label);
-        outputsName.value = outputs.map(output => output.label);
+    if (newGroups[0]) {
+        const { inputs, outputs } = newGroups[0];
+
+        inputsBandWidth.value.splice(0, inputsBandWidth.value.length, ...inputs.map(input => input.bitWidth));
+        outputsBandWidth.value.splice(0, outputsBandWidth.value.length, ...outputs.map(output => output.bitWidth));
+        inputsName.value.splice(0, inputsName.value.length, ...inputs.map(input => input.label));
+        outputsName.value.splice(0, outputsName.value.length, ...outputs.map(output => output.label));
+    } else {
+        inputsBandWidth.value.splice(0, inputsBandWidth.value.length, 1);
+        outputsBandWidth.value.splice(0, outputsBandWidth.value.length, 1);
+        inputsName.value.splice(0, inputsName.value.length, "inp1");
+        outputsName.value.splice(0, outputsName.value.length, "out1");
     }
-}, { deep: true });
+});
 
-watch(() => testBenchStore.testbenchData.testData.groups, (newGroupsData) => {
+watch(() => testBenchStore.testbenchData.testData.groups, () => {
     results.splice(0, results.length);
-    if (!newGroupsData) return;
-
-    newGroupsData.forEach(group => {
-        const groupResults: boolean[][] = [];
-        group.outputs.forEach((output) => {
-            const outputResults: boolean[] = [];
-            if (output.results) {
-                for (let i = 0; i < output.values.length; i++) {
-                    outputResults.push(output.values[i] === output.results[i]);
+    testBenchStore.testbenchData.testData.groups.map(group => {
+        results.push([]);
+        group.outputs.map((output) => {
+            results[results.length - 1].push([]);
+            for(let i = 0; i < output.values.length; i++) {
+                if(output.results && output.values[i] === output.results[i]) {
+                    results[results.length - 1][results[results.length - 1].length - 1].push(true);
+                } else {
+                    results[results.length - 1][results[results.length - 1].length - 1].push(false);
                 }
             }
-            groupResults.push(outputResults);
         });
-        results.push(groupResults);
     });
-}, { deep: true });
-
+},
+    { deep: true }
+);
 
 watch(testType, () => {
-    groups.forEach((group, index) => {
-        group.title = testType.value === 'comb' ? `Group ${index + 1}` : `Set ${index + 1}`;
-    });
+    if (testType.value === 'comb') {
+        groups.forEach(group => {
+            group.title = `Group ${groups.indexOf(group) + 1}`;
+        });
+    }
+    else {
+        groups.forEach(group => {
+            group.title = `Set ${groups.indexOf(group) + 1}`;
+        });
+    }
 });
 
 const sendData = () => {
     const groupsData = groups.map(group => {
-        const inputsData = inputsName.value.map((label, index) => ({
-            label,
-            bitWidth: inputsBandWidth.value[index],
-            values: group.inputs[index] || [],
-        }));
+        const inputsData = group.inputs.map((input, index) => {
+            return {
+                label: inputsName.value[index],
+                bitWidth: inputsBandWidth.value[index],
+                values: input
+            };
+        });
 
-        const outputsData = outputsName.value.map((label, index) => ({
-            label,
-            bitWidth: outputsBandWidth.value[index],
-            values: group.outputs[index] || [],
-        }));
+        const outputsData = group.outputs.map((output, index) => {
+            return {
+                label: outputsName.value[index],
+                bitWidth: outputsBandWidth.value[index],
+                values: output
+            };
+        });
 
         return {
             label: group.title,
             inputs: inputsData,
             outputs: outputsData,
-            n: (inputsData[0]?.values.length) || 0,
+            n: inputsData[0] ? inputsData[0].values.length : 0,
         };
     });
 
@@ -269,102 +264,72 @@ const sendData = () => {
 
 const addTestToGroup = (index: number) => {
     const group = groups[index];
-    for (let i = 0; i < inputsName.value.length; i++) {
-        if (!group.inputs[i]) group.inputs[i] = [];
-        group.inputs[i].push("0".repeat(inputsBandWidth.value[i] || 1));
+    for (let i = 0; i < inputsBandWidth.value.length; i++) {
+        if (group.inputs.length === i)
+            group.inputs.push([]);
+        group.inputs[i].push("0");
     }
 
-    for (let i = 0; i < outputsName.value.length; i++) {
-        if (!group.outputs[i]) group.outputs[i] = [];
-        group.outputs[i].push("0".repeat(outputsBandWidth.value[i] || 1));
+    for (let i = 0; i < outputsBandWidth.value.length; i++) {
+        if (group.outputs.length === i)
+            group.outputs.push([]);
+        group.outputs[i].push("0");
     }
-};
-
-const deleteTestFromGroup = (groupIndex: number, testIndex: number) => {
-    groups[groupIndex].inputs.forEach(input => {
-        input.splice(testIndex, 1);
-    });
-
-    groups[groupIndex].outputs.forEach(output => {
-        output.splice(testIndex, 1);
-    });
 };
 
 const addNewGroup = () => {
-    const nextIndex = groups.length + 1;
-    const newGroup: Group = {
-        title: testType.value === 'comb' ? `Group ${nextIndex}` : `Set ${nextIndex}`,
-        inputs: Array.from({ length: inputsName.value.length }, () => []),
-        outputs: Array.from({ length: outputsName.value.length }, () => []),
-    };
-
-    // If there are existing tests in other groups, add one empty test to the new group for consistency
-    const hasTests = groups.some(g => g.inputs[0]?.length > 0);
-    if(groups.length > 0 && hasTests) {
-        for (let i = 0; i < inputsName.value.length; i++) {
-            newGroup.inputs[i].push("0".repeat(inputsBandWidth.value[i] || 1));
-        }
-        for (let i = 0; i < outputsName.value.length; i++) {
-            newGroup.outputs[i].push("0".repeat(outputsBandWidth.value[i] || 1));
-        }
-    }
-
-    groups.push(newGroup);
+    groups.push({
+        title: `Group ${groups.length + 1}`,
+        inputs: [],
+        outputs: [],
+    });
 };
-
 
 const increInputs = () => {
+    groups.forEach((group) => {
+        if (group.inputs.length === 0) return;
+
+        group.inputs.push([]);
+
+        for (let i = 0; i < group.inputs[0].length; i++) {
+            group.inputs[group.inputs.length - 1].push("0");
+        }
+    });
+
     inputsBandWidth.value.push(1);
     inputsName.value.push(`inp${inputsName.value.length + 1}`);
-    groups.forEach((group) => {
-        const newCol = group.inputs.length > 0 ? Array(group.inputs[0].length).fill("0") : [];
-        group.inputs.push(newCol);
-    });
-};
-
-const deleteInput = (index: number) => {
-    if (inputsName.value.length <= 1) return;
-    inputsBandWidth.value.splice(index, 1);
-    inputsName.value.splice(index, 1);
-    groups.forEach((group) => {
-        group.inputs.splice(index, 1);
-    });
 };
 
 const increOutputs = () => {
+    groups.forEach((group) => {
+        if (group.outputs.length === 0) return;
+
+        group.outputs.push([]);
+
+        for (let i = 0; i < group.outputs[0].length; i++) {
+            group.outputs[group.outputs.length - 1].push("0");
+        }
+    });
+
     outputsBandWidth.value.push(1);
     outputsName.value.push(`out${outputsName.value.length + 1}`);
-    groups.forEach((group) => {
-         const newCol = group.outputs.length > 0 ? Array(group.outputs[0].length).fill("0") : [];
-        group.outputs.push(newCol);
-    });
 };
-
-const deleteOutput = (index: number) => {
-    if (outputsName.value.length <= 1) return;
-    outputsBandWidth.value.splice(index, 1);
-    outputsName.value.splice(index, 1);
-    groups.forEach((group) => {
-        group.outputs.splice(index, 1);
-    });
-};
-
 
 const exportAsCSV = () => {
     let csv = `${testType.value},${testTitle.value}\n`;
 
-    csv += `Inputs BandWidth:${inputsBandWidth.value.join(',')}\n`;
-    csv += `Outputs BandWidth:${outputsBandWidth.value.join(',')}\n`;
-    csv += `Inputs Name:${inputsName.value.join(',')}\n`;
-    csv += `Outputs Name:${outputsName.value.join(',')}\n`;
+    csv += `Inputs BandWidth: ${inputsBandWidth.value.join(',')}\n`;
+    csv += `Outputs BandWidth: ${outputsBandWidth.value.join(',')}\n`;
+    csv += `Inputs Name: ${inputsName.value.join(',')}\n`;
+    csv += `Outputs Name: ${outputsName.value.join(',')}\n`;
 
     csv += groups.map(group => {
-        let groupStr = `G-${group.title}\n`;
+        let groupStr = `G-${group.title}:\n`;
         groupStr += group.inputs.map((input, index) => `I-${inputsName.value[index]}:${input.join(',')}`).join('\n');
         groupStr += '\n';
         groupStr += group.outputs.map((output, index) => `O-${outputsName.value[index]}:${output.join(',')}`).join('\n');
         return groupStr;
-    }).join('\n\n');
+    }).join('\n');
 
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
@@ -387,46 +352,56 @@ const importFromCSV = () => {
         const reader = new FileReader();
         reader.onload = () => {
             const csv = reader.result as string;
-            const lines = csv.split('\n').filter(line => line.trim() !== '');
+            const lines = csv.split('\n');
 
             const firstLine = lines.shift();
             if (firstLine) {
                 [testType.value, testTitle.value] = firstLine.split(',');
             }
 
-            const config: { [key: string]: string } = {};
-            while(lines.length > 0 && lines[0].includes(':') && !lines[0].startsWith('G-')) {
-                const line = lines.shift();
-                if(!line) continue;
-                const [key, value] = line.split(/:(.*)/s);
-                config[key] = value;
+            let line = lines.shift();
+            if (line) {
+                inputsBandWidth.value = line.split(': ')[1].split(',').map(Number);
             }
-
-            inputsBandWidth.value = config['Inputs BandWidth']?.split(',').map(Number) || [];
-            outputsBandWidth.value = config['Outputs BandWidth']?.split(',').map(Number) || [];
-            inputsName.value = config['Inputs Name']?.split(',') || [];
-            outputsName.value = config['Outputs Name']?.split(',') || [];
-
+            line = lines.shift();
+            if (line) {
+                outputsBandWidth.value = line.split(': ')[1].split(',').map(Number);
+            }
+            line = lines.shift();
+            if (line) {
+                inputsName.value = line.split(': ')[1].split(',');
+            }
+            line = lines.shift();
+            if (line) {
+                outputsName.value = line.split(': ')[1].split(',');
+            }
 
             const newGroups: Group[] = [];
-            let currentGroup: Group | null = null;
-
-            for (const line of lines) {
-                 if (line.startsWith('G-')) {
-                    if (currentGroup) newGroups.push(currentGroup);
-                    currentGroup = { title: line.substring(2), inputs: [], outputs: [] };
-                } else if (currentGroup) {
-                    const [typeAndLabel, values] = line.split(':');
-                    const valuesArr = values ? values.split(',') : [];
-
-                    if (typeAndLabel.startsWith('I-')) {
-                        currentGroup.inputs.push(valuesArr);
-                    } else if (typeAndLabel.startsWith('O-')) {
-                        currentGroup.outputs.push(valuesArr);
+            let group: Group = {
+                title: '',
+                inputs: [],
+                outputs: [],
+            }
+            lines.forEach(line => {
+                if (line.startsWith('G-')) {
+                    if (group.title) {
+                        newGroups.push(group);
+                    }
+                    group = { title: line.slice(2), inputs: [], outputs: [] };
+                } else {
+                    const [name, values] = line.split(':');
+                    const isInput = name.startsWith('I-') && inputsName.value.includes(name.slice(2));
+                    const isOutput = name.startsWith('O-') && outputsName.value.includes(name.slice(2));
+                    if (isInput) {
+                        group.inputs.push(values.split(','));
+                    } else if (isOutput) {
+                        group.outputs.push(values.split(','));
                     }
                 }
+            });
+            if (group.title) {
+                newGroups.push(group);
             }
-            if (currentGroup) newGroups.push(currentGroup);
 
             groups.splice(0, groups.length, ...newGroups);
         };
@@ -436,7 +411,6 @@ const importFromCSV = () => {
 
     input.click();
 };
-
 </script>
 
 <style scoped>
