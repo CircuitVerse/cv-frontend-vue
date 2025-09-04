@@ -4,7 +4,7 @@
             <!-- Header Section -->
             <v-card-title class="headline-container">
                 <h1 class="headline-title">{{ dialogTitle }}</h1>
-                <v-btn icon size="small" variant="text" @click="testBenchStore.showTestBenchCreator.value = false" class="close-button">
+                <v-btn icon size="small" variant="text" @click="testBenchStore.showTestBenchCreator = false" class="close-button">
                     <v-icon>mdi-close</v-icon>
                 </v-btn>
             </v-card-title>
