@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="showCreator" :persistent="false" max-width="1100px">
+    <v-dialog v-model="testBenchStore.showTestBenchCreator" :persistent="false" max-width="1100px">
         <v-card class="testbench-creator-card">
             <!-- Header Section -->
             <v-card-title class="headline-container">
@@ -80,12 +80,12 @@
                         <div class="grid-cell label-col">Bitwidth</div>
                         <div class="grid-cell inputs-col">
                             <div v-for="(_, i) in inputsBandWidth" :key="`in-bw-${i}`" class="io-cell">
-                                <input class="io-input bitwidth-input" type="text" v-model="inputsBandWidth[i]" maxlength="1" />
+                                <input class="io-input bitwidth-input" type="number" v-model.number="inputsBandWidth[i]" min="1" max="64" />
                             </div>
                         </div>
                         <div class="grid-cell outputs-col">
                             <div v-for="(_, i) in outputsBandWidth" :key="`out-bw-${i}`" class="io-cell">
-                                <input class="io-input bitwidth-input" type="text" v-model="outputsBandWidth[i]" maxlength="1" />
+                                <input class="io-input bitwidth-input" type="number" v-model.number="outputsBandWidth[i]" min="1" max="64" />
                             </div>
                         </div>
                     </div>
@@ -145,7 +145,7 @@ import { useTestBenchStore } from '#/store/testBenchStore';
 
 const testBenchStore = useTestBenchStore();
 
-const showCreator = computed(() => testBenchStore.showTestBenchCreator);
+// v-model is now bound directly to the store ref
 
 const results: boolean[][][] = reactive([]);
 const testTitle = ref('Untitled');
