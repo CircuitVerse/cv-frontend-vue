@@ -58,7 +58,9 @@
 
                     <!-- Labels Row -->
                     <div class="data-grid labels-grid" :class="{ 'with-results': testBenchStore.showResults }">
-                        <div class="grid-cell label-col">Label</div>
+                        <div class="grid-cell label-col">
+                            Label
+                        </div>
                         <div class="grid-cell inputs-col">
                             <div v-for="(name, i) in inputsName" :key="`in-name-${i}`" class="io-cell">
                                 <input class="io-input" type="text" v-model="inputsName[i]" />
@@ -277,6 +279,16 @@ const addTestToGroup = (index: number) => {
     }
 };
 
+const deleteTestFromGroup = (groupIndex: number, testIndex: number) => {
+    groups[groupIndex].inputs.forEach(input => {
+        input.splice(testIndex, 1);
+    });
+
+    groups[groupIndex].outputs.forEach(output => {
+        output.splice(testIndex, 1);
+    });
+};
+
 const addNewGroup = () => {
     groups.push({
         title: `Group ${groups.length + 1}`,
@@ -300,6 +312,18 @@ const increInputs = () => {
     inputsName.value.push(`inp${inputsName.value.length + 1}`);
 };
 
+const deleteInput = (index:number) => {
+    if(inputsName.value.length === 1) return;
+    groups.forEach((group) => {
+        if (group.inputs.length === 0) return;
+
+        group.inputs.splice(index, 1);
+    });
+
+    inputsBandWidth.value.splice(index, 1);
+    inputsName.value.splice(index, 1);
+};
+
 const increOutputs = () => {
     groups.forEach((group) => {
         if (group.outputs.length === 0) return;
@@ -313,6 +337,32 @@ const increOutputs = () => {
 
     outputsBandWidth.value.push(1);
     outputsName.value.push(`out${outputsName.value.length + 1}`);
+};
+
+const deleteOutput = (index:number) => {
+    if(outputsName.value.length === 1) return;
+    groups.forEach((group) => {
+        if (group.outputs.length === 0) return;
+
+        group.outputs.splice(index, 1);
+    });
+
+    outputsBandWidth.value.splice(index, 1);
+    outputsName.value.splice(index, 1);
+};
+
+const resetData = () => {
+    testTitle.value = 'Untitled';
+    testType.value = 'comb';
+    inputsBandWidth.value = [1];
+    outputsBandWidth.value = [1];
+    inputsName.value = ["inp1"];
+    outputsName.value = ["out1"];
+    groups.splice(0, groups.length, {
+        title: 'Group 1',
+        inputs: [],
+        outputs: [],
+    });
 };
 
 const exportAsCSV = () => {
