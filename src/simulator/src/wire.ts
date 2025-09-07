@@ -20,7 +20,7 @@ enum WireValue {
 
 export default class Wire {
     objectType = 'Wire';
-    type = 'horizontal';
+    type: 'horizontal' | 'vertical' = 'horizontal';
     x1: number;
     y1: number;
     x2: number;
@@ -42,6 +42,7 @@ export default class Wire {
             this.node2.absX(), this.node2.absY()
         ];
         if (this.x1 === this.x2) this.type = 'vertical';
+        else if (this.y1 === this.y2) this.type = 'horizontal';
     }
 
     updateScope(scope: Scope): void {
@@ -53,7 +54,9 @@ export default class Wire {
         const disconnected = this.node1.deleted || this.node2.deleted ||
             !this.node1.connections?.includes(this.node2) ||
             !this.node2.connections?.includes(this.node1);
-        if (disconnected) this.delete();
+        if (disconnected) {
+            setTimeout(() => this.delete(), 0);
+        }
         return disconnected;
     }
 
@@ -97,15 +100,24 @@ export default class Wire {
     }
 
     checkWithin(x: number, y: number): boolean {
+        const threshold = 2;
+        return this.checkCoordAndBetween(x, y, threshold);
+    }
+
+    private checkCoordAndBetween(x: number, y: number, threshold: number): boolean {
         if (this.type === 'horizontal') {
-            return y === this.node1.absY() && this.isBetween(x, this.node1.absX(), this.node2.absX());
+            return this.checkCoordinate(y, this.node1.absY(), threshold) &&
+                this.isBetween(x, this.node1.absX(), this.node2.absX());
         }
-
         if (this.type === 'vertical') {
-            return x === this.node1.absX() && this.isBetween(y, this.node1.absY(), this.node2.absY());
+            return this.checkCoordinate(x, this.node1.absX(), threshold) &&
+                this.isBetween(y, this.node1.absY(), this.node2.absY());
         }
-
         return false;
+    }
+
+    private checkCoordinate(coord: number, reference: number, threshold: number): boolean {
+        return Math.abs(coord - reference) <= threshold;
     }
 
     private isBetween(value: number, a: number, b: number): boolean {
@@ -113,6 +125,7 @@ export default class Wire {
     }
 
     converge(n: Node): void {
+        if (n === this.node1 || n === this.node2) return;
         this.node1.connect(n);
         this.node2.connect(n);
         this.delete();
@@ -146,10 +159,8 @@ export default class Wire {
         const y2 = this.node2.absY();
 
         if (x1 === x2) {
-            this.x1 = this.x2 = x1;
             this.type = 'vertical';
         } else if (y1 === y2) {
-            this.y1 = this.y2 = y1;
             this.type = 'horizontal';
         }
     }
@@ -205,42 +216,58 @@ export default class Wire {
         return false;
     }
 
+    private createAlignmentPoint(
+        current: number,
+        expected: number,
+        x: number,
+        y: number,
+        scopeRoot: CircuitElement,
+        referenceNode: Node
+    ): { current: number, expected: number, createNode: () => Node, referenceNode: Node } {
+        return {
+            current,
+            expected,
+            createNode: () => new Node(x, y, 2, scopeRoot),
+            referenceNode
+        };
+    }
+
     private alignNodesAlongYAxis(): boolean {
-        return this.checkAndCreateNode(
-            this.node1.absY(),
-            this.y1,
-            () => new Node(this.node1.absX(), this.y1, 2, this.scope.root),
-            this.node2.absY(),
-            this.y2,
-            () => new Node(this.node2.absX(), this.y2, 2, this.scope.root)
-        );
+        const p1 = this.createAlignmentPoint(this.node1.absY(), this.y1, this.node1.absX(), this.y1, this.scope.root, this.node1);
+        const p2 = this.createAlignmentPoint(this.node2.absY(), this.y2, this.node2.absX(), this.y2, this.scope.root, this.node2);
+        return this.checkAndCreateNode(p1, p2);
     }
 
     private alignNodesAlongXAxis(): boolean {
-        return this.checkAndCreateNode(
-            this.node1.absX(),
-            this.x1,
-            () => new Node(this.x1, this.node1.absY(), 2, this.scope.root),
-            this.node2.absX(),
-            this.x2,
-            () => new Node(this.x2, this.node2.absY(), 2, this.scope.root)
-        );
+        const p1 = this.createAlignmentPoint(this.node1.absX(), this.x1, this.x1, this.node1.absY(), this.scope.root, this.node1);
+        const p2 = this.createAlignmentPoint(this.node2.absX(), this.x2, this.x2, this.node2.absY(), this.scope.root, this.node2);
+        return this.checkAndCreateNode(p1, p2);
+    }
+
+    private checkNode(
+        current: number,
+        expected: number,
+        createNode: () => Node,
+        referenceNode: Node
+    ): boolean {
+        if (current !== expected) {
+            const newNode = createNode();
+            if (newNode.absX() !== referenceNode.absX() || newNode.absY() !== referenceNode.absY()) {
+                this.converge(newNode);
+                return true;
+            }
+        }
+        return false;
     }
 
     private checkAndCreateNode(
-        current1: number,
-        expected1: number,
-        createNode1: () => Node,
-        current2: number,
-        expected2: number,
-        createNode2: () => Node
+        point1: { current: number, expected: number, createNode: () => Node, referenceNode: Node },
+        point2: { current: number, expected: number, createNode: () => Node, referenceNode: Node }
     ): boolean {
-        if (current1 !== expected1) {
-            this.converge(createNode1());
+        if (this.checkNode(point1.current, point1.expected, point1.createNode, point1.referenceNode)) {
             return true;
         }
-        if (current2 !== expected2) {
-            this.converge(createNode2());
+        if (this.checkNode(point2.current, point2.expected, point2.createNode, point2.referenceNode)) {
             return true;
         }
         return false;
