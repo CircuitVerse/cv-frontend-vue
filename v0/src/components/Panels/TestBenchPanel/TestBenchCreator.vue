@@ -89,7 +89,7 @@
                             </v-btn>
                         </div>
 
-                        <div v-for="(_, testIndex) in group.inputs[0]" class="data-grid data-row" :key="testIndex" :class="{ 'with-results': testBenchStore.showResults }">
+                        <div v-for="(_, testIndex) in (group.inputs[0] || [])" class="data-grid data-row" :key="testIndex" :class="{ 'with-results': testBenchStore.showResults }">
                              <div class="grid-cell label-col action-col">
                                  <v-btn icon size="x-small" variant="text" class="delete-io-btn" @click="deleteTestFromGroup(groupIndex, testIndex)"><v-icon size="small">mdi-close</v-icon></v-btn>
                              </div>
@@ -151,11 +151,11 @@ interface Group {
 }
 
 const groups = reactive<Group[]>([
-    {
-        title: 'Group 1',
-        inputs: [],
-        outputs: [],
-    }
+  {
+    title: 'Group 1',
+    inputs: Array.from({ length: inputsName.value.length }, () => []),
+    outputs: Array.from({ length: outputsName.value.length }, () => []),
+  }
 ]);
 
 watch(() => testBenchStore.testbenchData.testData.groups, () => {
@@ -277,11 +277,11 @@ const deleteTestFromGroup = (groupIndex: number, testIndex: number) => {
 };
 
 const addNewGroup = () => {
-    groups.push({
-        title: `Group ${groups.length + 1}`,
-        inputs: [],
-        outputs: [],
-    });
+  groups.push({
+    title: `Group ${groups.length + 1}`,
+    inputs: Array.from({ length: inputsName.value.length }, () => []),
+    outputs: Array.from({ length: outputsName.value.length }, () => []),
+  });
 };
 
 const increInputs = () => {
@@ -346,9 +346,9 @@ const resetData = () => {
     inputsName.value = ["inp1"];
     outputsName.value = ["out1"];
     groups.splice(0, groups.length, {
-        title: 'Group 1',
-        inputs: [],
-        outputs: [],
+      title: 'Group 1',
+      inputs: Array.from({ length: inputsName.value.length }, () => []),
+      outputs: Array.from({ length: outputsName.value.length }, () => []),
     });
 };
 
