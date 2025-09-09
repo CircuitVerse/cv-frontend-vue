@@ -8,22 +8,15 @@
             <div
                 class="noSelect pointerCursor"
                 style="position: absolute; left: 0; top: 0; z-index: 4"
+                v-if="!isEmbed"
             >
                 <TabsBar />
             </div>
+
             <div id="code-window" class="code-window-embed">
                 <textarea id="codeTextArea"></textarea>
             </div>
-            <!-- <% if @project&.assignment_id.present? && @project&.assignment.elements_restricted? %> -->
-            <!-- <div id="restrictedElementsDiv" class="alert alert-danger">
-                <div>
-                    <span style="font-style: italic">
-                        Restricted elements used:
-                    </span>
-                    <span id="restrictedElementsDiv--list"> </span>
-                </div>
-            </div> -->
-            <!-- <% end %> -->
+
             <div id="MessageDiv"></div>
 
             <div
@@ -47,8 +40,14 @@
                     "
                 ></canvas>
             </div>
+
             <div id="elementName"></div>
-            <div v-if="hasZoomInOut" id="zoom-in-out-embed" class="zoom-wrapper">
+
+            <div
+                v-if="!isEmbed && hasZoomInOut"
+                id="zoom-in-out-embed"
+                class="zoom-wrapper"
+            >
                 <div class="noSelect">
                     <button
                         id="zoom-in-embed"
@@ -80,6 +79,7 @@
             </div>
 
             <div
+                v-if="!isEmbed"
                 style="position: absolute; right: 10px; top: 25px; z-index: 100"
                 class="clockPropertyHeader noSelect"
             >
@@ -118,6 +118,7 @@
                     </div>
                 </div>
             </div>
+
             <div
                 class="sk-folding-cube loadingIcon"
                 style="
@@ -134,11 +135,13 @@
                 <div class="sk-cube3 sk-cube"></div>
             </div>
 
-            <!-- <% if @external_embed  == true %> -->
-            <div v-if="hasDisplayTitle" id="bottom_right_circuit_heading">
+            <div
+                v-if="!isEmbed && hasDisplayTitle"
+                id="bottom_right_circuit_heading"
+            >
                 project Name
-                <!-- <h5><%= @project.name %></h5> -->
             </div>
+
             <div id="bottom_right_watermark">
                 <a
                     style="
@@ -158,7 +161,6 @@
                     Made With CircuitVerse
                 </a>
             </div>
-            <!-- <% end %> -->
         </div>
     </div>
 </template>
@@ -181,30 +183,26 @@ import startListeners from '#/simulator/src/embedListeners'
 import TabsBar from '#/components/TabsBar/TabsBar.vue'
 import { updateThemeForStyle } from '#/simulator/src/themer/themer'
 import { THEME, ThemeType } from '#/assets/constants/theme'
-// import { time } from 'console'
-// __logix_project_id = "<%= @logix_project_id %>";
-// embed=true;
-// <% if @project&.assignment_id.present? %>
-// restrictedElements = JSON.parse('<%= raw @project&.assignment.clean_restricted_elements %>');
-// <% else %>
-// restrictedElements = [];
-// <% end %>
+
 const route = useRoute()
 const timePeriod = ref(simulationArea.timePeriod)
 const clockEnabled = ref(simulationArea.clockEnabled)
 
-// Embed user preferences
-const theme = computed(() => route.query.theme);
-const hasDisplayTitle = computed(() => route.query.display_title ? route.query.display_title === 'true' : false);
-const hasClockTime = computed(() => route.query.clock_time ? route.query.clock_time === 'true' : true);
-const hasFullscreen = computed(() => route.query.fullscreen ? route.query.fullscreen === 'true' : true);
-const hasZoomInOut = computed(() => route.query.zoom_in_out ? route.query.zoom_in_out === 'true' : true);
+const isEmbed = computed(() => route.query.embed === 'true')
 
-const selectedTheme = computed(() => localStorage.getItem('theme'));
-
-// watch(timePeriod, function (val) {
-//     simulationArea.timePeriod = val
-// })
+const theme = computed(() => route.query.theme)
+const hasDisplayTitle = computed(() =>
+    route.query.display_title ? route.query.display_title === 'true' : false
+)
+const hasClockTime = computed(() =>
+    route.query.clock_time ? route.query.clock_time === 'true' : true
+)
+const hasFullscreen = computed(() =>
+    route.query.fullscreen ? route.query.fullscreen === 'true' : true
+)
+const hasZoomInOut = computed(() =>
+    route.query.zoom_in_out ? route.query.zoom_in_out === 'true' : true
+)
 
 watch(timePeriod, (val) => {
     scheduleUpdate()
@@ -241,8 +239,8 @@ onBeforeMount(() => {
 })
 
 onMounted(() => {
-    const themeValue = theme?.value as string;
-    updateThemeForStyle(THEME[themeValue as keyof ThemeType]);
+    const themeValue = theme?.value as string
+    updateThemeForStyle(THEME[themeValue as keyof ThemeType])
 })
 
 onMounted(() => {
@@ -258,7 +256,6 @@ function zoomOutEmbed() {
     ZoomOut()
 }
 
-// Center focus accordingly
 function exitHandler() {
     setTimeout(() => {
         Object.keys(scopeList).forEach((id) => {
@@ -310,7 +307,6 @@ function toggleFullScreen() {
     }
 }
 
-// Full screen Listeners
 if (document.addEventListener) {
     document.addEventListener('webkitfullscreenchange', exitHandler, false)
     document.addEventListener('mozfullscreenchange', exitHandler, false)
