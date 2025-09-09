@@ -1,21 +1,16 @@
 <template>
     <v-dialog v-model="testBenchStore.showTestBenchCreator" :persistent="false" max-width="1100px">
         <v-card class="testbench-creator-card">
-            <!-- Header Section -->
             <v-card-title class="headline-container">
                 <h1 class="headline-title">{{ dialogTitle }}</h1>
                 <v-btn icon size="small" variant="text" @click="testBenchStore.showTestBenchCreator = false" class="close-button">
                     <v-icon>mdi-close</v-icon>
                 </v-btn>
             </v-card-title>
-
             <v-card-text class="pa-6">
-                <!-- Title Input -->
                 <div class="mb-6 text-center">
                     <input v-model="testTitle" class="title-input" type="text" placeholder="Enter Test Title" />
                 </div>
-
-                <!-- Test Type Selection -->
                 <div class="test-type-container">
                     <v-btn
                         :class="['test-type-btn', { 'active': testType === 'seq' }]"
@@ -33,14 +28,11 @@
                     </v-btn>
                 </div>
 
-                <!-- Empty State Placeholder -->
                 <div v-if="groups.length === 0" class="empty-state">
                     <p>No test groups added yet. Click "+ New Group" to start creating your test.</p>
                 </div>
 
-                <!-- Test Data Table -->
                 <div v-else class="data-table-container">
-                    <!-- Table Header -->
                     <div class="data-grid header-grid" :class="{ 'with-results': testBenchStore.showResults }">
                         <div class="grid-cell header-cell label-col"></div>
                         <div class="grid-cell header-cell inputs-col">
@@ -56,7 +48,6 @@
                         </div>
                     </div>
 
-                    <!-- Labels Row -->
                     <div class="data-grid labels-grid" :class="{ 'with-results': testBenchStore.showResults }">
                         <div class="grid-cell label-col">
                             Label
@@ -75,7 +66,6 @@
                         </div>
                     </div>
 
-                     <!-- Bitwidth Row -->
                     <div class="data-grid bitwidth-grid" :class="{ 'with-results': testBenchStore.showResults }">
                         <div class="grid-cell label-col">Bitwidth</div>
                         <div class="grid-cell inputs-col">
@@ -90,7 +80,6 @@
                         </div>
                     </div>
 
-                    <!-- Data Groups -->
                     <div v-for="(group, groupIndex) in groups" class="group-container" :key="groupIndex">
                         <div class="group-header">
                             <input v-model="group.title" class="group-title-input" type="text" />
@@ -124,7 +113,6 @@
                 </div>
             </v-card-text>
 
-            <!-- Action Buttons Footer -->
             <v-card-actions class="footer-actions">
                 <v-btn class="action-btn new-group-btn" @click="addNewGroup">
                     <v-icon left>mdi-plus</v-icon>
@@ -145,7 +133,6 @@ import { useTestBenchStore } from '#/store/testBenchStore';
 
 const testBenchStore = useTestBenchStore();
 
-// v-model is now bound directly to the store ref
 
 const results: boolean[][][] = reactive([]);
 const testTitle = ref('Untitled');
@@ -464,9 +451,7 @@ const importFromCSV = () => {
 </script>
 
 <style scoped>
-/* Main Dialog Styling */
 .testbench-creator-card {
-    /* Color Palette */
     --cv-green: #4caf50;
     --cv-green-dark: #388e3c;
     --cv-red: #f44336;
@@ -503,7 +488,6 @@ const importFromCSV = () => {
     transform: translateY(-50%);
 }
 
-/* Title Input */
 .title-input {
     border: 1px solid var(--cv-border);
     border-radius: 8px;
@@ -521,7 +505,6 @@ const importFromCSV = () => {
     box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
 }
 
-/* Test Type Selection */
 .test-type-container {
     display: flex;
     justify-content: center;
@@ -546,7 +529,6 @@ const importFromCSV = () => {
     color: white;
 }
 
-/* Empty State */
 .empty-state {
     border: 2px dashed var(--cv-border);
     border-radius: 8px;
@@ -556,7 +538,6 @@ const importFromCSV = () => {
     margin: 24px;
 }
 
-/* Data Table Styling */
 .data-table-container {
     padding: 0 16px;
 }
@@ -566,7 +547,6 @@ const importFromCSV = () => {
     align-items: center;
     padding: 8px 0;
 }
-/* Grid column definitions */
 .data-grid:not(.data-row) { grid-template-columns: 120px 1fr 1fr; }
 .data-grid.data-row { grid-template-columns: 40px 1fr 1fr; }
 .data-grid.with-results:not(.data-row) { grid-template-columns: 120px 1fr 1fr 120px; }
@@ -650,7 +630,6 @@ const importFromCSV = () => {
     opacity: 1;
 }
 
-/* Group Styling */
 .group-container {
     margin-top: 24px;
 }
@@ -685,7 +664,6 @@ const importFromCSV = () => {
 }
 
 
-/* Footer Actions */
 .footer-actions {
     display: flex;
     justify-content: center;
