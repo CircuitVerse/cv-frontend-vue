@@ -44,7 +44,7 @@
             <div id="elementName"></div>
 
             <div
-                v-if="!isEmbed && hasZoomInOut"
+                v-if="(!isEmbed && hasZoomInOut) || (isEmbed && route.query.zoom_in_out === 'true')"
                 id="zoom-in-out-embed"
                 class="zoom-wrapper"
             >
@@ -136,7 +136,7 @@
             </div>
 
             <div
-                v-if="!isEmbed && hasDisplayTitle"
+               v-if="isEmbed ? hasDisplayTitle : true"
                 id="bottom_right_circuit_heading"
             >
                 project Name
@@ -239,8 +239,10 @@ onBeforeMount(() => {
 })
 
 onMounted(() => {
-    const themeValue = theme?.value as string
+   const themeValue = theme?.value as string | undefined
+if (themeValue && THEME[themeValue as keyof ThemeType]) {
     updateThemeForStyle(THEME[themeValue as keyof ThemeType])
+}
 })
 
 onMounted(() => {
