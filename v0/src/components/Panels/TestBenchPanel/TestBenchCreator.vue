@@ -67,17 +67,29 @@
                     </div>
 
                     <div class="data-grid bitwidth-grid" :class="{ 'with-results': testBenchStore.showResults }">
-                        <div class="grid-cell label-col">Bitwidth</div>
-                        <div class="grid-cell inputs-col">
-                            <div v-for="(_, i) in inputsBandWidth" :key="`in-bw-${i}`" class="io-cell">
-                                <input class="io-input bitwidth-input" type="number" v-model.number="inputsBandWidth[i]" min="1" max="64" />
-                            </div>
+                      <div class="grid-cell label-col">Bitwidth</div>
+                      <div class="grid-cell inputs-col">
+                        <div v-for="(bw, i) in inputsBandWidth" :key="`in-bw-${i}`" class="io-cell bitwidth-row">
+                          <v-btn icon size="x-small" variant="text" @click="inputsBandWidth[i] = Math.max(1, inputsBandWidth[i] - 1)" title="Decrease bitwidth">
+                            <v-icon>mdi-minus</v-icon>
+                          </v-btn>
+                          <input class="io-input bitwidth-input no-spinner" type="number" v-model.number="inputsBandWidth[i]" min="1" max="64" />
+                          <v-btn icon size="x-small" variant="text" @click="inputsBandWidth[i] = Math.min(64, inputsBandWidth[i] + 1)" title="Increase bitwidth">
+                            <v-icon>mdi-plus</v-icon>
+                          </v-btn>
                         </div>
-                        <div class="grid-cell outputs-col">
-                            <div v-for="(_, i) in outputsBandWidth" :key="`out-bw-${i}`" class="io-cell">
-                                <input class="io-input bitwidth-input" type="number" v-model.number="outputsBandWidth[i]" min="1" max="64" />
-                            </div>
+                      </div>
+                      <div class="grid-cell outputs-col">
+                        <div v-for="(bw, i) in outputsBandWidth" :key="`out-bw-${i}`" class="io-cell bitwidth-row">
+                          <v-btn icon size="x-small" variant="text" @click="outputsBandWidth[i] = Math.max(1, outputsBandWidth[i] - 1)" title="Decrease bitwidth">
+                            <v-icon>mdi-minus</v-icon>
+                          </v-btn>
+                          <input class="io-input bitwidth-input no-spinner" type="number" v-model.number="outputsBandWidth[i]" min="1" max="64" />
+                          <v-btn icon size="x-small" variant="text" @click="outputsBandWidth[i] = Math.min(64, outputsBandWidth[i] + 1)" title="Increase bitwidth">
+                            <v-icon>mdi-plus</v-icon>
+                          </v-btn>
                         </div>
+                      </div>
                     </div>
 
                     <div v-for="(group, groupIndex) in groups" class="group-container" :key="groupIndex">
@@ -612,6 +624,14 @@ const importFromCSV = () => {
     max-width: 40px;
     background-color: #f5f5f5;
     border-radius: 4px;
+}
+.no-spinner::-webkit-inner-spin-button,
+.no-spinner::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.no-spinner[type=number] {
+  -moz-appearance: textfield;
 }
 .data-input {
     border: 1px solid transparent;
