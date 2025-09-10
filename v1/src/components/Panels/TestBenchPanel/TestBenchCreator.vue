@@ -116,8 +116,14 @@
                                  </div>
                              </div>
                              <div v-if="testBenchStore.showResults" class="grid-cell results-col">
-                                 <div v-for="(_, i) in results[groupIndex]" class="io-cell result-cell" :key="`g${groupIndex}-res-${i}-${testIndex}`" :class="results[groupIndex][i][testIndex] ? 'success' : 'fail'">
-                                     {{ results[groupIndex][i][testIndex] ? '✔' : '✘' }}
+-                                <div v-for="(_, i) in results[groupIndex]" class="io-cell result-cell" :key="`g${groupIndex}-res-${i}-${testIndex}`" :class="results[groupIndex][i][testIndex] ? 'success' : 'fail'">
+                                <div
+                                  v-for="(_, i) in (results[groupIndex] || [])"
+                                  class="io-cell result-cell"
+                                  :key="`g${groupIndex}-res-${i}-${testIndex}`"
+                                  :class="(results[groupIndex]?.[i]?.[testIndex]) ? 'success' : 'fail'"
+                                >
+                                    {{ (results[groupIndex]?.[i]?.[testIndex]) ? '✔' : '✘' }}
                                  </div>
                              </div>
                         </div>
