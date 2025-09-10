@@ -292,8 +292,8 @@ async function handleAuthSubmit() {
 
   try {
     const url = isLoginMode.value
-      ? 'http://localhost:4000/api/v1/auth/login'
-      : 'http://localhost:4000/api/v1/auth/signup'
+      ? 'https://circuitverse.org/api/v1/auth/login'
+      : 'https://circuitverse.org/api/v1/auth/signup'
 
     const body = isLoginMode.value
       ? { email: email.value, password: password.value }
