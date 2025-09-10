@@ -30,11 +30,7 @@
           :title="authStore.getUsername"
           lines="two"
           color="white"
-        >
-          <template v-if="authStore.getIsLoggedIn" v-slot:subtitle>
-            <span class="text-caption text-white">Member since {{ authStore.getJoinDate }}</span>
-          </template>
-        </v-list-item>
+        ></v-list-item>
 
         <v-list-item>
           <v-select
@@ -245,6 +241,7 @@ import { useI18n } from 'vue-i18n'
 import { availableLocale } from '#/locales/i18n'
 import { useAuthStore } from '#/store/authStore'
 import { mdiClose } from '@mdi/js'
+import { fetch } from '@tauri-apps/plugin-http'
 import './User.scss'
 
 const authStore = useAuthStore()
@@ -302,18 +299,31 @@ async function handleAuthSubmit() {
     const response = await fetch(url, {
       method: 'POST',
       headers: {
+        'Accept': 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify(body)
     })
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ message: 'An error occurred' }))
+      let errorData
+      try {
+        errorData = await response.json()
+      } catch (e) {
+        errorData = { message: 'An error occurred' }
+      }
+      console.error('Authentication failed:', response.status, errorData)
       handleLoginError(response.status, errorData)
       return
     }
 
     const data = await response.json()
+    console.log('Auth successful:', data)
+    
+    if (!data.token) {
+      throw new Error('No token received from server')
+    }
+    
     authStore.setToken(data.token)
     showSnackbar(
       isLoginMode.value ? 'Login successful!' : 'Registration successful!',
@@ -322,7 +332,7 @@ async function handleAuthSubmit() {
     authModal.value = false
   } catch (error) {
     console.error('Authentication error:', error)
-    showSnackbar('An error occurred. Please try again.', 'error')
+    showSnackbar(`Authentication failed: ${error.message}`, 'error')
   } finally {
     isLoading.value = false
   }

@@ -10,11 +10,20 @@
     "fs:default",
     {
       "identifier": "fs:allow-download-read-recursive",
-      "allow": [{ "path": "$DOWNLOAD/*" }]
+      "allow": [
+        {
+          "path": "$DOWNLOAD/*"
+        }
+      ]
     },
     {
       "identifier": "fs:allow-download-write-recursive",
-      "allow": [{ "path": "$DOWNLOAD/*", "write": true }]
+      "allow": [
+        {
+          "path": "$DOWNLOAD/*",
+          "write": true
+        }
+      ]
     }
   ]
 }

@@ -34,5 +34,14 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ]
+  },
+  "plugins": {
+    "http": {
+      "default": true,
+      "allow": [
+        { "url": "https://circuitverse.org/api/v1/auth/login" },
+        { "url": "https://circuitverse.org/api/v1/auth/signup" }
+      ]
+    }
   }
 }
