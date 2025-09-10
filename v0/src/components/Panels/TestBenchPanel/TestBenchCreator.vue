@@ -73,7 +73,7 @@
                           <v-btn icon size="x-small" variant="text" @click="inputsBandWidth[i] = Math.max(1, inputsBandWidth[i] - 1)" title="Decrease bitwidth">
                             <v-icon>mdi-minus</v-icon>
                           </v-btn>
-                          <input class="io-input bitwidth-input no-spinner" type="number" v-model.number="inputsBandWidth[i]" min="1" max="64" />
+                          <input class="io-input bitwidth-input no-spinner" v-model="inputsBandWidth[i]" min="1" max="64" @blur="inputsBandWidth[i] = clamp(inputsBandWidth[i])"/>
                           <v-btn icon size="x-small" variant="text" @click="inputsBandWidth[i] = Math.min(64, inputsBandWidth[i] + 1)" title="Increase bitwidth">
                             <v-icon>mdi-plus</v-icon>
                           </v-btn>
@@ -84,7 +84,7 @@
                           <v-btn icon size="x-small" variant="text" @click="outputsBandWidth[i] = Math.max(1, outputsBandWidth[i] - 1)" title="Decrease bitwidth">
                             <v-icon>mdi-minus</v-icon>
                           </v-btn>
-                          <input class="io-input bitwidth-input no-spinner" type="number" v-model.number="outputsBandWidth[i]" min="1" max="64" />
+                          <input class="io-input bitwidth-input no-spinner" v-model="outputsBandWidth[i]" min="1" max="64" @blur="outputsBandWidth[i] = clamp(outputsBandWidth[i])"/>
                           <v-btn icon size="x-small" variant="text" @click="outputsBandWidth[i] = Math.min(64, outputsBandWidth[i] + 1)" title="Increase bitwidth">
                             <v-icon>mdi-plus</v-icon>
                           </v-btn>
@@ -107,7 +107,7 @@
                              </div>
                              <div class="grid-cell inputs-col">
                                  <div v-for="(_, i) in group.inputs" class="io-cell" :key="`g${groupIndex}-in-${i}-${testIndex}`">
-                                     <input class="io-input data-input" type="text" v-model="group.inputs[i][testIndex]" :disabled="testBenchStore.readOnly" :maxlength="inputsBandWidth[i]" />
+                                     <input class="io-input data-input" type="text" v-model="group.inputs[i][testIndex]" :disabled="testBenchStore.readOnly" :maxlength="inputsBandWidth[i] as number" />
                                  </div>
                              </div>
                              <div class="grid-cell outputs-col">
@@ -155,6 +155,12 @@ const inputsBandWidth = ref([1]);
 const outputsBandWidth = ref([1]);
 const inputsName = ref<string[]>(["inp1"]);
 const outputsName = ref<string[]>(["out1"]);
+const clamp = (val) => {
+  if (!val) return 1
+  const n = Number(val)
+  if (isNaN(n)) return 1
+  return Math.min(Math.max(n, 1), 64)
+}
 
 interface Group {
     title: string;
