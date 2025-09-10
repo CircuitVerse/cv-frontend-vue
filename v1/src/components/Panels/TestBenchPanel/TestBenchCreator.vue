@@ -1,136 +1,139 @@
 <template>
-    <v-dialog v-model="showCreator" :persistent="false">
-        <v-card class="messageBoxContent" id="creatorBox">
-            <v-card-text class="creatorHeader">
-                <p class="dialogHeader">{{ dialogTitle }}</p>
-                <v-btn size="x-small" icon class="dialogClose"
-                    @mousedown="testBenchStore.showTestBenchCreator = false">
+    <v-dialog v-model="testBenchStore.showTestBenchCreator" :persistent="false" max-width="1100px">
+        <v-card class="testbench-creator-card">
+            <v-card-title class="headline-container">
+                <h1 class="headline-title">{{ dialogTitle }}</h1>
+                <v-btn icon size="small" variant="text" @click="testBenchStore.showTestBenchCreator = false" class="close-button">
                     <v-icon>mdi-close</v-icon>
                 </v-btn>
-                <div class="testInput">
-                    <label for="fileNameInputField">Title:</label>
-                    <input v-model="testTitle" class="inputField" type="text" />
+            </v-card-title>
+            <v-card-text class="pa-6">
+                <div class="mb-6 text-center">
+                    <input v-model="testTitle" class="title-input" type="text" placeholder="Enter Test Title" />
+                </div>
+                <div class="test-type-container">
+                    <v-btn
+                        :class="['test-type-btn', { 'active': testType === 'seq' }]"
+                        @click="testType = 'seq'"
+                        elevation="0"
+                    >
+                        Sequential Test
+                    </v-btn>
+                    <v-btn
+                        :class="['test-type-btn', { 'active': testType === 'comb' }]"
+                        @click="testType = 'comb'"
+                        elevation="0"
+                    >
+                        Combinational Test
+                    </v-btn>
+                </div>
+
+                <div v-if="groups.length === 0" class="empty-state">
+                    <p>No test groups added yet. Click "+ New Group" to start creating your test.</p>
+                </div>
+
+                <div v-else class="data-table-container">
+                    <div class="data-grid header-grid" :class="{ 'with-results': testBenchStore.showResults }">
+                        <div class="grid-cell header-cell label-col"></div>
+                        <div class="grid-cell header-cell inputs-col">
+                            <span>Inputs</span>
+                            <v-btn icon size="x-small" variant="flat" class="ml-2 action-icon" @click="increInputs"><v-icon>mdi-plus</v-icon></v-btn>
+                        </div>
+                        <div class="grid-cell header-cell outputs-col">
+                            <span>Outputs</span>
+                             <v-btn icon size="x-small" variant="flat" class="ml-2 action-icon" @click="increOutputs"><v-icon>mdi-plus</v-icon></v-btn>
+                        </div>
+                        <div v-if="testBenchStore.showResults" class="grid-cell header-cell results-col">
+                            Results
+                        </div>
+                    </div>
+
+                    <div class="data-grid labels-grid" :class="{ 'with-results': testBenchStore.showResults }">
+                        <div class="grid-cell label-col">
+                            Label
+                        </div>
+                        <div class="grid-cell inputs-col">
+                            <div v-for="(name, i) in inputsName" :key="`in-name-${i}`" class="io-cell">
+                                <input class="io-input" type="text" v-model="inputsName[i]" />
+                                <v-btn icon size="x-small" variant="text" class="delete-io-btn" @click="deleteInput(i)"><v-icon size="small">mdi-minus-circle-outline</v-icon></v-btn>
+                            </div>
+                        </div>
+                        <div class="grid-cell outputs-col">
+                            <div v-for="(name, i) in outputsName" :key="`out-name-${i}`" class="io-cell">
+                                <input class="io-input" type="text" v-model="outputsName[i]" />
+                                <v-btn icon size="x-small" variant="text" class="delete-io-btn" @click="deleteOutput(i)"><v-icon size="small">mdi-minus-circle-outline</v-icon></v-btn>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="data-grid bitwidth-grid" :class="{ 'with-results': testBenchStore.showResults }">
+                      <div class="grid-cell label-col">Bitwidth</div>
+                      <div class="grid-cell inputs-col">
+                        <div v-for="(bw, i) in inputsBandWidth" :key="`in-bw-${i}`" class="io-cell bitwidth-row">
+                          <v-btn icon size="x-small" variant="text" @click="inputsBandWidth[i] = Math.max(1, inputsBandWidth[i] - 1)" title="Decrease bitwidth">
+                            <v-icon>mdi-minus</v-icon>
+                          </v-btn>
+                          <input class="io-input bitwidth-input no-spinner" v-model="inputsBandWidth[i]" min="1" max="64" @blur="inputsBandWidth[i] = clamp(inputsBandWidth[i])"/>
+                          <v-btn icon size="x-small" variant="text" @click="inputsBandWidth[i] = Math.min(64, inputsBandWidth[i] + 1)" title="Increase bitwidth">
+                            <v-icon>mdi-plus</v-icon>
+                          </v-btn>
+                        </div>
+                      </div>
+                      <div class="grid-cell outputs-col">
+                        <div v-for="(bw, i) in outputsBandWidth" :key="`out-bw-${i}`" class="io-cell bitwidth-row">
+                          <v-btn icon size="x-small" variant="text" @click="outputsBandWidth[i] = Math.max(1, outputsBandWidth[i] - 1)" title="Decrease bitwidth">
+                            <v-icon>mdi-minus</v-icon>
+                          </v-btn>
+                          <input class="io-input bitwidth-input no-spinner" v-model="outputsBandWidth[i]" min="1" max="64" @blur="outputsBandWidth[i] = clamp(outputsBandWidth[i])"/>
+                          <v-btn icon size="x-small" variant="text" @click="outputsBandWidth[i] = Math.min(64, outputsBandWidth[i] + 1)" title="Increase bitwidth">
+                            <v-icon>mdi-plus</v-icon>
+                          </v-btn>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div v-for="(group, groupIndex) in groups" class="group-container" :key="groupIndex">
+                        <div class="group-header">
+                            <input v-model="group.title" class="group-title-input" type="text" />
+                             <v-btn size="small" class="add-test-btn" variant="tonal" @click="addTestToGroup(groupIndex)">
+                                <v-icon left>mdi-plus</v-icon>
+                                Add Test
+                            </v-btn>
+                        </div>
+
+                        <div v-for="(_, testIndex) in (group.inputs[0] || [])" class="data-grid data-row" :key="testIndex" :class="{ 'with-results': testBenchStore.showResults }">
+                             <div class="grid-cell label-col action-col">
+                                 <v-btn icon size="x-small" variant="text" class="delete-io-btn" @click="deleteTestFromGroup(groupIndex, testIndex)"><v-icon size="small">mdi-close</v-icon></v-btn>
+                             </div>
+                             <div class="grid-cell inputs-col">
+                                 <div v-for="(_, i) in group.inputs" class="io-cell" :key="`g${groupIndex}-in-${i}-${testIndex}`">
+                                     <input class="io-input data-input" type="text" v-model="group.inputs[i][testIndex]" :disabled="testBenchStore.readOnly" :maxlength="inputsBandWidth[i] as number" />
+                                 </div>
+                             </div>
+                             <div class="grid-cell outputs-col">
+                                 <div v-for="(_, i) in group.outputs" class="io-cell" :key="`g${groupIndex}-out-${i}-${testIndex}`">
+                                     <input class="io-input data-input" type="text" v-model="group.outputs[i][testIndex]" :disabled="testBenchStore.readOnly" :maxlength="outputsBandWidth[i]" />
+                                 </div>
+                             </div>
+                             <div v-if="testBenchStore.showResults" class="grid-cell results-col">
+                                 <div v-for="(_, i) in results[groupIndex]" class="io-cell result-cell" :key="`g${groupIndex}-res-${i}-${testIndex}`" :class="results[groupIndex][i][testIndex] ? 'success' : 'fail'">
+                                     {{ results[groupIndex][i][testIndex] ? '✔' : '✘' }}
+                                 </div>
+                             </div>
+                        </div>
+                    </div>
                 </div>
             </v-card-text>
 
-            <v-card-actions class="testType">
-                <v-btn class="messageBtn" block @mousedown="testType = 'seq'">
-                    Sequential Test
+            <v-card-actions class="footer-actions">
+                <v-btn class="action-btn new-group-btn" @click="addNewGroup">
+                    <v-icon left>mdi-plus</v-icon>
+                    New Group
                 </v-btn>
-                <v-btn class="messageBtn" block @mousedown="testType = 'comb'">
-                    Combinational Test
-                </v-btn>
-            </v-card-actions>
-
-            <v-card-text style="testCard">
-                <div class="testCol">
-                    <div class="testRow firstCol">
-
-                    </div>
-                    <div class="testRow fullTestRow space">
-                        <span>Inputs</span> <span @mousedown="increInputs" class="plusMinusBtn">+</span>
-                    </div>
-                    <div class="testRow fullTestRow space">
-                        <span>Outputs</span> <span @mousedown="increOutputs" class="plusMinusBtn">+</span>
-                    </div>
-                </div>
-                <div class="testCol">
-                    <div class="testRow firstCol">
-                        Label
-                    </div>
-                    <div class="testContainer">
-                        <div v-for="(_, i) in inputsName" class="testRow"
-                            :style="{ width: 100 / inputsBandWidth.length + '%' }">
-                            <input class="inputField dataGroupTitle smInputName" type="text" v-model="inputsName[i]" />
-                            <span @mousedown="deleteInput(i)" class="plusMinusBtn">-</span>
-                        </div>
-                    </div>
-                    <div class="testContainer">
-                        <div v-for="(_, i) in outputsName" class="testRow"
-                            :style="{ width: 100 / outputsBandWidth.length + '%' }">
-                            <input class="inputField dataGroupTitle smInputName" type="text" v-model="outputsName[i]" />
-                            <span @mousedown="deleteOutput(i)" class="plusMinusBtn">-</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="testCol">
-                    <div class="testRow firstCol">
-                        Bitwidth
-                    </div>
-                    <div class="testContainer">
-                        <div v-for="(_, i) in inputsBandWidth" class="testRow"
-                            :style="{ width: 100 / inputsBandWidth.length + '%' }">
-                            <input class="inputField dataGroupTitle smInput" type="text" v-model="inputsBandWidth[i]"
-                                maxlength="1" />
-                        </div>
-                    </div>
-                    <div class="testContainer">
-                        <div v-for="(_, i) in outputsBandWidth" class="testRow"
-                            :style="{ width: 100 / outputsBandWidth.length + '%' }">
-                            <input class="inputField dataGroupTitle smInput" type="text" v-model="outputsBandWidth[i]"
-                                maxlength="1" />
-                        </div>
-                    </div>
-                </div>
-
-                <div v-for="(group, groupIndex) in groups" class="groupParent" :key="groupIndex">
-                    <input v-model="group.title" class="inputField dataGroupTitle" type="text" />
-                    <p>Click + to add tests to the {{ testType === 'comb' ? 'group' : 'set' }}</p>
-
-                    <div v-for="(_, index) in group.inputs[0]" class="groupRow" :key="index">
-                        <div class="testRow firstCol spaceArea"></div>
-                        <span @mousedown="deleteTestFromGroup(groupIndex, index)" class="plusMinusBtn">-</span>
-                        <div class="testContainer">
-                            <div v-for="(_, i) in group.inputs" class="testRow colWise"
-                                :style="{ width: 100 / inputsBandWidth.length + '%' }">
-                                <input class="inputField dataGroupTitle smInput" type="text"
-                                    :disabled="testBenchStore.readOnly" v-model="group.inputs[i][index]"
-                                    maxlength="1" />
-                            </div>
-                        </div>
-                        <div class="testContainer">
-                            <div v-for="(_, i) in group.outputs" class="testRow colWise"
-                                :style="{ width: 100 / outputsBandWidth.length + '%' }">
-                                <input class="inputField dataGroupTitle smInput" type="text"
-                                    :disabled="testBenchStore.readOnly" v-model="group.outputs[i][index]"
-                                    maxlength="1" />
-                            </div>
-                        </div>
-                        <div v-if="testBenchStore.showResults" class="resultContainer">
-                            <div v-for="(_, i) in results" class="testRow colWise"
-                                :style="{ width: 100 / outputsBandWidth.length + '%', color: results[groupIndex][i][index] ? '#17FC12' : '#FF1616' }">
-                                 {{ results[groupIndex][i][index] ? '✔' : '✘' }}
-                            </div>
-                        </div>
-                    </div>
-
-                    <v-btn v-if="groupIndex !== groups.length - 1" class="messageBtn addBtn" block
-                        @mousedown="addTestToGroup(groupIndex)">
-                        +
-                    </v-btn>
-                </div>
-            </v-card-text>
-
-            <v-card-actions class="testActionBtns">
-                <div class="btnDiv">
-                    <v-btn class="messageBtn" block @mousedown="addTestToGroup(groups.length - 1)">
-                        +
-                    </v-btn>
-                    <v-btn class="messageBtn" block @mousedown="addNewGroup">
-                        New Group
-                    </v-btn>
-                </div>
-                <div class="btnDiv">
-                    <v-btn class="messageBtn" block @mousedown="importFromCSV">
-                        Import From CSV
-                    </v-btn>
-                    <v-btn class="messageBtn" block @mousedown="exportAsCSV">
-                        Export As CSV
-                    </v-btn>
-                    <v-btn class="messageBtn" block @mousedown="sendData">
-                        Attach
-                    </v-btn>
-                </div>
+                <v-btn class="action-btn reset-btn" @click="resetData">Reset</v-btn>
+                <v-btn class="action-btn secondary-btn" @click="importFromCSV">Import CSV</v-btn>
+                <v-btn class="action-btn secondary-btn" @click="exportAsCSV">Export CSV</v-btn>
+                <v-btn class="action-btn attach-btn" @click="sendData">Attach</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -142,7 +145,6 @@ import { useTestBenchStore } from '#/store/testBenchStore';
 
 const testBenchStore = useTestBenchStore();
 
-const showCreator = computed(() => testBenchStore.showTestBenchCreator);
 
 const results: boolean[][][] = reactive([]);
 const testTitle = ref('Untitled');
@@ -153,6 +155,12 @@ const inputsBandWidth = ref([1]);
 const outputsBandWidth = ref([1]);
 const inputsName = ref<string[]>(["inp1"]);
 const outputsName = ref<string[]>(["out1"]);
+const clamp = (val) => {
+  if (!val) return 1
+  const n = Number(val)
+  if (isNaN(n)) return 1
+  return Math.min(Math.max(n, 1), 64)
+}
 
 interface Group {
     title: string;
@@ -161,11 +169,11 @@ interface Group {
 }
 
 const groups = reactive<Group[]>([
-    {
-        title: 'Group 1',
-        inputs: [],
-        outputs: [],
-    }
+  {
+    title: 'Group 1',
+    inputs: Array.from({ length: inputsName.value.length }, () => []),
+    outputs: Array.from({ length: outputsName.value.length }, () => []),
+  }
 ]);
 
 watch(() => testBenchStore.testbenchData.testData.groups, () => {
@@ -287,11 +295,11 @@ const deleteTestFromGroup = (groupIndex: number, testIndex: number) => {
 };
 
 const addNewGroup = () => {
-    groups.push({
-        title: `Group ${groups.length + 1}`,
-        inputs: [],
-        outputs: [],
-    });
+  groups.push({
+    title: `Group ${groups.length + 1}`,
+    inputs: Array.from({ length: inputsName.value.length }, () => []),
+    outputs: Array.from({ length: outputsName.value.length }, () => []),
+  });
 };
 
 const increInputs = () => {
@@ -346,6 +354,20 @@ const deleteOutput = (index:number) => {
 
     outputsBandWidth.value.splice(index, 1);
     outputsName.value.splice(index, 1);
+};
+
+const resetData = () => {
+    testTitle.value = 'Untitled';
+    testType.value = 'comb';
+    inputsBandWidth.value = [1];
+    outputsBandWidth.value = [1];
+    inputsName.value = ["inp1"];
+    outputsName.value = ["out1"];
+    groups.splice(0, groups.length, {
+      title: 'Group 1',
+      inputs: Array.from({ length: inputsName.value.length }, () => []),
+      outputs: Array.from({ length: outputsName.value.length }, () => []),
+    });
 };
 
 const exportAsCSV = () => {
@@ -447,146 +469,276 @@ const importFromCSV = () => {
 </script>
 
 <style scoped>
-#creatorBox {
-    width: 1100px;
+.testbench-creator-card {
+    --cv-green: #4caf50;
+    --cv-green-dark: #388e3c;
+    --cv-red: #f44336;
+    --cv-red-dark: #d32f2f;
+    --cv-background: #f7f9fb;
+    --cv-surface: #ffffff;
+    --cv-border: #e0e0e0;
+    --cv-text-primary: #212121;
+    --cv-text-secondary: #757575;
+
+    background-color: var(--cv-background);
+    border-radius: 12px;
 }
 
-.creatorHeader {
+.headline-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     position: relative;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--cv-border);
 }
 
-.testInput {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
+.headline-title {
+    color: var(--cv-text-primary);
+    font-size: 1.5rem;
+    font-weight: 500;
 }
 
-.testType {
-    width: 97%;
+.close-button {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
-.testActionBtns {
-    width: 97%;
-    display: flex;
-    justify-content: space-between;
-    padding-bottom: 1rem;
-}
-
-.btnDiv {
-    display: flex;
-    gap: 0.1rem;
-    align-items: center;
-}
-
-.testRow {
-    border: 1px solid #c5c5c5;
-    padding: 0.75rem;
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.colWise {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-.testCol {
-    display: flex;
-    gap: 0.5rem;
-    justify-content: center;
-    margin-bottom: 0.5rem;
-}
-
-.firstCol {
-    width: 30%;
-}
-
-.dataGroupTitle {
-    border: none;
-    padding: 0;
-    margin: 0;
-}
-
-.spaceArea {
-    visibility: hidden;
-}
-
-.testContainer {
-    display: flex;
-    width: 35%;
-    gap: 0.5rem;
-    overflow-x: scroll;
-}
-
-.resultContainer {
-    display: flex;
-    width: 15%;
-    gap: 0.5rem;
-    overflow-x: scroll;
-}
-
-.fullTestRow {
-    width: 35%;
-}
-
-.groupRow {
-    display: flex;
-    gap: 0.5rem;
-    justify-content: center;
-}
-
-.plusMinusBtn {
-    align-self: center;
+.title-input {
+    border: 1px solid var(--cv-border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 1rem;
+    width: 50%;
+    max-width: 400px;
     text-align: center;
-    width: 16px;
-    cursor: pointer;
-    padding: 2px;
-    padding-top: 0.5px;
-    padding-bottom: 0.5px;
-    border: 1px solid #c5c5c5;
+    transition: border-color 0.3s, box-shadow 0.3s;
 }
 
-.space {
-    gap: 0.25rem;
+.title-input:focus {
+    outline: none;
+    border-color: var(--cv-green);
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
 }
 
-.groupParent {
-    margin-bottom: 2rem;
-    margin-top: 2rem;
+.test-type-container {
+    display: flex;
+    justify-content: center;
+    background-color: #eef1f5;
+    border-radius: 8px;
+    padding: 4px;
+    margin: 0 auto 24px auto;
+    width: fit-content;
 }
 
-.addBtn {
+.test-type-btn {
+    border-radius: 6px !important;
+    text-transform: none;
+    font-weight: 500;
+    color: var(--cv-text-secondary);
     background-color: transparent;
+    border: none;
+}
+
+.test-type-btn.active {
+    background-color: var(--cv-green);
     color: white;
 }
 
-.testCard {
-    padding-left: 2.2rem;
+.empty-state {
+    border: 2px dashed var(--cv-border);
+    border-radius: 8px;
+    padding: 48px 24px;
+    text-align: center;
+    color: var(--cv-text-secondary);
+    margin: 24px;
 }
 
-.smInput {
-    width: 12px;
+.data-table-container {
+    padding: 0 16px;
+}
+.data-grid {
+    display: grid;
+    gap: 16px;
+    align-items: center;
+    padding: 8px 0;
+}
+.data-grid:not(.data-row) { grid-template-columns: 120px 1fr 1fr; }
+.data-grid.data-row { grid-template-columns: 40px 1fr 1fr; }
+.data-grid.with-results:not(.data-row) { grid-template-columns: 120px 1fr 1fr 120px; }
+.data-grid.data-row.with-results { grid-template-columns: 40px 1fr 1fr 120px; }
+
+.data-row {
+     border-top: 1px solid var(--cv-border);
+}
+
+.grid-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.header-cell {
+    font-weight: 600;
+    color: var(--cv-text-primary);
+    font-size: 1rem;
+    justify-content: center;
+}
+.action-icon {
+    background-color: #e0e0e0;
+    color: #616161;
+}
+
+.label-col {
+    font-weight: 500;
+    color: var(--cv-text-secondary);
+    padding-left: 12px;
+}
+.action-col {
+    justify-content: center;
+}
+
+.inputs-col, .outputs-col, .results-col {
+    background-color: var(--cv-surface);
+    border: 1px solid var(--cv-border);
+    border-radius: 8px;
+    padding: 4px;
+}
+
+.io-cell {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 4px;
+}
+
+.io-input {
+    width: 100%;
+    text-align: center;
     border: none;
+    background-color: transparent;
+    font-size: 0.9rem;
 }
-
-.smInputName {
-    width: 34px;
-    border: none;
-}
-
-.smInputName:focus,
-.smInput:focus {
+.io-input:focus {
     outline: none;
-    border: none;
+}
+.bitwidth-input {
+    max-width: 40px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+}
+.no-spinner::-webkit-inner-spin-button,
+.no-spinner::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.no-spinner[type=number] {
+  -moz-appearance: textfield;
+}
+.data-input {
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+.data-input:focus {
+    border-color: var(--cv-green);
 }
 
-.smInput:focus {
-    outline: none;
+.delete-io-btn {
+    opacity: 0;
+    transition: opacity 0.2s;
+    color: var(--cv-text-secondary);
+}
+.io-cell:hover .delete-io-btn, .action-col:hover .delete-io-btn {
+    opacity: 1;
+}
+
+.group-container {
+    margin-top: 24px;
+}
+.group-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    gap: 16px;
+}
+.group-title-input {
+    font-size: 1.1rem;
+    font-weight: 500;
     border: none;
+    border-bottom: 1px solid transparent;
+    padding: 4px 0;
+}
+.group-title-input:focus {
+    outline: none;
+    border-bottom-color: var(--cv-green);
+}
+.add-test-btn {
+    color: var(--cv-green);
+}
+.result-cell {
+    font-weight: bold;
+}
+.result-cell.success {
+    color: var(--cv-green);
+}
+.result-cell.fail {
+    color: var(--cv-red);
+}
+
+
+.footer-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px 24px;
+    border-top: 1px solid var(--cv-border);
+    background-color: var(--cv-surface);
+    gap: 12px;
+}
+
+.action-btn {
+    text-transform: none;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.new-group-btn {
+    background-color: var(--cv-green);
+    color: white;
+}
+.new-group-btn:hover {
+    background-color: var(--cv-green-dark);
+}
+
+.reset-btn {
+    background-color: transparent;
+    color: var(--cv-red);
+    border: 1px solid var(--cv-red);
+}
+.reset-btn:hover {
+    background-color: rgba(244, 67, 54, 0.1);
+}
+
+.secondary-btn {
+    background-color: transparent;
+    color: var(--cv-text-secondary);
+    border: 1px solid var(--cv-border);
+}
+.secondary-btn:hover {
+    background-color: #f5f5f5;
+    border-color: #bdbdbd;
+}
+
+.attach-btn {
+    background-color: #626262;
+    color: white;
+}
+.attach-btn:hover {
+    background-color: #424242;
 }
 </style>
+
