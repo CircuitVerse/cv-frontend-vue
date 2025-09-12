@@ -8,6 +8,18 @@
   "permissions": [
     "core:default",
     "fs:default",
+    "http:default",
+    {
+      "identifier": "http:allow-fetch",
+      "allow": [
+        {
+          "url": "https://circuitverse.org/api/v1/auth/login"
+        },
+        {
+          "url": "https://circuitverse.org/api/v1/auth/signup"
+        }
+      ]
+    },
     {
       "identifier": "fs:allow-download-read-recursive",
       "allow": [
