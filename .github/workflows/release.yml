@@ -43,11 +43,16 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Install Tauri CLI and API
-        run: |
-          npm install -g @tauri-apps/cli
-          npm install @tauri-apps/cli @tauri-apps/api @tauri-apps/plugin-fs --save-dev
-        shell: bash
+      - name: Cache Rust Dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri"
+
+      - name: Update Rust Dependencies
+        run: cd src-tauri && cargo update
+
+      - name: Build Tauri App
+        run: npm run tauri build
 
       - name: Run Cross-Platform Build Script
         run: node build-desktop.js
