@@ -16,8 +16,8 @@
     "dependencies": {
         "@fortawesome/fontawesome-free": "^6.5.1",
         "@mdi/font": "5.9.55",
-        "@tauri-apps/api": "^2.3.0",
-        "@tauri-apps/plugin-fs": "^2.2.0",
+        "@tauri-apps/api": "^2.3.1",
+        "@tauri-apps/plugin-fs": "^2.3.1",
         "@tiptap/core": "^2.0.3",
         "@tiptap/extension-character-count": "^2.0.3",
         "@tiptap/extension-subscript": "^2.0.3",
