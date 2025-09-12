@@ -43,14 +43,11 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Check and Install Latest Tauri Packages
+      - name: Install Tauri CLI and API
         run: |
-          # Install the latest CLI globally
           npm install -g @tauri-apps/cli
-          # Check for any outdated tauri packages in the project
-          npm outdated '/@tauri-apps/'
-          # Install the latest versions of the CLI, API, and plugins to ensure they match
-          npm install @tauri-apps/cli@latest @tauri-apps/api@latest @tauri-apps/plugin-fs@latest --save-dev
+          npm install @tauri-apps/cli @tauri-apps/api @tauri-apps/plugin-fs --save-dev
+        shell: bash
 
       - name: Run Cross-Platform Build Script
         run: node build-desktop.js
