@@ -43,10 +43,14 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Install Tauri CLI and API
+      - name: Check and Install Latest Tauri Packages
         run: |
+          # Install the latest CLI globally
           npm install -g @tauri-apps/cli
-          npm install @tauri-apps/cli @tauri-apps/api @tauri-apps/plugin-fs --save-dev
+          # Check for any outdated tauri packages in the project
+          npm outdated '/@tauri-apps/'
+          # Install the latest versions of the CLI, API, and plugins to ensure they match
+          npm install @tauri-apps/cli@latest @tauri-apps/api@latest @tauri-apps/plugin-fs@latest --save-dev
 
       - name: Run Cross-Platform Build Script
         run: node build-desktop.js
@@ -175,3 +179,4 @@ jobs:
             --title "CircuitVerse Desktop $NEW_VERSION" \
             --notes "$CHANGELOG_NOTES" \
             release-assets/*
+      
