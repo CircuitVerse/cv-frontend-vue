@@ -28,60 +28,45 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Clean Caches
+        run: |
+          # This step aggressively removes old cached data to prevent conflicts
+          rm -rf ~/.npm
+          rm -rf ~/.cargo
+          rm -rf ./src-tauri/target
+          rm -rf ./node_modules
+          rm -f ./package-lock.json
+          rm -f ./src-tauri/Cargo.lock
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      - name: Cache Node.js Dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: ${{ runner.os }}-node-
-
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Cache Rust Dependencies
-        uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: "./src-tauri"
-
-      - name: Update Rust Dependencies
-        run: cd src-tauri && cargo update
-
-      - name: Build Tauri App
-        run: npm run tauri build
-
-      - name: Run Cross-Platform Build Script
-        run: node build-desktop.js
-
       - name: Setup Rust
-        if: matrix.os != 'windows-latest'
+        run: rustup update stable
+
+      - name: Install Dependencies in Correct Order
         run: |
-          rustup update stable
-          rustup default stable
+          # First, update Rust dependencies based on the corrected Cargo.toml
+          echo "--- Updating Rust dependencies ---"
+          cd src-tauri && cargo update && cd ..
+          
+          # Second, install NPM packages. This respects the new Cargo.lock file.
+          echo "--- Installing NPM dependencies ---"
+          npm install
 
       - name: Install Linux Dependencies (Ubuntu)
         if: matrix.os == 'ubuntu-latest'
         run: |
-          sudo apt update
-          sudo apt install libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev
-
-      - name: Install macOS Dependencies
-        if: matrix.os == 'macos-latest'
-        run: |
-          brew update
-          brew install pkg-config
-
-      - name: Cache Rust Dependencies
-        uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: "./src-tauri"
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libssl-dev libayatana-appindicator3-dev librsvg2-dev
 
       - name: Build Tauri App
         run: npm run tauri build
+        env:
+          # This helps diagnose build issues if they persist
+          RUST_BACKTRACE: 1
 
       - name: Upload Tauri Build Artifacts
         uses: actions/upload-artifact@v4
