@@ -1,0 +1,197 @@
+name: Manually Triggered Desktop Release
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: desktop-release-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  workflow_dispatch:
+    inputs:
+      version-bump:
+        description: 'The type of version bump (major, minor, or patch)'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+        - patch
+        - minor
+        - major
+
+jobs:
+  build-tauri:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Cache Node.js Dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-node-
+
+      - name: Install Dependencies
+        run: npm install
+        shell: bash
+
+      - name: Run Cross-Platform Build Script
+        run: node build-desktop.js
+        shell: bash
+
+      - name: Setup Rust (stable)
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Linux Dependencies (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt update
+          sudo apt install libwebkit2gtk-4.1-dev \
+          build-essential \
+          curl \
+          wget \
+          file \
+          libxdo-dev \
+          libssl-dev \
+          libayatana-appindicator3-dev \
+          librsvg2-dev
+        shell: bash
+
+      - name: Install macOS Dependencies
+        if: matrix.os == 'macos-latest'
+        run: |
+          brew update
+          brew install pkg-config
+        shell: bash
+
+      - name: Install Windows Dependencies
+        if: matrix.os == 'windows-latest'
+        shell: powershell
+        run: |
+          choco install -y wixtoolset nsis microsoft-edge-webview2-runtime
+
+      - name: Cache Rust Dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri"
+
+      - name: Build Tauri App
+        run: npm run tauri build
+        shell: bash
+
+      - name: Upload Tauri Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Tauri Build Artifacts (${{ matrix.os }})
+          path: |
+            src-tauri/target/release/bundle
+
+  create-release:
+    runs-on: ubuntu-latest
+    needs: build-tauri
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate Changelog
+        id: changelog
+        uses: TriPSs/conventional-changelog-action@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Prepare Release Assets
+        run: |
+          mkdir -p release-assets
+          # Move all built files (.deb, .AppImage, .msi, .dmg) into one folder
+          # The '|| true' prevents the workflow from failing if a specific file type doesn't exist
+          find artifacts -type f \( -name "*.deb" -o -name "*.AppImage" -o -name "*.msi" -o -name "*.dmg" \) -exec cp {} release-assets/ \; || true
+          
+          if [ -d "artifacts/Tauri Build Artifacts (macos-latest)/src-tauri/target/release/bundle/macos" ]; then
+            cd "artifacts/Tauri Build Artifacts (macos-latest)/src-tauri/target/release/bundle/macos"
+            for app in *.app; do
+              zip -r "../../../release-assets/${app%.app}.zip" "$app"
+            done
+            cd -
+          fi
+          
+          echo "Prepared release assets:"
+          ls -l release-assets/
+
+      - name: Install GitHub CLI
+        run: |
+          type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+          && sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+          && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+          && sudo apt update \
+          && sudo apt install gh -y
+
+      - name: Determine New Version and Create GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Fetch the latest tag from the repository
+          LATEST_TAG=$(git tag --sort=-v:refname | head -n 1)
+          if [[ -z "$LATEST_TAG" ]]; then
+            # If no tags exist, start from v0.0.0
+            LATEST_TAG="v0.0.0"
+          fi
+          
+          # Parse the latest tag to get major, minor, and patch numbers
+          if [[ "$LATEST_TAG" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+            MAJOR=${BASH_REMATCH[1]}
+            MINOR=${BASH_REMATCH[2]}
+            PATCH=${BASH_REMATCH[3]}
+          else
+            echo "Could not parse latest tag: $LATEST_TAG. Starting from v0.1.0."
+            MAJOR=0; MINOR=1; PATCH=0
+          fi
+          # Increment the version based on the manual input
+          BUMP_TYPE="${{ github.event.inputs.version-bump }}"
+          if [ "$BUMP_TYPE" == "major" ]; then
+            MAJOR=$((MAJOR + 1)); MINOR=0; PATCH=0
+          elif [ "$BUMP_TYPE" == "minor" ]; then
+            MINOR=$((MINOR + 1)); PATCH=0
+          else # Default to patch
+            PATCH=$((PATCH + 1))
+          fi
+          
+          if [ -n "${{ steps.changelog.outputs.tag }}" ]; then
+            NEW_VERSION="${{ steps.changelog.outputs.tag }}"
+            echo "Using tag from changelog output: $NEW_VERSION"
+          else
+            NEW_VERSION="v$MAJOR.$MINOR.$PATCH"
+          fi
+          echo "Creating new release: $NEW_VERSION"
+          
+          # Get the release notes generated by the changelog action
+          CHANGELOG_NOTES_FILE="RELEASE_NOTES.md"
+          printf "%s\n" "${{ steps.changelog.outputs.changelog }}" > "$CHANGELOG_NOTES_FILE"
+          
+          # Create the GitHub Release and upload all assets
+          test -n "$(ls -A release-assets 2>/dev/null)" || { echo "No assets to upload"; exit 1; }
+          gh release create "$NEW_VERSION" \
+            --title "CircuitVerse Desktop $NEW_VERSION" \
+            --notes-file "$CHANGELOG_NOTES_FILE" \
+            release-assets/*

@@ -1,0 +1,53 @@
+name: Desktop Simulator Tests
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  schedule:
+    - cron: '16 5 * * 0'
+
+jobs:
+  desktop-simulator-tests:
+    name: Desktop Simulator Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22  # Use Node.js 22
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli
+
+      - name: Debug Environment
+        run: |
+          echo "Node.js version: $(node -v)"
+          echo "npm version: $(npm -v)"
+          echo "Rust version: $(rustc --version)"
+          echo "Tauri CLI version: $(tauri --version)"
+
+      - name: Start Mock API
+        run: |
+          npm install -g json-server
+          json-server --watch mock-api.json --port 3000 &
+
+      - name: Build Tauri App using build-desktop.js
+        run: |
+          node build-desktop.js
+
+      
