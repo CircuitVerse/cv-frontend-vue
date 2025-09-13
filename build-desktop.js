@@ -30,6 +30,13 @@ console.log(`Building for ${platform === 'win32' ? 'Windows' : 'Unix-based syste
 
 runCommand('npm run build');
 
+const fs = require('fs');
+	
+	if (!fs.existsSync('dist/index-cv.html')) {
+	  console.error('Error: dist/index-cv.html not found after build');
+	  process.exit(1);
+	}
+
 if (platform === 'win32') {
   runCommand('copy dist\\index-cv.html dist\\index.html');
 } else {
