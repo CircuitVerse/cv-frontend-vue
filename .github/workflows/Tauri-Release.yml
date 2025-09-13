@@ -113,9 +113,8 @@ jobs:
           # The '|| true' prevents the workflow from failing if a specific file type doesn't exist
           find artifacts -type f \( -name "*.deb" -o -name "*.AppImage" -o -name "*.msi" -o -name "*.dmg" \) -exec cp {} release-assets/ \; || true
           
-          # For macOS, we also zip the .app bundle for easier distribution
-          if [ -d "artifacts/Tauri Build Artifacts (macos-latest)/app" ]; then
-            cd artifacts/Tauri\ Build\ Artifacts\ \(macos-latest\)/app
+          if [ -d "artifacts/Tauri Build Artifacts (macos-latest)/src-tauri/target/release/bundle/macos" ]; then
+            cd "artifacts/Tauri Build Artifacts (macos-latest)/src-tauri/target/release/bundle/macos"
             for app in *.app; do
               zip -r "../../../release-assets/${app%.app}.zip" "$app"
             done
