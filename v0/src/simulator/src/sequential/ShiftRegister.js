@@ -27,7 +27,10 @@ export default class ShiftRegister extends CircuitElement {
 
         this.width = 60;
 
-        this.noOfStages = noOfStages || parseInt(prompt('Enter number of stages:'));
+        this.noOfStages = noOfStages || 4; // Safe default
+        if (!this.noOfStages || this.noOfStages < 1 || this.noOfStages > 32) {
+           this.noOfStages = 4;
+        }
 
 
         this.registerType = registerType ?? "PIPO";
