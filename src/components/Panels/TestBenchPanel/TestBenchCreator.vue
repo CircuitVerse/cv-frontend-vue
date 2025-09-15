@@ -47,6 +47,7 @@
                             Results
                         </div>
                     </div>
+                </div>
 
                     <div class="data-grid labels-grid" :class="{ 'with-results': testBenchStore.showResults }">
                         <div class="grid-cell label-col">
