@@ -2,12 +2,15 @@ name: Conventional Commits
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   check-commits:
+    permissions:
+      contents: read
+      pull-requests: read
     name: Conventional Commits
     runs-on: ubuntu-latest
     steps:
