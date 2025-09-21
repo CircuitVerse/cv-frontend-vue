@@ -241,7 +241,7 @@ import { useI18n } from 'vue-i18n'
 import { availableLocale } from '#/locales/i18n'
 import { useAuthStore } from '#/store/authStore'
 import { mdiClose } from '@mdi/js'
-import { fetch } from '@tauri-apps/plugin-http'
+// import { fetch } from '@tauri-apps/plugin-http' // Uncomment if using Tauri's HTTP plugin
 import './User.scss'
 
 const authStore = useAuthStore()
@@ -289,8 +289,8 @@ async function handleAuthSubmit() {
 
   try {
     const url = isLoginMode.value
-      ? 'https://circuitverse.org/api/v1/auth/login'
-      : 'https://circuitverse.org/api/v1/auth/signup'
+      ? 'http://localhost:4000/api/v1/auth/login'
+      : 'http://localhost:4000/api/v1/auth/signup'
 
     const body = isLoginMode.value
       ? { email: email.value, password: password.value }
