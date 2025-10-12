@@ -81,6 +81,7 @@ export default class LSB extends CircuitElement {
             this.enable.value = 0
         }
         simulationArea.simulationQueue.add(this.enable)
+        this.setOutputsUpstream(true);
     }
 
     /**
