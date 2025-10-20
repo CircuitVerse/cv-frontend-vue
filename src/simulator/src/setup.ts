@@ -25,6 +25,20 @@ import '../vendor/jquery-ui.min.css'
 import '../vendor/jquery-ui.min'
 import { confirmSingleOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
 import { getToken } from '#/pages/simulatorHandler.vue'
+import { ProjectData } from './types/setup.types'
+import { BackgroundArea } from './interface/backgroundArea'
+
+declare var DPR: number
+declare var width: number
+declare var height: number
+declare var embed: boolean
+declare var lightMode: boolean
+interface PlotArea {
+    setup: () => void
+}
+
+const typedBackgroundArea = backgroundArea as unknown as BackgroundArea
+const typedPlotArea = plotArea as unknown as PlotArea
 
 /**
  * to resize window and setup things it
@@ -32,36 +46,46 @@ import { getToken } from '#/pages/simulatorHandler.vue'
  * Also redraws the grid.
  * @category setup
  */
-export function resetup() {
+export function resetup(): void {
     DPR = window.devicePixelRatio || 1
     if (lightMode) {
         DPR = 1
     }
-    width = document.getElementById('simulationArea').clientWidth * DPR
+    width = document.getElementById('simulationArea')!.clientWidth * DPR
     if (!embed) {
+        const toolbar = document.getElementById('toolbar')
         height =
-            (document.body.clientHeight -
-                document.getElementById('toolbar')?.clientHeight) *
-            DPR
+            (document.body.clientHeight - (toolbar?.clientHeight || 0)) * DPR
     } else {
-        height = document.getElementById('simulation').clientHeight * DPR
+        height = document.getElementById('simulation')!.clientHeight * DPR
     }
     // setup simulationArea and backgroundArea variables used to make changes to canvas.
     backgroundArea.setup()
     simulationArea.setup()
     // redraw grid
     dots()
-    document.getElementById('backgroundArea').style.height =
-        height / DPR + 100 + 'px'
-    document.getElementById('backgroundArea').style.width =
-        width / DPR + 100 + 'px'
-    document.getElementById('canvasArea').style.height = height / DPR + 'px'
+    const bgArea = document.getElementById('backgroundArea')
+    const canvasArea = document.getElementById('canvasArea')
+
+    if (bgArea) {
+        bgArea.style.height = height / DPR + 100 + 'px'
+        bgArea.style.width = width / DPR + 100 + 'px'
+    }
+
+    if (canvasArea) {
+        canvasArea.style.height = height / DPR + 'px'
+    }
+
     simulationArea.canvas.width = width
     simulationArea.canvas.height = height
-    backgroundArea.canvas.width = width + 100 * DPR
-    backgroundArea.canvas.height = height + 100 * DPR
+
+    if (typedBackgroundArea.canvas) {
+        typedBackgroundArea.canvas.width = width + 100 * DPR
+        typedBackgroundArea.canvas.height = height + 100 * DPR
+    }
+
     if (!embed) {
-        plotArea.setup()
+        typedPlotArea.setup()
     }
     updateCanvasSet(true)
     update() // INEFFICIENT, needs to be deprecated
@@ -79,13 +103,13 @@ window.addEventListener('orientationchange', resetup) // listener
  * function to setup environment variables like projectId and DPR
  * @category setup
  */
-function setupEnvironment() {
+function setupEnvironment(): void {
     setupModules()
     const projectId = generateId()
     window.projectId = projectId
     updateSimulationSet(true)
     // const DPR = window.devicePixelRatio || 1 // unused variable
-    newCircuit('Main')
+    newCircuit('Main', undefined, false, false)
     window.data = {}
     resetup()
     setupCodeMirrorEnvironment()
@@ -96,7 +120,7 @@ function setupEnvironment() {
  * @param {number} projectId The ID of the project to fetch data for
  * @category setup
  */
-async function fetchProjectData(projectId) {
+async function fetchProjectData(projectId: number): Promise<void> {
     try {
         const response = await fetch(
             `/api/v1/projects/${projectId}/circuit_data`,
@@ -109,8 +133,8 @@ async function fetchProjectData(projectId) {
             }
         )
         if (response.ok) {
-            const data = await response.json()
-            await load(data)
+            const data: ProjectData = await response.json()
+            await load(data as any)
             await simulationArea.changeClockTime(data.timePeriod || 500)
             $('.loadingIcon').fadeOut()
         } else {
@@ -128,18 +152,21 @@ async function fetchProjectData(projectId) {
  * Improvement to eliminate delay caused by setTimeout in previous implementation revert if issues arise.
  * @category setup
  */
-async function loadProjectData() {
+async function loadProjectData(): Promise<void> {
     window.logixProjectId = window.logixProjectId ?? 0
     if (window.logixProjectId !== 0) {
         $('.loadingIcon').fadeIn()
         await fetchProjectData(window.logixProjectId)
     } else if (localStorage.getItem('recover_login') && window.isUserLoggedIn) {
         // Restore unsaved data and save
-        const data = JSON.parse(localStorage.getItem('recover_login'))
-        await load(data)
-        localStorage.removeItem('recover')
-        localStorage.removeItem('recover_login')
-        await save()
+        const item = localStorage.getItem('recover_login')
+        if (item) {
+            const data = JSON.parse(item)
+            await load(data as any)
+            localStorage.removeItem('recover')
+            localStorage.removeItem('recover_login')
+            await save()
+        }
     } else if (localStorage.getItem('recover')) {
         // Restore unsaved data which didn't get saved due to error
         showMessage(
@@ -153,8 +180,8 @@ async function loadProjectData() {
  * The tour is shown after a delay of 2 seconds.
  * @category setup
  */
-function showTour() {
-    if (!localStorage.tutorials_tour_done && !embed) {
+function showTour(): void {
+    if (!localStorage.getItem('tutorials_tour_done') && !embed) {
         setTimeout(() => {
             showTourGuide()
         }, 2000)
@@ -167,7 +194,7 @@ function showTour() {
  * loads the project data, and shows the tour guide.
  * @category setup
  */
-export function setup() {
+export function setup(): void {
     setupEnvironment()
     if (!embed) {
         setupUI()
