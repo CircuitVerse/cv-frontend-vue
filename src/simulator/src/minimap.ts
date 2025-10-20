@@ -2,25 +2,33 @@ import { simulationArea } from './simulationArea'
 import { colors } from './themer/themer'
 import { layoutModeGet } from './layoutMode'
 import { updateOrder } from './metadata'
+import { MiniMapAreaType } from './types/minimap.types'
+
+// jQuery is available globally in this project
+declare const $: JQueryStatic
+
+// Global variables are already declared in app.types.ts
 
 /**
- * @type {Object} miniMapArea
  * This object is used to draw the miniMap.
- * @property {number} pageY
- * @property {number} pageX
- * @property {HTMLCanvasObject} canvas - the canvas object
- * @property {function} setup - used to setup the parameters and dimensions
- * @property {function} play - used to draw outline of minimap and call resolve
- * @property {function} resolve - used to resolve all objects and draw them on minimap
- * @property {function} clear - used to clear minimap
- * @category minimap
  */
-var miniMapArea
-export default miniMapArea = {
-    canvas: document.getElementById('miniMapArea'),
+const miniMapArea: MiniMapAreaType = {
+    canvas: null,
+    ctx: null,
+    pageHeight: 0,
+    pageWidth: 0,
+    pageY: 0,
+    pageX: 0,
+    minX: 0,
+    maxX: 0,
+    minY: 0,
+    maxY: 0,
+
     setup() {
         if (lightMode) return
-        this.canvas = document.getElementById('miniMapArea')
+        this.canvas = document.getElementById(
+            'miniMapArea'
+        ) as HTMLCanvasElement
         this.pageHeight = height // Math.round(((parseInt($("#simulationArea").height())))/ratio)*ratio-50; // -50 for tool bar? Check again
         this.pageWidth = width // Math.round(((parseInt($("#simulationArea").width())))/ratio)*ratio;
         this.pageY = this.pageHeight - globalScope.oy
@@ -59,10 +67,10 @@ export default miniMapArea = {
             this.maxX = this.pageX / globalScope.scale
         }
 
-        var h = this.maxY - this.minY
-        var w = this.maxX - this.minX
+        const h = this.maxY - this.minY
+        const w = this.maxX - this.minX
 
-        var ratio = Math.min(250 / h, 250 / w)
+        const ratio = Math.min(250 / h, 250 / w)
         if (h > w) {
             this.canvas.height = 250.0
             this.canvas.width = (250.0 * w) / h
@@ -74,22 +82,28 @@ export default miniMapArea = {
         this.canvas.height += 5
         this.canvas.width += 5
 
-        document.getElementById('miniMap').style.height = this.canvas.height
-        document.getElementById('miniMap').style.width = this.canvas.width
+        const miniMapElement = document.getElementById('miniMap')
+        if (miniMapElement) {
+            miniMapElement.style.height = `${this.canvas.height}px`
+            miniMapElement.style.width = `${this.canvas.width}px`
+        }
+
         this.ctx = this.canvas.getContext('2d')
         this.play(ratio)
     },
 
-    play(ratio) {
+    play(ratio: number) {
         if (lightMode || layoutModeGet()) return
+        if (!this.ctx) return
 
         this.ctx.fillStyle = '#bbb'
-        this.ctx.rect(0, 0, this.canvas.width, this.canvas.height)
+        this.ctx.rect(0, 0, this.canvas!.width, this.canvas!.height)
         this.ctx.fill()
         this.resolve(ratio)
     },
-    resolve(ratio) {
-        if (lightMode) return
+
+    resolve(ratio: number) {
+        if (lightMode || !this.ctx) return
 
         this.ctx.fillStyle = '#ddd'
         this.ctx.beginPath()
@@ -108,15 +122,15 @@ export default miniMapArea = {
         this.ctx.fill()
 
         //  to show the area of current canvas
-        var lst = updateOrder
+        const lst = updateOrder
         const miniFill = colors['mini_fill']
         const miniStroke = colors['mini_stroke']
 
         this.ctx.strokeStyle = miniStroke
         this.ctx.fillStyle = miniFill
-        for (var i = 0; i < lst.length; i++) {
+        for (let i = 0; i < lst.length; i++) {
             if (lst[i] === 'wires') {
-                for (var j = 0; j < globalScope[lst[i]].length; j++) {
+                for (let j = 0; j < globalScope[lst[i]].length; j++) {
                     this.ctx.beginPath()
                     this.ctx.moveTo(
                         2.5 +
@@ -138,7 +152,7 @@ export default miniMapArea = {
                 }
             } else if (lst[i] != 'nodes') {
                 // Don't include SquareRGBLed here; it has correct size.
-                var ledY = 0
+                let ledY = 0
                 if (
                     lst[i] == 'DigitalLed' ||
                     lst[i] == 'VariableLed' ||
@@ -147,11 +161,9 @@ export default miniMapArea = {
                     ledY = 20
                 }
 
-                for (var j = 0; j < globalScope[lst[i]].length; j++) {
-                    var xx = globalScope[lst[i]][j].x - simulationArea.minWidth
-                    var yy = globalScope[lst[i]][j].y - simulationArea.minHeight
+                for (let j = 0; j < globalScope[lst[i]].length; j++) {
+                    const obj = globalScope[lst[i]][j]
                     this.ctx.beginPath()
-                    var obj = globalScope[lst[i]][j]
                     this.ctx.rect(
                         2.5 + (obj.x - obj.leftDimensionX - this.minX) * ratio,
                         2.5 + (obj.y - obj.upDimensionY - this.minY) * ratio,
@@ -165,17 +177,29 @@ export default miniMapArea = {
             }
         }
     },
+
     clear() {
         if (lightMode) return
         $('#miniMapArea').css('z-index', '-1')
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+        if (this.ctx && this.canvas) {
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
+        }
     },
 }
-var lastMiniMapShown
-export function updatelastMinimapShown() {
+
+let lastMiniMapShown: number | undefined
+
+/**
+ * Update the timestamp of when the minimap was last shown
+ */
+export function updatelastMinimapShown(): void {
     lastMiniMapShown = new Date().getTime()
 }
-export function removeMiniMap() {
+
+/**
+ * Remove the minimap after a certain time period
+ */
+export function removeMiniMap(): void {
     if (lightMode) return
 
     if (
@@ -183,12 +207,17 @@ export function removeMiniMap() {
         simulationArea.mouseDown
     )
         return
-    if (lastMiniMapShown + 2000 >= new Date().getTime()) {
+
+    if (lastMiniMapShown && lastMiniMapShown + 2000 >= new Date().getTime()) {
         setTimeout(
             removeMiniMap,
             lastMiniMapShown + 2000 - new Date().getTime()
         )
         return
     }
+
+    // Using jQuery for the fade out effect
     $('#miniMap').fadeOut('fast')
 }
+
+export default miniMapArea
