@@ -1,9 +1,8 @@
 import CircuitElement from '../circuitElement'
-import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { correctWidth, rect, fillText, drawImage } from '../canvasApi'
 import { colors } from '../themer/themer'
-import { promptFile, showMessage, getImageDimensions } from '../utils'
+import { promptFile, showMessage } from '../utils'
 /**
  * @class
  * Image
@@ -113,7 +112,7 @@ export default class ImageAnnotation extends CircuitElement {
 
             if (
                 simulationArea.lastSelected === this ||
-                simulationArea.multipleObjectSelections.contains(this)
+                simulationArea.multipleObjectSelections.includes(this)
             ) {
                 ctx.fillStyle = 'rgba(255, 255, 32,0.1)'
                 ctx.fill()
