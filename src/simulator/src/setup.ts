@@ -26,19 +26,10 @@ import '../vendor/jquery-ui.min'
 import { confirmSingleOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
 import { getToken } from '#/pages/simulatorHandler.vue'
 import { ProjectData } from './types/setup.types'
-import { BackgroundArea } from './interface/backgroundArea'
 
-declare var DPR: number
-declare var width: number
-declare var height: number
-declare var embed: boolean
-declare var lightMode: boolean
 interface PlotArea {
     setup: () => void
 }
-
-const typedBackgroundArea = backgroundArea as unknown as BackgroundArea
-const typedPlotArea = plotArea as unknown as PlotArea
 
 /**
  * to resize window and setup things it
@@ -47,17 +38,26 @@ const typedPlotArea = plotArea as unknown as PlotArea
  * @category setup
  */
 export function resetup(): void {
-    DPR = window.devicePixelRatio || 1
-    if (lightMode) {
-        DPR = 1
+    window.DPR = window.devicePixelRatio || 1
+    if (window.lightMode) {
+        window.DPR = 1
     }
-    width = document.getElementById('simulationArea')!.clientWidth * DPR
-    if (!embed) {
+    const simulationAreaElement = document.getElementById('simulationArea')
+    if (!simulationAreaElement) {
+        throw new Error('simulationArea element not found')
+    }
+    window.width = simulationAreaElement.clientWidth * window.DPR
+    if (!window.embed) {
         const toolbar = document.getElementById('toolbar')
-        height =
-            (document.body.clientHeight - (toolbar?.clientHeight || 0)) * DPR
+        window.height =
+            (document.body.clientHeight - (toolbar?.clientHeight || 0)) *
+            window.DPR
     } else {
-        height = document.getElementById('simulation')!.clientHeight * DPR
+        const simulationElement = document.getElementById('simulation')
+        if (!simulationElement) {
+            throw new Error('simulation element not found')
+        }
+        window.height = simulationElement.clientHeight * window.DPR
     }
     // setup simulationArea and backgroundArea variables used to make changes to canvas.
     backgroundArea.setup()
@@ -68,24 +68,24 @@ export function resetup(): void {
     const canvasArea = document.getElementById('canvasArea')
 
     if (bgArea) {
-        bgArea.style.height = height / DPR + 100 + 'px'
-        bgArea.style.width = width / DPR + 100 + 'px'
+        bgArea.style.height = window.height / window.DPR + 100 + 'px'
+        bgArea.style.width = window.width / window.DPR + 100 + 'px'
     }
 
     if (canvasArea) {
-        canvasArea.style.height = height / DPR + 'px'
+        canvasArea.style.height = window.height / window.DPR + 'px'
     }
 
-    simulationArea.canvas.width = width
-    simulationArea.canvas.height = height
+    simulationArea.canvas.width = window.width
+    simulationArea.canvas.height = window.height
 
-    if (typedBackgroundArea.canvas) {
-        typedBackgroundArea.canvas.width = width + 100 * DPR
-        typedBackgroundArea.canvas.height = height + 100 * DPR
+    if (backgroundArea.canvas) {
+        backgroundArea.canvas.width = window.width + 100 * window.DPR
+        backgroundArea.canvas.height = window.height + 100 * window.DPR
     }
 
-    if (!embed) {
-        typedPlotArea.setup()
+    if (!window.embed) {
+        ;(plotArea as PlotArea).setup()
     }
     updateCanvasSet(true)
     update() // INEFFICIENT, needs to be deprecated
@@ -134,6 +134,14 @@ async function fetchProjectData(projectId: number): Promise<void> {
         )
         if (response.ok) {
             const data: ProjectData = await response.json()
+            const simulatorVersion = data.simulatorVersion  
+            const projectName = data.name
+            if(!simulatorVersion){                 
+                window.location.href = `/simulator/edit/${projectName}`             
+            }           
+            if(simulatorVersion && simulatorVersion != "v0"){                 
+                window.location.href = `/simulatorvue/edit/${projectName}?simver=${simulatorVersion}`             
+            }
             await load(data as any)
             await simulationArea.changeClockTime(data.timePeriod || 500)
             $('.loadingIcon').fadeOut()
