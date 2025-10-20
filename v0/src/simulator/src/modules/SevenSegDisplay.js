@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import {
     colorToRGBA,
     correctWidth,
@@ -23,9 +23,6 @@ import {
 export default class SevenSegDisplay extends CircuitElement {
     constructor(x, y, scope = globalScope, color = 'Red') {
         super(x, y, scope, 'RIGHT', 1)
-        /* this is done in this.baseSetup() now
-        this.scope['SevenSegDisplay'].push(this);
-        */
         this.fixedBitWidth = true
         this.directionFixed = true
         this.setDimensions(30, 50)
@@ -266,7 +263,7 @@ export default class SevenSegDisplay extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected == this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         ) {
             ctx.fillStyle = 'rgba(255, 255, 32,0.6)'
             ctx.fill()
