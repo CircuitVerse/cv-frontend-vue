@@ -1,13 +1,7 @@
 export interface TourStep {
     element: string
     className?: string
-    popover: {
-        className?: string
-        title: string
-        description: string
-        position: 'top' | 'bottom' | 'left' | 'right'
-        offset?: number
-    }
+    popover: Popover
 }
 
 export interface Popover {
