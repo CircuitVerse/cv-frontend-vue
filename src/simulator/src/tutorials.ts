@@ -1,6 +1,7 @@
 import Driver from 'driver.js'
+import { TourStep, DriverInstance } from './types/tutorials.types'
 
-export const tour = [
+export const tour: TourStep[] = [
     {
         element: '#guide_1',
         className: 'guide_1',
@@ -79,7 +80,8 @@ export const tour = [
         element: '.testbench-manual-panel',
         popover: {
             title: 'Test Bench Panel',
-            description: 'This panel helps you test your circuit correctness by observing how your circuit responds under different test cases, ensuring a thorough and effective validation process.',
+            description:
+                'This panel helps you test your circuit correctness by observing how your circuit responds under different test cases, ensuring a thorough and effective validation process.',
             position: 'right',
             offset: 0,
         },
@@ -87,32 +89,47 @@ export const tour = [
 ]
 
 // Not used currently
-export const tutorialWrapper = () => {
-    const panelHighlight = new Driver()
-    document.querySelector('.panelHeader').addEventListener('click', (e) => {
-        if (localStorage.tutorials === 'next') {
-            panelHighlight.highlight({
-                element: '#guide_1',
-                showButtons: false,
-                popover: {
-                    title: 'Here are the elements',
-                    description:
-                        'Select any element by clicking on it & then click anywhere on the grid to place the element.',
-                    position: 'right',
-                    offset:
-                        e.target.nextElementSibling.offsetHeight +
-                        e.target.offsetTop -
-                        45,
-                },
-            })
-            localStorage.setItem('tutorials', 'done')
-        }
-    }, {
-        once: true,
-      })
-    document.querySelector('.icon').addEventListener('click', () => {
-        panelHighlight.reset(true)
-    })
+export const tutorialWrapper = (): void => {
+    const panelHighlight = new Driver() as unknown as DriverInstance
+    const panelHeader = document.querySelector('.panelHeader')
+
+    if (panelHeader) {
+        panelHeader.addEventListener(
+            'click',
+            (e: Event) => {
+                if (localStorage.getItem('tutorials') === 'next') {
+                    const target = e.target as HTMLElement
+                    const nextElement = target.nextElementSibling as HTMLElement
+
+                    panelHighlight.highlight({
+                        element: '#guide_1',
+                        showButtons: false,
+                        popover: {
+                            title: 'Here are the elements',
+                            description:
+                                'Select any element by clicking on it & then click anywhere on the grid to place the element.',
+                            position: 'right',
+                            offset:
+                                nextElement.offsetHeight +
+                                target.offsetTop -
+                                45,
+                        },
+                    })
+                    localStorage.setItem('tutorials', 'done')
+                }
+            },
+            {
+                once: true,
+            }
+        )
+    }
+
+    const iconElement = document.querySelector('.icon')
+    if (iconElement) {
+        iconElement.addEventListener('click', () => {
+            panelHighlight.reset(true)
+        })
+    }
 }
 
 const animatedTourDriver = new Driver({
@@ -120,13 +137,16 @@ const animatedTourDriver = new Driver({
     opacity: 0.8,
     padding: 5,
     showButtons: true,
-})
+}) as unknown as DriverInstance
 
-export function showTourGuide() {
-    document.querySelector('.draggable-panel .maximize').click();
+export function showTourGuide(): void {
+    const maximizeButton = document.querySelector('.draggable-panel .maximize')
+    if (maximizeButton && maximizeButton instanceof HTMLElement) {
+        maximizeButton.click()
+    }
     animatedTourDriver.defineSteps(tour)
     animatedTourDriver.start()
-    localStorage.setItem('tutorials_tour_done', true)
+    localStorage.setItem('tutorials_tour_done', 'true')
 }
 
 export default showTourGuide
