@@ -100,10 +100,11 @@ window.onorientationchange = resetup // listener
 window.addEventListener('orientationchange', resetup) // listener
 
 /**
- * function to setup environment variables like projectId and DPR
+ * Function to setup environment variables like projectId and DPR
  * @category setup
+ * @export
  */
-function setupEnvironment(): void {
+export function setupEnvironment(): void {
     setupModules()
     const projectId = generateId()
     window.projectId = projectId
@@ -120,7 +121,7 @@ function setupEnvironment(): void {
  * @param {number} projectId The ID of the project to fetch data for
  * @category setup
  */
-async function fetchProjectData(projectId: number): Promise<void> {
+export async function fetchProjectData(projectId: number): Promise<void> {
     try {
         const response = await fetch(
             `/api/v1/projects/${projectId}/circuit_data`,
@@ -134,14 +135,24 @@ async function fetchProjectData(projectId: number): Promise<void> {
         )
         if (response.ok) {
             const data: ProjectData = await response.json()
-            const simulatorVersion = data.simulatorVersion  
+            const simulatorVersion = data.simulatorVersion
             const projectName = data.name
-            if(!simulatorVersion){                 
-                window.location.href = `/simulator/edit/${projectName}`             
-            }           
-            if(simulatorVersion && simulatorVersion != "v0"){                 
-                window.location.href = `/simulatorvue/edit/${projectName}?simver=${simulatorVersion}`             
+            const safeName = encodeURIComponent(projectName ?? '')
+
+            if (!simulatorVersion) {
+                window.location.assign(`/simulator/edit/${safeName}`)
+                return
             }
+
+            if (simulatorVersion !== 'v0') {
+                window.location.assign(
+                    `/simulatorvue/edit/${safeName}?simver=${encodeURIComponent(
+                        simulatorVersion
+                    )}`
+                )
+                return
+            }
+
             await load(data as any)
             await simulationArea.changeClockTime(data.timePeriod || 500)
             $('.loadingIcon').fadeOut()
@@ -160,20 +171,33 @@ async function fetchProjectData(projectId: number): Promise<void> {
  * Improvement to eliminate delay caused by setTimeout in previous implementation revert if issues arise.
  * @category setup
  */
-async function loadProjectData(): Promise<void> {
+export async function loadProjectData(): Promise<void> {
     window.logixProjectId = window.logixProjectId ?? 0
     if (window.logixProjectId !== 0) {
         $('.loadingIcon').fadeIn()
-        await fetchProjectData(window.logixProjectId)
+        try {
+            await fetchProjectData(window.logixProjectId)
+        } catch (error) {
+            console.error('Failed to load project data:', error)
+            $('.loadingIcon').fadeOut()
+            showMessage('Failed to load project. Please try again.')
+        }
     } else if (localStorage.getItem('recover_login') && window.isUserLoggedIn) {
         // Restore unsaved data and save
-        const item = localStorage.getItem('recover_login')
-        if (item) {
-            const data = JSON.parse(item)
-            await load(data as any)
-            localStorage.removeItem('recover')
-            localStorage.removeItem('recover_login')
-            await save()
+        try {
+            const item = localStorage.getItem('recover_login')
+            if (item) {
+                const data = JSON.parse(item) as unknown as ProjectData
+                await load(data as any)
+                localStorage.removeItem('recover')
+                localStorage.removeItem('recover_login')
+                await save()
+            }
+        } catch (error) {
+            console.error('Failed to recover project data:', error)
+            showMessage(
+                'Failed to recover project data. The saved data may be corrupted.'
+            )
         }
     } else if (localStorage.getItem('recover')) {
         // Restore unsaved data which didn't get saved due to error
@@ -187,9 +211,10 @@ async function loadProjectData(): Promise<void> {
  * Show tour guide if it hasn't been completed yet.
  * The tour is shown after a delay of 2 seconds.
  * @category setup
+ * @export
  */
-function showTour(): void {
-    if (!localStorage.getItem('tutorials_tour_done') && !embed) {
+export function showTour(): void {
+    if (!localStorage.getItem('tutorials_tour_done') && !window.embed) {
         setTimeout(() => {
             showTourGuide()
         }, 2000)
