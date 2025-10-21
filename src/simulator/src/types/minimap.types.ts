@@ -1,7 +1,6 @@
 export interface MiniMapAreaType {
     canvas: HTMLCanvasElement | null
     ctx: CanvasRenderingContext2D | null
-    context?: CanvasRenderingContext2D
     pageHeight: number
     pageWidth: number
     pageY: number

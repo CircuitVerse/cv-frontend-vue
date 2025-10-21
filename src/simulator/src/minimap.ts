@@ -23,7 +23,7 @@ declare const $: JQueryStatic
  * @category minimap
  */
 const miniMapArea: MiniMapAreaType = {
-    canvas: document.getElementById('miniMapArea') as HTMLCanvasElement,
+    canvas: document.getElementById('miniMapArea') as HTMLCanvasElement | null,
     ctx: null,
     pageHeight: 0,
     pageWidth: 0,
@@ -38,7 +38,8 @@ const miniMapArea: MiniMapAreaType = {
         if (lightMode) return
         this.canvas = document.getElementById(
             'miniMapArea'
-        ) as HTMLCanvasElement
+        ) as HTMLCanvasElement | null
+        if (!this.canvas) return
         this.pageHeight = height // Math.round(((parseInt($("#simulationArea").height())))/ratio)*ratio-50; // -50 for tool bar? Check again
         this.pageWidth = width // Math.round(((parseInt($("#simulationArea").width())))/ratio)*ratio;
         this.pageY = this.pageHeight - globalScope.oy
@@ -100,6 +101,7 @@ const miniMapArea: MiniMapAreaType = {
 
         this.ctx = this.canvas.getContext('2d')
         // this.context = this.ctx || undefined
+        if (!this.ctx) return
         this.play(ratio)
     },
 
@@ -193,7 +195,10 @@ const miniMapArea: MiniMapAreaType = {
     clear() {
         if (lightMode) return
         $('#miniMapArea').css('z-index', '-1')
-        this.context!.clearRect(0, 0, this.canvas!.width, this.canvas!.height)
+        const ctx = this.ctx
+        const canvas = this.canvas
+        if (!ctx || !canvas) return
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
     },
 }
 
