@@ -1,39 +1,55 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
 import { simulationArea } from '../simulationArea'
-import { correctWidth, lineTo, moveTo, arc } from '../canvasApi'
+import { correctWidth, lineTo, moveTo, drawCircle2, arc } from '../canvasApi'
 import { changeInputSize } from '../modules'
 import { colors } from '../themer/themer'
 import { gateGenerateVerilog } from '../utils'
 
+// Import or declare globalScope
+declare const globalScope: any
+
+// Extend Node interface to include missing properties
+declare global {
+    interface Node {
+        verilogLabel?: string
+        value?: number
+        queueProperties?: {
+            inQueue: boolean
+            time?: number
+            index?: number
+        }
+    }
+}
+
 /**
  * @class
- * AndGate
+ * NandGate
  * @extends CircuitElement
- * @param {number} x - x coordinate of And Gate.
- * @param {number} y - y coordinate of And Gate.
- * @param {Scope=} scope - Cirucit on which and gate is drawn
- * @param {string=} dir - direction of And Gate
+ * @param {number} x - x coordinate of nand Gate.
+ * @param {number} y - y coordinate of nand Gate.
+ * @param {Scope=} scope - Cirucit on which nand gate is drawn
+ * @param {string=} dir - direction of nand Gate
  * @param {number=} inputLength - number of input nodes
  * @param {number=} bitWidth - bit width per node.
  * @category modules
  */
-export default class AndGate extends CircuitElement {
+export default class NandGate extends CircuitElement {
+    rectangleObject: boolean
+    inputSize: number
+    inp: Node[]
+    output1: Node
+    changeInputSize!: (size: number) => void
+
     constructor(
-        x,
-        y,
-        scope = globalScope,
-        dir = 'RIGHT',
-        inputLength = 2,
-        bitWidth = 1
+        x: number,
+        y: number,
+        scope: any = globalScope,
+        dir: string = 'RIGHT',
+        inputLength: number = 2,
+        bitWidth: number = 1
     ) {
-        /**
-         * super call
-         */
         super(x, y, scope, dir, bitWidth)
-        /* this is done in this.baseSetup() now
-        this.scope['AndGate'].push(this);
-        */
         this.rectangleObject = false
         this.setDimensions(15, 20)
         this.inp = []
@@ -61,12 +77,11 @@ export default class AndGate extends CircuitElement {
                 this.inp.push(a)
             }
         }
-
-        this.output1 = new Node(20, 0, 1, this)
+        this.output1 = new Node(30, 0, 1, this)
     }
 
     /**
-     * @memberof AndGate
+     * @memberof NandGate
      * fn to create save Json Data of object
      * @return {JSON}
      */
@@ -86,7 +101,7 @@ export default class AndGate extends CircuitElement {
     }
 
     /**
-     * @memberof AndGate
+     * @memberof NandGate
      * resolve output values based on inputData
      */
     resolve() {
@@ -96,30 +111,32 @@ export default class AndGate extends CircuitElement {
         }
         for (let i = 1; i < this.inputSize; i++)
             result &= this.inp[i].value || 0
-        this.output1.value = result >>> 0
-        simulationArea.simulationQueue.add(this.output1)
+        result =
+            ((~result >>> 0) << (32 - this.bitWidth)) >>> (32 - this.bitWidth)
+        this.output1.value = result
+        simulationArea.simulationQueue.add(this.output1 as any, 0)
     }
 
     /**
-     * @memberof AndGate
-     * function to draw And Gate
+     * @memberof NandGate
+     * function to draw nand Gate
      */
     customDraw() {
-        var ctx = simulationArea.context
+        const ctx = simulationArea.context
+        if (ctx === null) return
+
         ctx.beginPath()
         ctx.lineWidth = correctWidth(3)
-        ctx.strokeStyle = colors['stroke'] // ("rgba(0,0,0,1)");
+        ctx.strokeStyle = colors['stroke']
         ctx.fillStyle = colors['fill']
         const xx = this.x
         const yy = this.y
-
         moveTo(ctx, -10, -20, xx, yy, this.direction)
         lineTo(ctx, 0, -20, xx, yy, this.direction)
         arc(ctx, 0, 0, 20, -Math.PI / 2, Math.PI / 2, xx, yy, this.direction)
         lineTo(ctx, -10, 20, xx, yy, this.direction)
         lineTo(ctx, -10, -20, xx, yy, this.direction)
         ctx.closePath()
-
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected === this ||
@@ -128,41 +145,41 @@ export default class AndGate extends CircuitElement {
             ctx.fillStyle = colors['hover_select']
         ctx.fill()
         ctx.stroke()
+        ctx.beginPath()
+        drawCircle2(ctx, 25, 0, 5, xx, yy, this.direction)
+        ctx.stroke()
     }
 
     generateVerilog() {
-        return gateGenerateVerilog.call(this, '&')
+        return gateGenerateVerilog.call(this, '&', true)
     }
 }
 
-/**
- * @memberof AndGate
- * Help Tip
- * @type {string}
- * @category modules
- */
-AndGate.prototype.tooltipText =
-    'And Gate ToolTip : Implements logical conjunction'
+// Define static properties using Object.defineProperty
+Object.defineProperty(NandGate.prototype, 'tooltipText', {
+    value: 'Nand Gate ToolTip : Combination of AND and NOT gates',
+    writable: true,
+})
 
-/**
- * @memberof AndGate
- * @type {boolean}
- * @category modules
- */
-AndGate.prototype.alwaysResolve = true
+Object.defineProperty(NandGate.prototype, 'alwaysResolve', {
+    value: true,
+    writable: true,
+})
 
-/**
- * @memberof AndGate
- * @type {string}
- * @category modules
- */
-AndGate.prototype.verilogType = 'and'
+Object.defineProperty(NandGate.prototype, 'verilogType', {
+    value: 'nand',
+    writable: true,
+})
 
-/**
- * @memberof AndGate
- * function to change input nodes of the gate
- * @category modules
- */
-AndGate.prototype.changeInputSize = changeInputSize
-AndGate.prototype.helplink = 'https://docs.circuitverse.org/#/chapter4/4gates?id=and-gate'
-AndGate.prototype.objectType = 'AndGate'
+Object.defineProperty(NandGate.prototype, 'helplink', {
+    value: 'https://docs.circuitverse.org/#/chapter4/4gates?id=nand-gate',
+    writable: true,
+})
+
+Object.defineProperty(NandGate.prototype, 'objectType', {
+    value: 'NandGate',
+    writable: true,
+})
+
+// Set the changeInputSize function
+NandGate.prototype.changeInputSize = changeInputSize

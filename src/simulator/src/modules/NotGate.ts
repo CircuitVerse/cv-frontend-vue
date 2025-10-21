@@ -2,6 +2,22 @@ import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
 import { simulationArea } from '../simulationArea'
 import { correctWidth, lineTo, moveTo, drawCircle2 } from '../canvasApi'
+import { colors } from '../themer/themer'
+
+declare const globalScope: any
+
+declare global {
+    interface Node {
+        verilogLabel?: string
+        value?: number
+        queueProperties?: {
+            inQueue: boolean
+            time?: number
+            index?: number
+        }
+    }
+}
+
 /**
  * @class
  * NotGate
@@ -13,10 +29,18 @@ import { correctWidth, lineTo, moveTo, drawCircle2 } from '../canvasApi'
  * @param {number=} bitWidth - bit width per node.
  * @category modules
  */
-import { colors } from '../themer/themer'
-
 export default class NotGate extends CircuitElement {
-    constructor(x, y, scope = globalScope, dir = 'RIGHT', bitWidth = 1) {
+    rectangleObject: boolean
+    inp1: Node
+    output1: Node
+
+    constructor(
+        x: number,
+        y: number,
+        scope: any = globalScope,
+        dir: string = 'RIGHT',
+        bitWidth: number = 1
+    ) {
         super(x, y, scope, dir, bitWidth)
         this.rectangleObject = false
         this.setDimensions(15, 15)
@@ -51,7 +75,7 @@ export default class NotGate extends CircuitElement {
         this.output1.value =
             ((~this.inp1.value >>> 0) << (32 - this.bitWidth)) >>>
             (32 - this.bitWidth)
-        simulationArea.simulationQueue.add(this.output1)
+        simulationArea.simulationQueue.add(this.output1 as any, 0)
     }
 
     /**
@@ -59,7 +83,9 @@ export default class NotGate extends CircuitElement {
      * function to draw element
      */
     customDraw() {
-        var ctx = simulationArea.context
+        const ctx = simulationArea.context
+        if (ctx === null) return
+
         ctx.strokeStyle = colors['stroke']
         ctx.lineWidth = correctWidth(3)
 
@@ -87,22 +113,30 @@ export default class NotGate extends CircuitElement {
     generateVerilog() {
         return (
             'assign ' +
-            this.output1.verilogLabel +
+            (this.output1 as any).verilogLabel +
             ' = ~' +
-            this.inp1.verilogLabel +
+            (this.inp1 as any).verilogLabel +
             ';'
         )
     }
 }
 
-/**
- * @memberof NotGate
- * Help Tip
- * @type {string}
- * @category modules
- */
-NotGate.prototype.tooltipText =
-    'Not Gate ToolTip : Inverts the input digital signal.'
-NotGate.prototype.helplink = 'https://docs.circuitverse.org/#/chapter4/4gates?id=not-gate'
-NotGate.prototype.objectType = 'NotGate'
-NotGate.prototype.verilogType = 'not'
+Object.defineProperty(NotGate.prototype, 'tooltipText', {
+    value: 'Not Gate ToolTip : Inverts the input digital signal.',
+    writable: true,
+})
+
+Object.defineProperty(NotGate.prototype, 'helplink', {
+    value: 'https://docs.circuitverse.org/#/chapter4/4gates?id=not-gate',
+    writable: true,
+})
+
+Object.defineProperty(NotGate.prototype, 'objectType', {
+    value: 'NotGate',
+    writable: true,
+})
+
+Object.defineProperty(NotGate.prototype, 'verilogType', {
+    value: 'not',
+    writable: true,
+})
