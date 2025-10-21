@@ -4,16 +4,26 @@ import { layoutModeGet } from './layoutMode'
 import { updateOrder } from './metadata'
 import { MiniMapAreaType } from './types/minimap.types'
 
-// jQuery is available globally in this project
+declare const lightMode: boolean
+declare const globalScope: any
+declare const width: number
+declare const height: number
 declare const $: JQueryStatic
 
-// Global variables are already declared in app.types.ts
-
 /**
+ * @type {Object} miniMapArea
  * This object is used to draw the miniMap.
+ * @property {number} pageY
+ * @property {number} pageX
+ * @property {HTMLCanvasObject} canvas - the canvas object
+ * @property {function} setup - used to setup the parameters and dimensions
+ * @property {function} play - used to draw outline of minimap and call resolve
+ * @property {function} resolve - used to resolve all objects and draw them on minimap
+ * @property {function} clear - used to clear minimap
+ * @category minimap
  */
 const miniMapArea: MiniMapAreaType = {
-    canvas: null,
+    canvas: document.getElementById('miniMapArea') as HTMLCanvasElement,
     ctx: null,
     pageHeight: 0,
     pageWidth: 0,
@@ -78,17 +88,18 @@ const miniMapArea: MiniMapAreaType = {
             this.canvas.width = 250.0
             this.canvas.height = (250.0 * h) / w
         }
-
         this.canvas.height += 5
         this.canvas.width += 5
 
-        const miniMapElement = document.getElementById('miniMap')
-        if (miniMapElement) {
-            miniMapElement.style.height = `${this.canvas.height}px`
-            miniMapElement.style.width = `${this.canvas.width}px`
-        }
+        document.getElementById('miniMap')!.style.height = String(
+            this.canvas.height
+        )
+        document.getElementById('miniMap')!.style.width = String(
+            this.canvas.width
+        )
 
         this.ctx = this.canvas.getContext('2d')
+        // this.context = this.ctx || undefined
         this.play(ratio)
     },
 
@@ -97,6 +108,7 @@ const miniMapArea: MiniMapAreaType = {
         if (!this.ctx) return
 
         this.ctx.fillStyle = '#bbb'
+        this.ctx.beginPath()
         this.ctx.rect(0, 0, this.canvas!.width, this.canvas!.height)
         this.ctx.fill()
         this.resolve(ratio)
@@ -181,24 +193,14 @@ const miniMapArea: MiniMapAreaType = {
     clear() {
         if (lightMode) return
         $('#miniMapArea').css('z-index', '-1')
-        if (this.ctx && this.canvas) {
-            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
-        }
+        this.context!.clearRect(0, 0, this.canvas!.width, this.canvas!.height)
     },
 }
 
 let lastMiniMapShown: number | undefined
-
-/**
- * Update the timestamp of when the minimap was last shown
- */
 export function updatelastMinimapShown(): void {
     lastMiniMapShown = new Date().getTime()
 }
-
-/**
- * Remove the minimap after a certain time period
- */
 export function removeMiniMap(): void {
     if (lightMode) return
 
@@ -208,15 +210,14 @@ export function removeMiniMap(): void {
     )
         return
 
-    if (lastMiniMapShown && lastMiniMapShown + 2000 >= new Date().getTime()) {
+    if ((lastMiniMapShown as number) + 2000 >= new Date().getTime()) {
         setTimeout(
             removeMiniMap,
-            lastMiniMapShown + 2000 - new Date().getTime()
+            (lastMiniMapShown as number) + 2000 - new Date().getTime()
         )
         return
     }
 
-    // Using jQuery for the fade out effect
     $('#miniMap').fadeOut('fast')
 }
 
