@@ -29,7 +29,7 @@ export default class ShiftRegister extends CircuitElement {
 
         this.noOfStages = noOfStages || 4; // Safe default
         if (!this.noOfStages || this.noOfStages < 1 || this.noOfStages > 32) {
-           this.noOfStages = 4;
+            this.noOfStages = 4;
         }
 
 
@@ -60,27 +60,20 @@ export default class ShiftRegister extends CircuitElement {
         let i = 0;
 
         while (i < this.noOfStages) {
-            if (this.registerType == "PIPO") {
-                const a = new Node(30, 20 * (i + 1), 0, this, this.bitWidth);
-                this.inp.push(a);
+            if (this.registerType == "PIPO" || this.registerType == "PISO") {
+                const inputNode = new Node(30, 20 * (i + 1), 0, this, this.bitWidth);
+                this.inp.push(inputNode);
+            }
 
-                const b = new Node(-30, 20 * (i + 1), 1, this, this.bitWidth);
-                b.value = 1;
-                this.out.push(b);
-            } else if (this.registerType == "PISO") {
-                const a = new Node(30, 20 * (i + 1), 0, this, this.bitWidth);
-                this.inp.push(a);
-            } else if (this.registerType == "SIPO") {
-                const b = new Node(-30, 20 * (i + 1), 1, this, this.bitWidth);
-                b.value = 1;
-                this.out.push(b);
+            if (this.registerType == "PIPO" || this.registerType == "SIPO") {
+                const outputNode = new Node(-30, 20 * (i + 1), 1, this, this.bitWidth);
+                this.out.push(outputNode);
             }
             ++i;
         }
         if (this.registerType !== "PIPO" && this.registerType != "SIPO") {
-            const b = new Node(-30, 20 * i, 1, this, this.bitWidth);
-            b.value = 1;
-            this.out.push(b);
+            const outputNode = new Node(-30, 20 * i, 1, this, this.bitWidth);
+            this.out.push(outputNode);
         }
         this.lastClk = 0;
         this.cell = new Array(this.noOfStages);
@@ -233,12 +226,13 @@ export default class ShiftRegister extends CircuitElement {
                 reset: findNode(this.reset),
                 shiftLoad: findNode(this.shiftLoad),
                 clk: findNode(this.clk),
+                inp: this.inp.map(findNode),
                 out: this.out.map(findNode),
             },
             values: {
                 cell: this.cell,
             },
-            constructorParamaters: [this.direction, this.bitWidth, this.noOfStages],
+            constructorParamaters: [this.direction, this.bitWidth, this.noOfStages, this.registerType],
         };
         return data;
     }
