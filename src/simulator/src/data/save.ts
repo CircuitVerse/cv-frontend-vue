@@ -55,8 +55,8 @@ export function setProjectName(name: string | undefined): void {
 }
 
 /**
- * Function to set the name of project.
- * @param {string} name - name for project
+ * Function to get the name of project.
+ * @returns {string | undefined} The project name if defined, otherwise undefined
  * @category data
  */
 export function getProjectName(): string | undefined {
@@ -516,7 +516,7 @@ export default async function save(): Promise<void> {
                     showMessage(
                         `We have Created a new project: ${projectName} in our servers.`
                     )
-                    localStorage.removeItem('recover')
+                    localStorage.removeItem('recover_login')
                     
                     try {
                         const data = await response.json()
@@ -600,7 +600,7 @@ export default async function save(): Promise<void> {
                     showMessage(
                         `We have saved your project: ${projectName} in our servers.`
                     )
-                    localStorage.removeItem('recover')
+                    localStorage.removeItem('recover_login')
                 } else {
                     // Handle non-ok response with detailed error message
                     let errorMessage = "There was an error, we couldn't save to our servers"
