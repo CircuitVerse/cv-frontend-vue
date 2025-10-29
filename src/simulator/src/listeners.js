@@ -27,6 +27,7 @@ import {
 import { changeScale, findDimensions } from './canvasApi'
 import { scheduleBackup } from './data/backupCircuit'
 import { hideProperties, deleteSelected, uxvar, exitFullView } from './ux';
+import { toggleSimulationPlaying } from './utils'
 import { updateRestrictedElementsList, updateRestrictedElementsInScope, hideRestricted, showRestricted } from './restrictedElementDiv';
 import { removeMiniMap, updatelastMinimapShown } from './minimap'
 import undo from './data/undo'
@@ -556,6 +557,14 @@ export default function startListeners() {
                 ) {
                     // e.preventDefault(); //browsers normally open a new tab
                     simulationArea.changeClockTime(prompt('Enter Time:'))
+                }
+
+                // Simulation play/pause with space key
+                if (e.code === 'Space' || e.key === ' ' || e.keyCode === 32) {
+                    if (e.repeat) return
+                    toggleSimulationPlaying()
+                    e.preventDefault()
+                    return
                 }
             }
 
