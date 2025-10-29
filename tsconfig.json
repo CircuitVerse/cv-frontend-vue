@@ -21,7 +21,7 @@
         "declaration": true,
         "emitDeclarationOnly": true,
         "outDir": "dist",
-        "declarationMap": true
+        "declarationMap": true,
     },
     "include": [
         "v0/src/**/*.ts",
