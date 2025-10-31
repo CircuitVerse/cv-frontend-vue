@@ -26,9 +26,10 @@
                             :id="theme"
                             :key="theme"
                             class="theme"
-                            :class="
-                                theme == selectedTheme ? 'selected set' : ''
-                            "
+                            :class="{
+                                selected: theme === selectedTheme,
+                                set: theme === selectedThemeRef
+                            }"
                         >
                             <div
                                 class="themeSel"
@@ -161,6 +162,7 @@ const customThemes = ref<((keyof typeof customThemesList)[]) | undefined>(undefi
 const customThemesList: Themes = reactive({})
 const selectedTheme = ref('default-theme')
 const iscustomTheme = ref(false)
+const selectedThemeRef = ref<string | null>(null)
 
 onMounted(() => {
     SimulatorState.dialogBox.theme_dialog = false
@@ -195,36 +197,32 @@ function changeCustomTheme(e: InputEvent) {
 
 function applyTheme() {
     if (iscustomTheme.value == false) {
-        if ($('.selected label').text()) {
+        if (selectedTheme.value) {
             localStorage.removeItem('Custom Theme')
-            localStorage.setItem('theme', $('.selected label').text())
+            localStorage.setItem('theme', selectedTheme.value)
         }
     } else {
-        // update theme to Custom Theme
         localStorage.setItem('theme', 'Custom Theme')
-        // add Custom theme to custom theme object
         localStorage.setItem(
             'Custom Theme',
             JSON.stringify(themeOptions['Custom Theme'])
         )
     }
-    $('.set').removeClass('set')
-    $('.selected').addClass('set')
+    selectedThemeRef.value = selectedTheme.value
     SimulatorState.dialogBox.theme_dialog = false
     setTimeout(() => (iscustomTheme.value = false), 1000)
 }
+
 function applyCustomTheme() {
     iscustomTheme.value = true
     updateThemeForStyle(localStorage.getItem('theme'))
     updateBG()
     localStorage.setItem('theme', 'Custom Theme')
-    // add Custom theme to custom theme object
     localStorage.setItem(
         'Custom Theme',
         JSON.stringify(themeOptions['Custom Theme'])
     )
-    $('.set').removeClass('set')
-    $('.selected').addClass('set')
+    selectedThemeRef.value = selectedTheme.value
 }
 
 function receivedText(e: ProgressEvent<FileReader>) {
