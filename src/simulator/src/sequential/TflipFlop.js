@@ -101,6 +101,8 @@ export default class TflipFlop extends CircuitElement {
             simulationArea.simulationQueue.add(this.qOutput)
             simulationArea.simulationQueue.add(this.qInvOutput)
         }
+
+        this.setOutputsUpstream(true);
     }
 
     customSave() {
@@ -148,7 +150,7 @@ export default class TflipFlop extends CircuitElement {
           output reg [WIDTH-1:0] q, q_inv;
           input clk, a_rst, pre, en;
           input [WIDTH-1:0] t;
-        
+
           always @ (posedge clk or posedge a_rst)
             if (a_rst) begin
               q <= 'b0;
