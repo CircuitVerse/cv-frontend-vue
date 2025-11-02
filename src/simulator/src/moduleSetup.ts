@@ -70,7 +70,7 @@ interface ModuleSet {
 }
 
 export default function setupModules(): void {
-  var moduleSet: ModuleSet = {
+  const moduleSet: ModuleSet = {
     AndGate,
     Random,
     NandGate,
