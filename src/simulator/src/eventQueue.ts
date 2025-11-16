@@ -1,123 +1,156 @@
 /**
- * Event Queue is simply a priority Queue, basic implementation O(n^2).
+ * EventQueue implements a priority queue where events are ordered by time.
+ * This is a simple O(n²) shifting implementation used by the CircuitVerse simulator.
  * @category eventQueue
  */
 
-interface QueueObject {
+export interface QueueObject {
     queueProperties: {
-        inQueue: boolean
-        time: number
-        index: number
-    }
-    propagationDelay: number
+        inQueue: boolean;
+        time: number;
+        index: number;
+    };
+    propagationDelay: number;
 }
 
 export class EventQueue {
-    size: number
-    queue: Array<QueueObject>
-    frontIndex: number
-    time: number
+    private size: number;
+    private queue: QueueObject[];
+    private frontIndex: number;
+    time: number;
+
     constructor(size: number) {
-        this.size = size
-        this.queue = new Array(size)
-        this.frontIndex = 0
-        this.time = 0
+        this.size = size;
+        this.queue = new Array(size);
+        this.frontIndex = 0;
+        this.time = 0;
     }
 
+    /**
+     * Insert an object with a delay (or the object's default propagation delay).
+     * This maintains the queue sorted by event time.
+     */
     add(obj: QueueObject, delay: number) {
+        const eventTime = this.time + (delay ?? obj.propagationDelay);
+
         if (obj.queueProperties.inQueue) {
-            obj.queueProperties.time =
-                this.time + (delay || obj.propagationDelay)
-            let i = obj.queueProperties.index
-            while (
-                i > 0 &&
-                obj.queueProperties.time >
-                    this.queue[i - 1].queueProperties.time
-            ) {
-                this.swap(i, i - 1)
-                i--
-            }
-            i = obj.queueProperties.index
-            while (
-                i < this.frontIndex - 1 &&
-                obj.queueProperties.time <
-                    this.queue[i + 1].queueProperties.time
-            ) {
-                this.swap(i, i + 1)
-                i++
-            }
-            return
+            // Update the time and re-order
+            obj.queueProperties.time = eventTime;
+            this.reorder(obj);
+            return;
         }
 
-        if (this.frontIndex == this.size) throw 'EventQueue size exceeded'
-        this.queue[this.frontIndex] = obj
-        obj.queueProperties.time = this.time + (delay || obj.propagationDelay)
-        obj.queueProperties.index = this.frontIndex
-        this.frontIndex++
-        obj.queueProperties.inQueue = true
-        let i = obj.queueProperties.index
+        if (this.frontIndex === this.size) {
+            throw new Error("EventQueue size exceeded");
+        }
+
+        // Insert at end
+        this.queue[this.frontIndex] = obj;
+        obj.queueProperties.time = eventTime;
+        obj.queueProperties.index = this.frontIndex;
+        obj.queueProperties.inQueue = true;
+        this.frontIndex++;
+
+        this.shiftUp(obj);
+    }
+
+    /**
+     * Insert an object at current time without delay.
+     */
+    addImmediate(obj: QueueObject) {
+        if (this.frontIndex === this.size) {
+            throw new Error("EventQueue size exceeded");
+        }
+
+        this.queue[this.frontIndex] = obj;
+        obj.queueProperties.time = this.time;
+        obj.queueProperties.index = this.frontIndex;
+        obj.queueProperties.inQueue = true;
+        this.frontIndex++;
+    }
+
+    /**
+     * Ensure correct ordering when an in-queue object's time changes.
+     */
+    private reorder(obj: QueueObject) {
+        this.shiftUp(obj);
+        this.shiftDown(obj);
+    }
+
+    /**
+     * Move object earlier in queue if its time increased.
+     */
+    private shiftUp(obj: QueueObject) {
+        let i = obj.queueProperties.index;
         while (
             i > 0 &&
             obj.queueProperties.time > this.queue[i - 1].queueProperties.time
         ) {
-            this.swap(i, i - 1)
-            i--
+            this.swap(i, i - 1);
+            i--;
         }
     }
 
     /**
-     * To add without any delay.
-     * @param {CircuitElement} obj - the object to be added
+     * Move object later in queue if its time decreased.
      */
-    addImmediate(obj: QueueObject) {
-        this.queue[this.frontIndex] = obj
-        obj.queueProperties.time = this.time
-        obj.queueProperties.index = this.frontIndex
-        obj.queueProperties.inQueue = true
-        this.frontIndex++
+    private shiftDown(obj: QueueObject) {
+        let i = obj.queueProperties.index;
+        while (
+            i < this.frontIndex - 1 &&
+            obj.queueProperties.time < this.queue[i + 1].queueProperties.time
+        ) {
+            this.swap(i, i + 1);
+            i++;
+        }
     }
 
     /**
-     * Function to swap two objects in queue.
+     * Swap two queue positions and update indices.
      */
-    swap(v1: number, v2: number) {
-        const obj1 = this.queue[v1]
-        obj1.queueProperties.index = v2
+    private swap(i: number, j: number) {
+        const obj1 = this.queue[i];
+        const obj2 = this.queue[j];
 
-        const obj2 = this.queue[v2]
-        obj2.queueProperties.index = v1
+        obj1.queueProperties.index = j;
+        obj2.queueProperties.index = i;
 
-        this.queue[v1] = obj2
-        this.queue[v2] = obj1
+        this.queue[i] = obj2;
+        this.queue[j] = obj1;
     }
 
     /**
-     * function to pop element from queue.
+     * Pop the next event (highest time).
      */
     pop() {
-        if (this.isEmpty()) throw 'Queue Empty'
+        if (this.isEmpty()) {
+            throw new Error("Queue Empty");
+        }
 
-        this.frontIndex--
-        const obj = this.queue[this.frontIndex]
-        this.time = obj.queueProperties.time
-        obj.queueProperties.inQueue = false
-        return obj
+        this.frontIndex--;
+        const obj = this.queue[this.frontIndex];
+
+        this.time = obj.queueProperties.time;
+        obj.queueProperties.inQueue = false;
+
+        return obj;
     }
 
     /**
-     * function to reset queue.
+     * Reset entire queue.
      */
     reset() {
-        for (let i = 0; i < this.frontIndex; i++)
-            this.queue[i].queueProperties.inQueue = false
-        this.time = 0
-        this.frontIndex = 0
+        for (let i = 0; i < this.frontIndex; i++) {
+            this.queue[i].queueProperties.inQueue = false;
+        }
+        this.time = 0;
+        this.frontIndex = 0;
     }
 
     /**
-     * function to check if empty queue.
+     * Whether queue contains zero events.
      */
     isEmpty() {
-        return this.frontIndex == 0
+        return this.frontIndex === 0;
     }
 }
