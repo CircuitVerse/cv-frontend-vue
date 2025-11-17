@@ -1,19 +1,24 @@
-#!/bin/bash
+// build.js (Windows + cross-platform equivalent of build.sh)
 
+const { execSync } = require("child_process");
+const fs = require("fs");
 
-versions=($(jq -r '.[].version' version.json))
+console.log("Reading version.json...");
 
+const versions = JSON.parse(fs.readFileSync("version.json", "utf8"))
+  .map((v) => v.version);
 
-for version in "${versions[@]}"; do
-  echo "Building for version: $version"
-  
-  npx vite build --config vite.config."$version".ts
-  
-  #Build status
-  if [ $? -ne 0 ]; then
-    echo "Build failed for version: $version"
-    exit 1
-  fi
-done
+for (const version of versions) {
+  console.log(`\nBuilding for version: ${version}`);
 
-echo "All builds completed successfully"
+  try {
+    execSync(`npx vite build --config vite.config.${version}.ts`, {
+      stdio: "inherit",
+    });
+  } catch (err) {
+    console.error(`❌ Build failed for version: ${version}`);
+    process.exit(1);
+  }
+}
+
+console.log("\n✅ All builds completed successfully!");

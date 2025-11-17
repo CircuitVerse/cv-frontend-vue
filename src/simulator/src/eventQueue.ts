@@ -1,6 +1,6 @@
 /**
  * EventQueue implements a priority queue where events are ordered by time.
- * This is a simple O(n²) shifting implementation used by the CircuitVerse simulator.
+ * Uses a binary min-heap for O(log n) insertion and removal.
  * @category eventQueue
  */
 
@@ -8,149 +8,126 @@ export interface QueueObject {
     queueProperties: {
         inQueue: boolean;
         time: number;
-        index: number;
+        index: number; // heap index
     };
     propagationDelay: number;
 }
 
 export class EventQueue {
-    private size: number;
-    private queue: QueueObject[];
-    private frontIndex: number;
-    time: number;
+    private heap: QueueObject[] = [];
+    time = 0;
 
-    constructor(size: number) {
-        this.size = size;
-        this.queue = new Array(size);
-        this.frontIndex = 0;
-        this.time = 0;
-    }
+    constructor(private size: number) {}
 
     /**
-     * Insert an object with a delay (or the object's default propagation delay).
-     * This maintains the queue sorted by event time.
+     * Insert an object with delay. Maintains min-heap by event time.
      */
     add(obj: QueueObject, delay: number) {
         const eventTime = this.time + (delay ?? obj.propagationDelay);
+        obj.queueProperties.time = eventTime;
 
         if (obj.queueProperties.inQueue) {
-            // Update the time and re-order
-            obj.queueProperties.time = eventTime;
-            this.reorder(obj);
+            // Update time + reposition
+            this.heapifyUp(obj.queueProperties.index);
+            this.heapifyDown(obj.queueProperties.index);
             return;
         }
 
-        if (this.frontIndex === this.size) {
+        if (this.heap.length === this.size) {
             throw new Error("EventQueue size exceeded");
         }
 
-        // Insert at end
-        this.queue[this.frontIndex] = obj;
-        obj.queueProperties.time = eventTime;
-        obj.queueProperties.index = this.frontIndex;
+        obj.queueProperties.index = this.heap.length;
         obj.queueProperties.inQueue = true;
-        this.frontIndex++;
-
-        this.shiftUp(obj);
+        this.heap.push(obj);
+        this.heapifyUp(obj.queueProperties.index);
     }
 
     /**
-     * Insert an object at current time without delay.
+     * Insert object at current time.
      */
     addImmediate(obj: QueueObject) {
-        if (this.frontIndex === this.size) {
-            throw new Error("EventQueue size exceeded");
-        }
-
-        this.queue[this.frontIndex] = obj;
-        obj.queueProperties.time = this.time;
-        obj.queueProperties.index = this.frontIndex;
-        obj.queueProperties.inQueue = true;
-        this.frontIndex++;
+        this.add(obj, 0);
     }
 
     /**
-     * Ensure correct ordering when an in-queue object's time changes.
-     */
-    private reorder(obj: QueueObject) {
-        this.shiftUp(obj);
-        this.shiftDown(obj);
-    }
-
-    /**
-     * Move object earlier in queue if its time increased.
-     */
-    private shiftUp(obj: QueueObject) {
-        let i = obj.queueProperties.index;
-        while (
-            i > 0 &&
-            obj.queueProperties.time > this.queue[i - 1].queueProperties.time
-        ) {
-            this.swap(i, i - 1);
-            i--;
-        }
-    }
-
-    /**
-     * Move object later in queue if its time decreased.
-     */
-    private shiftDown(obj: QueueObject) {
-        let i = obj.queueProperties.index;
-        while (
-            i < this.frontIndex - 1 &&
-            obj.queueProperties.time < this.queue[i + 1].queueProperties.time
-        ) {
-            this.swap(i, i + 1);
-            i++;
-        }
-    }
-
-    /**
-     * Swap two queue positions and update indices.
-     */
-    private swap(i: number, j: number) {
-        const obj1 = this.queue[i];
-        const obj2 = this.queue[j];
-
-        obj1.queueProperties.index = j;
-        obj2.queueProperties.index = i;
-
-        this.queue[i] = obj2;
-        this.queue[j] = obj1;
-    }
-
-    /**
-     * Pop the next event (highest time).
+     * Pop next event (minimum event time)
      */
     pop() {
-        if (this.isEmpty()) {
-            throw new Error("Queue Empty");
+        if (this.isEmpty()) throw new Error("Queue Empty");
+
+        const top = this.heap[0];
+        const last = this.heap.pop()!;
+
+        if (this.heap.length > 0) {
+            this.heap[0] = last;
+            last.queueProperties.index = 0;
+            this.heapifyDown(0);
         }
 
-        this.frontIndex--;
-        const obj = this.queue[this.frontIndex];
-
-        this.time = obj.queueProperties.time;
-        obj.queueProperties.inQueue = false;
-
-        return obj;
-    }
-
-    /**
-     * Reset entire queue.
-     */
-    reset() {
-        for (let i = 0; i < this.frontIndex; i++) {
-            this.queue[i].queueProperties.inQueue = false;
-        }
-        this.time = 0;
-        this.frontIndex = 0;
+        top.queueProperties.inQueue = false;
+        this.time = top.queueProperties.time;
+        return top;
     }
 
     /**
      * Whether queue contains zero events.
      */
     isEmpty() {
-        return this.frontIndex === 0;
+        return this.heap.length === 0;
+    }
+
+    /**
+     * Reset entire queue.
+     */
+    reset() {
+        for (const obj of this.heap) obj.queueProperties.inQueue = false;
+        this.heap = [];
+        this.time = 0;
+    }
+
+    // -------------------------------
+    //   Heap Utility Functions
+    // -------------------------------
+
+    private swap(i: number, j: number) {
+        const a = this.heap[i];
+        const b = this.heap[j];
+        this.heap[i] = b;
+        this.heap[j] = a;
+        a.queueProperties.index = j;
+        b.queueProperties.index = i;
+    }
+
+    private heapifyUp(i: number) {
+        while (i > 0) {
+            const parent = Math.floor((i - 1) / 2);
+            if (this.heap[i].queueProperties.time >= this.heap[parent].queueProperties.time) break;
+            this.swap(i, parent);
+            i = parent;
+        }
+    }
+
+    private heapifyDown(i: number) {
+        const n = this.heap.length;
+
+        while (true) {
+            let smallest = i;
+            const left = 2 * i + 1;
+            const right = 2 * i + 2;
+
+            if (left < n && this.heap[left].queueProperties.time < this.heap[smallest].queueProperties.time) {
+                smallest = left;
+            }
+
+            if (right < n && this.heap[right].queueProperties.time < this.heap[smallest].queueProperties.time) {
+                smallest = right;
+            }
+
+            if (smallest === i) break;
+
+            this.swap(i, smallest);
+            i = smallest;
+        }
     }
 }
