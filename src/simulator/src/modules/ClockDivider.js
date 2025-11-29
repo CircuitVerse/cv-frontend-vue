@@ -30,16 +30,21 @@ export default class ClockDivider extends CircuitElement {
                 name: 'Divide Factor',
                 type: 'number',
                 max: '100',
-                min: '1',
+                min: '2',
                 func: 'setDivideFactor',
             },
         }
     }
 
     setDivideFactor(value) {
-        value = parseInt(value)
-        if (!isNaN(value) && value > 0) {
-            this.divideFactor = value
+        let factor = parseInt(value, 10)
+        if (isNaN(factor)) return
+
+        // Clamp to UI-advertised range
+        factor = Math.max(2, Math.min(100, factor))
+
+        if (factor !== this.divideFactor) {
+            this.divideFactor = factor
             this.counter = 0 // Reset counter when factor changes
         }
     }
