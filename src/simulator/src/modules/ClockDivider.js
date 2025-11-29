@@ -56,7 +56,7 @@ export default class ClockDivider extends CircuitElement {
      */
     customSave() {
         const data = {
-            constructorParamaters: [this.divideFactor],
+            constructorParameters: [this.divideFactor],
             nodes: {
                 clock: findNode(this.clock),
                 output: findNode(this.output),
@@ -108,7 +108,7 @@ export default class ClockDivider extends CircuitElement {
         ctx.font = '14px Raleway'
         ctx.fillStyle = colors['input_text']
         ctx.textAlign = 'center'
-        fillText(ctx, '÷' + this.divideFactor, xx, yy + 5)
+        fillText(ctx, '÷' + this.divideFactor, xx, yy + 5, 14)
     }
 }
 
