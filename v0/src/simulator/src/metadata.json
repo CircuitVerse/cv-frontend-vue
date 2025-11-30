@@ -62,7 +62,8 @@
         "TB_Output",
         "ForceGate",
         "Comparator",
-        "PullResistor"
+        "PullResistor",
+        "ShiftRegister"
     ],
     "annotationList": ["Text", "Rectangle", "Arrow", "ImageAnnotation"],
     "inputList": [
@@ -142,6 +143,7 @@
             { "name": "Decoder", "label": "Decoder" }
         ],
         "Sequential Elements": [
+            { "name": "ShiftRegister", "label": "Shift Register" },
             { "name": "DflipFlop", "label": "D flip Flop" },
             { "name": "Dlatch", "label": "D latch" },
             { "name": "TflipFlop", "label": "T flip Flop" },

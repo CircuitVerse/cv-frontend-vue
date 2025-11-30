@@ -65,6 +65,7 @@ import verilogShiftRight from './modules/verilogShiftRight'
 import verilogRAM from './sequential/verilogRAM'
 import PullResistor from './modules/PullResistor'
 import Comparator from './modules/Comparator'
+import ShiftRegister from './sequential/ShiftRegister'
 
 export default function setupModules() {
     var moduleSet = {
@@ -133,7 +134,8 @@ export default function setupModules() {
         TB_Output,
         ForceGate,
         Comparator,
-        PullResistor
+        PullResistor,
+        ShiftRegister
     }
     Object.assign(modules, moduleSet)
 }
