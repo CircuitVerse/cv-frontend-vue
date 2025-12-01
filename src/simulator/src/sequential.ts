@@ -5,6 +5,7 @@ import { simulationArea } from './simulationArea'
  * a global function as a helper for simulationArea.changeClockEnable
  * @category sequential
  */
-export function changeClockEnable(val) {
-    simulationArea.clockEnabled = val
+export function changeClockEnable(val: boolean): void {
+  simulationArea.clockEnabled = val
 }
+
