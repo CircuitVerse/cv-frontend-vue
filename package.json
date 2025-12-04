@@ -11,7 +11,8 @@
         "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src",
         "format": "prettier .  --write",
         "postinstall": "husky install",
-        "test": "vitest"
+        "test": "vitest",
+        "simulator:test": "vitest run src/simulator/spec"
     },
     "dependencies": {
         "@fortawesome/fontawesome-free": "^6.5.1",
@@ -24,6 +25,7 @@
         "@tiptap/extension-superscript": "^2.0.3",
         "@tiptap/extension-text-align": "^2.0.3",
         "@tiptap/extension-underline": "^2.0.3",
+        "@tiptap/pm": "^3.12.0",
         "@tiptap/starter-kit": "^2.0.3",
         "@tiptap/vue-3": "^2.0.3",
         "bootstrap": "^4.6.1",
@@ -36,6 +38,7 @@
         "interactjs": "^1.10.17",
         "jquery": "^3.6.0",
         "pinia": "^2.0.14",
+        "popper.js": "^1.16.1",
         "vue": "^3.2.25",
         "vue-i18n": "^9.14.3",
         "vue-router": "^4.0.15",
@@ -63,7 +66,7 @@
         "typescript": "^4.5.4",
         "vite": "^2.9.18",
         "vite-plugin-html": "^3.2.2",
-        "vite-plugin-vuetify": "^1.0.0-alpha.0",
+        "vite-plugin-vuetify": "^1.0.2",
         "vitest": "^2.1.9",
         "vue-cli-plugin-vuetify": "~2.5.1",
         "vue-tsc": "^0.34.7"
