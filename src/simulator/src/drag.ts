@@ -21,8 +21,32 @@ function updatePosition(
     // Update the element's x and y position
     const currentPosition = positions.get(element)
     if (!currentPosition) return // Check if the currentPosition is valid
-    currentPosition.x += dx
-    currentPosition.y += dy
+    
+    // Calculate new position
+    let newX = currentPosition.x + dx
+    let newY = currentPosition.y + dy
+
+    // Get navbar bottom position to prevent overlap
+    const navbar = document.querySelector('.navbar.header') as HTMLElement
+    if (navbar) {
+        const navbarRect = navbar.getBoundingClientRect()
+        const navbarBottom = navbarRect.bottom
+        
+        // Get element's current position on screen
+        const elementRect = element.getBoundingClientRect()
+        const elementTop = elementRect.top
+        
+        // Calculate what the new top position would be after applying transform
+        const newElementTop = elementTop - currentPosition.y + newY
+        
+        // Prevent panel from going above the navbar
+        if (newElementTop < navbarBottom) {
+            newY = currentPosition.y + (navbarBottom - elementTop)
+        }
+    }
+
+    currentPosition.x = newX
+    currentPosition.y = newY
 
     // Apply the new position to the element using the CSS transform property
     element.style.transform = `translate(${currentPosition.x}px, ${currentPosition.y}px)`
