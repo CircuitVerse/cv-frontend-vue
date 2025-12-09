@@ -5,19 +5,55 @@ import miniMapArea, { removeMiniMap, updatelastMinimapShown } from './minimap'
 import { colors } from './themer/themer'
 import { updateOrder } from './metadata'
 
+type Direction = 'LEFT' | 'RIGHT' | 'UP' | 'DOWN';
+
+// Global variable declarations
+declare let globalScope: Scope;
+declare let embed: boolean;
+declare let lightMode: boolean;
+declare const DPR: number;
+declare let width: number;
+declare let height: number;
+
+/**
+ * Interface for circuit elements accessed in findDimensions
+ */
+interface CircuitElement {
+    x: number;
+    y: number;
+    absX(): number;
+    absY(): number;
+    objectType: string;
+    upDimensionY: number;
+    downDimensionY: number;
+    leftDimensionX: number;
+    rightDimensionX: number;
+}
+
+/**
+ * Interface for Scope - represents a circuit scope with scale and origin
+ */
+interface Scope {
+    scale: number;
+    ox: number;
+    oy: number;
+    [key: string]: CircuitElement[] | number;
+}
+
 var unit = 10
 
-export function findDimensions(scope = globalScope) {
-    var totalObjects = 0
+export function findDimensions(scope: Scope = globalScope): void {
+    let totalObjects = 0
     simulationArea.minWidth = undefined
     simulationArea.maxWidth = undefined
     simulationArea.minHeight = undefined
     simulationArea.maxHeight = undefined
-    for (var i = 0; i < updateOrder.length; i++) {
+    for (let i = 0; i < updateOrder.length; i++) {
         if (updateOrder[i] !== 'wires') {
-            for (var j = 0; j < scope[updateOrder[i]].length; j++) {
+            const elements = scope[updateOrder[i]] as CircuitElement[]
+            for (let j = 0; j < elements.length; j++) {
                 totalObjects += 1
-                var obj = scope[updateOrder[i]][j]
+                const obj = elements[j]
                 if (totalObjects === 1) {
                     simulationArea.minWidth = obj.absX()
                     simulationArea.minHeight = obj.absY()
@@ -25,29 +61,29 @@ export function findDimensions(scope = globalScope) {
                     simulationArea.maxHeight = obj.absY()
                 }
                 if (obj.objectType !== 'Node') {
-                    if (obj.y - obj.upDimensionY < simulationArea.minHeight) {
+                    if (obj.y - obj.upDimensionY < simulationArea.minHeight!) {
                         simulationArea.minHeight = obj.y - obj.upDimensionY
                     }
-                    if (obj.y + obj.downDimensionY > simulationArea.maxHeight) {
+                    if (obj.y + obj.downDimensionY > simulationArea.maxHeight!) {
                         simulationArea.maxHeight = obj.y + obj.downDimensionY
                     }
-                    if (obj.x - obj.leftDimensionX < simulationArea.minWidth) {
+                    if (obj.x - obj.leftDimensionX < simulationArea.minWidth!) {
                         simulationArea.minWidth = obj.x - obj.leftDimensionX
                     }
-                    if (obj.x + obj.rightDimensionX > simulationArea.maxWidth) {
+                    if (obj.x + obj.rightDimensionX > simulationArea.maxWidth!) {
                         simulationArea.maxWidth = obj.x + obj.rightDimensionX
                     }
                 } else {
-                    if (obj.absY() < simulationArea.minHeight) {
+                    if (obj.absY() < simulationArea.minHeight!) {
                         simulationArea.minHeight = obj.absY()
                     }
-                    if (obj.absY() > simulationArea.maxHeight) {
+                    if (obj.absY() > simulationArea.maxHeight!) {
                         simulationArea.maxHeight = obj.absY()
                     }
-                    if (obj.absX() < simulationArea.minWidth) {
+                    if (obj.absX() < simulationArea.minWidth!) {
                         simulationArea.minWidth = obj.absX()
                     }
-                    if (obj.absX() > simulationArea.maxWidth) {
+                    if (obj.absX() > simulationArea.maxWidth!) {
                         simulationArea.maxWidth = obj.absX()
                     }
                 }
@@ -60,14 +96,22 @@ export function findDimensions(scope = globalScope) {
 // Function used to change the zoom level wrt to a point
 // fn to change scale (zoom) - It also shifts origin so that the position
 // of the object in focus doesn't change
-export function changeScale(delta, xx, yy, method = 1) {
+export function changeScale(
+    delta: number,
+    xx?: number | string,
+    yy?: number | string,
+    method: number = 1
+): void {
     // method = 3/2 - Zoom wrt center of screen
     // method = 1 - Zoom wrt position of mouse
     // Otherwise zoom wrt to selected object
 
+    let x: number
+    let y: number
+
     if (method === 3) {
-        xx = (width / 2 - globalScope.ox) / globalScope.scale
-        yy = (height / 2 - globalScope.oy) / globalScope.scale
+        x = (width / 2 - globalScope.ox) / globalScope.scale
+        y = (height / 2 - globalScope.oy) / globalScope.scale
     } else if (
         xx === undefined ||
         yy === undefined ||
@@ -79,40 +123,48 @@ export function changeScale(delta, xx, yy, method = 1) {
             simulationArea.lastSelected.objectType !== 'Wire'
         ) {
             // selected object
-            xx = simulationArea.lastSelected.x
-            yy = simulationArea.lastSelected.y
+            x = simulationArea.lastSelected.x
+            y = simulationArea.lastSelected.y
         } else {
             // mouse location
             // eslint-disable-next-line no-lonely-if
             if (method === 1) {
-                xx = simulationArea.mouseX
-                yy = simulationArea.mouseY
+                x = simulationArea.mouseX
+                y = simulationArea.mouseY
             } else if (method === 2) {
-                xx = (width / 2 - globalScope.ox) / globalScope.scale
-                yy = (height / 2 - globalScope.oy) / globalScope.scale
+                x = (width / 2 - globalScope.ox) / globalScope.scale
+                y = (height / 2 - globalScope.oy) / globalScope.scale
+            } else {
+                x = simulationArea.mouseX
+                y = simulationArea.mouseY
             }
         }
+    } else {
+        x = xx as number
+        y = yy as number
     }
 
-    var oldScale = globalScope.scale
+    const oldScale = globalScope.scale
     globalScope.scale = Math.max(
         0.5,
         Math.min(4 * DPR, globalScope.scale + delta)
     )
     globalScope.scale = Math.round(globalScope.scale * 10) / 10
-    globalScope.ox -= Math.round(xx * (globalScope.scale - oldScale)) // Shift accordingly, so that we zoom wrt to the selected point
-    globalScope.oy -= Math.round(yy * (globalScope.scale - oldScale))
+    globalScope.ox -= Math.round(x * (globalScope.scale - oldScale)) // Shift accordingly, so that we zoom wrt to the selected point
+    globalScope.oy -= Math.round(y * (globalScope.scale - oldScale))
     // dots(true,false);
 
     // MiniMap
     if (!embed && !lightMode) {
         findDimensions(globalScope)
         miniMapArea.setup()
-        let miniMap = document.querySelector('#miniMap');
-        miniMap.style.display = 'block';
-        updatelastMinimapShown()
-        miniMap.style.display = 'block';
-        setTimeout(removeMiniMap, 2000)
+        const miniMap = document.querySelector('#miniMap') as HTMLElement | null;
+        if (miniMap) {
+            miniMap.style.display = 'block';
+            updatelastMinimapShown()
+            miniMap.style.display = 'block';
+            setTimeout(removeMiniMap, 2000)
+        }
     }
 }
 // fn to draw Dots on screen
@@ -120,10 +172,10 @@ export function changeScale(delta, xx, yy, method = 1) {
 // Otherwise for normal panning, the canvas itself is moved to give the illusion of movement
 
 export function dots(
-    dots = true,
-    transparentBackground = false,
-    force = false
-) {
+    dots: boolean = true,
+    transparentBackground: boolean = false,
+    force: boolean = false
+): void {
     const scale = unit * globalScope.scale
     const ox = globalScope.ox % scale // offset
     const oy = globalScope.oy % scale // offset
@@ -131,11 +183,11 @@ export function dots(
     const backgroundCtx = backgroundArea.context
     if (!backgroundCtx) return
 
-    const canvasWidth = backgroundArea.canvas.width // max X distance
-    const canvasHeight = backgroundArea.canvas.height // max Y distance
+    const canvasWidth = backgroundArea.canvas!.width // max X distance
+    const canvasHeight = backgroundArea.canvas!.height // max Y distance
 
-    backgroundArea.canvas.style.left = `${(ox - scale) / DPR}px` // adjust left position of canvas
-    backgroundArea.canvas.style.top = `${(oy - scale) / DPR}px` // adjust top position of canvas
+    backgroundArea.canvas!.style.left = `${(ox - scale) / DPR}px` // adjust left position of canvas
+    backgroundArea.canvas!.style.top = `${(oy - scale) / DPR}px` // adjust top position of canvas
 
     if (globalScope.scale === simulationArea.prevScale && !force) return
 
@@ -207,12 +259,22 @@ export function dots(
 // direction is used to abstract rotation of everything by a certain angle
 // Possible values for direction = "RIGHT" (default), "LEFT", "UP", "DOWN"
 
-export function bezierCurveTo(x1, y1, x2, y2, x3, y3, xx, yy, dir) {
+export function bezierCurveTo(
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    x3: number,
+    y3: number,
+    xx: number,
+    yy: number,
+    dir?: Direction
+): void {
     ;[x1, y1] = rotate(x1, y1, dir)
     ;[x2, y2] = rotate(x2, y2, dir)
     ;[x3, y3] = rotate(x3, y3, dir)
-    var { ox } = globalScope
-    var { oy } = globalScope
+    const { ox } = globalScope
+    const { oy } = globalScope
     x1 *= globalScope.scale
     y1 *= globalScope.scale
     x2 *= globalScope.scale
@@ -221,7 +283,8 @@ export function bezierCurveTo(x1, y1, x2, y2, x3, y3, xx, yy, dir) {
     y3 *= globalScope.scale
     xx *= globalScope.scale
     yy *= globalScope.scale
-    var ctx = simulationArea.context
+    const ctx = simulationArea.context
+    if (!ctx) return
     ctx.bezierCurveTo(
         Math.round(xx + ox + x1),
         Math.round(yy + oy + y1),
@@ -232,10 +295,18 @@ export function bezierCurveTo(x1, y1, x2, y2, x3, y3, xx, yy, dir) {
     )
 }
 
-export function moveTo(ctx, x1, y1, xx, yy, dir, bypass = false) {
-    var correction = 0.5 * (ctx.lineWidth % 2)
-    let newX
-    let newY
+export function moveTo(
+    ctx: CanvasRenderingContext2D,
+    x1: number,
+    y1: number,
+    xx: number,
+    yy: number,
+    dir?: Direction,
+    bypass: boolean = false
+): void {
+    const correction = 0.5 * (ctx.lineWidth % 2)
+    let newX: number
+    let newY: number
     ;[newX, newY] = rotate(x1, y1, dir)
     newX *= globalScope.scale
     newY *= globalScope.scale
@@ -254,11 +325,18 @@ export function moveTo(ctx, x1, y1, xx, yy, dir, bypass = false) {
     }
 }
 
-export function lineTo(ctx, x1, y1, xx, yy, dir) {
-    let newX
-    let newY
+export function lineTo(
+    ctx: CanvasRenderingContext2D,
+    x1: number,
+    y1: number,
+    xx: number,
+    yy: number,
+    dir?: Direction
+): void {
+    let newX: number
+    let newY: number
 
-    var correction = 0.5 * (ctx.lineWidth % 2)
+    const correction = 0.5 * (ctx.lineWidth % 2)
     ;[newX, newY] = rotate(x1, y1, dir)
     newX *= globalScope.scale
     newY *= globalScope.scale
@@ -270,14 +348,24 @@ export function lineTo(ctx, x1, y1, xx, yy, dir) {
     )
 }
 
-export function arc(ctx, sx, sy, radius, start, stop, xx, yy, dir) {
+export function arc(
+    ctx: CanvasRenderingContext2D,
+    sx: number,
+    sy: number,
+    radius: number,
+    start: number,
+    stop: number,
+    xx: number,
+    yy: number,
+    dir?: Direction
+): void {
     // ox-x of origin, xx- x of element , sx - shift in x from element
-    let Sx
-    let Sy
-    let newStart
-    let newStop
-    let counterClock
-    var correction = 0.5 * (ctx.lineWidth % 2)
+    let Sx: number
+    let Sy: number
+    let newStart: number
+    let newStop: number
+    let counterClock: boolean
+    const correction = 0.5 * (ctx.lineWidth % 2)
     ;[Sx, Sy] = rotate(sx, sy, dir)
     Sx *= globalScope.scale
     Sy *= globalScope.scale
@@ -295,14 +383,24 @@ export function arc(ctx, sx, sy, radius, start, stop, xx, yy, dir) {
     )
 }
 
-export function arc2(ctx, sx, sy, radius, start, stop, xx, yy, dir) {
+export function arc2(
+    ctx: CanvasRenderingContext2D,
+    sx: number,
+    sy: number,
+    radius: number,
+    start: number,
+    stop: number,
+    xx: number,
+    yy: number,
+    dir?: Direction
+): void {
     // ox-x of origin, xx- x of element , sx - shift in x from element
-    let Sx
-    let Sy
-    let newStart
-    let newStop
-    let counterClock
-    var correction = 0.5 * (ctx.lineWidth % 2)
+    let Sx: number
+    let Sy: number
+    let newStart: number
+    let newStop: number
+    let counterClock: boolean
+    const correction = 0.5 * (ctx.lineWidth % 2)
     ;[Sx, Sy] = rotate(sx, sy, dir)
     Sx *= globalScope.scale
     Sy *= globalScope.scale
@@ -310,7 +408,7 @@ export function arc2(ctx, sx, sy, radius, start, stop, xx, yy, dir) {
     yy *= globalScope.scale
     radius *= globalScope.scale
     ;[newStart, newStop, counterClock] = rotateAngle(start, stop, dir)
-    var pi = 0
+    let pi = 0
     if (counterClock) {
         pi = Math.PI
     }
@@ -323,10 +421,18 @@ export function arc2(ctx, sx, sy, radius, start, stop, xx, yy, dir) {
     )
 }
 
-export function drawCircle2(ctx, sx, sy, radius, xx, yy, dir) {
+export function drawCircle2(
+    ctx: CanvasRenderingContext2D,
+    sx: number,
+    sy: number,
+    radius: number,
+    xx: number,
+    yy: number,
+    dir?: Direction
+): void {
     // ox-x of origin, xx- x of element , sx - shift in x from element
-    let Sx
-    let Sy
+    let Sx: number
+    let Sy: number
     ;[Sx, Sy] = rotate(sx, sy, dir)
     Sx *= globalScope.scale
     Sy *= globalScope.scale
@@ -342,8 +448,14 @@ export function drawCircle2(ctx, sx, sy, radius, xx, yy, dir) {
     )
 }
 
-export function rect(ctx, x1, y1, x2, y2) {
-    var correction = 0.5 * (ctx.lineWidth % 2)
+export function rect(
+    ctx: CanvasRenderingContext2D,
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number
+): void {
+    const correction = 0.5 * (ctx.lineWidth % 2)
     x1 *= globalScope.scale
     y1 *= globalScope.scale
     x2 *= globalScope.scale
@@ -356,7 +468,14 @@ export function rect(ctx, x1, y1, x2, y2) {
     )
 }
 
-export function drawImage(ctx, img, x1, y1, w_canvas, h_canvas) {
+export function drawImage(
+    ctx: CanvasRenderingContext2D,
+    img: CanvasImageSource,
+    x1: number,
+    y1: number,
+    w_canvas: number,
+    h_canvas: number
+): void {
     x1 *= globalScope.scale
     y1 *= globalScope.scale
     x1 += globalScope.ox
@@ -367,8 +486,17 @@ export function drawImage(ctx, img, x1, y1, w_canvas, h_canvas) {
     ctx.drawImage(img, x1, y1, w_canvas, h_canvas)
 }
 
-export function rect2(ctx, x1, y1, x2, y2, xx, yy, dir = 'RIGHT') {
-    var correction = 0.5 * (ctx.lineWidth % 2)
+export function rect2(
+    ctx: CanvasRenderingContext2D,
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    xx: number,
+    yy: number,
+    dir: Direction = 'RIGHT'
+): void {
+    const correction = 0.5 * (ctx.lineWidth % 2)
     ;[x1, y1] = rotate(x1, y1, dir)
     ;[x2, y2] = rotate(x2, y2, dir)
     x1 *= globalScope.scale
@@ -385,7 +513,7 @@ export function rect2(ctx, x1, y1, x2, y2, xx, yy, dir = 'RIGHT') {
     )
 }
 
-export function rotate(x1, y1, dir) {
+export function rotate(x1: number, y1: number, dir?: Direction): [number, number] {
     if (dir === 'LEFT') {
         return [-x1, y1]
     }
@@ -398,11 +526,15 @@ export function rotate(x1, y1, dir) {
     return [x1, y1]
 }
 
-export function correctWidth(w) {
+export function correctWidth(w: number): number {
     return Math.max(1, Math.round(w * globalScope.scale))
 }
 
-function rotateAngle(start, stop, dir) {
+function rotateAngle(
+    start: number,
+    stop: number,
+    dir?: Direction
+): [number, number, boolean] {
     if (dir === 'LEFT') {
         return [start, stop, true]
     }
@@ -415,7 +547,15 @@ function rotateAngle(start, stop, dir) {
     return [start, stop, false]
 }
 
-export function drawLine(ctx, x1, y1, x2, y2, color, width) {
+export function drawLine(
+    ctx: CanvasRenderingContext2D,
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    color: string,
+    width: number
+): void {
     x1 *= globalScope.scale
     y1 *= globalScope.scale
     x2 *= globalScope.scale
@@ -424,9 +564,9 @@ export function drawLine(ctx, x1, y1, x2, y2, color, width) {
     ctx.strokeStyle = color
     ctx.lineCap = 'round'
     ctx.lineWidth = correctWidth(width) //* globalScope.scale;
-    var correction = 0.5 * (ctx.lineWidth % 2)
-    var hCorrection = 0
-    var vCorrection = 0
+    const correction = 0.5 * (ctx.lineWidth % 2)
+    let hCorrection = 0
+    let vCorrection = 0
     if (y1 === y2) vCorrection = correction
     if (x1 === x2) hCorrection = correction
     ctx.moveTo(
@@ -441,26 +581,33 @@ export function drawLine(ctx, x1, y1, x2, y2, color, width) {
 }
 
 // Checks if string color is a valid color using a hack
-export function validColor(color) {
-    let newDiv = document.createElement('div')
+export function validColor(color: string): boolean {
+    const newDiv = document.createElement('div')
     newDiv.style.border = `1px solid ${color}`
     return newDiv.style.borderColor !== ''
 }
 
 // Helper function to color "RED" to RGBA
-export function colorToRGBA(color) {
-    var cvs
-    var ctx
-    cvs = document.createElement('canvas')
+export function colorToRGBA(color: string): Uint8ClampedArray {
+    const cvs = document.createElement('canvas')
     cvs.height = 1
     cvs.width = 1
-    ctx = cvs.getContext('2d')
+    const ctx = cvs.getContext('2d')
+    if (!ctx) {
+        return new Uint8ClampedArray(4)
+    }
     ctx.fillStyle = color
     ctx.fillRect(0, 0, 1, 1)
     return ctx.getImageData(0, 0, 1, 1).data
 }
 
-export function drawCircle(ctx, x1, y1, r, color) {
+export function drawCircle(
+    ctx: CanvasRenderingContext2D,
+    x1: number,
+    y1: number,
+    r: number,
+    color: string
+): void {
     x1 *= globalScope.scale
     y1 *= globalScope.scale
     ctx.beginPath()
@@ -478,13 +625,19 @@ export function drawCircle(ctx, x1, y1, r, color) {
 }
 
 // To show message like values, node name etc
-export function canvasMessage(ctx, str, x1, y1, fontSize = 10) {
+export function canvasMessage(
+    ctx: CanvasRenderingContext2D,
+    str: string,
+    x1: number,
+    y1: number,
+    fontSize: number = 10
+): void {
     if (!str || !str.length) return
 
     ctx.font = `${Math.round(fontSize * globalScope.scale)}px Raleway`
     ctx.textAlign = 'center'
-    var width = ctx.measureText(str).width / globalScope.scale + 8
-    var height = 13
+    const width = ctx.measureText(str).width / globalScope.scale + 8
+    const height = 13
     ctx.strokeStyle = 'black'
     ctx.lineWidth = correctWidth(1)
     ctx.fillStyle = 'yellow'
@@ -510,7 +663,13 @@ export function canvasMessage(ctx, str, x1, y1, fontSize = 10) {
     ctx.fill()
 }
 
-export function fillText(ctx, str, x1, y1, fontSize = 20) {
+export function fillText(
+    ctx: CanvasRenderingContext2D,
+    str: string,
+    x1: number,
+    y1: number,
+    fontSize: number = 20
+): void {
     x1 *= globalScope.scale
     y1 *= globalScope.scale
     ctx.font = `${Math.round(fontSize * globalScope.scale)}px Raleway`
@@ -521,8 +680,16 @@ export function fillText(ctx, str, x1, y1, fontSize = 20) {
     )
 }
 
-export function fillText2(ctx, str, x1, y1, xx, yy, dir) {
-    var angle = {
+export function fillText2(
+    ctx: CanvasRenderingContext2D,
+    str: string,
+    x1: number,
+    y1: number,
+    xx: number,
+    yy: number,
+    dir?: Direction
+): void {
+    const angle: Record<Direction, number> = {
         RIGHT: 0,
         LEFT: 0,
         DOWN: Math.PI / 2,
@@ -540,7 +707,7 @@ export function fillText2(ctx, str, x1, y1, xx, yy, dir) {
         Math.round(xx + x1 + globalScope.ox),
         Math.round(yy + y1 + globalScope.oy)
     )
-    ctx.rotate(angle[dir])
+    ctx.rotate(angle[dir || 'RIGHT'])
     ctx.textAlign = 'center'
     ctx.fillText(
         str,
@@ -551,17 +718,17 @@ export function fillText2(ctx, str, x1, y1, xx, yy, dir) {
 }
 
 export function fillText4(
-    ctx,
-    str,
-    x1,
-    y1,
-    xx,
-    yy,
-    dir,
-    fontSize = 14,
-    textAlign = 'center'
-) {
-    var angle = {
+    ctx: CanvasRenderingContext2D,
+    str: string,
+    x1: number,
+    y1: number,
+    xx: number,
+    yy: number,
+    dir?: Direction,
+    fontSize: number = 14,
+    textAlign: CanvasTextAlign = 'center'
+): void {
+    const angle: Record<Direction, number> = {
         RIGHT: 0,
         LEFT: 0,
         DOWN: Math.PI / 2,
@@ -587,16 +754,16 @@ export function fillText4(
 }
 
 export function fillText3(
-    ctx,
-    str,
-    x1,
-    y1,
-    xx = 0,
-    yy = 0,
-    fontSize = 14,
-    font = 'Raleway',
-    textAlign = 'center'
-) {
+    ctx: CanvasRenderingContext2D,
+    str: string,
+    x1: number,
+    y1: number,
+    xx: number = 0,
+    yy: number = 0,
+    fontSize: number = 14,
+    font: string = 'Raleway',
+    textAlign: CanvasTextAlign = 'center'
+): void {
     x1 *= globalScope.scale
     y1 *= globalScope.scale
     xx *= globalScope.scale
@@ -611,13 +778,13 @@ export function fillText3(
     )
 }
 
-export const oppositeDirection = {
+export const oppositeDirection: Record<Direction, Direction> = {
     RIGHT: 'LEFT',
     LEFT: 'RIGHT',
     DOWN: 'UP',
     UP: 'DOWN',
 }
-export const fixDirection = {
+export const fixDirection: Record<string, Direction> = {
     right: 'LEFT',
     left: 'RIGHT',
     down: 'UP',
