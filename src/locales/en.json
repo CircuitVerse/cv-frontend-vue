@@ -163,5 +163,13 @@
             "increase_width": "Increase Width",
             "reset": "Reset"
         }
+    },
+    "search": {
+        "placeholder": "Search projects, users...",
+        "no_results": "No results found for \"{query}\"",
+        "validation": {
+            "too_long": "Search query must be less than {max} characters",
+            "error": "An error occurred while searching. Please try again."
+        }
     }
 }
