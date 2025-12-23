@@ -15,11 +15,16 @@ The SearchBar component provides a robust search functionality with input valida
 - **Real-time Validation**: Users receive immediate feedback when typing
 
 ### 3. **Input Sanitization**
-- Removes potential XSS attempts:
-  - Strips `<>` angle brackets
-  - Removes `javascript:` protocol
-  - Filters out event handlers (e.g., `onclick=`)
+- Uses **DOMPurify** library for robust XSS prevention
+- Strips all HTML tags and attributes
+- Keeps only plain text content
 - Trims whitespace from input
+- **Important**: Backend must also sanitize as authoritative source
+
+### 4. **URL Encoding**
+- All queries are encoded using `encodeURIComponent()` before transmission
+- Prevents URL injection attacks
+- Safe for API transmission
 
 ### 4. **Flexible Search**
 - **Allows Numbers**: Users can search for projects like "Project-123"
@@ -49,11 +54,16 @@ The component includes a placeholder `performSearch()` function that needs to be
 
 ```typescript
 const performSearch = async (query: string, type: string): Promise<any[]> => {
-  // Replace with actual API call
-  const response = await fetch(`/api/search?q=${encodeURIComponent(query)}&type=${type}`)
+  // Query is already sanitized with DOMPurify and encoded with encodeURIComponent
+  const encodedQuery = encodeURIComponent(query)
+  const encodedType = encodeURIComponent(type)
+  
+  const response = await fetch(`/api/search?q=${encodedQuery}&type=${encodedType}`)
   return await response.json()
 }
 ```
+
+**Security Note**: While the frontend sanitizes and encodes queries, the **backend must always validate and sanitize** all input as the authoritative source. Never trust client-side validation alone.
 
 ## Localization
 
@@ -85,9 +95,20 @@ The component supports internationalization. Add translations in your locale fil
 ## Security
 
 The component implements multiple security measures:
-1. Input sanitization to prevent XSS attacks
-2. Character length limits to prevent overflow
-3. Removal of potentially malicious patterns
+
+### Client-Side Protection
+1. **DOMPurify sanitization** - Industry-standard XSS prevention library
+2. **Character length limits** - Prevents buffer overflow attacks
+3. **URL encoding** - Safe query parameter transmission via `encodeURIComponent()`
+4. **Input validation** - Real-time feedback prevents malformed queries
+
+### Backend Requirements
+⚠️ **Critical**: The backend MUST implement its own validation and sanitization:
+- Never trust client-side input
+- Validate all parameters server-side
+- Sanitize before database queries (prevent SQL injection)
+- Escape output when rendering (prevent XSS in responses)
+- Implement rate limiting to prevent abuse
 
 ## Future Enhancements
 

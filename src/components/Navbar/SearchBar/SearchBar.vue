@@ -18,7 +18,7 @@
                 v-model="searchQuery"
                 type="text"
                 class="navbar-search-bar-input"
-                :placeholder="$t('search.placeholder', 'Search...')"
+                :placeholder="$t('search.placeholder')"
                 :maxlength="MAX_SEARCH_LENGTH"
                 aria-label="Search input"
                 @input="handleInput"
@@ -40,16 +40,21 @@
         
         <!-- No results message -->
         <div v-if="showNoResults" class="search-no-results">
-            {{ $t('search.no_results', `No results found for "${searchQuery}"`) }}
+            {{ $t('search.no_results', { query: searchQuery }) }}
         </div>
     </div>
 </template>
 
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+import DOMPurify from 'dompurify'
 
 // Constants
 const MAX_SEARCH_LENGTH = 100
+
+// i18n
+const { t } = useI18n()
 
 // Reactive state
 const searchQuery = ref('')
@@ -64,12 +69,15 @@ const isSearchDisabled = computed(() => {
 
 // Methods
 const sanitizeInput = (input: string): string => {
-    // Remove any potential XSS attempts
-    return input
-        .trim()
-        .replace(/[<>]/g, '') // Remove angle brackets
-        .replace(/javascript:/gi, '') // Remove javascript: protocol
-        .replace(/on\w+=/gi, '') // Remove event handlers
+    // Use DOMPurify to sanitize input and remove XSS attempts
+    // Strip all HTML tags and keep only plain text
+    const sanitized = DOMPurify.sanitize(input, {
+        ALLOWED_TAGS: [], // No HTML tags allowed
+        ALLOWED_ATTR: [], // No attributes allowed
+        KEEP_CONTENT: true, // Keep text content
+    })
+    
+    return sanitized.trim()
 }
 
 const validateInput = (input: string): string | null => {
@@ -82,7 +90,7 @@ const validateInput = (input: string): string | null => {
     
     // Check length
     if (trimmed.length > MAX_SEARCH_LENGTH) {
-        return `Search query must be less than ${MAX_SEARCH_LENGTH} characters`
+        return t('search.validation.too_long', { max: MAX_SEARCH_LENGTH }) as unknown as string
     }
     
     // Allow numbers and symbols - they might be valid search terms
@@ -118,18 +126,18 @@ const handleSearch = async () => {
         return
     }
     
-    // Sanitize the input
+    // Sanitize the input using DOMPurify
     const sanitized = sanitizeInput(trimmed)
     
-    // If empty, reload or show all projects
+    // If empty after sanitization, reload or show all projects
     if (sanitized.length === 0) {
         window.location.reload()
         return
     }
     
     try {
-        // TODO: Replace with actual API call
-        // For now, this is a placeholder
+        // Encode the query for safe URL transmission
+        // The backend should also validate and sanitize as the authoritative source
         const results = await performSearch(sanitized, searchType.value)
         
         if (results.length === 0) {
@@ -141,16 +149,25 @@ const handleSearch = async () => {
         }
     } catch (error) {
         console.error('Search error:', error)
-        validationMessage.value = 'An error occurred while searching. Please try again.'
+        validationMessage.value = t('search.validation.error') as unknown as string
     }
 }
 
 // Placeholder search function - replace with actual API call
 const performSearch = async (query: string, type: string): Promise<any[]> => {
-    // TODO: Implement actual search API call
+    // TODO: Replace with actual API endpoint
+    // Always use encodeURIComponent to safely encode the query for URL transmission
+    // The backend MUST also sanitize and validate - client-side is not authoritative
+    const encodedQuery = encodeURIComponent(query)
+    const encodedType = encodeURIComponent(type)
+    
+    // Example: const response = await fetch(`/api/search?q=${encodedQuery}&type=${encodedType}`)
+    // return await response.json()
+    
     // For now, return empty array to simulate no results
     return new Promise((resolve) => {
         setTimeout(() => {
+            console.log(`Would search for: ${encodedQuery} (type: ${encodedType})`)
             resolve([]) // Replace with actual API call
         }, 500)
     })
