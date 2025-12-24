@@ -34,12 +34,22 @@
         </form>
         
         <!-- Validation message -->
-        <div v-if="validationMessage" class="search-validation-message">
+        <div 
+            v-if="validationMessage" 
+            class="search-validation-message"
+            role="alert"
+            aria-live="assertive"
+        >
             {{ validationMessage }}
         </div>
         
         <!-- No results message -->
-        <div v-if="showNoResults" class="search-no-results">
+        <div 
+            v-if="showNoResults" 
+            class="search-no-results"
+            role="status"
+            aria-live="polite"
+        >
             {{ $t('search.no_results', { query: searchQuery }) }}
         </div>
     </div>
@@ -55,6 +65,12 @@ const MAX_SEARCH_LENGTH = 100
 
 // i18n
 const { t } = useI18n()
+
+// Emits
+const emit = defineEmits<{
+    (e: 'clear-search'): void
+    (e: 'search-results', results: any[]): void
+}>()
 
 // Reactive state
 const searchQuery = ref('')
@@ -129,9 +145,10 @@ const handleSearch = async () => {
     // Sanitize the input using DOMPurify
     const sanitized = sanitizeInput(trimmed)
     
-    // If empty after sanitization, reload or show all projects
+    // If empty after sanitization, emit clear-search event instead of reloading
     if (sanitized.length === 0) {
-        window.location.reload()
+        emit('clear-search')
+        searchQuery.value = ''
         return
     }
     
@@ -143,9 +160,9 @@ const handleSearch = async () => {
         if (results.length === 0) {
             showNoResults.value = true
         } else {
-            // Handle results (navigate to results page, update state, etc.)
+            // Emit results to parent component
+            emit('search-results', results)
             console.log('Search results:', results)
-            // You might want to navigate to a results page or emit an event
         }
     } catch (error) {
         console.error('Search error:', error)

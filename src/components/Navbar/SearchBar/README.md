@@ -6,8 +6,9 @@ The SearchBar component provides a robust search functionality with input valida
 ## Features
 
 ### 1. **Empty Input Handling**
-- When the user submits an empty search, the page reloads to show all projects/default view
-- No error is shown for empty input
+- When the user submits an empty search, it emits a `clear-search` event to the parent component
+- No page reload (SPA-friendly approach for better performance)
+- Parent component can handle showing all projects or resetting the view
 
 ### 2. **Input Validation**
 - **Maximum Length**: Search queries are limited to 100 characters
@@ -32,21 +33,40 @@ The SearchBar component provides a robust search functionality with input valida
 - **Handles No Results**: Shows a clear message when no results are found
 
 ### 5. **User Feedback**
-- **Validation Messages**: Red popup for validation errors
-- **No Results Message**: Orange popup when search returns no results
+- **Validation Messages**: Red popup for validation errors with `role="alert"` for screen readers
+- **No Results Message**: Orange popup when search returns no results with `role="status"`
 - **Disabled State**: Submit button is disabled when input is invalid
+- **ARIA Live Regions**: Accessibility support for dynamic content updates
 
 ## Usage
 
 ```vue
 <template>
-  <SearchBar />
+  <SearchBar 
+    @clear-search="handleClearSearch" 
+    @search-results="handleSearchResults" 
+  />
 </template>
 
 <script setup>
 import SearchBar from '@/Navbar/SearchBar/SearchBar.vue'
+
+const handleClearSearch = () => {
+  // Reset to show all projects or default view
+  console.log('Search cleared')
+}
+
+const handleSearchResults = (results) => {
+  // Handle search results (navigate, update state, etc.)
+  console.log('Search results:', results)
+}
 </script>
 ```
+
+### Events
+
+- **`clear-search`**: Emitted when user submits empty search or clears input
+- **`search-results`**: Emitted with results array when search is successful
 
 ## API Integration
 
@@ -84,13 +104,14 @@ The component supports internationalization. Add translations in your locale fil
 
 ## Testing Checklist
 
-- [x] Empty search reloads the page
+- [x] Empty search emits clear-search event (no page reload)
 - [x] Search with numbers (e.g., "123") works correctly
 - [x] Search with symbols (e.g., "@@@") is sanitized and processed
 - [x] Character limit prevents excessive input
-- [x] Validation messages appear for invalid input
+- [x] Validation messages appear for invalid input with ARIA alerts
 - [x] "No results" message shows when search returns nothing
-- [x] XSS attempts are sanitized
+- [x] XSS attempts are sanitized with DOMPurify
+- [x] Screen readers announce validation errors and results
 
 ## Security
 
