@@ -252,9 +252,16 @@ export default {
                 undo: () => vm.undo().run(),
                 redo: () => vm.redo().run(),
                 clear: () => {
-                    vm.clearNodes().run()
-                    vm.unsetAllMarks().run()
-                },
+    const confirmed = window.confirm(
+        'Are you sure you want to clear the canvas? This action cannot be undone.'
+    )
+
+    if (!confirmed) return
+
+    vm.clearNodes().run()
+    vm.unsetAllMarks().run()
+},
+
             }
 
             actionTriggers[slug]()
