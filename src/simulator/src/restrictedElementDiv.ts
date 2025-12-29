@@ -52,7 +52,7 @@ export function showRestricted(): void {
     const restrictedDiv = document.getElementById('restrictedDiv')
     if (restrictedDiv) {
         restrictedDiv.classList.remove('display--none')
-        restrictedDiv.innerHTML = 'The element has been restricted by mentor. Usage might lead to deduction in marks'
+        restrictedDiv.textContent = 'The element has been restricted by mentor. Usage might lead to deduction in marks'
     }
     const helpDiv = document.getElementById('Help')
     if (helpDiv) {
