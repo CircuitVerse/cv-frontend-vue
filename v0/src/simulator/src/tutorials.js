@@ -33,16 +33,6 @@ export const tour = [
             // offset: 750,
         },
     },
-    // {
-    //     element: '.forum-tab',
-    //     popover: {
-    //         className: "",
-    //         title: 'Forum Tab',
-    //         description: "The forums can help you report issues & bugs, feature requests, and discussing about circuits with the community!",
-    //         position: 'right',
-    //         // offset: -25,
-    //     },
-    // },
     {
         element: '#tabsBar',
         popover: {
@@ -63,16 +53,6 @@ export const tour = [
             offset: 0,
         },
     },
-
-    // {
-    //     element: '#delCirGuide',
-    //     popover: {
-    //         title: 'Delete sub-circuit button',
-    //         description: "You can make delete sub-circuits by pressing the cross *Note that main circuit cannot be deleted.",
-    //         position: 'right',
-    //         // offset: 250,
-    //     },
-    // },
     {
         element: '.report-sidebar a',
         popover: {
@@ -91,6 +71,15 @@ export const tour = [
             title: 'Restart tutorial anytime',
             description:
                 'You can restart this tutorial anytime by clicking on "Tutorial Guide" under this dropdown.',
+            position: 'right',
+            offset: 0,
+        },
+    },
+    {
+        element: '.testbench-manual-panel',
+        popover: {
+            title: 'Test Bench Panel',
+            description: 'This panel helps you test your circuit correctness by observing how your circuit responds under different test cases, ensuring a thorough and effective validation process.',
             position: 'right',
             offset: 0,
         },

@@ -1,8 +1,7 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
-import { correctWidth, lineTo, moveTo, arc } from '../canvasApi'
-import { changeInputSize } from '../modules'
+import { simulationArea } from '../simulationArea'
+import { correctWidth, lineTo, moveTo } from '../canvasApi'
 /**
  * @class
  * Buffer
@@ -103,7 +102,7 @@ export default class Buffer extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         )
             ctx.fillStyle = colors['hover_select']
         ctx.fill()
