@@ -260,9 +260,8 @@ export default class Node {
     ) {
         // Should never raise, but just in case
         if (isNaN(x) || isNaN(y)) {
-            this.delete();
             showError('Fatal error occurred');
-            return;
+            throw new Error('Node constructor received NaN coordinates');
         }
 
         forceResetNodesSet(true);
@@ -320,7 +319,7 @@ export default class Node {
     /**
      * Function to convert a node to intermediate node
      */
-    converToIntermediate(): void {
+    convertToIntermediate(): void {
         this.type = NODE_INTERMEDIATE;
         this.x = this.absX();
         this.y = this.absY();
@@ -564,8 +563,7 @@ export default class Node {
                         simArea.contentionPending?.remove(node, this);
                     }
 
-                // Fallthrough intentional: NODE_OUTPUT propagates like a contention checked NODE_INPUT
-                // falls through
+                // biome-ignore lint/suspicious/noFallthroughSwitchClause: intentional fallthrough to share propagation/validation logic
                 case NODE_INPUT:
                     // Check bitwidths
                     if (this.bitWidth !== node.bitWidth) {
@@ -575,8 +573,7 @@ export default class Node {
                         break;
                     }
 
-                // Fallthrough intentional: NODE_INPUT propagates like a bitwidth checked NODE_INTERMEDIATE
-                // falls through
+                // biome-ignore lint/suspicious/noFallthroughSwitchClause: intentional fallthrough to share propagation/validation logic
                 case NODE_INTERMEDIATE:
                     if (node.value !== this.value || node.bitWidth !== this.bitWidth) {
                         // Propagate
