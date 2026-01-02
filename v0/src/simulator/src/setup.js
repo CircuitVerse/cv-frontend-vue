@@ -28,6 +28,9 @@ import { getToken } from '#/pages/simulatorHandler.vue'
 
 // Debounce timer for resize events
 let resizeTimeout = null
+// Retry counter for dimension validation
+let retryCount = 0
+const MAX_RETRY_ATTEMPTS = 10 // Maximum number of retry attempts
 
 /**
  * to resize window and setup things it
@@ -43,7 +46,18 @@ export function resetup() {
     
     // Get DOM element references
     const simulationAreaEl = document.getElementById('simulationArea')
-    if (!simulationAreaEl) return // Element not ready yet
+    if (!simulationAreaEl) {
+        // Element not ready yet, retry with limit
+        if (retryCount < MAX_RETRY_ATTEMPTS) {
+            retryCount++
+            if (resizeTimeout) clearTimeout(resizeTimeout)
+            resizeTimeout = setTimeout(resetup, 50)
+        } else {
+            console.warn('resetup: simulationArea element not found after maximum retries')
+            retryCount = 0 // Reset counter
+        }
+        return
+    }
     
     // Calculate dimensions - ensure we have valid measurements
     const newWidth = simulationAreaEl.clientWidth * DPR
@@ -54,17 +68,40 @@ export function resetup() {
         newHeight = (document.body.clientHeight - toolbarHeight) * DPR
     } else {
         const simulationEl = document.getElementById('simulation')
-        if (!simulationEl) return // Element not ready yet
+        if (!simulationEl) {
+            // Element not ready yet, retry with limit
+            if (retryCount < MAX_RETRY_ATTEMPTS) {
+                retryCount++
+                if (resizeTimeout) clearTimeout(resizeTimeout)
+                resizeTimeout = setTimeout(resetup, 50)
+            } else {
+                console.warn('resetup: simulation element not found after maximum retries')
+                retryCount = 0 // Reset counter
+            }
+            return
+        }
         newHeight = simulationEl.clientHeight * DPR
     }
     
     // Validate dimensions
     if (newWidth <= 0 || newHeight <= 0) {
-        // Dimensions not ready yet, schedule retry
-        if (resizeTimeout) clearTimeout(resizeTimeout)
-        resizeTimeout = setTimeout(resetup, 50)
+        // Dimensions not ready yet, schedule retry with limit
+        if (retryCount < MAX_RETRY_ATTEMPTS) {
+            retryCount++
+            if (resizeTimeout) clearTimeout(resizeTimeout)
+            resizeTimeout = setTimeout(resetup, 50)
+        } else {
+            console.warn('resetup: Invalid canvas dimensions after maximum retries', {
+                width: newWidth,
+                height: newHeight
+            })
+            retryCount = 0 // Reset counter
+        }
         return
     }
+    
+    // Reset retry counter on successful setup
+    retryCount = 0
     
     width = newWidth
     height = newHeight
