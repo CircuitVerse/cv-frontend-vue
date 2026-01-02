@@ -62,11 +62,20 @@ let lastTap = 0;
  */
 function onDoubleClickorTap(e) {
     updateCanvasSet(true);
+
+    // Case 1: double-click on element → preserve existing behavior
     if (simulationArea.lastSelected && simulationArea.lastSelected.dblclick !== undefined) {
         simulationArea.lastSelected.dblclick();
-    } else if (!simulationArea.shiftDown) {
-        simulationArea.multipleObjectSelections = [];
     }
+    // Case 2: double-click on empty canvas → Fit View
+    else if (
+        !simulationArea.lastSelected &&
+        !simulationArea.shiftDown
+    ) {
+        globalScope.centerFocus(false);
+        gridUpdateSet(true);
+    }
+
     scheduleUpdate(2);
     e.preventDefault();
 }
@@ -367,6 +376,18 @@ export default function startListeners() {
             if (e.key == 'Meta' || e.key == 'Control') {
                 simulationArea.controlDown = true
             }
+            if (
+    simulationArea.controlDown &&
+    (e.key === '0' || e.keyCode === 48)
+) {
+    e.preventDefault()
+    globalScope.centerFocus(false)
+    updateCanvasSet(true)
+    gridUpdateSet(true)
+    scheduleUpdate(1)
+    return
+}
+
 
             if (
                 simulationArea.controlDown &&
