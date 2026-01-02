@@ -159,9 +159,8 @@ function handleResize() {
 }
 
 window.onresize = handleResize // listener
-window.onorientationchange = handleResize // listener
 
-// for mobiles
+// for mobiles - using addEventListener for consistency and to avoid duplicates
 window.addEventListener('orientationchange', handleResize) // listener
 
 /**
