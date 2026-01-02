@@ -165,6 +165,10 @@ const plotArea = {
         if (!embed) {
             this.ctx = this.canvas.getContext('2d')
         }
+        // Clear any existing interval to prevent multiple timers
+        if (this.timeOutPlot) {
+            clearInterval(this.timeOutPlot)
+        }
         this.timeOutPlot = setInterval(() => {
             plotArea.plot()
         }, frameInterval)

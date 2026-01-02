@@ -26,6 +26,9 @@ import '../vendor/jquery-ui.min'
 import { confirmSingleOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
 import { getToken } from '#/pages/simulatorHandler.vue'
 
+// Debounce timer for resize events
+let resizeTimeout = null
+
 /**
  * to resize window and setup things it
  * sets up new width for the canvas variables.
@@ -37,43 +40,92 @@ export function resetup() {
     if (lightMode) {
         DPR = 1
     }
-    width = document.getElementById('simulationArea').clientWidth * DPR
+    
+    // Get DOM element references
+    const simulationAreaEl = document.getElementById('simulationArea')
+    if (!simulationAreaEl) return // Element not ready yet
+    
+    // Calculate dimensions - ensure we have valid measurements
+    const newWidth = simulationAreaEl.clientWidth * DPR
+    let newHeight
     if (!embed) {
-        height =
-            (document.body.clientHeight -
-                document.getElementById('toolbar')?.clientHeight) *
-            DPR
+        const toolbarEl = document.getElementById('toolbar')
+        const toolbarHeight = toolbarEl?.clientHeight || 0
+        newHeight = (document.body.clientHeight - toolbarHeight) * DPR
     } else {
-        height = document.getElementById('simulation').clientHeight * DPR
+        const simulationEl = document.getElementById('simulation')
+        if (!simulationEl) return // Element not ready yet
+        newHeight = simulationEl.clientHeight * DPR
     }
-    // setup simulationArea and backgroundArea variables used to make changes to canvas.
+    
+    // Validate dimensions
+    if (newWidth <= 0 || newHeight <= 0) {
+        // Dimensions not ready yet, schedule retry
+        if (resizeTimeout) clearTimeout(resizeTimeout)
+        resizeTimeout = setTimeout(resetup, 50)
+        return
+    }
+    
+    width = newWidth
+    height = newHeight
+    
+    // Set DOM element styles first to ensure proper layout
+    const backgroundAreaEl = document.getElementById('backgroundArea')
+    const canvasAreaEl = document.getElementById('canvasArea')
+    if (backgroundAreaEl) {
+        backgroundAreaEl.style.height = height / DPR + 100 + 'px'
+        backgroundAreaEl.style.width = width / DPR + 100 + 'px'
+    }
+    if (canvasAreaEl) {
+        canvasAreaEl.style.height = height / DPR + 'px'
+    }
+    
+    // Now set canvas dimensions before getting context
+    // This ensures the context is initialized with correct dimensions
+    if (simulationArea.canvas) {
+        simulationArea.canvas.width = width
+        simulationArea.canvas.height = height
+    }
+    if (backgroundArea.canvas) {
+        backgroundArea.canvas.width = width + 100 * DPR
+        backgroundArea.canvas.height = height + 100 * DPR
+    }
+    
+    // Setup canvas contexts after dimensions are set
     backgroundArea.setup()
     simulationArea.setup()
-    // redraw grid
-    dots()
-    document.getElementById('backgroundArea').style.height =
-        height / DPR + 100 + 'px'
-    document.getElementById('backgroundArea').style.width =
-        width / DPR + 100 + 'px'
-    document.getElementById('canvasArea').style.height = height / DPR + 'px'
-    simulationArea.canvas.width = width
-    simulationArea.canvas.height = height
-    backgroundArea.canvas.width = width + 100 * DPR
-    backgroundArea.canvas.height = height + 100 * DPR
-    if (!embed) {
-        plotArea.setup()
+    
+    // Reset scale to force grid redraw
+    simulationArea.prevScale = 0
+    
+    // Redraw grid
+    dots(true, false, true) // Force redraw
+    
+    // Update plot area if not in embed mode
+    if (!embed && plotArea.canvas) {
+        // Only resize plotArea, don't call setup() which creates new intervals
+        plotArea.resize()
     }
+    
+    // Force canvas update
     updateCanvasSet(true)
     update() // INEFFICIENT, needs to be deprecated
-    simulationArea.prevScale = 0
-    dots()
 }
 
-window.onresize = resetup // listener
-window.onorientationchange = resetup // listener
+// Debounced resize handler
+function handleResize() {
+    if (resizeTimeout) clearTimeout(resizeTimeout)
+    // Use requestAnimationFrame to ensure DOM has settled
+    requestAnimationFrame(() => {
+        resizeTimeout = setTimeout(resetup, 100) // 100ms debounce
+    })
+}
+
+window.onresize = handleResize // listener
+window.onorientationchange = handleResize // listener
 
 // for mobiles
-window.addEventListener('orientationchange', resetup) // listener
+window.addEventListener('orientationchange', handleResize) // listener
 
 /**
  * function to setup environment variables like projectId and DPR
