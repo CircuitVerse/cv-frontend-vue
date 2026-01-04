@@ -2,7 +2,7 @@ name: Vue Simulator Desktop Release
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "tauri-ci" ]
   release:
     types: [created]
 
