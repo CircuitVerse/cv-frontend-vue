@@ -26,25 +26,6 @@ function updatePosition(
     let newX = currentPosition.x + dx
     let newY = currentPosition.y + dy
 
-    // Get navbar bottom position to prevent overlap
-    const navbar = document.querySelector('.navbar.header') as HTMLElement
-    if (navbar) {
-        const navbarRect = navbar.getBoundingClientRect()
-        const navbarBottom = navbarRect.bottom
-        
-        // Get element's current position on screen
-        const elementRect = element.getBoundingClientRect()
-        const elementTop = elementRect.top
-        
-        // Calculate what the new top position would be after applying transform
-        const newElementTop = elementTop - currentPosition.y + newY
-        
-        // Prevent panel from going above the navbar
-        if (newElementTop < navbarBottom) {
-            newY = currentPosition.y + (navbarBottom - elementTop)
-        }
-    }
-
     currentPosition.x = newX
     currentPosition.y = newY
 
@@ -97,8 +78,9 @@ export function dragging(targetEl: HTMLElement, DragEl: HTMLElement): void {
     })
 
     $(DragEl).on('mousedown', () => {
-        $(`.draggable-panel:not(${DragEl})`).css('z-index', '99')
-        $(DragEl).css('z-index', '99')
+        // Keep all draggable panels above navbar (z-index 100)
+        $(`.draggable-panel:not(${DragEl})`).css('z-index', '120')
+        $(DragEl).css('z-index', '130')
     })
 
     let panelElements = document.querySelectorAll(

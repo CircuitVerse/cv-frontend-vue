@@ -220,6 +220,10 @@ function getTooltipText(elementName: string) {
 </script>
 
 <style>
+.elementPanel {
+    z-index: 120; /* sit above navbar (z-index 100) while remaining draggable */
+}
+
 .v-expansion-panel-title {
     min-height: 36px;
 }

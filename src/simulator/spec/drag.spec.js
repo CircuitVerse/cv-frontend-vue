@@ -37,96 +37,13 @@ describe('Panel Dragging - Navbar Overlap Prevention', () => {
     });
 
     test('should prevent panel from overlapping navbar when dragged upward', () => {
-        // Mock getBoundingClientRect for navbar
-        const navbarGetBoundingClientRect = vi.fn(() => ({
-            top: 0,
-            bottom: 60,
-            left: 0,
-            right: window.innerWidth,
-            width: window.innerWidth,
-            height: 60,
-        }));
-        mockNavbar.getBoundingClientRect = navbarGetBoundingClientRect;
-
-        // Mock getBoundingClientRect for panel (initial position)
-        const panelGetBoundingClientRect = vi.fn(() => ({
-            top: 100,
-            bottom: 400,
-            left: 50,
-            right: 250,
-            width: 200,
-            height: 300,
-        }));
-        mockPanel.getBoundingClientRect = panelGetBoundingClientRect;
-
-        // Initialize dragging
-        dragging(mockHeader, mockPanel);
-
-        // Simulate manual position update that would overlap navbar
-        // This simulates what happens when a panel is dragged upward
-        const transform = mockPanel.style.transform;
-        
-        // The panel should not be able to move above navbar bottom (60px)
-        // If initial top is 100px and navbar bottom is 60px,
-        // the minimum transform Y should keep panel at or below 60px
-        expect(transform).toBeDefined();
-    });
-
-    test('should allow panel to be dragged freely when not near navbar', () => {
-        // Mock getBoundingClientRect for navbar
-        mockNavbar.getBoundingClientRect = vi.fn(() => ({
-            top: 0,
-            bottom: 60,
-            left: 0,
-            right: window.innerWidth,
-            width: window.innerWidth,
-            height: 60,
-        }));
-
-        // Mock getBoundingClientRect for panel (far from navbar)
-        mockPanel.getBoundingClientRect = vi.fn(() => ({
-            top: 200,
-            bottom: 500,
-            left: 50,
-            right: 250,
-            width: 200,
-            height: 300,
-        }));
-
-        // Initialize dragging
-        dragging(mockHeader, mockPanel);
-
-        // Panel should be able to move freely when far from navbar
-        expect(mockPanel.style.transform).toBeDefined();
-    });
-
-    test('should handle case when navbar does not exist', () => {
-        // Remove navbar
-        document.body.removeChild(mockNavbar);
-
-        // Initialize dragging without navbar present
-        expect(() => {
+        test('allows dragging regardless of navbar presence', () => {
+            // Initialize dragging with navbar present
             dragging(mockHeader, mockPanel);
-        }).not.toThrow();
-    });
+            expect(mockPanel.style.transform).toBeDefined();
 
-    test('should use runtime navbar height via getBoundingClientRect', () => {
-        const getBoundingClientRectSpy = vi.fn(() => ({
-            top: 0,
-            bottom: 75, // Dynamic height
-            left: 0,
-            right: window.innerWidth,
-            width: window.innerWidth,
-            height: 75,
-        }));
-        
-        mockNavbar.getBoundingClientRect = getBoundingClientRectSpy;
-        
-        // Initialize dragging
-        dragging(mockHeader, mockPanel);
-
-        // The navbar's getBoundingClientRect should be callable
-        // (actual constraint logic is tested during drag interactions)
-        expect(getBoundingClientRectSpy).toBeDefined();
-    });
+            // Remove navbar and ensure it still works
+            document.body.removeChild(mockNavbar);
+            expect(() => dragging(mockHeader, mockPanel)).not.toThrow();
+        });
 });

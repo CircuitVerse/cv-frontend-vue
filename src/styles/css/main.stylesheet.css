@@ -360,6 +360,7 @@ input[type='text']:focus {
     width: 240px;
     top: 90px;
     left: 10px;
+    z-index: 120;
 }
 
 .accordion > :last-child {
