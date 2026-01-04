@@ -24,6 +24,7 @@ import {
     gridUpdateSet,
     errorDetectedSet,
 } from './engine'
+import { fitToSelection } from './canvasApi'
 import { changeScale, findDimensions } from './canvasApi'
 import { scheduleBackup } from './data/backupCircuit'
 import { hideProperties, deleteSelected, uxvar, exitFullView } from './ux';
@@ -54,6 +55,24 @@ let centreX;
 let centreY;
 let timeout;
 let lastTap = 0;
+
+/* ===== Selection helpers ===== */
+export function getSelectedElements() {
+    if (
+        simulationArea.multipleObjectSelections &&
+        simulationArea.multipleObjectSelections.length > 0
+    ) {
+        return simulationArea.multipleObjectSelections
+    }
+
+    if (simulationArea.lastSelected) {
+        return [simulationArea.lastSelected]
+    }
+
+    return []
+}
+
+
 
 /**
  *
@@ -382,6 +401,15 @@ export default function startListeners() {
 ) {
     e.preventDefault()
     globalScope.centerFocus(false)
+    updateCanvasSet(true)
+    gridUpdateSet(true)
+    scheduleUpdate(1)
+    return
+}
+// Fit view to selection (F)
+if (e.key === 'f' || e.key === 'F') {
+    e.preventDefault()
+    fitToSelection()
     updateCanvasSet(true)
     gridUpdateSet(true)
     scheduleUpdate(1)
