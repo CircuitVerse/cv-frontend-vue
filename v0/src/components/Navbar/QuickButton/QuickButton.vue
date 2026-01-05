@@ -45,6 +45,15 @@
             ></button>
         </div>
         <div>
+    <button
+        type="button"
+        class="quick-btn-fit-selection"
+        title="Fit view to selection (F)"
+        @click="fitToSelection"
+    ></button>
+</div>
+
+        <div>
             <button
                 type="button"
                 class="quick-btn-undo"
@@ -88,8 +97,8 @@
 </template>
 
 <script lang="ts" setup>
-import { saveOnline, saveOffline, deleteSelectedItem, createSaveAsImgPrompt, zoomToFit, undoit, redoit, view, decrement, increment } from './QuickButton';
-
+import {  saveOnline, saveOffline, deleteSelectedItem, createSaveAsImgPrompt, zoomToFit, undoit, redoit, view, decrement, increment } from './QuickButton';
+import { fitToSelection } from '../../../simulator/src/canvasApi'
 function dragover(): void {
     const quickBtn: HTMLElement | null = document.querySelector('.quick-btn')
     if (quickBtn) {
@@ -184,6 +193,24 @@ function dragover(): void {
     height: 15.2px;
     display: block;
 }
+.quick-btn-fit-selection {
+    background: url(../../../styles/css/assets/shorcuts/fit.svg)
+        center/cover;
+    width: 15.2px;
+    height: 15.2px;
+    display: block;
+
+    /* distinction */
+    filter: hue-rotate(90deg);
+    opacity: 0.85;
+}
+
+.quick-btn-fit-selection:hover {
+    opacity: 1;
+}
+
+
+
 
 .quick-btn-undo {
     background: url(../../../styles/css/assets/shorcuts/undo.svg) center/cover;
