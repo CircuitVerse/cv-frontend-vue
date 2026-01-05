@@ -406,8 +406,8 @@ export default function startListeners() {
     scheduleUpdate(1)
     return
 }
-// Fit view to selection (F)
-if (e.key === 'f' || e.key === 'F') {
+// Fit view to selection (1)
+if (e.key === '1' ) {
     e.preventDefault()
     fitToSelection()
     updateCanvasSet(true)
