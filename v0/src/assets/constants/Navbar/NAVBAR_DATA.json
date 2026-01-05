@@ -42,24 +42,30 @@
             },
             {
                 "id": "7",
+                "item": "import_online_circuit",
+                "itemid": "ImportOnlineCircuit",
+                "attributes": []
+            },
+            {
+                "id": "8",
                 "item": "clear_project",
                 "itemid": "clearProject",
                 "attributes": []
             },
             {
-                "id": "8",
+                "id": "9",
                 "item": "recover_project",
                 "itemid": "recoverProject",
                 "attributes": []
             },
             {
-                "id": "9",
+                "id": "10",
                 "item": "preview_circuit",
                 "itemid": "fullViewOption",
                 "attributes": []
             },
             {
-                "id": "10",
+                "id": "11",
                 "item": "view_previous_ui",
                 "itemid": "",
                 "attributes": [

@@ -1,6 +1,14 @@
 <template>
-    <QuickButtonMobile v-if="simulatorMobileStore.showQuickButtons && simulatorMobileStore.showMobileView" />
-    <TimingDiagramMobile v-if="simulatorMobileStore.showMobileView" v-show="simulatorMobileStore.showTimingDiagram" />
+    <QuickButtonMobile
+        v-if="
+            simulatorMobileStore.showQuickButtons &&
+            simulatorMobileStore.showMobileView
+        "
+    />
+    <TimingDiagramMobile
+        v-if="simulatorMobileStore.showMobileView"
+        v-show="simulatorMobileStore.showTimingDiagram"
+    />
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- TabsBar -->
     <TabsBar />
@@ -13,7 +21,7 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Circuit Elements Panel -->
-    <ElementsPanel v-if="!simulatorMobileStore.showMobileView"/>
+    <ElementsPanel v-if="!simulatorMobileStore.showMobileView" />
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
@@ -36,8 +44,20 @@
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Message Display -->
     <div id="MessageDiv">
-        <div v-for="mes in useState().successMessages" class='alert alert-success' role='alert'> {{ mes }}</div>
-        <div v-for="error in useState().errorMessages" class='alert alert-danger' role='alert'> {{ error }}</div>
+        <div
+            v-for="mes in useState().successMessages"
+            class="alert alert-success"
+            role="alert"
+        >
+            {{ mes }}
+        </div>
+        <div
+            v-for="error in useState().errorMessages"
+            class="alert alert-danger"
+            role="alert"
+        >
+            {{ error }}
+        </div>
     </div>
     <!-- --------------------------------------------------------------------------------------------- -->
 
@@ -48,7 +68,12 @@
     <div id="code-window" class="code-window">
         <textarea id="codeTextArea"></textarea>
     </div>
-    <VerilogEditorPanelMobile v-if="simulatorMobileStore.showMobileView && simulatorMobileStore.showVerilogPanel" />
+    <VerilogEditorPanelMobile
+        v-if="
+            simulatorMobileStore.showMobileView &&
+            simulatorMobileStore.showVerilogPanel
+        "
+    />
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
@@ -75,9 +100,20 @@
         title="Select Theme"
     ></div> -->
     <ApplyThemes />
-    <div id="CustomColorThemesDialog" class="customScroll" tabindex="0" style="display: none" title="Custom Theme">
-    </div>
-    <input id="importThemeFile" type="file" name="themeFile" style="display: none" multiple />
+    <div
+        id="CustomColorThemesDialog"
+        class="customScroll"
+        tabindex="0"
+        style="display: none"
+        title="Custom Theme"
+    ></div>
+    <input
+        id="importThemeFile"
+        type="file"
+        name="themeFile"
+        style="display: none"
+        multiple
+    />
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
@@ -85,61 +121,82 @@
     <div id="simulation" class="simulation">
         <!-- <div id="restrictedDiv" class="alert alert-danger display--none"></div> -->
         <div id="canvasArea" class="canvasArea">
-            <canvas id="backgroundArea" style="
+            <canvas
+                id="backgroundArea"
+                style="
                     position: absolute;
                     left: 0;
                     top: 0;
                     z-index: 0;
                     width: 100%;
                     height: 100%;
-                "></canvas>
+                "
+            ></canvas>
             <canvas
-                    id="simulationArea"
-                    style="
+                id="simulationArea"
+                style="
                     position: absolute;
                     left: 0;
                     top: 0;
                     z-index: 1;
                     width: 100%;
                     height: 100%;
-                    "
-                    @touchstart="(e) => {
-                        simulationArea.touch = true;
+                "
+                @touchstart="
+                    (e) => {
+                        simulationArea.touch = true
                         panStart(e)
-                    }"
-                    @touchend="(e) => {
-                        simulationArea.touch = true;
+                    }
+                "
+                @touchend="
+                    (e) => {
+                        simulationArea.touch = true
                         panStop(e)
-                    }"
-                    @touchmove="(e) => {
-                        simulationArea.touch = true;
+                    }
+                "
+                @touchmove="
+                    (e) => {
+                        simulationArea.touch = true
                         panMove(e)
-                    }"
-                    @mousedown="(e) => {
-                        simulationArea.touch = false;
+                    }
+                "
+                @mousedown="
+                    (e) => {
+                        simulationArea.touch = false
                         panStart(e)
-                    }"
-                    @mousemove="(e) => {
-                        simulationArea.touch = false;
+                    }
+                "
+                @mousemove="
+                    (e) => {
+                        simulationArea.touch = false
                         panMove(e)
-                    }"
-                    @mouseup="(e) => {
-                        simulationArea.touch = false;
+                    }
+                "
+                @mouseup="
+                    (e) => {
+                        simulationArea.touch = false
                         panStop(e)
-                    }"
+                    }
+                "
             ></canvas>
             <div id="miniMap">
-                <canvas id="miniMapArea" style="position: absolute; left: 0; top: 0; z-index: 3"></canvas>
+                <canvas
+                    id="miniMapArea"
+                    style="position: absolute; left: 0; top: 0; z-index: 3"
+                ></canvas>
             </div>
 
             <div id="Help"></div>
-            <div class="sk-folding-cube loadingIcon" style="
+            <div
+                class="sk-folding-cube loadingIcon"
+                style="
                     display: none;
                     position: absolute;
                     right: 50%;
                     bottom: 50%;
                     z-index: 100;
-                ">
+                "
+            >
                 <div class="sk-cube1 sk-cube"></div>
                 <div class="sk-cube2 sk-cube"></div>
                 <div class="sk-cube4 sk-cube"></div>
@@ -156,7 +213,7 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Dialog Box - Testbench -->
-     <TestBenchValidator />
+    <TestBenchValidator />
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
@@ -167,6 +224,7 @@
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Dialog Box - Open Project -->
     <OpenOffline />
+    <ImportOnlineCircuit />
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- Dialog Box - Hex Bin Dec --------------------------------------------------------------------------------------------- -->
@@ -179,17 +237,26 @@
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <v-btn
-      class="cir-ele-btn"
-      @mousedown="simulatorMobileStore.showElementsPanel = !simulatorMobileStore.showElementsPanel"
-      :style="{bottom: simulatorMobileStore.showElementsPanel ? '10rem' : '2rem'}"
-      v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.showMobileView && !simulatorMobileStore.isVerilog"
+        class="cir-ele-btn"
+        @mousedown="
+            simulatorMobileStore.showElementsPanel =
+                !simulatorMobileStore.showElementsPanel
+        "
+        :style="{
+            bottom: simulatorMobileStore.showElementsPanel ? '10rem' : '2rem',
+        }"
+        v-if="
+            simulatorMobileStore.showMobileButtons &&
+            simulatorMobileStore.showMobileView &&
+            !simulatorMobileStore.isVerilog
+        "
     >
         <i class="fas fa-bezier-curve"></i>
     </v-btn>
 
     <v-btn
-      class="cir-btn"
-      @mousedown="(e: React.MouseEvent) => {
+        class="cir-btn"
+        @mousedown="(e: React.MouseEvent) => {
         if(simulationArea.shiftDown == false) {
             simulationArea.shiftDown = true;
             selectMultiple = true;
@@ -200,43 +267,80 @@
             e.preventDefault();
         }
       }"
-      :style="{bottom: simulatorMobileStore.showElementsPanel ? '10rem' : '2rem', backgroundColor: selectMultiple ? 'var(--primary)' : 'var(--bg-toggle-btn-primary)'}"
-      v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.showMobileView && !simulatorMobileStore.isVerilog"
+        :style="{
+            bottom: simulatorMobileStore.showElementsPanel ? '10rem' : '2rem',
+            backgroundColor: selectMultiple
+                ? 'var(--primary)'
+                : 'var(--bg-toggle-btn-primary)',
+        }"
+        v-if="
+            simulatorMobileStore.showMobileButtons &&
+            simulatorMobileStore.showMobileView &&
+            !simulatorMobileStore.isVerilog
+        "
     >
         <i class="fa-solid fa-vector-square"></i>
     </v-btn>
 
     <v-btn
-      class="cir-verilog-btn"
-      @mousedown="simulatorMobileStore.showVerilogPanel = !simulatorMobileStore.showVerilogPanel"
-      v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.isVerilog && simulatorMobileStore.showMobileView"
+        class="cir-verilog-btn"
+        @mousedown="
+            simulatorMobileStore.showVerilogPanel =
+                !simulatorMobileStore.showVerilogPanel
+        "
+        v-if="
+            simulatorMobileStore.showMobileButtons &&
+            simulatorMobileStore.isVerilog &&
+            simulatorMobileStore.showMobileView
+        "
     >
         <i class="fa-solid fa-gears"></i>
     </v-btn>
 
     <v-btn
-      class="cir-btn"
-      @mousedown="copyBtnClick()"
-      :style="{bottom: simulatorMobileStore.showElementsPanel ? '16rem' : '8rem'}"
-      v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.showMobileView && !simulatorMobileStore.isCopy && !simulatorMobileStore.isVerilog"
+        class="cir-btn"
+        @mousedown="copyBtnClick()"
+        :style="{
+            bottom: simulatorMobileStore.showElementsPanel ? '16rem' : '8rem',
+        }"
+        v-if="
+            simulatorMobileStore.showMobileButtons &&
+            simulatorMobileStore.showMobileView &&
+            !simulatorMobileStore.isCopy &&
+            !simulatorMobileStore.isVerilog
+        "
     >
         <i class="fa-solid fa-copy"></i>
     </v-btn>
 
     <v-btn
-      class="cir-btn"
-      @mousedown="pasteBtnClick()"
-      :style="{bottom: simulatorMobileStore.showElementsPanel ? '16rem' : '8rem'}"
-      v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.showMobileView && simulatorMobileStore.isCopy && !simulatorMobileStore.isVerilog"
+        class="cir-btn"
+        @mousedown="pasteBtnClick()"
+        :style="{
+            bottom: simulatorMobileStore.showElementsPanel ? '16rem' : '8rem',
+        }"
+        v-if="
+            simulatorMobileStore.showMobileButtons &&
+            simulatorMobileStore.showMobileView &&
+            simulatorMobileStore.isCopy &&
+            !simulatorMobileStore.isVerilog
+        "
     >
         <i class="fa-solid fa-paste"></i>
     </v-btn>
 
     <v-btn
-      class="cir-btn"
-      @mousedown="propertiesBtnClick()"
-      :style="{bottom: simulatorMobileStore.showElementsPanel ? `${propertiesPanelPos.up}rem` : `${propertiesPanelPos.down}rem`}"
-      v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.showMobileView"
+        class="cir-btn"
+        @mousedown="propertiesBtnClick()"
+        :style="{
+            bottom: simulatorMobileStore.showElementsPanel
+                ? `${propertiesPanelPos.up}rem`
+                : `${propertiesPanelPos.down}rem`,
+        }"
+        v-if="
+            simulatorMobileStore.showMobileButtons &&
+            simulatorMobileStore.showMobileView
+        "
     >
         <i class="fa-solid fa-sliders"></i>
     </v-btn>
@@ -260,6 +364,7 @@ import ExportVerilog from './DialogBox/ExportVerilog.vue'
 import CustomShortcut from './DialogBox/CustomShortcut.vue'
 import InsertSubcircuit from './DialogBox/InsertSubcircuit.vue'
 import OpenOffline from './DialogBox/OpenOffline.vue'
+import ImportOnlineCircuit from './DialogBox/ImportOnlineCircuit.vue'
 import ReportIssue from './ReportIssue/ReportIssue.vue'
 import LayoutElementsPanel from './Panels/LayoutElementsPanel/LayoutElementsPanel.vue'
 import TestBenchPanel from './Panels/TestBenchPanel/TestBenchPanel.vue'
@@ -271,7 +376,7 @@ import ElementsPanelMobile from './Panels/ElementsPanel/ElementsPanelMobile.vue'
 import PropertiesPanelMobile from './Panels/PropertiesPanel/PropertiesPanelMobile.vue'
 import { simulationArea } from '#/simulator/src/simulationArea'
 import { paste } from '#/simulator/src/events'
-import  { panStart, panMove, panStop } from '#/simulator/src/listeners'
+import { panStart, panMove, panStop } from '#/simulator/src/listeners'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { useState } from '#/store/SimulatorStore/state'
 import { reactive, ref, watch } from 'vue'
@@ -280,18 +385,21 @@ const simulatorMobileStore = useSimulatorMobileStore()
 const selectMultiple = ref(false)
 const propertiesPanelPos = reactive({
     up: 22,
-    down: 14
-});
-
-watch(() => simulatorMobileStore.isVerilog, (val) => {
-    if (val) {
-        propertiesPanelPos.up = 10
-        propertiesPanelPos.down = 2
-    } else {
-        propertiesPanelPos.up = 22
-        propertiesPanelPos.down = 14
-    }
+    down: 14,
 })
+
+watch(
+    () => simulatorMobileStore.isVerilog,
+    (val) => {
+        if (val) {
+            propertiesPanelPos.up = 10
+            propertiesPanelPos.down = 2
+        } else {
+            propertiesPanelPos.up = 22
+            propertiesPanelPos.down = 14
+        }
+    }
+)
 
 const copyBtnClick = () => {
     window.document.execCommand('copy')
@@ -300,17 +408,19 @@ const copyBtnClick = () => {
 }
 
 const pasteBtnClick = () => {
-    paste(localStorage.getItem('clipboardData'));
+    paste(localStorage.getItem('clipboardData'))
     simulatorMobileStore.isCopy = false
 }
 
 const propertiesBtnClick = () => {
-    simulatorMobileStore.showPropertiesPanel = !simulatorMobileStore.showPropertiesPanel
+    simulatorMobileStore.showPropertiesPanel =
+        !simulatorMobileStore.showPropertiesPanel
 }
 </script>
 
 <style scoped>
-.cir-ele-btn, .cir-verilog-btn {
+.cir-ele-btn,
+.cir-verilog-btn {
     position: absolute;
     right: 1.5rem;
     bottom: 15rem;
@@ -333,7 +443,7 @@ const propertiesBtnClick = () => {
     bottom: 2rem;
 }
 
-.cir-btn{
+.cir-btn {
     position: absolute;
     left: 1.5rem;
     bottom: 2rem;

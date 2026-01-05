@@ -3,19 +3,21 @@ import { defineStore } from 'pinia'
 // use camel case variable names
 export interface State {
     title: string
-    activeCircuit: {
-        id: number | string
-        name: string
-    } | undefined;
+    activeCircuit:
+        | {
+              id: number | string
+              name: string
+          }
+        | undefined
     circuit_list: {
         id: number | string
         name: string
         isVerilog?: boolean
         focussed?: boolean
-    }[];
+    }[]
     errorMessages: string[]
     successMessages: string[]
-    circuit_name_clickable: boolean;
+    circuit_name_clickable: boolean
     dialogBox: {
         combinationalanalysis_dialog: boolean
         hex_bin_dec_converter_dialog: boolean
@@ -28,6 +30,7 @@ export interface State {
         open_project_dialog: boolean
         export_project_dialog: boolean
         import_project_dialog: boolean
+        import_online_circuit_dialog: boolean
     }
     combinationalAnalysis: Object
     subCircuitElementList: Array<LayoutElementGroup>
@@ -62,6 +65,7 @@ export const useState = defineStore({
                 open_project_dialog: false,
                 export_project_dialog: false,
                 import_project_dialog: false,
+                import_online_circuit_dialog: false,
             },
             combinationalAnalysis: {
                 inputNameList: 'eg. In A, In B',
