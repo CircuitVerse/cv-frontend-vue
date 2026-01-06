@@ -10,9 +10,10 @@ import { layoutModeGet } from './layoutMode'
 import plotArea from './plotArea'
 import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
 import { useActions } from '#/store/SimulatorStore/actions'
-import { writeTextFile } from '@tauri-apps/plugin-fs';
-import { join, downloadDir } from '@tauri-apps/api/path';
+import { writeTextFile } from '@tauri-apps/plugin-fs'
+import { join, downloadDir } from '@tauri-apps/api/path'
 import { isTauri } from '@tauri-apps/api/core'
+
 
 window.globalScope = undefined
 window.lightMode = false // To be deprecated

@@ -1,8 +1,8 @@
 import { simulationArea } from './simulationArea'
 import { convertors } from './utils'
-import { join, downloadDir } from '@tauri-apps/api/path';
-import { writeFile } from '@tauri-apps/plugin-fs';
+import { join, downloadDir } from '@tauri-apps/api/path'
 import { isTauri } from '@tauri-apps/api/core'
+import { writeFile } from '@tauri-apps/plugin-fs';
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { toRefs } from 'vue'
 
