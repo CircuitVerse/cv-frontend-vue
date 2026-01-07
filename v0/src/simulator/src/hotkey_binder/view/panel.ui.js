@@ -7,24 +7,24 @@ import { setUserKeys } from '../model/actions'
 export const updateHTML = (mode) => {
     let x = 0
     if (mode == 'user') {
-        const userKeys = localStorage.get('userKeys')
+        const userKeys = localStorage.getItem('userKeys')
         while ($('#preference').children()[x]) {
             $('#preference').children()[x].children[1].children[1].innerText =
                 userKeys[
-                    $('#preference').children()[
-                        x
-                    ].children[1].children[0].innerText
+                $('#preference').children()[
+                    x
+                ].children[1].children[0].innerText
                 ]
             x++
         }
     } else if (mode == 'default') {
         while ($('#preference').children()[x]) {
-            const defaultKeys = localStorage.get('defaultKeys')
+            const defaultKeys = localStorage.getItem('defaultKeys')
             $('#preference').children()[x].children[1].children[1].innerText =
                 defaultKeys[
-                    $('#preference').children()[
-                        x
-                    ].children[1].children[0].innerText
+                $('#preference').children()[
+                    x
+                ].children[1].children[0].innerText
                 ]
             x++
         }
