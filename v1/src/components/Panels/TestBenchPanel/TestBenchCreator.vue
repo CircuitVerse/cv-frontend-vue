@@ -147,6 +147,15 @@
 </template>
 
 <script lang="ts" setup>
+import {
+  VDialog,
+  VCard,
+  VCardTitle,
+  VCardText,
+  VCardActions,
+  VBtn,
+  VIcon,
+} from 'vuetify/components'
 import { computed, ref, reactive, watch } from 'vue';
 import { useTestBenchStore } from '#/store/testBenchStore';
 

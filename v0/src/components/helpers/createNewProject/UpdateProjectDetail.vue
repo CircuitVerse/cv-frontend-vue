@@ -111,6 +111,22 @@ export const UpdateProjectDetail = (data: dataType) => {
 </script>
 
 <script lang="ts" setup>
+import {
+  VDialog,
+  VCard,
+  VCardText,
+  VCardActions,
+  VForm,
+  VTextField,
+  VChip,
+  VSelect,
+  VBtn,
+} from 'vuetify/components'
+
+import { ref } from 'vue'
+import { usePromptStore } from '#/store/promptStore'
+import { useAuthStore } from '#/store/authStore'
+
 const promptStore = usePromptStore()
 const isFullscreen = ref(false)
 const projectTypes = ref(['Public', 'Private', 'Limited access'])

@@ -69,6 +69,7 @@
 import draggable from 'vuedraggable'
 import { showMessage, truncateString } from '#/simulator/src/utils'
 import { ref, Ref } from 'vue'
+import { VIcon } from 'vuetify/components'
 import {
     createNewCircuitScope,
     // deleteCurrentCircuit,

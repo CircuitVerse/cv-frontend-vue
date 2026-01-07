@@ -246,6 +246,7 @@
 </template>
 
 <script lang="ts" setup>
+import { VBtn } from 'vuetify/components'
 import VerilogEditorPanel from './Panels/VerilogEditorPanel/VerilogEditorPanel.vue'
 import VerilogEditorPanelMobile from './Panels/VerilogEditorPanel/VerilogEditorPanelMobile.vue'
 import ElementsPanel from './Panels/ElementsPanel/ElementsPanel.vue'

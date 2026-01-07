@@ -43,6 +43,14 @@
 </template>
 
 <script lang="ts" setup>
+import {
+  VDialog,
+  VCard,
+  VCardText,
+  VCardActions,
+  VBtn,
+  VIcon,
+} from 'vuetify/components'
 import { onMounted, ref } from 'vue'
 import { useState } from '#/store/SimulatorStore/state'
 const SimulatorState = useState()

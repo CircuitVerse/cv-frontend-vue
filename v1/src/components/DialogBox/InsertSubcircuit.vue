@@ -62,6 +62,14 @@
 </template>
 
 <script lang="ts" setup>
+import {
+  VDialog,
+  VCard,
+  VCardText,
+  VCardActions,
+  VBtn,
+  VIcon,
+} from 'vuetify/components'
 import { onMounted, onUpdated, ref } from '@vue/runtime-core'
 import { useState } from '#/store/SimulatorStore/state'
 import { createNewCircuitScope, scopeList } from '#/simulator/src/circuit'

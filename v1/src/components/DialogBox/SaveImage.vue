@@ -112,6 +112,14 @@
 </template>
 
 <script lang="ts" setup>
+import {
+  VDialog,
+  VCard,
+  VCardText,
+  VCardActions,
+  VBtn,
+  VIcon,
+} from 'vuetify/components'
 import { generateImage } from '#/simulator/src/data/save'
 import { useState } from '#/store/SimulatorStore/state'
 import { ref, computed, Ref } from '@vue/runtime-core'

@@ -79,6 +79,17 @@ export function ImportProject() {
 </script>
 
 <script lang="ts" setup>
+import {
+  VDialog,
+  VCard,
+  VCardActions,
+  VTextField,
+  VBtn,
+  VIcon,
+  VFileInput,
+  VChip,
+} from 'vuetify/components'
+
 const SimulatorState = useState()
 const projectStore = useProjectStore()
 

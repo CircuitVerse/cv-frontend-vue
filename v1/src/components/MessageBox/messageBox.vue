@@ -48,6 +48,13 @@
 </template>
 
 <script lang="ts" setup>
+import {
+  VDialog,
+  VCard,
+  VCardText,
+  VCardActions,
+  VBtn,
+} from 'vuetify/components'
 import BooleanTable from '@/DialogBox/BooleanTable.vue'
 
 defineEmits(['buttonClick'])

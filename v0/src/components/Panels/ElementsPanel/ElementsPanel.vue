@@ -140,6 +140,12 @@
 </template>
 
 <script lang="ts" setup>
+import {
+  VExpansionPanels,
+  VExpansionPanel,
+  VExpansionPanelTitle,
+  VExpansionPanelText,
+} from 'vuetify/components'
 import PanelHeader from '../Shared/PanelHeader.vue'
 import { elementHierarchy } from '#/simulator/src/metadata'
 import { createElement, getImgUrl } from './ElementsPanel'

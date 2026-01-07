@@ -64,6 +64,7 @@
 </template>
 
 <script lang="ts" setup>
+import { VDialog } from 'vuetify/components'
 import Themes from '../../../assets/constants/Panels/VerilogEditorPanel/THEMES.json'
 import {
   saveVerilogCode,

@@ -116,6 +116,20 @@
   </v-card>
 </template>
 <script lang="ts" setup>
+import {
+  VAvatar,
+  VBtn,
+  VCard,
+  VDivider,
+  VIcon,
+  VLayout,
+  VList,
+  VListItem,
+  VMain,
+  VNavigationDrawer,
+  VSelect,
+} from 'vuetify/components'
+
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { availableLocale } from '#/locales/i18n'

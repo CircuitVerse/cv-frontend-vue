@@ -145,6 +145,14 @@
 </template>
 
 <script lang="ts" setup>
+import {
+  VDialog,
+  VCard,
+  VCardText,
+  VCardActions,
+  VBtn,
+  VIcon,
+} from 'vuetify/components'
 import { useState } from '#/store/SimulatorStore/state'
 import { onMounted, onUpdated, ref, reactive } from '@vue/runtime-core'
 import themeOptions from '#/simulator/src/themer/themes'

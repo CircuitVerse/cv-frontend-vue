@@ -112,6 +112,7 @@
 </template>
 
 <script lang="ts" setup>
+import { VBtn } from 'vuetify/components'
 import { onMounted, watch } from 'vue'
 import PanelHeader from '#/components/Panels/Shared/PanelHeader.vue'
 import { layoutFunction } from '../PropertiesPanel'

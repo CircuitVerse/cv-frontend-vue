@@ -50,6 +50,13 @@
 </template>
 
 <script lang="ts" setup>
+import {
+  VMenu,
+  VBtn,
+  VList,
+  VListItem,
+  VListItemTitle,
+} from 'vuetify/components'
 // import DropDown from '@/Dropdown/DropDown.vue'
 import logixFunction from '#/simulator/src/data'
 import { ref } from 'vue'

@@ -57,26 +57,42 @@ export function ExportProject() {
 </script>
 
 <script lang="ts" setup>
+import {
+  VBtn,
+  VCard,
+  VCardText,
+  VCardActions,
+  VDialog,
+  VIcon,
+} from 'vuetify/components'
+
+import { ref } from 'vue'
+import { useState } from '#/store/SimulatorStore/state'
+import { useProjectStore } from '#/store/projectStore'
+import { generateSaveData } from '#/simulator/src/data/save'
+import { downloadFile, escapeHtml } from '#/simulator/src/utils'
+
 const SimulatorState = useState()
 const projectStore = useProjectStore()
 
 const fileNameInput = ref(
-    projectStore.getProjectName +
-        '__' +
-        new Date().toLocaleString().replace(/[: \/,-]/g, '_')
+  projectStore.getProjectName +
+    '__' +
+    new Date().toLocaleString().replace(/[: \/,-]/g, '_')
 )
 
 const exportAsFile = async () => {
-    let fileName = escapeHtml(fileNameInput.value) || 'untitled'
-    const circuitData = await generateSaveData(
-        projectStore.getProjectName,
-        false
-    )
-    fileName = `${fileName.replace(/[^a-z0-9]/gi, '_')}.cv`
-    downloadFile(fileName, circuitData)
-    SimulatorState.dialogBox.export_project_dialog = false
+  let fileName = escapeHtml(fileNameInput.value) || 'untitled'
+  const circuitData = await generateSaveData(
+    projectStore.getProjectName,
+    false
+  )
+  fileName = `${fileName.replace(/[^a-z0-9]/gi, '_')}.cv`
+  downloadFile(fileName, circuitData)
+  SimulatorState.dialogBox.export_project_dialog = false
 }
 </script>
+
 
 <style scoped>
 .exportProjectCard {

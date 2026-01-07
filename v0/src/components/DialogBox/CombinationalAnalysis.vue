@@ -20,6 +20,7 @@
 </template>
 
 <script lang="ts" setup>
+import { VAlert } from 'vuetify/components'
 import { stripTags } from '#/simulator/src/utils'
 import { useState } from '#/store/SimulatorStore/state'
 import messageBox from '@/MessageBox/messageBox.vue'

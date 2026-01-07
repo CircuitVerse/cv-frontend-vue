@@ -34,6 +34,12 @@
 </template>
 
 <script lang="ts" setup>
+import {
+  VExpansionPanels,
+  VExpansionPanel,
+  VExpansionPanelTitle,
+  VExpansionPanelText,
+} from 'vuetify/components'
 import { useState } from '#/store/SimulatorStore/state'
 import { simulationArea } from '#/simulator/src/simulationArea'
 import { useLayoutStore } from '#/store/layoutStore';

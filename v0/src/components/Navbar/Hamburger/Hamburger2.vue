@@ -72,6 +72,16 @@
 </template>
 
 <script lang="ts" setup>
+import {
+  VBtn,
+  VCard,
+  VLayout,
+  VNavigationDrawer,
+  VList,
+  VListItem,
+  VDivider,
+  VIcon,
+} from 'vuetify/components'
 // import { useState } from '#/store/SimulatorStore/state'
 import { useAuthStore } from '#/store/authStore'
 import { useProjectStore } from '#/store/projectStore'

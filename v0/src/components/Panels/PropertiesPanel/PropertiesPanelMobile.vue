@@ -141,6 +141,7 @@
 </template>
 
 <script lang="ts" setup>
+import { VDialog, VBtn } from 'vuetify/components'
 import { toRaw, onMounted, computed } from 'vue'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import ProjectProperty from './ModuleProperty/ProjectProperty/ProjectProperty.vue'

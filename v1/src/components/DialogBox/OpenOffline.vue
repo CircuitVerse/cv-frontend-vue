@@ -86,6 +86,14 @@
 </template>
 
 <script lang="ts" setup>
+import {
+  VDialog,
+  VCard,
+  VCardText,
+  VCardActions,
+  VBtn,
+  VIcon,
+} from 'vuetify/components'
 import load from '#/simulator/src/data/load'
 import { useState } from '#/store/SimulatorStore/state'
 import { onMounted, onUpdated, ref } from '@vue/runtime-core'

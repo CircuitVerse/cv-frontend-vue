@@ -40,7 +40,7 @@ import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { toRefs } from 'vue'
 
 const unit = 10
-let listenToSimulator = true
+let listenToSimulator = true    
 let coordinate;
 const returnCoordinate = {
   x: 0,

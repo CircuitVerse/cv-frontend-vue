@@ -112,6 +112,14 @@ export function keyBinder() {
 </script>
 
 <script lang="ts" setup>
+import {
+  VDialog,
+  VCard,
+  VCardText,
+  VCardActions,
+  VBtn,
+  VIcon,
+} from 'vuetify/components'
 interface KeyOption {
     0: string
     1: string

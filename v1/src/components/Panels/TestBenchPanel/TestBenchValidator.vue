@@ -40,6 +40,14 @@
 </template>
 
 <script lang="ts" setup>
+import {
+  VDialog,
+  VCard,
+  VCardText,
+  VCardActions,
+  VBtn,
+  VIcon,
+} from 'vuetify/components'
 import { useTestBenchStore, ValidationErrors } from '#/store/testBenchStore';
 import { VALIDATION_ERRORS } from '#/simulator/src/testbench';
 import { showMessage } from '#/simulator/src/utils';
