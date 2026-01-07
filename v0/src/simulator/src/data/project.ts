@@ -140,9 +140,10 @@ window.onbeforeunload = async function () {
 
 /**
  * Function to clear project
+ * @param skipConfirm - If true, skips the confirmation dialog
  */
-export async function clearProject() {
-    if (await confirmOption('Would you like to clear the project?')) {
+export async function clearProject(skipConfirm: boolean = false) {
+    if (skipConfirm || await confirmOption('Would you like to clear the project?')) {
         globalScope = undefined
         resetScopeList()
         // $('.circuits').remove()
@@ -163,8 +164,10 @@ export async function newProject(verify: boolean) {
             'What you like to start a new project? Any unsaved changes will be lost.'
         ))
     ) {
-        clearProject()
+        clearProject(true)
         localStorage.removeItem('recover')
+        projectSaved = true
+        window.onbeforeunload = null
         const baseUrl = window.location.origin !== 'null' ? window.location.origin : 'http://localhost:4000';
         window.location.assign(`${baseUrl}/simulatorvue/`);
 

@@ -121,28 +121,22 @@ function checkToSave() {
  * @category data
  */
 window.onbeforeunload = async function () {
-    if (projectSaved || embed) return
+    if (projectSaved || embed) return undefined
 
-    if (!checkToSave()) return
+    if (!checkToSave()) return undefined
 
-    alert(
-        'You have unsaved changes on this page. Do you want to leave this page and discard your changes or stay on this page?'
-    )
-    // await confirmSingleOption(
-    //     'You have unsaved changes on this page. Do you want to leave this page and discard your changes or stay on this page?'
-    // )
     const data = await generateSaveData('Untitled')
     const stringData = JSON.stringify(data)
     localStorage.setItem('recover', stringData)
-    // eslint-disable-next-line consistent-return
-    return 'Are u sure u want to leave? Any unsaved changes may not be recoverable'
+    return undefined
 }
 
 /**
  * Function to clear project
+ * @param skipConfirm - If true, skips the confirmation dialog
  */
-export async function clearProject() {
-    if (await confirmOption('Would you like to clear the project?')) {
+export async function clearProject(skipConfirm: boolean = false) {
+    if (skipConfirm || await confirmOption('Would you like to clear the project?')) {
         globalScope = undefined
         resetScopeList()
         // $('.circuits').remove()
@@ -163,8 +157,10 @@ export async function newProject(verify: boolean) {
             'What you like to start a new project? Any unsaved changes will be lost.'
         ))
     ) {
-        clearProject()
+        clearProject(true)
         localStorage.removeItem('recover')
+        projectSaved = true
+        window.onbeforeunload = null
         const baseUrl = window.location.origin !== 'null' ? window.location.origin : 'http://localhost:4000';
         window.location.assign(`${baseUrl}/simulatorvue/`);
 
