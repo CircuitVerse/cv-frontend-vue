@@ -149,6 +149,10 @@ const outputs = computed(() => testData.value.groups[currentGroup.value].outputs
     margin-top: 20px;
     padding: 8px;
 }
+.tb-footer .testbench-manual-panel-buttons {
+    display: flex;
+    align-items: center;
+}
 .tb-view-detailed {
     color: #18a2cd;
     cursor: pointer;
