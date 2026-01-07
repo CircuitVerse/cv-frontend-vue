@@ -7,7 +7,7 @@ import { setUserKeys } from '../model/actions'
 export const updateHTML = (mode) => {
     let x = 0
     if (mode == 'user') {
-        const userKeys = localStorage.getItem('userKeys')
+        const userKeys = JSON.parse(localStorage.getItem('userKeys') || '{}')
         while ($('#preference').children()[x]) {
             $('#preference').children()[x].children[1].children[1].innerText =
                 userKeys[
@@ -18,8 +18,8 @@ export const updateHTML = (mode) => {
             x++
         }
     } else if (mode == 'default') {
+        const defaultKeys = JSON.parse(localStorage.getItem('defaultKeys') || '{}')
         while ($('#preference').children()[x]) {
-            const defaultKeys = localStorage.getItem('defaultKeys')
             $('#preference').children()[x].children[1].children[1].innerText =
                 defaultKeys[
                 $('#preference').children()[
