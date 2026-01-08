@@ -261,10 +261,16 @@ export function renderCanvas(scope) {
         string: undefined,
     }
 
-// Show a subtle helper message when the canvas is empty
-// (i.e., no components have been added yet).
-// This improves first-time user onboarding without interfering
-// once the user starts building a circuit.
+/**
+ * Determines whether the simulator canvas is empty.
+ *
+ * A canvas is considered empty when no circuit components
+ * (inputs, outputs, gates, wires, or subcircuits) are present.
+ * This is used to conditionally display a non-intrusive
+ * guidance message for first-time users.
+ *
+ * @type {boolean}
+ */
     const isCanvasEmpty = renderOrder.every(
         type => scope[type].length === 0
     )
@@ -272,9 +278,17 @@ export function renderCanvas(scope) {
     if (isCanvasEmpty) {
     canvasMessageData.string =
         'Drag components from the left panel to start building your circuit'
-// Position the message at the visual center of the viewport.
-// We convert screen-center coordinates into circuit-space
-// by compensating for current pan (ox, oy) and zoom (scale).
+/**
+ * Computes the message position in circuit-space coordinates.
+ *
+ * Screen center coordinates are converted into circuit space
+ * by compensating for the current pan offset (ox, oy)
+ * and zoom level (scale).
+ *
+ * This ensures the helper text remains visually centered
+ * regardless of panning or zooming.
+ */
+
 
     canvasMessageData.x =
         (simulationArea.canvas.width / 2 - globalScope.ox) / globalScope.scale
