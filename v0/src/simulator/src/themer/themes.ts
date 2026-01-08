@@ -111,7 +111,7 @@ const themes: Themes = {
         '--text-navbar--alt': '#000000',
         '--br-secondary': '#6b6b6b',
         '--cus-radio_label': '#6b6b6b',
-        '--primary': '#eaeaea',
+        '--primary': '#eaeaeb',
         '--text-dark': '#6b6b6b',
         '--text-lite': '#ffffff',
         '--text-panel': '#6b6b6b',
@@ -142,7 +142,7 @@ const themes: Themes = {
         '--canvas-stroke': '#bababa',
         '--node': '#42b983',
         '--stroke': '#6b6b6b',
-        '--fill': '#eaeaea',
+        '--fill': '#eaeaeb',
         '--hover-and-sel': '#ffe99b',
         '--wire-draw': '#6b6b6b',
         '--wire-cnt': '#42b983',
@@ -165,7 +165,7 @@ const themes: Themes = {
         '--text-navbar--alt': '#000000',
         '--br-secondary': '#6b6b6b',
         '--cus-radio_label': '#6b6b6b',
-        '--primary': '#eaeaea',
+        '--primary': '#eaeaeb',
         '--text-dark': '#6b6b6b',
         '--text-lite': '#ffffff',
         '--text-panel': '#656565',
@@ -196,7 +196,7 @@ const themes: Themes = {
         '--canvas-stroke': '#bababa',
         '--node': '#42b983',
         '--stroke': '#6b6b6b',
-        '--fill': '#eaeaea',
+        '--fill': '#eaeaeb',
         '--hover-and-sel': '#ffe99b',
         '--wire-draw': '#6b6b6b',
         '--wire-cnt': '#42b983',
@@ -326,10 +326,29 @@ const themes: Themes = {
         '--table-head-dark': '#2e2b21',
     },
 }
+const storedCustomTheme: Record<string, string> = (() => {  
+    try {  
+        if (typeof window === 'undefined' || !window.localStorage) {  
+            return {};  
+        }  
+        const raw = window.localStorage.getItem('Custom Theme');  
+        if (!raw) {  
+            return {};  
+        }  
+        const parsed = JSON.parse(raw);  
+        if (parsed && typeof parsed === 'object') {  
+            return parsed as Record<string, string>;  
+        }  
+        return {};  
+    } catch {  
+        return {};  
+    }  
+})();  
 
-themes['Custom Theme'] = {
-    ...themes['Default Theme'],
-    ...(JSON.parse(localStorage.getItem('Custom Theme') || '{}')),
-}
+themes['Custom Theme'] = {  
+    ...themes['Default Theme'],  
+    ...storedCustomTheme,  
+};
+
 
 export default themes;
