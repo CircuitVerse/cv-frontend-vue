@@ -151,10 +151,14 @@ const animatedTourDriver = new Driver({
  * Launches the interactive tutorial tour for the simulator UI.
  */
 export function showTourGuide(): void {
-    (document.querySelector('.draggable-panel .maximize')as HTMLElement).click();
+    const maximizeButton =
+    document.querySelector('.draggable-panel .maximize') as HTMLElement | null
+    if (maximizeButton) {
+        maximizeButton.click()
+    }
     animatedTourDriver.defineSteps(tour)
     animatedTourDriver.start()
-    localStorage.setItem('tutorials_tour_done', String(true))
+    localStorage.setItem('tutorials', String(true))
 }
 
 export default showTourGuide
