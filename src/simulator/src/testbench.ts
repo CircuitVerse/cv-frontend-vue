@@ -352,9 +352,19 @@ function dec2bin(dec: number | undefined, bitWidth: number | undefined = undefin
 /**
  * Gets Output values as a Map with keys as output name and value as output state
  */
-function getOutputValues(data: TestData, outputs: any) {
-  const values = new Map()
+interface OutputNode {
+  value: number
+  bitWidth: number
+}
 
+interface OutputSignal {
+  nodeList: OutputNode[]
+}
+
+type OutputCollection = Record<string, OutputSignal>
+
+function getOutputValues(data: TestData, outputs: OutputCollection) {
+  const values = new Map<string, string>()
   data.groups[0].outputs.forEach((dataOutput) => {
     // Using node value because output state only changes on rendering
     const resultValue = outputs[dataOutput.label].nodeList[0].value
