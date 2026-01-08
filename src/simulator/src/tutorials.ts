@@ -14,6 +14,11 @@ interface TourStep {
     popover: TourPopover
 }
 
+/**
+ * Defines the steps used by the Driver.js tutorial tour.
+ * Each step highlights a UI element and displays contextual guidance.
+ */
+
 export const tour: TourStep[]=[
     {
         element: '#guide_1',
@@ -101,6 +106,11 @@ export const tour: TourStep[]=[
 ]
 
 // Not used currently
+
+/**
+ * Initializes a one-time tutorial highlight for the circuit elements panel.
+ * Currently unused but retained for future onboarding flows.
+ */
 export const tutorialWrapper = (): void => {
     const panelHighlight = new Driver()
     document.querySelector('.panelHeader')!.addEventListener('click', (e:Event) => {
@@ -137,6 +147,9 @@ const animatedTourDriver = new Driver({
     showButtons: true,
 })
 
+/**
+ * Launches the interactive tutorial tour for the simulator UI.
+ */
 export function showTourGuide(): void {
     (document.querySelector('.draggable-panel .maximize')as HTMLElement).click();
     animatedTourDriver.defineSteps(tour)
