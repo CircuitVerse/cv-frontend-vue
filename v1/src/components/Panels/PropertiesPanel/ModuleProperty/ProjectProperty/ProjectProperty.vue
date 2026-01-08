@@ -8,7 +8,7 @@
             autocomplete="off"
             name="setProjectName"
             v-model="projectStore.project.name"
-            :oninput="projectStore.setProjectNameDefined"
+            @input="projectStore.setProjectNameDefined(true)"
         />
     </p>
 
@@ -116,7 +116,7 @@ import { watch } from 'vue'
 import { ref } from 'vue'
 
 const projectStore = useProjectStore()
-const SimulatorState = <SimulatorStateType>useState()
+const SimulatorState = useState() as SimulatorStateType
 const circnameInput = ref<HTMLInputElement | null>(null)
 const simulatorMobileStore = useSimulatorMobileStore()
 
