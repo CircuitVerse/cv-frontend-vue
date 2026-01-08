@@ -1,6 +1,20 @@
 import Driver from 'driver.js'
 
-export const tour = [
+interface TourPopover {
+    className?: string
+    title: string
+    description: string
+    position: 'right' | 'left' | 'bottom' | 'top'
+    offset?: number
+}
+
+interface TourStep {
+    element: string
+    className?: string
+    popover: TourPopover
+}
+
+export const tour: TourStep[]=[
     {
         element: '#guide_1',
         className: 'guide_1',
@@ -87,10 +101,11 @@ export const tour = [
 ]
 
 // Not used currently
-export const tutorialWrapper = () => {
+export const tutorialWrapper = (): void => {
     const panelHighlight = new Driver()
-    document.querySelector('.panelHeader').addEventListener('click', (e) => {
+    document.querySelector('.panelHeader')!.addEventListener('click', (e:Event) => {
         if (localStorage.tutorials === 'next') {
+            const target = e.target as HTMLElement
             panelHighlight.highlight({
                 element: '#guide_1',
                 showButtons: false,
@@ -100,8 +115,8 @@ export const tutorialWrapper = () => {
                         'Select any element by clicking on it & then click anywhere on the grid to place the element.',
                     position: 'right',
                     offset:
-                        e.target.nextElementSibling.offsetHeight +
-                        e.target.offsetTop -
+                        (target.nextElementSibling as HTMLElement).offsetHeight +
+                        target.offsetTop -
                         45,
                 },
             })
@@ -110,7 +125,7 @@ export const tutorialWrapper = () => {
     }, {
         once: true,
       })
-    document.querySelector('.icon').addEventListener('click', () => {
+    document.querySelector('.icon')!.addEventListener('click', () => {
         panelHighlight.reset(true)
     })
 }
@@ -122,11 +137,11 @@ const animatedTourDriver = new Driver({
     showButtons: true,
 })
 
-export function showTourGuide() {
-    document.querySelector('.draggable-panel .maximize').click();
+export function showTourGuide(): void {
+    (document.querySelector('.draggable-panel .maximize')as HTMLElement).click();
     animatedTourDriver.defineSteps(tour)
     animatedTourDriver.start()
-    localStorage.setItem('tutorials_tour_done', true)
+    localStorage.setItem('tutorials_tour_done', String(true))
 }
 
 export default showTourGuide
