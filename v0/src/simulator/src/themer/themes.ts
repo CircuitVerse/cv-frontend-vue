@@ -328,6 +328,8 @@ const themes: Themes = {
 }
 const CUSTOM_THEME_KEY = 'Custom Theme';
 
+const CSS_COLOR_REGEX = /^(#[0-9a-fA-F]{6}|#[0-9a-fA-F]{3}|rgba?\([^)]+\)|rgb\([0-9]{1,3},[0-9]{1,3},[0-9]{1,3}\))$/;
+
 function loadStoredCustomTheme(): Record<string, string> {
     try {
         if (typeof window === 'undefined' || !window.localStorage) {
@@ -338,8 +340,14 @@ function loadStoredCustomTheme(): Record<string, string> {
             return {};
         }
         const parsed = JSON.parse(raw);
-        if (parsed && typeof parsed === 'object') {
-            return parsed as Record<string, string>;
+        if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+            const validated: Record<string, string> = {};
+            for (const [key, value] of Object.entries(parsed)) {
+            if (typeof value === 'string' && CSS_COLOR_REGEX.test(value)) {
+                validated[key] = value;
+            }
+            }
+            return validated;
         }
         return {};
     } catch {
@@ -347,7 +355,7 @@ function loadStoredCustomTheme(): Record<string, string> {
     }
 }
 
-Object.defineProperty(themes as any, CUSTOM_THEME_KEY, {
+Object.defineProperty(themes, CUSTOM_THEME_KEY, { // Removed 'as any'
     get() {
         const storedCustomTheme = loadStoredCustomTheme();
         return {
