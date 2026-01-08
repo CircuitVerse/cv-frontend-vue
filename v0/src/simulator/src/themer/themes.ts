@@ -326,29 +326,36 @@ const themes: Themes = {
         '--table-head-dark': '#2e2b21',
     },
 }
-const storedCustomTheme: Record<string, string> = (() => {  
-    try {  
-        if (typeof window === 'undefined' || !window.localStorage) {  
-            return {};  
-        }  
-        const raw = window.localStorage.getItem('Custom Theme');  
-        if (!raw) {  
-            return {};  
-        }  
-        const parsed = JSON.parse(raw);  
-        if (parsed && typeof parsed === 'object') {  
-            return parsed as Record<string, string>;  
-        }  
-        return {};  
-    } catch {  
-        return {};  
-    }  
-})();  
+const CUSTOM_THEME_KEY = 'Custom Theme';
 
-themes['Custom Theme'] = {  
-    ...themes['Default Theme'],  
-    ...storedCustomTheme,  
-};
+function loadStoredCustomTheme(): Record<string, string> {
+    try {
+        if (typeof window === 'undefined' || !window.localStorage) {
+            return {};
+        }
+        const raw = window.localStorage.getItem(CUSTOM_THEME_KEY);
+        if (!raw) {
+            return {};
+        }
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === 'object') {
+            return parsed as Record<string, string>;
+        }
+        return {};
+    } catch {
+        return {};
+    }
+}
 
+Object.defineProperty(themes as any, CUSTOM_THEME_KEY, {
+    get() {
+        const storedCustomTheme = loadStoredCustomTheme();
+        return {
+            ...themes['Default Theme'],
+            ...storedCustomTheme,
+        };
+    },
+    enumerable: true,
+});
 
 export default themes;
