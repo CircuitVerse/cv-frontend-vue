@@ -328,7 +328,7 @@ const themes: Themes = {
 }
 const CUSTOM_THEME_KEY = 'Custom Theme';
 
-const CSS_COLOR_REGEX = /^(#[0-9a-fA-F]{6}|#[0-9a-fA-F]{3}|rgba?\([^)]+\)|rgb\([0-9]{1,3},[0-9]{1,3},[0-9]{1,3}\))$/;
+const CSS_COLOR_REGEX = /^(#[0-9a-fA-F]{6}|rgba?\(\s*([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\s*,\s*([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\s*,\s*([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\s*(,\s*(0|0?\.[0-9]+|1(\.0)?))?\s*\))$/;
 
 function loadStoredCustomTheme(): Record<string, string> {
     try {
