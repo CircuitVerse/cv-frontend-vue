@@ -1,0 +1,167 @@
+{
+    "simulator": {
+        "save_online": "Enregistrer en ligne",
+        "save_offline": "Enregistrer hors ligne",
+        "preview_circuit": "Aperçu du circuit",
+        "export_verilog": "Exporter Verilog",
+        "insert_subcircuit": "Insérer un sous-circuit",
+        "undo": "Annuler",
+        "report_issue": "Signaler un problème",
+        "restricted_elements_used": "Éléments restreints utilisés :",
+        "made_with_circuitverse": "Réalisé avec CircuitVerse",
+        "layout": {
+            "layout_elements": "Éléments de mise en page",
+            "no_elements_available": "Aucun élément de mise en page disponible"
+        },
+        "unlabeled": "Sans étiquette",
+        "nav": {
+            "untitled_project": "Sans titre",
+            "sign_out": "Déconnexion",
+            "sign_in": "Connexion",
+            "user_dropdown": {
+                "dashboard": "Tableau de bord",
+                "my_groups": "Mes groupes",
+                "notifications": "Notifications"
+            },
+            "project": {
+                "heading": "Projet",
+                "project_page": "Page du projet",
+                "new_project": "Nouveau projet",
+                "open_offline": "Ouvrir hors ligne",
+                "export_as_file": "Exporter comme fichier",
+                "import_project": "Importer un projet",
+                "save_online": "Enregistrer en ligne",
+                "save_offline": "Enregistrer hors ligne",
+                "preview_circuit": "Aperçu du circuit",
+                "clear_project": "Effacer le projet",
+                "recover_project": "Récupérer le projet",
+                "view_previous_ui": "Voir l'ancienne interface"
+            },
+            "circuit": {
+                "heading": "Circuit",
+                "new_circuit": "Nouveau circuit +",
+                "insert_subcircuit": "Insérer un sous-circuit",
+                "new_verilog_module_html": "Nouveau module\nVerilog"
+            },
+            "tools": {
+                "heading": "Outils",
+                "combinational_analysis_html": "Analyse\ncombinatoire",
+                "hex_bin_dec_converter_html": "Convertisseur\nHex-Bin-Dec",
+                "download_image": "Télécharger l'image",
+                "themes": "Thèmes",
+                "export_verilog": "Exporter Verilog",
+                "custom_shortcut": "Raccourci personnalisé"
+            },
+            "help": {
+                "heading": "Aide",
+                "tutorial_guide": "Guide tutoriel",
+                "user_manual": "Manuel de l'utilisateur",
+                "learn_digital_logic": "Apprendre la logique numérique",
+                "discussion_forum": "Forum de discussion"
+            }
+        },
+        "panel_header": {
+            "circuit_elements": "Éléments du circuit",
+            "layout_elements": "Éléments de mise en page",
+            "timing_diagram": "Chronomogramme",
+            "verilog_module": "Module Verilog",
+            "properties": "Propriétés",
+            "layout": "Mise en page",
+            "keybinding_preference": "Préférence de touches",
+            "render_image": "Rendre l'image",
+            "select_theme": "Sélectionner le thème",
+            "boolean_logic_table": "Table de vérité",
+            "open_project": "Ouvrir le projet",
+            "bit_converter": "Convertisseur Déc-Bin-Hex"
+        },
+        "panel_body": {
+            "circuit_elements": {
+                "search": "Chercher...",
+                "search_result": "Aucun élément trouvé...",
+                "expansion_panel_title": {
+                    "Input": "Entrée",
+                    "Output": "Sortie",
+                    "Gates": "Portes",
+                    "Decoders & Plexers": "Décodeurs et Multiplexeurs",
+                    "Sequential Elements": "Éléments séquentiels",
+                    "Annotation": "Annotation",
+                    "Misc": "Divers"
+                }
+            },
+            "timing_diagram": {
+                "one_cycle": "1 Cycle =",
+                "units": "Unités"
+            },
+            "verilog_module": {
+                "reset_code": "Réinitialiser le code",
+                "save_code": "Enregistrer le code",
+                "module_in_experiment_notice": "Ceci est un module expérimental. Le code n'est pas enregistré sauf si vous cliquez sur le bouton \"Enregistrer le code\".",
+                "apply_themes": "Appliquer les thèmes",
+                "select_theme": "Sélectionnez un thème :"
+            },
+            "layout": {
+                "width": "Largeur",
+                "height": "Hauteur",
+                "reset_all_nodes": "Réinitialiser tous les nœuds :",
+                "title": "Titre",
+                "title_enabled": "Titre activé :",
+                "save": "Enregistrer",
+                "cancel": "Annuler"
+            },
+            "render_image": {
+                "full_circuit_view": "Vue complète du circuit",
+                "current_view": "Vue actuelle",
+                "transparent_background": "Fond transparent",
+                "resolution": "Résolution :"
+            },
+            "context_menu": {
+                "paste": "Coller",
+                "copy": "Copier",
+                "cut": "Couper",
+                "delete": "Supprimer",
+                "new_circuit": "Nouveau circuit",
+                "center_focus": "Centrer le focus"
+            },
+            "bit_converter": {
+                "decimal_value": "Valeur décimale",
+                "binary_value": "Valeur binaire",
+                "octal_value": "Valeur octale",
+                "hexadecimal_value": "Valeur hexadécimale"
+            },
+            "custom_shortcut": {
+                "esc_cancel": "Appuyez sur la combinaison de touches souhaitée et appuyez sur Entrée",
+                "command": "Commande",
+                "keymapping": "Mappage des touches",
+                "reset_to_default": "Réinitialiser",
+                "save": "Enregistrer"
+            },
+            "report_issue": {
+                "describe_issue": "Décrivez votre problème :",
+                "email": "Email",
+                "optional": " [Optionnel]",
+                "report_btn": "Signaler",
+                "cancel_btn": "Annuler",
+                "close_btn": "Fermer"
+            }
+        },
+        "tooltip": {
+            "delete_selected": "Supprimer la sélection",
+            "download_as_image": "Télécharger comme image",
+            "fit_to_screen": "Ajuster à l'écran",
+            "redo": "Rétablir",
+            "decrease_size": "Diminuer la taille",
+            "increase_size": "Augmenter la taille",
+            "decrease_height": "Diminuer la hauteur",
+            "increase_height": "Augmenter la hauteur",
+            "reset_timing_diagram": "Réinitialiser le chronomogramme",
+            "autocalibrate_cycle_units": "Autocalibrer les unités",
+            "zoom_in": "Zoom avant",
+            "zoom_out": "Zoom arrière",
+            "resume_timing_diagram": "Reprendre le chronomogramme",
+            "pause_timing_diagram": "Mettre en pause le chronomogramme",
+            "decrease_width": "Diminuer la largeur",
+            "increase_width": "Augmenter la largeur",
+            "reset": "Réinitialiser"
+        }
+    }
+}

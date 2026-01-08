@@ -13,7 +13,7 @@
             size="x-small"
             icon
             class="dialogClose"
-            @click="drawer = false"
+            v-on:click="drawer = false"
             variant="text"
             color="white"
           >
@@ -23,18 +23,18 @@
 
         <v-list-item
           class="list-item-avatar"
-          :prepend-avatar="authStore.getUserAvatar"
-          :prepend-icon="
+          v-bind:prepend-avatar="authStore.getUserAvatar"
+          v-bind:prepend-icon="
             authStore.getUserAvatar === 'default' ? 'mdi-account-circle-outline' : undefined
           "
-          :title="authStore.getUsername"
+          v-bind:title="authStore.getUsername"
           lines="two"
           color="white"
         ></v-list-item>
 
         <v-list-item>
           <v-select
-            :items="availableLocale"
+            v-bind:items="availableLocale"
             label="Locale"
             v-model="locale"
             density="compact"
@@ -48,11 +48,10 @@
 
         <v-divider class="my-2 bg-white"></v-divider>
 
-        <!-- Authentication Section -->
         <template v-if="!authStore.getIsLoggedIn">
           <v-list density="compact" nav>
             <v-list-item
-              @click.stop="showAuthModal(true)"
+              v-on:click="showAuthModal(true)"
               prepend-icon="mdi-login"
               title="Sign In"
               value="sign_in"
@@ -60,7 +59,7 @@
               color="white"
             ></v-list-item>
             <v-list-item
-              @click.stop="showAuthModal(false)"
+              v-on:click="showAuthModal(false)"
               prepend-icon="mdi-account-plus"
               title="Register"
               value="register"
@@ -70,11 +69,10 @@
           </v-list>
         </template>
 
-        <!-- User Menu Section -->
         <template v-else>
           <v-list density="compact" nav>
             <v-list-item
-              @click.stop="dashboard"
+              v-on:click="dashboard"
               prepend-icon="mdi-view-dashboard-outline"
               title="Dashboard"
               value="dashboard"
@@ -82,7 +80,7 @@
               color="white"
             ></v-list-item>
             <v-list-item
-              @click.stop="my_groups"
+              v-on:click="my_groups"
               prepend-icon="mdi-account-group-outline"
               title="My Groups"
               value="my_groups"
@@ -90,7 +88,7 @@
               color="white"
             ></v-list-item>
             <v-list-item
-              @click.stop="notifications"
+              v-on:click="notifications"
               prepend-icon="mdi-bell-outline"
               title="Notifications"
               value="notifications"
@@ -98,7 +96,7 @@
               color="white"
             >
               <template v-if="unreadCount > 0" v-slot:append>
-                <v-badge :content="unreadCount" color="error"></v-badge>
+                <v-badge v-bind:content="unreadCount" color="error"></v-badge>
               </template>
             </v-list-item>
           </v-list>
@@ -106,7 +104,7 @@
           <v-divider class="my-2 bg-white"></v-divider>
 
           <v-list-item
-            @click.stop="signout"
+            v-on:click="signout"
             prepend-icon="mdi-logout"
             title="Logout"
             value="logout"
@@ -120,14 +118,14 @@
         <v-btn
           class="avatar-btn"
           variant="text"
-          @click.stop="drawer = !drawer"
+          v-on:click="drawer = !drawer"
           rounded="xl"
           color="white"
         >
           <v-avatar
             v-if="authStore.getUserAvatar !== 'default'"
             size="32"
-            :image="authStore.getUserAvatar"
+            v-bind:image="authStore.getUserAvatar"
             color="white"
           ></v-avatar>
           <v-icon
@@ -141,7 +139,6 @@
       </v-main>
     </v-layout>
 
-    <!-- Authentication Dialog -->
     <v-dialog v-model="authModal" max-width="500" persistent>
       <v-card class="auth-modal" style="background-color: white">
         <v-toolbar color="#43b984">
@@ -149,19 +146,19 @@
             {{ isLoginMode ? 'Sign In' : 'Register' }}
           </v-toolbar-title>
           <v-spacer></v-spacer>
-          <v-btn icon @click="authModal = false" color="white">
+          <v-btn icon v-on:click="authModal = false" color="white">
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-toolbar>
 
         <v-card-text class="pa-6">
-          <v-form @submit.prevent="handleAuthSubmit" ref="authForm">
+          <v-form v-on:submit.prevent="handleAuthSubmit" ref="authForm">
             <v-text-field 
               v-if="!isLoginMode" 
               v-model="name" 
               label="Name" 
               type="text"
-              :rules="[requiredRule]"
+              v-bind:rules="[requiredRule]"
               variant="outlined"
               class="mb-0"
               bg-color="#f0eee6"
@@ -171,7 +168,7 @@
               v-model="email"
               label="Email"
               type="email"
-              :rules="[requiredRule, emailRule]"
+              v-bind:rules="[requiredRule, emailRule]"
               variant="outlined"
               class="mb-0"
               bg-color="#f0eee6"
@@ -181,7 +178,7 @@
               v-model="password"
               label="Password"
               type="password"
-              :rules="[requiredRule, passwordRule]"
+              v-bind:rules="[requiredRule, passwordRule]"
               variant="outlined"
               class="mb-0"
               bg-color="#f0eee6"
@@ -191,8 +188,8 @@
               <v-btn
                 color="#43b984"
                 type="submit"
-                :loading="isLoading"
-                :disabled="isLoading"
+                v-bind:loading="isLoading"
+                v-bind:disabled="isLoading"
                 size="large"
                 block
                 class="mb-2"
@@ -202,7 +199,7 @@
 
               <v-btn
                 variant="text"
-                @click="toggleAuthMode"
+                v-on:click="toggleAuthMode"
                 size="small"
                 color="#43b984"
               >
@@ -214,11 +211,10 @@
       </v-card>
     </v-dialog>
 
-    <!-- Snackbar Notification -->
     <v-snackbar
       v-model="snackbar.visible"
-      :color="snackbar.color"
-      :timeout="3000"
+      v-bind:color="snackbar.color"
+      v-bind:timeout="3000"
       location="bottom right"
     >
       {{ snackbar.message }}
@@ -226,8 +222,8 @@
       <template v-slot:actions>
         <v-btn
           variant="text"
-          @click="snackbar.visible = false"
-          :icon="mdiClose"
+          v-on:click="snackbar.visible = false"
+          v-bind:icon="mdiClose"
           color="white"
         ></v-btn>
       </template>
@@ -236,12 +232,11 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { availableLocale } from '#/locales/i18n'
 import { useAuthStore } from '#/store/authStore'
 import { mdiClose } from '@mdi/js'
-// import { fetch } from '@tauri-apps/plugin-http' // Uncomment if using Tauri's HTTP plugin
 import './User.scss'
 
 const authStore = useAuthStore()
@@ -256,10 +251,43 @@ const isLoading = ref(false)
 const authForm = ref()
 const unreadCount = ref(0)
 
+/**
+ * Watcher to handle language changes:
+ * 1. Saves preference to localStorage for refresh persistence.
+ * 2. Updates the document lang and direction (RTL support).
+ */
+watch(locale, function(newLocale) {
+  localStorage.setItem('locale', newLocale)
+  document.documentElement.lang = newLocale
+  
+  if (newLocale === 'ar') {
+    document.documentElement.dir = 'rtl'
+  } else {
+    document.documentElement.dir = 'ltr'
+  }
+})
+
+/**
+ * Lifecycle hook to restore user's language preference on load.
+ */
+onMounted(function() {
+  const savedLocale = localStorage.getItem('locale')
+  if (savedLocale) {
+    locale.value = savedLocale
+  }
+  
+  document.documentElement.lang = locale.value
+  if (locale.value === 'ar') {
+    document.documentElement.dir = 'rtl'
+  } else {
+    document.documentElement.dir = 'ltr'
+  }
+})
+
 // Form validation rules
-const requiredRule = (v: string) => !!v || 'This field is required'
-const emailRule = (v: string) => /.+@.+\..+/.test(v) || 'E-mail must be valid'
-const passwordRule = (v: string) => v.length >= 6 || 'Password must be at least 6 characters'
+const requiredRule = function(v: string) { return !!v || 'This field is required' }
+const emailRule = function(v: string) { return /.+@.+\..+/.test(v) || 'E-mail must be valid' }
+const passwordRule = function(v: string) { return v.length >= 6 || 'Password must be at least 6 characters' }
 
 // Snackbar state
 const snackbar = ref({
@@ -312,13 +340,11 @@ async function handleAuthSubmit() {
       } catch (e) {
         errorData = { message: 'An error occurred' }
       }
-      console.error('Authentication failed:', response.status, errorData)
       handleLoginError(response.status, errorData)
       return
     }
 
     const data = await response.json()
-    console.log('Auth successful:', data)
     
     if (!data.token) {
       throw new Error('No token received from server')
@@ -330,8 +356,7 @@ async function handleAuthSubmit() {
       'success'
     )
     authModal.value = false
-  } catch (error) {
-    console.error('Authentication error:', error)
+  } catch (error: any) {
     showSnackbar(`Authentication failed: ${error.message}`, 'error')
   } finally {
     isLoading.value = false
@@ -361,7 +386,7 @@ function showSnackbar(message: string, type: 'success' | 'error' | 'warning' | '
   snackbar.value = {
     visible: true,
     message,
-    color: type
+    color: type === 'error' ? '#dc5656' : '#43b984'
   }
 }
 

@@ -1,0 +1,167 @@
+{
+    "simulator": {
+        "save_online": "オンラインで保存",
+        "save_offline": "オフラインで保存",
+        "preview_circuit": "回路をプレビュー",
+        "export_verilog": "Verilogをエクスポート",
+        "insert_subcircuit": "サブ回路を挿入",
+        "undo": "元に戻す",
+        "report_issue": "問題を報告",
+        "restricted_elements_used": "使用制限のある要素:",
+        "made_with_circuitverse": "CircuitVerseで作成",
+        "layout": {
+            "layout_elements": "レイアウト要素",
+            "no_elements_available": "利用可能なレイアウト要素はありません"
+        },
+        "unlabeled": "ラベルなし",
+        "nav": {
+            "untitled_project": "無題のプロジェクト",
+            "sign_out": "サインアウト",
+            "sign_in": "サインイン",
+            "user_dropdown": {
+                "dashboard": "ダッシュボード",
+                "my_groups": "マイグループ",
+                "notifications": "通知"
+            },
+            "project": {
+                "heading": "プロジェクト",
+                "project_page": "プロジェクトページ",
+                "new_project": "新規プロジェクト",
+                "open_offline": "オフラインで開く",
+                "export_as_file": "ファイルとしてエクスポート",
+                "import_project": "プロジェクトをインポート",
+                "save_online": "オンラインで保存",
+                "save_offline": "オフラインで保存",
+                "preview_circuit": "回路をプレビュー",
+                "clear_project": "プロジェクトをクリア",
+                "recover_project": "プロジェクトを復元",
+                "view_previous_ui": "以前のUIを表示"
+            },
+            "circuit": {
+                "heading": "回路",
+                "new_circuit": "新規回路 +",
+                "insert_subcircuit": "サブ回路を挿入",
+                "new_verilog_module_html": "新規Verilogモジュール"
+            },
+            "tools": {
+                "heading": "ツール",
+                "combinational_analysis_html": "組み合わせ分析",
+                "hex_bin_dec_converter_html": "進数変換器",
+                "download_image": "画像をダウンロード",
+                "themes": "テーマ",
+                "export_verilog": "Verilogをエクスポート",
+                "custom_shortcut": "カスタムショートカット"
+            },
+            "help": {
+                "heading": "ヘルプ",
+                "tutorial_guide": "チュートリアルガイド",
+                "user_manual": "ユーザーマニュアル",
+                "learn_digital_logic": "デジタル論理を学ぶ",
+                "discussion_forum": "ディスカッションフォーラム"
+            }
+        },
+        "panel_header": {
+            "circuit_elements": "回路要素",
+            "layout_elements": "レイアウト要素",
+            "timing_diagram": "タイミングチャート",
+            "verilog_module": "Verilogモジュール",
+            "properties": "プロパティ",
+            "layout": "レイアウト",
+            "keybinding_preference": "キー割り当て設定",
+            "render_image": "画像をレンダリング",
+            "select_theme": "テーマを選択",
+            "boolean_logic_table": "真理値表",
+            "open_project": "プロジェクトを開く",
+            "bit_converter": "10/2/16進数変換器"
+        },
+        "panel_body": {
+            "circuit_elements": {
+                "search": "検索...",
+                "search_result": "要素が見つかりません...",
+                "expansion_panel_title": {
+                    "Input": "入力",
+                    "Output": "出力",
+                    "Gates": "ゲート",
+                    "Decoders & Plexers": "デコーダとマルチプレクサ",
+                    "Sequential Elements": "順序回路要素",
+                    "Annotation": "注釈",
+                    "Misc": "その他"
+                }
+            },
+            "timing_diagram": {
+                "one_cycle": "1サイクル =",
+                "units": "単位"
+            },
+            "verilog_module": {
+                "reset_code": "コードをリセット",
+                "save_code": "コードを保存",
+                "module_in_experiment_notice": "これは実験的なモジュールです。「コードを保存」をクリックしない限り、コードは保存されません。",
+                "apply_themes": "テーマを適用",
+                "select_theme": "テーマを選択:"
+            },
+            "layout": {
+                "width": "幅",
+                "height": "高さ",
+                "reset_all_nodes": "すべてのノードをリセット:",
+                "title": "タイトル",
+                "title_enabled": "タイトルの有効化:",
+                "save": "保存",
+                "cancel": "キャンセル"
+            },
+            "render_image": {
+                "full_circuit_view": "回路全体を表示",
+                "current_view": "現在のビュー",
+                "transparent_background": "背景を透明にする",
+                "resolution": "解像度:"
+            },
+            "context_menu": {
+                "paste": "貼り付け",
+                "copy": "コピー",
+                "cut": "切り取り",
+                "delete": "削除",
+                "new_circuit": "新規回路",
+                "center_focus": "中央にフォーカス"
+            },
+            "bit_converter": {
+                "decimal_value": "10進数の値",
+                "binary_value": "2進数の値",
+                "octal_value": "8進数の値",
+                "hexadecimal_value": "16進数の値"
+            },
+            "custom_shortcut": {
+                "esc_cancel": "希望のキーの組み合わせを押してEnterを押してください",
+                "command": "コマンド",
+                "keymapping": "キーマッピング",
+                "reset_to_default": "デフォルトに戻す",
+                "save": "保存"
+            },
+            "report_issue": {
+                "describe_issue": "問題の内容を記述してください:",
+                "email": "メールアドレス",
+                "optional": " [任意]",
+                "report_btn": "報告する",
+                "cancel_btn": "キャンセル",
+                "close_btn": "閉じる"
+            }
+        },
+        "tooltip": {
+            "delete_selected": "選択した項目を削除",
+            "download_as_image": "画像としてダウンロード",
+            "fit_to_screen": "画面に合わせる",
+            "redo": "やり直し",
+            "decrease_size": "サイズを縮小",
+            "increase_size": "サイズを拡大",
+            "decrease_height": "高さを低くする",
+            "increase_height": "高さを高くする",
+            "reset_timing_diagram": "タイミングチャートをリセット",
+            "autocalibrate_cycle_units": "サイクル単位を自動調整",
+            "zoom_in": "拡大",
+            "zoom_out": "縮小",
+            "resume_timing_diagram": "タイミングチャートを再開",
+            "pause_timing_diagram": "タイミングチャートを一時停止",
+            "decrease_width": "幅を狭くする",
+            "increase_width": "幅を広くする",
+            "reset": "リセット"
+        }
+    }
+}

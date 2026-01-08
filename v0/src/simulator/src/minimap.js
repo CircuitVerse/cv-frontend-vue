@@ -167,8 +167,11 @@ export default miniMapArea = {
     },
     clear() {
         if (lightMode) return
-        $('#miniMapArea').css('z-index', '-1')
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+        const miniMapArea = document.getElementById('miniMapArea')
+        if (miniMapArea) {
+            miniMapArea.style.zIndex = '-1'
+        }
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
     },
 }
 var lastMiniMapShown
@@ -190,5 +193,8 @@ export function removeMiniMap() {
         )
         return
     }
-    $('#miniMap').fadeOut('fast')
+    const miniMap = document.getElementById('miniMap')
+    if (miniMap) {
+        miniMap.style.display = 'none'
+    }
 }
