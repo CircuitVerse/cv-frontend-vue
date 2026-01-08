@@ -158,7 +158,8 @@ export function showTourGuide(): void {
     }
     animatedTourDriver.defineSteps(tour)
     animatedTourDriver.start()
-    localStorage.setItem('tutorials', String(true))
+    localStorage.setItem('tutorials_tour_done', 'done')
+
 }
 
 export default showTourGuide
