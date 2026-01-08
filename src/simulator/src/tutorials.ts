@@ -114,8 +114,11 @@ export const tour: TourStep[]=[
 export const tutorialWrapper = (): void => {
     const panelHighlight = new Driver()
     document.querySelector('.panelHeader')!.addEventListener('click', (e:Event) => {
-        if (localStorage.tutorials === 'next') {
-            const target = e.target as HTMLElement
+        if (localStorage.getItem('tutorials_tour_done')=== 'next') {
+            const target = e.target
+            if (!(target instanceof HTMLElement)) return
+            const sibling = target.nextElementSibling as HTMLElement | null
+            const siblingHeight = sibling ? sibling.offsetHeight : 0
             panelHighlight.highlight({
                 element: '#guide_1',
                 showButtons: false,
@@ -125,12 +128,10 @@ export const tutorialWrapper = (): void => {
                         'Select any element by clicking on it & then click anywhere on the grid to place the element.',
                     position: 'right',
                     offset:
-                        (target.nextElementSibling as HTMLElement).offsetHeight +
-                        target.offsetTop -
-                        45,
+                        siblingHeight + target.offsetTop - 45,
                 },
             })
-            localStorage.setItem('tutorials', 'done')
+            localStorage.setItem('tutorials_tour_done', 'done')
         }
     }, {
         once: true,
