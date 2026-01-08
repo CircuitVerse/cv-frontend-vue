@@ -113,7 +113,9 @@ export const tour: TourStep[]=[
  */
 export const tutorialWrapper = (): void => {
     const panelHighlight = new Driver()
-    document.querySelector('.panelHeader')!.addEventListener('click', (e:Event) => {
+    const panelHeaderEl = document.querySelector('.panelHeader')
+    if (!panelHeaderEl) return
+    panelHeaderEl.addEventListener('click', (e: Event) => {
         if (localStorage.getItem('tutorials_tour_done')=== 'next') {
             const target = e.target
             if (!(target instanceof HTMLElement)) return
@@ -136,17 +138,13 @@ export const tutorialWrapper = (): void => {
     }, {
         once: true,
       })
-    document.querySelector('.icon')!.addEventListener('click', () => {
-        panelHighlight.reset(true)
-    })
+    const icon = document.querySelector('.icon')
+    if (icon) {
+        icon.addEventListener('click', () => {
+            panelHighlight.reset(true)
+        })
+    }
 }
-
-const animatedTourDriver = new Driver({
-    animate: true,
-    opacity: 0.8,
-    padding: 5,
-    showButtons: true,
-})
 
 /**
  * Launches the interactive tutorial tour for the simulator UI.
@@ -157,10 +155,18 @@ export function showTourGuide(): void {
     if (maximizeButton) {
         maximizeButton.click()
     }
-    animatedTourDriver.defineSteps(tour)
-    animatedTourDriver.start()
-    localStorage.setItem('tutorials_tour_done', 'done')
+    const tourDriver = new Driver({
+        animate: true,
+        opacity: 0.8,
+        padding: 5,
+        showButtons: true,
+         onReset: () => {
+            localStorage.setItem('tutorials_tour_done', 'done')
+        },
+    })
 
+    tourDriver.defineSteps(tour)
+    tourDriver.start()
 }
 
 export default showTourGuide
