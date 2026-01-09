@@ -20,6 +20,8 @@ jobs:
             args: '--target x86_64-apple-darwin'  # Intel Mac
           - platform: 'ubuntu-22.04'
             args: ''
+          - platform: 'windows-latest'
+            args: ''
           
 
     runs-on: ${{ matrix.platform }}
