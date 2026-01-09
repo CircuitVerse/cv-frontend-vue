@@ -9,13 +9,14 @@
             name="setProjectName"
             v-model="projectStore.project.name"
             @input="projectStore.setProjectNameDefined(true)"
+            @focus="($event.target as HTMLInputElement).select()"
         />
     </p>
 
     <p>
         <span>Circuit:</span>
         <input
-            :ref="circnameInput"
+            ref="circnameInput"
             id="circname"
             :key="SimulatorState.activeCircuit?.id"
             class="objectPropertyAttribute"
@@ -56,6 +57,7 @@
                 type="checkbox"
                 class="objectPropertyAttributeChecked"
                 name="changeLightMode"
+                checked
             />
             <span class="slider"></span>
         </label>
@@ -116,7 +118,7 @@ import { watch } from 'vue'
 import { ref } from 'vue'
 
 const projectStore = useProjectStore()
-const SimulatorState = useState() as SimulatorStateType
+const SimulatorState = useState() as unknown as SimulatorStateType
 const circnameInput = ref<HTMLInputElement | null>(null)
 const simulatorMobileStore = useSimulatorMobileStore()
 

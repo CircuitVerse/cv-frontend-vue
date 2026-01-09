@@ -9,13 +9,14 @@
             name="setProjectName"
             v-model="projectStore.project.name"
             @input="projectStore.setProjectNameDefined(true)"
+            @focus="($event.target as HTMLInputElement).select()"
         />
     </p>
 
     <p>
         <span>Circuit:</span>
         <input
-            :ref="circnameInput"
+            ref="circnameInput"
             id="circname"
             :key="SimulatorState.activeCircuit?.id"
             class="objectPropertyAttribute"
@@ -43,8 +44,7 @@
                 type="checkbox"
                 class="objectPropertyAttributeChecked"
                 name="changeClockEnable"
-                checked
-            />
+                checked />
             <span class="slider"></span
         ></label>
     </p>
@@ -56,6 +56,7 @@
                 type="checkbox"
                 class="objectPropertyAttributeChecked"
                 name="changeLightMode"
+                checked
             />
             <span class="slider"></span>
         </label>
@@ -65,11 +66,13 @@
         <button
             type="button"
             class="panelButton btn btn-xs custom-btn--primary"
-            @click="() => {
-                toggleLayoutMode()
-                simulatorMobileStore.showPropertiesPanel = false
-                simulatorMobileStore.showCircuits = 'layout-elements'
-            }"
+            @click="
+                () => {
+                    toggleLayoutMode()
+                    simulatorMobileStore.showPropertiesPanel = false
+                    simulatorMobileStore.showCircuits = 'layout-elements'
+                }
+            "
         >
             Edit Layout
         </button>
@@ -116,17 +119,20 @@ import { watch } from 'vue'
 import { ref } from 'vue'
 
 const projectStore = useProjectStore()
-const SimulatorState = useState() as SimulatorStateType
+const SimulatorState = useState() as unknown as SimulatorStateType
 const circnameInput = ref<HTMLInputElement | null>(null)
 const simulatorMobileStore = useSimulatorMobileStore()
 
-watch(() => SimulatorState.circuit_name_clickable, () => {
-    setTimeout(() => {
-        if (circnameInput.value && SimulatorState.circuit_name_clickable) {
-            circnameInput.value.select()
-        }
-    }, 100)
-})
+watch(
+    () => SimulatorState.circuit_name_clickable,
+    () => {
+        setTimeout(() => {
+            if (circnameInput.value && SimulatorState.circuit_name_clickable) {
+                circnameInput.value.select()
+            }
+        }, 100)
+    }
+)
 // const circuitId: Ref<string | number> = ref(0)
 // const circuitName: Ref<string> = ref('Untitled-Cirucit')
 // const ifPersistentShow: Ref<boolean> = ref(false)
