@@ -26,6 +26,12 @@ import '../vendor/jquery-ui.min'
 import { confirmSingleOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
 import { getToken } from '#/pages/simulatorHandler.vue'
 
+// Debounce timer for resize events
+let resizeTimeout = null
+// Retry counter for dimension validation
+let retryCount = 0
+const MAX_RETRY_ATTEMPTS = 10 // Maximum number of retry attempts
+
 /**
  * to resize window and setup things it
  * sets up new width for the canvas variables.
@@ -37,43 +43,125 @@ export function resetup() {
     if (lightMode) {
         DPR = 1
     }
-    width = document.getElementById('simulationArea').clientWidth * DPR
-    if (!embed) {
-        height =
-            (document.body.clientHeight -
-                document.getElementById('toolbar')?.clientHeight) *
-            DPR
-    } else {
-        height = document.getElementById('simulation').clientHeight * DPR
+    
+    // Get DOM element references
+    const simulationAreaEl = document.getElementById('simulationArea')
+    if (!simulationAreaEl) {
+        // Element not ready yet, retry with limit
+        if (retryCount < MAX_RETRY_ATTEMPTS) {
+            retryCount++
+            if (resizeTimeout) clearTimeout(resizeTimeout)
+            resizeTimeout = setTimeout(resetup, 50)
+        } else {
+            console.warn('resetup: simulationArea element not found after maximum retries')
+            retryCount = 0 // Reset counter
+        }
+        return
     }
-    // setup simulationArea and backgroundArea variables used to make changes to canvas.
+    
+    // Calculate dimensions - ensure we have valid measurements
+    const newWidth = simulationAreaEl.clientWidth * DPR
+    let newHeight
+    if (!embed) {
+        const toolbarEl = document.getElementById('toolbar')
+        const toolbarHeight = toolbarEl?.clientHeight || 0
+        newHeight = (document.body.clientHeight - toolbarHeight) * DPR
+    } else {
+        const simulationEl = document.getElementById('simulation')
+        if (!simulationEl) {
+            // Element not ready yet, retry with limit
+            if (retryCount < MAX_RETRY_ATTEMPTS) {
+                retryCount++
+                if (resizeTimeout) clearTimeout(resizeTimeout)
+                resizeTimeout = setTimeout(resetup, 50)
+            } else {
+                console.warn('resetup: simulation element not found after maximum retries')
+                retryCount = 0 // Reset counter
+            }
+            return
+        }
+        newHeight = simulationEl.clientHeight * DPR
+    }
+    
+    // Validate dimensions
+    if (newWidth <= 0 || newHeight <= 0) {
+        // Dimensions not ready yet, schedule retry with limit
+        if (retryCount < MAX_RETRY_ATTEMPTS) {
+            retryCount++
+            if (resizeTimeout) clearTimeout(resizeTimeout)
+            resizeTimeout = setTimeout(resetup, 50)
+        } else {
+            console.warn('resetup: Invalid canvas dimensions after maximum retries', {
+                width: newWidth,
+                height: newHeight
+            })
+            retryCount = 0 // Reset counter
+        }
+        return
+    }
+    
+    // Reset retry counter on successful setup
+    retryCount = 0
+    
+    width = newWidth
+    height = newHeight
+    
+    // Set DOM element styles first to ensure proper layout
+    const backgroundAreaEl = document.getElementById('backgroundArea')
+    const canvasAreaEl = document.getElementById('canvasArea')
+    if (backgroundAreaEl) {
+        backgroundAreaEl.style.height = height / DPR + 100 + 'px'
+        backgroundAreaEl.style.width = width / DPR + 100 + 'px'
+    }
+    if (canvasAreaEl) {
+        canvasAreaEl.style.height = height / DPR + 'px'
+    }
+    
+    // Now set canvas dimensions before getting context
+    // This ensures the context is initialized with correct dimensions
+    if (simulationArea.canvas) {
+        simulationArea.canvas.width = width
+        simulationArea.canvas.height = height
+    }
+    if (backgroundArea.canvas) {
+        backgroundArea.canvas.width = width + 100 * DPR
+        backgroundArea.canvas.height = height + 100 * DPR
+    }
+    
+    // Setup canvas contexts after dimensions are set
     backgroundArea.setup()
     simulationArea.setup()
-    // redraw grid
-    dots()
-    document.getElementById('backgroundArea').style.height =
-        height / DPR + 100 + 'px'
-    document.getElementById('backgroundArea').style.width =
-        width / DPR + 100 + 'px'
-    document.getElementById('canvasArea').style.height = height / DPR + 'px'
-    simulationArea.canvas.width = width
-    simulationArea.canvas.height = height
-    backgroundArea.canvas.width = width + 100 * DPR
-    backgroundArea.canvas.height = height + 100 * DPR
-    if (!embed) {
-        plotArea.setup()
+    
+    // Reset scale to force grid redraw
+    simulationArea.prevScale = 0
+    
+    // Redraw grid
+    dots(true, false, true) // Force redraw
+    
+    // Update plot area if not in embed mode
+    if (!embed && plotArea.canvas) {
+        // Only resize plotArea, don't call setup() which creates new intervals
+        plotArea.resize()
     }
+    
+    // Force canvas update
     updateCanvasSet(true)
     update() // INEFFICIENT, needs to be deprecated
-    simulationArea.prevScale = 0
-    dots()
 }
 
-window.onresize = resetup // listener
-window.onorientationchange = resetup // listener
+// Debounced resize handler
+function handleResize() {
+    if (resizeTimeout) clearTimeout(resizeTimeout)
+    // Use requestAnimationFrame to ensure DOM has settled
+    requestAnimationFrame(() => {
+        resizeTimeout = setTimeout(resetup, 100) // 100ms debounce
+    })
+}
 
-// for mobiles
-window.addEventListener('orientationchange', resetup) // listener
+window.onresize = handleResize // listener
+
+// for mobiles - using addEventListener for consistency and to avoid duplicates
+window.addEventListener('orientationchange', handleResize) // listener
 
 /**
  * function to setup environment variables like projectId and DPR
