@@ -19,7 +19,7 @@
         "@mdi/js": "^7.4.47",
         "@tauri-apps/api": "2.8.0",
         "@tauri-apps/plugin-fs": "2.4.5",
-        "@tauri-apps/plugin-http": "^2.5.5",
+        "@tauri-apps/plugin-http": "2.5.5",
         "@tiptap/core": "^2.0.3",
         "@tiptap/extension-character-count": "^2.0.3",
         "@tiptap/extension-subscript": "^2.0.3",
