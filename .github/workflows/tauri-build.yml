@@ -1,7 +1,8 @@
 name: Vue Simulator Desktop Release
 
 on:
-  pull_request:
+  push:
+    branches: [ "main" ]
   release:
     types: [created]
 
@@ -14,15 +15,15 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - platform: macos-latest
-            args: --target aarch64-apple-darwin
-          - platform: macos-latest
-            args: --target x86_64-apple-darwin
-          - platform: ubuntu-22.04
-            args: ""
+          - platform: 'macos-latest'
+            args: '--target aarch64-apple-darwin' # Apple Silicon
+          - platform: 'macos-latest'
+            args: '--target x86_64-apple-darwin'  # Intel Mac
+          - platform: 'ubuntu-22.04'
+            args: ''
+          
 
     runs-on: ${{ matrix.platform }}
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -35,6 +36,7 @@ jobs:
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:
+          # Targets for cross-compiling on MacOS
           targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
       - name: Install Linux dependencies
@@ -48,23 +50,23 @@ jobs:
             patchelf
 
       - name: Install Frontend Dependencies
-        working-directory: ./src
         run: npm install
+        working-directory: ./src  
 
       - name: Build Frontend (Vue)
-        working-directory: ./src
+        # Using npx ensures these tools work on Windows, Mac, and Linux
         run: |
           npx cross-env DESKTOP_MODE=true npm run build
-          node -e "const fs=require('fs');const s='./dist/index-cv.html';const d='./dist/index.html';if(fs.existsSync(s))fs.copyFileSync(s,d);"
+          node -e "const fs = require('fs'); const src='./dist/index-cv.html'; const dest='./dist/index.html'; if (fs.existsSync(src)) { fs.copyFileSync(src, dest); console.log('Synced index files'); } else { console.log('index-cv.html not found, skipping sync'); }"
+        working-directory: ./src
 
       - name: Build Tauri App
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tauriVersion: 2.8.0
-          projectPath: ./src-tauri
-          tagName: app-v__VERSION__
+          projectPath: ./src-tauri 
+          tagName: app-v__VERSION__ 
           releaseName: "CircuitVerse Desktop v__VERSION__"
           releaseBody: "See the assets below to download this release."
           releaseDraft: true
@@ -76,4 +78,9 @@ jobs:
         with:
           name: build-assets-${{ matrix.platform }}-${{ strategy.job-index }}
           path: |
-            src-tauri/target/**/release/bundle/**
+            src-tauri/target/**/release/bundle/dmg/*.dmg
+            src-tauri/target/**/release/bundle/macos/*.app
+            src-tauri/target/**/release/bundle/msi/*.msi
+            src-tauri/target/**/release/bundle/nsis/*.exe
+            src-tauri/target/**/release/bundle/deb/*.deb
+            src-tauri/target/**/release/bundle/appimage/*.AppImage
