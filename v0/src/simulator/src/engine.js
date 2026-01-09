@@ -307,6 +307,8 @@ export function renderCanvas(scope) {
      * and improves visual feedback for users.
      */
 const hover = simulationArea.hover
+const type = hover?.objectType
+
 
 if (simulationArea.mouseDown) {
     simulationArea.canvas.style.cursor = 'grabbing'
