@@ -290,13 +290,41 @@ export function renderCanvas(scope) {
         ctx.stroke()
         ctx.fill()
     }
-    if (simulationArea.hover !== undefined) {
+       /**
+     * Determine the cursor style based on current user interaction.
+     *
+     * This runs at the end of renderCanvas when hover detection
+     * and selection state are fully resolved.
+     *
+     * Cursor mapping:
+     *  - mouseDown            → "grabbing"   (panning the canvas)
+     *  - hover over Node      → "crosshair"  (precise wiring target)
+     *  - hover over Wire      → "pointer"    (clickable path)
+     *  - hover over Gate      → "move"       (draggable component)
+     *  - nothing hovered     → "default"
+     *
+     * This matches common schematic/CAD editor behavior
+     * and improves visual feedback for users.
+     */
+const hover = simulationArea.hover
+const type = hover?.objectType
+
+
+if (simulationArea.mouseDown) {
+    simulationArea.canvas.style.cursor = 'grabbing'
+} else if (hover) {
+    if (hover.objectType === 'Node') {
+        simulationArea.canvas.style.cursor = 'crosshair'
+    } else if (hover.objectType === 'Wire') {
         simulationArea.canvas.style.cursor = 'pointer'
-    } else if (simulationArea.mouseDown) {
-        simulationArea.canvas.style.cursor = 'grabbing'
     } else {
-        simulationArea.canvas.style.cursor = 'default'
+        simulationArea.canvas.style.cursor = 'move'
     }
+} else {
+    simulationArea.canvas.style.cursor = 'default'
+}
+
+
 }
 
 /**
