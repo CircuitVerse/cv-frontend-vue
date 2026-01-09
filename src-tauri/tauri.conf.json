@@ -7,7 +7,8 @@
     "frontendDist": "../dist",
     "devUrl": "http://localhost:4000/simulatorvue/",
     "beforeDevCommand": "npm run dev",
-    "beforeBuildCommand": "DESKTOP_MODE=true npm run build && cp ./dist/index-cv.html ./dist/index.html"
+    "beforeBuildCommand": "cross-env DESKTOP_MODE=true npm run build && node -e \"require('fs').copyFileSync('dist/index-cv.html','dist/index.html')\""
+
   },
   "app": {
     "windows": [
