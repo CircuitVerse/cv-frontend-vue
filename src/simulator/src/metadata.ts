@@ -38,6 +38,7 @@ export const circuitElementList = [
     "TTY",
     "Keyboard",
     "Clock",
+    "ClockDivider",
     "DigitalLed",
     "Stepper",
     "VariableLed",
@@ -85,6 +86,7 @@ export const inputList = [
     "ConstantVal",
     "Input",
     "Clock",
+    "ClockDivider",
     "Button",
     "Counter"
 ]
@@ -101,6 +103,7 @@ export const subCircuitInputList = [
     "Power",
     "ConstantVal",
     "Clock",
+    "ClockDivider",
     "Button",
     "Counter"
 ]
@@ -158,6 +161,7 @@ export const elementHierarchy: Record<string, NameLabel[]> = {
         { name: "TTY", label: "TTY" },
         { name: "Keyboard", label: "Keyboard" },
         { name: "Clock", label: "Clock" },
+        { name: "ClockDivider", label: "Clock Divider" },
         { name: "Rom", label: "ROM" },
         { name: "RAM", label: "RAM" },
         { name: "verilogRAM", label: "Verilog RAM" },
