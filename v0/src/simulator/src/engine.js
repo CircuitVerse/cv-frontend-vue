@@ -240,38 +240,99 @@ export function changeLightMode(val) {
  */
 export function renderCanvas(scope) {
     if (layoutModeGet() || verilogModeGet()) {
-        // Different Algorithm
         return
     }
-    var ctx = simulationArea.context
+
+    const ctx = simulationArea.context
+
     // Reset canvas
     simulationArea.clear()
-    // Update Grid
+
+    // Update grid
     if (gridUpdate) {
         gridUpdateSet(false)
         dots()
     }
+
+    // Reset canvas message (must be before setting it)
     canvasMessageData = {
         x: undefined,
         y: undefined,
         string: undefined,
-    } //  Globally set in draw fn ()
+    }
+
+/**
+ * Determines whether the simulator canvas is empty.
+ *
+ * A canvas is considered empty when no circuit components
+ * (inputs, outputs, gates, wires, or subcircuits) are present.
+ * This is used to conditionally display a non-intrusive
+ * guidance message for first-time users.
+ *
+ * @type {boolean}
+ */
+    const isCanvasEmpty = renderOrder.every(
+        type => scope[type].length === 0
+    )
+
+    if (isCanvasEmpty) {
+    canvasMessageData.string =
+        'Drag components from the left panel to start building your circuit'
+/**
+ * Computes the message position in circuit-space coordinates.
+ *
+ * Screen center coordinates are converted into circuit space
+ * by compensating for the current pan offset (ox, oy)
+ * and zoom level (scale).
+ *
+ * This ensures the helper text remains visually centered
+ * regardless of panning or zooming.
+ */
+
+
+    canvasMessageData.x =
+        (simulationArea.canvas.width / 2 - globalScope.ox) / globalScope.scale
+
+    canvasMessageData.y =
+        (simulationArea.canvas.height / 2 - globalScope.oy) / globalScope.scale
+        - 60
+}
+
+
     // Render objects
     for (let i = 0; i < renderOrder.length; i++) {
-        for (var j = 0; j < scope[renderOrder[i]].length; j++) {
+        for (let j = 0; j < scope[renderOrder[i]].length; j++) {
             scope[renderOrder[i]][j].draw()
         }
     }
+
     // Show any message
     if (canvasMessageData.string !== undefined) {
-        canvasMessage(
-            ctx,
-            canvasMessageData.string,
-            canvasMessageData.x,
-            canvasMessageData.y
+// Render a subtle, non-intrusive hint text.
+// Dark gray with reduced opacity ensures readability
+// on a light grid background without drawing excessive attention.
+    ctx.save()
+
+   ctx.fillStyle = '#444'
+ctx.globalAlpha = 0.55
+
+    ctx.font = `${Math.round(16 * globalScope.scale)}px Raleway`
+    ctx.textAlign = 'center'
+
+    ctx.fillText(
+        canvasMessageData.string,
+        Math.round(
+            canvasMessageData.x * globalScope.scale + globalScope.ox
+        ),
+        Math.round(
+            canvasMessageData.y * globalScope.scale + globalScope.oy
         )
-    }
-    // If multiple object selections are going on, show selected area
+    )
+
+    ctx.restore()
+}
+
+    // Selection rectangle
     if (objectSelection) {
         ctx.beginPath()
         ctx.lineWidth = 2
@@ -290,6 +351,8 @@ export function renderCanvas(scope) {
         ctx.stroke()
         ctx.fill()
     }
+
+    // Cursor state
     if (simulationArea.hover !== undefined) {
         simulationArea.canvas.style.cursor = 'pointer'
     } else if (simulationArea.mouseDown) {
@@ -298,6 +361,7 @@ export function renderCanvas(scope) {
         simulationArea.canvas.style.cursor = 'default'
     }
 }
+
 
 /**
  * Function to move multiple objects and panes window
