@@ -326,9 +326,10 @@ const themes: Themes = {
         '--table-head-dark': '#2e2b21',
     },
 }
+
 const CUSTOM_THEME_KEY = 'Custom Theme';
 
-const CSS_COLOR_REGEX = /^(#[0-9a-fA-F]{6}|rgba?\(\s*([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\s*,\s*([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\s*,\s*([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\s*(,\s*(0|0?\.[0-9]+|1(\.0)?))?\s*\))$/;
+const CSS_COLOR_REGEX = /^#[0-9a-fA-F]{6}$/;
 
 function loadStoredCustomTheme(): Record<string, string> {
     try {
@@ -343,9 +344,9 @@ function loadStoredCustomTheme(): Record<string, string> {
         if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
             const validated: Record<string, string> = {};
             for (const [key, value] of Object.entries(parsed)) {
-            if (typeof value === 'string' && CSS_COLOR_REGEX.test(value)) {
-                validated[key] = value;
-            }
+                if (typeof value === 'string' && CSS_COLOR_REGEX.test(value)) {
+                    validated[key] = value;
+                }
             }
             return validated;
         }
@@ -355,7 +356,7 @@ function loadStoredCustomTheme(): Record<string, string> {
     }
 }
 
-Object.defineProperty(themes, CUSTOM_THEME_KEY, { // Removed 'as any'
+Object.defineProperty(themes, CUSTOM_THEME_KEY, {
     get() {
         const storedCustomTheme = loadStoredCustomTheme();
         return {
