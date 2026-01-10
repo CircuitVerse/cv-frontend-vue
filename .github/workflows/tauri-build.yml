@@ -1,8 +1,7 @@
 name: Vue Simulator Desktop Release
 
 on:
-  push:
-    branches: [ "main" ]
+  pull_request:
   release:
     types: [created]
 
