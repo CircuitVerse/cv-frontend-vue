@@ -9,6 +9,8 @@
         >
             <NavbarLinks :navbar-data="navbarData" />
 
+            <SearchBar />
+
             <span
                 id="projectName"
                 class="projectName noSelect defaultCursor font-weight-bold"
@@ -25,6 +27,7 @@
 import QuickButton from '@/Navbar/QuickButton/QuickButton.vue'
 import User from '@/Navbar/User/User.vue'
 import NavbarLinks from '@/Navbar/NavbarLinks/NavbarLinks.vue'
+import SearchBar from '@/Navbar/SearchBar/SearchBar.vue'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 
 import navbarData from '#/assets/constants/Navbar/NAVBAR_DATA.json'
