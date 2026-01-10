@@ -1,6 +1,6 @@
 {
     "simulator": {
-        "save_online": "",
+        "save_online": "অনলাইন সংরক্ষণ",
         "save_offline": "অফলাইন সংরক্ষণ করুন",
         "preview_circuit": "সার্কিট পূর্বরূপ",
         "export_verilog": "ভেরিলগ রপ্তানি করুন",

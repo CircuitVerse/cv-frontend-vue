@@ -81,7 +81,7 @@
                 "expansion_panel_title": {
                     "Input": "Entrada",
                     "Output": "Salida",
-                    "Gates": "Comuertas",
+                    "Gates": "Compuertas",
                     "Decoders & Plexers": "Decodificadores y Multiplexores",
                     "Sequential Elements": "Elementos secuenciales",
                     "Annotation": "Anotación",

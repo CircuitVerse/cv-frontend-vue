@@ -23,8 +23,8 @@
 
         <v-list-item
           class="list-item-avatar"
-          :prepend-avatar="authStore.getUserAvatar !== 'default' ? authStore.getUserAvatar : undefined"
-          :prepend-icon="authStore.getUserAvatar === 'default' ? 'mdi-account-circle-outline' : undefined"
+          :prepend-avatar="avatarUrl"
+          :prepend-icon="avatarIcon"
           :title="authStore.getUsername"
           lines="two"
           color="white"
@@ -221,20 +221,20 @@
         <v-btn
           variant="text"
           @click="snackbar.visible = false"
-          :icon="mdiClose"
           color="white"
-        ></v-btn>
+        >
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
       </template>
     </v-snackbar>
   </v-card>
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { availableLocale } from '#/locales/i18n'
 import { useAuthStore } from '#/store/authStore'
-import { mdiClose } from '@mdi/js'
 import './User.scss'
 
 const authStore = useAuthStore()
@@ -249,7 +249,23 @@ const isLoading = ref(false)
 const authForm = ref()
 const unreadCount = ref(0)
 
-// Watch for locale changes and persist to localStorage
+const avatarUrl = computed(() => {
+  const avatar = authStore.getUserAvatar
+  if (!avatar || avatar === 'default') {
+    return undefined
+  }
+  return avatar
+})
+
+
+const avatarIcon = computed(() => {
+  const avatar = authStore.getUserAvatar
+  if (!avatar || avatar === 'default') {
+    return 'mdi-account-circle-outline'
+  }
+  return undefined
+})
+// Watch for locale changes to update localStorage and document attributes
 watch(locale, (newLocale) => {
   try {
     localStorage.setItem('locale', newLocale)
