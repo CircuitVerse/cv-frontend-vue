@@ -63,11 +63,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           projectPath: ./src-tauri
-          tagName: app-v__VERSION__
-          releaseName: "CircuitVerse Desktop v__VERSION__"
-          releaseBody: "See the assets below to download this release."
-          releaseDraft: true
-          prerelease: false
           args: ${{ matrix.args }}
 
       - name: Upload Artifacts
