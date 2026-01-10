@@ -23,10 +23,8 @@
 
         <v-list-item
           class="list-item-avatar"
-          :prepend-avatar="authStore.getUserAvatar"
-          :prepend-icon="
-            authStore.getUserAvatar === 'default' ? 'mdi-account-circle-outline' : undefined
-          "
+          :prepend-avatar="authStore.getUserAvatar !== 'default' ? authStore.getUserAvatar : undefined"
+          :prepend-icon="authStore.getUserAvatar === 'default' ? 'mdi-account-circle-outline' : undefined"
           :title="authStore.getUsername"
           lines="two"
           color="white"
@@ -48,11 +46,10 @@
 
         <v-divider class="my-2 bg-white"></v-divider>
 
-        <!-- Authentication Section -->
         <template v-if="!authStore.getIsLoggedIn">
           <v-list density="compact" nav>
             <v-list-item
-              @click.stop="showAuthModal(true)"
+              @click="showAuthModal(true)"
               prepend-icon="mdi-login"
               title="Sign In"
               value="sign_in"
@@ -60,7 +57,7 @@
               color="white"
             ></v-list-item>
             <v-list-item
-              @click.stop="showAuthModal(false)"
+              @click="showAuthModal(false)"
               prepend-icon="mdi-account-plus"
               title="Register"
               value="register"
@@ -70,11 +67,10 @@
           </v-list>
         </template>
 
-        <!-- User Menu Section -->
         <template v-else>
           <v-list density="compact" nav>
             <v-list-item
-              @click.stop="dashboard"
+              @click="dashboard"
               prepend-icon="mdi-view-dashboard-outline"
               title="Dashboard"
               value="dashboard"
@@ -82,7 +78,7 @@
               color="white"
             ></v-list-item>
             <v-list-item
-              @click.stop="my_groups"
+              @click="my_groups"
               prepend-icon="mdi-account-group-outline"
               title="My Groups"
               value="my_groups"
@@ -90,7 +86,7 @@
               color="white"
             ></v-list-item>
             <v-list-item
-              @click.stop="notifications"
+              @click="notifications"
               prepend-icon="mdi-bell-outline"
               title="Notifications"
               value="notifications"
@@ -106,7 +102,7 @@
           <v-divider class="my-2 bg-white"></v-divider>
 
           <v-list-item
-            @click.stop="signout"
+            @click="signout"
             prepend-icon="mdi-logout"
             title="Logout"
             value="logout"
@@ -120,7 +116,7 @@
         <v-btn
           class="avatar-btn"
           variant="text"
-          @click.stop="drawer = !drawer"
+          @click="drawer = !drawer"
           rounded="xl"
           color="white"
         >
@@ -141,7 +137,6 @@
       </v-main>
     </v-layout>
 
-    <!-- Authentication Dialog -->
     <v-dialog v-model="authModal" max-width="500" persistent>
       <v-card class="auth-modal" style="background-color: white">
         <v-toolbar color="#43b984">
@@ -214,7 +209,6 @@
       </v-card>
     </v-dialog>
 
-    <!-- Snackbar Notification -->
     <v-snackbar
       v-model="snackbar.visible"
       :color="snackbar.color"
@@ -236,12 +230,11 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { availableLocale } from '#/locales/i18n'
 import { useAuthStore } from '#/store/authStore'
 import { mdiClose } from '@mdi/js'
-// import { fetch } from '@tauri-apps/plugin-http' // Uncomment if using Tauri's HTTP plugin
 import './User.scss'
 
 const authStore = useAuthStore()
@@ -256,7 +249,26 @@ const isLoading = ref(false)
 const authForm = ref()
 const unreadCount = ref(0)
 
-// Form validation rules
+// Watch for locale changes and persist to localStorage
+watch(locale, (newLocale) => {
+  try {
+    localStorage.setItem('locale', newLocale)
+    document.documentElement.lang = newLocale
+    
+    // RTL support: Set text direction to right-to-left for Arabic
+    if (newLocale === 'ar') {
+      document.documentElement.dir = 'rtl'
+      console.log('RTL mode activated for Arabic')
+    } else {
+      document.documentElement.dir = 'ltr'
+      console.log('LTR mode activated for', newLocale)
+    }
+  } catch (e) {
+    console.error('Error saving locale:', e)
+  }
+})
+
+// Form validation rules - using arrow functions for better TypeScript support
 const requiredRule = (v: string) => !!v || 'This field is required'
 const emailRule = (v: string) => /.+@.+\..+/.test(v) || 'E-mail must be valid'
 const passwordRule = (v: string) => v.length >= 6 || 'Password must be at least 6 characters'
@@ -267,6 +279,14 @@ const snackbar = ref({
   message: '',
   color: '#43b984'
 })
+
+// Color mapping for different snackbar types
+const snackbarColors: Record<'success' | 'error' | 'warning' | 'info', string> = {
+  success: '#43b984',
+  error: '#dc5656',
+  warning: '#f39c12',
+  info: '#3498db'
+}
 
 function showAuthModal(login: boolean) {
   isLoginMode.value = login
@@ -312,13 +332,11 @@ async function handleAuthSubmit() {
       } catch (e) {
         errorData = { message: 'An error occurred' }
       }
-      console.error('Authentication failed:', response.status, errorData)
       handleLoginError(response.status, errorData)
       return
     }
 
     const data = await response.json()
-    console.log('Auth successful:', data)
     
     if (!data.token) {
       throw new Error('No token received from server')
@@ -331,8 +349,8 @@ async function handleAuthSubmit() {
     )
     authModal.value = false
   } catch (error) {
-    console.error('Authentication error:', error)
-    showSnackbar(`Authentication failed: ${error.message}`, 'error')
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred'
+    showSnackbar(`Authentication failed: ${errorMessage}`, 'error')
   } finally {
     isLoading.value = false
   }
@@ -361,7 +379,7 @@ function showSnackbar(message: string, type: 'success' | 'error' | 'warning' | '
   snackbar.value = {
     visible: true,
     message,
-    color: type
+    color: snackbarColors[type]
   }
 }
 

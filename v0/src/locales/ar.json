@@ -1,0 +1,167 @@
+{
+    "simulator": {
+        "save_online": "حفظ عبر الإنترنت",
+        "save_offline": "حفظ بدون اتصال",
+        "preview_circuit": "معاينة الدائرة",
+        "export_verilog": "تصدير Verilog",
+        "insert_subcircuit": "إدراج دائرة فرعية",
+        "undo": "تراجع",
+        "report_issue": "إبلاغ عن مشكلة",
+        "restricted_elements_used": "العناصر المقيدة المستخدمة:",
+        "made_with_circuitverse": "صُنع بواسطة CircuitVerse",
+        "layout": {
+            "layout_elements": "عناصر التخطيط",
+            "no_elements_available": "لا توجد عناصر تخطيط متاحة"
+        },
+        "unlabeled": "بدون تسمية",
+        "nav": {
+            "untitled_project": "مشروع بدون عنوان",
+            "sign_out": "تسجيل الخروج",
+            "sign_in": "تسجيل الدخول",
+            "user_dropdown": {
+                "dashboard": "لوحة القيادة",
+                "my_groups": "مجموعاتي",
+                "notifications": "التنبيهات"
+            },
+            "project": {
+                "heading": "المشروع",
+                "project_page": "صفحة المشروع",
+                "new_project": "مشروع جديد",
+                "open_offline": "فتح بدون اتصال",
+                "export_as_file": "تصدير كملف",
+                "import_project": "استيراد مشروع",
+                "save_online": "حفظ عبر الإنترنت",
+                "save_offline": "حفظ بدون اتصال",
+                "preview_circuit": "معاينة الدائرة",
+                "clear_project": "مسح المشروع",
+                "recover_project": "استعادة المشروع",
+                "view_previous_ui": "عرض الواجهة السابقة"
+            },
+            "circuit": {
+                "heading": "الدائرة",
+                "new_circuit": "دائرة جديدة +",
+                "insert_subcircuit": "إدراج دائرة فرعية",
+                "new_verilog_module_html": "وحدة Verilog جديدة"
+            },
+            "tools": {
+                "heading": "الأدوات",
+                "combinational_analysis_html": "التحليل التوافيقي",
+                "hex_bin_dec_converter_html": "محول الأنظمة العددية",
+                "download_image": "تحميل الصورة",
+                "themes": "السمات",
+                "export_verilog": "تصدير Verilog",
+                "custom_shortcut": "اختصارات مخصصة"
+            },
+            "help": {
+                "heading": "مساعدة",
+                "tutorial_guide": "دليل تعليمي",
+                "user_manual": "دليل المستخدم",
+                "learn_digital_logic": "تعلم المنطق الرقمي",
+                "discussion_forum": "منتدى النقاش"
+            }
+        },
+        "panel_header": {
+            "circuit_elements": "عناصر الدائرة",
+            "layout_elements": "عناصر التخطيط",
+            "timing_diagram": "المخطط الزمني",
+            "verilog_module": "وحدة Verilog",
+            "properties": "الخصائص",
+            "layout": "التخطيط",
+            "keybinding_preference": "تفضيلات المفاتيح",
+            "render_image": "رسم الصورة",
+            "select_theme": "اختر سمة",
+            "boolean_logic_table": "جدول المنطق البولياني",
+            "open_project": "فتح المشروع",
+            "bit_converter": "محول البت"
+        },
+        "panel_body": {
+            "circuit_elements": {
+                "search": "بحث...",
+                "search_result": "لم يتم العثور على عناصر...",
+                "expansion_panel_title": {
+                    "Input": "الإدخال",
+                    "Output": "الإخراج",
+                    "Gates": "البوابات",
+                    "Decoders & Plexers": "المشفرات والمجمعات",
+                    "Sequential Elements": "العناصر التتابعية",
+                    "Annotation": "ملاحظات",
+                    "Misc": "متنوعات"
+                }
+            },
+            "timing_diagram": {
+                "one_cycle": "دورة واحدة =",
+                "units": "وحدات"
+            },
+            "verilog_module": {
+                "reset_code": "إعادة تعيين الكود",
+                "save_code": "حفظ الكود",
+                "module_in_experiment_notice": "هذه وحدة تجريبية. لن يتم حفظ الكود إلا عند النقر على زر حفظ الكود.",
+                "apply_themes": "تطبيق السمات",
+                "select_theme": "اختر سمة:"
+            },
+            "layout": {
+                "width": "العرض",
+                "height": "الارتفاع",
+                "reset_all_nodes": "إعادة تعيين كافة العقد:",
+                "title": "العنوان",
+                "title_enabled": "تمكين العنوان:",
+                "save": "حفظ",
+                "cancel": "إلغاء"
+            },
+            "render_image": {
+                "full_circuit_view": "عرض الدائرة كاملة",
+                "current_view": "العرض الحالي",
+                "transparent_background": "خلفية شفافة",
+                "resolution": "الدقة:"
+            },
+            "context_menu": {
+                "paste": "لصق",
+                "copy": "نسخ",
+                "cut": "قص",
+                "delete": "حذف",
+                "new_circuit": "دائرة جديدة",
+                "center_focus": "تركيز في المنتصف"
+            },
+            "bit_converter": {
+                "decimal_value": "قيمة عشرية",
+                "binary_value": "قيمة ثنائية",
+                "octal_value": "قيمة ثمانية",
+                "hexadecimal_value": "قيمة سداسية عشرية"
+            },
+            "custom_shortcut": {
+                "esc_cancel": "اضغط على مجموعة المفاتيح المطلوبة ثم اضغط Enter",
+                "command": "أمر",
+                "keymapping": "تعيين المفاتيح",
+                "reset_to_default": "إعادة للوضع الافتراضي",
+                "save": "حفظ"
+            },
+            "report_issue": {
+                "describe_issue": "صف مشكلتك:",
+                "email": "البريد الإلكتروني",
+                "optional": " [اختياري]",
+                "report_btn": "إبلاغ",
+                "cancel_btn": "إلغاء",
+                "close_btn": "إغلاق"
+            }
+        },
+        "tooltip": {
+            "delete_selected": "حذف المحدد",
+            "download_as_image": "تحميل كصورة",
+            "fit_to_screen": "ملاءمة الشاشة",
+            "redo": "إعادة",
+            "decrease_size": "تصغير الحجم",
+            "increase_size": "تكبير الحجم",
+            "decrease_height": "تقليل الارتفاع",
+            "increase_height": "زيادة الارتفاع",
+            "reset_timing_diagram": "إعادة تعيين المخطط الزمني",
+            "autocalibrate_cycle_units": "معايرة تلقائية لوحدات الدورة",
+            "zoom_in": "تكبير",
+            "zoom_out": "تصغير",
+            "resume_timing_diagram": "استئناف المخطط الزمني",
+            "pause_timing_diagram": "إيقاف المخطط الزمني مؤقتاً",
+            "decrease_width": "تقليل العرض",
+            "increase_width": "زيادة العرض",
+            "reset": "إعادة تعيين"
+        }
+    }
+}
