@@ -148,7 +148,9 @@ function ValidateData(fileData: string) {
         return true
     } catch (error) {
         document.querySelector('.fileInput')?.classList.add('error--text')
-        errorMessage.value = 'Invalid / Corrupt [ .cv ] file !'
+        errorMessage.value = error instanceof Error 
+            ? `Invalid file: ${error.message}`
+            : 'Invalid / Corrupt [ .cv ] file !'
         return false
     }
 }
