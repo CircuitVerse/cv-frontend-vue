@@ -4,8 +4,11 @@ import { simulationArea } from './simulationArea'
 import miniMapArea, { removeMiniMap, updatelastMinimapShown } from './minimap'
 import { colors } from './themer/themer'
 import { updateOrder } from './metadata'
+import { getSelectedElements } from './listeners'
+
 
 var unit = 10
+
 
 export function findDimensions(scope = globalScope) {
     var totalObjects = 0
@@ -56,6 +59,46 @@ export function findDimensions(scope = globalScope) {
     }
     simulationArea.objectList = updateOrder
 }
+
+function buildSelectionScope(selectedElements) {
+    const scope = {}
+
+    updateOrder.forEach(type => {
+        scope[type] = []
+    })
+
+    selectedElements.forEach(el => {
+        updateOrder.forEach(type => {
+            if (
+                Array.isArray(globalScope[type]) &&
+                globalScope[type].includes(el)
+            ) {
+                scope[type].push(el)
+            }
+        })
+    })
+
+    return scope
+}
+
+export function fitToSelection() {
+    const selected = getSelectedElements()
+
+    // Fallback → behave like Reset View
+    if (!selected || selected.length === 0) {
+        globalScope.centerFocus(false)
+        return
+    }
+
+    const selectionScope = buildSelectionScope(selected)
+
+    // Compute bounds ONLY for selected elements
+    findDimensions(selectionScope)
+
+    // Let engine handle centering + zoom
+    globalScope.centerFocus(true)
+}
+
 
 // Function used to change the zoom level wrt to a point
 // fn to change scale (zoom) - It also shifts origin so that the position
@@ -627,3 +670,4 @@ export const fixDirection = {
     UP: 'UP',
     DOWN: 'DOWN',
 }
+
