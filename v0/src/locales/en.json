@@ -30,6 +30,7 @@
                 "open_offline": "Open Offline",
                 "export_as_file": "Export as File",
                 "import_project": "Import Project",
+                "import_online_circuit": "Import Online Circuit",
                 "save_online": "Save Online",
                 "save_offline": "Save Offline",
                 "preview_circuit": "Preview Circuit",
