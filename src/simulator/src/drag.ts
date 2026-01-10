@@ -21,8 +21,13 @@ function updatePosition(
     // Update the element's x and y position
     const currentPosition = positions.get(element)
     if (!currentPosition) return // Check if the currentPosition is valid
-    currentPosition.x += dx
-    currentPosition.y += dy
+    
+    // Calculate new position
+    let newX = currentPosition.x + dx
+    let newY = currentPosition.y + dy
+
+    currentPosition.x = newX
+    currentPosition.y = newY
 
     // Apply the new position to the element using the CSS transform property
     element.style.transform = `translate(${currentPosition.x}px, ${currentPosition.y}px)`
@@ -73,8 +78,9 @@ export function dragging(targetEl: HTMLElement, DragEl: HTMLElement): void {
     })
 
     $(DragEl).on('mousedown', () => {
-        $(`.draggable-panel:not(${DragEl})`).css('z-index', '99')
-        $(DragEl).css('z-index', '99')
+        // Keep all draggable panels above navbar (z-index 100)
+        $(`.draggable-panel:not(${DragEl})`).css('z-index', '120')
+        $(DragEl).css('z-index', '130')
     })
 
     let panelElements = document.querySelectorAll(
