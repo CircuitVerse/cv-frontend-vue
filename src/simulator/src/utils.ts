@@ -249,13 +249,26 @@ export const convertors = {
     dec2bcd: (x: number) => parseInt(x.toString(10), 16).toString(2),
 }
 
-export function setBaseValues(x) {
+/**
+ * Sets base values for bit converter inputs using native DOM
+ * Note: This is legacy code - the Vue component HexBinDec.vue handles this now
+ * Kept for backwards compatibility with any code that may still call it
+ * @param x - decimal value to convert
+ */
+export function setBaseValues(x: number) {
     if (isNaN(x)) return;
-    $("#binaryInput").val(convertors.dec2bin(x));
-    $("#bcdInput").val(convertors.dec2bcd(x));
-    $("#octalInput").val(convertors.dec2octal(x));
-    $("#hexInput").val(convertors.dec2hex(x));
-    $("#decimalInput").val(x);
+
+    const binaryInput = document.getElementById('binaryInput') as HTMLInputElement | null;
+    const bcdInput = document.getElementById('bcdInput') as HTMLInputElement | null;
+    const octalInput = document.getElementById('octalInput') as HTMLInputElement | null;
+    const hexInput = document.getElementById('hexInput') as HTMLInputElement | null;
+    const decimalInput = document.getElementById('decimalInput') as HTMLInputElement | null;
+
+    if (binaryInput) binaryInput.value = convertors.dec2bin(x);
+    if (bcdInput) bcdInput.value = convertors.dec2bcd(x);
+    if (octalInput) octalInput.value = convertors.dec2octal(x);
+    if (hexInput) hexInput.value = convertors.dec2hex(x);
+    if (decimalInput) decimalInput.value = String(x);
 }
 
 export function parseNumber(num: string | number) {
@@ -268,49 +281,71 @@ export function parseNumber(num: string | number) {
     return parseInt(num)
 }
 
+/**
+ * Sets up bit converter event listeners using native DOM
+ * Note: This is legacy code - the Vue component HexBinDec.vue handles this now
+ * Kept for backwards compatibility
+ */
 export function setupBitConvertor() {
-    $("#decimalInput").on('keyup', function () {
-        var x = parseInt($("#decimalInput").val(), 10);
-        setBaseValues(x);
-    })
+    const decimalInput = document.getElementById('decimalInput');
+    const binaryInput = document.getElementById('binaryInput');
+    const bcdInput = document.getElementById('bcdInput');
+    const hexInput = document.getElementById('hexInput');
+    const octalInput = document.getElementById('octalInput');
 
-    $("#binaryInput").on('keyup', function () {
-        var inp = $("#binaryInput").val();
-        var x;
-        if (inp.slice(0, 2) == '0b')
-            x = parseInt(inp.slice(2), 2);
-        else
-            x = parseInt(inp, 2);
-        setBaseValues(x);
-    })
-    $("#bcdInput").on('keyup', function () {
-        var input = $("#bcdInput").val();
-        var num = 0;
-        while (input.length % 4 !== 0){
-            input = "0" + input;
-        }
-        if(input !== 0){
-            var i = 0;
-            while (i < input.length / 4){
-                if(parseInt(input.slice((4 * i), 4 * (i + 1)), 2) < 10)
-                    num = num * 10 + parseInt(input.slice((4 * i), 4 * (i + 1)), 2);
-                else
-                    return setBaseValues(NaN);
-                i++;
+    if (decimalInput) {
+        decimalInput.addEventListener('keyup', function () {
+            const x = parseInt((this as HTMLInputElement).value, 10);
+            setBaseValues(x);
+        });
+    }
+
+    if (binaryInput) {
+        binaryInput.addEventListener('keyup', function () {
+            const inp = (this as HTMLInputElement).value;
+            let x: number;
+            if (inp.slice(0, 2) == '0b')
+                x = parseInt(inp.slice(2), 2);
+            else
+                x = parseInt(inp, 2);
+            setBaseValues(x);
+        });
+    }
+
+    if (bcdInput) {
+        bcdInput.addEventListener('keyup', function () {
+            let input = (this as HTMLInputElement).value;
+            let num = 0;
+            while (input.length % 4 !== 0) {
+                input = "0" + input;
             }
-        }
-        return setBaseValues(x);
-    })
+            if (input.length !== 0) {
+                let i = 0;
+                while (i < input.length / 4) {
+                    if (parseInt(input.slice((4 * i), 4 * (i + 1)), 2) < 10)
+                        num = num * 10 + parseInt(input.slice((4 * i), 4 * (i + 1)), 2);
+                    else
+                        return setBaseValues(NaN);
+                    i++;
+                }
+            }
+            return setBaseValues(num);
+        });
+    }
 
-    $("#hexInput").on('keyup', function () {
-        var x = parseInt($("#hexInput").val(), 16);
-        setBaseValues(x);
-    })
+    if (hexInput) {
+        hexInput.addEventListener('keyup', function () {
+            const x = parseInt((this as HTMLInputElement).value, 16);
+            setBaseValues(x);
+        });
+    }
 
-    $("#octalInput").on('keyup', function () {
-        var x = parseInt($("#octalInput").val(), 8);
-        setBaseValues(x);
-    })
+    if (octalInput) {
+        octalInput.addEventListener('keyup', function () {
+            const x = parseInt((this as HTMLInputElement).value, 8);
+            setBaseValues(x);
+        });
+    }
 }
 
 export function promptFile(contentType: string, multiple: boolean) {
