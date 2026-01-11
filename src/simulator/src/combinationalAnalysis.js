@@ -69,7 +69,7 @@ export const performCombinationalAnalysis = (
         }
     } else if (
         (inputList.length == 0 || outputList.length == 0) &&
-        booleanInputVariables == 0
+        booleanInputVariables.length === 0
     ) {
         alert('Enter Input / Output Variable(s) OR Boolean Function!')
     } else {
