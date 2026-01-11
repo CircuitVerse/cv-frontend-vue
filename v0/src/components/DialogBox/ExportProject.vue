@@ -73,7 +73,7 @@ const exportAsFile = async () => {
         false
     )
     fileName = `${fileName.replace(/[^a-z0-9]/gi, '_')}.cv`
-    downloadFile(fileName, circuitData)
+    downloadFile(fileName, JSON.stringify(circuitData))
     SimulatorState.dialogBox.export_project_dialog = false
 }
 </script>

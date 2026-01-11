@@ -91,7 +91,8 @@ const scopeSchema = [
     'restrictedCircuitElementsUsed',
     'nodes',
 ]
-const JSONSchema = [
+// Required keys for all circuit files
+const requiredKeys = [
     'name',
     'timePeriod',
     'clockEnabled',
@@ -100,6 +101,9 @@ const JSONSchema = [
     'orderedTabs',
     'scopes',
 ]
+
+// Optional keys (for backward compatibility with old files)
+const optionalKeys = ['simulatorVersion']
 
 const file = ref(Array<File>())
 const errorMessage = ref('')
@@ -126,11 +130,14 @@ function addDropFile(e: DragEvent) {
 function ValidateData(fileData: string) {
     try {
         const parsedFileDate = JSON.parse(fileData)
-        if (
-            JSON.stringify(Object.keys(parsedFileDate)) !==
-            JSON.stringify(JSONSchema)
-        )
-            throw new Error('Invalid JSON data')
+        const fileKeys = Object.keys(parsedFileDate)
+        
+        // Check if all required keys exist (order doesn't matter)
+        // simulatorVersion is optional for backward compatibility
+        const missingKeys = requiredKeys.filter(key => !fileKeys.includes(key))
+        if (missingKeys.length > 0) {
+            throw new Error(`Missing required keys: ${missingKeys.join(', ')}`)
+        }
         parsedFileDate.scopes.forEach((scope: object) => {
             const keys = Object.keys(scope) // get scope keys
             scopeSchema.forEach((key) => {
@@ -141,7 +148,9 @@ function ValidateData(fileData: string) {
         return true
     } catch (error) {
         document.querySelector('.fileInput')?.classList.add('error--text')
-        errorMessage.value = 'Invalid / Corrupt [ .cv ] file !'
+        errorMessage.value = error instanceof Error 
+            ? `Invalid file: ${error.message}`
+            : 'Invalid / Corrupt [ .cv ] file !'
         return false
     }
 }
@@ -149,10 +158,10 @@ function ValidateData(fileData: string) {
 async function receivedText(fileContent: string) {
     // receive file content
     const backUp = JSON.parse(
-        (await generateSaveData(
+        JSON.stringify(await generateSaveData(
             escapeHtml(projectStore.getProjectName || 'untitled').trim(),
             false
-        )) as any
+        ))
     )
     const valid = ValidateData(fileContent) // pass fileContent
     if (valid) {
