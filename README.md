@@ -10,52 +10,66 @@ We would love to hear from you! We communicate on Slack:
 
 [![Slack](https://img.shields.io/badge/chat-on_slack-purple.svg?style=for-the-badge&logo=slack)](https://circuitverse.org/slack)
 
-## Installation
-To set up the project on your local machine, follow these steps:
+## Development & Versions
+This repository supports multiple versions of the simulator.
+- **v0**: Stable production version.
+- **v1**: Experimental version for new features.
 
-  1. Clone the repository to your local machine using the following command:
-  ```
-  git clone https://github.com/CircuitVerse/cv-frontend-vue.git
-  ```
-  2. Navigate to the project directory:
-  ```
-  cd cv-frontend-vue
-  ```
-  3. Install the project dependencies:
-  ```
-  npm install
-  ```
-  4. Start the development server:
-  ```
-  npm run dev
-  ```
+To start the development server:
+```bash
+# Start v0 (Default)
+npm run dev
 
-## Setting up on cloud with Stackblitz
-[StackBlitz](https://developer.stackblitz.com/guides/user-guide/what-is-stackblitz) is an instant fullstack web IDE for the JavaScript ecosystem.
+# Start v1
+VITE_SIM_VERSION=v1 npm run dev
+```
 
-  1. Initiate the setup process by clicking on the following button:
+## Build System
+We use a unified build system to generate assets for all versions.
 
-  [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/~/github.com/CircuitVerse/cv-frontend-vue)
+To build all supported versions:
+```bash
+npm run build
+```
 
-  2. Once the setup is complete, a Preview URL will be displayed in the browser window. Append `/simulatorvue/` to your URL to access the simulator.
-  ```
-  https://<preview_url>/simulatorvue/
-  ```
+To build a specific version:
+```bash
+npm run build -- v1
+```
+Built assets will be available in `dist/simulatorvue/`. Each version will have a predictable entry point:
+- `dist/simulatorvue/v0/simulator-v0.js`
+- `dist/simulatorvue/v1/simulator-v1.js`
+
+To preview the built assets:
+```bash
+# Preview v0
+npm run serve
+
+# Preview v1
+VITE_SIM_VERSION=v1 npm run serve
+```
+
+## Route-Agnostic Support
+The simulator is designed to be **route-agnostic**. It can be mounted on any path (e.g., within a Rails view) by including the appropriate script and setting global variables:
+
+```html
+<div id="app"></div>
+<script>
+  window.logixProjectId = "0"; // Project ID or "0" for new
+  window.isUserLoggedIn = true;
+</script>
+<script type="module" src="/path/to/simulator-v0.js"></script>
+```
 
 ## How to Use Vue Simulator with CircuitVerse Main Repo
-To access the Vue Simulator from the [CircuitVerse main repo](https://github.com/CircuitVerse/CircuitVerse) dev server, you can follow one of the following methods:
+The Vue Simulator can be integrated into the [CircuitVerse main repo](https://github.com/CircuitVerse/CircuitVerse) as a replacement for the legacy jQuery-based simulator.
 
-### Accessing Vue Simulator
-  1. Start the CircuitVerse Main Repo dev server.
-  2. go to the `/simulatorvue` path in the dev server.
-  3. You would be accessing the Vue Simulator.
+### Activation via Flipper
+1. Log in to the CircuitVerse dev server using an admin account.
+2. Navigate to `/flipper`.
+3. Enable the `vuesim` feature flag.
 
-### Setting Vue Simulator as Default
-  1. Log in to the CircuitVerse dev server using the admin account:
-      - **Email:** `admin@circuitverse.org`
-      - **Password:** `password`
-  2. Once logged in, go to `/flipper` path and turn on vuesim feature flag site wide or for your user.
-  3. After activation, you will be able to access the Vue Simulator site-wide in your dev server, also in `/simulator` path the Vue Simulator will be opening instead of the old simulator.
+Once enabled, the Rails app will handle routing and data synchronization between the backend and the Vue frontend.
 
 ## Code of Conduct
 We follow the [Code of Conduct](https://github.com/CircuitVerse/CircuitVerse/blob/master/code-of-conduct.md) of the [CircuitVerse](https://circuitverse.org) Community.

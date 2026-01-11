@@ -1,7 +1,11 @@
 #!/bin/bash
 
 
-versions=($(jq -r '.[].version' version.json))
+if [ $# -gt 0 ]; then
+  versions=("$@")
+else
+  versions=($(jq -r '.[].version' version.json))
+fi
 
 
 for version in "${versions[@]}"; do

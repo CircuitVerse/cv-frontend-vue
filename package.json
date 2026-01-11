@@ -4,7 +4,7 @@
     "private": true,
     "scripts": {
         "serve": "vite preview",
-        "build": "vite build",
+        "build": "bash build.sh",
         "dev": "vite",
         "tauri": "tauri",
         "preview": "vite preview",
