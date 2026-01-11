@@ -20,8 +20,8 @@ To start the development server:
 # Start v0 (Default)
 npm run dev
 
-# Start v1
-VITE_SIM_VERSION=v1 npm run dev
+# Start v1 (Windows/Unix)
+# Set VITE_SIM_VERSION=v1 in your environment and run npm run dev
 ```
 
 ## Build System
@@ -40,15 +40,6 @@ Built assets will be available in `dist/simulatorvue/`. Each version will have a
 - `dist/simulatorvue/v0/simulator-v0.js`
 - `dist/simulatorvue/v1/simulator-v1.js`
 
-To preview the built assets:
-```bash
-# Preview v0
-npm run serve
-
-# Preview v1
-VITE_SIM_VERSION=v1 npm run serve
-```
-
 ## Route-Agnostic Support
 The simulator is designed to be **route-agnostic**. It can be mounted on any path (e.g., within a Rails view) by including the appropriate script and setting global variables:
 
@@ -58,8 +49,39 @@ The simulator is designed to be **route-agnostic**. It can be mounted on any pat
   window.logixProjectId = "0"; // Project ID or "0" for new
   window.isUserLoggedIn = true;
 </script>
-<script type="module" src="/path/to/simulator-v0.js"></script>
+<script type="module" src="/simulatorvue/v0/simulator-v0.js"></script>
 ```
+
+## Embed Mode
+The simulator can be embedded in two ways:
+
+### 1. Via Iframe (Recommended for external sites)
+Use the dedicated embed route in your iframe `src`.
+```html
+<iframe 
+  src="/simulatorvue/v0/embed/:projectId" 
+  width="100%" 
+  height="600px"
+></iframe>
+```
+
+### 2. Direct Integration (Recommended for main Rails app)
+Include the simulator script on any page and set the `window.embed` flag. This renders the minimal embed UI instead of the full simulator UI.
+```html
+<div id="app"></div>
+<script>
+  window.embed = true;
+  window.logixProjectId = "123";
+</script>
+<script type="module" src="/simulatorvue/v0/simulator-v0.js"></script>
+```
+
+The embed mode supports query parameters for customization (e.g., `?theme=dark&fullscreen=false`):
+- `theme`: `light` (default) or `dark`
+- `display_title`: `true` or `false`
+- `clock_time`: `true` or `false`
+- `fullscreen`: `true` or `false`
+- `zoom_in_out`: `true` or `false`
 
 ## How to Use Vue Simulator with CircuitVerse Main Repo
 The Vue Simulator can be integrated into the [CircuitVerse main repo](https://github.com/CircuitVerse/CircuitVerse) as a replacement for the legacy jQuery-based simulator.

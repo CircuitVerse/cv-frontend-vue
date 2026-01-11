@@ -4,6 +4,11 @@ import Embed from '../pages/embed.vue'
 
 export const routes = [
     {
+        path: '/embed/:projectId?',
+        name: 'embed',
+        component: Embed,
+    },
+    {
         path: '/:pathMatch(.*)*',
         name: 'simulator',
         component: simulatorHandler,

@@ -237,7 +237,12 @@ watch(clockEnabled, (val) => {
 
 onBeforeMount(() => {
     window.embed = true
-    window.logixProjectId = route.params.projectId
+    // Prioritize window.logixProjectId if set, otherwise use route params
+    if ((window as any).logixProjectId && (window as any).logixProjectId !== '0') {
+        // Already set
+    } else {
+        (window as any).logixProjectId = route.params.projectId
+    }
 })
 
 onMounted(() => {
