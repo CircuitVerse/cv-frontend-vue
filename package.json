@@ -4,8 +4,8 @@
     "private": true,
     "scripts": {
         "serve": "vite preview",
-        "build": "bash build.sh",
-        "dev": "vite",
+        "build": "node scripts/multi-build.js",
+        "dev": "cross-env VITE_SIM_VERSION=v0 vite",
         "tauri": "tauri",
         "preview": "vite preview",
         "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src",
@@ -55,6 +55,7 @@
         "@typescript-eslint/parser": "^8.52.0",
         "@vitejs/plugin-vue": "^2.3.3",
         "@vue/test-utils": "^2.4.6",
+        "cross-env": "^10.1.0",
         "eslint": "^8.17.0",
         "eslint-config-prettier": "^8.5.0",
         "eslint-plugin-vue": "^9.1.0",

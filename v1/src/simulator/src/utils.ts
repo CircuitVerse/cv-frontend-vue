@@ -10,9 +10,11 @@ import { layoutModeGet } from './layoutMode'
 import plotArea from './plotArea'
 import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
 import { useActions } from '#/store/SimulatorStore/actions'
-import { writeTextFile } from '@tauri-apps/plugin-fs';
-import { join, downloadDir } from '@tauri-apps/api/path';
-import { isTauri } from '@tauri-apps/api/core'
+// import { writeTextFile } from '@tauri-apps/plugin-fs';
+// import { join, downloadDir } from '@tauri-apps/api/path';
+// import { isTauri } from '@tauri-apps/api/core'
+
+export const isTauri = () => (window as any).__TAURI_INTERNALS__ !== undefined;
 
 window.globalScope = undefined
 window.lightMode = false // To be deprecated
@@ -148,6 +150,9 @@ export function downloadFileWeb(filename: string, text: string | number | boolea
 
 // For Desktop Application
 export async function downloadFileDesktop(filename: string, text: string | number | boolean | JSON) {
+    const { downloadDir, join } = await import('@tauri-apps/api/path');
+    const { writeTextFile } = await import('@tauri-apps/plugin-fs');
+
     const downloadsDirectory = await downloadDir();
     let path = filename;
 
@@ -259,7 +264,7 @@ export function setBaseValues(x) {
 }
 
 export function parseNumber(num: string | number) {
-    if(typeof num === 'number') return num;
+    if (typeof num === 'number') return num;
     if (num.slice(0, 2).toLocaleLowerCase() == '0b')
         return parseInt(num.slice(2), 2)
     if (num.slice(0, 2).toLocaleLowerCase() == '0x')
@@ -286,13 +291,13 @@ export function setupBitConvertor() {
     $("#bcdInput").on('keyup', function () {
         var input = $("#bcdInput").val();
         var num = 0;
-        while (input.length % 4 !== 0){
+        while (input.length % 4 !== 0) {
             input = "0" + input;
         }
-        if(input !== 0){
+        if (input !== 0) {
             var i = 0;
-            while (i < input.length / 4){
-                if(parseInt(input.slice((4 * i), 4 * (i + 1)), 2) < 10)
+            while (i < input.length / 4) {
+                if (parseInt(input.slice((4 * i), 4 * (i + 1)), 2) < 10)
                     num = num * 10 + parseInt(input.slice((4 * i), 4 * (i + 1)), 2);
                 else
                     return setBaseValues(NaN);

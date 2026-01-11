@@ -1,8 +1,8 @@
 import { simulationArea } from './simulationArea'
 import { convertors } from './utils'
-import { join, downloadDir } from '@tauri-apps/api/path';
-import { writeFile } from '@tauri-apps/plugin-fs';
-import { isTauri } from '@tauri-apps/api/core'
+// import { join, downloadDir } from '@tauri-apps/api/path';
+// import { writeFile } from '@tauri-apps/plugin-fs';
+import { isTauri } from './utils'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { toRefs } from 'vue'
 
@@ -111,7 +111,7 @@ const plotArea = {
     },
     // download as image
     download() {
-        if(isTauri()){
+        if (isTauri()) {
             this.downloadImageDesktop()
             return
         }
@@ -125,6 +125,9 @@ const plotArea = {
     // download as image for desktop
     async downloadImageDesktop() {
         try {
+            const { downloadDir, join } = await import('@tauri-apps/api/path');
+            const { writeFile } = await import('@tauri-apps/plugin-fs');
+
             const img = this.canvas.toDataURL('image/png');
 
             const response = await fetch(img);
@@ -448,7 +451,7 @@ const plotArea = {
             showCanvas.value = false
             return
         }
-       showCanvas.value = true
+        showCanvas.value = true
 
         this.update()
         this.render()

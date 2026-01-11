@@ -8,7 +8,6 @@ import vueI18n from '@intlify/vite-plugin-vue-i18n'
 import vuetify from 'vite-plugin-vuetify'
 import { createHtmlPlugin } from 'vite-plugin-html'
 
-const proxyUrl: string = 'http://localhost:3000'
 
 // https://vitejs.dev/config/
 export default defineConfig(() => {
@@ -67,27 +66,9 @@ export default defineConfig(() => {
         },
         server: {
             port: 4000,
-            proxy: {
-                '^/(?!(simulatorvue)).*': {
-                    target: proxyUrl,
-                    changeOrigin: true,
-                    headers: {
-                        origin: proxyUrl,
-                    },
-                },
-            },
         },
         preview: {
             port: 4173,
-            proxy: {
-                '^/(?!(simulatorvue)).*': {
-                    target: proxyUrl,
-                    changeOrigin: true,
-                    headers: {
-                        origin: proxyUrl,
-                    },
-                },
-            },
         },
     }
 })
