@@ -112,14 +112,28 @@ async function fetchProjectData(projectId) {
             const data = await response.json()
             await load(data)
             await simulationArea.changeClockTime(data.timePeriod || 500)
-            $('.loadingIcon').fadeOut()
+            // Fade out loading icon using native DOM
+            document.querySelectorAll('.loadingIcon').forEach((el) => {
+                el.style.transition = 'opacity 0.4s'
+                el.style.opacity = '0'
+                setTimeout(() => {
+                    el.style.display = 'none'
+                }, 400)
+            })
         } else {
             throw new Error('API call failed')
         }
     } catch (error) {
         console.error(error)
         confirmSingleOption('Error: Could not load.')
-        $('.loadingIcon').fadeOut()
+        // Fade out loading icon using native DOM
+        document.querySelectorAll('.loadingIcon').forEach((el) => {
+            el.style.transition = 'opacity 0.4s'
+            el.style.opacity = '0'
+            setTimeout(() => {
+                el.style.display = 'none'
+            }, 400)
+        })
     }
 }
 
@@ -131,7 +145,15 @@ async function fetchProjectData(projectId) {
 async function loadProjectData() {
     window.logixProjectId = window.logixProjectId ?? 0
     if (window.logixProjectId !== 0) {
-        $('.loadingIcon').fadeIn()
+        // Fade in loading icon using native DOM
+        document.querySelectorAll('.loadingIcon').forEach((el) => {
+            el.style.display = 'block'
+            el.style.opacity = '0'
+            el.style.transition = 'opacity 0.4s'
+            setTimeout(() => {
+                el.style.opacity = '1'
+            }, 10)
+        })
         await fetchProjectData(window.logixProjectId)
     } else if (localStorage.getItem('recover_login') && window.isUserLoggedIn) {
         // Restore unsaved data and save
