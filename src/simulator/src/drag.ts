@@ -73,18 +73,16 @@ export function dragging(targetEl: HTMLElement, DragEl: HTMLElement): void {
     })
 
     // Handle z-index on mousedown using native DOM
-    const dragElement = document.querySelector(DragEl as unknown as string) as HTMLElement | null
-    if (dragElement) {
-        dragElement.addEventListener('mousedown', () => {
-            // Reset z-index for other panels
-            const otherPanels = document.querySelectorAll(`.draggable-panel:not(${DragEl})`)
-            otherPanels.forEach((panel) => {
-                (panel as HTMLElement).style.zIndex = '99'
-            })
-            // Set z-index for current panel
-            dragElement.style.zIndex = '99'
+    DragEl.addEventListener('mousedown', () => {
+        // Reset z-index for other panels (lower priority)
+        document.querySelectorAll<HTMLElement>('.draggable-panel').forEach((panel) => {
+            if (panel !== DragEl) {
+                panel.style.zIndex = '98'
+            }
         })
-    }
+        // Set higher z-index for current panel to bring it to front
+        DragEl.style.zIndex = '99'
+    })
 
     let panelElements = document.querySelectorAll(
         '.elementPanel, .layoutElementPanel, #moduleProperty, #layoutDialog, #verilogEditorPanel, .timing-diagram-panel, .testbench-manual-panel, .quick-btn'
