@@ -4,7 +4,7 @@
     "private": true,
     "scripts": {
         "serve": "vite preview",
-        "build": "node scripts/build.js",
+        "build": "node scripts/multi-build.js",
         "dev": "node scripts/dev.js",
         "tauri": "tauri",
         "preview": "vite preview",
@@ -55,6 +55,7 @@
         "@typescript-eslint/parser": "^8.52.0",
         "@vitejs/plugin-vue": "^2.3.3",
         "@vue/test-utils": "^2.4.6",
+        "cross-env": "^10.1.0",
         "eslint": "^8.17.0",
         "eslint-config-prettier": "^8.5.0",
         "eslint-plugin-vue": "^9.1.0",
