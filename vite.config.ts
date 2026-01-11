@@ -10,6 +10,7 @@ import vuetify from 'vite-plugin-vuetify'
 // https://vitejs.dev/config/
 export default defineConfig(() => {
   const isDesktop = !!process.env.DESKTOP_MODE
+  const version = process.env.VITE_SIM_VERSION
 
   return {
     plugins: [
@@ -34,7 +35,9 @@ export default defineConfig(() => {
     base: isDesktop ? '/' : '/simulatorvue/',
 
     build: {
-      outDir: './dist',
+      outDir: version
+        ? `./dist/simulatorvue/${version}`
+        : './dist',
       assetsDir: 'assets',
       chunkSizeWarningLimit: 1600,
       rollupOptions: {
