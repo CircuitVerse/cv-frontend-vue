@@ -30,6 +30,32 @@ export const useAuthStore = defineStore({
         isAdmin: false,
     }),
     actions: {
+        setToken(token: string): void {
+            try {
+                const part = token.split('.')[1] ?? ''
+                // base64url -> base64 with padding
+                const b64 = part.replace(/-/g, '+').replace(/_/g, '/')
+                    .padEnd(Math.ceil(part.length / 4) * 4, '=')
+                const payload: any = JSON.parse(globalThis.atob(b64))
+                if (!payload || typeof payload !== 'object') throw new Error('Empty/invalid payload')
+
+                // Reject expired tokens
+                const now = Math.floor(Date.now() / 1000)
+                if (typeof payload.exp === 'number' && payload.exp < now) {
+                    throw new Error('Token expired')
+                }
+
+                this.isLoggedIn = true
+               this.userId = payload.user_id ?? payload.sub ?? ''
+                this.username = payload.username ?? 'Guest'
+                // Optional: persist token for session restore (guarded for web/tauri)
+                try { if (typeof localStorage !== 'undefined') localStorage.setItem('cv_token', token) } catch {}
+            } catch (err) {
+                console.error('[authStore] Invalid JWT:', err)
+                this.signOut()
+                return
+            }
+        },
         setUserInfo(userInfo: UserInfo): void {
             this.isLoggedIn = true
             this.userId = userInfo.id ?? ''
@@ -40,6 +66,14 @@ export const useAuthStore = defineStore({
             }
             this.locale = userInfo.attributes.locale ?? 'en'
             this.isAdmin = userInfo.attributes.admin
+        },
+        signOut(): void {
+            this.isLoggedIn = false
+            this.userId = ''
+            this.username = 'Guest'
+            this.userAvatar = 'default'
+            this.locale = 'en'
+            this.isAdmin = false
         },
     },
     getters: {

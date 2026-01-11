@@ -21,7 +21,8 @@
         "declaration": true,
         "emitDeclarationOnly": true,
         "outDir": "dist",
-        "declarationMap": true
+        "declarationMap": true,
+        "types": ["vite/client", "@tauri-apps/api/tauri"]
     },
     "include": [
         "v0/src/**/*.ts",

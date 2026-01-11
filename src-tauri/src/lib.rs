@@ -4,6 +4,7 @@ use tauri::Emitter;
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_fs::init())
         .setup(|app| {
             if cfg!(debug_assertions) {
@@ -14,7 +15,13 @@ pub fn run() {
                 )?;
 
                 let file_menu = SubmenuBuilder::new(app, "File")
-                    .hide()
+                    .text("new-circuit", "New Circuit")
+                    .separator()
+                    .text("save-offline", "Save")
+                    .text("save-online", "Save Online")
+                    .separator()
+                    .text("open-offline", "Open")
+                    .separator()
                     .hide_others()
                     .show_all()
                     .separator()
