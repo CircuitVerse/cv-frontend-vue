@@ -1,18 +1,26 @@
 const { spawn } = require('child_process');
 
-// Default version to v0 if not set
-process.env.VITE_SIM_VERSION = process.env.VITE_SIM_VERSION || 'v0';
+// Parse version from CLI args (e.g. npm run dev -- v1)
+const args = process.argv.slice(2);
+const version = args.find(arg => !arg.startsWith('--'));
 
-// Set DESKTOP_MODE if we detect we are likely in a Tauri context
-// (Tauri usually sets TAURI_ENV_PLATFORM or similar during dev)
+// Only set VITE_SIM_VERSION if explicitly provided
+if (version) {
+    process.env.VITE_SIM_VERSION = version;
+}
+
+// Enable desktop mode if requested
 if (process.argv.includes('--desktop')) {
     process.env.DESKTOP_MODE = 'true';
 }
 
-console.log(`Starting dev server for version: ${process.env.VITE_SIM_VERSION}`);
+if (process.env.VITE_SIM_VERSION) {
+    console.log(`Starting dev server for version: ${process.env.VITE_SIM_VERSION}`);
+} else {
+    console.log('Starting dev server for default simulator (root src/)');
+}
 
-// Spawn vite dev server
-// Using shell: true to support Windows correctly
+// Spawn Vite dev server
 const child = spawn('npx', ['vite'], {
     stdio: 'inherit',
     shell: true,
