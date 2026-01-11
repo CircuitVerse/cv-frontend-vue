@@ -529,6 +529,18 @@ export function update(scope = globalScope, updateEverything = false) {
             }
         }
     }
+
+    //Wire hover resolution
+if (!simulationArea.mouseDown) {
+    for (let i = 0; i < scope.wires.length; i++) {
+        const w = scope.wires[i]
+        if (w.checkWithin(simulationArea.mouseX, simulationArea.mouseY)) {
+            simulationArea.hover = w
+            break
+        }
+    }
+}
+
     // Updates multiple objectselections and panes window
     if (updatePosition || updateEverything) {
         updateSelectionsAndPane(scope)
