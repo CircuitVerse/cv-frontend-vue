@@ -4,33 +4,14 @@ import Embed from '../pages/embed.vue'
 
 export const routes = [
     {
-        path: '/',
-        redirect: '/simulatorvue', // @TODO: update later back to /simulator
+        path: '/embed/:projectId?',
+        name: 'embed',
+        component: Embed,
     },
     {
-        path: '/simulatorvue', // @TODO: update later back to /simulator
+        path: '/:pathMatch(.*)*',
         name: 'simulator',
         component: simulatorHandler,
-        children: [
-            {
-                path: 'edit/:projectId',
-                name: 'simulator-edit',
-                component: simulatorHandler,
-                props: true,
-            },
-        ],
-    },
-    {
-        path: '/simulatorvue/:projectId',
-        name: 'simulator-view',
-        component: Embed,
-        props: true,
-    },
-    {
-        path: '/simulatorvue/embed/:projectId',
-        name: 'simulator-embed',
-        component: Embed,
-        props: true,
     },
 ]
 const router = createRouter({
