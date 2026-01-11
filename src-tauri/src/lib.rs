@@ -15,7 +15,13 @@ pub fn run() {
                 )?;
 
                 let file_menu = SubmenuBuilder::new(app, "File")
-                    .hide()
+                    .text("new-circuit", "New Circuit")
+                    .separator()
+                    .text("save-offline", "Save")
+                    .text("save-online", "Save Online")
+                    .separator()
+                    .text("open-offline", "Open")
+                    .separator()
                     .hide_others()
                     .show_all()
                     .separator()
