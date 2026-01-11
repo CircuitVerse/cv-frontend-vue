@@ -1,6 +1,25 @@
 import Driver from 'driver.js'
 
-export const tour = [
+interface TourPopover {
+    className?: string
+    title: string
+    description: string
+    position: 'right' | 'left' | 'bottom' | 'top'
+    offset?: number
+}
+
+interface TourStep {
+    element: string
+    className?: string
+    popover: TourPopover
+}
+
+/**
+ * Defines the steps used by the Driver.js tutorial tour.
+ * Each step highlights a UI element and displays contextual guidance.
+ */
+
+export const tour: TourStep[]=[
     {
         element: '#guide_1',
         className: 'guide_1',
@@ -87,10 +106,21 @@ export const tour = [
 ]
 
 // Not used currently
-export const tutorialWrapper = () => {
+
+/**
+ * Initializes a one-time tutorial highlight for the circuit elements panel.
+ * Currently unused but retained for future onboarding flows.
+ */
+export const tutorialWrapper = (): void => {
     const panelHighlight = new Driver()
-    document.querySelector('.panelHeader').addEventListener('click', (e) => {
-        if (localStorage.tutorials === 'next') {
+    const panelHeaderEl = document.querySelector('.panelHeader')
+    if (!panelHeaderEl) return
+    panelHeaderEl.addEventListener('click', (e: Event) => {
+        if (localStorage.getItem('tutorials_tour_done')=== 'next') {
+            const target = e.target
+            if (!(target instanceof HTMLElement)) return
+            const sibling = target.nextElementSibling as HTMLElement | null
+            const siblingHeight = sibling ? sibling.offsetHeight : 0
             panelHighlight.highlight({
                 element: '#guide_1',
                 showButtons: false,
@@ -100,33 +130,43 @@ export const tutorialWrapper = () => {
                         'Select any element by clicking on it & then click anywhere on the grid to place the element.',
                     position: 'right',
                     offset:
-                        e.target.nextElementSibling.offsetHeight +
-                        e.target.offsetTop -
-                        45,
+                        siblingHeight + target.offsetTop - 45,
                 },
             })
-            localStorage.setItem('tutorials', 'done')
+            localStorage.setItem('tutorials_tour_done', 'done')
         }
     }, {
         once: true,
       })
-    document.querySelector('.icon').addEventListener('click', () => {
-        panelHighlight.reset(true)
-    })
+    const icon = document.querySelector('.icon')
+    if (icon) {
+        icon.addEventListener('click', () => {
+            panelHighlight.reset(true)
+        })
+    }
 }
 
-const animatedTourDriver = new Driver({
-    animate: true,
-    opacity: 0.8,
-    padding: 5,
-    showButtons: true,
-})
+/**
+ * Launches the interactive tutorial tour for the simulator UI.
+ */
+export function showTourGuide(): void {
+    const maximizeButton =
+    document.querySelector('.draggable-panel .maximize') as HTMLElement | null
+    if (maximizeButton) {
+        maximizeButton.click()
+    }
+    const tourDriver = new Driver({
+        animate: true,
+        opacity: 0.8,
+        padding: 5,
+        showButtons: true,
+         onReset: () => {
+            localStorage.setItem('tutorials_tour_done', 'done')
+        },
+    })
 
-export function showTourGuide() {
-    document.querySelector('.draggable-panel .maximize').click();
-    animatedTourDriver.defineSteps(tour)
-    animatedTourDriver.start()
-    localStorage.setItem('tutorials_tour_done', true)
+    tourDriver.defineSteps(tour)
+    tourDriver.start()
 }
 
 export default showTourGuide
