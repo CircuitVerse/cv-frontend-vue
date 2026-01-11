@@ -349,6 +349,7 @@ export function updateSelectionsAndPane(scope = globalScope) {
         simulationArea.lastSelected = undefined
         simulationArea.selected = false
         simulationArea.hover = undefined
+        
         if (objectSelection) {
             objectSelectionSet(false)
             var x1 = simulationArea.mouseDownX
@@ -497,6 +498,17 @@ export function update(scope = globalScope, updateEverything = false) {
     if (loading === true || layoutModeGet()) return
     var updated = false
     simulationArea.hover = undefined
+        // Resolve wire hover (engine-level, only if nothing else owns hover)
+    if (!simulationArea.mouseDown && simulationArea.hover === undefined) {
+        for (let i = scope.wires.length - 1; i >= 0; i--) {
+            const wire = scope.wires[i]
+            if (wire.checkHover()) {
+                simulationArea.hover = wire
+                break
+            }
+        }
+    }
+
     // Update wires
     if (wireToBeChecked || updateEverything) {
         if (wireToBeChecked === 2)
