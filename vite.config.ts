@@ -6,58 +6,88 @@ import vueI18n from '@intlify/vite-plugin-vue-i18n'
 
 // https://github.com/vuetifyjs/vuetify-loader/tree/next/packages/vite-plugin
 import vuetify from 'vite-plugin-vuetify'
+import { createHtmlPlugin } from 'vite-plugin-html'
 
 const proxyUrl: string = 'http://localhost:3000'
 
 // https://vitejs.dev/config/
-export default defineConfig(() => ({
-    plugins: [
-        vue(),
-        vuetify({ autoImport: true }),
-        vueI18n({
-            // if you want to use Vue I18n Legacy API, you need to set `compositionOnly: false`
-            // compositionOnly: false,
+export default defineConfig(() => {
+    const version = process.env.VITE_SIM_VERSION || 'v0'
+    const isDesktop = !!process.env.DESKTOP_MODE
 
-            // you need to set i18n resource including paths !
-            include: fileURLToPath(
-                new URL(`./v0/src/locales/**`, import.meta.url)
-            ),
-        }),
-    ],
-    resolve: {
-        alias: {
-            '#': fileURLToPath(new URL(`./v0/src`, import.meta.url)),
-            '@': fileURLToPath(new URL(`./v0/src/components`, import.meta.url)),
-        },
-    },
-    base: process.env.DESKTOP_MODE ? '/' : '/simulatorvue/',
-    build: {
-        outDir: process.env.DESKTOP_MODE ? './dist' : '../public/simulatorvue/v0/',
-        assetsDir: 'assets',
-        chunkSizeWarningLimit: 1600,
-    },
-    test:{
-        globals: true,
-        environment: 'jsdom',
-        server: {
-            deps: {
-                inline: ['vuetify'],
+    return {
+        plugins: [
+            vue(),
+            vuetify({ autoImport: true }),
+            vueI18n({
+                // if you want to use Vue I18n Legacy API, you need to set `compositionOnly: false`
+                // compositionOnly: false,
+
+                // you need to set i18n resource including paths !
+                include: fileURLToPath(
+                    new URL(`./${version}/src/locales/**`, import.meta.url)
+                ),
+            }),
+        ],
+        resolve: {
+            alias: {
+                '#': fileURLToPath(new URL(`./${version}/src`, import.meta.url)),
+                '@': fileURLToPath(
+                    new URL(`./${version}/src/components`, import.meta.url)
+                ),
             },
         },
-        setupFiles: './src/simulator/spec/vitestSetup.ts',
-    },
-    server: {
-        port: 4000,
-        proxy: {
-            // ...(process.env.NODE_ENV === 'development' && {
-            '^/(?!(simulatorvue)).*': {
-                target: proxyUrl,
-                changeOrigin: true,
-                headers: {
-                    origin: proxyUrl,
+        base: isDesktop ? '/' : `/simulatorvue/${version}/`,
+        build: {
+            outDir: `./dist/simulatorvue/${version}/`,
+            assetsDir: 'assets',
+            chunkSizeWarningLimit: 1600,
+            rollupOptions: {
+                input: {
+                    [version]: fileURLToPath(
+                        new URL(`./${version}/index.html`, import.meta.url)
+                    ),
+                },
+                output: {
+                    entryFileNames: `simulator-[name].js`,
+                    chunkFileNames: `assets/[name]-[hash].js`,
+                    assetFileNames: `assets/[name]-[hash].[ext]`,
                 },
             },
-            // }),
         },
-    },
-}))
+        test: {
+            globals: true,
+            environment: 'jsdom',
+            server: {
+                deps: {
+                    inline: ['vuetify'],
+                },
+            },
+            setupFiles: './src/simulator/spec/vitestSetup.ts',
+        },
+        server: {
+            port: 4000,
+            proxy: {
+                '^/(?!(simulatorvue)).*': {
+                    target: proxyUrl,
+                    changeOrigin: true,
+                    headers: {
+                        origin: proxyUrl,
+                    },
+                },
+            },
+        },
+        preview: {
+            port: 4173,
+            proxy: {
+                '^/(?!(simulatorvue)).*': {
+                    target: proxyUrl,
+                    changeOrigin: true,
+                    headers: {
+                        origin: proxyUrl,
+                    },
+                },
+            },
+        },
+    }
+})

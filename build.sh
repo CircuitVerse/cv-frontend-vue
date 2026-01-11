@@ -7,7 +7,13 @@ versions=($(jq -r '.[].version' version.json))
 for version in "${versions[@]}"; do
   echo "Building for version: $version"
   
-  npx vite build --config vite.config."$version".ts
+  VITE_SIM_VERSION="$version" npx vite build
+  
+  # Flatten output: move nested index.html to parent
+  if [ -f "dist/simulatorvue/$version/$version/index.html" ]; then
+    mv "dist/simulatorvue/$version/$version/index.html" "dist/simulatorvue/$version/index.html"
+    rmdir "dist/simulatorvue/$version/$version"
+  fi
   
   #Build status
   if [ $? -ne 0 ]; then
