@@ -1,5 +1,5 @@
 {
-"$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "CircuitVerse",
   "version": "0.1.0",
   "identifier": "org.circuitVerse.simulator",
@@ -7,7 +7,7 @@
     "frontendDist": "../dist",
     "devUrl": "http://localhost:4000/simulatorvue/",
     "beforeDevCommand": "npm run dev",
-    "beforeBuildCommand": "DESKTOP_MODE=true npm run build && cp ./dist/index-cv.html ./dist/index.html"
+   "beforeBuildCommand": "node scripts/build.js"
   },
   "app": {
     "windows": [
