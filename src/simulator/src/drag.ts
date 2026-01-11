@@ -72,9 +72,16 @@ export function dragging(targetEl: HTMLElement, DragEl: HTMLElement): void {
         ],
     })
 
-    $(DragEl).on('mousedown', () => {
-        $(`.draggable-panel:not(${DragEl})`).css('z-index', '99')
-        $(DragEl).css('z-index', '99')
+    // Handle z-index on mousedown using native DOM
+    DragEl.addEventListener('mousedown', () => {
+        // Reset z-index for other panels (lower priority)
+        document.querySelectorAll<HTMLElement>('.draggable-panel').forEach((panel) => {
+            if (panel !== DragEl) {
+                panel.style.zIndex = '98'
+            }
+        })
+        // Set higher z-index for current panel to bring it to front
+        DragEl.style.zIndex = '99'
     })
 
     let panelElements = document.querySelectorAll(
