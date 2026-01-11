@@ -100,6 +100,8 @@ jobs:
         uses: TriPSs/conventional-changelog-action@v3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          skip-on-empty: 'false'
+          release-count: '0'
 
       - name: Download all build artifacts
         uses: actions/download-artifact@v4
