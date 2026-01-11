@@ -6,6 +6,8 @@ import { play } from '#/simulator/src/engine'
 import { confirmOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
 import { escapeHtml } from '#/simulator/src/utils'
 
+declare var globalScope: any;
+
 const CONTEXT = {
   CONTEXT_SIMULATOR: 0,
   CONTEXT_ASSIGNMENTS: 1,
@@ -140,7 +142,7 @@ function checkDistinctIdentifiersData(data: TestData) {
  * Checks if all the input/output labels in the scope are unique. Called by validate()
  * TODO: Replace with identifiers
  */
-function checkDistinctIdentifiersScope(scope) {
+function checkDistinctIdentifiersScope(scope: any) {
   const inputIdentifiersScope = scope.Input.map((input) => input.label)
   const outputIdentifiersScope = scope.Output.map((output) => output.label)
   let identifiersScope = inputIdentifiersScope.concat(outputIdentifiersScope)
@@ -155,7 +157,7 @@ function checkDistinctIdentifiersScope(scope) {
  * Validates presence and bitwidths of test inputs in the circuit.
  * Called by validate()
  */
-function validateInputs(data: TestData, scope) {
+function validateInputs(data: TestData, scope: any) {
   const invalids: Invalids[] = []
 
   data.groups[0].inputs.forEach((dataInput) => {
@@ -197,7 +199,7 @@ interface Invalids {
  * Validates presence and bitwidths of test outputs in the circuit.
  * Called by validate()
  */
-function validateOutputs(data: TestData, scope) {
+function validateOutputs(data: TestData, scope: any) {
   const invalids: Invalids[] = []
 
   data.groups[0].outputs.forEach((dataOutput) => {
@@ -231,7 +233,7 @@ function validateOutputs(data: TestData, scope) {
 /**
  * Validate if all inputs and output elements are present with correct bitwidths
  */
-function validate(data: TestData, scope) {
+function validate(data: TestData, scope: any) {
   let invalids = []
 
   // Check for duplicate identifiers
@@ -258,10 +260,10 @@ function validate(data: TestData, scope) {
   const inputsValid = validateInputs(data, scope)
   const outputsValid = validateOutputs(data, scope)
 
-  invalids = inputsValid.ok ? invalids : invalids.concat(inputsValid.invalids)
+  invalids = inputsValid.ok ? invalids : invalids.concat(inputsValid.invalids || [])
   invalids = outputsValid.ok
     ? invalids
-    : invalids.concat(outputsValid.invalids)
+    : invalids.concat(outputsValid.invalids || [])
 
   // Validate presence of reset if test is sequential
   if (data.type === 'seq') {
@@ -288,7 +290,7 @@ function validate(data: TestData, scope) {
 /**
  * Returns object of scope inputs and outputs keyed by their labels
  */
-function bindIO(data: TestData, scope) {
+function bindIO(data: TestData, scope: any) {
   const inputs: { [key: string]: any } = {}
   const outputs: { [key: string]: any } = {}
   let reset
@@ -318,7 +320,7 @@ function bindIO(data: TestData, scope) {
  * Set and propogate the input values according to the testcase.
  * Called by runSingle() and runAll()
  */
-function setInputValues(inputs, group, caseIndex: number, scope) {
+function setInputValues(inputs: any, group: any, caseIndex: number, scope: any) {
   group.inputs.forEach((input) => {
     inputs[input.label].state = parseInt(input.values[caseIndex], 2)
   })
@@ -339,7 +341,7 @@ function tickClock(scope: any) {
 
 // Do we have any other function to do this?
 // Utility function. Converts decimal number to binary string
-function dec2bin(dec: number | undefined, bitWidth = undefined) {
+function dec2bin(dec: number | undefined, bitWidth: number | undefined = undefined) {
   if (dec === undefined) return 'X'
   const bin = (dec >>> 0).toString(2)
   if (!bitWidth) return bin
@@ -350,9 +352,19 @@ function dec2bin(dec: number | undefined, bitWidth = undefined) {
 /**
  * Gets Output values as a Map with keys as output name and value as output state
  */
-function getOutputValues(data: TestData, outputs) {
-  const values = new Map()
+interface OutputNode {
+  value: number
+  bitWidth: number
+}
 
+interface OutputSignal {
+  nodeList: OutputNode[]
+}
+
+type OutputCollection = Record<string, OutputSignal>
+
+function getOutputValues(data: TestData, outputs: OutputCollection) {
+  const values = new Map<string, string>()
   data.groups[0].outputs.forEach((dataOutput) => {
     // Using node value because output state only changes on rendering
     const resultValue = outputs[dataOutput.label].nodeList[0].value
@@ -476,7 +488,7 @@ export function runAll(data: TestData, scope = globalScope) {
 /**
  * Runs single combinational test
  */
-function runSingleCombinational(testbenchData: TestBenchData, scope) {
+function runSingleCombinational(testbenchData: TestBenchData, scope: any) {
   const data = testbenchData.testData
   const groupIndex = testbenchData.currentGroup
   const caseIndex = testbenchData.currentCase
@@ -500,7 +512,7 @@ function runSingleCombinational(testbenchData: TestBenchData, scope) {
  * Runs single sequential test and all tests above it in the group
  * Used in MANUAL mode
  */
-function runSingleSequential(testbenchData: TestBenchData, scope) {
+function runSingleSequential(testbenchData: TestBenchData, scope: any) {
   const data = testbenchData.testData
   const groupIndex = testbenchData.currentGroup
   const caseIndex = testbenchData.currentCase
@@ -556,7 +568,7 @@ export function openCreator(type: openCreatorType) {
 * Set the current test case result on the UI
 */
 
-function setUIResult(testbenchData: TestBenchData, result) {
+function setUIResult(testbenchData: TestBenchData, result: any) {
   const testBenchStore = useTestBenchStore();
   const data = testbenchData.testData;
   const groupIndex = testbenchData.currentGroup;
@@ -747,7 +759,7 @@ export const buttonListenerFunctions = {
 /**
 * Runs single test
 */
-function runSingleTest(testbenchData: TestBenchData, scope) {
+function runSingleTest(testbenchData: TestBenchData, scope: any) {
   const data = testbenchData.testData
 
   let result
