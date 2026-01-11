@@ -165,11 +165,12 @@ export default miniMapArea = {
     },
     clear() {
         if (lightMode) return
-        const miniMapArea = document.getElementById('miniMapArea')
-        if (miniMapArea) {
-            miniMapArea.style.zIndex = '-1'
+        const miniMapAreaEl = document.getElementById('miniMapArea')
+        if (miniMapAreaEl) {
+            miniMapAreaEl.style.zIndex = '-1'
         }
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+        // setup() sets this.ctx; use it here with optional chaining for safety
+        this.ctx?.clearRect(0, 0, this.canvas.width, this.canvas.height)
     },
 }
 var lastMiniMapShown
