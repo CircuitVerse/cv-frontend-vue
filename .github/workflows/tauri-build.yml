@@ -20,6 +20,8 @@ jobs:
             args: '--target x86_64-apple-darwin'  # Intel Mac
           - platform: 'ubuntu-22.04'
             args: ''
+          - platform: 'windows-latest'
+            args: ''
           
 
     runs-on: ${{ matrix.platform }}
@@ -64,12 +66,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          projectPath: ./src-tauri 
-          tagName: app-v__VERSION__ 
-          releaseName: "CircuitVerse Desktop v__VERSION__"
-          releaseBody: "See the assets below to download this release."
-          releaseDraft: true
-          prerelease: false
+          projectPath: ./src-tauri
           args: ${{ matrix.args }}
 
       - name: Upload Artifacts

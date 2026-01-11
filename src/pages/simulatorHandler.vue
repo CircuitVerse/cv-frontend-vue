@@ -83,11 +83,13 @@ async function getLoginData() {
 }
 
 onBeforeMount(() => {
-    // set project id if /edit/:projectId route is used
-
-    ;(window as any).logixProjectId = route.params.projectId
-    // only execute if projectId is defined
-    if ((window as any).logixProjectId) {
+    // prioritize logixProjectId from window
+    const windowLogixProjectId = (window as any).logixProjectId
+    if (windowLogixProjectId && windowLogixProjectId !== '0') {
+        ;(window as any).logixProjectId = windowLogixProjectId
+        checkEditAccess()
+    } else if (route.params.projectId) {
+        ;(window as any).logixProjectId = route.params.projectId
         checkEditAccess()
     } else {
         // if projectId is not defined open blank simulator
