@@ -129,10 +129,9 @@ export function pinchZoom(e, globalScope) {
     updatePositionSet(true)
     updateCanvasSet(true)
     // Calculating distance between touch to see if its pinchIN or pinchOut
-    distance = Math.sqrt(
-        (e.touches[1].clientX - e.touches[0].clientX) ** 2,
-        (e.touches[1].clientY - e.touches[0].clientY) ** 2
-    )
+    const dx = e.touches[1].clientX - e.touches[0].clientX
+    const dy = e.touches[1].clientY - e.touches[0].clientY
+    distance = Math.sqrt(dx * dx + dy * dy)
     if (distance >= currDistance) {
         pinchZ += 0.02
         currDistance = distance
@@ -155,7 +154,7 @@ export function pinchZoom(e, globalScope) {
     const RawX = (centreX - rect.left) * DPR
     const RawY = (centreY - rect.top) * DPR
     const Xf = Math.round((RawX - globalScope.ox) / globalScope.scale / unit)
-    const Yf = Math.round((RawY - globalScope.ox) / globalScope.scale / unit)
+    const Yf = Math.round((RawY - globalScope.oy) / globalScope.scale / unit)
     const currCentreX = Math.round(Xf / unit) * unit
     const currCentreY = Math.round(Yf / unit) * unit
     globalScope.ox = Math.round(currCentreX * (globalScope.scale - oldScale))
