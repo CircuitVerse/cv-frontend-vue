@@ -72,10 +72,19 @@ export function dragging(targetEl: HTMLElement, DragEl: HTMLElement): void {
         ],
     })
 
-    $(DragEl).on('mousedown', () => {
-        $(`.draggable-panel:not(${DragEl})`).css('z-index', '99')
-        $(DragEl).css('z-index', '99')
-    })
+    // Handle z-index on mousedown using native DOM
+    const dragElement = document.querySelector(DragEl as unknown as string) as HTMLElement | null
+    if (dragElement) {
+        dragElement.addEventListener('mousedown', () => {
+            // Reset z-index for other panels
+            const otherPanels = document.querySelectorAll(`.draggable-panel:not(${DragEl})`)
+            otherPanels.forEach((panel) => {
+                (panel as HTMLElement).style.zIndex = '99'
+            })
+            // Set z-index for current panel
+            dragElement.style.zIndex = '99'
+        })
+    }
 
     let panelElements = document.querySelectorAll(
         '.elementPanel, .layoutElementPanel, #moduleProperty, #layoutDialog, #verilogEditorPanel, .timing-diagram-panel, .testbench-manual-panel, .quick-btn'
