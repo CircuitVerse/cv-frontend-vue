@@ -142,13 +142,11 @@ window.onbeforeunload = async function () {
  * Function to clear project
  */
 export async function clearProject() {
-    if (await confirmOption('Would you like to clear the project?')) {
         globalScope = undefined
         resetScopeList()
         // $('.circuits').remove()
         newCircuit('main')
         showMessage('Your project is as good as new!')
-    }
 }
 
 /**
