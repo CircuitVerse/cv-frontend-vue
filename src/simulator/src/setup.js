@@ -88,7 +88,7 @@ function setupEnvironment() {
     newCircuit('Main')
     window.data = {}
     resetup()
-    setupCodeMirrorEnvironment()
+    
 }
 
 /**
@@ -168,12 +168,33 @@ function showTour() {
  * @category setup
  */
 export function setup() {
-    setupEnvironment()
+    console.log('[setup] called', {
+  simulationArea: !!document.getElementById('simulationArea'),
+  toolbar: !!document.getElementById('toolbar'),
+  panelHeader: document.querySelectorAll('.panel-header').length
+})
+
+    setupEnvironment()  
     if (!embed) {
-        setupUI()
-        startMainListeners()
+        waitForAllPanelsAndSetupUI()
     }
     // startListeners()
     loadProjectData()
     showTour()
+}
+function waitForAllPanelsAndSetupUI() {
+    const observer = new MutationObserver(() => {
+        const panels = document.querySelectorAll('.panel-header')
+
+        if (panels.length >= 7) {
+            setupUI()
+            startMainListeners()
+            observer.disconnect()
+        }
+    })
+
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+    })
 }
