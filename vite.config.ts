@@ -38,7 +38,7 @@ export default defineConfig(() => {
                 ),
             },
         },
-        base: isDesktop ? '/' : `/simulatorvue/${version}/`,
+        base: process.env.VITE_BASE || (isDesktop ? '/' : `/simulatorvue/${version}/`),
         build: {
             outDir: `./dist/simulatorvue/${version}/`,
             assetsDir: 'assets',
