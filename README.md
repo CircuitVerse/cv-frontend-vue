@@ -52,6 +52,7 @@ If you mount the simulator on a different path than the default `/simulatorvue/`
 # Example for a mounting point at /simulator-v0/
 VITE_BASE=/simulator-v0/ npm run build -- v0
 ```
+
 Built assets will be available in `dist/simulatorvue/`. Each version will have a predictable entry point:
 - `dist/simulatorvue/v0/simulator-v0.js`
 - `dist/simulatorvue/v1/simulator-v1.js`
