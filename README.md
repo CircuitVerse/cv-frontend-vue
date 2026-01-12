@@ -10,6 +10,14 @@ We would love to hear from you! We communicate on Slack:
 
 [![Slack](https://img.shields.io/badge/chat-on_slack-purple.svg?style=for-the-badge&logo=slack)](https://circuitverse.org/slack)
 
+## Prerequisites
+
+If you are on Windows, ensure that symlinks are enabled in your Git configuration. This is required because the project uses symlinks for version management:
+
+```bash
+git config --global core.symlinks true
+```
+
 ## Development & Versions
 This repository supports multiple versions of the simulator.
 - **v0**: Stable production version.
@@ -36,6 +44,15 @@ To build a specific version:
 ```bash
 npm run build -- v1
 ```
+
+### Custom Mounting Point (e.g. for Rails)
+If you mount the simulator on a different path than the default `/simulatorvue/`, you must specify the `VITE_BASE` environment variable during build:
+
+```bash
+# Example for a mounting point at /simulator-v0/
+VITE_BASE=/simulator-v0/ npm run build -- v0
+```
+
 Built assets will be available in `dist/simulatorvue/`. Each version will have a predictable entry point:
 - `dist/simulatorvue/v0/simulator-v0.js`
 - `dist/simulatorvue/v1/simulator-v1.js`
@@ -49,6 +66,7 @@ The simulator is designed to be **route-agnostic**. It can be mounted on any pat
   window.logixProjectId = "0"; // Project ID or "0" for new
   window.isUserLoggedIn = true;
 </script>
+<!-- CSS is automatically injected by the JavaScript file -->
 <script type="module" src="/simulatorvue/v0/simulator-v0.js"></script>
 ```
 

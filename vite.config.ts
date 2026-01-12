@@ -8,6 +8,7 @@ import vueI18n from '@intlify/vite-plugin-vue-i18n'
 import vuetify from 'vite-plugin-vuetify'
 import { createHtmlPlugin } from 'vite-plugin-html'
 
+import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js'
 
 // https://vitejs.dev/config/
 export default defineConfig(() => {
@@ -18,6 +19,7 @@ export default defineConfig(() => {
         plugins: [
             vue(),
             vuetify({ autoImport: true }),
+            cssInjectedByJsPlugin(),
             vueI18n({
                 // if you want to use Vue I18n Legacy API, you need to set `compositionOnly: false`
                 // compositionOnly: false,
@@ -36,21 +38,21 @@ export default defineConfig(() => {
                 ),
             },
         },
-        base: isDesktop ? '/' : `/simulatorvue/${version}/`,
+        base: process.env.VITE_BASE || (isDesktop ? '/' : `/simulatorvue/${version}/`),
         build: {
             outDir: `./dist/simulatorvue/${version}/`,
             assetsDir: 'assets',
             chunkSizeWarningLimit: 1600,
             rollupOptions: {
                 input: {
-                    [version]: fileURLToPath(
+                    main: fileURLToPath(
                         new URL(`./${version}/index.html`, import.meta.url)
                     ),
                 },
                 output: {
-                    entryFileNames: `simulator-[name].js`,
-                    chunkFileNames: `assets/[name]-[hash].js`,
-                    assetFileNames: `assets/[name]-[hash].[ext]`,
+                    entryFileNames: `simulator-${version}.js`,
+                    chunkFileNames: `assets/[name].js`,
+                    assetFileNames: `assets/[name].[ext]`,
                 },
             },
         },
