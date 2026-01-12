@@ -19,14 +19,16 @@ export function getToken(name: string) {
 
 <script setup lang="ts">
 import simulator from './simulator.vue'
-import { onBeforeMount, ref } from 'vue'
+import { onBeforeMount, ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '#/store/authStore'
+import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 
 const route = useRoute()
 const hasAccess = ref(true)
 const isLoading = ref(true)
 const authStore = useAuthStore()
+const simulatorMobileStore = useSimulatorMobileStore()
 
 // check if user has edit access to the project
 async function checkEditAccess() {
@@ -81,11 +83,13 @@ async function getLoginData() {
 }
 
 onBeforeMount(() => {
-    // set project id if /edit/:projectId route is used
-
-    ;(window as any).logixProjectId = route.params.projectId
-    // only execute if projectId is defined
-    if ((window as any).logixProjectId) {
+    // prioritize logixProjectId from window
+    const windowLogixProjectId = (window as any).logixProjectId
+    if (windowLogixProjectId && windowLogixProjectId !== '0') {
+        ;(window as any).logixProjectId = windowLogixProjectId
+        checkEditAccess()
+    } else if (route.params.projectId) {
+        ;(window as any).logixProjectId = route.params.projectId
         checkEditAccess()
     } else {
         // if projectId is not defined open blank simulator
@@ -93,4 +97,11 @@ onBeforeMount(() => {
         isLoading.value = false
     }
 })
+
+onMounted(() => {
+    window.addEventListener('resize', checkShowSidebar)
+})
+function checkShowSidebar() {
+    simulatorMobileStore.showMobileView = window.innerWidth < simulatorMobileStore.minWidthToShowMobile ? true : false
+}
 </script>
