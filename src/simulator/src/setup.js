@@ -176,16 +176,30 @@ export function setup() {
     loadProjectData()
     showTour()
 }
-function waitForAllPanelsAndSetupUI() {
-    const observer = new MutationObserver(() => {
-        const panels = document.querySelectorAll('.panel-header')
+const EXPECTED_PANEL_COUNT = 7
+const PANEL_WAIT_TIMEOUT_MS = 5000
 
-        // 7 is the stable number after refresh (from your logs)
-        // 7 panel headers is the stable count once the simulator UI is fully rendered.
-        if (panels.length >= 7) {
-            setupUI()
-            startMainListeners()
+function waitForAllPanelsAndSetupUI() {
+    const initializeUI = () => {
+        setupUI()
+        startMainListeners()
+    }
+
+    const checkPanels = () => {
+        return document.querySelectorAll('.panel-header').length >= EXPECTED_PANEL_COUNT
+    }
+
+    // If panels are already present, initialize immediately
+    if (checkPanels()) {
+        initializeUI()
+        return
+    }
+
+    const observer = new MutationObserver(() => {
+        if (checkPanels()) {
             observer.disconnect()
+            clearTimeout(timeoutId)
+            initializeUI()
         }
     })
 
@@ -193,4 +207,12 @@ function waitForAllPanelsAndSetupUI() {
         childList: true,
         subtree: true,
     })
+
+    // Fallback to avoid indefinite waiting
+    const timeoutId = setTimeout(() => {
+        observer.disconnect()
+        console.warn('Panel initialization timeout reached, initializing UI anyway')
+        initializeUI()
+    }, PANEL_WAIT_TIMEOUT_MS)
 }
+
