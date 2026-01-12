@@ -88,7 +88,7 @@ function setupEnvironment() {
     newCircuit('Main')
     window.data = {}
     resetup()
-    
+    setupCodeMirrorEnvironment()
 }
 
 /**
@@ -168,13 +168,7 @@ function showTour() {
  * @category setup
  */
 export function setup() {
-    console.log('[setup] called', {
-  simulationArea: !!document.getElementById('simulationArea'),
-  toolbar: !!document.getElementById('toolbar'),
-  panelHeader: document.querySelectorAll('.panel-header').length
-})
-
-    setupEnvironment()  
+    setupEnvironment()
     if (!embed) {
         waitForAllPanelsAndSetupUI()
     }
@@ -186,6 +180,8 @@ function waitForAllPanelsAndSetupUI() {
     const observer = new MutationObserver(() => {
         const panels = document.querySelectorAll('.panel-header')
 
+        // 7 is the stable number after refresh (from your logs)
+        // 7 panel headers is the stable count once the simulator UI is fully rendered.
         if (panels.length >= 7) {
             setupUI()
             startMainListeners()
