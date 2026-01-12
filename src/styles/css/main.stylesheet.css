@@ -252,9 +252,10 @@ input[type='text']:focus {
 
 .draggable-panel-css {
     border-radius: 5px;
-    z-index: 70;
+    z-index: 120;
     transition: background 0.5s ease-out;
     position: fixed;
+    pointer-events: auto;
 }
 
 @supports (backdrop-filter: blur()) {
