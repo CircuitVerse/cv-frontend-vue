@@ -11,6 +11,12 @@ if (process.argv.length > 2) {
   versions = process.argv.slice(2);
 }
 
+// Clear dist directory once at the start if it exists
+if (fs.existsSync('dist')) {
+  console.log('Clearing old dist/ directory...');
+  fs.rmSync('dist', { recursive: true, force: true });
+}
+
 for (const version of versions) {
   console.log(`Building for version: ${version}`);
 

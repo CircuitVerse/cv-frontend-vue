@@ -49,6 +49,7 @@ The simulator is designed to be **route-agnostic**. It can be mounted on any pat
   window.logixProjectId = "0"; // Project ID or "0" for new
   window.isUserLoggedIn = true;
 </script>
+<!-- CSS is automatically injected by the JavaScript file -->
 <script type="module" src="/simulatorvue/v0/simulator-v0.js"></script>
 ```
 
