@@ -190,7 +190,7 @@ function checkValidBitWidth() {
     const oldVal = selector.getAttribute('old-val')
 
     if (
-        value === undefined ||
+        value === '' ||
         parseInt(value) > 32 ||
         parseInt(value) < 1 ||
         !isNumeric(value)
@@ -493,7 +493,7 @@ export function fullView() {
     simulatorMobileStore.showQuickButtons.value = false
     simulatorMobileStore.showMobileButtons.value = false
 
-    app.appendChild(exitViewEl)
+    if (app) app.appendChild(exitViewEl)
     exitViewEl.addEventListener('click', exitFullView)
 }
 
