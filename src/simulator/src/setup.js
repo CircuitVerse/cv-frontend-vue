@@ -8,7 +8,6 @@ import { simulationArea } from './simulationArea'
 import { dots } from './canvasApi'
 import { update, updateSimulationSet, updateCanvasSet } from './engine'
 import { setupUI } from './ux'
-import startMainListeners from './listeners'
 import { newCircuit } from './circuit'
 import load from './data/load'
 import save from './data/save'
@@ -180,7 +179,7 @@ export function setup() {
     setupEnvironment()
 
     if (!embed) {
-      debug('waiting for panel-ready initialization')
+      debug('UI and listeners initialized after panels are ready (Vue lifecycle)')
     }
 
     loadProjectData()
