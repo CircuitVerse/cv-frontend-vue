@@ -32,6 +32,12 @@ import { getToken } from '#/pages/simulatorHandler.vue'
  * Also redraws the grid.
  * @category setup
  */
+function debug(...args) {
+    if (window.__SIM_DEBUG__) {
+        console.log('[SIM DEBUG]', ...args)
+    }
+}
+
 export function resetup() {
     DPR = window.devicePixelRatio || 1
     if (lightMode) {
@@ -168,51 +174,16 @@ function showTour() {
  * @category setup
  */
 export function setup() {
+    debug('setup() called')
+    debug('document.readyState =', document.readyState)
+
     setupEnvironment()
+
     if (!embed) {
-        waitForAllPanelsAndSetupUI()
+      debug('waiting for panel-ready initialization')
     }
-    // startListeners()
+
     loadProjectData()
     showTour()
-}
-const EXPECTED_PANEL_COUNT = 7
-const PANEL_WAIT_TIMEOUT_MS = 5000
-
-function waitForAllPanelsAndSetupUI() {
-    const initializeUI = () => {
-        setupUI()
-        startMainListeners()
-    }
-
-    const checkPanels = () => {
-        return document.querySelectorAll('.panel-header').length >= EXPECTED_PANEL_COUNT
-    }
-
-    // If panels are already present, initialize immediately
-    if (checkPanels()) {
-        initializeUI()
-        return
-    }
-
-    const observer = new MutationObserver(() => {
-        if (checkPanels()) {
-            observer.disconnect()
-            clearTimeout(timeoutId)
-            initializeUI()
-        }
-    })
-
-    observer.observe(document.body, {
-        childList: true,
-        subtree: true,
-    })
-
-    // Fallback to avoid indefinite waiting
-    const timeoutId = setTimeout(() => {
-        observer.disconnect()
-        console.warn('Panel initialization timeout reached, initializing UI anyway')
-        initializeUI()
-    }, PANEL_WAIT_TIMEOUT_MS)
 }
 

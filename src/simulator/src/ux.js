@@ -149,7 +149,6 @@ export function setupUI() {
     $('.logixButton').on('click', function () {
         logixFunction[this.id]()
     })
-    setupPanels()
 }
 
 /**
@@ -493,4 +492,25 @@ export function fillSubcircuitElements() {
         subCircuitElementList.value = subcircuitElements
         isEmptySubCircuitElementList.value = !subCircuitElementExists
     }
+}
+let panelsInitialized = false
+
+export function setupPanelsWhenReady() {
+    const requiredPanels = [
+        '.elementPanel',
+        '.layoutElementPanel',
+        '#verilogEditorPanel',
+        '.timing-diagram-panel',
+        '.testbench-manual-panel',
+    ]
+
+    const allPresent = requiredPanels.every(
+        (sel) => document.querySelector(sel)
+    )
+
+    if (!allPresent || panelsInitialized) return
+
+    panelsInitialized = true
+    setupPanels()
+
 }
