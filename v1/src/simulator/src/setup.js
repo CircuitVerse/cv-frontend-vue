@@ -26,6 +26,58 @@ import '../vendor/jquery-ui.min'
 import { confirmSingleOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
 import { getToken } from '#/pages/simulatorHandler.vue'
 
+// Loading icon fade animation constants and helpers
+const LOADING_ICON_SELECTOR = '.loadingIcon'
+const LOADING_FADE_MS = 400
+const loadingIconTimeouts = new WeakMap()
+
+/**
+ * Fade out all loading icons with timeout cancellation to avoid race conditions
+ */
+function fadeOutLoadingIcons() {
+    document.querySelectorAll(LOADING_ICON_SELECTOR).forEach((el) => {
+        // Cancel any pending timeout for this element
+        const prev = loadingIconTimeouts.get(el)
+        if (prev) clearTimeout(prev)
+
+        el.style.transition = `opacity ${LOADING_FADE_MS}ms`
+        el.style.opacity = '0'
+
+        const id = setTimeout(() => {
+            el.style.display = 'none'
+        }, LOADING_FADE_MS)
+        loadingIconTimeouts.set(el, id)
+    })
+}
+
+/**
+ * Fade in all loading icons with proper display restoration
+ */
+function fadeInLoadingIcons() {
+    document.querySelectorAll(LOADING_ICON_SELECTOR).forEach((el) => {
+        // Cancel any pending fade-out timeout
+        const prev = loadingIconTimeouts.get(el)
+        if (prev) clearTimeout(prev)
+
+        // Store original display if not already stored
+        if (!el.dataset.prevDisplay) {
+            const computed = window.getComputedStyle(el).display
+            el.dataset.prevDisplay = computed !== 'none' ? computed : 'block'
+        }
+
+        el.style.display = el.dataset.prevDisplay
+        el.style.opacity = '0'
+        el.style.transition = `opacity ${LOADING_FADE_MS}ms`
+
+        // Use requestAnimationFrame to ensure display change takes effect before opacity
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                el.style.opacity = '1'
+            })
+        })
+    })
+}
+
 /**
  * to resize window and setup things it
  * sets up new width for the canvas variables.
@@ -110,24 +162,16 @@ async function fetchProjectData(projectId) {
         )
         if (response.ok) {
             const data = await response.json()
-            const simulatorVersion = data.simulatorVersion  
-            const projectName = data.name
-            if(!simulatorVersion){                 
-                window.location.href = `/simulator/edit/${projectName}`             
-            }           
-            if(simulatorVersion && simulatorVersion != "v0"){                 
-                window.location.href = `/simulatorvue/edit/${projectName}?simver=${simulatorVersion}`             
-            }
             await load(data)
             await simulationArea.changeClockTime(data.timePeriod || 500)
-            $('.loadingIcon').fadeOut()
+            fadeOutLoadingIcons()
         } else {
             throw new Error('API call failed')
         }
     } catch (error) {
         console.error(error)
         confirmSingleOption('Error: Could not load.')
-        $('.loadingIcon').fadeOut()
+        fadeOutLoadingIcons()
     }
 }
 
@@ -139,7 +183,7 @@ async function fetchProjectData(projectId) {
 async function loadProjectData() {
     window.logixProjectId = window.logixProjectId ?? 0
     if (window.logixProjectId !== 0) {
-        $('.loadingIcon').fadeIn()
+        fadeInLoadingIcons()
         await fetchProjectData(window.logixProjectId)
     } else if (localStorage.getItem('recover_login') && window.isUserLoggedIn) {
         // Restore unsaved data and save
