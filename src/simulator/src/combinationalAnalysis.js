@@ -321,14 +321,14 @@ function drawCombinationalAnalysis(
                 v2.connect(v)
                 o.inp[j].connect(v2)
 
-                var v = new Node(
+                v = new Node(
                     andPosX + 30 + (midWay - j) * 10,
                     andGateNodes[andGateCount - j - 1].absY(),
                     2,
                     scope.root
                 )
                 v.connect(andGateNodes[andGateCount - j - 1])
-                var v2 = new Node(
+                v2 = new Node(
                     andPosX + 30 + (midWay - j) * 10,
                     o.inp[andGateCount - j - 1].absY(),
                     2,
@@ -340,7 +340,7 @@ function drawCombinationalAnalysis(
             var out = new Output(outputPosX, o.y, scope, 'LEFT', 1)
             out.inp1.connect(o.output1)
         } else {
-            var out = new Output(
+            out = new Output(
                 outputPosX,
                 andGateNodes[0].absY(),
                 scope,
@@ -352,9 +352,9 @@ function drawCombinationalAnalysis(
         out.setLabel(outputListNames[i])
         out.newLabelDirection('RIGHT')
     }
-    for (var i = 0; i < logixNodes.length; i++) {
+    for (i = 0; i < logixNodes.length; i++) {
         if (logixNodes[i].absY() != currentPosY) {
-            var v = new Node(logixNodes[i].absX(), currentPosY, 2, scope.root)
+            v = new Node(logixNodes[i].absX(), currentPosY, 2, scope.root)
             logixNodes[i].connect(v)
         }
     }
