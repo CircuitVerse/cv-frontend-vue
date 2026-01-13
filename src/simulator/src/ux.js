@@ -18,6 +18,7 @@ import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
 import { toRefs } from 'vue'
 import { circuitElementList } from './metadata'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
+import startMainListeners from './listeners'
 
 export const uxvar = {
     smartDropXX: 50,
@@ -511,6 +512,7 @@ export function setupPanelsWhenReady() {
     if (!allPresent || panelsInitialized) return
 
     panelsInitialized = true
-    setupPanels()
 
+    setupPanels()
+    startMainListeners()
 }
