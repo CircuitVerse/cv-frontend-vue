@@ -7,9 +7,8 @@ import plotArea from './plotArea'
 import { simulationArea } from './simulationArea'
 import { dots } from './canvasApi'
 import { update, updateSimulationSet, updateCanvasSet } from './engine'
-import { setupUI } from './ux'
 import { newCircuit } from './circuit'
-import load from './data/load'
+import load from './data/load'  
 import save from './data/save'
 import { showTourGuide } from './tutorials'
 import setupModules from './moduleSetup'
@@ -31,11 +30,6 @@ import { getToken } from '#/pages/simulatorHandler.vue'
  * Also redraws the grid.
  * @category setup
  */
-function debug(...args) {
-    if (window.__SIM_DEBUG__) {
-        console.log('[SIM DEBUG]', ...args)
-    }
-}
 
 export function resetup() {
     DPR = window.devicePixelRatio || 1
@@ -173,15 +167,7 @@ function showTour() {
  * @category setup
  */
 export function setup() {
-    debug('setup() called')
-    debug('document.readyState =', document.readyState)
-
     setupEnvironment()
-
-    if (!embed) {
-      debug('UI and listeners initialized after panels are ready (Vue lifecycle)')
-    }
-
     loadProjectData()
     showTour()
 }
