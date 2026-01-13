@@ -44,6 +44,11 @@ const simulatorMobileStore = useSimulatorMobileStore()
 
 <style scoped>
 @import './Navbar.css';
+#projectName {
+    line-height: normal; 
+    padding-bottom: 2px;
+    overflow: visible;
+}
 
 .useMenuBtn {
     margin: 0 2rem 0 auto;
