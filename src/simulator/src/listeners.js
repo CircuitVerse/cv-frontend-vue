@@ -7,11 +7,7 @@
 /* eslint-disable prefer-template */
 /* eslint-disable no-param-reassign */
 // Most Listeners are stored here
-import {
-    layoutModeGet,
-    tempBuffer,
-    layoutUpdate,
-} from './layoutMode'
+import { layoutModeGet, tempBuffer, layoutUpdate } from './layoutMode'
 import { simulationArea } from './simulationArea'
 import {
     scheduleUpdate,
@@ -26,8 +22,13 @@ import {
 } from './engine'
 import { changeScale, findDimensions } from './canvasApi'
 import { scheduleBackup } from './data/backupCircuit'
-import { hideProperties, deleteSelected, uxvar, exitFullView } from './ux';
-import { updateRestrictedElementsList, updateRestrictedElementsInScope, hideRestricted, showRestricted } from './restrictedElementDiv';
+import { hideProperties, deleteSelected, uxvar, exitFullView } from './ux'
+import {
+    updateRestrictedElementsList,
+    updateRestrictedElementsInScope,
+    hideRestricted,
+    showRestricted,
+} from './restrictedElementDiv'
 import { removeMiniMap, updatelastMinimapShown } from './minimap'
 import undo from './data/undo'
 import redo from './data/redo'
@@ -41,19 +42,19 @@ import { toRefs } from 'vue'
 
 const unit = 10
 let listenToSimulator = true
-let coordinate;
+let coordinate
 const returnCoordinate = {
-  x: 0,
-  y: 0
+    x: 0,
+    y: 0,
 }
 
-let currDistance = 0;
-let distance = 0;
-let pinchZ = 0;
-let centreX;
-let centreY;
-let timeout;
-let lastTap = 0;
+let currDistance = 0
+let distance = 0
+let pinchZ = 0
+let centreX
+let centreY
+let timeout
+let lastTap = 0
 
 /**
  *
@@ -61,14 +62,17 @@ let lastTap = 0;
  * function for double click or double tap
  */
 function onDoubleClickorTap(e) {
-    updateCanvasSet(true);
-    if (simulationArea.lastSelected && simulationArea.lastSelected.dblclick !== undefined) {
-        simulationArea.lastSelected.dblclick();
+    updateCanvasSet(true)
+    if (
+        simulationArea.lastSelected &&
+        simulationArea.lastSelected.dblclick !== undefined
+    ) {
+        simulationArea.lastSelected.dblclick()
     } else if (!simulationArea.shiftDown) {
-        simulationArea.multipleObjectSelections = [];
+        simulationArea.multipleObjectSelections = []
     }
-    scheduleUpdate(2);
-    e.preventDefault();
+    scheduleUpdate(2)
+    e.preventDefault()
 }
 
 /**
@@ -77,19 +81,21 @@ function onDoubleClickorTap(e) {
  * function to detect tap and double tap
  */
 function getTap(e) {
-    const currentTime = new Date().getTime();
-    const tapLength = currentTime - lastTap;
-    clearTimeout(timeout);
+    const currentTime = new Date().getTime()
+    const tapLength = currentTime - lastTap
+    clearTimeout(timeout)
     if (tapLength < 500 && tapLength > 0) {
-        onDoubleClickorTap(e);
+        onDoubleClickorTap(e)
     } else {
-    // Single tap
+        // Single tap
     }
-    lastTap = currentTime;
-    e.preventDefault();
+    lastTap = currentTime
+    e.preventDefault()
 }
 
-const isIe = (navigator.userAgent.toLowerCase().indexOf('msie') != -1 || navigator.userAgent.toLowerCase().indexOf('trident') != -1);
+const isIe =
+    navigator.userAgent.toLowerCase().indexOf('msie') != -1 ||
+    navigator.userAgent.toLowerCase().indexOf('trident') != -1
 
 // Function to getCoordinate
 //  *If touch is enable then it will return touch coordinate
@@ -97,18 +103,18 @@ const isIe = (navigator.userAgent.toLowerCase().indexOf('msie') != -1 || navigat
 //
 export function getCoordinate(e) {
     if (simulationArea.touch) {
-        returnCoordinate.x = e.touches[0].clientX;
-        returnCoordinate.y = e.touches[0].clientY;
-        return returnCoordinate;
+        returnCoordinate.x = e.touches[0].clientX
+        returnCoordinate.y = e.touches[0].clientY
+        return returnCoordinate
     }
 
     if (!simulationArea.touch) {
-        returnCoordinate.x = e.clientX;
-        returnCoordinate.y = e.clientY;
-        return returnCoordinate;
+        returnCoordinate.x = e.clientX
+        returnCoordinate.y = e.clientY
+        return returnCoordinate
     }
 
-    return returnCoordinate;
+    return returnCoordinate
 }
 
 /* Function for Panstop on simulator
@@ -116,44 +122,46 @@ export function getCoordinate(e) {
     touch and mouse will change in future
 */
 export function pinchZoom(e, globalScope) {
-    e.preventDefault();
-    gridUpdateSet(true);
-    scheduleUpdate();
-    updateSimulationSet(true);
-    updatePositionSet(true);
-    updateCanvasSet(true);
+    e.preventDefault()
+    gridUpdateSet(true)
+    scheduleUpdate()
+    updateSimulationSet(true)
+    updatePositionSet(true)
+    updateCanvasSet(true)
     // Calculating distance between touch to see if its pinchIN or pinchOut
-    distance = Math.sqrt((e.touches[1].clientX - e.touches[0].clientX) ** 2, (e.touches[1].clientY - e.touches[0].clientY) ** 2);
+    distance = Math.sqrt(
+        (e.touches[1].clientX - e.touches[0].clientX) ** 2,
+        (e.touches[1].clientY - e.touches[0].clientY) ** 2
+    )
     if (distance >= currDistance) {
-        pinchZ += 0.02;
-        currDistance = distance;
+        pinchZ += 0.02
+        currDistance = distance
     } else if (currDistance >= distance) {
-        pinchZ -= 0.02;
-        currDistance = distance;
+        pinchZ -= 0.02
+        currDistance = distance
     }
     if (pinchZ >= 2) {
-        pinchZ = 2;
+        pinchZ = 2
+    } else if (pinchZ <= 0.5) {
+        pinchZ = 0.5
     }
-    else if (pinchZ <= 0.5) {
-        pinchZ = 0.5;
-    }
-    const oldScale = globalScope.scale;
-    globalScope.scale = Math.max(0.5, Math.min(4 * DPR, pinchZ * 3));
-    globalScope.scale = Math.round(globalScope.scale * 10) / 10;
+    const oldScale = globalScope.scale
+    globalScope.scale = Math.max(0.5, Math.min(4 * DPR, pinchZ * 3))
+    globalScope.scale = Math.round(globalScope.scale * 10) / 10
     // This is not working as expected
-    centreX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-    centreY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-    const rect = simulationArea.canvas.getBoundingClientRect();
-    const RawX = (centreX - rect.left) * DPR;
-    const RawY = (centreY - rect.top) * DPR;
-    const Xf = Math.round(((RawX - globalScope.ox) / globalScope.scale) / unit);
-    const Yf = Math.round(((RawY - globalScope.ox) / globalScope.scale) / unit);
-    const currCentreX = Math.round(Xf / unit) * unit;
-    const currCentreY = Math.round(Yf / unit) * unit;
-    globalScope.ox = Math.round(currCentreX * (globalScope.scale - oldScale));
-    globalScope.oy = Math.round(currCentreY * (globalScope.scale - oldScale));
-    gridUpdateSet(true);
-    scheduleUpdate(1);
+    centreX = (e.touches[0].clientX + e.touches[1].clientX) / 2
+    centreY = (e.touches[0].clientY + e.touches[1].clientY) / 2
+    const rect = simulationArea.canvas.getBoundingClientRect()
+    const RawX = (centreX - rect.left) * DPR
+    const RawY = (centreY - rect.top) * DPR
+    const Xf = Math.round((RawX - globalScope.ox) / globalScope.scale / unit)
+    const Yf = Math.round((RawY - globalScope.ox) / globalScope.scale / unit)
+    const currCentreX = Math.round(Xf / unit) * unit
+    const currCentreY = Math.round(Yf / unit) * unit
+    globalScope.ox = Math.round(currCentreX * (globalScope.scale - oldScale))
+    globalScope.oy = Math.round(currCentreY * (globalScope.scale - oldScale))
+    gridUpdateSet(true)
+    scheduleUpdate(1)
 }
 
 /*
@@ -163,36 +171,48 @@ export function pinchZoom(e, globalScope) {
   touch and mouse will change in future
  */
 export function panStart(e) {
-    coordinate = getCoordinate(e);
-    simulationArea.mouseDown = true;
+    coordinate = getCoordinate(e)
+    simulationArea.mouseDown = true
     // Deselect Input
     if (document.activeElement instanceof HTMLElement) {
-        document.activeElement.blur();
+        document.activeElement.blur()
     }
 
-    errorDetectedSet(false);
-    updateSimulationSet(true);
-    updatePositionSet(true);
-    updateCanvasSet(true);
-    simulationArea.lastSelected = undefined;
-    simulationArea.selected = false;
-    simulationArea.hover = undefined;
-    const rect = simulationArea.canvas.getBoundingClientRect();
-    simulationArea.mouseDownRawX = (coordinate.x - rect.left) * DPR;
-    simulationArea.mouseDownRawY = (coordinate.y - rect.top) * DPR;
-    simulationArea.mouseDownX = Math.round(((simulationArea.mouseDownRawX - globalScope.ox) / globalScope.scale) / unit) * unit;
-    simulationArea.mouseDownY = Math.round(((simulationArea.mouseDownRawY - globalScope.oy) / globalScope.scale) / unit) * unit;
+    errorDetectedSet(false)
+    updateSimulationSet(true)
+    updatePositionSet(true)
+    updateCanvasSet(true)
+    simulationArea.lastSelected = undefined
+    simulationArea.selected = false
+    simulationArea.hover = undefined
+    const rect = simulationArea.canvas.getBoundingClientRect()
+    simulationArea.mouseDownRawX = (coordinate.x - rect.left) * DPR
+    simulationArea.mouseDownRawY = (coordinate.y - rect.top) * DPR
+    simulationArea.mouseDownX =
+        Math.round(
+            (simulationArea.mouseDownRawX - globalScope.ox) /
+                globalScope.scale /
+                unit
+        ) * unit
+    simulationArea.mouseDownY =
+        Math.round(
+            (simulationArea.mouseDownRawY - globalScope.oy) /
+                globalScope.scale /
+                unit
+        ) * unit
     if (simulationArea.touch) {
-        simulationArea.mouseX = simulationArea.mouseDownX;
-        simulationArea.mouseY = simulationArea.mouseDownY;
+        simulationArea.mouseX = simulationArea.mouseDownX
+        simulationArea.mouseY = simulationArea.mouseDownY
     }
 
-    simulationArea.oldx = globalScope.ox;
-    simulationArea.oldy = globalScope.oy;
-    e.preventDefault();
-    scheduleBackup();
-    scheduleUpdate(1);
-    $('.dropdown.open').removeClass('open');
+    simulationArea.oldx = globalScope.ox
+    simulationArea.oldy = globalScope.oy
+    e.preventDefault()
+    scheduleBackup()
+    scheduleUpdate(1)
+    document
+        .querySelectorAll('.dropdown.open')
+        .forEach((el) => el.classList.remove('open'))
 }
 
 /*
@@ -207,107 +227,122 @@ export function panMove(e) {
     // If only one  it touched
     // pan left or right
     if (!simulationArea.touch || e.touches.length === 1) {
-        coordinate = getCoordinate(e);
-        const rect = simulationArea.canvas.getBoundingClientRect();
-        simulationArea.mouseRawX = (coordinate.x - rect.left) * DPR;
-        simulationArea.mouseRawY = (coordinate.y - rect.top) * DPR;
-        simulationArea.mouseXf = (simulationArea.mouseRawX - globalScope.ox) / globalScope.scale;
-        simulationArea.mouseYf = (simulationArea.mouseRawY - globalScope.oy) / globalScope.scale;
-        simulationArea.mouseX = Math.round(simulationArea.mouseXf / unit) * unit;
-        simulationArea.mouseY = Math.round(simulationArea.mouseYf / unit) * unit;
-        updateCanvasSet(true);
-        if (simulationArea.lastSelected && (simulationArea.mouseDown || simulationArea.lastSelected.newElement)) {
-            updateCanvasSet(true);
-            let fn;
+        coordinate = getCoordinate(e)
+        const rect = simulationArea.canvas.getBoundingClientRect()
+        simulationArea.mouseRawX = (coordinate.x - rect.left) * DPR
+        simulationArea.mouseRawY = (coordinate.y - rect.top) * DPR
+        simulationArea.mouseXf =
+            (simulationArea.mouseRawX - globalScope.ox) / globalScope.scale
+        simulationArea.mouseYf =
+            (simulationArea.mouseRawY - globalScope.oy) / globalScope.scale
+        simulationArea.mouseX = Math.round(simulationArea.mouseXf / unit) * unit
+        simulationArea.mouseY = Math.round(simulationArea.mouseYf / unit) * unit
+        updateCanvasSet(true)
+        if (
+            simulationArea.lastSelected &&
+            (simulationArea.mouseDown || simulationArea.lastSelected.newElement)
+        ) {
+            updateCanvasSet(true)
+            let fn
 
             if (simulationArea.lastSelected == globalScope.root) {
                 fn = function () {
-                    updateSelectionsAndPane();
-                };
+                    updateSelectionsAndPane()
+                }
             } else {
                 fn = function () {
                     if (simulationArea.lastSelected) {
-                        simulationArea.lastSelected.update();
+                        simulationArea.lastSelected.update()
                     }
-                };
+                }
             }
 
-            scheduleUpdate(0, 20, fn);
+            scheduleUpdate(0, 20, fn)
         } else {
-            scheduleUpdate(0, 200);
+            scheduleUpdate(0, 200)
         }
     }
 
     // If two fingures are touched
     // pinchZoom
     if (simulationArea.touch && e.touches.length === 2) {
-        pinchZoom(e, globalScope);
+        pinchZoom(e, globalScope)
     }
 }
 
 export function panStop(e) {
     const simulatorMobileStore = useSimulatorMobileStore()
-    simulationArea.mouseDown = false;
+    simulationArea.mouseDown = false
     if (!lightMode) {
-        updatelastMinimapShown();
-        setTimeout(removeMiniMap, 2000);
+        updatelastMinimapShown()
+        setTimeout(removeMiniMap, 2000)
     }
 
-    errorDetectedSet(false);
-    updateSimulationSet(true);
-    updatePositionSet(true);
-    updateCanvasSet(true);
-    gridUpdateSet(true);
-    wireToBeCheckedSet(1);
+    errorDetectedSet(false)
+    updateSimulationSet(true)
+    updatePositionSet(true)
+    updateCanvasSet(true)
+    gridUpdateSet(true)
+    wireToBeCheckedSet(1)
 
-    scheduleUpdate(1);
-    simulationArea.mouseDown = false;
+    scheduleUpdate(1)
+    simulationArea.mouseDown = false
 
     // eslint-disable-next-line no-plusplus
     for (let i = 0; i < 2; i++) {
-        updatePositionSet(true);
-        wireToBeCheckedSet(1);
-        update();
+        updatePositionSet(true)
+        wireToBeCheckedSet(1)
+        update()
     }
 
-    errorDetectedSet(false);
-    updateSimulationSet(true);
-    updatePositionSet(true);
-    updateCanvasSet(true);
-    gridUpdateSet(true);
-    wireToBeCheckedSet(1);
+    errorDetectedSet(false)
+    updateSimulationSet(true)
+    updatePositionSet(true)
+    updateCanvasSet(true)
+    gridUpdateSet(true)
+    wireToBeCheckedSet(1)
 
-    scheduleUpdate(1);
+    scheduleUpdate(1)
     // Var rect = simulationArea.canvas.getBoundingClientRect();
 
-    if (!(simulationArea.mouseRawX < 0 || simulationArea.mouseRawY < 0 || simulationArea.mouseRawX > width || simulationArea.mouseRawY > height)) {
-        uxvar.smartDropXX = simulationArea.mouseX + 100; // Math.round(((simulationArea.mouseRawX - globalScope.ox+100) / globalScope.scale) / unit) * unit;
-        uxvar.smartDropYY = simulationArea.mouseY - 50; // Math.round(((simulationArea.mouseRawY - globalScope.oy+100) / globalScope.scale) / unit) * unit;
+    if (
+        !(
+            simulationArea.mouseRawX < 0 ||
+            simulationArea.mouseRawY < 0 ||
+            simulationArea.mouseRawX > width ||
+            simulationArea.mouseRawY > height
+        )
+    ) {
+        uxvar.smartDropXX = simulationArea.mouseX + 100 // Math.round(((simulationArea.mouseRawX - globalScope.ox+100) / globalScope.scale) / unit) * unit;
+        uxvar.smartDropYY = simulationArea.mouseY - 50 // Math.round(((simulationArea.mouseRawY - globalScope.oy+100) / globalScope.scale) / unit) * unit;
     }
 
     if (simulationArea.touch) {
         const { isCopy } = toRefs(simulatorMobileStore)
         // small hack so Current circuit element should not spwan above last circuit element
         if (!isCopy.value) {
-            findDimensions(globalScope);
-            simulationArea.mouseX = 100 + simulationArea.maxWidth || 0;
-            simulationArea.mouseY = simulationArea.minHeight || 0;
-            getTap(e);
+            findDimensions(globalScope)
+            simulationArea.mouseX = 100 + simulationArea.maxWidth || 0
+            simulationArea.mouseY = simulationArea.minHeight || 0
+            getTap(e)
         }
     }
 }
 
 export default function startListeners() {
-    $(document).on('keyup', (e) => {
+    document.addEventListener('keyup', (e) => {
         if (e.key === 'Escape') exitFullView()
     })
 
-    $('#projectName').on('click', () => {
-		simulationArea.lastSelected = globalScope.root;
-		setTimeout(() => {
-			document.getElementById("projname").select();
-		}, 100);
-	});
+    const projectNameEl = document.getElementById('projectName')
+    if (projectNameEl) {
+        projectNameEl.addEventListener('click', () => {
+            simulationArea.lastSelected = globalScope.root
+            setTimeout(() => {
+                document.getElementById('projname').select()
+            }, 100)
+        })
+    }
 
     document
         .getElementById('simulationArea')
@@ -566,9 +601,11 @@ export default function startListeners() {
         true
     )
 
-    document.getElementById('simulationArea').addEventListener('dblclick', e => {
-		onDoubleClickorTap(e);
-	});
+    document
+        .getElementById('simulationArea')
+        .addEventListener('dblclick', (e) => {
+            onDoubleClickorTap(e)
+        })
 
     function MouseScroll(event) {
         updateCanvasSet(true)
@@ -676,34 +713,44 @@ export default function startListeners() {
     })
 
     // 'drag and drop' event listener for subcircuit elements in layout mode
-    $('#subcircuitMenu').on('dragstop', '.draggableSubcircuitElement', function (event, ui) {
-        const sideBarWidth = $('#guide_1')[0].clientWidth;
-        let tempElement;
+    const subcircuitMenu = document.getElementById('subcircuitMenu')
+    if (subcircuitMenu) {
+        subcircuitMenu.addEventListener('dragend', function (event) {
+            const target = event.target
+            if (!target.classList.contains('draggableSubcircuitElement')) return
+            const guide1 = document.getElementById('guide_1')
+            const sideBarWidth = guide1 ? guide1.clientWidth : 0
+            let tempElement
 
-        if (ui.position.top > 10 && ui.position.left > sideBarWidth) {
-            // Make a shallow copy of the element with the new coordinates
-            tempElement = globalScope[this.dataset.elementName][this.dataset.elementId];
-            // Changing the coordinate doesn't work yet, nodes get far from element
-            tempElement.x = ui.position.left - sideBarWidth;
-            tempElement.y = ui.position.top;
-            for (const node of tempElement.nodeList) {
-                node.x = ui.position.left - sideBarWidth;
-                node.y = ui.position.top;
+            const rect = target.getBoundingClientRect()
+            if (rect.top > 10 && rect.left > sideBarWidth) {
+                tempElement =
+                    globalScope[target.dataset.elementName][
+                        target.dataset.elementId
+                    ]
+                tempElement.x = rect.left - sideBarWidth
+                tempElement.y = rect.top
+                for (const node of tempElement.nodeList) {
+                    node.x = rect.left - sideBarWidth
+                    node.y = rect.top
+                }
+
+                tempBuffer.subElements.push(tempElement)
+                target.parentElement.removeChild(target)
             }
-
-            tempBuffer.subElements.push(tempElement);
-            this.parentElement.removeChild(this);
-        }
-    });
+        })
+    }
 
     restrictedElements.forEach((element) => {
-        $(`#${element}`).mouseover(() => {
-            showRestricted()
-        })
-
-        $(`#${element}`).mouseout(() => {
-            hideRestricted()
-        })
+        const el = document.getElementById(element)
+        if (el) {
+            el.addEventListener('mouseover', () => {
+                showRestricted()
+            })
+            el.addEventListener('mouseout', () => {
+                hideRestricted()
+            })
+        }
     })
 
     zoomSliderListeners()
@@ -713,11 +760,12 @@ export default function startListeners() {
 }
 
 function resizeTabs() {
-    const $windowsize = $('body').width()
-    const $sideBarsize = $('.side').width()
-    const $maxwidth = $windowsize - $sideBarsize
-    $('#tabsBar div').each(function (e) {
-        $(this).css({ 'max-width': $maxwidth - 30 })
+    const windowsize = document.body.offsetWidth
+    const sideBarEl = document.querySelector('.side')
+    const sideBarsize = sideBarEl ? sideBarEl.offsetWidth : 0
+    const maxwidth = windowsize - sideBarsize
+    document.querySelectorAll('#tabsBar div').forEach((el) => {
+        el.style.maxWidth = maxwidth - 30 + 'px'
     })
 }
 
@@ -725,155 +773,170 @@ window.addEventListener('resize', resizeTabs)
 resizeTabs()
 
 // direction is only 1 or -1
-function handleZoom (direction) {
+function handleZoom(direction) {
     if (globalScope.scale > 0.5 * DPR) {
-      changeScale(direction * 0.1 * DPR);
+        changeScale(direction * 0.1 * DPR)
     } else if (globalScope.scale < 4 * DPR) {
-      changeScale(direction * 0.1 * DPR);
+        changeScale(direction * 0.1 * DPR)
     }
-    gridUpdateSet(true);
-    scheduleUpdate();
-  }
-  export function ZoomIn () {
-    handleZoom(1);
-  }
-  export function ZoomOut () {
-    handleZoom(-1);
-  }
-  function zoomSliderListeners () {
-    document.getElementById("customRange1").value = 5;
-    document.getElementById('simulationArea').addEventListener('DOMMouseScroll', zoomSliderScroll);
-    document.getElementById('simulationArea').addEventListener('mousewheel', zoomSliderScroll);
-    let curLevel = document.getElementById("customRange1").value;
-    $(document).on('input change', '#customRange1', function (e) {
-      const newValue = $(this).val();
-      const changeInScale = newValue - curLevel;
-      updateCanvasSet(true);
-      changeScale(changeInScale * 0.1, 'zoomButton', 'zoomButton', 3)
-      gridUpdateSet(true);
-      curLevel = newValue;
-    });
-    function zoomSliderScroll (e) {
-      let zoomLevel = document.getElementById("customRange1").value;
-      const deltaY = e.wheelDelta ? e.wheelDelta : -e.detail;
-      const directionY = deltaY > 0 ? 1 : -1;
-      if (directionY > 0) zoomLevel++
-      else zoomLevel--
-      if (zoomLevel >= 45) {
-        zoomLevel = 45;
-        document.getElementById("customRange1").value = 45;
-      } else if (zoomLevel <= 0) {
-        zoomLevel = 0;
-        document.getElementById("customRange1").value = 0;
-      } else {
-        document.getElementById("customRange1").value = zoomLevel;
-        curLevel = zoomLevel;
-      }
+    gridUpdateSet(true)
+    scheduleUpdate()
+}
+export function ZoomIn() {
+    handleZoom(1)
+}
+export function ZoomOut() {
+    handleZoom(-1)
+}
+function zoomSliderListeners() {
+    document.getElementById('customRange1').value = 5
+    document
+        .getElementById('simulationArea')
+        .addEventListener('DOMMouseScroll', zoomSliderScroll)
+    document
+        .getElementById('simulationArea')
+        .addEventListener('mousewheel', zoomSliderScroll)
+    let curLevel = document.getElementById('customRange1').value
+    const customRange1 = document.getElementById('customRange1')
+    if (customRange1) {
+        customRange1.addEventListener('input', function (e) {
+            const newValue = this.value
+            const changeInScale = newValue - curLevel
+            updateCanvasSet(true)
+            changeScale(changeInScale * 0.1, 'zoomButton', 'zoomButton', 3)
+            gridUpdateSet(true)
+            curLevel = newValue
+        })
     }
-    function sliderZoomButton (direction) {
-      const zoomSlider = $('#customRange1');
-      let currentSliderValue = parseInt(zoomSlider.val(), 10);
-      if (direction === -1) {
-        currentSliderValue--;
-      } else {
-        currentSliderValue++;
-      }
-      zoomSlider.val(currentSliderValue).change();
+    function zoomSliderScroll(e) {
+        let zoomLevel = document.getElementById('customRange1').value
+        const deltaY = e.wheelDelta ? e.wheelDelta : -e.detail
+        const directionY = deltaY > 0 ? 1 : -1
+        if (directionY > 0) zoomLevel++
+        else zoomLevel--
+        if (zoomLevel >= 45) {
+            zoomLevel = 45
+            document.getElementById('customRange1').value = 45
+        } else if (zoomLevel <= 0) {
+            zoomLevel = 0
+            document.getElementById('customRange1').value = 0
+        } else {
+            document.getElementById('customRange1').value = zoomLevel
+            curLevel = zoomLevel
+        }
     }
-    $('#decrement').click(() => {
-      sliderZoomButton(-1);
-    });
-    $('#increment').click(() => {
-      sliderZoomButton(1);
-    });
-  }
+    function sliderZoomButton(direction) {
+        const zoomSlider = document.getElementById('customRange1')
+        if (!zoomSlider) return
+        let currentSliderValue = parseInt(zoomSlider.value, 10)
+        if (direction === -1) {
+            currentSliderValue--
+        } else {
+            currentSliderValue++
+        }
+        zoomSlider.value = currentSliderValue
+        zoomSlider.dispatchEvent(new Event('input'))
+    }
+    const decrementBtn = document.getElementById('decrement')
+    if (decrementBtn) {
+        decrementBtn.addEventListener('click', () => {
+            sliderZoomButton(-1)
+        })
+    }
+    const incrementBtn = document.getElementById('increment')
+    if (incrementBtn) {
+        incrementBtn.addEventListener('click', () => {
+            sliderZoomButton(1)
+        })
+    }
+}
 
 // Desktop App Listeners
 
 listen('new-project', () => {
-    logixFunction.newProject();
-});
+    logixFunction.newProject()
+})
 
 listen('save-online', () => {
-    logixFunction.save();
-});
+    logixFunction.save()
+})
 
 listen('save-offline', () => {
-    logixFunction.saveOffline();
-});
+    logixFunction.saveOffline()
+})
 
 listen('open-offline', () => {
-    logixFunction.createOpenLocalPrompt();
-});
+    logixFunction.createOpenLocalPrompt()
+})
 
 listen('export', () => {
-    logixFunction.ExportProject();
-});
+    logixFunction.ExportProject()
+})
 
 listen('import', () => {
-    logixFunction.ImportProject();
-});
+    logixFunction.ImportProject()
+})
 
 listen('recover', () => {
-    logixFunction.recoverProject();
-});
+    logixFunction.recoverProject()
+})
 
 listen('clear', () => {
-    logixFunction.clearProject();
-});
+    logixFunction.clearProject()
+})
 
 listen('preview-circuit', () => {
-    logixFunction.fullViewOption();
-});
+    logixFunction.fullViewOption()
+})
 
 listen('new-circuit', () => {
-    logixFunction.createNewCircuitScope();
-});
+    logixFunction.createNewCircuitScope()
+})
 
 listen('new-verilog-module', () => {
-    logixFunction.newVerilogModule();
-});
+    logixFunction.newVerilogModule()
+})
 
 listen('insert-sub-circuit', () => {
-    logixFunction.createSubCircuitPrompt();
-});
+    logixFunction.createSubCircuitPrompt()
+})
 
 listen('combinational-analysis', () => {
-    logixFunction.createCombinationalAnalysisPrompt();
-});
+    logixFunction.createCombinationalAnalysisPrompt()
+})
 
 listen('hex-bin-dec', () => {
-    logixFunction.bitconverter();
-});
+    logixFunction.bitconverter()
+})
 
 listen('download-image', () => {
-    logixFunction.createSaveAsImgPrompt();
-});
+    logixFunction.createSaveAsImgPrompt()
+})
 
 listen('themes', () => {
-    logixFunction.colorThemes();
-});
+    logixFunction.colorThemes()
+})
 
 listen('custom-shortcut', () => {
-    logixFunction.customShortcut();
-});
+    logixFunction.customShortcut()
+})
 
 listen('export-verilog', () => {
-    logixFunction.generateVerilog();
-});
+    logixFunction.generateVerilog()
+})
 
 listen('tutorial', () => {
-    logixFunction.showTourGuide();
-});
+    logixFunction.showTourGuide()
+})
 
 listen('user-manual', () => {
-    logixFunction.showUserManual();
-});
+    logixFunction.showUserManual()
+})
 
 listen('learn-digital-circuit', () => {
-    logixFunction.showDigitalCircuit();
-});
+    logixFunction.showDigitalCircuit()
+})
 
 listen('discussion-forum', () => {
-    logixFunction.showDiscussionForum();
-});
+    logixFunction.showDiscussionForum()
+})
