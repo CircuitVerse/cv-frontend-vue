@@ -339,7 +339,8 @@ export default function startListeners() {
         projectNameEl.addEventListener('click', () => {
             simulationArea.lastSelected = globalScope.root
             setTimeout(() => {
-                document.getElementById('projname').select()
+                const projnameEl = document.getElementById('projname')
+                if (projnameEl) projnameEl.select()
             }, 100)
         })
     }
