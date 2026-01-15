@@ -41,6 +41,7 @@ export function stripTags(string = '') {
 
 export function clockTick() {
     if (!simulationArea.clockEnabled) return
+    if (!simulationArea.simulationPlaying) return
     if (errorDetectedGet()) return
     if (layoutModeGet()) return
     updateCanvasSet(true)
@@ -48,6 +49,15 @@ export function clockTick() {
     plotArea.nextCycle()
     play()
     scheduleUpdate(0, 20)
+}
+
+export function toggleSimulationPlaying() {
+    simulationArea.simulationPlaying = !simulationArea.simulationPlaying
+    // UI Update
+    if (simulationArea.simulationPlaying) {
+        updateCanvasSet(true)
+        scheduleUpdate(1)
+    }
 }
 
 /**
