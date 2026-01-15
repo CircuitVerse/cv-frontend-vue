@@ -52,8 +52,8 @@ export default class Clock extends CircuitElement {
 
     resolve(): void {
         this.output1.value = this.state
-        // @ts-expect-error - simulationQueue types need updating
-        simulationArea.simulationQueue.add(this.output1, 0)
+        // @ts-expect-error - Second argument (0) is ineffective as simulationQueue.add uses (delay || obj.propagationDelay)
+        simulationArea.simulationQueue.add(this.output1)
     }
 
     toggleState(): void {
@@ -96,7 +96,7 @@ export default class Clock extends CircuitElement {
     }
 
     static verilogInstructions(): string {
-        return 'Clock - Use a single global clock\\n'
+        return 'Clock - Use a single global clock\n'
     }
 }
 
