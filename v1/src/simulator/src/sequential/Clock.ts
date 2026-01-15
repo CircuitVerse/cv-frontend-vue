@@ -52,7 +52,7 @@ export default class Clock extends CircuitElement {
 
     resolve(): void {
         this.output1.value = this.state
-        // @ts-expect-error - simulationQueue.add expects 2 args but uses propagationDelay property when delay is falsy
+        // @ts-expect-error - add() signature mismatch: uses output1.propagationDelay internally
         simulationArea.simulationQueue.add(this.output1)
     }
 
