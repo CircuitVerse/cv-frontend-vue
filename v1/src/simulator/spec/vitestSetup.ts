@@ -2,7 +2,7 @@ import { vi, beforeAll, afterAll } from 'vitest'
 
 declare global {
     interface Window {
-        Jquery: any
+        jQuery: any
         $: any
         restrictedElements: any[]
         userSignedIn: boolean
@@ -16,11 +16,13 @@ declare global {
 global.window = window
 // @ts-ignore
 global.jQuery = require('jquery')
+// @ts-ignore
+global.$ = require('jquery')
 global.DPR = true
 global.width = true
 global.height = true
 
-window.Jquery = require('jquery')
+window.jQuery = require('jquery')
 window.$ = require('jquery')
 window.restrictedElements = []
 window.userSignedIn = true
@@ -33,8 +35,8 @@ beforeAll(() => {
 
 // Restore real timers and cleanup after all tests
 afterAll(() => {
-    vi.useRealTimers()
     vi.clearAllTimers()
+    vi.useRealTimers()
     vi.clearAllMocks()
     vi.restoreAllMocks()
 })
@@ -50,7 +52,11 @@ const suppressedPatterns = [
 ]
 
 // Check if error should be suppressed
-const shouldSuppressError = (error: Error | any): boolean => {
+const shouldSuppressError = (
+    error: Error | any,
+    isTearingDown: boolean
+): boolean => {
+    if (!isTearingDown) return false
     const errorMessage = error?.message || String(error)
     return suppressedPatterns.some(
         (pattern) =>
@@ -58,18 +64,37 @@ const shouldSuppressError = (error: Error | any): boolean => {
     )
 }
 
+let isTearingDown = false
+
 // Handle unhandled rejections
-process.on('unhandledRejection', (reason) => {
-    if (shouldSuppressError(reason)) {
+const handleUnhandledRejection = (reason: any) => {
+    if (shouldSuppressError(reason, isTearingDown)) {
         return
     }
     throw reason
-})
+}
 
 // Handle uncaught exceptions
-process.on('uncaughtException', (error) => {
-    if (shouldSuppressError(error)) {
+const handleUncaughtException = (error: Error) => {
+    if (shouldSuppressError(error, isTearingDown)) {
         return
     }
     throw error
+}
+
+// Register error handlers
+beforeAll(() => {
+    process.on('unhandledRejection', handleUnhandledRejection)
+    process.on('uncaughtException', handleUncaughtException)
+})
+
+// Unregister error handlers and suppress expected teardown errors
+afterAll(() => {
+    isTearingDown = true
+    process.off('unhandledRejection', handleUnhandledRejection)
+    process.off('uncaughtException', handleUncaughtException)
+    vi.clearAllTimers()
+    vi.useRealTimers()
+    vi.clearAllMocks()
+    vi.restoreAllMocks()
 })

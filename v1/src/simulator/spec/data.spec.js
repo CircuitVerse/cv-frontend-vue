@@ -22,7 +22,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 import i18n from '#/locales/i18n'
 import vuetify from '#/plugins/vuetify'
 import { routes } from '#/router'
-import { beforeAll, describe, expect, test, vi } from 'vitest'
 
 vi.mock('@tauri-apps/api/event', () => ({
     listen: vi.fn(() => Promise.resolve(() => {})),
