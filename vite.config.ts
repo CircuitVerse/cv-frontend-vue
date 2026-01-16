@@ -32,13 +32,17 @@ export default defineConfig(() => {
         ],
         resolve: {
             alias: {
-                '#': fileURLToPath(new URL(`./${version}/src`, import.meta.url)),
+                '#': fileURLToPath(
+                    new URL(`./${version}/src`, import.meta.url)
+                ),
                 '@': fileURLToPath(
                     new URL(`./${version}/src/components`, import.meta.url)
                 ),
             },
         },
-        base: process.env.VITE_BASE || (isDesktop ? '/' : `/simulatorvue/${version}/`),
+        base:
+            process.env.VITE_BASE ||
+            (isDesktop ? '/' : `/simulatorvue/${version}/`),
         build: {
             outDir: `./dist/simulatorvue/${version}/`,
             assetsDir: 'assets',
@@ -56,16 +60,19 @@ export default defineConfig(() => {
                 },
             },
         },
-        test: {
-            globals: true,
-            environment: 'jsdom',
-            server: {
-                deps: {
-                    inline: ['vuetify'],
-                },
-            },
-            setupFiles: './src/simulator/spec/vitestSetup.ts',
-        },
+        // Test configuration is handled by vitest.workspace.ts
+        // Removed to avoid conflicts with workspace projects
+        // test: {
+        //     globals: true,
+        //     environment: 'jsdom',
+        //     server: {
+        //         deps: {
+        //             inline: ['vuetify'],
+        //         },
+        //     },
+        //     setupFiles: `./${version}/src/simulator/spec/vitestSetup.ts`,
+        // },
+
         server: {
             port: 4000,
         },
