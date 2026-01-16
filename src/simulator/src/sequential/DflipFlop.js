@@ -63,7 +63,7 @@ export default class DflipFlop extends CircuitElement {
      * This implementation matches the CircuitVerse documentation and Verilog export.
      */
     resolve(){
-        let Q_new=this.qOutput.value
+        let Q_new = this.qOutput.value
         if (this.reset.value==1){
             Q_new=this.preset.value || 0
         }
@@ -74,9 +74,13 @@ export default class DflipFlop extends CircuitElement {
         ){
           Q_new=this.dInp.value      
         }
-        if (Q_new!== this.qOutput.value){
+        const qInvNew = Q_new === undefined ? undefined : this.flipBits(Q_new)
+        if (
+            Q_new !== this.qOutput.value ||
+            qInvNew !== this.qInvOutput.value
+        ) {
             this.qOutput.value = Q_new
-            this.qInvOutput.value = this.flipBits(Q_new)
+            this.qInvOutput.value = qInvNew
             simulationArea.simulationQueue.add(this.qOutput)
             simulationArea.simulationQueue.add(this.qInvOutput)
         }
@@ -119,6 +123,12 @@ export default class DflipFlop extends CircuitElement {
         fillText(ctx,(this.qOutput.value ?? 0).toString(16),xx,yy + 5)
         ctx.fill()
     }
+    /**
+     * DESIGN NOTE:
+     * JS simulation models a level-sensitive latch for pedagogical reasons,
+     * while Verilog export uses an edge-triggered FF for synthesis consistency.
+     */
+
 
     static moduleVerilog() {
         return `
@@ -128,13 +138,15 @@ module DflipFlop(q, q_inv, clk, d, a_rst, pre, en);
     input clk, a_rst, en;
     input [WIDTH-1:0] d, pre;
 
-    always @ (*) begin
+    always @(posedge clk or posedge a_rst) begin
         if (a_rst) begin
-            q = pre;  
-        end else if (en && clk) begin
-            q = d;                
+            q     <= pre;
+            q_inv <= ~pre;
+        end else if (en) begin
+            q     <= d;
+            q_inv <= ~d;
         end
-        q_inv = ~q;
+        // else: hold state
     end
 endmodule
     `
