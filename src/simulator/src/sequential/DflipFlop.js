@@ -28,9 +28,9 @@ export default class DflipFlop extends CircuitElement {
         this.reset = new Node(10, 20, 0, this, 1, 'Asynchronous Reset')
         this.preset = new Node(0, 20, 0, this, this.bitWidth, 'Preset')
         this.en = new Node(-10, 20, 0, this, 1, 'Enable')
-        this.masterState = 0
-        this.slaveState = 0
-        this.prevClockState = 0
+        //this.masterState = 0
+        //this.slaveState = 0
+        //this.prevClockState = 0
 
         this.wasClicked = false
     }
@@ -52,41 +52,31 @@ export default class DflipFlop extends CircuitElement {
 
     /**
      * @memberof DflipFlop
-     * On the leading edge of the clock signal (LOW-to-HIGH) the first stage,
-     * the “master” latches the input condition at D, while the output stage is deactivated.
-     * On the trailing edge of the clock signal (HIGH-to-LOW) the second “slave” stage is
-     * now activated, latching on to the output from the first master circuit.
-     * Then the output stage appears to be triggered on the negative edge of the clock pulse.
-     * This fuction sets the value for the node qOutput based on the previous state
-     * and input of the clock. We flip the bits to find qInvOutput
+     *
+     * Level-sensitive D flipflop behavior:
+     * - When the clock is HIGH and the enable pin is active, Q follows D
+     *   after the component's propagation delay.
+     * - When the clock is LOW, the latch is closed and Q holds its previous value.
+     * - Asynchronous reset overrides clock and data and forces Q to the preset value.
+     * - Q Inverse always reflects the bitwise inverse of Q.
+     *
+     * This implementation matches the CircuitVerse documentation and Verilog export.
      */
-    resolve() {
-        if (this.reset.value == 1) {
-            this.masterState = this.slaveState = this.preset.value || 0
-        } else if (this.en.value == 0) {
-            this.prevClockState = this.clockInp.value
-        } else if (this.en.value == 1 || this.en.connections.length == 0) {
-            // if(this.en.value==1) // Creating Infinite Loop, WHY ??
-            if (this.clockInp.value == this.prevClockState) {
-                if (this.clockInp.value == 0 && this.dInp.value != undefined) {
-                    this.masterState = this.dInp.value
-                }
-            } else if (this.clockInp.value != undefined) {
-                if (this.clockInp.value == 1) {
-                    this.slaveState = this.masterState
-                } else if (
-                    this.clockInp.value == 0 &&
-                    this.dInp.value != undefined
-                ) {
-                    this.masterState = this.dInp.value
-                }
-                this.prevClockState = this.clockInp.value
-            }
+    resolve(){
+        let Q_new=this.qOutput.value
+        if (this.reset.value==1){
+            Q_new=this.preset.value || 0
         }
-
-        if (this.qOutput.value != this.slaveState) {
-            this.qOutput.value = this.slaveState
-            this.qInvOutput.value = this.flipBits(this.slaveState)
+        else if(
+        (this.en.value === 1 || this.en.connections.length === 0) &&
+        this.clockInp.value === 1 &&
+        this.dInp.value !== undefined
+        ){
+          Q_new=this.dInp.value      
+        }
+        if (Q_new!== this.qOutput.value){
+            this.qOutput.value = Q_new
+            this.qInvOutput.value = this.flipBits(Q_new)
             simulationArea.simulationQueue.add(this.qOutput)
             simulationArea.simulationQueue.add(this.qInvOutput)
         }
@@ -126,7 +116,7 @@ export default class DflipFlop extends CircuitElement {
         ctx.font = '20px Raleway'
         ctx.fillStyle = colors['input_text']
         ctx.textAlign = 'center'
-        fillText(ctx, this.slaveState.toString(16), xx, yy + 5)
+        fillText(ctx,(this.qOutput.value ?? 0).toString(16),xx,yy + 5)
         ctx.fill()
     }
 
@@ -144,8 +134,6 @@ module DflipFlop(q, q_inv, clk, d, a_rst, pre, en);
         end else if (en && clk) begin
             q = d;                
         end
-    end
-    always @ (*) begin
         q_inv = ~q;
     end
 endmodule
