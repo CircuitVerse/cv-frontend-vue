@@ -11,7 +11,7 @@ import i18n from '#/locales/i18n'
 import { routes } from '#/router'
 import vuetify from '#/plugins/vuetify'
 import simulator from '#/pages/simulator.vue'
-import { vi } from 'vitest'
+import { describe, test, expect, vi, beforeAll } from 'vitest'
 
 vi.mock('@tauri-apps/api/event', () => ({
     listen: vi.fn(() => Promise.resolve(() => {})),
