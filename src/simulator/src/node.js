@@ -42,7 +42,7 @@ export function replace(node, index) {
     }
     var { scope } = node
     var { parent } = node
-    parent.nodeList = parent.nodeList.filter(x=> x !== node);
+    parent.nodeList = parent.nodeList.filter((x) => x !== node)
     node.delete()
     node = scope.allNodes[index]
     node.parent = parent
@@ -122,9 +122,13 @@ function extractNode(x, scope, parent) {
 // input node=0
 // intermediate node =2
 
-window.NODE_INPUT = 0
-window.NODE_OUTPUT = 1
-window.NODE_INTERMEDIATE = 2
+const NODE_INPUT = 0
+const NODE_OUTPUT = 1
+const NODE_INTERMEDIATE = 2
+
+window.NODE_INPUT = NODE_INPUT
+window.NODE_OUTPUT = NODE_OUTPUT
+window.NODE_INTERMEDIATE = NODE_INTERMEDIATE
 /**
  * used to give id to a node.
  * @type {number}
@@ -288,9 +292,12 @@ export default class Node {
      * Refreshes a node after roation of parent
      */
     refresh() {
+        // console.log(`Refreshing node ${this.id}`)
         this.updateRotation()
         for (var i = 0; i < this.connections.length; i++) {
-            this.connections[i].connections = this.connections[i].connections.filter(x => x !== this)
+            this.connections[i].connections = this.connections[
+                i
+            ].connections.filter((x) => x !== this)
         }
         this.scope.timeStamp = new Date().getTime()
         this.connections = []
@@ -372,8 +379,8 @@ export default class Node {
      * disconnecting two nodes connected wirelessly
      */
     disconnectWireLess(n) {
-        this.connections = this.connections.filter(x => x !== n)
-        n.connections = n.connections.filter(x => x !== this)
+        this.connections = this.connections.filter((x) => x !== n)
+        n.connections = n.connections.filter((x) => x !== this)
 
         this.scope.timeStamp = new Date().getTime()
     }
@@ -386,7 +393,7 @@ export default class Node {
             // Since output node forces its value on its neighbours, remove its contentions.
             // An existing contention will now trickle to the other output node that was causing
             // the contention.
-            simulationArea.contentionPending.removeAllContentionsForNode(this);
+            simulationArea.contentionPending.removeAllContentionsForNode(this)
         }
         // Remove Propogation of values (TriState)
         if (this.value == undefined) {
@@ -412,7 +419,10 @@ export default class Node {
                     this.parent.isResolvable() &&
                     !this.parent.queueProperties.inQueue
                 ) {
-                    if (this.parent.objectType == 'TriState' || this.parent.objectType == 'ControlledInverter') {
+                    if (
+                        this.parent.objectType == 'TriState' ||
+                        this.parent.objectType == 'ControlledInverter'
+                    ) {
                         if (this.parent.state.value) {
                             simulationArea.simulationQueue.add(this.parent)
                         }
@@ -430,64 +440,83 @@ export default class Node {
             if (this.parent.isResolvable()) {
                 simulationArea.simulationQueue.add(this.parent)
             }
-        }
-        else if (this.type == NODE_OUTPUT) {
+        } else if (this.type == NODE_OUTPUT) {
             // Since output node forces its value on its neighbours, remove its contentions.
             // An existing contention will now trickle to the other output node that was causing
             // the contention.
-            simulationArea.contentionPending.removeAllContentionsForNode(this);
+            simulationArea.contentionPending.removeAllContentionsForNode(this)
         }
 
         for (var i = 0; i < this.connections.length; i++) {
-            const node = this.connections[i];
+            const node = this.connections[i]
 
             switch (node.type) {
-            // TODO: For an output node, a downstream value (value given by elements other than the parent)
-            // should be overwritten in contention check and should not cause contention.
-            case NODE_OUTPUT:
-                if (node.value != this.value || node.bitWidth != this.bitWidth) {
-                    // Check contentions
-                    if (node.value != undefined && node.parent.objectType != 'SubCircuit'
-                        && !(node.subcircuitOverride && node.scope != this.scope)) {
-                        // Tristate has always been a pain in the ass.
-                        if ((node.parent.objectType == 'TriState' || node.parent.objectType == 'ControlledInverter') && node.value != undefined) {
-                            if (node.parent.state.value) {
-                                simulationArea.contentionPending.add(node, this);
-                                break;
+                // TODO: For an output node, a downstream value (value given by elements other than the parent)
+                // should be overwritten in contention check and should not cause contention.
+                case NODE_OUTPUT:
+                    if (
+                        node.value != this.value ||
+                        node.bitWidth != this.bitWidth
+                    ) {
+                        // Check contentions
+                        if (
+                            node.value != undefined &&
+                            node.parent.objectType != 'SubCircuit' &&
+                            !(
+                                node.subcircuitOverride &&
+                                node.scope != this.scope
+                            )
+                        ) {
+                            // Tristate has always been a pain in the ass.
+                            if (
+                                (node.parent.objectType == 'TriState' ||
+                                    node.parent.objectType ==
+                                        'ControlledInverter') &&
+                                node.value != undefined
+                            ) {
+                                if (node.parent.state.value) {
+                                    simulationArea.contentionPending.add(
+                                        node,
+                                        this
+                                    )
+                                    break
+                                }
+                            } else {
+                                simulationArea.contentionPending.add(node, this)
+                                break
                             }
                         }
-                        else {
-                            simulationArea.contentionPending.add(node, this);
-                            break;
-                        }
+                    } else {
+                        // Output node was given an agreeing value, so remove any contention
+                        // entry between these two nodes if it exists.
+                        simulationArea.contentionPending.remove(node, this)
                     }
-                } else {
-                    // Output node was given an agreeing value, so remove any contention
-                    // entry between these two nodes if it exists.
-                    simulationArea.contentionPending.remove(node, this);
-                }
 
-            // Fallthrough. NODE_OUTPUT propagates like a contention checked NODE_INPUT
-            case NODE_INPUT:
-                // Check bitwidths
-                if (this.bitWidth != node.bitWidth) {
-                    this.highlighted = true;
-                    node.highlighted = true;
-                    showError(`BitWidth Error: ${this.bitWidth} and ${node.bitWidth}`);
-                    break;
-                }
+                // Fallthrough. NODE_OUTPUT propagates like a contention checked NODE_INPUT
+                case NODE_INPUT:
+                    // Check bitwidths
+                    if (this.bitWidth != node.bitWidth) {
+                        this.highlighted = true
+                        node.highlighted = true
+                        showError(
+                            `BitWidth Error: ${this.bitWidth} and ${node.bitWidth}`
+                        )
+                        break
+                    }
 
-            // Fallthrough. NODE_INPUT propagates like a bitwidth checked NODE_INTERMEDIATE
-            case NODE_INTERMEDIATE:
-
-                if (node.value != this.value || node.bitWidth != this.bitWidth) {
-                    // Propagate
-                    node.bitWidth = this.bitWidth;
-                    node.value = this.value;
-                    simulationArea.simulationQueue.add(node);
-                }
-            default:
-                break;
+                // Fallthrough. NODE_INPUT propagates like a bitwidth checked NODE_INTERMEDIATE
+                case NODE_INTERMEDIATE:
+                    if (
+                        node.value != this.value ||
+                        node.bitWidth != this.bitWidth
+                    ) {
+                        // Propagate
+                        node.bitWidth = this.bitWidth
+                        node.value = this.value
+                        simulationArea.simulationQueue.add(node)
+                    }
+                default:
+                    break
             }
         }
     }
@@ -663,7 +692,8 @@ export default class Node {
      */
     checkDeleted() {
         if (this.deleted) this.delete()
-        if (this.connections.length == 0 && this.type == NODE_INTERMEDIATE) this.delete()
+        if (this.connections.length == 0 && this.type == NODE_INTERMEDIATE)
+            this.delete()
     }
 
     /**
@@ -725,7 +755,10 @@ export default class Node {
                     if (
                         simulationArea.multipleObjectSelections.includes(this)
                     ) {
-                        simulationArea.multipleObjectSelections = simulationArea.multipleObjectSelections.filter(x=> x !== this);
+                        simulationArea.multipleObjectSelections =
+                            simulationArea.multipleObjectSelections.filter(
+                                (x) => x !== this
+                            )
                     } else {
                         simulationArea.multipleObjectSelections.push(this)
                     }
@@ -836,15 +869,7 @@ export default class Node {
 
             if (x != x2 && y != y2) {
                 // Rare Exception Cases
-                if (
-                    this.prev == 'a' &&
-                    distance(
-                        simulationArea.mouseX,
-                        simulationArea.mouseY,
-                        this.absX(),
-                        this.absY()
-                    ) >= 10
-                ) {
+                if (this.prev == 'a') {
                     if (
                         Math.abs(
                             this.x + this.parent.x - simulationArea.mouseX
@@ -915,7 +940,10 @@ export default class Node {
                 simulationArea.lastSelected = n2
         }
 
-        if (this.type == NODE_INTERMEDIATE && simulationArea.mouseDown == false) {
+        if (
+            this.type == NODE_INTERMEDIATE &&
+            simulationArea.mouseDown == false
+        ) {
             if (this.connections.length == 2) {
                 if (
                     this.connections[0].absX() == this.connections[1].absX() ||
@@ -932,17 +960,25 @@ export default class Node {
      * function delete a node
      */
     delete() {
+        // console.log(`Deleting node ${this.id}`)
         updateSimulationSet(true)
         this.deleted = true
-        this.parent.scope.allNodes = this.parent.scope.allNodes.filter(x => x !== this)
-        this.parent.scope.nodes = this.parent.scope.nodes.filter(x => x !== this)
+        this.parent.scope.allNodes = this.parent.scope.allNodes.filter(
+            (x) => x !== this
+        )
+        this.parent.scope.nodes = this.parent.scope.nodes.filter(
+            (x) => x !== this
+        )
 
-        this.parent.scope.root.nodeList = this.parent.scope.root.nodeList.filter(x => x !== this) // Hope this works! - Can cause bugs
+        this.parent.scope.root.nodeList =
+            this.parent.scope.root.nodeList.filter((x) => x !== this) // Hope this works! - Can cause bugs
 
         if (simulationArea.lastSelected == this)
             simulationArea.lastSelected = undefined
         for (var i = 0; i < this.connections.length; i++) {
-            this.connections[i].connections = this.connections[i].connections.filter(x => x !== this)
+            this.connections[i].connections = this.connections[
+                i
+            ].connections.filter((x) => x !== this)
             this.connections[i].checkDeleted()
         }
 
@@ -1000,6 +1036,12 @@ export default class Node {
         if (n == undefined) {
             for (var i = 0; i < this.parent.scope.wires.length; i++) {
                 if (this.parent.scope.wires[i].checkConvergence(this)) {
+                    if (
+                        this.parent.scope.wires[i].node1 === this ||
+                        this.parent.scope.wires[i].node2 === this
+                    ) {
+                        continue
+                    }
                     var n = this
                     if (this.type != NODE_INTERMEDIATE) {
                         n = new Node(
