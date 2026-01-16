@@ -1,37 +1,66 @@
-import { setup } from '../src/setup';
-import { bitConverterDialog, setBaseValues, setupBitConvertor } from '../src/utils';
-import { createPinia, setActivePinia } from 'pinia';
-import { mount } from '@vue/test-utils';
-import { createRouter, createWebHistory } from 'vue-router';
-import i18n from '#/locales/i18n';
-import { routes } from '#/router';
-import vuetify from '#/plugins/vuetify';
-import simulator from '#/pages/simulator.vue';
+import { setup } from '../src/setup'
+import {
+    bitConverterDialog,
+    setBaseValues,
+    setupBitConvertor,
+} from '../src/utils'
+import { createPinia, setActivePinia } from 'pinia'
+import { mount } from '@vue/test-utils'
+import { createRouter, createWebHistory } from 'vue-router'
+import i18n from '#/locales/i18n'
+import { routes } from '#/router'
+import vuetify from '#/plugins/vuetify'
+import simulator from '#/pages/simulator.vue'
+import { vi } from 'vitest'
+
+vi.mock('@tauri-apps/api/event', () => ({
+    listen: vi.fn(() => Promise.resolve(() => {})),
+}))
+
+global.ResizeObserver = vi.fn().mockImplementation(() => ({
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
+}))
+
+HTMLCanvasElement.prototype.getContext = vi.fn(() => ({
+    clearRect: vi.fn(),
+    fillRect: vi.fn(),
+    fillText: vi.fn(),
+    strokeRect: vi.fn(),
+    beginPath: vi.fn(),
+    moveTo: vi.fn(),
+    lineTo: vi.fn(),
+    stroke: vi.fn(),
+    closePath: vi.fn(),
+    arc: vi.fn(),
+    fill: vi.fn(),
+}))
 
 vi.mock('codemirror', async (importOriginal) => {
-    const actual = await importOriginal();
+    const actual = await importOriginal()
     return {
         ...actual,
-        fromTextArea: vi.fn(() => ({ setValue: () => { } })),
-    };
-});
+        fromTextArea: vi.fn(() => ({ setValue: () => {} })),
+    }
+})
 
 vi.mock('codemirror-editor-vue3', () => ({
     defineSimpleMode: vi.fn(),
-}));
+}))
 
 describe('data dir working', () => {
-    let pinia;
-    let router;
+    let pinia
+    let router
 
     beforeAll(async () => {
-        pinia = createPinia();
-        setActivePinia(pinia);
+        pinia = createPinia()
+        setActivePinia(pinia)
 
         router = createRouter({
             history: createWebHistory(),
             routes,
-        });
+        })
 
         const elem = document.createElement('div')
 
@@ -57,32 +86,32 @@ describe('data dir working', () => {
                 length: 0,
                 [Symbol.iterator]: vi.fn(() => []),
             })),
-        }));
+        }))
 
-        global.globalScope = global.globalScope || {};
+        global.globalScope = global.globalScope || {}
 
         mount(simulator, {
             global: {
                 plugins: [pinia, router, i18n, vuetify],
             },
             attachTo: elem,
-        });
+        })
 
-        setup();
-    });
+        setup()
+    })
 
     // Open BitConvertor Dialog
     test('bitConvertor Dialog working', () => {
-        expect(() => bitConverterDialog()).not.toThrow();
-    });
+        expect(() => bitConverterDialog()).not.toThrow()
+    })
 
     test('function setupBitConvertor working', () => {
-        expect(() => setupBitConvertor()).not.toThrow();
-    });
+        expect(() => setupBitConvertor()).not.toThrow()
+    })
 
     test('function setBaseValues working', () => {
-        const randomBaseValue = Math.floor(Math.random() * 100);
-        console.log('Testing for Base Value --> ', randomBaseValue);
-        expect(() => setBaseValues(randomBaseValue)).not.toThrow();
-    });
-});
+        const randomBaseValue = Math.floor(Math.random() * 100)
+        console.log('Testing for Base Value --> ', randomBaseValue)
+        expect(() => setBaseValues(randomBaseValue)).not.toThrow()
+    })
+})

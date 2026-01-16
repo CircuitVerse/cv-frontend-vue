@@ -1,52 +1,76 @@
-import { describe, test, expect, vi, beforeAll } from 'vitest';
-import { setup } from '../src/setup';
-import load from '../src/data/load';
-import gatesCircuitData from './circuits/gates-circuitdata.json';
-import decoderCircuitData from './circuits/Decoders-plexers-circuitdata.json';
-import { checkIfBackup, scheduleBackup } from '../src/data/backupCircuit';
-import undo from '../src/data/undo';
-import redo from '../src/data/redo';
-import save from '../src/data/save';
+import { describe, test, expect, vi, beforeAll } from 'vitest'
+import { setup } from '../src/setup'
+import load from '../src/data/load'
+import gatesCircuitData from './circuits/gates-circuitdata.json'
+import decoderCircuitData from './circuits/Decoders-plexers-circuitdata.json'
+import { checkIfBackup, scheduleBackup } from '../src/data/backupCircuit'
+import undo from '../src/data/undo'
+import redo from '../src/data/redo'
+import save from '../src/data/save'
 import {
     clearProject,
     newProject,
     recoverProject,
     saveOffline,
     openOffline,
-} from '../src/data/project';
-import createSaveAsImgPrompt from '../src/data/saveImage';
-import { createPinia, setActivePinia } from 'pinia';
-import { mount } from '@vue/test-utils';
-import simulator from '#/pages/simulatorHandler.vue';
-import { createRouter, createWebHistory } from 'vue-router';
-import i18n from '#/locales/i18n';
-import vuetify from '#/plugins/vuetify';
-import { routes } from '#/router';
+} from '../src/data/project'
+import createSaveAsImgPrompt from '../src/data/saveImage'
+import { createPinia, setActivePinia } from 'pinia'
+import { mount } from '@vue/test-utils'
+import simulator from '#/pages/simulatorHandler.vue'
+import { createRouter, createWebHistory } from 'vue-router'
+import i18n from '#/locales/i18n'
+import vuetify from '#/plugins/vuetify'
+import { routes } from '#/router'
+
+vi.mock('@tauri-apps/api/event', () => ({
+    listen: vi.fn(() => Promise.resolve(() => {})),
+}))
+
+global.ResizeObserver = vi.fn().mockImplementation(() => ({
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
+}))
+
+HTMLCanvasElement.prototype.getContext = vi.fn(() => ({
+    clearRect: vi.fn(),
+    fillRect: vi.fn(),
+    fillText: vi.fn(),
+    strokeRect: vi.fn(),
+    beginPath: vi.fn(),
+    moveTo: vi.fn(),
+    lineTo: vi.fn(),
+    stroke: vi.fn(),
+    closePath: vi.fn(),
+    arc: vi.fn(),
+    fill: vi.fn(),
+}))
 
 vi.mock('codemirror', async (importOriginal) => {
-    const actual = await importOriginal();
+    const actual = await importOriginal()
     return {
         ...actual,
         fromTextArea: vi.fn(() => ({ setValue: () => {} })),
-    };
-});
+    }
+})
 
 vi.mock('codemirror-editor-vue3', () => ({
     defineSimpleMode: vi.fn(),
-}));
+}))
 
 describe('data dir working', () => {
-    let pinia;
-    let router;
+    let pinia
+    let router
 
     beforeAll(async () => {
-        pinia = createPinia();
-        setActivePinia(pinia);
+        pinia = createPinia()
+        setActivePinia(pinia)
 
         router = createRouter({
             history: createWebHistory(),
             routes,
-        });
+        })
 
         const elem = document.createElement('div')
 
@@ -72,99 +96,99 @@ describe('data dir working', () => {
                 length: 0,
                 [Symbol.iterator]: vi.fn(() => []),
             })),
-        }));
+        }))
 
-        global.globalScope = global.globalScope || {};
+        global.globalScope = global.globalScope || {}
 
         mount(simulator, {
             global: {
                 plugins: [pinia, router, i18n, vuetify],
             },
             attachTo: elem,
-        });
+        })
 
-        setup();
-    });
+        setup()
+    })
 
     test('load gates_circuitData without throwing error', () => {
-        expect(() => load(gatesCircuitData)).not.toThrow();
-    });
+        expect(() => load(gatesCircuitData)).not.toThrow()
+    })
 
     test('should load another circuit data decoder_circuitData', () => {
-        expect(() => load(decoderCircuitData)).not.toThrow();
-    });
+        expect(() => load(decoderCircuitData)).not.toThrow()
+    })
 
     test('schedule backup working', () => {
         globalScope.Input.forEach((input) => {
-            input.state = input.state === 1 ? 0 : 1;
-            expect(() => scheduleBackup()).not.toThrow();
-        });
-    });
+            input.state = input.state === 1 ? 0 : 1
+            expect(() => scheduleBackup()).not.toThrow()
+        })
+    })
 
     test('check if backup performed', () => {
-        expect(checkIfBackup(globalScope)).toBeTruthy();
-    });
+        expect(checkIfBackup(globalScope)).toBeTruthy()
+    })
 
     test('undo working', () => {
         const beforeUndo = {
             backups: globalScope.backups.length,
             history: globalScope.history.length,
-        };
+        }
         for (let i = 1; i < beforeUndo.backups; i++) {
-            undo();
+            undo()
             const afterUndo = {
                 backups: globalScope.backups.length + i,
                 history: globalScope.history.length - i,
-            };
-            expect(afterUndo).toEqual(beforeUndo);
+            }
+            expect(afterUndo).toEqual(beforeUndo)
         }
-    });
+    })
 
     test('redo working', () => {
         const beforeRedo = {
             backups: globalScope.backups.length,
             history: globalScope.history.length,
-        };
+        }
         for (let i = 1; i < beforeRedo.history; i++) {
-            redo();
+            redo()
             const afterRedo = {
                 backups: globalScope.backups.length - i,
                 history: globalScope.history.length + i,
-            };
-            expect(afterRedo).toEqual(beforeRedo);
+            }
+            expect(afterRedo).toEqual(beforeRedo)
         }
-    });
+    })
 
     test('save updated circuit_data', () => {
-        window.logixProjectId = decoderCircuitData.projectId;
-        expect(() => save()).not.toThrow();
-    });
+        window.logixProjectId = decoderCircuitData.projectId
+        expect(() => save()).not.toThrow()
+    })
 
     test('project working', () => {
-        expect(() => newProject(true)).not.toThrow();
-    });
+        expect(() => newProject(true)).not.toThrow()
+    })
 
     test('clear Project working', () => {
-        expect(() => clearProject()).not.toThrow();
-    });
+        expect(() => clearProject()).not.toThrow()
+    })
 
     test('recover Project working', () => {
-        localStorage.setItem('recover', JSON.stringify(gatesCircuitData));
-        expect(() => recoverProject()).not.toThrow();
-    });
+        localStorage.setItem('recover', JSON.stringify(gatesCircuitData))
+        expect(() => recoverProject()).not.toThrow()
+    })
 
     test('SaveOffline working', () => {
-        expect(() => saveOffline()).not.toThrow();
-    });
+        expect(() => saveOffline()).not.toThrow()
+    })
 
     test('OpenOffline working', () => {
-        openOffline();
-        document.querySelector('#openProjectDialog input')?.click();
-        document.querySelector('#Open_offline_btn')?.click();
-        expect(globalScope.id).toBe(11597572508);
-    });
+        openOffline()
+        document.querySelector('#openProjectDialog input')?.click()
+        document.querySelector('#Open_offline_btn')?.click()
+        expect(globalScope.id).toBe(11597572508)
+    })
 
     test('saveImage working', () => {
-        expect(() => createSaveAsImgPrompt()).not.toThrow();
-    });
-});
+        expect(() => createSaveAsImgPrompt()).not.toThrow()
+    })
+})
