@@ -742,7 +742,7 @@ export default class CircuitElement {
             }
         }
         // calls the subcircuitDraw function in the element to draw it to canvas
-        (this as any).subcircuitDraw(xOffset, yOffset)
+        ;(this as any).subcircuitDraw?.(xOffset, yOffset)
     }
 
     /**
