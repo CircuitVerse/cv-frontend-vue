@@ -54,6 +54,13 @@ HTMLCanvasElement.prototype.getContext = vi.fn(() => ({
     fillStyle: '',
     strokeStyle: '',
     font: '',
+    measureText: vi.fn(() => ({ width: 0 })),
+    setLineDash: vi.fn(),
+    getImageData: vi.fn(() => ({ data: [], width: 0, height: 0 })),
+    rotate: vi.fn(),
+    putImageData: vi.fn(),
+    drawImage: vi.fn(),
+    bezierCurveTo: vi.fn(),
 }))
 
 vi.mock('codemirror', async (importOriginal) => {
