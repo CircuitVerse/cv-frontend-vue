@@ -66,6 +66,5 @@ const createWorkspaceConfig = (version: string) =>
 
 export default defineWorkspace([
     createWorkspaceConfig('src'),
-    createWorkspaceConfig('v0'),
     createWorkspaceConfig('v1'),
 ])
