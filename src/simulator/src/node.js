@@ -515,6 +515,7 @@ export default class Node {
                         node.value = this.value
                         simulationArea.simulationQueue.add(node)
                     }
+                // falls through
                 default:
                     break
             }
