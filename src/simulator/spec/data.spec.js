@@ -45,6 +45,15 @@ HTMLCanvasElement.prototype.getContext = vi.fn(() => ({
     closePath: vi.fn(),
     arc: vi.fn(),
     fill: vi.fn(),
+    rect: vi.fn(),
+    getSerializedSvg: vi.fn(() => ''),
+    save: vi.fn(),
+    restore: vi.fn(),
+    translate: vi.fn(),
+    scale: vi.fn(),
+    fillStyle: '',
+    strokeStyle: '',
+    font: '',
 }))
 
 vi.mock('codemirror', async (importOriginal) => {
