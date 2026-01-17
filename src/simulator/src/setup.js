@@ -23,6 +23,7 @@ import '../vendor/jquery-ui.min.css'
 import '../vendor/jquery-ui.min'
 import { confirmSingleOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
 import { getToken } from '#/pages/simulatorHandler.vue'
+import { setupUI } from './ux'
 
 /**
  * to resize window and setup things it
@@ -168,6 +169,11 @@ function showTour() {
  */
 export function setup() {
     setupEnvironment()
+    if(!embed){
+        setupUI()
+        // Don't call startMainListeners() here anymore
+        // It will be called from setupPanelsWhenReady() in Extra.vue
+    }
     loadProjectData()
     showTour()
 }

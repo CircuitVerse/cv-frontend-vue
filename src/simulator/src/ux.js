@@ -497,6 +497,9 @@ export function fillSubcircuitElements() {
 let panelsInitialized = false
 
 export function setupPanelsWhenReady() {
+    // Don't run in embed mode or if already initialized
+    if (embed || panelsInitialized) return
+    
     const requiredPanels = [
         '.elementPanel',
         '.layoutElementPanel',
@@ -509,10 +512,10 @@ export function setupPanelsWhenReady() {
         (sel) => document.querySelector(sel)
     )
 
-    if (!allPresent || panelsInitialized) return
+    if (!allPresent) return
 
     panelsInitialized = true
 
     setupPanels()
-    startMainListeners()
+    startMainListeners()  // This gets called after panels are ready
 }
