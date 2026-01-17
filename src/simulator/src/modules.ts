@@ -1,9 +1,15 @@
 /* eslint-disable import/no-cycle */
 import { simulationArea } from './simulationArea'
 
-export function getNextPosition(x = 0, scope = globalScope) {
+/**
+ * Finds next available Y position for layout
+ * @param x - X coordinate to check
+ * @param scope - The scope to check positions in
+ * @returns The next available Y position
+ */
+export function getNextPosition(x: number = 0, scope = globalScope): number {
     let possibleY = 20
-    const done = {}
+    const done: Record<number, number> = {}
     for (let i = 0; i < scope.Input.length - 1; i++) {
         if (scope.Input[i].layoutProperties.x === x) {
             done[scope.Input[i].layoutProperties.y] = 1
@@ -36,17 +42,21 @@ export function getNextPosition(x = 0, scope = globalScope) {
 }
 
 /**
- * Global
+ * Global modules registry
  */
-var modules = {}
+const modules: Record<string, any> = {}
 
 export default modules
 
-export function changeInputSize(size) {
+/**
+ * Changes input size of a circuit element
+ * @param size - New input size (2-10)
+ */
+export function changeInputSize(this: any, size: number): any {
     if (size == undefined || size < 2 || size > 10) return
     if (this.inputSize == size) return
-    size = parseInt(size, 10)
-    var obj = new modules[this.objectType](
+    size = parseInt(String(size), 10)
+    const obj = new modules[this.objectType](
         this.x,
         this.y,
         this.scope,
