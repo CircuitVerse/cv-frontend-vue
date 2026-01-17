@@ -498,7 +498,8 @@ let panelsInitialized = false
 
 export function setupPanelsWhenReady() {
     // Don't run in embed mode or if already initialized
-    if (embed || panelsInitialized) return
+    // embed is a global flag from globalVariables.ts
+    if (window.embed || panelsInitialized) return
     
     const requiredPanels = [
         '.elementPanel',
