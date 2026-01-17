@@ -17,24 +17,25 @@ import { moduleList, updateOrder } from './metadata'
 
 /**
  * Helper function to paste
+ * @param copyData - JSON string data to paste
  * @category events
  */
-export function paste(copyData) {
+export function paste(copyData: string): void {
     if (copyData === 'undefined') return
-    var data = JSON.parse(copyData)
+    const data = JSON.parse(copyData)
     if (!data.logixClipBoardData) return
 
-    var currentScopeId = globalScope.id
+    const currentScopeId = globalScope.id
     for (let i = 0; i < data.scopes.length; i++) {
         if (scopeList[data.scopes[i].id] === undefined) {
-            var isVerilogCircuit = false
-            var isMainCircuit = false
+            let isVerilogCircuit = false
+            let isMainCircuit = false
             if (data.scopes[i].verilogMetadata) {
                 isVerilogCircuit =
                     data.scopes[i].verilogMetadata.isVerilogCircuit
                 isMainCircuit = data.scopes[i].verilogMetadata.isMainCircuit
             }
-            var scope = newCircuit(
+            const scope = newCircuit(
                 data.scopes[i].name,
                 data.scopes[i].id,
                 isVerilogCircuit,
@@ -46,13 +47,13 @@ export function paste(copyData) {
     }
 
     switchCircuit(currentScopeId)
-    var tempScope = new Scope(globalScope.name, globalScope.id)
-    var oldOx = globalScope.ox
-    var oldOy = globalScope.oy
-    var oldScale = globalScope.scale
+    const tempScope = new Scope(globalScope.name, globalScope.id)
+    const oldOx = globalScope.ox
+    const oldOy = globalScope.oy
+    const oldScale = globalScope.scale
     loadScope(tempScope, data)
 
-    var prevLength = tempScope.allNodes.length
+    let prevLength = tempScope.allNodes.length
     for (let i = 0; i < tempScope.allNodes.length; i++) {
         tempScope.allNodes[i].checkDeleted()
         if (tempScope.allNodes.length != prevLength) {
@@ -61,9 +62,9 @@ export function paste(copyData) {
         }
     }
 
-    var approxX = 0
-    var approxY = 0
-    var count = 0
+    let approxX = 0
+    let approxY = 0
+    let count = 0
 
     for (let i = 0; i < updateOrder.length; i++) {
         for (let j = 0; j < tempScope[updateOrder[i]].length; j++) {
@@ -128,18 +129,20 @@ export function paste(copyData) {
 
     forceResetNodesSet(true)
 }
+
 /**
  * Helper function for cut
- * @param {JSON} copyList - The selected elements
+ * @param copyList - The selected elements
+ * @returns JSON string of cut data
  * @category events
  */
-export function cut(copyList) {
+export function cut(copyList: any[]): string | undefined {
     if (copyList.length === 0) return
-    var tempScope = new Scope(globalScope.name, globalScope.id)
-    var oldOx = globalScope.ox
-    var oldOy = globalScope.oy
-    var oldScale = globalScope.scale
-    d = backUp(globalScope)
+    const tempScope = new Scope(globalScope.name, globalScope.id)
+    const oldOx = globalScope.ox
+    const oldOy = globalScope.oy
+    const oldScale = globalScope.scale
+    const d = backUp(globalScope)
     loadScope(tempScope, d)
     scopeList[tempScope.id] = tempScope
 
@@ -176,7 +179,7 @@ export function cut(copyList) {
         }
     }
 
-    var prevLength = globalScope.wires.length
+    let prevLength = globalScope.wires.length
     for (let i = 0; i < globalScope.wires.length; i++) {
         globalScope.wires[i].checkConnections()
         if (globalScope.wires.length != prevLength) {
@@ -187,9 +190,9 @@ export function cut(copyList) {
 
     updateSimulationSet(true)
 
-    var data = backUp(globalScope)
+    let data: any = backUp(globalScope)
     data.logixClipBoardData = true
-    var dependencyList = globalScope.getDependencies()
+    const dependencyList = globalScope.getDependencies()
     data.dependencies = {}
     Object.keys(dependencyList).forEach((dependency) => {
         data.dependencies[dependency] = backUp(scopeList[dependency])
@@ -209,19 +212,21 @@ export function cut(copyList) {
     // eslint-disable-next-line consistent-return
     return data
 }
+
 /**
  * Helper function for copy
- * @param {JSON} copyList - The data to copied
- * @param {boolean} cutflag - flase if we want to copy
+ * @param copyList - The data to be copied
+ * @param cutflag - false if we want to copy
+ * @returns JSON string of copied data
  * @category events
  */
-export function copy(copyList, cutflag = false) {
+export function copy(copyList: any[], cutflag: boolean = false): string | undefined {
     if (copyList.length === 0) return
-    var tempScope = new Scope(globalScope.name, globalScope.id)
-    var oldOx = globalScope.ox
-    var oldOy = globalScope.oy
-    var oldScale = globalScope.scale
-    var d = backUp(globalScope)
+    const tempScope = new Scope(globalScope.name, globalScope.id)
+    const oldOx = globalScope.ox
+    const oldOy = globalScope.oy
+    const oldScale = globalScope.scale
+    const d = backUp(globalScope)
     const oldTestbenchData = globalScope.testbenchData
 
     loadScope(tempScope, d)
@@ -262,7 +267,7 @@ export function copy(copyList, cutflag = false) {
         }
     }
 
-    var prevLength = globalScope.wires.length
+    let prevLength = globalScope.wires.length
     for (let i = 0; i < globalScope.wires.length; i++) {
         globalScope.wires[i].checkConnections()
         if (globalScope.wires.length != prevLength) {
@@ -273,15 +278,15 @@ export function copy(copyList, cutflag = false) {
 
     updateSimulationSet(true)
 
-    var data = backUp(globalScope)
+    let data: any = backUp(globalScope)
     data.scopes = []
-    var dependencyList = {}
-    var requiredDependencies = globalScope.getDependencies()
-    var completed = {}
+    const dependencyList: Record<string, any> = {}
+    const requiredDependencies = globalScope.getDependencies()
+    const completed: Record<string, boolean> = {}
     Object.keys(scopeList).forEach((id) => {
         dependencyList[id] = scopeList[id].getDependencies()
     })
-    function saveScope(id) {
+    function saveScope(id: string): void {
         if (completed[id]) return
         for (let i = 0; i < dependencyList[id].length; i++) {
             saveScope(dependencyList[id][i])
@@ -320,9 +325,10 @@ export function copy(copyList, cutflag = false) {
 
 /**
  * Function selects all the elements from the scope
+ * @param scope - The scope to select from
  * @category events
  */
-export function selectAll(scope = globalScope) {
+export function selectAll(scope = globalScope): void {
     moduleList.forEach((val, _, __) => {
         if (scope.hasOwnProperty(val)) {
             simulationArea.multipleObjectSelections.push(...scope[val])
