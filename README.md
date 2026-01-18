@@ -47,7 +47,7 @@ CircuitVerse Frontend Vue supports building a cross-platform desktop application
 npm run tauri dev
 ```
 
-## Building the Desktop Application
+### Building the Desktop Application
 
 ```bash
 npm run tauri build
