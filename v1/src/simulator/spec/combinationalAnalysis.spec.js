@@ -1,39 +1,67 @@
-import { setup } from '../src/setup';
-import { runAll } from '../src/testbench';
-import testData from './testData/gates-testdata.json';
-import { GenerateCircuit, performCombinationalAnalysis } from '../src/combinationalAnalysis';
-import { createPinia, setActivePinia } from 'pinia';
-import { mount } from '@vue/test-utils';
-import { createRouter, createWebHistory } from 'vue-router';
-import i18n from '#/locales/i18n';
-import { routes } from '#/router';
-import vuetify from '#/plugins/vuetify';
-import simulator from '#/pages/simulator.vue';
+import { setup } from '../src/setup'
+import { runAll } from '../src/testbench'
+import testData from './testData/gates-testdata.json'
+import {
+    GenerateCircuit,
+    performCombinationalAnalysis,
+} from '../src/combinationalAnalysis'
+import { createPinia, setActivePinia } from 'pinia'
+import { mount } from '@vue/test-utils'
+import { createRouter, createWebHistory } from 'vue-router'
+import i18n from '#/locales/i18n'
+import { routes } from '#/router'
+import vuetify from '#/plugins/vuetify'
+import simulator from '#/pages/simulator.vue'
+import { beforeAll, describe, expect, test, vi } from 'vitest'
+
+vi.mock('@tauri-apps/api/event', () => ({
+    listen: vi.fn(() => Promise.resolve(() => {})),
+}))
+
+global.ResizeObserver = vi.fn().mockImplementation(() => ({
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
+}))
+
+HTMLCanvasElement.prototype.getContext = vi.fn(() => ({
+    clearRect: vi.fn(),
+    fillRect: vi.fn(),
+    fillText: vi.fn(),
+    strokeRect: vi.fn(),
+    beginPath: vi.fn(),
+    moveTo: vi.fn(),
+    lineTo: vi.fn(),
+    stroke: vi.fn(),
+    closePath: vi.fn(),
+    arc: vi.fn(),
+    fill: vi.fn(),
+}))
 
 vi.mock('codemirror', async (importOriginal) => {
-    const actual = await importOriginal();
+    const actual = await importOriginal()
     return {
         ...actual,
-        fromTextArea: vi.fn(() => ({ setValue: () => { } })),
-    };
-});
+        fromTextArea: vi.fn(() => ({ setValue: () => {} })),
+    }
+})
 
 vi.mock('codemirror-editor-vue3', () => ({
     defineSimpleMode: vi.fn(),
-}));
+}))
 
 describe('Combinational Analysis Testing', () => {
-    let pinia;
-    let router;
+    let pinia
+    let router
 
     beforeAll(async () => {
-        pinia = createPinia();
-        setActivePinia(pinia);
+        pinia = createPinia()
+        setActivePinia(pinia)
 
         router = createRouter({
             history: createWebHistory(),
             routes,
-        });
+        })
 
         const elem = document.createElement('div')
 
@@ -59,34 +87,36 @@ describe('Combinational Analysis Testing', () => {
                 length: 0,
                 [Symbol.iterator]: vi.fn(() => []),
             })),
-        }));
+        }))
 
-        global.globalScope = global.globalScope || {};
+        global.globalScope = global.globalScope || {}
 
         mount(simulator, {
             global: {
                 plugins: [pinia, router, i18n, vuetify],
             },
             attachTo: elem,
-        });
+        })
 
-        setup();
-    });
+        setup()
+    })
 
     test('performCombinationalAnalysis function working', () => {
-        expect(() => performCombinationalAnalysis('', '', 'AB')).not.toThrow();
-    });
+        expect(() => performCombinationalAnalysis('', '', 'AB')).not.toThrow()
+    })
 
     test('Generating Circuit', () => {
-        expect(() => GenerateCircuit([13], ['A', 'B'], [0, 0, 0, 1], 'AB')).not.toThrow();
-    });
+        expect(() =>
+            GenerateCircuit([13], ['A', 'B'], [0, 0, 0, 1], 'AB')
+        ).not.toThrow()
+    })
 
     test('testing Combinational circuit', () => {
-        testData.AndGate.groups[0].inputs[0].label = 'A';
-        testData.AndGate.groups[0].inputs[1].label = 'B';
-        testData.AndGate.groups[0].outputs[0].label = 'AB';
+        testData.AndGate.groups[0].inputs[0].label = 'A'
+        testData.AndGate.groups[0].inputs[1].label = 'B'
+        testData.AndGate.groups[0].outputs[0].label = 'AB'
 
-        const result = runAll(testData.AndGate);
-        expect(result.summary.passed).toBe(3);
-    });
-});
+        const result = runAll(testData.AndGate)
+        expect(result.summary.passed).toBe(3)
+    })
+})
