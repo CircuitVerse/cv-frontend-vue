@@ -38,8 +38,9 @@ CircuitVerse Frontend Vue supports building a cross-platform desktop application
 
 - Node.js (LTS recommended)
 - npm
-- Rust (required by Tauri): https://www.rust-lang.org/tools/install
-- Tauri system dependencies: https://tauri.app/start/prerequisites/
+- Rust (required by Tauri): [Install Rust](https://www.rust-lang.org/tools/install)
+- Tauri system dependencies: [Tauri Prerequisites](https://tauri.app/start/prerequisites/)
+
 
 ### Running the Desktop App in Development Mode
 
