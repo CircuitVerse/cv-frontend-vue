@@ -30,6 +30,30 @@ To set up the project on your local machine, follow these steps:
   npm run dev
   ```
 
+## Desktop Application Development (Tauri)
+
+CircuitVerse Frontend Vue supports building a cross-platform desktop application using **Tauri**.
+
+### Prerequisites
+
+- Node.js (LTS recommended)
+- npm
+- Rust (required by Tauri): https://www.rust-lang.org/tools/install
+- Tauri system dependencies: https://tauri.app/start/prerequisites/
+
+### Running the Desktop App in Development Mode
+
+```bash
+npm run tauri dev
+```
+
+## Building the Desktop Application
+
+```bash
+npm run tauri build
+```
+
+
 ## Setting up on cloud with Stackblitz
 [StackBlitz](https://developer.stackblitz.com/guides/user-guide/what-is-stackblitz) is an instant fullstack web IDE for the JavaScript ecosystem.
 
