@@ -45,6 +45,7 @@ var ctxPos = {
     visible: false,
 }
 let isFullViewActive = false
+let prevMobileState = null
 // FUNCTION TO SHOW AND HIDE CONTEXT MENU
 function hideContextMenu() {
     var el = document.getElementById('contextMenu')
@@ -418,10 +419,18 @@ export function exitFullView() {
         }
     })
 
-    // Mobile Components
+    // Mobile Components - Restore previous state
     const simulatorMobileStore = toRefs(useSimulatorMobileStore())
-    simulatorMobileStore.showQuickButtons.value = true
-    simulatorMobileStore.showMobileButtons.value = true
+    
+    // ✅ RESTORE PREVIOUS STATE
+    if (prevMobileState) {
+        simulatorMobileStore.showElementsPanel.value = prevMobileState.showElementsPanel
+        simulatorMobileStore.showPropertiesPanel.value = prevMobileState.showPropertiesPanel
+        simulatorMobileStore.showTimingDiagram.value = prevMobileState.showTimingDiagram
+        simulatorMobileStore.showQuickButtons.value = prevMobileState.showQuickButtons
+        simulatorMobileStore.showMobileButtons.value = prevMobileState.showMobileButtons
+        prevMobileState = null // Clear saved state
+    }
 
     // Reset state flag
     isFullViewActive = false
@@ -453,8 +462,18 @@ export function fullView() {
         }
     })
 
-    // Mobile Components
+    // Mobile Components - Save previous state before hiding
     const simulatorMobileStore = toRefs(useSimulatorMobileStore())
+    
+    // ✅ SAVE PREVIOUS STATE
+    prevMobileState = {
+        showElementsPanel: simulatorMobileStore.showElementsPanel.value,
+        showPropertiesPanel: simulatorMobileStore.showPropertiesPanel.value,
+        showTimingDiagram: simulatorMobileStore.showTimingDiagram.value,
+        showQuickButtons: simulatorMobileStore.showQuickButtons.value,
+        showMobileButtons: simulatorMobileStore.showMobileButtons.value
+    }
+
     simulatorMobileStore.showElementsPanel.value = false
     simulatorMobileStore.showPropertiesPanel.value = false
     simulatorMobileStore.showTimingDiagram.value = false
