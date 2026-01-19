@@ -44,6 +44,7 @@ var ctxPos = {
     y: 0,
     visible: false,
 }
+let isFullViewActive = false
 // FUNCTION TO SHOW AND HIDE CONTEXT MENU
 function hideContextMenu() {
     var el = document.getElementById('contextMenu')
@@ -403,12 +404,14 @@ function setupPanelListeners(panelSelector) {
 }
 
 export function exitFullView() {
-    const exitViewBtn = document.querySelector('#exitViewBtn')
-    if (exitViewBtn) exitViewBtn.remove()
+    // Remove ALL exit buttons (handles edge cases)
+    const exitViewBtns = document.querySelectorAll('#exitViewBtn')
+    exitViewBtns.forEach(btn => btn.remove())
 
     const elements = document.querySelectorAll(
         '.navbar, .modules, .report-sidebar, #tabsBar, #moduleProperty, .timing-diagram-panel, .testbench-manual-panel, .quick-btn'
     )
+
     elements.forEach((element) => {
         if (element instanceof HTMLElement) {
             element.style.display = ''
@@ -416,15 +419,25 @@ export function exitFullView() {
     })
 
     // Mobile Components
-
-    const simulatorMobileStore = toRefs(useSimulatorMobileStore());
-
+    const simulatorMobileStore = toRefs(useSimulatorMobileStore())
     simulatorMobileStore.showQuickButtons.value = true
     simulatorMobileStore.showMobileButtons.value = true
+
+    // Reset state flag
+    isFullViewActive = false
 }
 
 export function fullView() {
+    // Prevent multiple calls
+    if (isFullViewActive) return
+    
     const app = document.querySelector('#app')
+    if (!app) return
+
+    // Close all menus using custom event (Vue-safe approach)
+    document.dispatchEvent(new Event('ui:close-menus'))
+
+    isFullViewActive = true
 
     const exitViewEl = document.createElement('button')
     exitViewEl.id = 'exitViewBtn'
@@ -433,6 +446,7 @@ export function fullView() {
     const elements = document.querySelectorAll(
         '.navbar, .modules, .report-sidebar, #tabsBar, #moduleProperty, .timing-diagram-panel, .testbench-manual-panel, .quick-btn'
     )
+
     elements.forEach((element) => {
         if (element instanceof HTMLElement) {
             element.style.display = 'none'
@@ -440,9 +454,7 @@ export function fullView() {
     })
 
     // Mobile Components
-
-    const simulatorMobileStore = toRefs(useSimulatorMobileStore());
-
+    const simulatorMobileStore = toRefs(useSimulatorMobileStore())
     simulatorMobileStore.showElementsPanel.value = false
     simulatorMobileStore.showPropertiesPanel.value = false
     simulatorMobileStore.showTimingDiagram.value = false
