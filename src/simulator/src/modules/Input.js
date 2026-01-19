@@ -58,6 +58,12 @@ export default class Input extends CircuitElement {
         this.directionFixed = true
         this.setWidth(this.bitWidth * 10)
         this.rectangleObject = true // Trying to make use of base class draw
+
+        // Initialize subcircuitMetadata coordinates from layoutProperties
+        if (this.canShowInSubcircuit && this.layoutProperties) {
+            this.subcircuitMetadata.x = this.layoutProperties.x || 0
+            this.subcircuitMetadata.y = this.layoutProperties.y || 0
+        }
     }
 
     /**
