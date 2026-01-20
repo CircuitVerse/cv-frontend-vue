@@ -34,6 +34,7 @@ export default class Wire {
         this.updateData();
         this.scope.wires.push(this);
         forceResetNodesSet(true);
+        updateSimulationSet(true);
     }
 
     updateData(): void {
