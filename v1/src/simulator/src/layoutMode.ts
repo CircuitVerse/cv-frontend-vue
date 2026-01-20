@@ -449,7 +449,11 @@ export function toggleLayoutMode() {
     const layoutStore = toRefs(useLayoutStore())
     const simulatorMobileStore = toRefs(useSimulatorMobileStore())
     prevPropertyObjSet(undefined)
-    $('.objectPropertyAttribute').unbind('change keyup paste click')
+    // Remove all event listeners by cloning and replacing elements
+    document.querySelectorAll('.objectPropertyAttribute').forEach((el) => {
+        const clone = el.cloneNode(true)
+        el.parentNode?.replaceChild(clone, el)
+    })
 
     if (layoutModeGet()) {
         layoutModeSet(false)
