@@ -38,9 +38,9 @@ const buttonArr = ref([{}])
 const showAlert = ref(false)
 const alertType = ref('error')
 const alertMessage = ref('')
-const outputListNamesInteger = ref([])
-const inputListNames = ref([])
-const outputListNames = ref([])
+const outputListNamesInteger = ref<number[]>([])
+const inputListNames = ref<string[]>([])
+const outputListNames = ref(<string []>[])
 const tableHeader = ref([])
 const tableBody = ref([])
 const output = ref([])
@@ -214,11 +214,11 @@ function createLogicTable() {
     }
 }
 
-function createBooleanPrompt(inputList, outputList, scope = globalScope) {
+function createBooleanPrompt(inputList : string[] , outputList :string[], scope = globalScope) {
     inputListNames.value =
-        inputList || prompt('Enter inputs separated by commas').split(',')
+        inputList || prompt('Enter inputs separated by commas')?.split(',')
     outputListNames.value =
-        outputList || prompt('Enter outputs separated by commas').split(',')
+        outputList || prompt('Enter outputs separated by commas')?.split(',')
     if (output.value == null) {
         for (var i = 0; i < outputListNames.value.length; i++) {
             outputListNamesInteger.value[i] = 7 * i + 13
