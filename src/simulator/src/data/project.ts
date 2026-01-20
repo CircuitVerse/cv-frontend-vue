@@ -120,23 +120,23 @@ function checkToSave() {
  * Prompt user to save data if unsaved
  * @category data
  */
-window.onbeforeunload = async function () {
-    if (projectSaved || embed) return
+// window.onbeforeunload = async function () {
+//     if (projectSaved || embed) return
 
-    if (!checkToSave()) return
+//     if (!checkToSave()) return
 
-    alert(
-        'You have unsaved changes on this page. Do you want to leave this page and discard your changes or stay on this page?'
-    )
-    // await confirmSingleOption(
-    //     'You have unsaved changes on this page. Do you want to leave this page and discard your changes or stay on this page?'
-    // )
-    const data = await generateSaveData('Untitled')
-    const stringData = JSON.stringify(data)
-    localStorage.setItem('recover', stringData)
-    // eslint-disable-next-line consistent-return
-    return 'Are u sure u want to leave? Any unsaved changes may not be recoverable'
-}
+//     alert(
+//         'You have unsaved changes on this page. Do you want to leave this page and discard your changes or stay on this page?'
+//     )
+//     // await confirmSingleOption(
+//     //     'You have unsaved changes on this page. Do you want to leave this page and discard your changes or stay on this page?'
+//     // )
+//     const data = await generateSaveData('Untitled')
+//     const stringData = JSON.stringify(data)
+//     localStorage.setItem('recover', stringData)
+//     // eslint-disable-next-line consistent-return
+//     return 'Are u sure u want to leave? Any unsaved changes may not be recoverable'
+// }
 
 /**
  * Function to clear project
@@ -155,21 +155,25 @@ export async function clearProject() {
  Function used to start a new project while prompting confirmation from the user
  */
 export async function newProject(verify: boolean) {
+    
     if (
-        verify ||
-        projectSaved ||
-        !checkToSave() ||
-        (await confirmOption(
+        !verify &&
+        (!projectSaved && checkToSave()) &&
+        !(await confirmOption(
             'What you like to start a new project? Any unsaved changes will be lost.'
         ))
     ) {
-        clearProject()
-        localStorage.removeItem('recover')
-        const baseUrl = window.location.origin !== 'null' ? window.location.origin : 'http://localhost:4000';
-        window.location.assign(`${baseUrl}/simulatorvue/`);
-
-        setProjectName(undefined)
-        projectId = generateId()
-        showMessage('New Project has been created!')
+        return  
     }
+
+    // Proceed to clear project and create a new one if confirmed or conditions met
+    await clearProject()
+    localStorage.removeItem('recover')
+
+    const baseUrl = window.location.origin !== 'null' ? window.location.origin : 'http://localhost:4000'
+    window.location.assign(`${baseUrl}/simulatorvue/`)
+
+    setProjectName(undefined)
+    projectId = generateId()
+    showMessage('New Project has been created!')
 }
