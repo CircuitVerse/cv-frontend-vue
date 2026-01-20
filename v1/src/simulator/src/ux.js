@@ -4,11 +4,7 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable guard-for-in */
 import { layoutModeGet } from './layoutMode'
-import {
-    scheduleUpdate,
-    wireToBeCheckedSet,
-    updateCanvasSet
-} from './engine'
+import { scheduleUpdate, wireToBeCheckedSet, updateCanvasSet } from './engine'
 import { simulationArea } from './simulationArea'
 import logixFunction from './data'
 import { circuitProperty } from './circuit'
@@ -44,14 +40,26 @@ var ctxPos = {
     y: 0,
     visible: false,
 }
+
+/**
+ * Helper function to check if value is numeric
+ * @param {any} val - value to check
+ * @returns {boolean}
+ * @category ux
+ */
+function isNumeric(val) {
+    return !isNaN(parseFloat(val)) && isFinite(val)
+}
+
 // FUNCTION TO SHOW AND HIDE CONTEXT MENU
 function hideContextMenu() {
     var el = document.getElementById('contextMenu')
-    el.style = 'opacity:0;'
+    if (!el) return
+    el.style.opacity = '0'
     setTimeout(() => {
-        el.style = 'visibility:hidden;'
+        el.style.visibility = 'hidden'
         ctxPos.visible = false
-    }, 200) // Hide after 2 sec
+    }, 200) // Hide after 200ms
 }
 /**
  * Function displays context menu
@@ -59,60 +67,59 @@ function hideContextMenu() {
  */
 function showContextMenu() {
     if (layoutModeGet()) return false // Hide context menu when it is in Layout Mode
-    $('#contextMenu').css({
-        visibility: 'visible',
-        opacity: 1,
-    })
+
+    const contextMenu = document.getElementById('contextMenu')
+    if (!contextMenu) return false
+
+    contextMenu.style.visibility = 'visible'
+    contextMenu.style.opacity = '1'
+
+    const simulationAreaEl = document.getElementById('simulationArea')
+    if (!simulationAreaEl) return false
 
     var windowHeight =
-        $('#simulationArea').height() - $('#contextMenu').height() - 10
+        simulationAreaEl.offsetHeight - contextMenu.offsetHeight - 10
     var windowWidth =
-        $('#simulationArea').width() - $('#contextMenu').width() - 10
+        simulationAreaEl.offsetWidth - contextMenu.offsetWidth - 10
+
     // for top, left, right, bottom
     var topPosition
     var leftPosition
     var rightPosition
     var bottomPosition
+
     if (ctxPos.y > windowHeight && ctxPos.x <= windowWidth) {
         //When user click on bottom-left part of window
         leftPosition = ctxPos.x
-        bottomPosition = $(window).height() - ctxPos.y
-        $('#contextMenu').css({
-            left: `${leftPosition}px`,
-            bottom: `${bottomPosition}px`,
-            right: 'auto',
-            top: 'auto',
-        })
+        bottomPosition = window.innerHeight - ctxPos.y
+        contextMenu.style.left = `${leftPosition}px`
+        contextMenu.style.bottom = `${bottomPosition}px`
+        contextMenu.style.right = 'auto'
+        contextMenu.style.top = 'auto'
     } else if (ctxPos.y > windowHeight && ctxPos.x > windowWidth) {
         //When user click on bottom-right part of window
-        bottomPosition = $(window).height() - ctxPos.y
-        rightPosition = $(window).width() - ctxPos.x
-        $('#contextMenu').css({
-            left: 'auto',
-            bottom: `${bottomPosition}px`,
-            right: `${rightPosition}px`,
-            top: 'auto',
-        })
+        bottomPosition = window.innerHeight - ctxPos.y
+        rightPosition = window.innerWidth - ctxPos.x
+        contextMenu.style.left = 'auto'
+        contextMenu.style.bottom = `${bottomPosition}px`
+        contextMenu.style.right = `${rightPosition}px`
+        contextMenu.style.top = 'auto'
     } else if (ctxPos.y <= windowHeight && ctxPos.x <= windowWidth) {
         //When user click on top-left part of window
         leftPosition = ctxPos.x
         topPosition = ctxPos.y
-        $('#contextMenu').css({
-            left: `${leftPosition}px`,
-            bottom: 'auto',
-            right: 'auto',
-            top: `${topPosition}px`,
-        })
+        contextMenu.style.left = `${leftPosition}px`
+        contextMenu.style.bottom = 'auto'
+        contextMenu.style.right = 'auto'
+        contextMenu.style.top = `${topPosition}px`
     } else {
         //When user click on top-right part of window
-        rightPosition = $(window).width() - ctxPos.x
+        rightPosition = window.innerWidth - ctxPos.x
         topPosition = ctxPos.y
-        $('#contextMenu').css({
-            left: 'auto',
-            bottom: 'auto',
-            right: `${rightPosition}px`,
-            top: `${topPosition}px`,
-        })
+        contextMenu.style.left = 'auto'
+        contextMenu.style.bottom = 'auto'
+        contextMenu.style.right = `${rightPosition}px`
+        contextMenu.style.top = `${topPosition}px`
     }
     ctxPos.visible = true
     return false
@@ -128,6 +135,7 @@ export function setupUI() {
     document.addEventListener('mousedown', (e) => {
         // Check if mouse is not inside the context menu and menu is visible
         if (
+            ctxEl &&
             !(
                 e.clientX >= ctxPos.x &&
                 e.clientX <= ctxPos.x + ctxEl.offsetWidth &&
@@ -144,11 +152,19 @@ export function setupUI() {
         ctxPos.x = e.clientX
         ctxPos.y = e.clientY
     })
-    document.getElementById('canvasArea').oncontextmenu = showContextMenu
+    const canvasArea = document.getElementById('canvasArea')
+    if (canvasArea) {
+        canvasArea.oncontextmenu = showContextMenu
+    }
 
-    $('.logixButton').on('click', function () {
-        logixFunction[this.id]()
+    // Setup logix button click listeners
+    const logixButtons = document.querySelectorAll('.logixButton')
+    logixButtons.forEach((button) => {
+        button.addEventListener('click', function () {
+            logixFunction[this.id]()
+        })
     })
+
     setupPanels()
 }
 
@@ -167,17 +183,24 @@ export function prevPropertyObjGet() {
 }
 
 function checkValidBitWidth() {
-    const selector = $("[name='newBitWidth']")
+    const selector = document.querySelector("[name='newBitWidth']")
+    if (!selector) return
+
+    const value = selector.value
+    const oldVal = selector.getAttribute('old-val')
+
     if (
-        selector === undefined ||
-        selector.val() > 32 ||
-        selector.val() < 1 ||
-        !$.isNumeric(selector.val())
+        value === '' ||
+        parseInt(value) > 32 ||
+        parseInt(value) < 1 ||
+        !isNumeric(value)
     ) {
-        // fallback to previously saves state
-        selector.val(selector.attr('old-val'))
+        // fallback to previously saved state
+        if (oldVal) {
+            selector.value = oldVal
+        }
     } else {
-        selector.attr('old-val', selector.val())
+        selector.setAttribute('old-val', value)
     }
 }
 
@@ -210,23 +233,33 @@ export function objectPropertyAttributeCheckedUpdate() {
 }
 
 export function checkPropertiesUpdate(value = 0) {
-    $('.objectPropertyAttribute').off(
-        'change keyup paste click',
-        objectPropertyAttributeUpdate
+    const propertyAttributes = document.querySelectorAll(
+        '.objectPropertyAttribute'
     )
-    $('.objectPropertyAttribute').on(
-        'change keyup paste click',
-        objectPropertyAttributeUpdate
-    )
+    propertyAttributes.forEach((el) => {
+        // Remove existing listeners by cloning
+        const newEl = el.cloneNode(true)
+        el.parentNode.replaceChild(newEl, el)
+        // Add new listeners
+        newEl.addEventListener('change', objectPropertyAttributeUpdate)
+        newEl.addEventListener('keyup', objectPropertyAttributeUpdate)
+        newEl.addEventListener('paste', objectPropertyAttributeUpdate)
+        newEl.addEventListener('click', objectPropertyAttributeUpdate)
+    })
 
-    $('.objectPropertyAttributeChecked').off(
-        'change keyup paste click',
-        objectPropertyAttributeCheckedUpdate
+    const checkedAttributes = document.querySelectorAll(
+        '.objectPropertyAttributeChecked'
     )
-    $('.objectPropertyAttributeChecked').on(
-        'change keyup paste click',
-        objectPropertyAttributeCheckedUpdate
-    )
+    checkedAttributes.forEach((el) => {
+        // Remove existing listeners by cloning
+        const newEl = el.cloneNode(true)
+        el.parentNode.replaceChild(newEl, el)
+        // Add new listeners
+        newEl.addEventListener('change', objectPropertyAttributeCheckedUpdate)
+        newEl.addEventListener('keyup', objectPropertyAttributeCheckedUpdate)
+        newEl.addEventListener('paste', objectPropertyAttributeCheckedUpdate)
+        newEl.addEventListener('click', objectPropertyAttributeCheckedUpdate)
+    })
 }
 
 /**
@@ -244,10 +277,26 @@ export function showProperties(obj) {
  * @category ux
  */
 export function hideProperties() {
-    $('#moduleProperty-inner').empty()
-    $('#moduleProperty').hide()
+    const modulePropertyInner = document.getElementById('moduleProperty-inner')
+    if (modulePropertyInner) {
+        modulePropertyInner.innerHTML = ''
+    }
+
+    const moduleProperty = document.getElementById('moduleProperty')
+    if (moduleProperty) {
+        moduleProperty.style.display = 'none'
+    }
+
     prevPropertyObjSet(undefined)
-    $('.objectPropertyAttribute').unbind('change keyup paste click')
+
+    // Remove event listeners from property attributes
+    const propertyAttributes = document.querySelectorAll(
+        '.objectPropertyAttribute'
+    )
+    propertyAttributes.forEach((el) => {
+        const newEl = el.cloneNode(true)
+        el.parentNode.replaceChild(newEl, el)
+    })
 }
 /**
  * checkss the input is safe or not
@@ -295,25 +344,14 @@ export function deleteSelected() {
 }
 
 /**
- * listener for opening the prompt for bin conversion
+ * Bit converter dialog - now handled by Vue HexBinDec.vue component
+ * This function opens the dialog via the SimulatorStore
  * @category ux
  */
-$('#bitconverter').on('click', () => {
-    $('#bitconverterprompt').dialog({
-        resizable: false,
-        buttons: [
-            {
-                text: 'Reset',
-                click() {
-                    $('#decimalInput').val('0')
-                    $('#binaryInput').val('0')
-                    $('#octalInput').val('0')
-                    $('#hexInput').val('0')
-                },
-            },
-        ],
-    })
-})
+export function openBitConverterDialog() {
+    const simulatorStore = SimulatorStore()
+    simulatorStore.dialogBox.hex_bin_dec_converter_dialog = true
+}
 
 // convertors
 const convertors = {
@@ -321,34 +359,6 @@ const convertors = {
     dec2hex: (x) => `0x${x.toString(16)}`,
     dec2octal: (x) => `0${x.toString(8)}`,
 }
-
-function setBaseValues(x) {
-    if (isNaN(x)) return
-    $('#binaryInput').val(convertors.dec2bin(x))
-    $('#octalInput').val(convertors.dec2octal(x))
-    $('#hexInput').val(convertors.dec2hex(x))
-    $('#decimalInput').val(x)
-}
-
-$('#decimalInput').on('keyup', () => {
-    var x = parseInt($('#decimalInput').val(), 10)
-    setBaseValues(x)
-})
-
-$('#binaryInput').on('keyup', () => {
-    var x = parseInt($('#binaryInput').val(), 2)
-    setBaseValues(x)
-})
-
-$('#hexInput').on('keyup', () => {
-    var x = parseInt($('#hexInput').val(), 16)
-    setBaseValues(x)
-})
-
-$('#octalInput').on('keyup', () => {
-    var x = parseInt($('#octalInput').val(), 8)
-    setBaseValues(x)
-})
 
 export function setupPanels() {
     dragging('#dragQPanel', '.quick-btn')
@@ -362,44 +372,78 @@ export function setupPanels() {
     setupPanelListeners('.testbench-manual-panel')
 
     // Minimize Timing Diagram (takes too much space)
-    $('.timing-diagram-panel .minimize').trigger('click')
+    const timingMinimize = document.querySelector(
+        '.timing-diagram-panel .minimize'
+    )
+    if (timingMinimize) {
+        timingMinimize.click()
+    }
 
     // Minimize Testbench UI
-    $('.testbench-manual-panel .minimize').trigger('click')
+    const testbenchMinimize = document.querySelector(
+        '.testbench-manual-panel .minimize'
+    )
+    if (testbenchMinimize) {
+        testbenchMinimize.click()
+    }
 
-    $('#projectName').on('click', () => {
-        $("input[name='setProjectName']").focus().select()
-    })
+    const projectName = document.getElementById('projectName')
+    if (projectName) {
+        projectName.addEventListener('click', () => {
+            const input = document.querySelector("input[name='setProjectName']")
+            if (input) {
+                input.focus()
+                input.select()
+            }
+        })
+    }
 }
 
 function setupPanelListeners(panelSelector) {
-    var headerSelector = `${panelSelector} .panel-header`
-    var minimizeSelector = `${panelSelector} .minimize`
-    var maximizeSelector = `${panelSelector} .maximize`
-    var bodySelector = `${panelSelector} > .panel-body`
+    const panel = document.querySelector(panelSelector)
+    if (!panel) return
 
-    dragging(headerSelector, panelSelector)
+    const header = panel.querySelector('.panel-header')
+    const minimizeBtn = panel.querySelector('.minimize')
+    const maximizeBtn = panel.querySelector('.maximize')
+    const body = panel.querySelector('.panel-body')
+
+    if (header) {
+        dragging(panelSelector + ' .panel-header', panelSelector)
+    }
+
     // Current Panel on Top
     var minimized = false
-    $(headerSelector).on('dblclick', () =>
-        minimized
-            ? $(maximizeSelector).trigger('click')
-            : $(minimizeSelector).trigger('click')
-    )
+
+    if (header) {
+        header.addEventListener('dblclick', () => {
+            if (minimized) {
+                maximizeBtn?.click()
+            } else {
+                minimizeBtn?.click()
+            }
+        })
+    }
+
     // Minimize
-    $(minimizeSelector).on('click', () => {
-        $(bodySelector).hide()
-        $(minimizeSelector).hide()
-        $(maximizeSelector).show()
-        minimized = true
-    })
+    if (minimizeBtn) {
+        minimizeBtn.addEventListener('click', () => {
+            if (body) body.style.display = 'none'
+            minimizeBtn.style.display = 'none'
+            if (maximizeBtn) maximizeBtn.style.display = ''
+            minimized = true
+        })
+    }
+
     // Maximize
-    $(maximizeSelector).on('click', () => {
-        $(bodySelector).show()
-        $(minimizeSelector).show()
-        $(maximizeSelector).hide()
-        minimized = false
-    })
+    if (maximizeBtn) {
+        maximizeBtn.addEventListener('click', () => {
+            if (body) body.style.display = ''
+            if (minimizeBtn) minimizeBtn.style.display = ''
+            maximizeBtn.style.display = 'none'
+            minimized = false
+        })
+    }
 }
 
 export function exitFullView() {
@@ -417,7 +461,7 @@ export function exitFullView() {
 
     // Mobile Components
 
-    const simulatorMobileStore = toRefs(useSimulatorMobileStore());
+    const simulatorMobileStore = toRefs(useSimulatorMobileStore())
 
     simulatorMobileStore.showQuickButtons.value = true
     simulatorMobileStore.showMobileButtons.value = true
@@ -441,7 +485,7 @@ export function fullView() {
 
     // Mobile Components
 
-    const simulatorMobileStore = toRefs(useSimulatorMobileStore());
+    const simulatorMobileStore = toRefs(useSimulatorMobileStore())
 
     simulatorMobileStore.showElementsPanel.value = false
     simulatorMobileStore.showPropertiesPanel.value = false
@@ -449,7 +493,7 @@ export function fullView() {
     simulatorMobileStore.showQuickButtons.value = false
     simulatorMobileStore.showMobileButtons.value = false
 
-    app.appendChild(exitViewEl)
+    if (app) app.appendChild(exitViewEl)
     exitViewEl.addEventListener('click', exitFullView)
 }
 
@@ -458,7 +502,8 @@ export function fullView() {
 **/
 export function fillSubcircuitElements() {
     const simulatorStore = SimulatorStore()
-    const { subCircuitElementList, isEmptySubCircuitElementList } = toRefs(simulatorStore)
+    const { subCircuitElementList, isEmptySubCircuitElementList } =
+        toRefs(simulatorStore)
     subCircuitElementList.value = []
     isEmptySubCircuitElementList.value = true
 
@@ -481,13 +526,13 @@ export function fillSubcircuitElements() {
         for (let i = 0; i < globalScope[el].length; i++) {
             if (!globalScope[el][i].subcircuitMetadata.showInSubcircuit) {
                 available = true
-                const element = globalScope[el][i];
-                elementGroup.elements.push(element);
+                const element = globalScope[el][i]
+                elementGroup.elements.push(element)
             }
         }
         subCircuitElementExists = subCircuitElementExists || available
         if (available) {
-            subcircuitElements.push(elementGroup);
+            subcircuitElements.push(elementGroup)
         }
 
         subCircuitElementList.value = subcircuitElements
