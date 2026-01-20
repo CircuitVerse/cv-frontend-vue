@@ -146,18 +146,23 @@ export default class TflipFlop extends CircuitElement {
         module TflipFlop(q, q_inv, clk, t, a_rst, pre, en);
           parameter WIDTH = 1;
           output reg [WIDTH-1:0] q, q_inv;
-          input clk, a_rst, pre, en;
-          input [WIDTH-1:0] t;
+          input clk, a_rst, en;
+          input [WIDTH-1:0] t, pre;
         
-          always @ (posedge clk or posedge a_rst)
+          always @ (posedge clk or posedge a_rst) begin
             if (a_rst) begin
-              q <= 'b0;
-              q_inv <= 'b1;
-            end else if (en == 0) ;
-            else if (t) begin
-              q <= q ^ t;
-              q_inv <= ~q ^ t;
+              q <= pre;
+              q_inv <= ~pre;
+            end else if (en) begin
+              if (t) begin
+                // Toggle when T input is high
+                q <= ~q;
+                q_inv <= q;
+              end
+              // When t == 0, hold current state
             end
+            // When en == 0, hold current state
+          end
         endmodule
         `
     }
