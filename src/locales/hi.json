@@ -99,6 +99,30 @@
                 "apply_themes": "थीम लागू करें",
                 "select_theme": "थीम चुनें:"
             },
+            "project_property": {
+                "project": "परियोजना:",
+                "circuit": "सर्किट:",
+                "clock_time": "घड़ी का समय (मिलीसेकंड):",
+                "clock_enabled": "घड़ी इनेबल किया गया:",
+                "lite_mode": "लाइट मोड:",
+                "edit_layout": "लेआउट संपादित करें",
+                "delete_circuit": "सर्किट हटाएं"
+            },
+            "element_property": {
+                "bit_width": "बिट-चौड़ाई:",
+                "input_size": "इनपुट आकार:",
+                "delay": "विलंब (सेकंड):",
+                "label": "लेबल:",
+                "label_direction": "लेबल दिशा:",
+                "direction": "दिशा:",
+                "orientation": "ओरिएंटेशन:",
+                "label_directions": {
+                    "up": "ऊपर",
+                    "down": "नीचे",
+                    "left": "बाएं",
+                    "right": "दाएं"
+                }
+            },
             "layout": {
                 "width": "चौड़ाई",
                 "height": "ऊंचाई",
