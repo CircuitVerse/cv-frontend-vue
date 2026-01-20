@@ -37,46 +37,52 @@
 </template>
 
 <script lang="ts" setup>
+import { defineProps, PropType } from 'vue'
+
 const props = defineProps({
     propertyName: { type: String, default: 'Property Name' },
     propertyValue: { type: Number, default: 0 },
     propertyValueType: { type: String, default: 'number' },
-    valueMin: { type: String, default: '0' },
-    valueMax: { type: String, default: '100000000000000' },
-    stepSize: { type: String, default: '1' },
+    valueMin: { type: Number, default: 0 },
+    valueMax: { type: Number, default: 100000000000000 },
+    stepSize: { type: Number, default: 1 },
     propertyInputName: { type: String, default: 'Property_Input_Name' },
     propertyInputId: { type: String, default: 'Property_Input_Id' },
 })
 
 // can be modified if required
-function increaseValue() {
-    const ele = document.getElementById(props.propertyInputId)
-    var value = parseInt(ele.value, 10)
-    var step = parseInt(props.stepSize, 10)
+function increaseValue(): void {
+  const ele = document.getElementById(props.propertyInputId) as HTMLInputElement | null
+  if (ele) {
+    let value = parseInt(ele.value, 10)
+    let step = parseInt(props.stepSize.toString(), 10)
     value = isNaN(value) ? 0 : value
     step = isNaN(step) ? 1 : step
     if (value + step <= props.valueMax) value = value + step
     else return
-    props.propertyValue = value
-    ele.value = value
-    // manually triggering on change event
-    const e = new Event('change')
-    ele.dispatchEvent(e)
+    const updatedValue = value
+    ele.value = updatedValue.toString()
+    // emit event with updated value
+    const event = new Event('input', { bubbles: true })
+    ele.dispatchEvent(event)
+  }
 }
 
-function decreaseValue() {
-    const ele = document.getElementById(props.propertyInputId)
-    var value = parseInt(ele.value, 10)
-    var step = parseInt(props.stepSize, 10)
+function decreaseValue(): void {
+  const ele = document.getElementById(props.propertyInputId) as HTMLInputElement | null
+  if (ele) {
+    let value = parseInt(ele.value, 10)
+    let step = parseInt(props.stepSize.toString(), 10)
     value = isNaN(value) ? 0 : value
     step = isNaN(step) ? 1 : step
     if (value - step >= props.valueMin) value = value - step
     else return
-    props.propertyValue = value
-    ele.value = value
-    // manually triggering on change event
-    const e = new Event('change')
-    ele.dispatchEvent(e)
+    const updatedValue = value
+    ele.value = updatedValue.toString()
+    // emit event with updated value
+    const event = new Event('input', { bubbles: true })
+    ele.dispatchEvent(event)
+  }
 }
 </script>
 
