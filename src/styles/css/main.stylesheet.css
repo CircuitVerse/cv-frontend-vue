@@ -182,6 +182,10 @@ input[type='text']:focus {
     width: 35vw;
     overflow: hidden;
     text-overflow: ellipsis;
+    height: 5vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 @media (max-width: 991px) {
