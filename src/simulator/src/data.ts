@@ -21,7 +21,11 @@ import { keyBinder } from '#/components/DialogBox/CustomShortcut.vue'
 import { ExportProject } from '#/components/DialogBox/ExportProject.vue'
 import { ImportProject } from '#/components/DialogBox/ImportProject.vue'
 
-const logixFunction = {}
+
+type LogixFunction<T extends any[] = any[]> = (...args: T) => void | Promise<void>;
+
+const logixFunction : Record<string, LogixFunction> = {}
+
 logixFunction.save = save
 logixFunction.load = load
 logixFunction.createSaveAsImgPrompt = createSaveAsImgPrompt
