@@ -352,27 +352,4 @@ onUnmounted(() => {
     color: #ff6b6b;
 }
 
-/* SHOW BUTTON (when terminal is hidden) */
-.terminal-show-btn {
-    position: fixed;
-    bottom: 12px;
-    right: 12px;
-    background: var(--bg-navbar, #2d2d2d);
-    color: var(--text-lite, #ffffff);
-    border: 1px solid var(--br-primary, #333);
-    padding: 6px 12px;
-    font-size: 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    z-index: 1001;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    opacity: 0.85;
-}
-
-.terminal-show-btn:hover {
-    opacity: 1;
-}
-
 </style>
