@@ -9,6 +9,16 @@
                 <i class="fas fa-terminal"></i>
                 <span>Verilog Output</span>
             </div>
+        <button
+        class="terminal-toggle-btn"
+        @mousedown.stop
+        @click.stop="verilogStore.hideTerminal()"
+        aria-label="Hide Verilog Output Terminal"
+        title="Hide Terminal"
+        >
+        ✕
+        </button>
+
         </div>
 
         <div class="terminal-content" ref="terminalContent">
@@ -50,10 +60,12 @@ let startY = 0
 // Watch store visibility to trigger side effects
 watch(
     () => verilogStore.isTerminalVisible,
-    () => {
+    async () => {
+        await nextTick()
         adjustCodeWindowHeight()
     }
 )
+
 
 const adjustCodeWindowHeight = () => {
     const codeWindow = document.getElementById('code-window')
@@ -324,4 +336,43 @@ onUnmounted(() => {
 :global(.code-window .CodeMirror-gutters) {
     min-width: auto !important;
 }
+
+.terminal-toggle-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-lite, #ffffff);
+    font-size: 16px;
+    cursor: pointer;
+    padding: 4px 8px;
+    opacity: 0.7;
+}
+
+.terminal-toggle-btn:hover {
+    opacity: 1;
+    color: #ff6b6b;
+}
+
+/* SHOW BUTTON (when terminal is hidden) */
+.terminal-show-btn {
+    position: fixed;
+    bottom: 12px;
+    right: 12px;
+    background: var(--bg-navbar, #2d2d2d);
+    color: var(--text-lite, #ffffff);
+    border: 1px solid var(--br-primary, #333);
+    padding: 6px 12px;
+    font-size: 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    opacity: 0.85;
+}
+
+.terminal-show-btn:hover {
+    opacity: 1;
+}
+
 </style>
