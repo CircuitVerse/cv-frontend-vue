@@ -290,14 +290,44 @@ export function renderCanvas(scope) {
         ctx.stroke()
         ctx.fill()
     }
-    if (simulationArea.hover !== undefined) {
-        simulationArea.canvas.style.cursor = 'pointer'
-    } else if (simulationArea.mouseDown) {
-        simulationArea.canvas.style.cursor = 'grabbing'
-    } else {
-        simulationArea.canvas.style.cursor = 'default'
+    // Current object under the mouse (Node / Wire / undefined)
+    const hover = simulationArea.hover;
+    const type = hover?.objectType;
+
+    //Mouse is pressed → dragging or panning
+    if (simulationArea.mouseDown) {
+        // While dragging nodes or panning the canvas
+        simulationArea.canvas.style.cursor = 'grabbing';
+
+    } 
+    //Mouse is hovering over something
+    else if (hover) {
+
+        // Hovering over a Node
+        if (type === 'Node') {
+            simulationArea.canvas.style.cursor = 'crosshair';
+
+        // Hovering over a Wire
+    }   
+        else if (type === 'Wire') {
+            simulationArea.canvas.style.cursor = 'pointer';
+
+    // Hovering over other objects (modules, subcircuits, etc.)
+    } 
+        else {
+            simulationArea.canvas.style.cursor = 'move';
     }
-}
+
+    } 
+    //Idle canvas (no hover, no mouse down)
+    else {
+        // Default canvas interaction state
+        simulationArea.canvas.style.cursor = 'grab';
+    }
+
+
+
+    }
 
 /**
  * Function to move multiple objects and panes window
