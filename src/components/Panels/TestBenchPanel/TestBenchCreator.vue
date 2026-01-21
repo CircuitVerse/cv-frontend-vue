@@ -101,7 +101,7 @@
                                 Add Test
                             </v-btn>
 
-                            <v-btn iconsize="small" variant="text" color="black" @click="deleteGroup(groupIndex)"title="Delete Group">
+                            <v-btn icon size="small" variant="text" color="black" @click="deleteGroup(groupIndex)" title="Delete Group">
                             <v-icon>mdi-delete</v-icon>
                             </v-btn>
 
