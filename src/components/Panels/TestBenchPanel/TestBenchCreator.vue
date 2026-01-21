@@ -100,6 +100,11 @@
                                 <v-icon left>mdi-plus</v-icon>
                                 Add Test
                             </v-btn>
+
+                            <v-btn iconsize="small" variant="text" color="black" @click="deleteGroup(groupIndex)"title="Delete Group">
+                            <v-icon>mdi-delete</v-icon>
+                            </v-btn>
+
                         </div>
 
                         <div v-for="(_, testIndex) in (group.inputs[0] || [])" class="data-grid data-row" :key="testIndex" :class="{ 'with-results': testBenchStore.showResults }">
@@ -308,6 +313,12 @@ const addNewGroup = () => {
     outputs: Array.from({ length: outputsName.value.length }, () => []),
   });
 };
+
+const deleteGroup = (groupIndex: number) => {
+    if (groups.length === 1) return; // prevent deleting last group
+    groups.splice(groupIndex, 1);
+};
+
 
 const increInputs = () => {
     groups.forEach((group) => {
