@@ -161,7 +161,14 @@
             "pause_timing_diagram": "Pause Timing Diagram",
             "decrease_width": "Decrease Width",
             "increase_width": "Increase Width",
-            "reset": "Reset"
+            "reset": "Reset",
+            "circuit_elements": "Circuit Elements",
+            "wiring_mode": "Wiring Mode",
+            "verilog_panel": "Verilog Panel",
+            "copy": "Copy",
+            "paste": "Paste",
+            "properties": "Properties",
+            "report_issue": "Report an Issue"
         }
     }
 }
