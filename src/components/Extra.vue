@@ -122,23 +122,22 @@
  @mousemove="(e) => {
   simulationArea.touch = false;
 
-  // panMove(e); // keep OFF for now
-
-  simulationArea.mouseX = e.offsetX;
-  simulationArea.mouseY = e.offsetY;
+  // keep panMove ON so mouseX/mouseY stay correct in grid-space
+  panMove(e);
 
   const hovered = simulationArea.hover;
 
   if (hovered && hovered.tooltipText) {
     tooltip.visible = true;
     tooltip.text = hovered.tooltipText;
+
+    // tooltip position should be in pixels (overlay space)
     tooltip.x = e.offsetX + 12;
     tooltip.y = e.offsetY + 12;
   } else {
     tooltip.visible = false;
   }
 }"
-
 
   @mouseleave="() => {
     tooltip.visible = false
