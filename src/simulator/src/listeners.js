@@ -35,7 +35,7 @@ import { copy, paste, selectAll } from './events'
 import { verilogModeGet } from './Verilog2CV'
 import { setupTimingListeners } from './plotArea'
 import logixFunction from './data'
-import { listen } from '@tauri-apps/api/event'
+
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { toRefs } from 'vue'
 
@@ -788,92 +788,102 @@ function handleZoom (direction) {
     });
   }
 
-// Desktop App Listeners
+  // Desktop App Listeners (Tauri)
+// In web mode (npm run dev), @tauri-apps/api is not available, so we must guard these.
 
-listen('new-project', () => {
-    logixFunction.newProject();
-});
+function initDesktopAppListeners() {
+    // if not running inside Tauri, do nothing
+    if (!window.__TAURI__ || typeof listen !== 'function') return
 
-listen('save-online', () => {
-    logixFunction.save();
-});
+    listen('new-project', () => {
+        logixFunction.newProject();
+    });
 
-listen('save-offline', () => {
-    logixFunction.saveOffline();
-});
+    listen('save-online', () => {
+        logixFunction.save();
+    });
 
-listen('open-offline', () => {
-    logixFunction.createOpenLocalPrompt();
-});
+    listen('save-offline', () => {
+        logixFunction.saveOffline();
+    });
 
-listen('export', () => {
-    logixFunction.ExportProject();
-});
+    listen('open-offline', () => {
+        logixFunction.createOpenLocalPrompt();
+    });
 
-listen('import', () => {
-    logixFunction.ImportProject();
-});
+    listen('export', () => {
+        logixFunction.ExportProject();
+    });
 
-listen('recover', () => {
-    logixFunction.recoverProject();
-});
+    listen('import', () => {
+        logixFunction.ImportProject();
+    });
 
-listen('clear', () => {
-    logixFunction.clearProject();
-});
+    listen('recover', () => {
+        logixFunction.recoverProject();
+    });
 
-listen('preview-circuit', () => {
-    logixFunction.fullViewOption();
-});
+    listen('clear', () => {
+        logixFunction.clearProject();
+    });
 
-listen('new-circuit', () => {
-    logixFunction.createNewCircuitScope();
-});
+    listen('preview-circuit', () => {
+        logixFunction.fullViewOption();
+    });
 
-listen('new-verilog-module', () => {
-    logixFunction.newVerilogModule();
-});
+    listen('new-circuit', () => {
+        logixFunction.createNewCircuitScope();
+    });
 
-listen('insert-sub-circuit', () => {
-    logixFunction.createSubCircuitPrompt();
-});
+    listen('new-verilog-module', () => {
+        logixFunction.newVerilogModule();
+    });
 
-listen('combinational-analysis', () => {
-    logixFunction.createCombinationalAnalysisPrompt();
-});
+    listen('insert-sub-circuit', () => {
+        logixFunction.createSubCircuitPrompt();
+    });
 
-listen('hex-bin-dec', () => {
-    logixFunction.bitconverter();
-});
+    listen('combinational-analysis', () => {
+        logixFunction.createCombinationalAnalysisPrompt();
+    });
 
-listen('download-image', () => {
-    logixFunction.createSaveAsImgPrompt();
-});
+    listen('hex-bin-dec', () => {
+        logixFunction.bitconverter();
+    });
 
-listen('themes', () => {
-    logixFunction.colorThemes();
-});
+    listen('download-image', () => {
+        logixFunction.createSaveAsImgPrompt();
+    });
 
-listen('custom-shortcut', () => {
-    logixFunction.customShortcut();
-});
+    listen('themes', () => {
+        logixFunction.colorThemes();
+    });
 
-listen('export-verilog', () => {
-    logixFunction.generateVerilog();
-});
+    listen('custom-shortcut', () => {
+        logixFunction.customShortcut();
+    });
 
-listen('tutorial', () => {
-    logixFunction.showTourGuide();
-});
+    listen('export-verilog', () => {
+        logixFunction.generateVerilog();
+    });
 
-listen('user-manual', () => {
-    logixFunction.showUserManual();
-});
+    listen('tutorial', () => {
+        logixFunction.showTourGuide();
+    });
 
-listen('learn-digital-circuit', () => {
-    logixFunction.showDigitalCircuit();
-});
+    listen('user-manual', () => {
+        logixFunction.showUserManual();
+    });
 
-listen('discussion-forum', () => {
-    logixFunction.showDiscussionForum();
-});
+    listen('learn-digital-circuit', () => {
+        logixFunction.showDigitalCircuit();
+    });
+
+    listen('discussion-forum', () => {
+        logixFunction.showDiscussionForum();
+    });
+}
+
+// call it once
+initDesktopAppListeners()
+

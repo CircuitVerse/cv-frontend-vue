@@ -93,41 +93,82 @@
                     width: 100%;
                     height: 100%;
                 "></canvas>
-            <canvas
-                    id="simulationArea"
-                    style="
-                    position: absolute;
-                    left: 0;
-                    top: 0;
-                    z-index: 1;
-                    width: 100%;
-                    height: 100%;
-                    "
-                    @touchstart="(e) => {
-                        simulationArea.touch = true;
-                        panStart(e)
-                    }"
-                    @touchend="(e) => {
-                        simulationArea.touch = true;
-                        panStop(e)
-                    }"
-                    @touchmove="(e) => {
-                        simulationArea.touch = true;
-                        panMove(e)
-                    }"
-                    @mousedown="(e) => {
-                        simulationArea.touch = false;
-                        panStart(e)
-                    }"
-                    @mousemove="(e) => {
-                        simulationArea.touch = false;
-                        panMove(e)
-                    }"
-                    @mouseup="(e) => {
-                        simulationArea.touch = false;
-                        panStop(e)
-                    }"
-            ></canvas>
+         <canvas
+  id="simulationArea"
+  style="
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+  "
+  @touchstart="(e) => {
+    simulationArea.touch = true;
+    panStart(e)
+  }"
+  @touchend="(e) => {
+    simulationArea.touch = true;
+    panStop(e)
+  }"
+  @touchmove="(e) => {
+    simulationArea.touch = true;
+    panMove(e)
+  }"
+  @mousedown="(e) => {
+    simulationArea.touch = false;
+    panStart(e)
+  }"
+ @mousemove="(e) => {
+  simulationArea.touch = false;
+
+  // panMove(e); // keep OFF for now
+
+  simulationArea.mouseX = e.offsetX;
+  simulationArea.mouseY = e.offsetY;
+
+  const hovered = simulationArea.hover;
+
+  if (hovered && hovered.tooltipText) {
+    tooltip.visible = true;
+    tooltip.text = hovered.tooltipText;
+    tooltip.x = e.offsetX + 12;
+    tooltip.y = e.offsetY + 12;
+  } else {
+    tooltip.visible = false;
+  }
+}"
+
+
+  @mouseleave="() => {
+    tooltip.visible = false
+  }"
+  @mouseup="(e) => {
+    simulationArea.touch = false;
+    panStop(e)
+  }"
+></canvas>
+
+            <!-- Tooltip Overlay -->
+<div
+  v-if="tooltip.visible"
+  class="custom-tooltip-styling"
+  :style="{
+    position: 'absolute',
+    left: tooltip.x + 'px',
+    top: tooltip.y + 'px',
+    padding: '6px 10px',
+    borderRadius: '8px',
+    fontSize: '12px',
+    maxWidth: '260px',
+    zIndex: 9999,
+    pointerEvents: 'none',
+    whiteSpace: 'pre-line'
+  }"
+>
+  {{ tooltip.text }}
+</div>
+
             <div id="miniMap">
                 <canvas id="miniMapArea" style="position: absolute; left: 0; top: 0; z-index: 3"></canvas>
             </div>
@@ -180,6 +221,7 @@
 
     <v-btn
       class="cir-ele-btn"
+      title="Circuit Elements"
       @mousedown="simulatorMobileStore.showElementsPanel = !simulatorMobileStore.showElementsPanel"
       :style="{bottom: simulatorMobileStore.showElementsPanel ? '10rem' : '2rem'}"
       v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.showMobileView && !simulatorMobileStore.isVerilog"
@@ -189,6 +231,7 @@
 
     <v-btn
       class="cir-btn"
+      title="Multi-select"
       @mousedown="(e: React.MouseEvent) => {
         if(simulationArea.shiftDown == false) {
             simulationArea.shiftDown = true;
@@ -216,6 +259,7 @@
 
     <v-btn
       class="cir-btn"
+      title="Copy"
       @mousedown="copyBtnClick()"
       :style="{bottom: simulatorMobileStore.showElementsPanel ? '16rem' : '8rem'}"
       v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.showMobileView && !simulatorMobileStore.isCopy && !simulatorMobileStore.isVerilog"
@@ -225,6 +269,7 @@
 
     <v-btn
       class="cir-btn"
+      title="Paste"
       @mousedown="pasteBtnClick()"
       :style="{bottom: simulatorMobileStore.showElementsPanel ? '16rem' : '8rem'}"
       v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.showMobileView && simulatorMobileStore.isCopy && !simulatorMobileStore.isVerilog"
@@ -234,6 +279,7 @@
 
     <v-btn
       class="cir-btn"
+      title="Properties"
       @mousedown="propertiesBtnClick()"
       :style="{bottom: simulatorMobileStore.showElementsPanel ? `${propertiesPanelPos.up}rem` : `${propertiesPanelPos.down}rem`}"
       v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.showMobileView"
@@ -283,6 +329,13 @@ const propertiesPanelPos = reactive({
     down: 14
 });
 
+const tooltip = reactive({
+    visible: false,
+    text: '',
+    x: 0,
+    y: 0,
+})
+
 watch(() => simulatorMobileStore.isVerilog, (val) => {
     if (val) {
         propertiesPanelPos.up = 10
@@ -310,6 +363,9 @@ const propertiesBtnClick = () => {
 </script>
 
 <style scoped>
+.canvasArea {
+  position: relative;
+}
 .cir-ele-btn, .cir-verilog-btn {
     position: absolute;
     right: 1.5rem;
