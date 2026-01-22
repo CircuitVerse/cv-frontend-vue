@@ -93,7 +93,7 @@
                     width: 100%;
                     height: 100%;
                 "></canvas>
-         <canvas
+            <canvas
   id="simulationArea"
   style="
     position: absolute;
@@ -119,26 +119,21 @@
     simulationArea.touch = false;
     panStart(e)
   }"
- @mousemove="(e) => {
-  simulationArea.touch = false;
+  @mousemove="(e) => {
+    simulationArea.touch = false;
+    panMove(e)
 
-  // keep panMove ON so mouseX/mouseY stay correct in grid-space
-  panMove(e);
+    const hovered = simulationArea.hover
 
-  const hovered = simulationArea.hover;
-
-  if (hovered && hovered.tooltipText) {
-    tooltip.visible = true;
-    tooltip.text = hovered.tooltipText;
-
-    // tooltip position should be in pixels (overlay space)
-    tooltip.x = e.offsetX + 12;
-    tooltip.y = e.offsetY + 12;
-  } else {
-    tooltip.visible = false;
-  }
-}"
-
+    if (hovered && hovered.tooltipText) {
+      tooltip.visible = true
+      tooltip.text = hovered.tooltipText
+      tooltip.x = e.offsetX + 12
+      tooltip.y = e.offsetY + 12
+    } else {
+      tooltip.visible = false
+    }
+  }"
   @mouseleave="() => {
     tooltip.visible = false
   }"
