@@ -142,7 +142,7 @@ defineExpose({
 }
 
 .code-window .CodeMirror {
-    overflow: auto !important;
+    overflow: visible !important;
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
@@ -168,7 +168,7 @@ defineExpose({
 }
 
 .code-window {
-    overflow: auto !important;
+    overflow: visible !important;
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
