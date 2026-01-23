@@ -45,21 +45,21 @@ const simulationArea: SimulationArea = {
         }, 600)
     },
     setup() {
-        this.canvas = document.getElementById('simulationArea') as HTMLCanvasElement;
-        this.canvas.width = width;
-        this.canvas.height = height;
-        this.simulationQueue = new EventQueue(10000);
-        this.context = this.canvas.getContext('2d')!;
+        simulationArea.canvas = document.getElementById('simulationArea') as HTMLCanvasElement;
+        simulationArea.canvas.width = width;
+        simulationArea.canvas.height = height;
+        simulationArea.simulationQueue = new EventQueue(10000);
+        simulationArea.context = simulationArea.canvas.getContext('2d')!;
         simulationArea.changeClockTime(simulationArea.timePeriod);
-        this.mouseDown = false;
+        simulationArea.mouseDown = false;
     },
     changeClockTime(t: number) {
         if (t < 50) {
             return;
         }
 
-        if (!this._debouncedChangeClockTime) {
-            this._debouncedChangeClockTime = debounce((time: number) => {
+        if (!simulationArea._debouncedChangeClockTime) {
+            simulationArea._debouncedChangeClockTime = debounce((time: number) => {
                 if (simulationArea.ClockInterval != null) {
                     clearInterval(simulationArea.ClockInterval);
                 }
@@ -68,15 +68,15 @@ const simulationArea: SimulationArea = {
         }
 
         simulationArea.timePeriod = t
-        if (this._debouncedChangeClockTime) {
-            this._debouncedChangeClockTime(t)
+        if (simulationArea._debouncedChangeClockTime) {
+            simulationArea._debouncedChangeClockTime(t)
         }
     },
     clear() {
-        if (!this.context) {
+        if (!simulationArea.context) {
             return;
         }
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        simulationArea.context.clearRect(0, 0, simulationArea.canvas.width, simulationArea.canvas.height);
     },
 };
 export { simulationArea }
