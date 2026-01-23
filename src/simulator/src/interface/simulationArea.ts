@@ -31,6 +31,7 @@ export interface SimulationArea {
     lock: string;
     mouseDown: boolean;
     ClockInterval: NodeJS.Timeout|null;
+    _debouncedChangeClockTime?: (t: number) => void;
     touch: boolean;
     timer: () => void;
     setup: () => void;

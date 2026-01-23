@@ -1,6 +1,10 @@
 import { EventQueue } from './eventQueue'
 import { SimulationArea } from './interface/simulationArea'
 import { clockTick } from './utils'
+import { debounce } from './utils/debounce'
+
+declare var width: number
+declare var height: number
 
 const simulationArea: SimulationArea = {
     canvas: document.getElementById('simulationArea') as HTMLCanvasElement,
@@ -53,11 +57,20 @@ const simulationArea: SimulationArea = {
         if (t < 50) {
             return;
         }
-        if (simulationArea.ClockInterval != null) {
-            clearInterval(simulationArea.ClockInterval);
+
+        if (!this._debouncedChangeClockTime) {
+            this._debouncedChangeClockTime = debounce((time: number) => {
+                if (simulationArea.ClockInterval != null) {
+                    clearInterval(simulationArea.ClockInterval);
+                }
+                simulationArea.ClockInterval = setInterval(clockTick, time)
+            }, 300)
         }
-        simulationArea.timePeriod = t;
-        simulationArea.ClockInterval = setInterval(clockTick, t);
+
+        simulationArea.timePeriod = t
+        if (this._debouncedChangeClockTime) {
+            this._debouncedChangeClockTime(t)
+        }
     },
     clear() {
         if (!this.context) {
