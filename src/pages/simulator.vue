@@ -9,8 +9,8 @@
 import Navbar from '@/Navbar/Navbar.vue'
 import ContextMenu from '@/ContextMenu/ContextMenu.vue'
 import Extra from '@/Extra.vue'
-import { defineComponent, onMounted } from 'vue'
-import { setup as setupSimulator } from '../simulator/src/setup'
+import { defineComponent, onMounted, onUnmounted } from 'vue'
+import { setup as setupSimulator, stopSimulator } from '../simulator/src/setup'
 import Helper from '#/components/helpers/Helper.vue'
 
 defineComponent({
@@ -23,5 +23,9 @@ defineComponent({
 
 onMounted(() => {
     setupSimulator()
+})
+
+onUnmounted(() => {
+    stopSimulator()
 })
 </script>

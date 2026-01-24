@@ -22,6 +22,17 @@ import { ZoomIn, ZoomOut, pinchZoom, getCoordinate, } from './listeners';
 
 const unit = 10
 let embedCoordinate;
+
+const simulatorListeners = [];
+
+/**
+ * Helper to add and track standard JS event listeners
+ */
+function addListener(target, type, listener, options) {
+    if (!target) return;
+    target.addEventListener(type, listener, options);
+    simulatorListeners.push({ target, type, listener, options });
+}
 /** *Function embedPanStart
     *This function hepls to initialize mouse and touch
     *For now variable name starts with mouse like mouseDown are used both
@@ -122,7 +133,7 @@ function BlockElementPan() {
 }
 
 export default function startListeners() {
-    window.addEventListener('keyup', (e) => {
+    addListener(window, 'keyup', (e) => {
         scheduleUpdate(1);
         if (e.keyCode == 16) {
             simulationArea.shiftDown = false;
@@ -132,44 +143,44 @@ export default function startListeners() {
         }
     });
     // All event listeners starts from here
-    document.getElementById('simulationArea').addEventListener('mousedown', (e) => {
+    addListener(document.getElementById('simulationArea'), 'mousedown', (e) => {
         simulationArea.touch = false;
         embedPanStart(e);
     });
-    document.getElementById('simulationArea').addEventListener('mousemove', () => {
+    addListener(document.getElementById('simulationArea'), 'mousemove', () => {
         simulationArea.touch = false;
         BlockElementPan();
     });
-    document.getElementById('simulationArea').addEventListener('touchstart', (e) => {
+    addListener(document.getElementById('simulationArea'), 'touchstart', (e) => {
         simulationArea.touch = true;
         embedPanStart(e);
     });
-    document.getElementById('simulationArea').addEventListener('touchmove', () => {
+    addListener(document.getElementById('simulationArea'), 'touchmove', () => {
         simulationArea.touch = true;
         BlockElementPan();
     });
-    window.addEventListener('mousemove', (e) => {
+    addListener(window, 'mousemove', (e) => {
         embedPanMove(e);
     });
-    window.addEventListener('touchmove', (e) => {
+    addListener(window, 'touchmove', (e) => {
         embedPanMove(e);
     });
-    window.addEventListener('mouseup', () => {
+    addListener(window, 'mouseup', () => {
         embedPanEnd();
     });
-    window.addEventListener('mousedown', function () {
+    addListener(window, 'mousedown', function () {
         this.focus();
     });
-    window.addEventListener('touchend', () => {
+    addListener(window, 'touchend', () => {
         embedPanEnd();
     });
-    window.addEventListener('touchstart', function () {
+    addListener(window, 'touchstart', function () {
         this.focus();
     });
-    document.getElementById('simulationArea').addEventListener('mousewheel', MouseScroll);
-    document.getElementById('simulationArea').addEventListener('DOMMouseScroll', MouseScroll);
+    addListener(document.getElementById('simulationArea'), 'mousewheel', MouseScroll);
+    addListener(document.getElementById('simulationArea'), 'DOMMouseScroll', MouseScroll);
 
-    window.addEventListener('keydown', (e) => {
+    addListener(window, 'keydown', (e) => {
         errorDetectedSet(false);
         updateSimulationSet(true);
         updatePositionSet(true);
@@ -218,7 +229,7 @@ export default function startListeners() {
             simulationArea.changeClockTime(prompt('Enter Time:'));
         }
     });
-    document.getElementById('simulationArea').addEventListener('dblclick', () => {
+    addListener(document.getElementById('simulationArea'), 'dblclick', () => {
         scheduleUpdate(2);
         if (simulationArea.lastSelected && simulationArea.lastSelected.dblclick !== undefined) {
             simulationArea.lastSelected.dblclick();
@@ -252,6 +263,16 @@ export default function startListeners() {
         gridUpdateSet(true);
         update(); // Schedule update not working, this is INEFFICENT
     }
+}
+
+/**
+ * Removes and cleans up all listeners added by the embed simulator
+ */
+export function stopListeners() {
+    simulatorListeners.forEach(({ target, type, listener, options }) => {
+        target.removeEventListener(type, listener, options);
+    });
+    simulatorListeners.length = 0;
 }
 
 // eslint-disable-next-line no-unused-vars

@@ -8,7 +8,7 @@ import { simulationArea } from './simulationArea'
 import { dots } from './canvasApi'
 import { update, updateSimulationSet, updateCanvasSet } from './engine'
 import { setupUI } from './ux'
-import startMainListeners from './listeners'
+import startMainListeners, { stopListeners } from './listeners'
 import { newCircuit } from './circuit'
 import load from './data/load'
 import save from './data/save'
@@ -69,9 +69,24 @@ export function resetup() {
     dots()
 }
 
-window.onresize = resetup // listener
-window.onorientationchange = resetup // listener
+/**
+ * Global cleanup for the simulator
+ */
+export function stopSimulator() {
+    stopListeners();
+    if (simulationArea.ClockInterval) {
+        clearInterval(simulationArea.ClockInterval);
+        simulationArea.ClockInterval = null;
+    }
+    if (simulationArea.clickTimer) {
+        clearTimeout(simulationArea.clickTimer);
+        simulationArea.clickTimer = null;
+    }
+    window.removeEventListener('resize', resetup);
+    window.removeEventListener('orientationchange', resetup);
+}
 
+window.addEventListener('resize', resetup);
 // for mobiles
 window.addEventListener('orientationchange', resetup) // listener
 
