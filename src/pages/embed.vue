@@ -164,7 +164,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onBeforeMount, onMounted, watch, computed } from 'vue'
+import { ref, onBeforeMount, onMounted, onUnmounted, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { simulationArea, changeClockTime } from '#/simulator/src/simulationArea'
 import {
@@ -177,7 +177,7 @@ import { prevPropertyObjSet, prevPropertyObjGet } from '#/simulator/src/ux'
 import { circuitProperty, scopeList } from '#/simulator/src/circuit'
 import { ZoomIn, ZoomOut } from '#/simulator/src/listeners'
 import { setup } from '#/simulator/src/setup'
-import startListeners from '#/simulator/src/embedListeners'
+import startListeners, { stopListeners } from '#/simulator/src/embedListeners'
 import TabsBar from '#/components/TabsBar/TabsBar.vue'
 import { updateThemeForStyle } from '#/simulator/src/themer/themer'
 import { THEME, ThemeType } from '#/assets/constants/theme'
@@ -245,14 +245,23 @@ onBeforeMount(() => {
     }
 })
 
-onMounted(() => {
+onMounted(async () => {
     const themeValue = theme?.value as string;
     updateThemeForStyle(THEME[themeValue as keyof ThemeType]);
+    await startListeners()
+    await setup()
 })
 
-onMounted(() => {
-    startListeners()
-    setup()
+onUnmounted(() => {
+    stopListeners()
+    if (simulationArea.ClockInterval) {
+        clearInterval(simulationArea.ClockInterval);
+        simulationArea.ClockInterval = null;
+    }
+    if (simulationArea.clickTimer) {
+        clearTimeout(simulationArea.clickTimer);
+        simulationArea.clickTimer = null;
+    }
 })
 
 function zoomInEmbed() {

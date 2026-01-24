@@ -43,8 +43,8 @@ const unit = 10
 let listenToSimulator = true
 let coordinate;
 const returnCoordinate = {
-  x: 0,
-  y: 0
+    x: 0,
+    y: 0
 }
 
 let currDistance = 0;
@@ -54,6 +54,25 @@ let centreX;
 let centreY;
 let timeout;
 let lastTap = 0;
+const simulatorListeners = [];
+const simulatorUnlistenTauri = [];
+
+/**
+ * Helper to add and track standard JS event listeners
+ */
+function addListener(target, type, listener, options) {
+    if (!target) return;
+    target.addEventListener(type, listener, options);
+    simulatorListeners.push({ target, type, listener, options });
+}
+
+/**
+ * Helper to add and track Tauri listeners
+ */
+async function addTauriListener(event, handler) {
+    const unlisten = await listen(event, handler);
+    simulatorUnlistenTauri.push(unlisten);
+}
 
 /**
  *
@@ -83,7 +102,7 @@ function getTap(e) {
     if (tapLength < 500 && tapLength > 0) {
         onDoubleClickorTap(e);
     } else {
-    // Single tap
+        // Single tap
     }
     lastTap = currentTime;
     e.preventDefault();
@@ -297,56 +316,59 @@ export function panStop(e) {
     }
 }
 
-export default function startListeners() {
-    $(document).on('keyup', (e) => {
+export default async function startListeners() {
+    addListener(document, 'keyup', (e) => {
         if (e.key === 'Escape') exitFullView()
     })
 
-    $('#projectName').on('click', () => {
-		simulationArea.lastSelected = globalScope.root;
-		setTimeout(() => {
-			document.getElementById("projname").select();
-		}, 100);
-	});
+    await setupTauriListeners();
 
-    document
-        .getElementById('simulationArea')
-        .addEventListener('mouseup', (e) => {
-            if (simulationArea.lastSelected) {
-                simulationArea.lastSelected.newElement = false
-            }
-            // handling restricted circuit elements
+    addListener(window, 'resize', resizeTabs)
+    resizeTabs()
+
+    addListener(document.getElementById('projectName'), 'click', () => {
+        simulationArea.lastSelected = globalScope.root;
+        setTimeout(() => {
+            document.getElementById("projname").select();
+        }, 100);
+    });
+
+    addListener(document.getElementById('simulationArea'), 'mouseup', (e) => {
+        if (simulationArea.lastSelected) {
+            simulationArea.lastSelected.newElement = false
+        }
+        // handling restricted circuit elements
+        if (
+            simulationArea.lastSelected &&
+            restrictedElements.includes(
+                simulationArea.lastSelected.objectType
+            ) &&
+            !globalScope.restrictedCircuitElementsUsed.includes(
+                simulationArea.lastSelected.objectType
+            )
+        ) {
+            globalScope.restrictedCircuitElementsUsed.push(
+                simulationArea.lastSelected.objectType
+            )
+            updateRestrictedElementsList()
+        }
+
+        // deselect multible elements with click
+        if (
+            !simulationArea.shiftDown &&
+            simulationArea.multipleObjectSelections.length > 0
+        ) {
             if (
-                simulationArea.lastSelected &&
-                restrictedElements.includes(
-                    simulationArea.lastSelected.objectType
-                ) &&
-                !globalScope.restrictedCircuitElementsUsed.includes(
-                    simulationArea.lastSelected.objectType
+                !simulationArea.multipleObjectSelections.includes(
+                    simulationArea.lastSelected
                 )
             ) {
-                globalScope.restrictedCircuitElementsUsed.push(
-                    simulationArea.lastSelected.objectType
-                )
-                updateRestrictedElementsList()
+                simulationArea.multipleObjectSelections = []
             }
+        }
+    })
 
-            // deselect multible elements with click
-            if (
-                !simulationArea.shiftDown &&
-                simulationArea.multipleObjectSelections.length > 0
-            ) {
-                if (
-                    !simulationArea.multipleObjectSelections.includes(
-                        simulationArea.lastSelected
-                    )
-                ) {
-                    simulationArea.multipleObjectSelections = []
-                }
-            }
-        })
-
-    window.addEventListener('keyup', (e) => {
+    addListener(window, 'keyup', (e) => {
         scheduleUpdate(1)
         simulationArea.shiftDown = e.shiftKey
         if (e.keyCode == 16) {
@@ -357,218 +379,216 @@ export default function startListeners() {
         }
     })
 
-    window.addEventListener(
-        'keydown',
-        (e) => {
-            if (document.activeElement.tagName == 'INPUT') return
-            if (document.activeElement != document.body) return
+    addListener(window, 'keydown', (e) => {
+        if (document.activeElement.tagName == 'INPUT') return
+        if (document.activeElement != document.body) return
 
+        simulationArea.shiftDown = e.shiftKey
+        if (e.key == 'Meta' || e.key == 'Control') {
+            simulationArea.controlDown = true
+        }
+
+        if (
+            simulationArea.controlDown &&
+            e.key.charCodeAt(0) == 122 &&
+            !simulationArea.shiftDown
+        ) {
+            // detect the special CTRL-Z code
+            undo()
+        }
+        if (
+            simulationArea.controlDown &&
+            e.key.charCodeAt(0) == 122 &&
+            simulationArea.shiftDown
+        ) {
+            // detect the special Cmd + shift + z code (macOs)
+            redo()
+        }
+        if (
+            simulationArea.controlDown &&
+            e.key.charCodeAt(0) == 121 &&
+            !simulationArea.shiftDown
+        ) {
+            // detect the special ctrl + Y code (windows)
+            redo()
+        }
+
+        if (listenToSimulator) {
+            // If mouse is focusing on input element, then override any action
+            if (
+                document.activeElement.tagName == 'INPUT' ||
+                simulationArea.mouseRawX < 0 ||
+                simulationArea.mouseRawY < 0 ||
+                simulationArea.mouseRawX > width ||
+                simulationArea.mouseRawY > height
+            ) {
+                return
+            }
+            // HACK TO REMOVE FOCUS ON PROPERTIES
+            if (document.activeElement.type == 'number') {
+                hideProperties()
+                showProperties(simulationArea.lastSelected)
+            }
+
+            errorDetectedSet(false)
+            updateSimulationSet(true)
+            updatePositionSet(true)
             simulationArea.shiftDown = e.shiftKey
+
             if (e.key == 'Meta' || e.key == 'Control') {
                 simulationArea.controlDown = true
             }
 
+            // zoom in (+)
             if (
-                simulationArea.controlDown &&
-                e.key.charCodeAt(0) == 122 &&
-                !simulationArea.shiftDown
+                (simulationArea.controlDown &&
+                    (e.keyCode == 187 || e.keyCode == 171)) ||
+                e.keyCode == 107
             ) {
-                // detect the special CTRL-Z code
-                undo()
+                e.preventDefault()
+                ZoomIn()
             }
+            // zoom out (-)
+            if (
+                (simulationArea.controlDown &&
+                    (e.keyCode == 189 || e.keyCode == 173)) ||
+                e.keyCode == 109
+            ) {
+                e.preventDefault()
+                ZoomOut()
+            }
+
+            if (
+                simulationArea.mouseRawX < 0 ||
+                simulationArea.mouseRawY < 0 ||
+                simulationArea.mouseRawX > width ||
+                simulationArea.mouseRawY > height
+            )
+                return
+
+            scheduleUpdate(1)
+            updateCanvasSet(true)
+            wireToBeCheckedSet(1)
+
+            if (
+                simulationArea.lastSelected &&
+                simulationArea.lastSelected.keyDown
+            ) {
+                if (
+                    e.key.toString().length == 1 ||
+                    e.key.toString() == 'Backspace' ||
+                    e.key.toString() == 'Enter'
+                ) {
+                    simulationArea.lastSelected.keyDown(e.key.toString())
+                    e.cancelBubble = true
+                    e.returnValue = false
+
+                    //e.stopPropagation works in Firefox.
+                    if (e.stopPropagation) {
+                        e.stopPropagation()
+                        e.preventDefault()
+                    }
+                    return
+                }
+            }
+
+            if (
+                simulationArea.lastSelected &&
+                simulationArea.lastSelected.keyDown2
+            ) {
+                if (e.key.toString().length == 1) {
+                    simulationArea.lastSelected.keyDown2(e.key.toString())
+                    return
+                }
+            }
+
+            if (
+                simulationArea.lastSelected &&
+                simulationArea.lastSelected.keyDown3
+            ) {
+                if (
+                    e.key.toString() != 'Backspace' &&
+                    e.key.toString() != 'Delete'
+                ) {
+                    simulationArea.lastSelected.keyDown3(e.key.toString())
+                    return
+                }
+            }
+
+            if (e.keyCode == 16) {
+                simulationArea.shiftDown = true
+                if (
+                    simulationArea.lastSelected &&
+                    !simulationArea.lastSelected.keyDown &&
+                    simulationArea.lastSelected.objectType != 'Wire' &&
+                    simulationArea.lastSelected.objectType !=
+                    'CircuitElement' &&
+                    !simulationArea.multipleObjectSelections.includes(
+                        simulationArea.lastSelected
+                    )
+                ) {
+                    simulationArea.multipleObjectSelections.push(
+                        simulationArea.lastSelected
+                    )
+                }
+            }
+
+            // Detect offline save shortcut (CTRL+SHIFT+S)
             if (
                 simulationArea.controlDown &&
-                e.key.charCodeAt(0) == 122 &&
+                e.keyCode == 83 &&
                 simulationArea.shiftDown
             ) {
-                // detect the special Cmd + shift + z code (macOs)
-                redo()
+                saveOffline()
+                e.preventDefault()
             }
+
+            // Detect Select all Shortcut
             if (
                 simulationArea.controlDown &&
-                e.key.charCodeAt(0) == 121 &&
-                !simulationArea.shiftDown
+                (e.keyCode == 65 || e.keyCode == 97)
             ) {
-                // detect the special ctrl + Y code (windows)
-                redo()
+                selectAll()
+                e.preventDefault()
             }
 
-            if (listenToSimulator) {
-                // If mouse is focusing on input element, then override any action
-                if (
-                    document.activeElement.tagName == 'INPUT' ||
-                    simulationArea.mouseRawX < 0 ||
-                    simulationArea.mouseRawY < 0 ||
-                    simulationArea.mouseRawX > width ||
-                    simulationArea.mouseRawY > height
-                ) {
-                    return
-                }
-                // HACK TO REMOVE FOCUS ON PROPERTIES
-                if (document.activeElement.type == 'number') {
-                    hideProperties()
-                    showProperties(simulationArea.lastSelected)
-                }
+            // deselect all Shortcut
+            if (e.keyCode == 27) {
+                simulationArea.multipleObjectSelections = []
+                simulationArea.lastSelected = undefined
+                e.preventDefault()
+            }
 
-                errorDetectedSet(false)
-                updateSimulationSet(true)
-                updatePositionSet(true)
-                simulationArea.shiftDown = e.shiftKey
-
-                if (e.key == 'Meta' || e.key == 'Control') {
-                    simulationArea.controlDown = true
-                }
-
-                // zoom in (+)
-                if (
-                    (simulationArea.controlDown &&
-                        (e.keyCode == 187 || e.keyCode == 171)) ||
-                    e.keyCode == 107
-                ) {
-                    e.preventDefault()
-                    ZoomIn()
-                }
-                // zoom out (-)
-                if (
-                    (simulationArea.controlDown &&
-                        (e.keyCode == 189 || e.keyCode == 173)) ||
-                    e.keyCode == 109
-                ) {
-                    e.preventDefault()
-                    ZoomOut()
-                }
-
-                if (
-                    simulationArea.mouseRawX < 0 ||
-                    simulationArea.mouseRawY < 0 ||
-                    simulationArea.mouseRawX > width ||
-                    simulationArea.mouseRawY > height
-                )
-                    return
-
-                scheduleUpdate(1)
-                updateCanvasSet(true)
-                wireToBeCheckedSet(1)
-
-                if (
-                    simulationArea.lastSelected &&
-                    simulationArea.lastSelected.keyDown
-                ) {
-                    if (
-                        e.key.toString().length == 1 ||
-                        e.key.toString() == 'Backspace' ||
-                        e.key.toString() == 'Enter'
-                    ) {
-                        simulationArea.lastSelected.keyDown(e.key.toString())
-                        e.cancelBubble = true
-                        e.returnValue = false
-
-                        //e.stopPropagation works in Firefox.
-                        if (e.stopPropagation) {
-                            e.stopPropagation()
-                            e.preventDefault()
-                        }
-                        return
-                    }
-                }
-
-                if (
-                    simulationArea.lastSelected &&
-                    simulationArea.lastSelected.keyDown2
-                ) {
-                    if (e.key.toString().length == 1) {
-                        simulationArea.lastSelected.keyDown2(e.key.toString())
-                        return
-                    }
-                }
-
-                if (
-                    simulationArea.lastSelected &&
-                    simulationArea.lastSelected.keyDown3
-                ) {
-                    if (
-                        e.key.toString() != 'Backspace' &&
-                        e.key.toString() != 'Delete'
-                    ) {
-                        simulationArea.lastSelected.keyDown3(e.key.toString())
-                        return
-                    }
-                }
-
-                if (e.keyCode == 16) {
-                    simulationArea.shiftDown = true
-                    if (
-                        simulationArea.lastSelected &&
-                        !simulationArea.lastSelected.keyDown &&
-                        simulationArea.lastSelected.objectType != 'Wire' &&
-                        simulationArea.lastSelected.objectType !=
-                            'CircuitElement' &&
-                        !simulationArea.multipleObjectSelections.includes(
-                            simulationArea.lastSelected
-                        )
-                    ) {
-                        simulationArea.multipleObjectSelections.push(
-                            simulationArea.lastSelected
-                        )
-                    }
-                }
-
-                // Detect offline save shortcut (CTRL+SHIFT+S)
-                if (
-                    simulationArea.controlDown &&
-                    e.keyCode == 83 &&
-                    simulationArea.shiftDown
-                ) {
-                    saveOffline()
-                    e.preventDefault()
-                }
-
-                // Detect Select all Shortcut
-                if (
-                    simulationArea.controlDown &&
-                    (e.keyCode == 65 || e.keyCode == 97)
-                ) {
-                    selectAll()
-                    e.preventDefault()
-                }
-
-                // deselect all Shortcut
-                if (e.keyCode == 27) {
-                    simulationArea.multipleObjectSelections = []
-                    simulationArea.lastSelected = undefined
-                    e.preventDefault()
-                }
-
-                if (
-                    (e.keyCode == 113 || e.keyCode == 81) &&
-                    simulationArea.lastSelected != undefined
-                ) {
-                    if (simulationArea.lastSelected.bitWidth !== undefined) {
-                        simulationArea.lastSelected.newBitWidth(
-                            parseInt(prompt('Enter new bitWidth'), 10)
-                        )
-                    }
-                }
-
-                if (
-                    simulationArea.controlDown &&
-                    (e.key == 'T' || e.key == 't')
-                ) {
-                    // e.preventDefault(); //browsers normally open a new tab
-                    simulationArea.changeClockTime(prompt('Enter Time:'))
+            if (
+                (e.keyCode == 113 || e.keyCode == 81) &&
+                simulationArea.lastSelected != undefined
+            ) {
+                if (simulationArea.lastSelected.bitWidth !== undefined) {
+                    simulationArea.lastSelected.newBitWidth(
+                        parseInt(prompt('Enter new bitWidth'), 10)
+                    )
                 }
             }
 
-            if (e.keyCode == 8 || e.key == 'Delete') {
-                deleteSelected()
+            if (
+                simulationArea.controlDown &&
+                (e.key == 'T' || e.key == 't')
+            ) {
+                // e.preventDefault(); //browsers normally open a new tab
+                simulationArea.changeClockTime(prompt('Enter Time:'))
             }
-        },
+        }
+
+        if (e.keyCode == 8 || e.key == 'Delete') {
+            deleteSelected()
+        }
+    },
         true
     )
 
-    document.getElementById('simulationArea').addEventListener('dblclick', e => {
-		onDoubleClickorTap(e);
-	});
+    addListener(document.getElementById('simulationArea'), 'dblclick', e => {
+        onDoubleClickorTap(e);
+    });
 
     function MouseScroll(event) {
         updateCanvasSet(true)
@@ -585,14 +605,10 @@ export default function startListeners() {
         else update() // Schedule update not working, this is INEFFICIENT
     }
 
-    document
-        .getElementById('simulationArea')
-        .addEventListener('mousewheel', MouseScroll)
-    document
-        .getElementById('simulationArea')
-        .addEventListener('DOMMouseScroll', MouseScroll)
+    addListener(document.getElementById('simulationArea'), 'mousewheel', MouseScroll);
+    addListener(document.getElementById('simulationArea'), 'DOMMouseScroll', MouseScroll);
 
-    document.addEventListener('cut', (e) => {
+    addListener(document, 'cut', (e) => {
         if (verilogModeGet()) return
         if (document.activeElement.tagName == 'INPUT') return
         if (document.activeElement.tagName != 'BODY') return
@@ -623,7 +639,7 @@ export default function startListeners() {
         }
     })
 
-    document.addEventListener('copy', (e) => {
+    addListener(document, 'copy', (e) => {
         if (verilogModeGet()) return
         if (document.activeElement.tagName == 'INPUT') return
         if (document.activeElement.tagName != 'BODY') return
@@ -654,7 +670,7 @@ export default function startListeners() {
         }
     })
 
-    document.addEventListener('paste', (e) => {
+    addListener(document, 'paste', (e) => {
         if (document.activeElement.tagName == 'INPUT') return
         if (document.activeElement.tagName != 'BODY') return
 
@@ -697,13 +713,13 @@ export default function startListeners() {
     });
 
     restrictedElements.forEach((element) => {
-        $(`#${element}`).mouseover(() => {
+        addListener(document.getElementById(element), 'mouseover', () => {
             showRestricted()
-        })
+        });
 
-        $(`#${element}`).mouseout(() => {
+        addListener(document.getElementById(element), 'mouseout', () => {
             hideRestricted()
-        })
+        });
     })
 
     zoomSliderListeners()
@@ -721,159 +737,183 @@ function resizeTabs() {
     })
 }
 
-window.addEventListener('resize', resizeTabs)
-resizeTabs()
 
 // direction is only 1 or -1
-function handleZoom (direction) {
+function handleZoom(direction) {
     if (globalScope.scale > 0.5 * DPR) {
-      changeScale(direction * 0.1 * DPR);
+        changeScale(direction * 0.1 * DPR);
     } else if (globalScope.scale < 4 * DPR) {
-      changeScale(direction * 0.1 * DPR);
+        changeScale(direction * 0.1 * DPR);
     }
     gridUpdateSet(true);
     scheduleUpdate();
-  }
-  export function ZoomIn () {
+}
+export function ZoomIn () {
     handleZoom(1);
-  }
-  export function ZoomOut () {
+}
+export function ZoomOut () {
     handleZoom(-1);
-  }
-  function zoomSliderListeners () {
+}
+function zoomSliderListeners () {
     document.getElementById("customRange1").value = 5;
-    document.getElementById('simulationArea').addEventListener('DOMMouseScroll', zoomSliderScroll);
-    document.getElementById('simulationArea').addEventListener('mousewheel', zoomSliderScroll);
+    addListener(document.getElementById('simulationArea'), 'DOMMouseScroll', zoomSliderScroll);
+    addListener(document.getElementById('simulationArea'), 'mousewheel', zoomSliderScroll);
     let curLevel = document.getElementById("customRange1").value;
-    $(document).on('input change', '#customRange1', function (e) {
-      const newValue = $(this).val();
-      const changeInScale = newValue - curLevel;
-      updateCanvasSet(true);
-      changeScale(changeInScale * 0.1, 'zoomButton', 'zoomButton', 3)
-      gridUpdateSet(true);
-      curLevel = newValue;
+    addListener(document.getElementById('customRange1'), 'input', function (e) {
+        const newValue = e.target.value;
+        const changeInScale = newValue - curLevel;
+        updateCanvasSet(true);
+        changeScale(changeInScale * 0.1, 'zoomButton', 'zoomButton', 3)
+        gridUpdateSet(true);
+        curLevel = newValue;
     });
-    function zoomSliderScroll (e) {
-      let zoomLevel = document.getElementById("customRange1").value;
-      const deltaY = e.wheelDelta ? e.wheelDelta : -e.detail;
-      const directionY = deltaY > 0 ? 1 : -1;
-      if (directionY > 0) zoomLevel++
-      else zoomLevel--
-      if (zoomLevel >= 45) {
-        zoomLevel = 45;
-        document.getElementById("customRange1").value = 45;
-      } else if (zoomLevel <= 0) {
-        zoomLevel = 0;
-        document.getElementById("customRange1").value = 0;
-      } else {
-        document.getElementById("customRange1").value = zoomLevel;
-        curLevel = zoomLevel;
-      }
+    addListener(document.getElementById('customRange1'), 'change', function (e) {
+        const newValue = e.target.value;
+        const changeInScale = newValue - curLevel;
+        updateCanvasSet(true);
+        changeScale(changeInScale * 0.1, 'zoomButton', 'zoomButton', 3)
+        gridUpdateSet(true);
+        curLevel = newValue;
+    });
+    function zoomSliderScroll(e) {
+        let zoomLevel = document.getElementById("customRange1").value;
+        const deltaY = e.wheelDelta ? e.wheelDelta : -e.detail;
+        const directionY = deltaY > 0 ? 1 : -1;
+        if (directionY > 0) zoomLevel++
+        else zoomLevel--
+        if (zoomLevel >= 45) {
+            zoomLevel = 45;
+            document.getElementById("customRange1").value = 45;
+        } else if (zoomLevel <= 0) {
+            zoomLevel = 0;
+            document.getElementById("customRange1").value = 0;
+        } else {
+            document.getElementById("customRange1").value = zoomLevel;
+            curLevel = zoomLevel;
+        }
     }
     function sliderZoomButton (direction) {
-      const zoomSlider = $('#customRange1');
-      let currentSliderValue = parseInt(zoomSlider.val(), 10);
-      if (direction === -1) {
-        currentSliderValue--;
-      } else {
-        currentSliderValue++;
-      }
-      zoomSlider.val(currentSliderValue).change();
+        const zoomSlider = $('#customRange1');
+        let currentSliderValue = parseInt(zoomSlider.val(), 10);
+        if (direction === -1) {
+            currentSliderValue--;
+        } else {
+            currentSliderValue++;
+        }
+        zoomSlider.val(currentSliderValue).change();
     }
-    $('#decrement').click(() => {
-      sliderZoomButton(-1);
+    addListener(document.getElementById('decrement'), 'click', () => {
+        sliderZoomButton(-1);
     });
-    $('#increment').click(() => {
-      sliderZoomButton(1);
+    addListener(document.getElementById('increment'), 'click', () => {
+        sliderZoomButton(1);
     });
-  }
+}
 
 // Desktop App Listeners
+async function setupTauriListeners() {
+    await addTauriListener('new-project', () => {
+        logixFunction.newProject();
+    });
 
-listen('new-project', () => {
-    logixFunction.newProject();
-});
+    await addTauriListener('save-online', () => {
+        logixFunction.save();
+    });
 
-listen('save-online', () => {
-    logixFunction.save();
-});
+    await addTauriListener('save-offline', () => {
+        logixFunction.saveOffline();
+    });
 
-listen('save-offline', () => {
-    logixFunction.saveOffline();
-});
+    await addTauriListener('open-offline', () => {
+        logixFunction.createOpenLocalPrompt();
+    });
 
-listen('open-offline', () => {
-    logixFunction.createOpenLocalPrompt();
-});
+    await addTauriListener('export', () => {
+        logixFunction.ExportProject();
+    });
 
-listen('export', () => {
-    logixFunction.ExportProject();
-});
+    await addTauriListener('import', () => {
+        logixFunction.ImportProject();
+    });
 
-listen('import', () => {
-    logixFunction.ImportProject();
-});
+    await addTauriListener('recover', () => {
+        logixFunction.recoverProject();
+    });
 
-listen('recover', () => {
-    logixFunction.recoverProject();
-});
+    await addTauriListener('clear', () => {
+        logixFunction.clearProject();
+    });
 
-listen('clear', () => {
-    logixFunction.clearProject();
-});
+    await addTauriListener('preview-circuit', () => {
+        logixFunction.fullViewOption();
+    });
 
-listen('preview-circuit', () => {
-    logixFunction.fullViewOption();
-});
+    await addTauriListener('new-circuit', () => {
+        logixFunction.createNewCircuitScope();
+    });
 
-listen('new-circuit', () => {
-    logixFunction.createNewCircuitScope();
-});
+    await addTauriListener('new-verilog-module', () => {
+        logixFunction.newVerilogModule();
+    });
 
-listen('new-verilog-module', () => {
-    logixFunction.newVerilogModule();
-});
+    await addTauriListener('insert-sub-circuit', () => {
+        logixFunction.createSubCircuitPrompt();
+    });
 
-listen('insert-sub-circuit', () => {
-    logixFunction.createSubCircuitPrompt();
-});
+    await addTauriListener('combinational-analysis', () => {
+        logixFunction.createCombinationalAnalysisPrompt();
+    });
 
-listen('combinational-analysis', () => {
-    logixFunction.createCombinationalAnalysisPrompt();
-});
+    await addTauriListener('hex-bin-dec', () => {
+        logixFunction.bitconverter();
+    });
 
-listen('hex-bin-dec', () => {
-    logixFunction.bitconverter();
-});
+    await addTauriListener('download-image', () => {
+        logixFunction.createSaveAsImgPrompt();
+    });
 
-listen('download-image', () => {
-    logixFunction.createSaveAsImgPrompt();
-});
+    await addTauriListener('themes', () => {
+        logixFunction.colorThemes();
+    });
 
-listen('themes', () => {
-    logixFunction.colorThemes();
-});
+    await addTauriListener('custom-shortcut', () => {
+        logixFunction.customShortcut();
+    });
 
-listen('custom-shortcut', () => {
-    logixFunction.customShortcut();
-});
+    await addTauriListener('export-verilog', () => {
+        logixFunction.generateVerilog();
+    });
 
-listen('export-verilog', () => {
-    logixFunction.generateVerilog();
-});
+    await addTauriListener('tutorial', () => {
+        logixFunction.showTourGuide();
+    });
 
-listen('tutorial', () => {
-    logixFunction.showTourGuide();
-});
+    await addTauriListener('user-manual', () => {
+        logixFunction.showUserManual();
+    });
 
-listen('user-manual', () => {
-    logixFunction.showUserManual();
-});
+    await addTauriListener('learn-digital-circuit', () => {
+        logixFunction.showDigitalCircuit();
+    });
 
-listen('learn-digital-circuit', () => {
-    logixFunction.showDigitalCircuit();
-});
+    await addTauriListener('discussion-forum', () => {
+        logixFunction.showDiscussionForum();
+    });
+}
 
-listen('discussion-forum', () => {
-    logixFunction.showDiscussionForum();
-});
+/**
+ * Removes and cleans up all listeners added by the simulator
+ */
+export function stopListeners() {
+    simulatorListeners.forEach(({ target, type, listener, options }) => {
+        target.removeEventListener(type, listener, options);
+    });
+    simulatorListeners.length = 0;
+
+    simulatorUnlistenTauri.forEach((unlisten) => unlisten());
+    simulatorUnlistenTauri.length = 0;
+
+    // Explicitly removing JQuery listeners if any remain
+    $(document).off('keyup');
+    $('#subcircuitMenu').off('dragstop', '.draggableSubcircuitElement');
+}

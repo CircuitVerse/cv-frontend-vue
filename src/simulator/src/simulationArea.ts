@@ -33,11 +33,16 @@ const simulationArea: SimulationArea = {
     lock: 'unlocked',
     mouseDown: false,
     ClockInterval: null,
+    clickTimer: null,
     touch: false,
 
     timer() {
-        const clickTimer = setTimeout(() => {
+        if (simulationArea.clickTimer) {
+            clearTimeout(simulationArea.clickTimer)
+        }
+        simulationArea.clickTimer = setTimeout(() => {
             simulationArea.clickCount = 0
+            simulationArea.clickTimer = null
         }, 600)
     },
     setup() {

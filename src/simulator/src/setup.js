@@ -8,7 +8,7 @@ import { simulationArea } from './simulationArea'
 import { dots } from './canvasApi'
 import { update, updateSimulationSet, updateCanvasSet } from './engine'
 import { setupUI } from './ux'
-import startMainListeners from './listeners'
+import startMainListeners, { stopListeners } from './listeners'
 import { newCircuit } from './circuit'
 import load from './data/load'
 import save from './data/save'
@@ -69,11 +69,26 @@ export function resetup() {
     dots()
 }
 
-window.onresize = resetup // listener
-window.onorientationchange = resetup // listener
+let listenersAttached = false;
 
-// for mobiles
-window.addEventListener('orientationchange', resetup) // listener
+/**
+ * Global cleanup for the simulator
+ */
+export function stopSimulator() {
+    stopListeners();
+    if (simulationArea.ClockInterval) {
+        clearInterval(simulationArea.ClockInterval);
+        simulationArea.ClockInterval = null;
+    }
+    if (simulationArea.clickTimer) {
+        clearTimeout(simulationArea.clickTimer);
+        simulationArea.clickTimer = null;
+    }
+    window.removeEventListener('resize', resetup);
+    window.removeEventListener('orientationchange', resetup);
+    listenersAttached = false;
+}
+
 
 /**
  * function to setup environment variables like projectId and DPR
@@ -167,13 +182,18 @@ function showTour() {
  * loads the project data, and shows the tour guide.
  * @category setup
  */
-export function setup() {
+export async function setup() {
     setupEnvironment()
     if (!embed) {
         setupUI()
-        startMainListeners()
     }
     // startListeners()
     loadProjectData()
     showTour()
+
+    if (!listenersAttached) {
+        window.addEventListener('resize', resetup);
+        window.addEventListener('orientationchange', resetup);
+        listenersAttached = true;
+    }
 }
