@@ -1,8 +1,10 @@
 import { setup } from './setup';
+import startMainListeners from './listeners'
 import { JsConfig } from './types/app.types'
 
-document.addEventListener('DOMContentLoaded', () => {
-    setup();
+document.addEventListener('DOMContentLoaded', async () => {
+    await setup();
+    await startMainListeners();
     const js: JsConfig = {
         devices: {
             dev0: {

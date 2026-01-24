@@ -245,15 +245,23 @@ onBeforeMount(() => {
     }
 })
 
-onMounted(() => {
+onMounted(async () => {
     const themeValue = theme?.value as string;
     updateThemeForStyle(THEME[themeValue as keyof ThemeType]);
-    startListeners()
-    setup()
+    await startListeners()
+    await setup()
 })
 
 onUnmounted(() => {
     stopListeners()
+    if (simulationArea.ClockInterval) {
+        clearInterval(simulationArea.ClockInterval);
+        simulationArea.ClockInterval = null;
+    }
+    if (simulationArea.clickTimer) {
+        clearTimeout(simulationArea.clickTimer);
+        simulationArea.clickTimer = null;
+    }
 })
 
 function zoomInEmbed() {

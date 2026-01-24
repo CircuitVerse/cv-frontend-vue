@@ -13,6 +13,8 @@ import { defineComponent, onMounted, onUnmounted } from 'vue'
 import { setup as setupSimulator, stopSimulator } from '../simulator/src/setup'
 import Helper from '#/components/helpers/Helper.vue'
 
+import startMainListeners from '../simulator/src/listeners'
+
 defineComponent({
     components: {
         Navbar,
@@ -21,8 +23,9 @@ defineComponent({
     },
 })
 
-onMounted(() => {
-    setupSimulator()
+onMounted(async () => {
+    await setupSimulator()
+    await startMainListeners()
 })
 
 onUnmounted(() => {

@@ -69,6 +69,8 @@ export function resetup() {
     dots()
 }
 
+let listenersAttached = false;
+
 /**
  * Global cleanup for the simulator
  */
@@ -84,11 +86,9 @@ export function stopSimulator() {
     }
     window.removeEventListener('resize', resetup);
     window.removeEventListener('orientationchange', resetup);
+    listenersAttached = false;
 }
 
-window.addEventListener('resize', resetup);
-// for mobiles
-window.addEventListener('orientationchange', resetup) // listener
 
 /**
  * function to setup environment variables like projectId and DPR
@@ -182,13 +182,18 @@ function showTour() {
  * loads the project data, and shows the tour guide.
  * @category setup
  */
-export function setup() {
+export async function setup() {
     setupEnvironment()
     if (!embed) {
         setupUI()
-        startMainListeners()
     }
     // startListeners()
     loadProjectData()
     showTour()
+
+    if (!listenersAttached) {
+        window.addEventListener('resize', resetup);
+        window.addEventListener('orientationchange', resetup);
+        listenersAttached = true;
+    }
 }

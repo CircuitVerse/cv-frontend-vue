@@ -132,7 +132,7 @@ function BlockElementPan() {
     document.getElementById('elementName').innerHTML = '';
 }
 
-export default function startListeners() {
+export default async function startListeners() {
     addListener(window, 'keyup', (e) => {
         scheduleUpdate(1);
         if (e.keyCode == 16) {

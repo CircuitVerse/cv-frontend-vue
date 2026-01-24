@@ -316,12 +316,15 @@ export function panStop(e) {
     }
 }
 
-export default function startListeners() {
+export default async function startListeners() {
     addListener(document, 'keyup', (e) => {
         if (e.key === 'Escape') exitFullView()
     })
 
-    setupTauriListeners();
+    await setupTauriListeners();
+
+    addListener(window, 'resize', resizeTabs)
+    resizeTabs()
 
     addListener(document.getElementById('projectName'), 'click', () => {
         simulationArea.lastSelected = globalScope.root;
@@ -734,8 +737,6 @@ function resizeTabs() {
     })
 }
 
-addListener(window, 'resize', resizeTabs)
-resizeTabs()
 
 // direction is only 1 or -1
 function handleZoom(direction) {
@@ -914,4 +915,5 @@ export function stopListeners() {
 
     // Explicitly removing JQuery listeners if any remain
     $(document).off('keyup');
+    $('#subcircuitMenu').off('dragstop', '.draggableSubcircuitElement');
 }
