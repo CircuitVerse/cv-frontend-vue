@@ -342,7 +342,6 @@ const themes: Themes = {
         '--qp-box-shadow-1': '#3b3b3b',
         '--qp-box-shadow-2': '#4f4f4f',
         '--bg-circuit': '#ddd',
-        '--br-circuit': '#454545',
         '--br-primary': '#ffffff',
         '--bg-primary-moz': '#454545e6',
         '--bg-primary-chr': '#454545b3',

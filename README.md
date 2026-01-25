@@ -12,11 +12,21 @@ We would love to hear from you! We communicate on Slack:
 
 ## Prerequisites
 
-If you are on Windows, ensure that symlinks are enabled in your Git configuration. This is required because the project uses symlinks for version management:
+### Windows users (important)
 
-```bash
-git config --global core.symlinks true
-```
+This project relies on **symlinks** for version management.
+
+On Windows, make sure the following are enabled **before cloning the repository**:
+
+1. Enable **Developer Mode**  
+   Open **Windows Settings**, search for **“Developer settings”**, and turn **Developer Mode** ON.
+
+2. Configure Git to allow symlinks:
+   ```bash
+   git config --global core.symlinks true
+   ```
+   After enabling the above, re-clone the repository to ensure symlinks are created correctly.
+
 
 ## Development & Versions
 This repository supports multiple versions of the simulator.
