@@ -4,12 +4,11 @@ import Driver from 'driver.js'
  * Each step highlights a UI element and displays contextual guidance.
  */
 
-export const tour: (Driver.Step & { className?: string })[] = [
+export const tour: Driver.Step [] = [
     {
         element: '#guide_1',
-        className: 'guide_1',
         popover: {
-            className: '',
+            className: 'guide_1',
             title: 'Circuit Elements panel',
             description:
                 'This is where you can find all the circuit elements that are offered to build amazing circuits.',
@@ -106,11 +105,10 @@ export const tutorialWrapper = (): void => {
             if (!(target instanceof HTMLElement)) return
             const sibling = target.nextElementSibling as HTMLElement | null
             const siblingHeight = sibling ? sibling.offsetHeight : 0
-            type StepWithButtons = Driver.Step & { showButtons?: boolean }
-            const step: StepWithButtons = {
+            const step: Driver.Step = {
                 element: '#guide_1',
-                showButtons: false,
                 popover: {
+                    showButtons: false,
                     title: 'Here are the elements',
                     description:
                         'Select any element by clicking on it & then click anywhere on the grid to place the element.',
@@ -119,7 +117,7 @@ export const tutorialWrapper = (): void => {
                         siblingHeight + target.offsetTop - 45,
                 },
             }
-            panelHighlight.highlight(step as Driver.Step)
+            panelHighlight.highlight(step)
             localStorage.setItem('tutorials', 'done')
         }
     }, {
