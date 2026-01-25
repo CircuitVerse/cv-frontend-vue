@@ -60,7 +60,8 @@ body:
   - type: dropdown
     attributes:
       label: Vue simulator version
-      description: Select the version of the Vue simulator you are using.
+      description: Select the version(s) of the Vue simulator you are using.
+      multiple: true
       options:
         - 'v0'
         - 'v1'
