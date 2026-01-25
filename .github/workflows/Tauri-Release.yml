@@ -96,7 +96,7 @@ jobs:
 
             - name: Generate Changelog
               id: changelog
-              uses: TriPSs/conventional-changelog-action@v3
+              uses: TriPSs/conventional-changelog-action@v6
               with:
                   github-token: ${{ secrets.GITHUB_TOKEN }}
                   skip-on-empty: 'false'
@@ -132,6 +132,10 @@ jobs:
               uses: actions/checkout@v4
               with:
                   ref: ${{ github.ref_name }}
+                  fetch-depth: 0
+
+            - name: Pull latest changes
+              run: git pull origin ${{ github.ref_name }}
 
             - name: Setup Node.js
               uses: actions/setup-node@v4
@@ -188,6 +192,12 @@ jobs:
             - name: Build Tauri App
               run: npm run tauri build
               shell: bash
+
+            # TODO: Add code signing steps here once certificates are obtained
+            # - Windows: Sign .msi and .exe files with Authenticode via SignPath
+            # - macOS: Sign .app bundles and .dmg with Apple Developer ID
+            # - Linux: Sign .deb and .AppImage with GPG
+            # Reference: Issue #631
 
             - name: Upload Tauri Build Artifacts
               uses: actions/upload-artifact@v4
