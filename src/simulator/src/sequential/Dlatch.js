@@ -1,0 +1,129 @@
+import CircuitElement from '../circuitElement'
+import Node, { findNode } from '../node'
+import { simulationArea } from '../simulationArea'
+import { correctWidth, lineTo, moveTo, fillText } from '../canvasApi'
+/**
+ * @class
+ * Dlatch
+ * D latch has 2 input nodes:
+ * clock, data input.
+ * Difference between this and D - FlipFlop is
+ * that Flip flop must have a clock.
+ * @extends CircuitElement
+ * @param {number} x - x coord of element
+ * @param {number} y - y coord of element
+ * @param {Scope=} scope - the ciruit in which we want the Element
+ * @param {string=} dir - direcion in which element has to drawn
+ * @category sequential
+ */
+import { colors } from '../themer/themer'
+export default class Dlatch extends CircuitElement {
+    constructor(x, y, scope = globalScope, dir = 'RIGHT', bitWidth = 1) {
+        super(x, y, scope, dir, bitWidth)
+        this.directionFixed = true
+        this.setDimensions(20, 20)
+        this.rectangleObject = true
+        this.clockInp = new Node(-20, +10, 0, this, 1, 'Clock')
+        this.dInp = new Node(-20, -10, 0, this, this.bitWidth, 'D')
+        this.qOutput = new Node(20, -10, 1, this, this.bitWidth, 'Q')
+        this.qInvOutput = new Node(20, 10, 1, this, this.bitWidth, 'Q Inverse')
+        this.state = 0
+        this.prevClockState = 0
+        this.wasClicked = false
+    }
+
+    /**
+     * Idea: should be D FF?
+     */
+    isResolvable() {
+        if (this.clockInp.value != undefined && this.dInp.value != undefined)
+            return true
+        return false
+    }
+
+    newBitWidth(bitWidth) {
+        this.bitWidth = bitWidth
+        this.dInp.bitWidth = bitWidth
+        this.qOutput.bitWidth = bitWidth
+        this.qInvOutput.bitWidth = bitWidth
+    }
+
+    /**
+     * @memberof Dlatch
+     * when the clock input is high we update the state
+     * qOutput is set to the state
+     */
+    resolve() {
+        if (this.clockInp.value == 1 && this.dInp.value != undefined) {
+            this.state = this.dInp.value
+        }
+
+        if (this.qOutput.value != this.state) {
+            this.qOutput.value = this.state
+            this.qInvOutput.value = this.flipBits(this.state)
+            simulationArea.simulationQueue.add(this.qOutput)
+            simulationArea.simulationQueue.add(this.qInvOutput)
+        }
+    }
+
+    customSave() {
+        var data = {
+            nodes: {
+                clockInp: findNode(this.clockInp),
+                dInp: findNode(this.dInp),
+                qOutput: findNode(this.qOutput),
+                qInvOutput: findNode(this.qInvOutput),
+            },
+            constructorParamaters: [this.direction, this.bitWidth],
+        }
+        return data
+    }
+
+    customDraw() {
+        var ctx = simulationArea.context
+        ctx.strokeStyle = colors['stroke']
+        ctx.fillStyle = colors['fill']
+        ctx.beginPath()
+        ctx.lineWidth = correctWidth(3)
+        var xx = this.x
+        var yy = this.y
+        moveTo(ctx, -20, 5, xx, yy, this.direction)
+        lineTo(ctx, -15, 10, xx, yy, this.direction)
+        lineTo(ctx, -20, 15, xx, yy, this.direction)
+        ctx.stroke()
+        ctx.beginPath()
+        ctx.font = '20px Raleway'
+        ctx.fillStyle = colors['input_text']
+        ctx.textAlign = 'center'
+        fillText(ctx, this.state.toString(16), xx, yy + 5)
+        ctx.fill()
+    }
+    static moduleVerilog() {
+return `
+    module Dlatch(q,q_inv,clk,d);
+        // By default, the module is written for 1bit, but it can be changed by changing parameter
+        parameter WIDTH = 1;
+        output reg [WIDTH-1:0]q;
+        output reg [WIDTH-1:0]q_inv;
+        input wire [WIDTH-1:0]d;
+        input wire clk;
+
+        always @(d or clk)
+            begin
+                if (clk)
+                    begin
+                        q <= d;
+                        q_inv <= ~d; 
+                    end
+                // prev state is preserved in case of else or clk = 0 
+            end
+    endmodule
+`
+    }
+}
+
+Dlatch.prototype.tooltipText = 'D Latch : Single input Flip flop or D FlipFlop'
+Dlatch.prototype.helplink =
+    'https://docs.circuitverse.org/#/chapter4/6sequentialelements?id=d-latch'
+
+Dlatch.prototype.objectType = 'Dlatch'

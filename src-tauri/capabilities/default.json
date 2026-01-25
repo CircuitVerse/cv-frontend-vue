@@ -1,0 +1,41 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "enables the default permissions",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:default",
+    "fs:default",
+    "http:default",
+    {
+      "identifier": "http:allow-fetch",
+      "allow": [
+        {
+          "url": "https://circuitverse.org/api/v1/auth/login"
+        },
+        {
+          "url": "https://circuitverse.org/api/v1/auth/signup"
+        }
+      ]
+    },
+    {
+      "identifier": "fs:allow-download-read-recursive",
+      "allow": [
+        {
+          "path": "$DOWNLOAD/*"
+        }
+      ]
+    },
+    {
+      "identifier": "fs:allow-download-write-recursive",
+      "allow": [
+        {
+          "path": "$DOWNLOAD/*",
+          "write": true
+        }
+      ]
+    }
+  ]
+}

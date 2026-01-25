@@ -1,0 +1,38 @@
+{
+    "compilerOptions": {
+        "target": "esnext",
+        "useDefineForClassFields": true,
+        "module": "esnext",
+        "moduleResolution": "node",
+        "strict": true,
+        "jsx": "preserve",
+        "sourceMap": true,
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "esModuleInterop": true,
+        "lib": ["esnext", "dom"],
+        "skipLibCheck": true,
+        "baseUrl": "./",
+        "paths": {
+            "#/*": ["./v0/src/*"],
+            "@/*": ["./v0/src/components/*"]
+        },
+        "allowJs": true,
+        "declaration": true,
+        "emitDeclarationOnly": true,
+        "outDir": "dist",
+        "declarationMap": true,
+        "types": ["vite/client", "@tauri-apps/api/tauri"]
+    },
+    "include": [
+        "v0/src/**/*.ts",
+        "v0/src/**/*.d.ts",
+        "v0/src/**/*.tsx",
+        "v0/src/**/*.vue",
+        "v0/src/**/*",
+        "commitlint.config.js"
+    ],
+    "references": [{ "path": "./tsconfig.node.json" }]
+}
+
+// https://www.typescriptlang.org/docs/handbook/declaration-files/dts-from-js.html
