@@ -69,7 +69,7 @@ export default class Wire {
 
     update(): boolean {
         let updated = false;
-        // if (embed) return updated;
+        if (embed) return updated;
 
         this.updateWireType();
         updated = this.handleMouseInteraction() || updated;
