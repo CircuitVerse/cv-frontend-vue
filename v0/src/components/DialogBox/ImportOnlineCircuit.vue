@@ -64,6 +64,16 @@
                             >No projects found</v-list-item-title
                         >
                     </v-list-item>
+                    <div v-if="hasMore" class="text-center pa-2">
+                        <v-btn
+                            variant="text"
+                            color="primary"
+                            :loading="loading"
+                            @click="loadMore"
+                        >
+                            Load More
+                        </v-btn>
+                    </div>
                 </v-list>
             </v-card-text>
 
@@ -101,7 +111,10 @@
 import { useState } from '#/store/SimulatorStore/state'
 import load from '#/simulator/src/data/load'
 import { useAuthStore } from '#/store/authStore'
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
+import { getToken } from '#/pages/simulatorHandler.vue'
+import { generateId, showMessage } from '#/simulator/src/utils'
+import { confirmOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
 
 export function ImportOnlineCircuit() {
     const SimulatorState = useState()
@@ -118,6 +131,8 @@ const projects = ref<any[]>([])
 const selectedProjects = ref<string[]>([])
 const loading = ref(false)
 const importing = ref(false)
+const page = ref(1)
+const hasMore = ref(false)
 
 // Watch dialog state to fetch projects when opened
 watch(
@@ -126,7 +141,8 @@ watch(
         if (val) {
             searchQuery.value = ''
             selectedProjects.value = []
-            fetchProjects()
+            page.value = 1
+            fetchProjects(true)
         }
     }
 )
@@ -135,7 +151,13 @@ const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString()
 }
 
-const fetchProjects = async () => {
+const fetchProjects = async (reset = false) => {
+    if (reset) {
+        projects.value = []
+        page.value = 1
+        hasMore.value = false
+    }
+
     loading.value = true
     try {
         const userId = authStore.getUserId
@@ -145,82 +167,159 @@ const fetchProjects = async () => {
             return
         }
 
-        let url = `/api/v1/users/${userId}/projects?page[number]=1&page[size]=20`
+        let url = `/api/v1/users/${userId}/projects?page[number]=${page.value}&page[size]=20`
         if (searchQuery.value) {
-            url = `/api/v1/projects/search?q=${encodeURIComponent(
+            // Use the user-scoped endpoint with query parameter for search
+            url = `/api/v1/users/${userId}/projects?q=${encodeURIComponent(
                 searchQuery.value
-            )}&page[number]=1&page[size]=20`
+            )}&page[number]=${page.value}&page[size]=20`
         }
 
-        const response = await fetch(url)
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                Authorization: `Token ${getToken('cvt')}`,
+            },
+        })
+
         if (!response.ok) throw new Error('Failed to fetch projects')
 
         const data = await response.json()
-        projects.value = data.data.map((p: any) => ({
+        const newProjects = data.data.map((p: any) => ({
             id: p.id,
             name: p.attributes.name,
             updated_at: p.attributes.updated_at,
         }))
+
+        if (reset) {
+            projects.value = newProjects
+        } else {
+            projects.value = [...projects.value, ...newProjects]
+        }
+
+        // Assumption: If we got a full page (20 items), there might be more.
+        hasMore.value = newProjects.length === 20
     } catch (error) {
         console.error('Error fetching projects:', error)
-        projects.value = []
+        if (reset) projects.value = []
     } finally {
         loading.value = false
     }
 }
 
+const loadMore = () => {
+    page.value++
+    fetchProjects(false)
+}
+
 const searchProjects = () => {
-    fetchProjects()
+    fetchProjects(true)
 }
 
 const importSelectedCircuits = async () => {
     if (selectedProjects.value.length === 0) return
 
+    // Confirmation before replacing circuit
+    if (
+        !(await confirmOption(
+            'Importing will replace your current circuit. Any unsaved changes will be lost. Continue?'
+        ))
+    ) {
+        return
+    }
+
     importing.value = true
     try {
         const allScopes: any[] = []
         let mainProjectData: any = null
+        let successCount = 0
+        const failedProjects: string[] = []
 
         // Fetch all selected projects
         for (const projectId of selectedProjects.value) {
-            const response = await fetch(`/simulator/get_data/${projectId}`)
-            if (!response.ok) {
-                console.error(
-                    `Failed to fetch circuit data for project ${projectId}`
+            try {
+                const response = await fetch(
+                    `/simulator/get_data/${projectId}`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            Accept: 'application/json',
+                            Authorization: `Token ${getToken('cvt')}`,
+                        },
+                    }
                 )
-                continue
-            }
-            const data = await response.json()
 
-            // If it's the first project, keep it as the 'base' for metadata
-            if (!mainProjectData) {
-                mainProjectData = data
-            }
+                if (!response.ok) {
+                    throw new Error(`Status ${response.status}`)
+                }
 
-            // Collect scopes
-            if (data.scopes && Array.isArray(data.scopes)) {
-                allScopes.push(...data.scopes)
+                let data = await response.json()
+
+                // Scope ID Remapping to prevent conflicts
+                const scopeMap = new Map<string, string>()
+
+                // 1. Generate new IDs for all scopes in this project
+                if (data.scopes && Array.isArray(data.scopes)) {
+                    data.scopes.forEach((scope: any) => {
+                        const newId = generateId()
+                        scopeMap.set(scope.id, newId)
+                    })
+                }
+
+                // 2. Perform global string replacement for these IDs
+                // This is a brutal but effective way to update SubCircuit dependencies, orderedTabs, etc.
+                if (scopeMap.size > 0) {
+                    let jsonString = JSON.stringify(data)
+                    scopeMap.forEach((newId, oldId) => {
+                        // Use a global replace.
+                        jsonString = jsonString.split(oldId).join(newId)
+                    })
+                    data = JSON.parse(jsonString)
+                }
+
+                // If it's the first project, keep it as the 'base' for metadata
+                if (!mainProjectData) {
+                    mainProjectData = data
+                }
+
+                // Collect scopes
+                if (data.scopes && Array.isArray(data.scopes)) {
+                    allScopes.push(...data.scopes)
+                }
+
+                successCount++
+            } catch (pError) {
+                console.error(`Failed to import project ${projectId}:`, pError)
+                failedProjects.push(projectId)
             }
         }
 
         if (mainProjectData && allScopes.length > 0) {
-            // Combine scopes
-            // To ensure verify unique IDs or names is a complex task.
-            // For MVP, we concatenate.
-
             // Construct the final data object
             const combinedData = {
                 ...mainProjectData,
                 scopes: allScopes,
-                // We might want to regenerate orderedTabs
+                // Regenerate orderedTabs based on all new scope IDs
                 orderedTabs: allScopes.map((s) => s.id),
             }
 
             load(combinedData)
             SimulatorState.dialogBox.import_online_circuit_dialog = false
+
+            if (failedProjects.length > 0) {
+                showMessage(
+                    `Imported ${successCount} projects. Failed: ${failedProjects.length}`
+                )
+            } else {
+                showMessage(`Successfully imported ${successCount} projects`)
+            }
+        } else if (failedProjects.length > 0) {
+            showMessage(`Failed to import selected projects.`)
         }
     } catch (error) {
         console.error('Error importing circuits:', error)
+        showMessage('An unexpected error occurred during import')
     } finally {
         importing.value = false
     }
