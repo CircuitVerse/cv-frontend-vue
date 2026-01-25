@@ -54,6 +54,12 @@ export default class Output extends CircuitElement {
         this.orientationFixed = false
         this.setDimensions(this.bitWidth * 10, 10)
         this.inp1 = new Node(this.bitWidth * 10, 0, 0, this)
+
+        // Initialize subcircuitMetadata coordinates from layoutProperties
+        if (this.canShowInSubcircuit && this.layoutProperties) {
+            this.subcircuitMetadata.x = this.layoutProperties.x
+            this.subcircuitMetadata.y = this.layoutProperties.y
+        }
     }
 
     /**
