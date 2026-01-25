@@ -43,8 +43,8 @@ const unit = 10
 let listenToSimulator = true
 let coordinate;
 const returnCoordinate = {
-  x: 0,
-  y: 0
+    x: 0,
+    y: 0
 }
 
 let currDistance = 0;
@@ -83,7 +83,7 @@ function getTap(e) {
     if (tapLength < 500 && tapLength > 0) {
         onDoubleClickorTap(e);
     } else {
-    // Single tap
+        // Single tap
     }
     lastTap = currentTime;
     e.preventDefault();
@@ -303,11 +303,11 @@ export default function startListeners() {
     })
 
     $('#projectName').on('click', () => {
-		simulationArea.lastSelected = globalScope.root;
-		setTimeout(() => {
-			document.getElementById("projname").select();
-		}, 100);
-	});
+        simulationArea.lastSelected = globalScope.root;
+        setTimeout(() => {
+            document.getElementById("projname").select();
+        }, 100);
+    });
 
     document
         .getElementById('simulationArea')
@@ -502,7 +502,7 @@ export default function startListeners() {
                         !simulationArea.lastSelected.keyDown &&
                         simulationArea.lastSelected.objectType != 'Wire' &&
                         simulationArea.lastSelected.objectType !=
-                            'CircuitElement' &&
+                        'CircuitElement' &&
                         !simulationArea.multipleObjectSelections.includes(
                             simulationArea.lastSelected
                         )
@@ -567,8 +567,8 @@ export default function startListeners() {
     )
 
     document.getElementById('simulationArea').addEventListener('dblclick', e => {
-		onDoubleClickorTap(e);
-	});
+        onDoubleClickorTap(e);
+    });
 
     function MouseScroll(event) {
         updateCanvasSet(true)
@@ -725,68 +725,68 @@ window.addEventListener('resize', resizeTabs)
 resizeTabs()
 
 // direction is only 1 or -1
-function handleZoom (direction) {
+function handleZoom(direction) {
     if (globalScope.scale > 0.5 * DPR) {
-      changeScale(direction * 0.1 * DPR);
+        changeScale(direction * 0.1 * DPR);
     } else if (globalScope.scale < 4 * DPR) {
-      changeScale(direction * 0.1 * DPR);
+        changeScale(direction * 0.1 * DPR);
     }
     gridUpdateSet(true);
     scheduleUpdate();
-  }
-  export function ZoomIn () {
+}
+export function ZoomIn() {
     handleZoom(1);
-  }
-  export function ZoomOut () {
+}
+export function ZoomOut() {
     handleZoom(-1);
-  }
-  function zoomSliderListeners () {
+}
+function zoomSliderListeners() {
     document.getElementById("customRange1").value = 5;
     document.getElementById('simulationArea').addEventListener('DOMMouseScroll', zoomSliderScroll);
     document.getElementById('simulationArea').addEventListener('mousewheel', zoomSliderScroll);
     let curLevel = document.getElementById("customRange1").value;
     $(document).on('input change', '#customRange1', function (e) {
-      const newValue = $(this).val();
-      const changeInScale = newValue - curLevel;
-      updateCanvasSet(true);
-      changeScale(changeInScale * 0.1, 'zoomButton', 'zoomButton', 3)
-      gridUpdateSet(true);
-      curLevel = newValue;
+        const newValue = $(this).val();
+        const changeInScale = newValue - curLevel;
+        updateCanvasSet(true);
+        changeScale(changeInScale * 0.1, 'zoomButton', 'zoomButton', 3)
+        gridUpdateSet(true);
+        curLevel = newValue;
     });
-    function zoomSliderScroll (e) {
-      let zoomLevel = document.getElementById("customRange1").value;
-      const deltaY = e.wheelDelta ? e.wheelDelta : -e.detail;
-      const directionY = deltaY > 0 ? 1 : -1;
-      if (directionY > 0) zoomLevel++
-      else zoomLevel--
-      if (zoomLevel >= 45) {
-        zoomLevel = 45;
-        document.getElementById("customRange1").value = 45;
-      } else if (zoomLevel <= 0) {
-        zoomLevel = 0;
-        document.getElementById("customRange1").value = 0;
-      } else {
-        document.getElementById("customRange1").value = zoomLevel;
-        curLevel = zoomLevel;
-      }
+    function zoomSliderScroll(e) {
+        let zoomLevel = document.getElementById("customRange1").value;
+        const deltaY = e.wheelDelta ? e.wheelDelta : -e.detail;
+        const directionY = deltaY > 0 ? 1 : -1;
+        if (directionY > 0) zoomLevel++
+        else zoomLevel--
+        if (zoomLevel >= 45) {
+            zoomLevel = 45;
+            document.getElementById("customRange1").value = 45;
+        } else if (zoomLevel <= 0) {
+            zoomLevel = 0;
+            document.getElementById("customRange1").value = 0;
+        } else {
+            document.getElementById("customRange1").value = zoomLevel;
+            curLevel = zoomLevel;
+        }
     }
-    function sliderZoomButton (direction) {
-      const zoomSlider = $('#customRange1');
-      let currentSliderValue = parseInt(zoomSlider.val(), 10);
-      if (direction === -1) {
-        currentSliderValue--;
-      } else {
-        currentSliderValue++;
-      }
-      zoomSlider.val(currentSliderValue).change();
+    function sliderZoomButton(direction) {
+        const zoomSlider = $('#customRange1');
+        let currentSliderValue = parseInt(zoomSlider.val(), 10);
+        if (direction === -1) {
+            currentSliderValue--;
+        } else {
+            currentSliderValue++;
+        }
+        zoomSlider.val(currentSliderValue).change();
     }
     $('#decrement').click(() => {
-      sliderZoomButton(-1);
+        sliderZoomButton(-1);
     });
     $('#increment').click(() => {
-      sliderZoomButton(1);
+        sliderZoomButton(1);
     });
-  }
+}
 
 // Desktop App Listeners
 
