@@ -59,6 +59,16 @@ body:
 
   - type: dropdown
     attributes:
+      label: Vue simulator version
+      description: Select the version of the Vue simulator you are using.
+      options:
+        - 'v0'
+        - 'v1'
+    validations:
+      required: true
+
+  - type: dropdown
+    attributes:
       label: Used Vue simulator with or without backend?
       description: Provide a clear and concise description of how you used the simulator.
       options:
