@@ -4,10 +4,10 @@
   "version": "0.1.0",
   "identifier": "org.circuitVerse.simulator",
   "build": {
-    "frontendDist": "../dist",
-    "devUrl": "http://localhost:4000/simulatorvue/",
-    "beforeDevCommand": "npm run dev",
-    "beforeBuildCommand": "node build-desktop.js"
+    "frontendDist": "../dist/simulatorvue/v0",
+    "devUrl": "http://localhost:4000/",
+    "beforeDevCommand": "npx cross-env DESKTOP_MODE=1 npm run dev",
+    "beforeBuildCommand": "npx cross-env DESKTOP_MODE=1 npm run build -- v0"
   },
   "app": {
     "windows": [
