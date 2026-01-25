@@ -59,6 +59,16 @@ body:
 
   - type: dropdown
     attributes:
+      label: Vue Simulator Version
+      description: in which version of vue simulator is the bug ?
+      options:
+        - 'V0'
+        - 'V1'
+    validations:
+      required: true
+
+  - type: dropdown
+    attributes:
       label: Used Vue simulator with or without backend?
       description: Provide a clear and concise description of how you used the simulator.
       options:
