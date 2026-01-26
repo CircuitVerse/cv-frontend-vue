@@ -57,9 +57,12 @@ export function findDimensions(scope = globalScope) {
     simulationArea.objectList = updateOrder
 }
 /**
- * Builds a temporary scope object containing ONLY the selected elements.
- * This allows reuse of existing dimension-calculation logic without
- * affecting the global simulation state.
+ * Creates a derived scope object containing only the selected elements.
+ * This scoped object mirrors the engine's updateOrder structure and is
+ * used to compute bounding dimensions without mutating global state.
+ *
+ * @param {Array} selectedElements - List of currently selected circuit elements
+ * @returns {Object} Scoped object matching engine updateOrder
  */
 function buildSelectionScope(selectedElements) {
     const scope = {}
