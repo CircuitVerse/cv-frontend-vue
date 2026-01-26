@@ -62,6 +62,9 @@
         "TB_Output",
         "ForceGate",
         "BitExtender"
+        "Comparator",
+        "PullResistor",
+        "ShiftRegister"
     ],
     "annotationList": ["Text", "Rectangle", "Arrow", "ImageAnnotation"],
     "inputList": [
@@ -79,7 +82,8 @@
         "Input",
         "Clock",
         "Button",
-        "Counter"
+        "Counter",
+        "PullResistor"
     ],
     "subCircuitInputList": [
         "Random",
@@ -95,7 +99,8 @@
         "ConstantVal",
         "Clock",
         "Button",
-        "Counter"
+        "Counter",
+        "PullResistor"
     ],
     "elementHierarchy": {
         "Input": [
@@ -106,7 +111,8 @@
             { "name": "ConstantVal", "label": "Constant Value" },
             { "name": "Stepper", "label": "Stepper" },
             { "name": "Random", "label": "Random" },
-            { "name": "Counter", "label": "Counter" }
+            { "name": "Counter", "label": "Counter" },
+            { "name": "PullResistor", "label": "Pull Resistor" }
         ],
         "Output": [
             { "name": "Output", "label": "Output" },
@@ -138,6 +144,7 @@
             { "name": "Decoder", "label": "Decoder" }
         ],
         "Sequential Elements": [
+            { "name": "ShiftRegister", "label": "Shift Register" },
             { "name": "DflipFlop", "label": "D flip Flop" },
             { "name": "Dlatch", "label": "D latch" },
             { "name": "TflipFlop", "label": "T flip Flop" },
@@ -159,6 +166,7 @@
         ],
         "Misc": [
             { "name": "BitExtender", "label":"Bit Extender"},
+            { "name": "Comparator", "label": "Comparator" },
             { "name": "TwoComplement", "label": "Two Complement" },
             { "name": "Flag", "label": "Flag" },
             { "name": "Splitter", "label": "Splitter" },

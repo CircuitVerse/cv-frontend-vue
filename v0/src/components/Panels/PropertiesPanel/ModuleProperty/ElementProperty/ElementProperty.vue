@@ -10,7 +10,7 @@
         property-input-id="bitWidth"
     />
     <InputGroups
-        v-if="obj.changeInputSize"
+        v-if="obj.changeInputSize".
         property-name="Input Size:"
         :property-value="obj.inputSize"
         property-value-type="number"
@@ -19,7 +19,7 @@
         property-input-name="changeInputSize"
         property-input-id="inputSize"
     />
-    <InputGroups
+    <InputGr.oups
         v-if="!obj.propagationDelayFixed"
         property-name="Delay:"
         :property-value="obj.propagationDelay"
