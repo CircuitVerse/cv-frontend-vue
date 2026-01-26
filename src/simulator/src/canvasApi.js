@@ -56,6 +56,54 @@ export function findDimensions(scope = globalScope) {
     }
     simulationArea.objectList = updateOrder
 }
+/**
+ * Builds a temporary scope object containing ONLY the selected elements.
+ * This allows reuse of existing dimension-calculation logic without
+ * affecting the global simulation state.
+ */
+function buildSelectionScope(selectedElements) {
+    const scope = {}
+
+    updateOrder.forEach(type => {
+        scope[type] = []
+    })
+
+    selectedElements.forEach(el => {
+        updateOrder.forEach(type => {
+            if (
+                Array.isArray(globalScope[type]) &&
+                globalScope[type].includes(el)
+            ) {
+                scope[type].push(el)
+            }
+        })
+    })
+
+    return scope
+}
+
+/**
+ * Fits the viewport to the bounding box of the given selection.
+ * - Uses a derived scope so global circuit state is not mutated
+ * - Falls back to Reset View behavior when selection is empty
+ * - Viewport-only operation (no simulation logic affected)
+ */
+export function fitToSelection(selected) {
+    if (!selected || selected.length === 0) {
+        globalScope.centerFocus(false)
+        return
+    }
+
+    const selectionScope = buildSelectionScope(selected)
+
+    // Compute bounds ONLY for selected elements
+    findDimensions(selectionScope)
+
+    // Let engine handle centering + zoom
+    globalScope.centerFocus(true)
+}
+
+
 
 // Function used to change the zoom level wrt to a point
 // fn to change scale (zoom) - It also shifts origin so that the position
