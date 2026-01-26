@@ -99,9 +99,21 @@ export function fitToSelection(selected) {
     // Compute bounds ONLY for selected elements
     findDimensions(selectionScope)
 
+    // Guard: wire-only or invalid bounds → fallback to Reset View
+    if (
+        simulationArea.minWidth === undefined ||
+        simulationArea.maxWidth === undefined ||
+        simulationArea.minHeight === undefined ||
+        simulationArea.maxHeight === undefined
+    ) {
+        globalScope.centerFocus(false)
+        return
+    }
+
     // Let engine handle centering + zoom
     globalScope.centerFocus(true)
 }
+
 
 
 
