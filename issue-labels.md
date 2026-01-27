@@ -3,11 +3,11 @@
 This document defines the labeling system used for issues and pull requests in the **cv-frontend-vue** repository.  
 The goal is to ensure consistent triaging, improve issue clarity, and make it easier for contributors and maintainers to collaborate effectively.
 
-Labels are applied after verifying reproducibility, checking for duplicates, and ensuring each issue addresses a single concern.
+Labels are applied after verifying reproducibility, checking for duplicates, and ensuring each issue addresses a single concern. Issues covering multiple concerns may be split for clarity.
 
 ---
 
-## 🟦 Status / Flow Labels
+## Status / Flow Labels
 
 These labels represent the **current lifecycle state** of an issue.
 
@@ -21,7 +21,7 @@ These labels represent the **current lifecycle state** of an issue.
 
 ---
 
-## 🟨 Type Labels
+## Type Labels
 
 These labels describe **the nature of the issue**.
 
@@ -37,7 +37,7 @@ These labels describe **the nature of the issue**.
 
 ---
 
-## 🟪 Platform / Area Labels
+## Platform / Area Labels
 
 These labels indicate **where the issue applies**.
 
@@ -48,7 +48,7 @@ These labels indicate **where the issue applies**.
 
 ---
 
-## 🖥️ Operating System Labels
+## Operating System Labels
 
 Used when an issue is **OS-specific**.
 
@@ -60,7 +60,7 @@ Used when an issue is **OS-specific**.
 
 ---
 
-## 🟩 Contributor-Friendly Labels
+## Contributor-Friendly Labels
 
 These labels help contributors discover suitable issues.
 
@@ -71,19 +71,19 @@ These labels help contributors discover suitable issues.
 
 ---
 
-## ⏱️ Effort / Time-Based Labels
+## Time-Based Labels
 
 These labels indicate **estimated effort or scope**.
 
 | Label | Description |
 |------|------------|
-| `Effort: Small` | Minor change, quick fix, or low-risk update. |
-| `Effort: Medium` | Requires moderate changes or understanding of the codebase. |
-| `Effort: Large` | Significant refactor, complex logic, or multi-file changes. |
+| `Small` | Minor change, quick fix, or low-risk update. |
+| `Medium` | Requires moderate changes or understanding of the codebase. |
+| `Large` | Significant refactor, complex logic, or multi-file changes. |
 
 ---
 
-## 🔀 Pull Request Labels
+## Pull Request Labels
 
 ### PR Status
 
@@ -99,11 +99,3 @@ These labels indicate **estimated effort or scope**.
 | `P0` | Critical fix; requires immediate attention. |
 | `P1` | High priority but not blocking. |
 | `P2` | Normal priority. |
-
----
-
-## ✅ Notes
-
-- Labels are applied only after confirming reproducibility and scope.
-- Issues covering multiple concerns may be split for clarity.
-- When unsure about labeling, discussion with maintainers is encouraged before applying labels.
