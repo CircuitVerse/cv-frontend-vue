@@ -31,7 +31,7 @@
                         max-errors="1"
                         accept=".cv"
                         v-model="file"
-                        prepend-icon="mdi-paperclip"
+                        prepend-icon=""
                     >
                         <template v-slot:selection="{ fileNames }">
                             <template
