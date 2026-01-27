@@ -77,5 +77,5 @@ export default class Arrow extends CircuitElement {
  */
 Arrow.prototype.tooltipText = 'Arrow ToolTip : Arrow Selected.'
 Arrow.prototype.propagationDelayFixed = true
-Arrow.prototype.helplink = 'https://docs.circuitverse.org/#/chapter4/7annotation?id=arrow'
+Arrow.prototype.helplink = 'https://docs.circuitverse.org/chapter4/chapter4-annotation#arrow'
 Arrow.prototype.objectType = 'Arrow'
