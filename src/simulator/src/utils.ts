@@ -34,9 +34,14 @@ export function generateId() {
     return id
 }
 
-// To strip tags from input
+// To strip tags from input and sanitize for CSS selector safety
 export function stripTags(string = '') {
-    return string.replace(/(<([^>]+)>)/gi, '').trim()
+    // Remove HTML tags
+    let sanitized = string.replace(/(<([^>]+)>)/gi, '').trim()
+    // Sanitize for CSS selectors: keep only alphanumeric, spaces, commas, underscores, and hyphens
+    // This prevents CSS selector injection (e.g., ".class.injection" or "#id")
+    sanitized = sanitized.replace(/[^a-zA-Z0-9\s,_-]/g, '')
+    return sanitized
 }
 
 export function clockTick() {

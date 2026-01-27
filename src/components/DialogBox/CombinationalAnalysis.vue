@@ -27,7 +27,10 @@ import { ref } from 'vue'
 import { onMounted } from 'vue'
 
 /* imports from combinationalAnalysis.js */
-import { GenerateCircuit, solveBooleanFunction } from '#/simulator/src/combinationalAnalysis'
+import {
+    GenerateCircuit,
+    solveBooleanFunction,
+} from '#/simulator/src/combinationalAnalysis'
 
 const SimulatorState = useState()
 onMounted(() => {
@@ -138,7 +141,12 @@ function dialogBoxConformation(selectedOption, circuitItem) {
     }
     if (selectedOption == 'generateCircuit') {
         SimulatorState.dialogBox.combinationalanalysis_dialog = false
-        GenerateCircuit()
+        GenerateCircuit(
+            outputListNamesInteger.value,
+            inputListNames.value,
+            output.value,
+            outputListNames.value
+        )
         clearData()
         SimulatorState.dialogBox.combinationalanalysis_dialog = false
     }
@@ -194,7 +202,7 @@ function createLogicTable() {
         }
     } else if (
         (inputList.length == 0 || outputList.length == 0) &&
-        booleanInputVariables == 0
+        booleanInputVariables.length === 0
     ) {
         showAlert.value = true
         alertType.value = 'info'
@@ -288,12 +296,11 @@ function createBooleanPrompt(inputList, outputList, scope = globalScope) {
 function printBooleanTable() {
     var sTable = $('.messageBox .v-card-text')[0].innerHTML
 
-    var style =
-        `<style>
+    var style = `<style>
         table {font: 40px Calibri;}
         table, th, td {border: solid 1px #DDD;border-collapse: 0;}
         tbody {padding: 2px 3px;text-align: center;}
-        </style>`.replace(/\n/g, "")
+        </style>`.replace(/\n/g, '')
     var win = window.open('', '', 'height=700,width=700')
     var htmlBody = `
                        <html><head>\
