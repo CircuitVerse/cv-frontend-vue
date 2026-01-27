@@ -9,12 +9,13 @@ import { simulationArea } from './simulationArea'
 import { dots, canvasMessage, findDimensions, rect2 } from './canvasApi'
 import { showProperties, prevPropertyObjGet } from './ux'
 import { showError } from './utils'
+import { debounce } from './utils/debounce'
 import miniMapArea from './minimap'
 import { resetup } from './setup'
 import { verilogModeGet } from './Verilog2CV'
 import { renderOrder, updateOrder } from './metadata'
 import ContentionPendingData from './contention';
-
+const debouncedResetup = debounce(resetup, 150)
 /**
  * Core of the simulation and rendering algorithm.
  */
@@ -230,7 +231,7 @@ export function changeLightMode(val) {
         DPR = 1
         $('#miniMap').fadeOut('fast')
     }
-    resetup()
+    debouncedResetup()
 }
 
 /**

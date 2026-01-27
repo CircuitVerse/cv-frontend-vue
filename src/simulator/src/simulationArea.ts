@@ -1,6 +1,10 @@
 import { EventQueue } from './eventQueue'
 import { SimulationArea } from './interface/simulationArea'
 import { clockTick } from './utils'
+import { debounce } from './utils/debounce'
+
+declare var width: number
+declare var height: number
 
 const simulationArea: SimulationArea = {
     canvas: document.getElementById('simulationArea') as HTMLCanvasElement,
@@ -41,29 +45,38 @@ const simulationArea: SimulationArea = {
         }, 600)
     },
     setup() {
-        this.canvas = document.getElementById('simulationArea') as HTMLCanvasElement;
-        this.canvas.width = width;
-        this.canvas.height = height;
-        this.simulationQueue = new EventQueue(10000);
-        this.context = this.canvas.getContext('2d')!;
+        simulationArea.canvas = document.getElementById('simulationArea') as HTMLCanvasElement;
+        simulationArea.canvas.width = width;
+        simulationArea.canvas.height = height;
+        simulationArea.simulationQueue = new EventQueue(10000);
+        simulationArea.context = simulationArea.canvas.getContext('2d')!;
         simulationArea.changeClockTime(simulationArea.timePeriod);
-        this.mouseDown = false;
+        simulationArea.mouseDown = false;
     },
     changeClockTime(t: number) {
         if (t < 50) {
             return;
         }
-        if (simulationArea.ClockInterval != null) {
-            clearInterval(simulationArea.ClockInterval);
+
+        if (!simulationArea._debouncedChangeClockTime) {
+            simulationArea._debouncedChangeClockTime = debounce((time: number) => {
+                if (simulationArea.ClockInterval != null) {
+                    clearInterval(simulationArea.ClockInterval);
+                }
+                simulationArea.ClockInterval = setInterval(clockTick, time)
+            }, 300)
         }
-        simulationArea.timePeriod = t;
-        simulationArea.ClockInterval = setInterval(clockTick, t);
+
+        simulationArea.timePeriod = t
+        if (simulationArea._debouncedChangeClockTime) {
+            simulationArea._debouncedChangeClockTime(t)
+        }
     },
     clear() {
-        if (!this.context) {
+        if (!simulationArea.context) {
             return;
         }
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        simulationArea.context.clearRect(0, 0, simulationArea.canvas.width, simulationArea.canvas.height);
     },
 };
 export { simulationArea }
