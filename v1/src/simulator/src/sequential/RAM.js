@@ -339,6 +339,7 @@ export default class RAM extends CircuitElement {
 
 RAM.prototype.tooltipText = 'Random Access Memory'
 RAM.prototype.shortName = 'RAM'
+RAM.prototype.helplink='https://docs.circuitverse.org/chapter4/chapter4-sequentialelements/#ram'
 RAM.prototype.maxAddressWidth = 20
 RAM.prototype.mutableProperties = {
     addressWidth: {

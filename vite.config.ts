@@ -56,16 +56,6 @@ export default defineConfig(() => {
                 },
             },
         },
-        test: {
-            globals: true,
-            environment: 'jsdom',
-            server: {
-                deps: {
-                    inline: ['vuetify'],
-                },
-            },
-            setupFiles: './src/simulator/spec/vitestSetup.ts',
-        },
         server: {
             port: 4000,
         },
