@@ -453,6 +453,8 @@ const plotArea = {
         }
         if (!this.canvas) return
 
+        if (typeof globalScope === 'undefined' || !globalScope) return
+
         const simulatorMobileStore = useSimulatorMobileStore()
         const { showCanvas } = toRefs(simulatorMobileStore)
         if (embed) return
