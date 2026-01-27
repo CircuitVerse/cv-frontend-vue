@@ -13,7 +13,7 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Circuit Elements Panel -->
-    <ElementsPanel v-if="!simulatorMobileStore.showMobileView"/>
+    <ElementsPanel v-if="!simulatorMobileStore.showMobileView && !simulatorMobileStore.isVerilog"/>
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
@@ -23,12 +23,12 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Timing Diagram Panel -->
-    <TimingDiagramPanel v-if="!simulatorMobileStore.showMobileView" />
+    <TimingDiagramPanel v-if="!simulatorMobileStore.showMobileView && !simulatorMobileStore.isVerilog" />
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Testbench -->
-    <TestBenchPanel v-if="!simulatorMobileStore.showMobileView" />
+    <TestBenchPanel v-show="!simulatorMobileStore.showMobileView" />
     <!-- --------------------------------------------------------------------------------------------- -->
     <TestBenchCreator v-if="!simulatorMobileStore.showMobileView" />
     <!-- --------------------------------------------------------------------------------------------- -->
@@ -43,11 +43,9 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Verilog Editor Panel -->
-    <VerilogEditorPanel v-if="!simulatorMobileStore.showMobileView" />
+    <VerilogEditorPanel v-show="!simulatorMobileStore.showMobileView || simulatorMobileStore.isVerilog" />
 
-    <div id="code-window" class="code-window">
-        <textarea id="codeTextArea"></textarea>
-    </div>
+
     <VerilogEditorPanelMobile v-if="simulatorMobileStore.showMobileView && simulatorMobileStore.showVerilogPanel" />
     <!-- --------------------------------------------------------------------------------------------- -->
 

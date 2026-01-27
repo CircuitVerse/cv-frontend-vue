@@ -111,7 +111,7 @@ const plotArea = {
     },
     // download as image
     download() {
-        if(isTauri()){
+        if (isTauri()) {
             this.downloadImageDesktop()
             return
         }
@@ -162,6 +162,8 @@ const plotArea = {
     // Setup function, called on page load
     setup() {
         this.canvas = document.getElementById('plotArea')
+        // Guard against null canvas (may be unmounted in Verilog mode)
+        if (!this.canvas) return
         if (!embed) {
             this.ctx = this.canvas.getContext('2d')
         }
@@ -439,6 +441,12 @@ const plotArea = {
     },
     // Driver function to render and update
     plot() {
+        // Check if canvas is available (may be unmounted in Verilog mode)
+        if (!this.canvas) {
+            this.canvas = document.getElementById('plotArea')
+        }
+        if (!this.canvas) return
+
         const simulatorMobileStore = useSimulatorMobileStore()
         const { showCanvas } = toRefs(simulatorMobileStore)
         if (embed) return
@@ -448,7 +456,7 @@ const plotArea = {
             showCanvas.value = false
             return
         }
-       showCanvas.value = true
+        showCanvas.value = true
 
         this.update()
         this.render()
