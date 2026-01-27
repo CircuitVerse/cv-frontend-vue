@@ -1,4 +1,4 @@
-# Issue & PR Label Guide (cv-frontend-vue)
+# Issue & PR Label Guide
 
 This document defines the labeling system used for issues and pull requests in the **cv-frontend-vue** repository.  
 The goal is to ensure consistent triaging, improve issue clarity, and make it easier for contributors and maintainers to collaborate effectively.
