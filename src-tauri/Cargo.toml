@@ -1,6 +1,6 @@
 [package]
 name = "CircuitVerse"
-version = "0.1.0"
+version = "0.0.0"
 description = "CircuitVerse Simulator"
 authors = ["CircuitVerse Team"]
 license = ""
@@ -24,4 +24,4 @@ log = "0.4"
 tauri = { version = "2.3.1", features = ["devtools"] }
 tauri-plugin-http = "2"
 tauri-plugin-log = "2.0.0-rc"
-tauri-plugin-fs = "2"
+tauri-plugin-fs = "2.3.0"
