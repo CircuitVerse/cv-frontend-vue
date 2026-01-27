@@ -214,8 +214,7 @@ export default class Keyboard extends CircuitElement {
 
 Keyboard.prototype.tooltipText = 'Keyboard'
 Keyboard.prototype.helplink =
-    'https://docs.circuitverse.org/chapter4/chapter4-sequentialelements#keyboard'
-
+    'https://docs.circuitverse.org/chapter4/chapter4-sequentialelements/#keyboard'
 Keyboard.prototype.mutableProperties = {
     bufferSize: {
         name: 'Buffer Size',

@@ -86,7 +86,7 @@ Clock.prototype.tooltipText = 'Clock'
 
 Clock.prototype.click = Clock.prototype.toggleState
 Clock.prototype.helplink =
-    'https://docs.circuitverse.org/chapter4/chapter4-sequentialelements#clock'
+    'https://docs.circuitverse.org/chapter4/chapter4-sequentialelements/#clock'
 Clock.prototype.objectType = 'Clock'
 Clock.prototype.propagationDelay = 0
 Clock.prototype.propagationDelayFixed = true
