@@ -15,26 +15,32 @@ import { simulationArea } from './simulationArea'
 import { TestbenchData } from '#/simulator/src/testbench'
 import { moduleList, updateOrder } from './metadata'
 
+interface CopyData {
+    logixClipBoardData: boolean
+    scopes: any[]
+    [key: string]: any
+}
+
 /**
  * Helper function to paste
  * @category events
  */
-export function paste(copyData) {
+export function paste(copyData: string): void {
     if (copyData === 'undefined') return
-    var data = JSON.parse(copyData)
+    const data: CopyData = JSON.parse(copyData)
     if (!data.logixClipBoardData) return
 
-    var currentScopeId = globalScope.id
+    const currentScopeId = globalScope.id
     for (let i = 0; i < data.scopes.length; i++) {
         if (scopeList[data.scopes[i].id] === undefined) {
-            var isVerilogCircuit = false
-            var isMainCircuit = false
+            let isVerilogCircuit = false
+            let isMainCircuit = false
             if (data.scopes[i].verilogMetadata) {
                 isVerilogCircuit =
                     data.scopes[i].verilogMetadata.isVerilogCircuit
                 isMainCircuit = data.scopes[i].verilogMetadata.isMainCircuit
             }
-            var scope = newCircuit(
+            const scope = newCircuit(
                 data.scopes[i].name,
                 data.scopes[i].id,
                 isVerilogCircuit,
@@ -46,30 +52,30 @@ export function paste(copyData) {
     }
 
     switchCircuit(currentScopeId)
-    var tempScope = new Scope(globalScope.name, globalScope.id)
-    var oldOx = globalScope.ox
-    var oldOy = globalScope.oy
-    var oldScale = globalScope.scale
+    const tempScope = new Scope(globalScope.name, globalScope.id)
+    const oldOx = globalScope.ox
+    const oldOy = globalScope.oy
+    const oldScale = globalScope.scale
     loadScope(tempScope, data)
 
-    var prevLength = tempScope.allNodes.length
+    let prevLength = tempScope.allNodes.length
     for (let i = 0; i < tempScope.allNodes.length; i++) {
         tempScope.allNodes[i].checkDeleted()
-        if (tempScope.allNodes.length != prevLength) {
+        if (tempScope.allNodes.length !== prevLength) {
             prevLength--
             i--
         }
     }
 
-    var approxX = 0
-    var approxY = 0
-    var count = 0
+    let approxX = 0
+    let approxY = 0
+    let count = 0
 
     for (let i = 0; i < updateOrder.length; i++) {
         for (let j = 0; j < tempScope[updateOrder[i]].length; j++) {
             const obj = tempScope[updateOrder[i]][j]
             obj.updateScope(globalScope)
-            if (obj.objectType != 'Wire') {
+            if (obj.objectType !== 'Wire') {
                 approxX += obj.x
                 approxY += obj.y
                 count++
@@ -98,7 +104,7 @@ export function paste(copyData) {
         }
     }
 
-    Object.keys(tempScope).forEach((l) => {
+    Object.keys(tempScope).forEach((l: string) => {
         if (
             tempScope[l] instanceof Array &&
             l !== 'objects' &&
@@ -128,18 +134,19 @@ export function paste(copyData) {
 
     forceResetNodesSet(true)
 }
+
 /**
  * Helper function for cut
  * @param {JSON} copyList - The selected elements
  * @category events
  */
-export function cut(copyList) {
-    if (copyList.length === 0) return
-    var tempScope = new Scope(globalScope.name, globalScope.id)
-    var oldOx = globalScope.ox
-    var oldOy = globalScope.oy
-    var oldScale = globalScope.scale
-    d = backUp(globalScope)
+export function cut(copyList: any[]): string {
+    if (copyList.length === 0) return ''
+    const tempScope = new Scope(globalScope.name, globalScope.id)
+    const oldOx = globalScope.ox
+    const oldOy = globalScope.oy
+    const oldScale = globalScope.scale
+    let d = backUp(globalScope)
     loadScope(tempScope, d)
     scopeList[tempScope.id] = tempScope
 
@@ -150,7 +157,7 @@ export function cut(copyList) {
             if (
                 tempScope[obj.objectType][j].x === obj.x &&
                 tempScope[obj.objectType][j].y === obj.y &&
-                (obj.objectType != 'Node' || obj.type === 2)
+                (obj.objectType !== 'Node' || obj.type === 2)
             ) {
                 tempScope[obj.objectType][j].delete()
                 break
@@ -162,24 +169,24 @@ export function cut(copyList) {
         let prevLength = globalScope[updateOrder[i]].length // LOL length of list will reduce automatically when deletion starts
         for (let j = 0; j < globalScope[updateOrder[i]].length; j++) {
             const obj = globalScope[updateOrder[i]][j]
-            if (obj.objectType != 'Wire') {
+            if (obj.objectType !== 'Wire') {
                 // }&&obj.objectType!='CircuitElement'){//}&&(obj.objectType!='Node'||obj.type==2)){
                 if (!copyList.includes(globalScope[updateOrder[i]][j])) {
                     globalScope[updateOrder[i]][j].cleanDelete()
                 }
             }
 
-            if (globalScope[updateOrder[i]].length != prevLength) {
+            if (globalScope[updateOrder[i]].length !== prevLength) {
                 prevLength--
                 j--
             }
         }
     }
 
-    var prevLength = globalScope.wires.length
+    let prevLength = globalScope.wires.length
     for (let i = 0; i < globalScope.wires.length; i++) {
         globalScope.wires[i].checkConnections()
-        if (globalScope.wires.length != prevLength) {
+        if (globalScope.wires.length !== prevLength) {
             prevLength--
             i--
         }
@@ -187,15 +194,15 @@ export function cut(copyList) {
 
     updateSimulationSet(true)
 
-    var data = backUp(globalScope)
+    let data = backUp(globalScope)
     data.logixClipBoardData = true
-    var dependencyList = globalScope.getDependencies()
+    const dependencyList = globalScope.getDependencies()
     data.dependencies = {}
-    Object.keys(dependencyList).forEach((dependency) => {
+    Object.keys(dependencyList).forEach((dependency: string) => {
         data.dependencies[dependency] = backUp(scopeList[dependency])
     })
     data.logixClipBoardData = true
-    data = JSON.stringify(data)
+    const result = JSON.stringify(data)
 
     simulationArea.multipleObjectSelections = []
     simulationArea.copyList = []
@@ -207,21 +214,22 @@ export function cut(copyList) {
     globalScope.scale = oldScale
     forceResetNodesSet(true)
     // eslint-disable-next-line consistent-return
-    return data
+    return result
 }
+
 /**
  * Helper function for copy
  * @param {JSON} copyList - The data to copied
  * @param {boolean} cutflag - flase if we want to copy
  * @category events
  */
-export function copy(copyList, cutflag = false) {
-    if (copyList.length === 0) return
-    var tempScope = new Scope(globalScope.name, globalScope.id)
-    var oldOx = globalScope.ox
-    var oldOy = globalScope.oy
-    var oldScale = globalScope.scale
-    var d = backUp(globalScope)
+export function copy(copyList: any[], cutflag = false): string {
+    if (copyList.length === 0) return ''
+    const tempScope = new Scope(globalScope.name, globalScope.id)
+    const oldOx = globalScope.ox
+    const oldOy = globalScope.oy
+    const oldScale = globalScope.scale
+    const d = backUp(globalScope)
     const oldTestbenchData = globalScope.testbenchData
 
     loadScope(tempScope, d)
@@ -235,7 +243,7 @@ export function copy(copyList, cutflag = false) {
                 if (
                     tempScope[obj.objectType][j].x === obj.x &&
                     tempScope[obj.objectType][j].y === obj.y &&
-                    (obj.objectType != 'Node' || obj.type === 2)
+                    (obj.objectType !== 'Node' || obj.type === 2)
                 ) {
                     tempScope[obj.objectType][j].delete()
                     break
@@ -248,24 +256,24 @@ export function copy(copyList, cutflag = false) {
         let prevLength = globalScope[updateOrder[i]].length // LOL length of list will reduce automatically when deletion starts
         for (let j = 0; j < globalScope[updateOrder[i]].length; j++) {
             const obj = globalScope[updateOrder[i]][j]
-            if (obj.objectType != 'Wire') {
+            if (obj.objectType !== 'Wire') {
                 // }&&obj.objectType!='CircuitElement'){//}&&(obj.objectType!='Node'||obj.type==2)){
                 if (!copyList.includes(globalScope[updateOrder[i]][j])) {
                     globalScope[updateOrder[i]][j].cleanDelete()
                 }
             }
 
-            if (globalScope[updateOrder[i]].length != prevLength) {
+            if (globalScope[updateOrder[i]].length !== prevLength) {
                 prevLength--
                 j--
             }
         }
     }
 
-    var prevLength = globalScope.wires.length
+    let prevLength = globalScope.wires.length
     for (let i = 0; i < globalScope.wires.length; i++) {
         globalScope.wires[i].checkConnections()
-        if (globalScope.wires.length != prevLength) {
+        if (globalScope.wires.length !== prevLength) {
             prevLength--
             i--
         }
@@ -273,15 +281,15 @@ export function copy(copyList, cutflag = false) {
 
     updateSimulationSet(true)
 
-    var data = backUp(globalScope)
+    let data = backUp(globalScope)
     data.scopes = []
-    var dependencyList = {}
-    var requiredDependencies = globalScope.getDependencies()
-    var completed = {}
-    Object.keys(scopeList).forEach((id) => {
+    const dependencyList: Record<string, any[]> = {}
+    const requiredDependencies = globalScope.getDependencies()
+    const completed: Record<string, boolean> = {}
+    Object.keys(scopeList).forEach((id: string) => {
         dependencyList[id] = scopeList[id].getDependencies()
     })
-    function saveScope(id) {
+    function saveScope(id: string): void {
         if (completed[id]) return
         for (let i = 0; i < dependencyList[id].length; i++) {
             saveScope(dependencyList[id][i])
@@ -294,7 +302,7 @@ export function copy(copyList, cutflag = false) {
     }
     data.logixClipBoardData = true
     data.testbenchData = undefined // Don't copy testbench data
-    data = JSON.stringify(data)
+    const result = JSON.stringify(data)
     simulationArea.multipleObjectSelections = []
     simulationArea.copyList = []
     updateSimulationSet(true)
@@ -315,15 +323,15 @@ export function copy(copyList, cutflag = false) {
     forceResetNodesSet(true)
     // needs to be fixed
     // eslint-disable-next-line consistent-return
-    return data
+    return result
 }
 
 /**
  * Function selects all the elements from the scope
  * @category events
  */
-export function selectAll(scope = globalScope) {
-    moduleList.forEach((val, _, __) => {
+export function selectAll(scope = globalScope): void {
+    moduleList.forEach((val: string, _, __) => {
         if (scope.hasOwnProperty(val)) {
             simulationArea.multipleObjectSelections.push(...scope[val])
         }
