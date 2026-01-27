@@ -10,7 +10,7 @@
         property-input-id="bitWidth"
     />
     <InputGroups
-        v-if="obj.changeInputSize"
+        v-if="obj.changeInputSize".
         property-name="Input Size:"
         :property-value="obj.inputSize"
         property-value-type="number"
@@ -19,7 +19,7 @@
         property-input-name="changeInputSize"
         property-input-id="inputSize"
     />
-    <InputGroups
+    <InputGr.oups
         v-if="!obj.propagationDelayFixed"
         property-name="Delay:"
         :property-value="obj.propagationDelay"
@@ -108,13 +108,13 @@
             </textarea>
         </p>
         <DropdownSelect
-        v-if="value.type === 'dropdown'"
-        :dropdown-array="value.dropdownArray"
-        :property-name="value.func"
-        :property-value="obj[name]"
-        :property-input-name="value.name"
-        :property-input-id="value.name"
-    />
+            v-if="value.type === 'dropdown'"
+            :dropdown-array="value.dropdownArray"
+            :property-name="value.func"
+            :property-value="obj[name]"
+            :property-input-name="value.name"
+            :property-input-id="value.name"
+        />
     </div>
 </template>
 

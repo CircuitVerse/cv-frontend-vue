@@ -63,6 +63,7 @@ import verilogPower from './modules/verilogPower'
 import verilogShiftLeft from './modules/verilogShiftLeft'
 import verilogShiftRight from './modules/verilogShiftRight'
 import verilogRAM from './sequential/verilogRAM'
+import BitExtender from './modules/BitExtender'
 import PullResistor from './modules/PullResistor'
 import Comparator from './modules/Comparator'
 import ShiftRegister from './sequential/ShiftRegister'
@@ -133,6 +134,7 @@ export default function setupModules() {
         TB_Input,
         TB_Output,
         ForceGate,
+        BitExtender,
         Comparator,
         PullResistor,
         ShiftRegister

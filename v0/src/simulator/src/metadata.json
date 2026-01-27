@@ -61,6 +61,7 @@
         "TB_Input",
         "TB_Output",
         "ForceGate",
+        "BitExtender"
         "Comparator",
         "PullResistor",
         "ShiftRegister"
@@ -164,6 +165,7 @@
             { "name": "Text", "label": "Text" }
         ],
         "Misc": [
+            { "name": "BitExtender", "label":"Bit Extender"},
             { "name": "Comparator", "label": "Comparator" },
             { "name": "TwoComplement", "label": "Two Complement" },
             { "name": "Flag", "label": "Flag" },
