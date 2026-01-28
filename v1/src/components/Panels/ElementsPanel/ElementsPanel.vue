@@ -169,6 +169,7 @@ onBeforeMount(() => {
 
 onMounted(() => {
     layoutStore.elementsPanelRef = elementsPanelRef.value
+    window.setupPanelListeners?.('.elementPanel')
 })
 
 var elementInput = ref('')

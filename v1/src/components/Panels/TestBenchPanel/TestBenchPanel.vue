@@ -117,6 +117,8 @@ const testbenchPanelRef = ref<HTMLElement | null>(null);
 
 onMounted(() => {
     layoutStore.testbenchPanelRef = testbenchPanelRef.value
+    window.setupPanelListeners?.('.testbench-manual-panel')
+    window.minimizePanel?.('.testbench-manual-panel')
 })
 
 const testData = computed(() => testBenchStore.testbenchData?.testData);
