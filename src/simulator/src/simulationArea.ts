@@ -44,7 +44,7 @@ const simulationArea: SimulationArea = {
         this.canvas = document.getElementById('simulationArea') as HTMLCanvasElement;
         this.canvas.width = width;
         this.canvas.height = height;
-        this.simulationQueue = new EventQueue(10000);
+        this.simulationQueue = new EventQueue(100000);
         this.context = this.canvas.getContext('2d')!;
         simulationArea.changeClockTime(simulationArea.timePeriod);
         this.mouseDown = false;
