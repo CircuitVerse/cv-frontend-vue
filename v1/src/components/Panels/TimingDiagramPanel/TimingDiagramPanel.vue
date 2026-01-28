@@ -55,6 +55,8 @@ const timingDiagramPanelStore = useTimingDiagramPanelStore();
 
 onMounted(() => {
     layoutStore.timingDiagramPanelRef = timingDiagramPanelStore.timingDiagramPanelRef
+    window.setupPanelListeners?.('.timing-diagram-panel')
+    window.minimizePanel?.('.timing-diagram-panel')
 })
 </script>
 

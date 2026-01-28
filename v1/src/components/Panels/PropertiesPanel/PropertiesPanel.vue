@@ -20,5 +20,6 @@ const propertiesPanelStore = usePropertiesPanelStore();
 onMounted(() => {
     // checks for which type of properties panel to show
     setInterval(showPropertiesPanel, 100)
+    window.setupPanelListeners?.('#moduleProperty')
 })
 </script>

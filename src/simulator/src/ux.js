@@ -350,6 +350,11 @@ $('#octalInput').on('keyup', () => {
     setBaseValues(x)
 })
 
+window.setupPanelListeners = setupPanelListeners
+
+window.minimizePanel = (panelSelector) => {
+    $(panelSelector + ' .minimize').trigger('click')
+}
 export function setupPanels() {
     dragging('#dragQPanel', '.quick-btn')
 
