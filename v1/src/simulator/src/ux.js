@@ -7,7 +7,8 @@ import { layoutModeGet } from './layoutMode'
 import {
     scheduleUpdate,
     wireToBeCheckedSet,
-    updateCanvasSet
+    updateCanvasSet,
+    update
 } from './engine'
 import { simulationArea } from './simulationArea'
 import logixFunction from './data'
@@ -53,12 +54,36 @@ function hideContextMenu() {
         ctxPos.visible = false
     }, 200) // Hide after 2 sec
 }
+
+var UNIT = 10
+
+function syncSelectionToContextMenuPosition() {
+    var canvas = simulationArea.canvas
+    if (!canvas || typeof globalScope === 'undefined') return
+    var rect = canvas.getBoundingClientRect()
+    var rawX = (ctxPos.x - rect.left) * DPR
+    var rawY = (ctxPos.y - rect.top) * DPR
+    simulationArea.mouseDownRawX = rawX
+    simulationArea.mouseDownRawY = rawY
+    simulationArea.mouseDownX = Math.round(((rawX - globalScope.ox) / globalScope.scale) / UNIT) * UNIT
+    simulationArea.mouseDownY = Math.round(((rawY - globalScope.oy) / globalScope.scale) / UNIT) * UNIT
+    simulationArea.mouseRawX = rawX
+    simulationArea.mouseRawY = rawY
+    simulationArea.mouseXf = (rawX - globalScope.ox) / globalScope.scale
+    simulationArea.mouseYf = (rawY - globalScope.oy) / globalScope.scale
+    simulationArea.mouseX = simulationArea.mouseDownX
+    simulationArea.mouseY = simulationArea.mouseDownY
+    simulationArea.mouseDown = true
+    update(globalScope, true)
+}
+
 /**
  * Function displays context menu
  * @category ux
  */
 function showContextMenu() {
     if (layoutModeGet()) return false // Hide context menu when it is in Layout Mode
+    syncSelectionToContextMenuPosition()
     $('#contextMenu').css({
         visibility: 'visible',
         opacity: 1,
