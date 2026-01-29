@@ -166,7 +166,7 @@ DigitalLed.prototype.tooltipText =
  * @category modules
  */
 DigitalLed.prototype.helplink =
-    'https://docs.circuitverse.org/#/chapter4/3output?id=digital-led'
+    'https://docs.circuitverse.org/chapter4/chapter4-output#digital-led'
 
 /**
  * @memberof DigitalLed
