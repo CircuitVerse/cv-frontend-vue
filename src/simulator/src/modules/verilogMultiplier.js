@@ -87,6 +87,8 @@ export default class verilogMultiplier extends CircuitElement {
             (product << (32 - this.outputBitWidth)) >>>
             (32 - this.outputBitWidth)
         simulationArea.simulationQueue.add(this.product)
+
+        this.setOutputsUpstream(true);
     }
 }
 

@@ -60,6 +60,8 @@ export default class OrGate extends CircuitElement {
         }
         this.output1.value = result >>> 0;
         simulationArea.simulationQueue.add(this.output1);
+
+        this.setOutputsUpstream(true);
     }
 
     customDraw() {

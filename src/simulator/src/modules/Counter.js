@@ -99,6 +99,8 @@ export default class Counter extends CircuitElement {
             this.zero.value = zeroValue
             simulationArea.simulationQueue.add(this.zero)
         }
+
+        this.setOutputsUpstream(true);
     }
 
     customDraw() {
@@ -156,16 +158,16 @@ export default class Counter extends CircuitElement {
       output reg zero;
       input [WIDTH-1:0] max;
       input clk, rst;
-    
+
       initial
         val = 0;
-    
+
       always @ (val)
         if (val == 0)
           zero = 1;
         else
           zero = 0;
-    
+
       always @ (posedge clk or posedge rst) begin
         if (rst)
           val <= 0;
