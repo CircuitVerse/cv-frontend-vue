@@ -155,13 +155,12 @@ function checkDistinctIdentifiersScope(scope) {
  * Validates presence and bitwidths of test inputs in the circuit.
  * Called by validate()
  */
-function validateInputs(data: TestData, scope) {
+function validateInputs(data: TestData, scope: any) {
   const invalids: Invalids[] = []
+  const inputMap = new Map<string, any>(scope.Input.map((input: any) => [input.label, input]));
 
   data.groups[0].inputs.forEach((dataInput) => {
-    const matchInput = scope.Input.find(
-      (simulatorInput) => simulatorInput.label === dataInput.label
-    )
+    const matchInput = inputMap.get(dataInput.label)
 
     if (matchInput === undefined) {
       invalids.push({
@@ -197,13 +196,12 @@ interface Invalids {
  * Validates presence and bitwidths of test outputs in the circuit.
  * Called by validate()
  */
-function validateOutputs(data: TestData, scope) {
+function validateOutputs(data: TestData, scope: any) {
   const invalids: Invalids[] = []
+  const outputMap = new Map<string, any>(scope.Output.map((output: any) => [output.label, output]));
 
   data.groups[0].outputs.forEach((dataOutput) => {
-    const matchOutput = scope.Output.find(
-      (simulatorOutput) => simulatorOutput.label === dataOutput.label
-    )
+    const matchOutput = outputMap.get(dataOutput.label)
 
     if (matchOutput === undefined) {
       invalids.push({
@@ -288,27 +286,24 @@ function validate(data: TestData, scope) {
 /**
  * Returns object of scope inputs and outputs keyed by their labels
  */
-function bindIO(data: TestData, scope) {
+function bindIO(data: TestData, scope: any) {
   const inputs: { [key: string]: any } = {}
   const outputs: { [key: string]: any } = {}
   let reset
 
-  data.groups[0].inputs.forEach((dataInput) => {
-    inputs[dataInput.label] = scope.Input.find(
-      (simulatorInput) => simulatorInput.label === dataInput.label
-    )
+  const inputMap = new Map<string, any>(scope.Input.map((input: any) => [input.label, input]));
+  const outputMap = new Map<string, any>(scope.Output.map((output: any) => [output.label, output]));
+
+  data.groups[0].inputs.forEach((dataInput: any) => {
+    inputs[dataInput.label] = inputMap.get(dataInput.label)
   })
 
-  data.groups[0].outputs.forEach((dataOutput) => {
-    outputs[dataOutput.label] = scope.Output.find(
-      (simulatorOutput) => simulatorOutput.label === dataOutput.label
-    )
+  data.groups[0].outputs.forEach((dataOutput: any) => {
+    outputs[dataOutput.label] = outputMap.get(dataOutput.label)
   })
 
   if (data.type === 'seq') {
-    reset = scope.Input.find(
-      (simulatorOutput) => simulatorOutput.label === 'RST'
-    )
+    reset = inputMap.get('RST')
   }
 
   return { inputs, outputs, reset }
@@ -318,7 +313,7 @@ function bindIO(data: TestData, scope) {
  * Set and propogate the input values according to the testcase.
  * Called by runSingle() and runAll()
  */
-function setInputValues(inputs, group, caseIndex: number, scope) {
+function setInputValues(inputs: any, group: any, caseIndex: number, scope: any) {
   group.inputs.forEach((input) => {
     inputs[input.label].state = parseInt(input.values[caseIndex], 2)
   })
@@ -350,7 +345,7 @@ function dec2bin(dec: number | undefined, bitWidth = undefined) {
 /**
  * Gets Output values as a Map with keys as output name and value as output state
  */
-function getOutputValues(data: TestData, outputs) {
+function getOutputValues(data: TestData, outputs: any) {
   const values = new Map()
 
   data.groups[0].outputs.forEach((dataOutput) => {
@@ -430,7 +425,10 @@ export function runAll(data: TestData, scope = globalScope) {
 
   data.groups.forEach((group) => {
     // for (const output of group.outputs) output.results = [];
-    group.outputs.forEach((output) => (output.results = []))
+    group.outputs.forEach((output: any) => (output.results = []))
+
+    const groupOutputMap = new Map<string, any>(group.outputs.map((output: any) => [output.label, output]));
+
     for (let case_i = 0; case_i < group.n; case_i++) {
       totalCases++
       // Set and propagate the inputs
@@ -443,14 +441,11 @@ export function runAll(data: TestData, scope = globalScope) {
 
       let casePassed = true // Tracks if current case passed or failed
 
-      caseResult.forEach((_, outName) => {
-        // TODO: find() is not the best idea because of O(n)
-        const output = group.outputs.find(
-          (dataOutput) => dataOutput.label === outName
-        )
-        output?.results?.push(caseResult.get(outName))
+      caseResult.forEach((val, outName) => {
+        const output = groupOutputMap.get(outName)
+        output?.results?.push(val)
 
-        if (output?.values[case_i] !== caseResult.get(outName))
+        if (output?.values[case_i] !== val)
           casePassed = false
       })
 
@@ -569,11 +564,10 @@ function setUIResult(testbenchData: TestBenchData, result) {
     newResultValues.push({ value: ' - ', color: '#000' });
   }
 
-  for (const output of result.keys()) {
-    const resultValue = result.get(output);
-    const outputData = data.groups[groupIndex].outputs.find(
-      (dataOutput) => dataOutput.label === output
-    );
+  const outputMap = new Map<string, any>(data.groups[groupIndex].outputs.map((output: any) => [output.label, output]));
+
+  for (const [outputLabel, resultValue] of result.entries()) {
+    const outputData = outputMap.get(outputLabel);
 
     const expectedValue = outputData ? outputData.values[caseIndex] : undefined;
     const color = resultValue === expectedValue ? '#17FC12' : '#FF1616';
