@@ -1,6 +1,6 @@
 {
   "name": "cv-frontend-vue",
-  "version": "11.0.2",
+  "version": "0.0.0",
   "private": true,
   "scripts": {
     "serve": "vite preview",
