@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "CircuitVerse",
-  "version": "11.0.1",
+  "version": "11.0.2",
   "identifier": "org.circuitVerse.simulator",
   "build": {
     "frontendDist": "../dist/simulatorvue/v0",
