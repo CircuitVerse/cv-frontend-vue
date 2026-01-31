@@ -16,8 +16,18 @@
 </template>
 
 <script lang="ts" setup>
-const props = defineProps({
-    tableHeader: { type: Array, default: () => [] },
-    tableBody: { type: Array, default: () => [] },
+/**
+ * BooleanTable component for displaying tabular data.
+ * @param tableHeader - Array of strings for table headers
+ * @param tableBody - 2D array of strings for table rows
+ */
+import { withDefaults } from 'vue'
+
+const { tableHeader, tableBody } = withDefaults(defineProps<{
+    tableHeader: string[]
+    tableBody: string[][]
+}>(), {
+    tableHeader: () => [],
+    tableBody: () => [],
 })
 </script>
