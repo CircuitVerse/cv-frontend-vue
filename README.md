@@ -53,23 +53,6 @@ The frontend can function independently for basic circuits, but certain features
 - Project permissions
 - Issue reporting
 
-**Required API Endpoints (~12):**
-| Endpoint | Purpose |
-|----------|----------|
-| `POST /api/v1/auth/login` | User authentication |
-| `POST /api/v1/auth/register` | New user registration |
-| `GET /api/v1/projects/:id` | Fetch project data |
-| `POST /api/v1/projects` | Create new project |
-| `PUT /api/v1/projects/:id` | Update existing project |
-| `DELETE /api/v1/projects/:id` | Delete project |
-| `GET /api/v1/projects/:id/permissions` | Fetch project permissions |
-| `POST /api/v1/files/upload` | Upload project files |
-| `GET /api/v1/files/download/:id` | Download project files |
-| `POST /api/v1/compile/verilog` | Compile Verilog code |
-| `POST /api/v1/issues/report` | Report issues/bugs |
-| `GET /api/v1/health/status` | API health check |
-
-
 ### Quick Setup
 
 1. **Copy the environment template:**
@@ -125,8 +108,6 @@ For full development capabilities, run the Rails backend locally:
    ```
 
 Now all backend features will work with your local Rails instance!
-
-
 
 ## Build System
 We use a unified build system to generate assets for all versions.
