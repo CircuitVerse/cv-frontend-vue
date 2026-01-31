@@ -252,7 +252,7 @@ export function hideProperties() {
     $('.objectPropertyAttribute').unbind('change keyup paste click')
 }
 /**
- * checkss the input is safe or not
+ * checks the input is safe or not
  * @param {HTML} unsafe - the html which we wants to escape
  * @category ux
  */
