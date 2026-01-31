@@ -74,11 +74,6 @@ The frontend can function independently for basic circuits, but certain features
    ```
    Requires running the [CircuitVerse Rails backend](https://github.com/CircuitVerse/CircuitVerse).
 
-   **Option C: Staging Server** (If available)
-   ```bash
-   VITE_API_URL=https://staging.circuitverse.org
-   ```
-
 3.  **Restart the development server:**
    ```bash
    npm run dev
