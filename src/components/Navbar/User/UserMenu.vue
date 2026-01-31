@@ -318,7 +318,6 @@ async function handleAuthSubmit() {
     }
 
     const data = await response.json()
-    console.log('Auth successful:', data)
     
     if (!data.token) {
       throw new Error('No token received from server')
