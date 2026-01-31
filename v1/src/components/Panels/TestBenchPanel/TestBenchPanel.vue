@@ -1,5 +1,5 @@
 <template>
-    <div class="testbench-manual-panel draggable-panel noSelect defaultCursor" ref="testbenchPanelRef">
+    <div ref="testbenchPanelRef" class="testbench-manual-panel draggable-panel noSelect defaultCursor">
         <div class="panel-header">
             Testbench
             <span class="fas fa-minus-square minimize panel-button"></span>
@@ -13,38 +13,44 @@
                     <span id="data-type" class="tb-data"><b>Type:</b> <span>{{ testData.type === 'comb' ?
                             'Combinational' : 'Sequential' }}</span></span>
                 </div>
-                <button id="edit-test-btn" @mousedown="buttonListenerFunctions.editTestButton()"
-                    class="custom-btn--basic panel-button tb-dialog-button">
+                <button
+id="edit-test-btn" class="custom-btn--basic panel-button tb-dialog-button"
+                    @mousedown="buttonListenerFunctions.editTestButton()">
                     Edit
                 </button>
-                <button id="remove-test-btn" @mousedown="buttonListenerFunctions.removeTestButton()"
-                    class="custom-btn--tertiary panel-button tb-dialog-button">
+                <button
+id="remove-test-btn" class="custom-btn--tertiary panel-button tb-dialog-button"
+                    @mousedown="buttonListenerFunctions.removeTestButton()">
                     Remove
                 </button>
             </div>
             <div style="overflow: auto; margin-bottom: 10px">
                 <div class="tb-manual-test-buttons tb-group-buttons">
                     <span style="line-height: 24px; margin-right: 5px"><b>Group: </b></span>
-                    <button id="prev-group-btn" @mousedown="buttonListenerFunctions.previousGroupButton()"
-                        class="custom-btn--basic panel-button tb-case-button-left tb-case-button">
+                    <button
+id="prev-group-btn" class="custom-btn--basic panel-button tb-case-button-left tb-case-button"
+                        @mousedown="buttonListenerFunctions.previousGroupButton()">
                         <i class="tb-case-arrow tb-case-arrow-left"></i>
                     </button>
                     <span class="tb-test-label group-label"> {{ testData.groups[testBenchStore.testbenchData.currentGroup].label
                         }}</span>
-                    <button id="next-group-btn" @mousedown="buttonListenerFunctions.nextGroupButton()"
-                        class="custom-btn--basic panel-button tb-case-button-right tb-case-button">
+                    <button
+id="next-group-btn" class="custom-btn--basic panel-button tb-case-button-right tb-case-button"
+                        @mousedown="buttonListenerFunctions.nextGroupButton()">
                         <i class="tb-case-arrow tb-case-arrow-right"></i>
                     </button>
                 </div>
                 <div class="tb-manual-test-buttons tb-case-buttons">
                     <span style="line-height: 24px; margin-right: 5px"><b>Case: </b></span>
-                    <button id="prev-case-btn" @mousedown="buttonListenerFunctions.previousCaseButton()"
-                        class="custom-btn--basic panel-button tb-case-button-left tb-case-button">
+                    <button
+id="prev-case-btn" class="custom-btn--basic panel-button tb-case-button-left tb-case-button"
+                        @mousedown="buttonListenerFunctions.previousCaseButton()">
                         <i class="tb-case-arrow tb-case-arrow-left"></i>
                     </button>
                     <span class="tb-test-label case-label"> {{ currentCase + 1 }}</span>
-                    <button id="next-case-btn" @mousedown="buttonListenerFunctions.nextCaseButton()"
-                        class="custom-btn--basic panel-button tb-case-button-right tb-case-button">
+                    <button
+id="next-case-btn" class="custom-btn--basic panel-button tb-case-button-right tb-case-button"
+                        @mousedown="buttonListenerFunctions.nextCaseButton()">
                         <i class="tb-case-arrow tb-case-arrow-right"></i>
                     </button>
                 </div>
@@ -74,18 +80,20 @@
             </div>
             <div style="display: table; margin-top: 20px; margin-left: 8px">
                 <div class="testbench-manual-panel-buttons">
-                    <button id="validate-btn" @mousedown="buttonListenerFunctions.validateButton()"
-                        class="custom-btn--basic panel-button tb-dialog-button">
+                    <button
+id="validate-btn" class="custom-btn--basic panel-button tb-dialog-button"
+                        @mousedown="buttonListenerFunctions.validateButton()">
                         Validate
                     </button>
-                    <button id="runall-btn" @mousedown="buttonListenerFunctions.runAllButton()"
-                        class="custom-btn--primary panel-button tb-dialog-button">
+                    <button
+id="runall-btn" class="custom-btn--primary panel-button tb-dialog-button"
+                        @mousedown="buttonListenerFunctions.runAllButton()">
                         Run All
                     </button>
                 </div>
                 <span v-if="testBenchStore.showPassed">
                     <span>{{ testBenchStore.passed }} out of {{ testBenchStore.total }}</span> Tests Passed
-                    <span @mousedown="openCreator('result')" :style="{ color: '#18a2cd' }">View Detailed</span>
+                    <span :style="{ color: '#18a2cd' }" @mousedown="openCreator('result')">View Detailed</span>
                 </span>
             </div>
         </div>
@@ -94,8 +102,9 @@
                 <div style="margin-bottom: 10px; overflow: auto">
                     <p><i>No Test is attached to the current circuit</i></p>
                 </div>
-                <button id="attach-test-btn" @mousedown="buttonListenerFunctions.attachTestButton()"
-                    class="custom-btn--primary panel-button tb-dialog-button">
+                <button
+id="attach-test-btn" class="custom-btn--primary panel-button tb-dialog-button"
+                    @mousedown="buttonListenerFunctions.attachTestButton()">
                     Attach Test
                 </button>
             </div>
