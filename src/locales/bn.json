@@ -145,7 +145,14 @@
             "pause_timing_diagram": "টাইমিং ডায়াগ্রামকে বিরত রাখুন",
             "decrease_width": "প্রস্থ কমান",
             "increase_width": "প্রস্থ বাড়ান",
-            "reset": "পুনরায় সেট করুন"
+            "reset": "পুনরায় সেট করুন",
+            "circuit_elements": "সার্কিট উপাদান",
+            "wiring_mode": "ওয়্যারিং মোড",
+            "verilog_panel": "ভেরিলগ প্যানেল",
+            "copy": "কপি করুন",
+            "paste": "পেস্ট করুন",
+            "properties": "বৈশিষ্ট্য",
+            "report_issue": "সমস্যার রিপোর্ট করুন"
         }
     }
 }

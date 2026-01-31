@@ -161,7 +161,14 @@
             "pause_timing_diagram": "टाइमिंग डायग्राम को पॉज करें",
             "decrease_width": "चौड़ाई घटाएं",
             "increase_width": "चौड़ाई बढ़ाएँ",
-            "reset": "रिसेट करें"
+            "reset": "रिसेट करें",
+            "circuit_elements": "सर्किट तत्व",
+            "wiring_mode": "वायरिंग मोड",
+            "verilog_panel": "वेरिलॉग पैनल",
+            "copy": "कॉपी",
+            "paste": "पेस्ट",
+            "properties": "गुण",
+            "report_issue": "समस्या की रिपोर्ट करें"
         }
     }
 }

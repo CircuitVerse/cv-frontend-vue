@@ -7,6 +7,7 @@
             data-target=".issue"
             :style="{ bottom: simulatorMobileStore.showElementsPanel ? '250px' : '120px' }"
             @click="openReportingModal"
+            :title="$t('simulator.tooltip.report_issue')"
         >
             <span class="fa fa-bug"></span>&nbsp;&nbsp;{{
                 $t('simulator.report_issue')
