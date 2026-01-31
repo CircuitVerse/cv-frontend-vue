@@ -36,8 +36,8 @@
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Message Display -->
     <div id="MessageDiv">
-        <div v-for="mes in useState().successMessages" :key="mes" class='alert alert-success' role='alert'> {{ mes }}</div>
-        <div v-for="error in useState().errorMessages" :key="error" class='alert alert-danger' role='alert'> {{ error }}</div>
+        <div v-for="(mes, idx) in useState().successMessages" :key="`success-${idx}`" class='alert alert-success' role='alert'> {{ mes }}</div>
+        <div v-for="(error, idx) in useState().errorMessages" :key="`error-${idx}`" class='alert alert-danger' role='alert'> {{ error }}</div>
     </div>
     <!-- --------------------------------------------------------------------------------------------- -->
 
@@ -86,7 +86,8 @@
         <!-- <div id="restrictedDiv" class="alert alert-danger display--none"></div> -->
         <div id="canvasArea" class="canvasArea">
             <canvas
-id="backgroundArea" style="
+                    id="backgroundArea"
+                    style="
                     position: absolute;
                     left: 0;
                     top: 0;
@@ -135,7 +136,8 @@ id="backgroundArea" style="
 
             <div id="Help"></div>
             <div
-class="sk-folding-cube loadingIcon" style="
+                    class="sk-folding-cube loadingIcon"
+                    style="
                     display: none;
                     position: absolute;
                     right: 50%;
