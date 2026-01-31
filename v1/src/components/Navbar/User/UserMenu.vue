@@ -312,13 +312,11 @@ async function handleAuthSubmit() {
       } catch (e) {
         errorData = { message: 'An error occurred' }
       }
-      console.error('Authentication failed:', response.status, errorData)
       handleLoginError(response.status, errorData)
       return
     }
 
     const data = await response.json()
-    console.log('Auth successful:', data)
     
     if (!data.token) {
       throw new Error('No token received from server')
@@ -331,7 +329,6 @@ async function handleAuthSubmit() {
     )
     authModal.value = false
   } catch (error) {
-    console.error('Authentication error:', error)
     showSnackbar(`Authentication failed: ${error.message}`, 'error')
   } finally {
     isLoading.value = false
