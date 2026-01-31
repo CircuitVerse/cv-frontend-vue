@@ -73,10 +73,10 @@ function syncSelectionToContextMenuPosition() {
     simulationArea.mouseYf = (rawY - globalScope.oy) / globalScope.scale
     simulationArea.mouseX = simulationArea.mouseDownX
     simulationArea.mouseY = simulationArea.mouseDownY
-    var wasMouseDown = simulationArea.mouseDown
+    var prevMouseDown = simulationArea.mouseDown
     simulationArea.mouseDown = true
     update(globalScope, true)
-    simulationArea.mouseDown = wasMouseDown
+    simulationArea.mouseDown = prevMouseDown
 }
 
 /**
