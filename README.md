@@ -53,6 +53,23 @@ The frontend can function independently for basic circuits, but certain features
 - Project permissions
 - Issue reporting
 
+**Required API Endpoints (~12):**
+| Endpoint | Purpose |
+|----------|----------|
+| `POST /auth/login` | User authentication |
+| `POST /auth/register` | New user registration |
+| `GET /projects/:id` | Fetch project data |
+| `POST /projects` | Create new project |
+| `PUT /projects/:id` | Update existing project |
+| `DELETE /projects/:id` | Delete project |
+| `GET /projects/:id/permissions` | Fetch project permissions |
+| `POST /files/upload` | Upload project files |
+| `GET /files/download/:id` | Download project files |
+| `POST /compile/verilog` | Compile Verilog code |
+| `POST /issues/report` | Report issues/bugs |
+| `GET /health/status` | API health check |
+
+
 ### Quick Setup
 
 1. **Copy the environment template:**
@@ -108,6 +125,22 @@ For full development capabilities, run the Rails backend locally:
    ```
 
 Now all backend features will work with your local Rails instance!
+
+**Required API Endpoints (~12):**
+| Endpoint | Purpose |
+|----------|----------|
+| `POST /auth/login` | User authentication |
+| `POST /auth/register` | New user registration |
+| `GET /projects/:id` | Fetch project data |
+| `POST /projects` | Create new project |
+| `PUT /projects/:id` | Update existing project |
+| `DELETE /projects/:id` | Delete project |
+| `GET /projects/:id/permissions` | Fetch project permissions |
+| `POST /files/upload` | Upload project files |
+| `GET /files/download/:id` | Download project files |
+| `POST /compile/verilog` | Compile Verilog code |
+| `POST /issues/report` | Report issues/bugs |
+| `GET /health/status` | API health check |
 
 ## Build System
 We use a unified build system to generate assets for all versions.
