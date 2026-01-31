@@ -56,18 +56,18 @@ The frontend can function independently for basic circuits, but certain features
 **Required API Endpoints (~12):**
 | Endpoint | Purpose |
 |----------|----------|
-| `POST /auth/login` | User authentication |
-| `POST /auth/register` | New user registration |
-| `GET /projects/:id` | Fetch project data |
-| `POST /projects` | Create new project |
-| `PUT /projects/:id` | Update existing project |
-| `DELETE /projects/:id` | Delete project |
-| `GET /projects/:id/permissions` | Fetch project permissions |
-| `POST /files/upload` | Upload project files |
-| `GET /files/download/:id` | Download project files |
-| `POST /compile/verilog` | Compile Verilog code |
-| `POST /issues/report` | Report issues/bugs |
-| `GET /health/status` | API health check |
+| `POST /api/v1/auth/login` | User authentication |
+| `POST /api/v1/auth/register` | New user registration |
+| `GET /api/v1/projects/:id` | Fetch project data |
+| `POST /api/v1/projects` | Create new project |
+| `PUT /api/v1/projects/:id` | Update existing project |
+| `DELETE /api/v1/projects/:id` | Delete project |
+| `GET /api/v1/projects/:id/permissions` | Fetch project permissions |
+| `POST /api/v1/files/upload` | Upload project files |
+| `GET /api/v1/files/download/:id` | Download project files |
+| `POST /api/v1/compile/verilog` | Compile Verilog code |
+| `POST /api/v1/issues/report` | Report issues/bugs |
+| `GET /api/v1/health/status` | API health check |
 
 
 ### Quick Setup
@@ -126,21 +126,7 @@ For full development capabilities, run the Rails backend locally:
 
 Now all backend features will work with your local Rails instance!
 
-**Required API Endpoints (~12):**
-| Endpoint | Purpose |
-|----------|----------|
-| `POST /auth/login` | User authentication |
-| `POST /auth/register` | New user registration |
-| `GET /projects/:id` | Fetch project data |
-| `POST /projects` | Create new project |
-| `PUT /projects/:id` | Update existing project |
-| `DELETE /projects/:id` | Delete project |
-| `GET /projects/:id/permissions` | Fetch project permissions |
-| `POST /files/upload` | Upload project files |
-| `GET /files/download/:id` | Download project files |
-| `POST /compile/verilog` | Compile Verilog code |
-| `POST /issues/report` | Report issues/bugs |
-| `GET /health/status` | API health check |
+
 
 ## Build System
 We use a unified build system to generate assets for all versions.
