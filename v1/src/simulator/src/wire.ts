@@ -12,6 +12,9 @@ interface Scope {
     timeStamp: number;
 }
 
+declare var globalScope: Scope;
+declare var embed: boolean;
+
 enum WireValue {
     LOOSE = -1,
     LOW = 0,
@@ -109,7 +112,7 @@ export default class Wire {
     }
 
     private isBetween(value: number, a: number, b: number): boolean {
-        return value >= Math.min(a, b) && value <= Math.max(a, b);
+        return value > Math.min(a, b) && value < Math.max(a, b);
     }
 
     converge(n: Node): void {
