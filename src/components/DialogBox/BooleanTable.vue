@@ -21,13 +21,15 @@
  * @param tableHeader - Array of strings for table headers
  * @param tableBody - 2D array of strings for table rows
  */
-import { withDefaults } from 'vue'
+import { withDefaults, toRefs } from 'vue'
 
-const { tableHeader, tableBody } = withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
     tableHeader: string[]
     tableBody: string[][]
 }>(), {
     tableHeader: () => [],
     tableBody: () => [],
 })
+
+const { tableHeader, tableBody } = toRefs(props)
 </script>
