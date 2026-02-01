@@ -6,8 +6,8 @@
 interface QueueObject {
     queueProperties: {
         inQueue: boolean
-        time: number
-        index: number
+        time?: number
+        index?: number
     }
     propagationDelay: number
 }
@@ -24,7 +24,7 @@ export class EventQueue {
         this.time = 0
     }
 
-    add(obj: QueueObject, delay: number) {
+    add(obj: QueueObject, delay?: number) {
         if (obj.queueProperties.inQueue) {
             obj.queueProperties.time =
                 this.time + (delay || obj.propagationDelay)
@@ -32,7 +32,7 @@ export class EventQueue {
             while (
                 i > 0 &&
                 obj.queueProperties.time >
-                    this.queue[i - 1].queueProperties.time
+                this.queue[i - 1].queueProperties.time
             ) {
                 this.swap(i, i - 1)
                 i--
@@ -41,7 +41,7 @@ export class EventQueue {
             while (
                 i < this.frontIndex - 1 &&
                 obj.queueProperties.time <
-                    this.queue[i + 1].queueProperties.time
+                this.queue[i + 1].queueProperties.time
             ) {
                 this.swap(i, i + 1)
                 i++
@@ -49,7 +49,7 @@ export class EventQueue {
             return
         }
 
-        if (this.frontIndex == this.size) throw 'EventQueue size exceeded'
+        if (this.frontIndex === this.size) throw 'EventQueue size exceeded'
         this.queue[this.frontIndex] = obj
         obj.queueProperties.time = this.time + (delay || obj.propagationDelay)
         obj.queueProperties.index = this.frontIndex
@@ -118,6 +118,6 @@ export class EventQueue {
      * function to check if empty queue.
      */
     isEmpty() {
-        return this.frontIndex == 0
+        return this.frontIndex === 0
     }
 }

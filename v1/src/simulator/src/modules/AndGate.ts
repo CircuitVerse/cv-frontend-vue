@@ -6,6 +6,20 @@ import { changeInputSize } from '../modules';
 import { colors } from '../themer/themer';
 import { gateGenerateVerilog } from '../utils';
 
+// Global scope declaration
+declare const globalScope: any;
+
+// Extend AndGate interface to include prototype properties
+interface AndGatePrototype {
+    tooltipText: string;
+    alwaysResolve: boolean;
+    verilogType: string;
+    changeInputSize: typeof changeInputSize;
+    helplink: string;
+    objectType: string;
+}
+
+
 /**
  * @class
  * AndGate
@@ -100,7 +114,7 @@ export default class AndGate extends CircuitElement {
             result &= this.inp[i].value || 0;
         }
         this.output1.value = result >>> 0;
-        simulationArea.simulationQueue.add(this.output1);
+        simulationArea.simulationQueue.add(this.output1 as any);
     }
 
     /**
@@ -156,7 +170,7 @@ export default class AndGate extends CircuitElement {
  * @type {string}
  * @category modules
  */
-AndGate.prototype.tooltipText =
+(AndGate.prototype as any).tooltipText =
     'And Gate ToolTip : Implements logical conjunction';
 
 /**
@@ -164,20 +178,20 @@ AndGate.prototype.tooltipText =
  * @type {boolean}
  * @category modules
  */
-AndGate.prototype.alwaysResolve = true;
+(AndGate.prototype as any).alwaysResolve = true;
 
 /**
  * @memberof AndGate
  * @type {string}
  * @category modules
  */
-AndGate.prototype.verilogType = 'and';
+(AndGate.prototype as any).verilogType = 'and';
 
 /**
  * @memberof AndGate
  * function to change input nodes of the gate
  * @category modules
  */
-AndGate.prototype.changeInputSize = changeInputSize;
-AndGate.prototype.helplink = 'https://docs.circuitverse.org/chapter4/chapter4-gates#and-gate';
-AndGate.prototype.objectType = 'AndGate';
+(AndGate.prototype as any).changeInputSize = changeInputSize;
+(AndGate.prototype as any).helplink = 'https://docs.circuitverse.org/chapter4/chapter4-gates#and-gate';
+(AndGate.prototype as any).objectType = 'AndGate';

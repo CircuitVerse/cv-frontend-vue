@@ -6,8 +6,8 @@
 interface QueueObject {
     queueProperties: {
         inQueue: boolean
-        time: number
-        index: number
+        time?: number
+        index?: number
     }
     propagationDelay: number
 }
@@ -24,7 +24,7 @@ export class EventQueue {
         this.time = 0
     }
 
-    add(obj: QueueObject, delay: number) {
+    add(obj: QueueObject, delay?: number) {
         if (obj.queueProperties.inQueue) {
             obj.queueProperties.time =
                 this.time + (delay || obj.propagationDelay)
