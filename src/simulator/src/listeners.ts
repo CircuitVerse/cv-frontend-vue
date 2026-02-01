@@ -36,13 +36,31 @@ import { verilogModeGet } from './Verilog2CV'
 import { setupTimingListeners } from './plotArea'
 import logixFunction from './data'
 import { listen } from '@tauri-apps/api/event'
-import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
+import { useSimulatorMobileStore } from '../../store/simulatorMobileStore'
 import { toRefs } from 'vue'
+import type Scope from './circuit'
+
+declare const DPR: number;
+declare const width: number;
+declare const height: number;
+declare const lightMode: boolean;
+declare const embed: boolean;
+declare const restrictedElements: string[];
+declare function saveOffline(): void;
+declare function showProperties(element: unknown): void;
+declare var globalScope: Scope;
+
+type Coordinate = { 
+    x: number; 
+    y: number 
+};
+type Direction = 1 | -1;
+type PointerEvent = MouseEvent | TouchEvent;
 
 const unit = 10
 let listenToSimulator = true
-let coordinate;
-const returnCoordinate = {
+let coordinate: Coordinate;
+const returnCoordinate: Coordinate = {
     x: 0,
     y: 0
 }
@@ -50,9 +68,9 @@ const returnCoordinate = {
 let currDistance = 0;
 let distance = 0;
 let pinchZ = 0;
-let centreX;
-let centreY;
-let timeout;
+let centreX = 0;
+let centreY = 0;
+let timeout: ReturnType<typeof setTimeout> | undefined;
 let lastTap = 0;
 
 /**
@@ -60,7 +78,7 @@ let lastTap = 0;
  * @param {event} e
  * function for double click or double tap
  */
-function onDoubleClickorTap(e) {
+function onDoubleClickorTap(e: PointerEvent) {
     updateCanvasSet(true);
     if (simulationArea.lastSelected && simulationArea.lastSelected.dblclick !== undefined) {
         simulationArea.lastSelected.dblclick();
@@ -76,7 +94,7 @@ function onDoubleClickorTap(e) {
  * @param {event} e
  * function to detect tap and double tap
  */
-function getTap(e) {
+function getTap(e: PointerEvent) {
     const currentTime = new Date().getTime();
     const tapLength = currentTime - lastTap;
     clearTimeout(timeout);
@@ -95,14 +113,14 @@ const isIe = (navigator.userAgent.toLowerCase().indexOf('msie') != -1 || navigat
 //  *If touch is enable then it will return touch coordinate
 //  *else it will return mouse coordinate
 //
-export function getCoordinate(e) {
-    if (simulationArea.touch) {
+export function getCoordinate(e: PointerEvent): Coordinate {
+    if (simulationArea.touch && 'touches' in e) {
         returnCoordinate.x = e.touches[0].clientX;
         returnCoordinate.y = e.touches[0].clientY;
         return returnCoordinate;
     }
 
-    if (!simulationArea.touch) {
+    if (!simulationArea.touch && 'clientX' in e) {
         returnCoordinate.x = e.clientX;
         returnCoordinate.y = e.clientY;
         return returnCoordinate;
@@ -115,7 +133,7 @@ export function getCoordinate(e) {
    *For now variable name starts with mouse like mouseDown are used both
     touch and mouse will change in future
 */
-export function pinchZoom(e, globalScope) {
+export function pinchZoom(e: TouchEvent, globalScope: Scope) {
     e.preventDefault();
     gridUpdateSet(true);
     scheduleUpdate();
@@ -123,7 +141,7 @@ export function pinchZoom(e, globalScope) {
     updatePositionSet(true);
     updateCanvasSet(true);
     // Calculating distance between touch to see if its pinchIN or pinchOut
-    distance = Math.sqrt((e.touches[1].clientX - e.touches[0].clientX) ** 2, (e.touches[1].clientY - e.touches[0].clientY) ** 2);
+    distance = Math.sqrt((e.touches[1].clientX - e.touches[0].clientX) ** 2 + (e.touches[1].clientY - e.touches[0].clientY) ** 2);
     if (distance >= currDistance) {
         pinchZ += 0.02;
         currDistance = distance;
@@ -162,7 +180,7 @@ export function pinchZoom(e, globalScope) {
  *For now variable name starts from mouse like mouseDown are used both
   touch and mouse will change in future
  */
-export function panStart(e) {
+export function panStart(e: PointerEvent) {
     coordinate = getCoordinate(e);
     simulationArea.mouseDown = true;
     // Deselect Input
@@ -176,7 +194,7 @@ export function panStart(e) {
     updateCanvasSet(true);
     simulationArea.lastSelected = undefined;
     simulationArea.selected = false;
-    simulationArea.hover = undefined;
+    simulationArea.hover = false;
     const rect = simulationArea.canvas.getBoundingClientRect();
     simulationArea.mouseDownRawX = (coordinate.x - rect.left) * DPR;
     simulationArea.mouseDownRawY = (coordinate.y - rect.top) * DPR;
@@ -203,10 +221,10 @@ export function panStart(e) {
    touch and mouse will change in future
  */
 
-export function panMove(e) {
+export function panMove(e: PointerEvent) {
     // If only one  it touched
     // pan left or right
-    if (!simulationArea.touch || e.touches.length === 1) {
+    if (!simulationArea.touch || ('touches' in e && e.touches.length === 1)) {
         coordinate = getCoordinate(e);
         const rect = simulationArea.canvas.getBoundingClientRect();
         simulationArea.mouseRawX = (coordinate.x - rect.left) * DPR;
@@ -240,12 +258,12 @@ export function panMove(e) {
 
     // If two fingures are touched
     // pinchZoom
-    if (simulationArea.touch && e.touches.length === 2) {
-        pinchZoom(e, globalScope);
+    if (simulationArea.touch && 'touches' in e && e.touches.length === 2) {
+        pinchZoom(e as TouchEvent, globalScope);
     }
 }
 
-export function panStop(e) {
+export function panStop(e: PointerEvent) {
     const simulatorMobileStore = useSimulatorMobileStore()
     simulationArea.mouseDown = false;
     if (!lightMode) {
@@ -298,20 +316,23 @@ export function panStop(e) {
 }
 
 export default function startListeners() {
-    $(document).on('keyup', (e) => {
+    $(document).on("keyup", (e: JQuery.KeyUpEvent) => {
         if (e.key === 'Escape') exitFullView()
     })
 
     $('#projectName').on('click', () => {
         simulationArea.lastSelected = globalScope.root;
         setTimeout(() => {
-            document.getElementById("projname").select();
+            const input = document.getElementById("projname");
+            if (input instanceof HTMLInputElement || input instanceof HTMLTextAreaElement) {
+                input.select();
+            }
         }, 100);
     });
 
-    document
-        .getElementById('simulationArea')
-        .addEventListener('mouseup', (e) => {
+    const simulationCanvas = document.getElementById('simulationArea') as HTMLCanvasElement | null
+    if (simulationCanvas) {
+        simulationCanvas.addEventListener('mouseup', (e: MouseEvent) => {
             if (simulationArea.lastSelected) {
                 simulationArea.lastSelected.newElement = false
             }
@@ -345,8 +366,9 @@ export default function startListeners() {
                 }
             }
         })
+    }
 
-    window.addEventListener('keyup', (e) => {
+    window.addEventListener('keyup', (e: KeyboardEvent) => {
         scheduleUpdate(1)
         simulationArea.shiftDown = e.shiftKey
         if (e.keyCode == 16) {
@@ -359,8 +381,8 @@ export default function startListeners() {
 
     window.addEventListener(
         'keydown',
-        (e) => {
-            if (document.activeElement.tagName == 'INPUT') return
+        (e: KeyboardEvent) => {
+            if (document.activeElement?.tagName == 'INPUT') return
             if (document.activeElement != document.body) return
 
             simulationArea.shiftDown = e.shiftKey
@@ -405,7 +427,8 @@ export default function startListeners() {
                     return
                 }
                 // HACK TO REMOVE FOCUS ON PROPERTIES
-                if (document.activeElement.type == 'number') {
+                const active = document.activeElement;
+                if (active instanceof HTMLInputElement && active.type === 'number') {
                     hideProperties()
                     showProperties(simulationArea.lastSelected)
                 }
@@ -535,7 +558,7 @@ export default function startListeners() {
                 // deselect all Shortcut
                 if (e.keyCode == 27) {
                     simulationArea.multipleObjectSelections = []
-                    simulationArea.lastSelected = undefined
+                    simulationArea.lastSelected = null
                     e.preventDefault()
                 }
 
@@ -545,7 +568,7 @@ export default function startListeners() {
                 ) {
                     if (simulationArea.lastSelected.bitWidth !== undefined) {
                         simulationArea.lastSelected.newBitWidth(
-                            parseInt(prompt('Enter new bitWidth'), 10)
+                            parseInt(prompt('Enter new bitWidth') ?? '0', 10)
                         )
                     }
                 }
@@ -555,7 +578,7 @@ export default function startListeners() {
                     (e.key == 'T' || e.key == 't')
                 ) {
                     // e.preventDefault(); //browsers normally open a new tab
-                    simulationArea.changeClockTime(prompt('Enter Time:'))
+                    simulationArea.changeClockTime(parseInt(prompt('Enter Time:') ?? '0'))
                 }
             }
 
@@ -566,11 +589,13 @@ export default function startListeners() {
         true
     )
 
-    document.getElementById('simulationArea').addEventListener('dblclick', e => {
-        onDoubleClickorTap(e);
-    });
+    if (simulationCanvas) {
+        simulationCanvas.addEventListener('dblclick', (e: MouseEvent) => {
+            onDoubleClickorTap(e);
+        });
+    }
 
-    function MouseScroll(event) {
+    function MouseScroll(event: WheelEvent & { wheelDelta?: number; detail?: number }) {
         updateCanvasSet(true)
         event.preventDefault()
         var deltaY = event.wheelDelta ? event.wheelDelta : -event.detail
@@ -585,30 +610,28 @@ export default function startListeners() {
         else update() // Schedule update not working, this is INEFFICIENT
     }
 
-    document
-        .getElementById('simulationArea')
-        .addEventListener('mousewheel', MouseScroll)
-    document
-        .getElementById('simulationArea')
-        .addEventListener('DOMMouseScroll', MouseScroll)
+    if (simulationCanvas) {
+        simulationCanvas.addEventListener('mousewheel', MouseScroll as EventListener)
+        simulationCanvas.addEventListener('DOMMouseScroll', MouseScroll as EventListener)
+    }
 
-    document.addEventListener('cut', (e) => {
+    document.addEventListener('cut', (e: ClipboardEvent) => {
         if (verilogModeGet()) return
-        if (document.activeElement.tagName == 'INPUT') return
-        if (document.activeElement.tagName != 'BODY') return
+        if (document.activeElement?.tagName == 'INPUT') return
+        if (document.activeElement?.tagName != 'BODY') return
 
         if (listenToSimulator) {
             simulationArea.copyList =
                 simulationArea.multipleObjectSelections.slice()
             if (
                 simulationArea.lastSelected &&
-                simulationArea.lastSelected !== simulationArea.root &&
+                simulationArea.lastSelected !== globalScope.root &&
                 !simulationArea.copyList.includes(simulationArea.lastSelected)
             ) {
                 simulationArea.copyList.push(simulationArea.lastSelected)
             }
 
-            const textToPutOnClipboard = copy(simulationArea.copyList, true)
+            const textToPutOnClipboard = JSON.parse(copy(simulationArea.copyList, true))
 
             // Updated restricted elements
             updateRestrictedElementsInScope()
@@ -616,30 +639,30 @@ export default function startListeners() {
             e.preventDefault()
             if (textToPutOnClipboard == undefined) return
             if (isIe) {
-                window.clipboardData.setData('Text', textToPutOnClipboard)
+                (window as any).clipboardData.setData('Text', textToPutOnClipboard)
             } else {
-                e.clipboardData.setData('text/plain', textToPutOnClipboard)
+                e?.clipboardData?.setData('text/plain', textToPutOnClipboard)
             }
         }
     })
 
-    document.addEventListener('copy', (e) => {
+    document.addEventListener('copy', (e: ClipboardEvent) => {
         if (verilogModeGet()) return
-        if (document.activeElement.tagName == 'INPUT') return
-        if (document.activeElement.tagName != 'BODY') return
+        if (document?.activeElement?.tagName == 'INPUT') return
+        if (document?.activeElement?.tagName != 'BODY') return
 
         if (listenToSimulator) {
             simulationArea.copyList =
                 simulationArea.multipleObjectSelections.slice()
             if (
                 simulationArea.lastSelected &&
-                simulationArea.lastSelected !== simulationArea.root &&
+                simulationArea.lastSelected !== globalScope.root &&
                 !simulationArea.copyList.includes(simulationArea.lastSelected)
             ) {
                 simulationArea.copyList.push(simulationArea.lastSelected)
             }
 
-            const textToPutOnClipboard = copy(simulationArea.copyList)
+            const textToPutOnClipboard = JSON.parse(copy(simulationArea.copyList))
 
             // Updated restricted elements
             updateRestrictedElementsInScope()
@@ -647,23 +670,23 @@ export default function startListeners() {
             e.preventDefault()
             if (textToPutOnClipboard == undefined) return
             if (isIe) {
-                window.clipboardData.setData('Text', textToPutOnClipboard)
+                (window as any).clipboardData.setData('Text', textToPutOnClipboard)
             } else {
-                e.clipboardData.setData('text/plain', textToPutOnClipboard)
+                e?.clipboardData?.setData('text/plain', textToPutOnClipboard)
             }
         }
     })
 
-    document.addEventListener('paste', (e) => {
-        if (document.activeElement.tagName == 'INPUT') return
-        if (document.activeElement.tagName != 'BODY') return
+    document.addEventListener('paste', (e: ClipboardEvent) => {
+        if (document?.activeElement?.tagName == 'INPUT') return
+        if (document?.activeElement?.tagName != 'BODY') return
 
         if (listenToSimulator) {
             var data
             if (isIe) {
-                data = window.clipboardData.getData('Text')
+                data = (window as any).clipboardData.getData('Text')
             } else {
-                data = e.clipboardData.getData('text/plain')
+                data = e?.clipboardData?.getData('text/plain')
             }
 
             paste(data)
@@ -676,7 +699,7 @@ export default function startListeners() {
     })
 
     // 'drag and drop' event listener for subcircuit elements in layout mode
-    $('#subcircuitMenu').on('dragstop', '.draggableSubcircuitElement', function (event, ui) {
+    $('#subcircuitMenu').on('dragstop', '.draggableSubcircuitElement', function (event: JQuery.TriggeredEvent, ui: any) {
         const sideBarWidth = $('#guide_1')[0].clientWidth;
         let tempElement;
 
@@ -713,10 +736,10 @@ export default function startListeners() {
 }
 
 function resizeTabs() {
-    const $windowsize = $('body').width()
-    const $sideBarsize = $('.side').width()
+    const $windowsize = $('body').width() || 0
+    const $sideBarsize = $('.side').width() || 0
     const $maxwidth = $windowsize - $sideBarsize
-    $('#tabsBar div').each(function (e) {
+    $('#tabsBar div').each(function () {
         $(this).css({ 'max-width': $maxwidth - 30 })
     })
 }
@@ -725,7 +748,7 @@ window.addEventListener('resize', resizeTabs)
 resizeTabs()
 
 // direction is only 1 or -1
-function handleZoom(direction) {
+function handleZoom(direction: Direction) {
     if (globalScope.scale > 0.5 * DPR) {
         changeScale(direction * 0.1 * DPR);
     } else if (globalScope.scale < 4 * DPR) {
@@ -741,38 +764,45 @@ export function ZoomOut() {
     handleZoom(-1);
 }
 function zoomSliderListeners() {
-    document.getElementById("customRange1").value = 5;
-    document.getElementById('simulationArea').addEventListener('DOMMouseScroll', zoomSliderScroll);
-    document.getElementById('simulationArea').addEventListener('mousewheel', zoomSliderScroll);
-    let curLevel = document.getElementById("customRange1").value;
-    $(document).on('input change', '#customRange1', function (e) {
-        const newValue = $(this).val();
+    const zoomInput = document.getElementById('customRange1') as HTMLInputElement | null;
+    const simulationCanvas = document.getElementById('simulationArea') as HTMLCanvasElement | null;
+    if (!zoomInput || !simulationCanvas) return;
+
+    zoomInput.value = '5';
+    simulationCanvas.addEventListener('DOMMouseScroll', zoomSliderScroll as EventListener);
+    simulationCanvas.addEventListener('mousewheel', zoomSliderScroll as EventListener);
+
+    let curLevel = Number(zoomInput.value);
+    $(document).on('input change', '#customRange1', function () {
+        const rawValue = $(this).val();
+        const newValue = typeof rawValue === 'number' ? rawValue : Number(rawValue);
         const changeInScale = newValue - curLevel;
         updateCanvasSet(true);
         changeScale(changeInScale * 0.1, 'zoomButton', 'zoomButton', 3)
         gridUpdateSet(true);
         curLevel = newValue;
     });
-    function zoomSliderScroll(e) {
-        let zoomLevel = document.getElementById("customRange1").value;
-        const deltaY = e.wheelDelta ? e.wheelDelta : -e.detail;
+    function zoomSliderScroll(e: WheelEvent & { wheelDelta?: number; detail?: number }) {
+        let zoomLevel = Number(zoomInput?.value);
+        const deltaY = e.wheelDelta ?? -Number(e.detail ?? 0);
         const directionY = deltaY > 0 ? 1 : -1;
         if (directionY > 0) zoomLevel++
         else zoomLevel--
         if (zoomLevel >= 45) {
             zoomLevel = 45;
-            document.getElementById("customRange1").value = 45;
+            if (zoomInput) zoomInput.value = '45';
         } else if (zoomLevel <= 0) {
             zoomLevel = 0;
-            document.getElementById("customRange1").value = 0;
+            if (zoomInput) zoomInput.value = '0';
         } else {
-            document.getElementById("customRange1").value = zoomLevel;
+            if (zoomInput) zoomInput.value = String(zoomLevel);
             curLevel = zoomLevel;
         }
     }
-    function sliderZoomButton(direction) {
+    function sliderZoomButton(direction: Direction) {
         const zoomSlider = $('#customRange1');
-        let currentSliderValue = parseInt(zoomSlider.val(), 10);
+        const raw = zoomSlider.val();
+        let currentSliderValue = parseInt(String(raw), 10);
         if (direction === -1) {
             currentSliderValue--;
         } else {
@@ -791,7 +821,7 @@ function zoomSliderListeners() {
 // Desktop App Listeners
 
 listen('new-project', () => {
-    logixFunction.newProject();
+    logixFunction.newProject(true);
 });
 
 listen('save-online', () => {

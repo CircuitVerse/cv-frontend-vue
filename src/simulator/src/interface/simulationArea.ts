@@ -1,3 +1,4 @@
+import CircuitElement from '../circuitElement';
 import { EventQueue } from '../eventQueue'
 export interface SimulationArea {
     canvas: HTMLCanvasElement;
@@ -18,7 +19,7 @@ export interface SimulationArea {
     minHeight: number;
     minWidth: number;
     multipleObjectSelections: any[];
-    copyList: any[];
+    copyList: CircuitElement[];
     shiftDown: boolean;
     controlDown: boolean;
     timePeriod: number;
@@ -32,6 +33,12 @@ export interface SimulationArea {
     mouseDown: boolean;
     ClockInterval: NodeJS.Timeout|null;
     touch: boolean;
+    mouseRawX: number;
+    mouseRawY: number;
+    mouseXf: number;
+    mouseYf: number;
+    mouseDownRawX: number;
+    mouseDownRawY: number;
     timer: () => void;
     setup: () => void;
     changeClockTime: (t: number) => void;
