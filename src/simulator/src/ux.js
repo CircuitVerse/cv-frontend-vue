@@ -44,6 +44,8 @@ var ctxPos = {
     y: 0,
     visible: false,
 }
+let isFullViewActive = false
+let prevMobileState = null
 // FUNCTION TO SHOW AND HIDE CONTEXT MENU
 function hideContextMenu() {
     var el = document.getElementById('contextMenu')
@@ -250,7 +252,7 @@ export function hideProperties() {
     $('.objectPropertyAttribute').unbind('change keyup paste click')
 }
 /**
- * checkss the input is safe or not
+ * checks the input is safe or not
  * @param {HTML} unsafe - the html which we wants to escape
  * @category ux
  */
@@ -403,28 +405,48 @@ function setupPanelListeners(panelSelector) {
 }
 
 export function exitFullView() {
-    const exitViewBtn = document.querySelector('#exitViewBtn')
-    if (exitViewBtn) exitViewBtn.remove()
+    // Remove ALL exit buttons (handles edge cases)
+    const exitViewBtns = document.querySelectorAll('#exitViewBtn')
+    exitViewBtns.forEach(btn => btn.remove())
 
     const elements = document.querySelectorAll(
         '.navbar, .modules, .report-sidebar, #tabsBar, #moduleProperty, .timing-diagram-panel, .testbench-manual-panel, .quick-btn'
     )
+
     elements.forEach((element) => {
         if (element instanceof HTMLElement) {
             element.style.display = ''
         }
     })
 
-    // Mobile Components
+    // Mobile Components - Restore previous state
+    const simulatorMobileStore = toRefs(useSimulatorMobileStore())
+    
+    // ✅ RESTORE PREVIOUS STATE
+    if (prevMobileState) {
+        simulatorMobileStore.showElementsPanel.value = prevMobileState.showElementsPanel
+        simulatorMobileStore.showPropertiesPanel.value = prevMobileState.showPropertiesPanel
+        simulatorMobileStore.showTimingDiagram.value = prevMobileState.showTimingDiagram
+        simulatorMobileStore.showQuickButtons.value = prevMobileState.showQuickButtons
+        simulatorMobileStore.showMobileButtons.value = prevMobileState.showMobileButtons
+        prevMobileState = null // Clear saved state
+    }
 
-    const simulatorMobileStore = toRefs(useSimulatorMobileStore());
-
-    simulatorMobileStore.showQuickButtons.value = true
-    simulatorMobileStore.showMobileButtons.value = true
+    // Reset state flag
+    isFullViewActive = false
 }
 
 export function fullView() {
+    // Prevent multiple calls
+    if (isFullViewActive) return
+    
     const app = document.querySelector('#app')
+    if (!app) return
+
+    // Close all menus using custom event (Vue-safe approach)
+    document.dispatchEvent(new Event('ui:close-menus'))
+
+    isFullViewActive = true
 
     const exitViewEl = document.createElement('button')
     exitViewEl.id = 'exitViewBtn'
@@ -433,15 +455,24 @@ export function fullView() {
     const elements = document.querySelectorAll(
         '.navbar, .modules, .report-sidebar, #tabsBar, #moduleProperty, .timing-diagram-panel, .testbench-manual-panel, .quick-btn'
     )
+
     elements.forEach((element) => {
         if (element instanceof HTMLElement) {
             element.style.display = 'none'
         }
     })
 
-    // Mobile Components
-
-    const simulatorMobileStore = toRefs(useSimulatorMobileStore());
+    // Mobile Components - Save previous state before hiding
+    const simulatorMobileStore = toRefs(useSimulatorMobileStore())
+    
+    // ✅ SAVE PREVIOUS STATE
+    prevMobileState = {
+        showElementsPanel: simulatorMobileStore.showElementsPanel.value,
+        showPropertiesPanel: simulatorMobileStore.showPropertiesPanel.value,
+        showTimingDiagram: simulatorMobileStore.showTimingDiagram.value,
+        showQuickButtons: simulatorMobileStore.showQuickButtons.value,
+        showMobileButtons: simulatorMobileStore.showMobileButtons.value
+    }
 
     simulatorMobileStore.showElementsPanel.value = false
     simulatorMobileStore.showPropertiesPanel.value = false
