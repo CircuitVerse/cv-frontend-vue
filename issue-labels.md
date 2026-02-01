@@ -89,7 +89,7 @@ These labels indicate **estimated effort or scope**.
 
 | Label | Description |
 |------|------------|
-| `Review-ready` | Pull request is ready for review. |
+| `Review-ready` | Pull request is ready for review. This is added only after all the threads mentioned by CodeRabbit and reviewers have been addressed. |
 | `Approved` | Pull request has been reviewed and approved. |
 
 ### PR Priority
