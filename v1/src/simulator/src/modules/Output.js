@@ -5,17 +5,7 @@ import { correctWidth, fillText, rect2, oppositeDirection } from '../canvasApi'
 import { getNextPosition } from '../modules'
 import { generateId } from '../utils'
 import { colors } from '../themer/themer'
-
-function bin2dec(binString) {
-    return parseInt(binString, 2)
-}
-
-function dec2bin(dec, bitWidth = undefined) {
-    // only for positive nos
-    var bin = dec.toString(2)
-    if (bitWidth == undefined) return bin
-    return '0'.repeat(bitWidth - bin.length) + bin
-}
+import { dec2bin } from '../node'
 
 /**
  * @class
