@@ -65,8 +65,9 @@ export default class AndGate extends CircuitElement {
 
     /**
      * @memberof AndGate
-     * fn to create save Json Data of object
-     * @return {JSON}
+     * Creates a JSON representation of the AND gate for saving/serialization
+     * @returns {object} Object containing constructor parameters and node mappings
+     * @category modules
      */
     customSave(): object {
         const data = {
@@ -85,7 +86,10 @@ export default class AndGate extends CircuitElement {
 
     /**
      * @memberof AndGate
-     * resolve output values based on inputData
+     * Resolves the output value by performing logical AND operation on all inputs
+     * Sets the output node value to the bitwise AND of all input values
+     * @returns {void}
+     * @category modules
      */
     resolve() {
         let result = this.inp[0].value || 0;
@@ -101,7 +105,10 @@ export default class AndGate extends CircuitElement {
 
     /**
      * @memberof AndGate
-     * function to draw And Gate
+     * Renders the AND gate on the canvas with its characteristic D-shaped symbol
+     * Handles hover and selection states with appropriate visual feedback
+     * @returns {void}
+     * @category modules
      */
     customDraw() {
         var ctx = simulationArea.context;
@@ -132,6 +139,12 @@ export default class AndGate extends CircuitElement {
         }
     }
 
+    /**
+     * @memberof AndGate
+     * Generates Verilog code for the AND gate
+     * @returns {string} Verilog code representation of the AND gate using the '&' operator
+     * @category modules
+     */
     generateVerilog(): string {
         return gateGenerateVerilog.call(this, '&');
     }
