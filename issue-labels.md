@@ -7,7 +7,7 @@ Labels are applied after verifying reproducibility, checking for duplicates, and
 
 ---
 
-## Status / Flow Labels
+## Status Labels
 
 These labels represent the **current lifecycle state** of an issue.
 
@@ -37,7 +37,7 @@ These labels describe **the nature of the issue**.
 
 ---
 
-## Platform / Area Labels
+## Platform Labels
 
 These labels indicate **where the issue applies**.
 
