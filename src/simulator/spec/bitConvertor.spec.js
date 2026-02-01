@@ -82,7 +82,6 @@ describe('data dir working', () => {
 
     test('function setBaseValues working', () => {
         const randomBaseValue = Math.floor(Math.random() * 100);
-        console.log('Testing for Base Value --> ', randomBaseValue);
         expect(() => setBaseValues(randomBaseValue)).not.toThrow();
     });
 });

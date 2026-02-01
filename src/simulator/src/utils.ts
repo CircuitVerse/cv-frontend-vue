@@ -95,7 +95,7 @@ export function gateGenerateVerilog(gate, invert = false) {
     let outputs = []
 
     for (let i = 0; i < this.nodeList.length; i++) {
-        if (this.nodeList[i].type == NODE_INPUT) {
+        if (this.nodeList[i].type === NODE_INPUT) {
             inputs.push(this.nodeList[i])
         } else {
             if (this.nodeList[i].connections.length > 0)
@@ -105,7 +105,7 @@ export function gateGenerateVerilog(gate, invert = false) {
     }
 
     let res = 'assign '
-    if (outputs.length == 1) res += outputs[0].verilogLabel
+    if (outputs.length === 1) res += outputs[0].verilogLabel
     else res += `{${outputs.map((x) => x.verilogLabel).join(', ')}}`
 
     res += ' = '
@@ -259,12 +259,12 @@ export function setBaseValues(x) {
 }
 
 export function parseNumber(num: string | number) {
-    if(typeof num === 'number') return num;
-    if (num.slice(0, 2).toLocaleLowerCase() == '0b')
+    if (typeof num === 'number') return num;
+    if (num.slice(0, 2).toLocaleLowerCase() === '0b')
         return parseInt(num.slice(2), 2)
-    if (num.slice(0, 2).toLocaleLowerCase() == '0x')
+    if (num.slice(0, 2).toLocaleLowerCase() === '0x')
         return parseInt(num.slice(2), 16)
-    if (num.slice(0, 1).toLocaleLowerCase() == '0') return parseInt(num, 8)
+    if (num.slice(0, 1).toLocaleLowerCase() === '0') return parseInt(num, 8)
     return parseInt(num)
 }
 
@@ -277,7 +277,7 @@ export function setupBitConvertor() {
     $("#binaryInput").on('keyup', function () {
         var inp = $("#binaryInput").val();
         var x;
-        if (inp.slice(0, 2) == '0b')
+        if (inp.slice(0, 2) === '0b')
             x = parseInt(inp.slice(2), 2);
         else
             x = parseInt(inp, 2);
@@ -286,13 +286,13 @@ export function setupBitConvertor() {
     $("#bcdInput").on('keyup', function () {
         var input = $("#bcdInput").val();
         var num = 0;
-        while (input.length % 4 !== 0){
+        while (input.length % 4 !== 0) {
             input = "0" + input;
         }
-        if(input !== 0){
+        if (input !== 0) {
             var i = 0;
-            while (i < input.length / 4){
-                if(parseInt(input.slice((4 * i), 4 * (i + 1)), 2) < 10)
+            while (i < input.length / 4) {
+                if (parseInt(input.slice((4 * i), 4 * (i + 1)), 2) < 10)
                     num = num * 10 + parseInt(input.slice((4 * i), 4 * (i + 1)), 2);
                 else
                     return setBaseValues(NaN);

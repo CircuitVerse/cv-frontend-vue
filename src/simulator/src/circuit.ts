@@ -101,7 +101,7 @@ export function switchCircuit(id: string) {
     if (globalScope.isVisible()) {
         // $(`#${id}`).addClass('current')
         const index = circuit_list.value.findIndex(
-            (circuit) => circuit.id == id
+            (circuit) => circuit.id === id
         ) // TODO: add strict equality after typescript
         circuit_list.value[index].focussed = true
         if (activeCircuit.value) {
@@ -127,7 +127,7 @@ export function switchCircuit(id: string) {
 
 export function getDependenciesList(scopeId: string | number) {
     let scope = scopeList[scopeId]
-    if (scope == undefined) scope = scopeList[globalScope.id]
+    if (scope === undefined) scope = scopeList[globalScope.id]
 
     let dependencies = ''
     for (let id in scopeList) {
@@ -187,7 +187,7 @@ export async function createNewCircuitScope(
 ) {
     name = name ?? (await provideCircuitName())
     if (name instanceof Error) return // if user cancels the prompt
-    if (name.trim() == '') {
+    if (name.trim() === '') {
         name = 'Untitled-Circuit'
     }
     simulationArea.lastSelected = undefined
