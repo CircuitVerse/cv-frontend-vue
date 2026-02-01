@@ -92,10 +92,10 @@ export default class AndGate extends CircuitElement {
      * @category modules
      */
     resolve() {
-        let result = this.inp[0].value || 0;
         if (this.isResolvable() === false) {
             return;
         }
+        let result = this.inp[0].value || 0;
         for (let i = 1; i < this.inputSize; i++) {
             result &= this.inp[i].value || 0;
         }
