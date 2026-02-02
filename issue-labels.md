@@ -11,13 +11,13 @@ Labels are applied after verifying reproducibility, checking for duplicates, and
 
 These labels represent the **current lifecycle state** of an issue.
 
-| Label | Description |
-|------|------------|
-| `pending` | Issue has been reported and is awaiting initial triage. |
-| `in progress` | Work on the issue has started. |
-| `blocked` | Progress is blocked due to a dependency or external factor. |
-| `duplicate` | The issue has already been reported and is tracked elsewhere. |
-| `stale` | No activity for an extended period; may be closed if no updates occur. |
+| Label         | Description                                                            |
+| ------------- | ---------------------------------------------------------------------- |
+| `pending`     | Issue has been reported and is awaiting initial triage.                |
+| `in progress` | Work on the issue has started.                                         |
+| `blocked`     | Progress is blocked due to a dependency or external factor.            |
+| `duplicate`   | The issue has already been reported and is tracked elsewhere.          |
+| `stale`       | No activity for an extended period; may be closed if no updates occur. |
 
 ---
 
@@ -25,14 +25,14 @@ These labels represent the **current lifecycle state** of an issue.
 
 These labels describe **the nature of the issue**.
 
-| Label | Description |
-|------|------------|
-| `bug` | Something is broken or not functioning as intended. |
-| `feature` | Request for new functionality or capability. |
-| `enhancement` | Improvement to an existing feature or behavior. |
-| `documentation` | Issues related to documentation, guides, or comments. |
-| `ui/ux` | User interface or user experience related issues. |
-| `security` | Issues that may impact application or user security. |
+| Label             | Description                                                              |
+| ----------------- | ------------------------------------------------------------------------ |
+| `bug`             | Something is broken or not functioning as intended.                      |
+| `feature`         | Request for new functionality or capability.                             |
+| `enhancement`     | Improvement to an existing feature or behavior.                          |
+| `documentation`   | Issues related to documentation, guides, or comments.                    |
+| `ui/ux`           | User interface or user experience-related issues.                        |
+| `security`        | Issues that may impact application or user security.                     |
 | `breaking change` | Changes that may break existing functionality or backward compatibility. |
 
 ---
@@ -41,10 +41,10 @@ These labels describe **the nature of the issue**.
 
 These labels indicate **where the issue applies**.
 
-| Label | Description |
-|------|------------|
-| `tauri` | Issues related to the Tauri-based application layer. |
-| `desktop` | Desktop-specific functionality or behavior. |
+| Label     | Description                                          |
+| --------- | ---------------------------------------------------- |
+| `tauri`   | Issues related to the Tauri-based application layer. |
+| `desktop` | Desktop-specific functionality or behavior.          |
 
 ---
 
@@ -52,11 +52,11 @@ These labels indicate **where the issue applies**.
 
 Used when an issue is **OS-specific**.
 
-| Label | Description |
-|------|------------|
+| Label     | Description                             |
+| --------- | --------------------------------------- |
 | `windows` | Issue specific to Windows environments. |
-| `linux` | Issue specific to Linux environments. |
-| `macos` | Issue specific to macOS environments. |
+| `linux`   | Issue specific to Linux environments.   |
+| `macos`   | Issue specific to macOS environments.   |
 
 ---
 
@@ -64,10 +64,10 @@ Used when an issue is **OS-specific**.
 
 These labels help contributors discover suitable issues.
 
-| Label | Description |
-|------|------------|
-| `good first issue` | Suitable for first-time contributors. |
-| `help wanted` | Maintainers welcome contributions on this issue. |
+| Label              | Description                                      |
+| ------------------ | ------------------------------------------------ |
+| `good first issue` | Suitable for first-time contributors.            |
+| `help wanted`      | Maintainers welcome contributions on this issue. |
 
 ---
 
@@ -75,11 +75,11 @@ These labels help contributors discover suitable issues.
 
 These labels indicate **estimated effort or scope**.
 
-| Label | Description |
-|------|------------|
-| `small` | Minor change, quick fix, or low-risk update. |
+| Label    | Description                                                 |
+| -------- | ----------------------------------------------------------- |
+| `small`  | Minor change, quick fix, or low-risk update.                |
 | `medium` | Requires moderate changes or understanding of the codebase. |
-| `large` | Significant refactor, complex logic, or multi-file changes. |
+| `large`  | Significant refactor, complex logic, or multi-file changes. |
 
 ---
 
@@ -87,15 +87,15 @@ These labels indicate **estimated effort or scope**.
 
 ### PR Status
 
-| Label | Description |
-|------|------------|
+| Label          | Description                                                                                                                           |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
 | `review-ready` | Pull request is ready for review. This is added only after all the threads mentioned by CodeRabbit and reviewers have been addressed. |
-| `approved` | Pull request has been reviewed and approved. |
+| `approved`     | Pull request has been reviewed and approved.                                                                                          |
 
 ### PR Priority
 
-| Label | Description |
-|------|------------|
-| `p0` | Critical fix; requires immediate attention. |
-| `p1` | High priority but not blocking. |
-| `p2` | Normal priority. |
+| Label | Description                                 |
+| ----- | ------------------------------------------- |
+| `p0`  | Critical fix; requires immediate attention. |
+| `p1`  | High priority but not blocking.             |
+| `p2`  | Normal priority.                            |
