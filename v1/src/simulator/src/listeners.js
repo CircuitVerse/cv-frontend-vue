@@ -12,6 +12,7 @@ import {
     tempBuffer,
     layoutUpdate,
 } from './layoutMode'
+import { distance as euclideanDistance } from './utils'
 import { simulationArea } from './simulationArea'
 import {
     scheduleUpdate,
@@ -123,7 +124,7 @@ export function pinchZoom(e, globalScope) {
     updatePositionSet(true);
     updateCanvasSet(true);
     // Calculating distance between touch to see if its pinchIN or pinchOut
-    distance = Math.sqrt((e.touches[1].clientX - e.touches[0].clientX) ** 2, (e.touches[1].clientY - e.touches[0].clientY) ** 2);
+    distance = euclideanDistance(e.touches[0].clientX, e.touches[0].clientY, e.touches[1].clientX, e.touches[1].clientY);
     if (distance >= currDistance) {
         pinchZ += 0.02;
         currDistance = distance;
