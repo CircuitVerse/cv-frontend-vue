@@ -7,10 +7,8 @@ import plotArea from './plotArea'
 import { simulationArea } from './simulationArea'
 import { dots } from './canvasApi'
 import { update, updateSimulationSet, updateCanvasSet } from './engine'
-import { setupUI } from './ux'
-import startMainListeners from './listeners'
 import { newCircuit } from './circuit'
-import load from './data/load'
+import load from './data/load'  
 import save from './data/save'
 import { showTourGuide } from './tutorials'
 import setupModules from './moduleSetup'
@@ -25,6 +23,7 @@ import '../vendor/jquery-ui.min.css'
 import '../vendor/jquery-ui.min'
 import { confirmSingleOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
 import { getToken } from '#/pages/simulatorHandler.vue'
+import { setupUI } from './ux'
 
 /**
  * to resize window and setup things it
@@ -32,6 +31,7 @@ import { getToken } from '#/pages/simulatorHandler.vue'
  * Also redraws the grid.
  * @category setup
  */
+
 export function resetup() {
     DPR = window.devicePixelRatio || 1
     if (lightMode) {
@@ -169,11 +169,12 @@ function showTour() {
  */
 export function setup() {
     setupEnvironment()
-    if (!embed) {
+    if(!embed){
         setupUI()
-        startMainListeners()
+        // Don't call startMainListeners() here anymore
+        // It will be called from setupPanelsWhenReady() in Extra.vue
     }
-    // startListeners()
     loadProjectData()
     showTour()
 }
+

@@ -18,6 +18,7 @@ import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
 import { toRefs } from 'vue'
 import { circuitElementList } from './metadata'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
+import startMainListeners from './listeners'
 
 export const uxvar = {
     smartDropXX: 50,
@@ -151,7 +152,6 @@ export function setupUI() {
     $('.logixButton').on('click', function () {
         logixFunction[this.id]()
     })
-    setupPanels()
 }
 
 /**
@@ -524,4 +524,30 @@ export function fillSubcircuitElements() {
         subCircuitElementList.value = subcircuitElements
         isEmptySubCircuitElementList.value = !subCircuitElementExists
     }
+}
+let panelsInitialized = false
+
+export function setupPanelsWhenReady() {
+    // Don't run in embed mode or if already initialized
+    // embed is a global flag from globalVariables.ts
+    if (window.embed || panelsInitialized) return
+    
+    const requiredPanels = [
+        '.elementPanel',
+        '.layoutElementPanel',
+        '#verilogEditorPanel',
+        '.timing-diagram-panel',
+        '.testbench-manual-panel',
+    ]
+
+    const allPresent = requiredPanels.every(
+        (sel) => document.querySelector(sel)
+    )
+
+    if (!allPresent) return
+
+    panelsInitialized = true
+
+    setupPanels()
+    startMainListeners()  // This gets called after panels are ready
 }
