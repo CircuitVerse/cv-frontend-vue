@@ -27,12 +27,17 @@ async function helpButtonClick() {
 	if (!link) return
 	
 	if (await isTauri()) {
-		new WebviewWindow(`help-${Date.now()}`, {
-			url: link,
-			title: 'Help - CircuitVerse',
-			width: 1000,
-			height: 700
-		})
+		try {
+			new WebviewWindow(`help-${Date.now()}`, {
+				url: link,
+				title: 'Help - CircuitVerse',
+				width: 1000,
+				height: 700
+			})
+		} catch {
+			// Fallback to browser if WebviewWindow fails
+			window.open(link, '_blank')
+		}
 	} else {
 		window.open(link, '_blank')
 	}
