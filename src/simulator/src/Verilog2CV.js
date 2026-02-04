@@ -47,6 +47,10 @@ export async function createVerilogCircuit() {
     )
 
     if (returned) {
+        if (!editor) {
+            setupCodeMirrorEnvironment()
+        }
+
         verilogModeSet(true)
 
         try {
@@ -102,7 +106,9 @@ function clearVerilogOutput() {
 }
 
 export function resetVerilogCode() {
-    editor.setValue(globalScope.verilogMetadata.code)
+    if (editor) {
+        editor.setValue(globalScope.verilogMetadata.code)
+    }
 }
 
 export function hasVerilogCodeChanges() {
@@ -311,6 +317,7 @@ export default function generateVerilogCircuit(
 
 export function setupCodeMirrorEnvironment() {
     var myTextarea = document.getElementById('codeTextArea')
+    if (!myTextarea) return
 
     CodeMirror.commands.autocomplete = function (cm) {
         cm.showHint({ hint: CodeMirror.hint.anyword })
