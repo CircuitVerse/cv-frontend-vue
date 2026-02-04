@@ -61,8 +61,9 @@ function syncSelectionToContextMenuPosition() {
     var canvas = simulationArea.canvas
     if (!canvas || typeof globalScope === 'undefined') return
     var rect = canvas.getBoundingClientRect()
-    var rawX = (ctxPos.x - rect.left) * DPR
-    var rawY = (ctxPos.y - rect.top) * DPR
+    var dpr = window.devicePixelRatio || 1
+    var rawX = (ctxPos.x - rect.left) * dpr
+    var rawY = (ctxPos.y - rect.top) * dpr
     simulationArea.mouseDownRawX = rawX
     simulationArea.mouseDownRawY = rawY
     simulationArea.mouseDownX = Math.round(((rawX - globalScope.ox) / globalScope.scale) / UNIT) * UNIT
@@ -305,7 +306,7 @@ export function deleteSelected() {
         if (
             !(
                 simulationArea.multipleObjectSelections[i].objectType ===
-                    'Node' &&
+                'Node' &&
                 simulationArea.multipleObjectSelections[i].type !== 2
             )
         )
