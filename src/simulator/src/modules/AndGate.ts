@@ -27,14 +27,14 @@ export default class AndGate extends CircuitElement {
 
         // variable inputLength, node creation
         if (inputLength % 2 === 1) {
-            for (let i = 0; i < inputLength / 2 - 1; i++) {
+            for (let i = Math.floor(inputLength / 2) - 1; i >= 0; i--) {
                 const a = new Node(-10, -10 * (i + 1), 0, this);
                 this.inp.push(a);
             }
             let a = new Node(-10, 0, 0, this);
             this.inp.push(a);
-            for (let i = inputLength / 2 + 1; i < inputLength; i++) {
-                a = new Node(-10, 10 * (i + 1 - inputLength / 2 - 1), 0, this);
+            for (let i = 0; i < Math.floor(inputLength / 2); i++) {
+                a = new Node(-10, 10 * (i + 1), 0, this);
                 this.inp.push(a);
             }
         } else {
