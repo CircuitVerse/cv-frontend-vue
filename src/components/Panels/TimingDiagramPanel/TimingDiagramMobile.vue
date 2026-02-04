@@ -17,7 +17,8 @@
             </div>
             {{ $t('simulator.panel_body.timing_diagram.one_cycle') }}
             <div>
-                <input id="timing-diagram-units" type="number" min="1" autocomplete="off" :value="timingDiagramPanelStore.cycleUnits"
+                <input
+id="timing-diagram-units" type="number" min="1" autocomplete="off" :value="timingDiagramPanelStore.cycleUnits"
                     @change="handleUnitsChange" @paste="handleUnitsChange" @keyup="handleUnitsChange" />
                 {{ $t('simulator.panel_body.timing_diagram.units') }}
             </div>

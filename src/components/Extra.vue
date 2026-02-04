@@ -36,8 +36,8 @@
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Message Display -->
     <div id="MessageDiv">
-        <div v-for="mes in useState().successMessages" class='alert alert-success' role='alert'> {{ mes }}</div>
-        <div v-for="error in useState().errorMessages" class='alert alert-danger' role='alert'> {{ error }}</div>
+        <div v-for="(mes, idx) in useState().successMessages" :key="`success-${idx}-${mes}`" class='alert alert-success' role='alert'> {{ mes }}</div>
+        <div v-for="(error, idx) in useState().errorMessages" :key="`error-${idx}-${error}`" class='alert alert-danger' role='alert'> {{ error }}</div>
     </div>
     <!-- --------------------------------------------------------------------------------------------- -->
 
@@ -85,7 +85,8 @@
     <div id="simulation" class="simulation">
         <!-- <div id="restrictedDiv" class="alert alert-danger display--none"></div> -->
         <div id="canvasArea" class="canvasArea">
-            <canvas id="backgroundArea" style="
+            <canvas
+id="backgroundArea" style="
                     position: absolute;
                     left: 0;
                     top: 0;
@@ -133,7 +134,8 @@
             </div>
 
             <div id="Help"></div>
-            <div class="sk-folding-cube loadingIcon" style="
+            <div
+class="sk-folding-cube loadingIcon" style="
                     display: none;
                     position: absolute;
                     right: 50%;
@@ -179,16 +181,18 @@
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <v-btn
-      class="cir-ele-btn"
-      @mousedown="simulatorMobileStore.showElementsPanel = !simulatorMobileStore.showElementsPanel"
-      :style="{bottom: simulatorMobileStore.showElementsPanel ? '10rem' : '2rem'}"
       v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.showMobileView && !simulatorMobileStore.isVerilog"
+      class="cir-ele-btn"
+      :style="{bottom: simulatorMobileStore.showElementsPanel ? '10rem' : '2rem'}"
+      @mousedown="simulatorMobileStore.showElementsPanel = !simulatorMobileStore.showElementsPanel"
     >
         <i class="fas fa-bezier-curve"></i>
     </v-btn>
 
     <v-btn
+      v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.showMobileView && !simulatorMobileStore.isVerilog"
       class="cir-btn"
+      :style="{bottom: simulatorMobileStore.showElementsPanel ? '10rem' : '2rem', backgroundColor: selectMultiple ? 'var(--primary)' : 'var(--bg-toggle-btn-primary)'}"
       @mousedown="(e: React.MouseEvent) => {
         if(simulationArea.shiftDown == false) {
             simulationArea.shiftDown = true;
@@ -200,43 +204,41 @@
             e.preventDefault();
         }
       }"
-      :style="{bottom: simulatorMobileStore.showElementsPanel ? '10rem' : '2rem', backgroundColor: selectMultiple ? 'var(--primary)' : 'var(--bg-toggle-btn-primary)'}"
-      v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.showMobileView && !simulatorMobileStore.isVerilog"
     >
         <i class="fa-solid fa-vector-square"></i>
     </v-btn>
 
     <v-btn
+      v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.isVerilog && simulatorMobileStore.showMobileView"
       class="cir-verilog-btn"
       @mousedown="simulatorMobileStore.showVerilogPanel = !simulatorMobileStore.showVerilogPanel"
-      v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.isVerilog && simulatorMobileStore.showMobileView"
     >
         <i class="fa-solid fa-gears"></i>
     </v-btn>
 
     <v-btn
-      class="cir-btn"
-      @mousedown="copyBtnClick()"
-      :style="{bottom: simulatorMobileStore.showElementsPanel ? '16rem' : '8rem'}"
       v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.showMobileView && !simulatorMobileStore.isCopy && !simulatorMobileStore.isVerilog"
+      class="cir-btn"
+      :style="{bottom: simulatorMobileStore.showElementsPanel ? '16rem' : '8rem'}"
+      @mousedown="copyBtnClick()"
     >
         <i class="fa-solid fa-copy"></i>
     </v-btn>
 
     <v-btn
-      class="cir-btn"
-      @mousedown="pasteBtnClick()"
-      :style="{bottom: simulatorMobileStore.showElementsPanel ? '16rem' : '8rem'}"
       v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.showMobileView && simulatorMobileStore.isCopy && !simulatorMobileStore.isVerilog"
+      class="cir-btn"
+      :style="{bottom: simulatorMobileStore.showElementsPanel ? '16rem' : '8rem'}"
+      @mousedown="pasteBtnClick()"
     >
         <i class="fa-solid fa-paste"></i>
     </v-btn>
 
     <v-btn
-      class="cir-btn"
-      @mousedown="propertiesBtnClick()"
-      :style="{bottom: simulatorMobileStore.showElementsPanel ? `${propertiesPanelPos.up}rem` : `${propertiesPanelPos.down}rem`}"
       v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.showMobileView"
+      class="cir-btn"
+      :style="{bottom: simulatorMobileStore.showElementsPanel ? `${propertiesPanelPos.up}rem` : `${propertiesPanelPos.down}rem`}"
+      @mousedown="propertiesBtnClick()"
     >
         <i class="fa-solid fa-sliders"></i>
     </v-btn>
