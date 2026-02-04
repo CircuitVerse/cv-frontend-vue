@@ -7,9 +7,9 @@ import { colors } from '../themer/themer';
 import { gateGenerateVerilog } from '../utils';
 
 export default class AndGate extends CircuitElement {
-    private inp: Node[];
-    private inputSize: number;
-    private output1: Node;
+    public inp: Node[];
+    public inputSize: number;
+    public output1: Node;
 
     constructor(
         x: number,
@@ -65,7 +65,7 @@ export default class AndGate extends CircuitElement {
     }
 
     customDraw() {
-        var ctx = simulationArea.context;
+        const ctx = simulationArea.context;
         if (ctx) {
             ctx.beginPath();
             ctx.lineWidth = correctWidth(3);
@@ -95,6 +95,12 @@ export default class AndGate extends CircuitElement {
 
     customSave(): object {
         const data = {
+            constructorParameters: [
+                this.direction,
+                this.inputSize,
+                this.bitWidth,
+            ],
+            // Legacy alias for backward compatibility
             constructorParamaters: [
                 this.direction,
                 this.inputSize,
@@ -122,5 +128,5 @@ AndGate.prototype.alwaysResolve = true;
 
 AndGate.prototype.verilogType = 'and';
 AndGate.prototype.helplink =
-    'https://docs.circuitverse.org/#/chapter4/4gates?id=and-gate';
+    'https://docs.circuitverse.org/chapter4/chapter4-gates#and-gate';
 AndGate.prototype.objectType = 'AndGate';
