@@ -386,25 +386,31 @@ function setupPanelListeners(panelSelector) {
     dragging(headerSelector, panelSelector)
     // Current Panel on Top
     var minimized = false
-    $(headerSelector).on('dblclick', () =>
-        minimized
-            ? $(maximizeSelector).trigger('click')
-            : $(minimizeSelector).trigger('click')
-    )
+    $(headerSelector)
+        .off('dblclick.panelListeners')
+        .on('dblclick.panelListeners', () =>
+            minimized
+                ? $(maximizeSelector).trigger('click')
+                : $(minimizeSelector).trigger('click')
+        )
     // Minimize
-    $(minimizeSelector).on('click', () => {
-        $(bodySelector).hide()
-        $(minimizeSelector).hide()
-        $(maximizeSelector).show()
-        minimized = true
-    })
+    $(minimizeSelector)
+        .off('click.panelListeners')
+        .on('click.panelListeners', () => {
+            $(bodySelector).hide()
+            $(minimizeSelector).hide()
+            $(maximizeSelector).show()
+            minimized = true
+        })
     // Maximize
-    $(maximizeSelector).on('click', () => {
-        $(bodySelector).show()
-        $(minimizeSelector).show()
-        $(maximizeSelector).hide()
-        minimized = false
-    })
+    $(maximizeSelector)
+        .off('click.panelListeners')
+        .on('click.panelListeners', () => {
+            $(bodySelector).show()
+            $(minimizeSelector).show()
+            $(maximizeSelector).hide()
+            minimized = false
+        })
 }
 
 export function exitFullView() {
