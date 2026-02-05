@@ -314,7 +314,11 @@ export default async function generateVerilogCircuit(
         let msg = error.message || 'Unknown error'
         if (error.status === 500) msg = 'Could not connect to Yosys server'
         else if (typeof error.json === 'function') {
-            try { msg = (await error.json()).message || msg } catch (e) { }
+            try {
+                msg = (await error.json()).message || msg
+            } catch (e) {
+                console.warn('Failed to parse error JSON:', e)
+            }
         }
         setVerilogOutput(msg, 'error')
     }
