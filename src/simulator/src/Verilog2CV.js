@@ -119,24 +119,24 @@ export function verilogModeSet(mode) {
     verilogMode = mode
     if (mode) {
         const code_window = document.getElementById('code-window')
-        if(code_window)
-        document.getElementById('code-window').style.display = 'block'
+        if (code_window)
+            document.getElementById('code-window').style.display = 'block'
 
         const elementPanel = document.querySelector('.elementPanel')
-        if(elementPanel)
-        document.querySelector('.elementPanel').style.display = 'none'
+        if (elementPanel)
+            document.querySelector('.elementPanel').style.display = 'none'
 
         const timingDiagramPanel = document.querySelector('.timing-diagram-panel')
-        if(timingDiagramPanel)
-        document.querySelector('.timing-diagram-panel').style.display = 'none'
+        if (timingDiagramPanel)
+            document.querySelector('.timing-diagram-panel').style.display = 'none'
 
         const quickBtn = document.querySelector('.quick-btn')
-        if(quickBtn)
-        document.querySelector('.quick-btn').style.display = 'none'
+        if (quickBtn)
+            document.querySelector('.quick-btn').style.display = 'none'
 
         const verilogEditorPanel = document.getElementById('verilogEditorPanel')
-        if(verilogEditorPanel)
-        document.getElementById('verilogEditorPanel').style.display = 'block'
+        if (verilogEditorPanel)
+            document.getElementById('verilogEditorPanel').style.display = 'block'
 
         if (!embed) {
             simulationArea.lastSelected = globalScope.root
@@ -146,24 +146,24 @@ export function verilogModeSet(mode) {
         resetVerilogCode()
     } else {
         const code_window = document.getElementById('code-window')
-        if(code_window)
-        document.getElementById('code-window').style.display = 'none'
+        if (code_window)
+            document.getElementById('code-window').style.display = 'none'
 
         const elementPanel = document.querySelector('.elementPanel')
-        if(elementPanel)
-        document.querySelector('.elementPanel').style.display = ''
+        if (elementPanel)
+            document.querySelector('.elementPanel').style.display = ''
 
         const timingDiagramPanel = document.querySelector('.timing-diagram-panel')
-        if(timingDiagramPanel)
-        document.querySelector('.timing-diagram-panel').style.display = ''
+        if (timingDiagramPanel)
+            document.querySelector('.timing-diagram-panel').style.display = ''
 
         const quickBtn = document.querySelector('.quick-btn')
-        if(quickBtn)
-        document.querySelector('.quick-btn').style.display = ''
+        if (quickBtn)
+            document.querySelector('.quick-btn').style.display = ''
 
         const verilogEditorPanel = document.getElementById('verilogEditorPanel')
-        if(verilogEditorPanel)
-        document.getElementById('verilogEditorPanel').style.display = 'none'
+        if (verilogEditorPanel)
+            document.getElementById('verilogEditorPanel').style.display = 'none'
     }
 }
 
@@ -270,7 +270,11 @@ export default async function generateVerilogCircuit(
 
     if (isTauri()) {
         apiUrl = `https://circuitverse.org${apiUrl}`
-        try { fetchFn = (await import('@tauri-apps/plugin-http')).fetch } catch (e) {}
+        try {
+            fetchFn = (await import('@tauri-apps/plugin-http')).fetch
+        } catch (e) {
+            console.warn('Failed to load Tauri HTTP plugin:', e)
+        }
     }
 
     try {
@@ -305,11 +309,11 @@ export default async function generateVerilogCircuit(
     } catch (error) {
         console.error('Verilog compilation error:', error)
         showError('Verilog compilation failed')
-        
+
         let msg = error.message || 'Unknown error'
         if (error.status === 500) msg = 'Could not connect to Yosys server'
         else if (typeof error.json === 'function') {
-            try { msg = (await error.json()).message || msg } catch (e) {}
+            try { msg = (await error.json()).message || msg } catch (e) { }
         }
         setVerilogOutput(msg, 'error')
     }
