@@ -2,7 +2,6 @@ import {
     createNewCircuitScope,
     switchCircuit,
     changeCircuitName,
-    scopeList,
 } from './circuit'
 import SubCircuit from './subcircuit'
 import { simulationArea } from './simulationArea'
