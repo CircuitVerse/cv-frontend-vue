@@ -34,6 +34,7 @@ import { showError, showMessage } from './utils'
 import { showProperties } from './ux'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { toRefs } from 'vue'
+import { isTauri } from '@tauri-apps/api/core'
 
 var editor
 var verilogMode = false
@@ -257,56 +258,61 @@ export function YosysJSON2CV(
     }
 }
 
-export default function generateVerilogCircuit(
+export default async function generateVerilogCircuit(
     verilogCode,
     scope = globalScope
 ) {
     clearVerilogOutput()
     setVerilogOutput('Compiling Verilog code...', 'info')
-    
-    var params = { code: verilogCode }
-    fetch('/api/v1/simulator/verilogcv', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(params),
-    })
-        .then((response) => {
-            if (!response.ok) {
-                throw response
-            }
-            return response.json()
+
+    let apiUrl = '/api/v1/simulator/verilogcv'
+    let fetchFn = window.fetch
+
+    if (isTauri()) {
+        apiUrl = `https://circuitverse.org${apiUrl}`
+        try { fetchFn = (await import('@tauri-apps/plugin-http')).fetch } catch (e) {}
+    }
+
+    try {
+        const response = await fetchFn(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code: verilogCode }),
         })
-        .then((circuitData) => {
-            scope.initialize()
-            for (var id in scope.verilogMetadata.subCircuitScopeIds)
-                delete scopeList[id]
-            scope.verilogMetadata.subCircuitScopeIds = []
-            scope.verilogMetadata.code = verilogCode
-            var subCircuitScope = {}
-            YosysJSON2CV(
-                circuitData,
-                globalScope,
-                'verilogCircuit',
-                subCircuitScope,
-                true
-            )
-            changeCircuitName(circuitData.name)
-            showMessage('Verilog Circuit Successfully Created')
-            setVerilogOutput('Verilog Circuit Successfully Created', 'success')
-        })
-        .catch((error) => {
-            if (error.status == 500) {
-                showError('Could not connect to Yosys')
-                setVerilogOutput('Could not connect to Yosys server', 'error')
-            } else {
-                showError('There is some issue with the code')
-                error.json().then((errorMessage) => {
-                    setVerilogOutput(errorMessage.message, 'error')
-                })
-            }
-        })
+
+        if (!response.ok) throw response
+        if (!response.headers.get('content-type')?.includes('application/json'))
+            throw new Error('Invalid JSON response')
+
+        const circuitData = await response.json()
+
+        scope.initialize()
+        for (var id in scope.verilogMetadata.subCircuitScopeIds)
+            delete scopeList[id]
+        scope.verilogMetadata.subCircuitScopeIds = []
+        scope.verilogMetadata.code = verilogCode
+        var subCircuitScope = {}
+        YosysJSON2CV(
+            circuitData,
+            globalScope,
+            'verilogCircuit',
+            subCircuitScope,
+            true
+        )
+        changeCircuitName(circuitData.name)
+        showMessage('Verilog Circuit Successfully Created')
+        setVerilogOutput('Verilog Circuit Successfully Created', 'success')
+    } catch (error) {
+        console.error('Verilog compilation error:', error)
+        showError('Verilog compilation failed')
+        
+        let msg = error.message || 'Unknown error'
+        if (error.status === 500) msg = 'Could not connect to Yosys server'
+        else if (typeof error.json === 'function') {
+            try { msg = (await error.json()).message || msg } catch (e) {}
+        }
+        setVerilogOutput(msg, 'error')
+    }
 }
 
 export function setupCodeMirrorEnvironment() {

@@ -17,6 +17,9 @@
         },
         {
           "url": "https://circuitverse.org/api/v1/auth/signup"
+        },
+        {
+          "url": "https://circuitverse.org/api/v1/simulator/verilogcv"
         }
       ]
     },
