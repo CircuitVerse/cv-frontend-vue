@@ -247,4 +247,4 @@ ImageAnnotation.prototype.mutableProperties = {
  * @category modules
  */
 ImageAnnotation.prototype.helplink =
-    'https://docs.circuitverse.org/chapter4/chapter4-annotation/#ImageAnnotation'
+    'https://docs.circuitverse.org/chapter4/chapter4-annotation#imageannotation'
