@@ -18,6 +18,7 @@
     "@mdi/font": "5.9.55",
     "@mdi/js": "^7.4.47",
     "@tauri-apps/api": "2.3.0",
+    "@tauri-apps/plugin-http": "^2.4.0",
     "@tauri-apps/plugin-fs": "2.2.0",
     "@tiptap/core": "^2.0.3",
     "@tiptap/extension-character-count": "^2.0.3",
