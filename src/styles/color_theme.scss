@@ -553,3 +553,32 @@ select {
     border: 1px solid var(--br-primary);
     color: var(--text-panel);
 }
+/* Enhanced tooltips for sidebar and floating buttons */
+.cir-btn[title],
+.cir-ele-btn[title],
+.cir-verilog-btn[title],
+.report-sidebar a[title] {
+    position: relative;
+}
+
+.cir-btn[title]:hover::after,
+.cir-ele-btn[title]:hover::after,
+.cir-verilog-btn[title]:hover::after,
+.report-sidebar a[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 110%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--bg-icons);
+    color: var(--text-panel);
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 1000;
+    border: 1px solid var(--br-primary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    font-weight: 500;
+    pointer-events: none;
+}
