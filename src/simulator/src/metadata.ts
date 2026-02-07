@@ -60,7 +60,8 @@ export const circuitElementList = [
     "Dlatch",
     "TB_Input",
     "TB_Output",
-    "ForceGate"
+    "ForceGate",
+    "ParityGenerator"
 ]
 const annotationList = ["Text", "Rectangle", "Arrow", "ImageAnnotation"]
 export const moduleList = [...circuitElementList, ...annotationList]
@@ -171,6 +172,7 @@ export const elementHierarchy: Record<string, NameLabel[]> = {
     ],
     "Misc": [
         { name: "TwoComplement", label: "Two Complement" },
+        { name: "ParityGenerator", label: "Parity Generator" },
         { name: "Flag", label: "Flag" },
         { name: "Splitter", label: "Splitter" },
         { name: "Adder", label: "Adder" },
