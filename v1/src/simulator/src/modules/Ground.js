@@ -96,7 +96,7 @@ Ground.prototype.tooltipText = 'Ground: All bits are Low(0).'
  * @category modules
  */
 Ground.prototype.helplink =
-    'https://docs.circuitverse.org/#/chapter4/2input?id=ground'
+    'https://docs.circuitverse.org/chapter4/chapter4-input#ground'
 
 /**
  * @memberof Ground
