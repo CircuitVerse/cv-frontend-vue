@@ -272,61 +272,71 @@ const themes: Themes = {
         '--disable': '#262626',
         '--table-head-dark': '#000000',
     },
-    'Color Blind': {
-        '--text-navbar--alt': '#000',
-        '--br-secondary': '#e2dad1',
-        '--cus-radio_label': '#2e2b21',
-        '--primary': '#2e2b21', //header bg
-        '--text-dark': 'black', //normal state text
-        '--text-lite': 'white', //text state on hover, on drop down menu , context menu
-        '--text-panel': 'white',
-        '--bg-navbar': '#2e2b21',
-        '--qp-br-tl': '#716950', //more ligthen than qp box shadow 1
-        '--qp-br-rd': '#6c654d',
-        '--qp-box-shadow-1': '#4f4a38', //lil lighten base .. top left shadow
-        '--qp-box-shadow-2': '#302d23', //lil darken base //down right shadow
-        '--bg-tabs': '#9a9a9a', //tabs bar primary bg,
-        '--text-circuit': 'black',
-        '--br-circuit-cur': '#e2dad1',
-        '--bg-circuit': '#d6d6d6',
-        '--br-circuit': '#e2dad1',
-        '--br-primary': '#e2dad1', //panel border, tabbar circuit border
-        '--context-text-hov': 'black',
-        '--context-text': 'white',
-        '--bg-primary-moz': 'rgba(46, 43, 33, 1)', //dialog bg, navbar dropwdown //.9 opacity of nav
-        '--bg-primary-chr': 'rgba(46, 43, 33, 1)', //dialog bg navbar dropwdown // .7 opacity of nav
-        '--bg-icons': '#9c7762', //ce icon bg
-        '--bg-text': '#ddd', //drop down, content menu, text bg on hover
-        '--bg-secondary': '#6B6B6B', //border color input button,
-        '--bg-toggle-btn-primary': '#bfaac1',
-        '--primary-btn-hov': '#ccbbcd',
-        '--btn-danger': '#b66e43',
-        '--btn-danger-darken': '#ba7144',
-        '--cus-btn-hov--bg': '#b66e43',
-        '--cus-btn-hov-text': '#fff',
-        '--canvas-fill': '#fff', //canvas bg
-        '--canvas-stroke': '#8d88ad', //canvas stroke
-        '--node': '#c59434',
-        '--stroke': '#342a1f',
-        '--fill': '#e0dcd3',
-        '--hover-and-sel': '#f4d4d4', //yellow
-        '--wire-draw': '#4c4c4c', //black
-        '--wire-cnt': '#908eb9', //
-        '--wire-pow': '#b3b1cf',
-        '--wire-sel': '#a7b8f8',
-        '--wire-lose': '#f42f0b',
-        '--mini-map': '#4b4636',
-        '--mini-map-stroke': '#000',
-        '--input-text': '#756d54',
-        '--output-rect': '#092c48',
-        '--secondary-stroke': '#cdb1ad',
-        '--text': '#000',
-        '--wire-norm': '#7f7cae',
-        '--node-norm': '#c59434',
-        '--splitter': '#836222',
-        '--disable': '#956c6a',
-        '--table-head-dark': '#2e2b21',
-    },
+'Color Blind': {
+    '--text-navbar--alt': '#000',
+    '--br-secondary': '#e2dad1',
+    '--cus-radio_label': '#2e2b21',
+    '--primary': '#2e2b21', //header bg
+    '--text-dark': 'black', //normal state text
+    '--text-lite': 'white', //text state on hover, on drop down menu , context menu
+    '--text-panel': 'white',
+    '--bg-navbar': '#2e2b21',
+
+    '--qp-br-tl': '#716950', //more ligthen than qp box shadow 1
+    '--qp-br-rd': '#6c654d',
+    '--qp-box-shadow-1': '#4f4a38', //lil lighten base .. top left shadow
+    '--qp-box-shadow-2': '#302d23', //lil darken base //down right shadow
+
+    '--bg-tabs': '#9a9a9a', //tabs bar primary bg,
+    '--text-circuit': 'black',
+    '--br-circuit-cur': '#e2dad1',
+    '--bg-circuit': '#d6d6d6',
+    '--br-circuit': '#e2dad1',
+    '--br-primary': '#e2dad1', //panel border, tabbar circuit border
+
+    '--context-text-hov': 'black',
+    '--context-text': 'white',
+
+    '--bg-primary-moz': 'rgba(46, 43, 33, 1)', //dialog bg, navbar dropwdown //.9 opacity of nav
+    '--bg-primary-chr': 'rgba(46, 43, 33, 1)', //dialog bg navbar dropwdown // .7 opacity of nav
+
+    '--bg-icons': '#9c7762', //ce icon bg
+    '--bg-text': '#ddd', //drop down, content menu, text bg on hover
+    '--bg-secondary': '#6B6B6B', //border color input button,
+
+    '--bg-toggle-btn-primary': '#bfaac1',
+    '--primary-btn-hov': '#ccbbcd',
+    '--btn-danger': '#b66e43',
+    '--btn-danger-darken': '#ba7144',
+
+    '--cus-btn-hov--bg': '#b66e43',
+    '--cus-btn-hov-text': '#fff',
+
+    '--canvas-fill': '#fff', //canvas bg
+    '--canvas-stroke': '#8d88ad', //canvas stroke
+
+    '--node': '#000000', // node (high contrast, not color-dependent)
+    '--stroke': '#342a1f',
+    '--fill': '#e0dcd3',
+    '--hover-and-sel': '#f4d4d4', //yellow
+    '--wire-draw': '#4c4c4c', //black
+    '--wire-norm': '#4e79a7', // normal wire (blue)
+    '--wire-cnt': '#1f77b4',  // connected wire (strong blue)
+    '--wire-pow': '#59a14f',  // power wire (high contrast green)
+    '--wire-sel': '#76b7b2',  // selected wire (cyan)
+    '--wire-lose': '#d55e00', // error wire (orange)
+    '--mini-map': '#4b4636',
+    '--mini-map-stroke': '#000',
+    '--input-text': '#756d54',
+    '--output-rect': '#092c48',
+    '--secondary-stroke': '#6c757d', // neutral gray (not red/brown)
+    '--text': '#000',
+    '--node-norm': '#000000', // node normal (same as node for clarity)
+    '--splitter': '#000000',  // splitter (high contrast)
+    '--disable': '#956c6a',
+    '--table-head-dark': '#2e2b21',
+},
+
     'Custom Theme': JSON.parse(localStorage.getItem('Custom Theme') || '{}') || {
         '--text-navbar--alt': '#000',
         '--br-secondary': '#7d7d7d',
