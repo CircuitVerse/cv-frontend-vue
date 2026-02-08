@@ -3,9 +3,8 @@
         <Logo :cvlogo="navbarLogo" />
 
         <div
-            v-if="!simulatorMobileStore.showMobileView"
             id="bs-example-navbar-collapse-1"
-            class="collapse navbar-collapse"
+            class="collapse navbar-collapse d-flex align-items-center"
         >
             <NavbarLinks :navbar-data="navbarData" />
 
