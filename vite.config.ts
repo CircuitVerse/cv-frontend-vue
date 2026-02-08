@@ -16,6 +16,8 @@ export default defineConfig(() => {
     const isDesktop = !!process.env.DESKTOP_MODE
 
     return {
+         root: `./${version}`,
+
         plugins: [
             vue(),
             vuetify({ autoImport: true }),
@@ -58,6 +60,9 @@ export default defineConfig(() => {
         },
         server: {
             port: 4000,
+            fs: {
+                allow: ['..']
+            }
         },
         preview: {
             port: 4173,

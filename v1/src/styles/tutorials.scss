@@ -1,4 +1,4 @@
-@import '/node_modules/driver.js/dist/driver.min.css';
+@import '../../../node_modules/driver.js/dist/driver.min.css';
 
 #driver-highlighted-element-stage {
     background-color: transparent !important;
@@ -7,7 +7,7 @@
 .driver-disabled {
     border: 1.5px solid #ddd !important;
 }
-
+    
 .driver-btn-group button {
     font-family: 'Nunito', sans-serif !important;
     font-size: 14px !important;
