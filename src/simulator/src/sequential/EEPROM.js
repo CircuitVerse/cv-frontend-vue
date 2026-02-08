@@ -12,12 +12,12 @@ import RAM from './RAM'
  * This is basically a RAM component that persists its contents.
  *
  * We consider EEPROMs more 'expensive' than RAMs, so we arbitrarily limit
- * the addressWith to a maximum of 10 bits (1024 addresses) with a default of 8-bit (256).
+ * the addressWidth to a maximum of 10 bits (1024 addresses) with a default of 8-bit (256).
  *
  * In the EEPROM all addresses are initialized to zero.
  * This way we serialize unused values as "0" instead of "null".
  *
- * These two techniques help keep reduce the size of saved projects.
+ * These two techniques helps reduce the size of saved projects.
  * @category sequential
  */
 export default class EEPROM extends RAM {
@@ -85,6 +85,7 @@ export default class EEPROM extends RAM {
 EEPROM.prototype.tooltipText =
     'Electrically Erasable Programmable Read-Only Memory'
 EEPROM.prototype.shortName = 'EEPROM'
+EEPROM.prototype.helplink = 'https://docs.circuitverse.org/chapter4/chapter4-sequentialelements/#eeprom'
 EEPROM.prototype.maxAddressWidth = 10
 EEPROM.prototype.mutableProperties = {
     addressWidth: {

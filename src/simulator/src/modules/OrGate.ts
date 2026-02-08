@@ -129,5 +129,5 @@ OrGate.prototype.alwaysResolve = true;
 
 OrGate.prototype.verilogType = 'or';
 OrGate.prototype.helplink =
-    'https://docs.circuitverse.org/#/chapter4/4gates?id=or-gate';
+    'https://docs.circuitverse.org/chapter4/chapter4-gates#or-gate';
 OrGate.prototype.objectType = 'OrGate';
