@@ -16,6 +16,8 @@ export default defineConfig(() => {
     const isDesktop = !!process.env.DESKTOP_MODE
 
     return {
+         root: `./${version}`,
+
         plugins: [
             vue(),
             vuetify({ autoImport: true }),
@@ -40,7 +42,7 @@ export default defineConfig(() => {
         },
         base: process.env.VITE_BASE || (isDesktop ? '/' : `/simulatorvue/${version}/`),
         build: {
-            outDir: `./dist/simulatorvue/${version}/`,
+            outDir: `../dist/simulatorvue/${version}/`,
             assetsDir: 'assets',
             chunkSizeWarningLimit: 1600,
             rollupOptions: {
@@ -58,6 +60,9 @@ export default defineConfig(() => {
         },
         server: {
             port: 4000,
+            fs: {
+                allow: ['..']
+            }
         },
         preview: {
             port: 4173,
