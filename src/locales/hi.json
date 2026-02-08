@@ -119,12 +119,15 @@
                 "copy": "कॉपी करें",
                 "cut": "कट करें",
                 "delete": "हटाएं",
+                "undo": "पूर्ववत् करें",
                 "new_circuit": "नया सर्किट",
+                "insert_subcircuit": "सबसर्किट डालें",
                 "center_focus": "सेंटर फोकस"
             },
             "bit_converter": {
                 "decimal_value": "डेसीमल वैल्यू",
                 "binary_value": "बाइनरी वैल्यू",
+                "binary_coded_decimal_value": "बाइनरी कोडेड डेसीमल वैल्यू",
                 "octal_value": "ऑक्टल वैल्यू",
                 "hexadecimal_value": "हेक्साडेसिमल वैल्यू"
             },
