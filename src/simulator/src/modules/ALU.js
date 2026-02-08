@@ -145,7 +145,12 @@ export default class ALU extends CircuitElement {
             simulationArea.simulationQueue.add(this.output)
             this.message = 'A+B'
         } else if (this.controlSignalInput.value === 3) {
+            // No operation - output 0 to avoid stale data
             this.message = 'ALU'
+            this.output.value = 0
+            simulationArea.simulationQueue.add(this.output)
+            this.carryOut.value = 0
+            simulationArea.simulationQueue.add(this.carryOut)
         } else if (this.controlSignalInput.value === 4) {
             this.message = 'A&~B'
             this.output.value = this.inp1.value & this.flipBits(this.inp2.value)
@@ -165,7 +170,8 @@ export default class ALU extends CircuitElement {
                     (32 - this.bitWidth)) >>>
                 (32 - this.bitWidth)
             simulationArea.simulationQueue.add(this.output)
-            this.carryOut.value = 0
+            // Borrow flag: set to 1 when B > A (borrow occurred)
+            this.carryOut.value = +(this.inp1.value < this.inp2.value)
             simulationArea.simulationQueue.add(this.carryOut)
         } else if (this.controlSignalInput.value === 7) {
             this.message = 'A<B'
