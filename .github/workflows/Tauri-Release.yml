@@ -3,6 +3,7 @@ name: Manually Triggered Desktop Release
 permissions:
     contents: write
     actions: read
+    pull-requests: write
 
 concurrency:
     group: desktop-release-${{ github.ref }}
@@ -27,6 +28,7 @@ jobs:
         outputs:
             new_version: ${{ steps.bump.outputs.new_version }}
             changelog: ${{ steps.changelog.outputs.clean_changelog }}
+            release_branch: ${{ steps.bump.outputs.release_branch }}
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
@@ -72,9 +74,11 @@ jobs:
 
                   NEW_VERSION="v$MAJOR.$MINOR.$PATCH"
                   VERSION_NO_V="$MAJOR.$MINOR.$PATCH"
+                  RELEASE_BRANCH="release/$NEW_VERSION"
 
                   echo "new_version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
                   echo "version_no_v=$VERSION_NO_V" >> "$GITHUB_OUTPUT"
+                  echo "release_branch=$RELEASE_BRANCH" >> "$GITHUB_OUTPUT"
                   echo "New version will be: $NEW_VERSION"
 
             - name: Update Version Files
@@ -109,15 +113,50 @@ jobs:
                   release-count: 0
                   tag-prefix: 'v'
 
-            - name: Commit Version Bump
+            - name: Commit Version Bump and Create Release Branch
               run: |
                   NEW_VERSION="${{ steps.bump.outputs.new_version }}"
+                  RELEASE_BRANCH="release/$NEW_VERSION"
 
+                  git checkout -b "$RELEASE_BRANCH"
                   git add package.json src-tauri/tauri.conf.json src-tauri/Cargo.toml
                   git commit -m "chore: bump version to $NEW_VERSION"
                   git tag "$NEW_VERSION"
-                  git push origin HEAD:${{ github.ref_name }}
+                  git push origin "$RELEASE_BRANCH"
                   git push origin "$NEW_VERSION"
+
+            - name: Create Pull Request
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  NEW_VERSION="${{ steps.bump.outputs.new_version }}"
+                  RELEASE_BRANCH="release/$NEW_VERSION"
+                  TARGET_BRANCH="${{ github.ref_name }}"
+
+                  # Check if a PR already exists for this release branch
+                  EXISTING_PR=$(gh pr list --head "$RELEASE_BRANCH" --base "$TARGET_BRANCH" --json number --jq '.[0].number' || true)
+
+                  if [ -n "$EXISTING_PR" ]; then
+                    echo "PR #$EXISTING_PR already exists for $RELEASE_BRANCH -> $TARGET_BRANCH. Skipping PR creation."
+                  else
+                    gh pr create \
+                      --title "chore: release $NEW_VERSION" \
+                      --body "## Release $NEW_VERSION
+
+                  This PR contains the version bump for release $NEW_VERSION.
+
+                  ### Changes
+                  - Updated version in package.json, tauri.conf.json, and Cargo.toml
+                  - Tagged release $NEW_VERSION
+
+                  > **Note:** The tag is created on the release branch before merge. This is intentional to allow the build and release process to complete. The tag points to the version bump commit.
+
+                  ---
+                  *This PR was automatically created by the release workflow.*" \
+                      --base "$TARGET_BRANCH" \
+                      --head "$RELEASE_BRANCH"
+                    echo "Created PR for $RELEASE_BRANCH -> $TARGET_BRANCH"
+                  fi
 
     build-tauri:
         runs-on: ${{ matrix.os }}
@@ -131,11 +170,11 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v4
               with:
-                  ref: ${{ github.ref_name }}
+                  ref: ${{ needs.version.outputs.release_branch }}
                   fetch-depth: 0
 
             - name: Pull latest changes
-              run: git pull origin ${{ github.ref_name }}
+              run: git pull origin ${{ needs.version.outputs.release_branch }}
 
             - name: Setup Node.js
               uses: actions/setup-node@v4
@@ -215,7 +254,7 @@ jobs:
               with:
                   fetch-depth: 0
                   token: ${{ secrets.GITHUB_TOKEN }}
-                  ref: ${{ github.ref_name }}
+                  ref: ${{ needs.version.outputs.release_branch }}
 
             - name: Configure Git
               run: |
@@ -244,10 +283,11 @@ jobs:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
                   set -euo pipefail
-                  
+                  RELEASE_BRANCH="${{ needs.version.outputs.release_branch }}"
+
                   # Pull latest changes (version job pushed new commits)
-                  git pull origin ${{ github.ref_name }} --rebase
-                  
+                  git pull origin "$RELEASE_BRANCH" --rebase
+
                   if git diff --quiet -- CHANGELOG.md; then
                     echo "No changelog updates to commit."
                     exit 0
@@ -255,7 +295,7 @@ jobs:
 
                   git add CHANGELOG.md
                   git commit -m "chore: update changelog for ${{ needs.version.outputs.new_version }}"
-                  git push origin HEAD:${{ github.ref_name }}
+                  git push origin HEAD:"$RELEASE_BRANCH"
 
             - name: Download all build artifacts
               uses: actions/download-artifact@v4
