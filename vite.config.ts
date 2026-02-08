@@ -1,5 +1,5 @@
 /// <reference types="vitest" />
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'url'
 import vueI18n from '@intlify/vite-plugin-vue-i18n'
@@ -11,7 +11,8 @@ import { createHtmlPlugin } from 'vite-plugin-html'
 import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js'
 
 // https://vitejs.dev/config/
-export default defineConfig(() => {
+export default defineConfig(({ mode }) => {
+    const env = loadEnv(mode, process.cwd(), '')
     const version = process.env.VITE_SIM_VERSION || 'v0'
     const isDesktop = !!process.env.DESKTOP_MODE
 
@@ -58,6 +59,13 @@ export default defineConfig(() => {
         },
         server: {
             port: 4000,
+            proxy: {
+                '/api': {
+                    target: env.VITE_API_URL || 'http://localhost:3000',
+                    changeOrigin: true,
+                    secure: true
+                }
+            }
         },
         preview: {
             port: 4173,

@@ -42,6 +42,73 @@ npm run dev
 # Set VITE_SIM_VERSION=v1 in your environment and run npm run dev
 ```
 
+## Backend API Setup
+
+The frontend can function independently for basic circuits, but certain features require the CircuitVerse Rails backend:
+
+**Backend-Dependent Features:**
+- Verilog compilation
+- Save/Load projects to database  
+- User authentication
+- Project permissions
+- Issue reporting
+
+### Quick Setup
+
+1. **Copy the environment template:**
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Choose your backend option** (edit `.env`):
+
+   **Option A: Production API** (Quick - uses circuitverse.org)
+   ```bash
+   VITE_API_URL=https://circuitverse.org
+   ```
+   ⚠️ **Warning:** This connects to production data!
+
+   **Option B: Local Rails Backend** (Recommended for development)
+   ```bash
+   VITE_API_URL=http://localhost:3000
+   ```
+   Requires running the [CircuitVerse Rails backend](https://github.com/CircuitVerse/CircuitVerse).
+
+3.  **Restart the development server:**
+   ```bash
+   npm run dev
+   ```
+
+### Running Local Rails Backend (Full Development Setup)
+
+For full development capabilities, run the Rails backend locally:
+
+1. **Clone the main CircuitVerse repository:**
+   ```bash
+   git clone https://github.com/CircuitVerse/CircuitVerse.git
+   cd CircuitVerse
+   ```
+
+2. **Follow the setup instructions** in the [CircuitVerse README](https://github.com/CircuitVerse/CircuitVerse/blob/master/README.md)
+
+3. **Start the Rails server:**
+   ```bash
+   rails server  # Runs on http://localhost:3000
+   ```
+
+4. **Configure your frontend** (in cv-frontend-vue):
+   ```bash
+   # .env
+   VITE_API_URL=http://localhost:3000
+   ```
+
+5. **Restart frontend dev server:**
+   ```bash
+   npm run dev
+   ```
+
+Now all backend features will work with your local Rails instance!
+
 ## Build System
 We use a unified build system to generate assets for all versions.
 
