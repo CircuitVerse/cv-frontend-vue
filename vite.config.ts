@@ -42,7 +42,7 @@ export default defineConfig(() => {
         },
         base: process.env.VITE_BASE || (isDesktop ? '/' : `/simulatorvue/${version}/`),
         build: {
-            outDir: `./dist/simulatorvue/${version}/`,
+            outDir: `../dist/simulatorvue/${version}/`,
             assetsDir: 'assets',
             chunkSizeWarningLimit: 1600,
             rollupOptions: {
