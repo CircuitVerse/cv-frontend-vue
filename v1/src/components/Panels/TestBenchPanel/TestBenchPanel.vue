@@ -110,6 +110,7 @@ import { buttonListenerFunctions } from '#/simulator/src/testbench'
 import { openCreator } from '#/simulator/src/testbench';
 import { useLayoutStore } from '#/store/layoutStore'
 import { onMounted, ref } from 'vue'
+import { setupPanelListeners, minimizePanel } from '#/simulator/src/ux'
 
 const layoutStore = useLayoutStore()
 const testBenchStore = useTestBenchStore();
@@ -117,8 +118,8 @@ const testbenchPanelRef = ref<HTMLElement | null>(null);
 
 onMounted(() => {
     layoutStore.testbenchPanelRef = testbenchPanelRef.value
-    window.setupPanelListeners?.('.testbench-manual-panel')
-    window.minimizePanel?.('.testbench-manual-panel')
+    setupPanelListeners('.testbench-manual-panel')
+    minimizePanel('.testbench-manual-panel')
 })
 
 const testData = computed(() => testBenchStore.testbenchData?.testData);

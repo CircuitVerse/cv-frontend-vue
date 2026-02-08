@@ -350,11 +350,11 @@ $('#octalInput').on('keyup', () => {
     setBaseValues(x)
 })
 
-window.setupPanelListeners = setupPanelListeners
 
-window.minimizePanel = (panelSelector) => {
+export function minimizePanel(panelSelector) {
     $(panelSelector + ' .minimize').trigger('click')
 }
+
 export function setupPanels() {
     dragging('#dragQPanel', '.quick-btn')
 
@@ -367,17 +367,17 @@ export function setupPanels() {
     setupPanelListeners('.testbench-manual-panel')
 
     // Minimize Timing Diagram (takes too much space)
-    $('.timing-diagram-panel .minimize').trigger('click')
+    minimizePanel('.timing-diagram-panel')
 
     // Minimize Testbench UI
-    $('.testbench-manual-panel .minimize').trigger('click')
+    minimizePanel('.testbench-manual-panel')
 
     $('#projectName').on('click', () => {
         $("input[name='setProjectName']").focus().select()
     })
 }
 
-function setupPanelListeners(panelSelector) {
+export function setupPanelListeners(panelSelector) {
     var headerSelector = `${panelSelector} .panel-header`
     var minimizeSelector = `${panelSelector} .minimize`
     var maximizeSelector = `${panelSelector} .maximize`

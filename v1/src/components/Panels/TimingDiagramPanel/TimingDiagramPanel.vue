@@ -1,5 +1,5 @@
 <template>
-    <div class="timing-diagram-panel draggable-panel" ref="timingDiagramPanelRef" id="time-Diagram">
+   <div class="timing-diagram-panel draggable-panel" ref="timingDiagramPanelRef" id="time-Diagram">
         <!-- Timing Diagram Panel -->
         <PanelHeader
             :header-title="$t('simulator.panel_header.timing_diagram')"
@@ -49,14 +49,15 @@ import PanelHeader from '../Shared/PanelHeader.vue'
 import { handleButtonClick, handleUnitsChange } from './TimingDiagramPanel'
 import { useLayoutStore } from '#/store/layoutStore'
 import { useTimingDiagramPanelStore } from '#/store/timingDiagramPanelStore'
+import { setupPanelListeners, minimizePanel } from '#/simulator/src/ux'
 
 const layoutStore = useLayoutStore()
 const timingDiagramPanelStore = useTimingDiagramPanelStore();
 
 onMounted(() => {
     layoutStore.timingDiagramPanelRef = timingDiagramPanelStore.timingDiagramPanelRef
-    window.setupPanelListeners?.('.timing-diagram-panel')
-    window.minimizePanel?.('.timing-diagram-panel')
+    setupPanelListeners('.timing-diagram-panel')
+    minimizePanel('.timing-diagram-panel')
 })
 </script>
 

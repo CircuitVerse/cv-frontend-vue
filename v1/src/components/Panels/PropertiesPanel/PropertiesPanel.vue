@@ -14,12 +14,13 @@ import LayoutProperty from '#/components/Panels/PropertiesPanel/LayoutProperty/L
 import { toRaw, onMounted } from 'vue'
 import { showPropertiesPanel } from './PropertiesPanel';
 import { usePropertiesPanelStore } from '#/store/propertiesPanelStore';
+import { setupPanelListeners } from '#/simulator/src/ux'
 
 const propertiesPanelStore = usePropertiesPanelStore();
 
 onMounted(() => {
     // checks for which type of properties panel to show
     setInterval(showPropertiesPanel, 100)
-    window.setupPanelListeners?.('#moduleProperty')
+    setupPanelListeners('#moduleProperty')
 })
 </script>
