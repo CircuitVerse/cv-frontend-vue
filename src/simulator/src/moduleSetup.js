@@ -43,6 +43,7 @@ import TwoComplement from './modules/TwoComplement'
 import VariableLed from './modules/VariableLed'
 import XnorGate from './modules/XnorGate'
 import XorGate from './modules/XorGate'
+import ParityGenerator from './modules/ParityGenerator'
 import Clock from './sequential/Clock'
 import DflipFlop from './sequential/DflipFlop'
 import Dlatch from './sequential/Dlatch'
@@ -72,6 +73,7 @@ export default function setupModules() {
         Counter,
         Multiplexer,
         XorGate,
+        ParityGenerator,
         XnorGate,
         SevenSegDisplay,
         SixteenSegDisplay,
