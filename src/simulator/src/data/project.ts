@@ -51,7 +51,7 @@ export async function recoverProject() {
                 console.error('Load error:', loadError)
             }
         } else {
-            localStorage.removeItem('recover')
+            // Keep recovery data so the user can retry via Project → Recover Project
         }
     } catch (parseError) {
         showError('Recovery data is corrupted and cannot be parsed')
