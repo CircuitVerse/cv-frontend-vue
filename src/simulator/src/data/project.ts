@@ -23,7 +23,7 @@ export async function recoverProject() {
         return
     }
     
-    try {
+    try {                                     //error handling for JSON parse and load function
         const data = JSON.parse(recoverData)
         
         if (!data || typeof data !== 'object') {
