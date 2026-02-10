@@ -57,6 +57,7 @@ Used when an issue is **OS-specific**.
 | `windows` | Issue specific to Windows environments. |
 | `linux`   | Issue specific to Linux environments.   |
 | `macos`   | Issue specific to macOS environments.   |
+| `android` | Issue specific to android environments. |
 
 ---
 
@@ -91,6 +92,7 @@ These labels indicate **estimated effort or scope**.
 | -------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
 | `review-ready` | Pull request is ready for review. This is added only after all the threads mentioned by CodeRabbit and reviewers have been addressed. |
 | `approved`     | Pull request has been reviewed and approved.                                                                                          |
+| `pr-metadata-needs-fix` | The PR template is either not followed correctly or the provided information conflicts with the changes. Please update the PR description. |
 
 ### PR Priority
 
