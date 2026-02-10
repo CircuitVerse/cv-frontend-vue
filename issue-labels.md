@@ -57,7 +57,6 @@ Used when an issue is **OS-specific**.
 | `windows` | Issue specific to Windows environments. |
 | `linux`   | Issue specific to Linux environments.   |
 | `macos`   | Issue specific to macOS environments.   |
-| `android` | Issue specific to android environments. |
 
 ---
 
