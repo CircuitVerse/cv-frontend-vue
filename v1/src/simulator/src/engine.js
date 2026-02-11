@@ -13,7 +13,7 @@ import miniMapArea from './minimap'
 import { resetup } from './setup'
 import { verilogModeGet } from './Verilog2CV'
 import { renderOrder, updateOrder } from './metadata'
-import ContentionPendingData from './contention';
+import ContentionPendingData from './contention'
 
 /**
  * Core of the simulation and rendering algorithm.
@@ -228,7 +228,16 @@ export function changeLightMode(val) {
         lightMode = true
         globalScope.scale /= DPR
         DPR = 1
-        $('#miniMap').fadeOut('fast')
+        // Fade out miniMap using native CSS transition
+        const miniMap = document.getElementById('miniMap')
+        if (miniMap) {
+            miniMap.style.transition = 'opacity 0.2s'
+            miniMap.style.opacity = '0'
+            setTimeout(() => {
+                miniMap.style.display = 'none'
+                miniMap.style.opacity = '1'
+            }, 200)
+        }
     }
     resetup()
 }
@@ -316,7 +325,8 @@ export function updateSelectionsAndPane(scope = globalScope) {
         } else if (!embed) {
             findDimensions(scope)
             miniMapArea.setup()
-            $('#miniMap').show()
+            const miniMap = document.getElementById('miniMap')
+            if (miniMap) miniMap.style.display = 'block'
         }
     } else if (
         simulationArea.lastSelected === scope.root &&
@@ -406,7 +416,7 @@ export function play(scope = globalScope, resetNodes = false) {
 
     simulationArea.simulationQueue.reset()
     plotArea.setExecutionTime() // Waveform thing
-    resetNodeHighlights(scope);
+    resetNodeHighlights(scope)
     // Reset Nodes if required
     if (resetNodes || forceResetNodes) {
         scope.reset()
@@ -415,7 +425,7 @@ export function play(scope = globalScope, resetNodes = false) {
     }
 
     // To store set of Nodes that have shown contention but kept temporarily
-    simulationArea.contentionPending = new ContentionPendingData();
+    simulationArea.contentionPending = new ContentionPendingData()
     // add inputs to the simulation queue
     scope.addInputs()
     // to check if we have infinite loop in circuit
@@ -441,18 +451,23 @@ export function play(scope = globalScope, resetNodes = false) {
     }
     // Check for Contentions
     if (simulationArea.contentionPending.size() > 0) {
-        for (const [ourNode, theirNode] of simulationArea.contentionPending.nodes()) {
-            ourNode.highlighted = true;
-            theirNode.highlighted = true;
+        for (const [
+            ourNode,
+            theirNode,
+        ] of simulationArea.contentionPending.nodes()) {
+            ourNode.highlighted = true
+            theirNode.highlighted = true
         }
 
-        forceResetNodesSet(true);
-        showError('Contention Error: One or more bus contentions in the circuit (check highlighted nodes)');
+        forceResetNodesSet(true)
+        showError(
+            'Contention Error: One or more bus contentions in the circuit (check highlighted nodes)'
+        )
     }
 }
 
 export function resetNodeHighlights(scope) {
-    for (const node of scope.allNodes) node.highlighted = false;
+    for (const node of scope.allNodes) node.highlighted = false
 }
 
 /**
@@ -541,7 +556,16 @@ export function update(scope = globalScope, updateEverything = false) {
         simulationArea.lastSelected !== globalScope.root
     ) {
         if (!lightMode) {
-            $('#miniMap').fadeOut('fast')
+            // Fade out miniMap using native CSS transition
+            const miniMapEl = document.getElementById('miniMap')
+            if (miniMapEl) {
+                miniMapEl.style.transition = 'opacity 0.2s'
+                miniMapEl.style.opacity = '0'
+                setTimeout(() => {
+                    miniMapEl.style.display = 'none'
+                    miniMapEl.style.opacity = '1'
+                }, 200)
+            }
         }
     }
     // Run simulation
