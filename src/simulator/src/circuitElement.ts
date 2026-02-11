@@ -17,15 +17,57 @@ import { generateNodeName } from './verilogHelpers'
 
 /**
  * Base class for circuit elements.
- * @param {number} x - x coordinate of the element
- * @param {number} y - y coordinate of the element
- * @param {Scope} scope - The circuit on which circuit element is being drawn
- * @param {string} dir - The direction of circuit element
- * @param {number} bitWidth - the number of bits per node.
+ * @param x - x coordinate of the element
+ * @param y - y coordinate of the element
+ * @param scope - The circuit on which circuit element is being drawn
+ * @param dir - The direction of circuit element
+ * @param bitWidth - the number of bits per node.
  * @category circuitElement
  */
 export default class CircuitElement {
-    constructor(x, y, scope, dir, bitWidth) {
+    x: number
+    y: number
+    hover: boolean
+    newElement: boolean
+    deleteNodesWhenDeleted: boolean
+    nodeList: any[]
+    clicked: boolean
+    oldx: number
+    oldy: number
+    leftDimensionX: number
+    rightDimensionX: number
+    upDimensionY: number
+    downDimensionY: number
+    label: string
+    scope: any
+    bitWidth: number
+    direction: string
+    directionFixed: boolean
+    labelDirectionFixed: boolean
+    labelDirection: string
+    orientationFixed: boolean
+    fixedBitWidth: boolean
+    queueProperties: {
+        inQueue: boolean
+        time: any
+        index: any
+    }
+    subcircuitMetadata: any
+    objectType: string
+    wasClicked: boolean
+    deleted: boolean
+    canShowInSubcircuit: boolean
+    alwaysResolve: boolean
+    propagationDelay: number
+    propagationDelayFixed: boolean
+    rectangleObject: boolean
+    verilogType: string
+    verilogLabel: string
+    centerElement: boolean
+    layoutProperties: any
+    overrideDirectionRotation: boolean
+
+    constructor(x: number, y: number, scope: any, dir: string, bitWidth: number) {
         // Data member initializations
         this.x = x
         this.y = y
@@ -55,7 +97,7 @@ export default class CircuitElement {
         this.scope = scope
         this.baseSetup()
 
-        this.bitWidth = bitWidth || parseInt(prompt('Enter bitWidth'), 10) || 1
+        this.bitWidth = bitWidth || parseInt(prompt('Enter bitWidth') || '1', 10) || 1
         this.direction = dir
         this.directionFixed = false
         this.labelDirectionFixed = false
@@ -85,44 +127,42 @@ export default class CircuitElement {
 
     /**
      * Function to flip bits
-     * @param {number} val - the value of flipped bits
-     * @returns {number} - The number of flipped bits
+     * @param val - the value of flipped bits
+     * @returns The number of flipped bits
      */
-    flipBits(val) {
+    flipBits(val: number): number {
         return ((~val >>> 0) << (32 - this.bitWidth)) >>> (32 - this.bitWidth)
     }
 
     /**
      * Function to get absolute value of x coordinate of the element
-     * @param {number} x - value of x coordinate of the element
-     * @return {number} - absolute value of x
+     * @return absolute value of x
      */
-    absX() {
+    absX(): number {
         return this.x
     }
 
     /**
      * Function to get absolute value of y coordinate of the element
-     * @param {number} y - value of y coordinate of the element
-     * @return {number} - absolute value of y
+     * @return absolute value of y
      */
-    absY() {
+    absY(): number {
         return this.y
     }
 
     /**
      * adds the element to scopeList
      */
-    baseSetup() {
+    baseSetup(): void {
         this.scope[this.objectType].push(this)
     }
 
     /**
      * Function to copy the circuit element obj to a new circuit element
-     * @param {CircuitElement} obj - element to be copied from
+     * @param obj - element to be copied from
      */
-    copyFrom(obj) {
-        var properties = ['label', 'labelDirection']
+    copyFrom(obj: any): void {
+        const properties = ['label', 'labelDirection']
         for (let i = 0; i < properties.length; i++) {
             if (obj[properties[i]] !== undefined) {
                 this[properties[i]] = obj[properties[i]]
@@ -130,22 +170,11 @@ export default class CircuitElement {
         }
     }
 
-    /** Methods to be Implemented for derivedClass
-     * saveObject(); //To generate JSON-safe data that can be loaded
-     * customDraw(); //This is to draw the custom design of the circuit(Optional)
-     * resolve(); // To execute digital logic(Optional)
-     * override isResolvable(); // custom logic for checking if module is ready
-     * override newDirection(dir) //To implement custom direction logic(Optional)
-     * newOrientation(dir) //To implement custom orientation logic(Optional)
-     */
-
-    // Method definitions
-
     /**
      * Function to update the scope when a new element is added.
-     * @param {Scope} scope - the circuit in which we add element
+     * @param scope - the circuit in which we add element
      */
-    updateScope(scope) {
+    updateScope(scope: any): void {
         this.scope = scope
         for (let i = 0; i < this.nodeList.length; i++) {
             this.nodeList[i].scope = scope
@@ -154,11 +183,10 @@ export default class CircuitElement {
 
     /**
      * To generate JSON-safe data that can be loaded
-     * @memberof CircuitElement
-     * @return {object} - the data to be saved
+     * @return the data to be saved
      */
-    saveObject() {
-        var data = {
+    saveObject(): any {
+        const data: any = {
             x: this.x,
             y: this.y,
             objectType: this.objectType,
@@ -176,11 +204,9 @@ export default class CircuitElement {
 
     /**
      * Always overriden
-     * @memberof CircuitElement
-     * @return {object} - the data to be saved
+     * @return the data to be saved
      */
-    // eslint-disable-next-line class-methods-use-this
-    customSave() {
+    customSave(): any {
         return {
             values: {},
             nodes: {},
@@ -190,9 +216,9 @@ export default class CircuitElement {
 
     /**
      * check hover over the element
-     * @return {boolean}
+     * @return boolean
      */
-    checkHover() {
+    checkHover(): void {
         if (simulationArea.mouseDown) return
         for (let i = 0; i < this.nodeList.length; i++) {
             this.nodeList[i].checkHover()
@@ -212,37 +238,32 @@ export default class CircuitElement {
 
     /**
      * This sets the width and height of the element if its rectangular
-     * and the reference point is at the center of the object.
-     * width and height define the X and Y distance from the center.
-     * Effectively HALF the actual width and height.
-     * NOT OVERRIDABLE
-     * @param {number} w - width
-     * @param {number} h - height
+     * @param width - width
+     * @param height - height
      */
-    setDimensions(width, height) {
+    setDimensions(width: number, height: number): void {
         this.leftDimensionX = this.rightDimensionX = width
         this.downDimensionY = this.upDimensionY = height
     }
 
     /**
-     * @memberof CircuitElement
-     * @param {number} w -width
+     * @param width - width
      */
-    setWidth(width) {
+    setWidth(width: number): void {
         this.leftDimensionX = this.rightDimensionX = width
     }
 
     /**
-     * @param {number} h -height
+     * @param height - height
      */
-    setHeight(height) {
+    setHeight(height: number): void {
         this.downDimensionY = this.upDimensionY = height
     }
 
     /**
      * Helper Function to drag element to a new position
      */
-    startDragging() {
+    startDragging(): void {
         if (!layoutModeGet()) {
             this.oldx = this.x
             this.oldy = this.y
@@ -254,9 +275,8 @@ export default class CircuitElement {
 
     /**
      * Helper Function to drag element to a new position
-     * @memberof CircuitElement
      */
-    drag() {
+    drag(): void {
         if (!layoutModeGet()) {
             this.x =
                 this.oldx + simulationArea.mouseX - simulationArea.mouseDownX
@@ -273,13 +293,12 @@ export default class CircuitElement {
     /**
      * The update method is used to change the parameters of the object on mouse click and hover.
      * Return Value: true if state has changed else false
-     * NOT OVERRIDABLE
      */
-    update() {
+    update(): any {
         if (layoutModeGet()) {
             return this.layoutUpdate()
         }
-        let update = false
+        let update: any = false
 
         update |= this.newElement
         if (this.newElement) {
@@ -367,13 +386,13 @@ export default class CircuitElement {
             this.clicked = false
             this.wasClicked = false
             // If this is SubCircuit, then call releaseClick to recursively release clicks on each subcircuit object
-            if (this.objectType == 'SubCircuit') this.releaseClick()
+            if (this.objectType == 'SubCircuit') (this as any).releaseClick()
         }
 
         if (simulationArea.mouseDown && !this.wasClicked) {
             if (this.clicked) {
                 this.wasClicked = true
-                if (this.click) this.click()
+                if ((this as any).click) (this as any).click()
                 if (simulationArea.shiftDown) {
                     simulationArea.lastSelected = undefined
                     if (
@@ -394,11 +413,9 @@ export default class CircuitElement {
 
     /**
      * Used to update the state of the elements inside the subcircuit in layout mode
-     * Return Value: true if the state has changed, false otherwise
-     **/
-
-    layoutUpdate() {
-        var update = false
+     */
+    layoutUpdate(): any {
+        let update: any = false
         update |= this.newElement
         if (this.newElement) {
             this.subcircuitMetadata.x = simulationArea.mouseX
@@ -446,15 +463,15 @@ export default class CircuitElement {
         }
 
         if (!this.clicked && !this.newElement) {
-            let x = this.subcircuitMetadata.x
-            let y = this.subcircuitMetadata.y
-            let yy = tempBuffer.layout.height
-            let xx = tempBuffer.layout.width
+            const x = this.subcircuitMetadata.x
+            const y = this.subcircuitMetadata.y
+            const yy = tempBuffer.layout.height
+            const xx = tempBuffer.layout.width
 
-            let rX = this.layoutProperties.rightDimensionX
-            let lX = this.layoutProperties.leftDimensionX
-            let uY = this.layoutProperties.upDimensionY
-            let dY = this.layoutProperties.downDimensionY
+            const rX = this.layoutProperties.rightDimensionX
+            const lX = this.layoutProperties.leftDimensionX
+            const uY = this.layoutProperties.upDimensionY
+            const dY = this.layoutProperties.downDimensionY
 
             if (lX <= x && x + rX <= xx && y >= uY && y + dY <= yy) return
 
@@ -468,7 +485,7 @@ export default class CircuitElement {
     /**
      * Helper Function to correct the direction of element
      */
-    fixDirection() {
+    fixDirection(): void {
         this.direction = fixDirection[this.direction] || this.direction
         this.labelDirection =
             fixDirection[this.labelDirection] || this.labelDirection
@@ -477,25 +494,24 @@ export default class CircuitElement {
     /**
      * The isHover method is used to check if the mouse is hovering over the object.
      * Return Value: true if mouse is hovering over object else false
-     * NOT OVERRIDABLE
      */
-    isHover() {
-        var mX = simulationArea.touch ? simulationArea.mouseDownX - this.x : simulationArea.mouseXf - this.x;
-        var mY = simulationArea.touch ? this.y - simulationArea.mouseDownY : this.y - simulationArea.mouseYf;
+    isHover(): boolean {
+        let mX = simulationArea.touch ? simulationArea.mouseDownX - this.x : simulationArea.mouseXf - this.x;
+        let mY = simulationArea.touch ? this.y - simulationArea.mouseDownY : this.y - simulationArea.mouseYf;
 
-        var rX = this.rightDimensionX
-        var lX = this.leftDimensionX
-        var uY = this.upDimensionY
-        var dY = this.downDimensionY
+        let rX = this.rightDimensionX
+        let lX = this.leftDimensionX
+        let uY = this.upDimensionY
+        let dY = this.downDimensionY
 
         if (layoutModeGet()) {
-            var mX = simulationArea.mouseXf - this.subcircuitMetadata.x
-            var mY = this.subcircuitMetadata.y - simulationArea.mouseYf
+            mX = simulationArea.mouseXf - this.subcircuitMetadata.x
+            mY = this.subcircuitMetadata.y - simulationArea.mouseYf
 
-            var rX = this.layoutProperties.rightDimensionX
-            var lX = this.layoutProperties.leftDimensionX
-            var uY = this.layoutProperties.upDimensionY
-            var dY = this.layoutProperties.downDimensionY
+            rX = this.layoutProperties.rightDimensionX
+            lX = this.layoutProperties.leftDimensionX
+            uY = this.layoutProperties.upDimensionY
+            dY = this.layoutProperties.downDimensionY
         }
 
         if (!this.directionFixed && !this.overrideDirectionRotation) {
@@ -518,34 +534,35 @@ export default class CircuitElement {
         return -lX <= mX && mX <= rX && -dY <= mY && mY <= uY
     }
 
-    isSubcircuitHover(xoffset = 0, yoffset = 0) {
-        var mX = simulationArea.mouseXf - this.subcircuitMetadata.x - xoffset
-        var mY = yoffset + this.subcircuitMetadata.y - simulationArea.mouseYf
+    /**
+     * Check if hovering over element in subcircuit
+     */
+    isSubcircuitHover(xoffset: number = 0, yoffset: number = 0): boolean {
+        const mX = simulationArea.mouseXf - this.subcircuitMetadata.x - xoffset
+        const mY = yoffset + this.subcircuitMetadata.y - simulationArea.mouseYf
 
-        var rX = this.layoutProperties.rightDimensionX
-        var lX = this.layoutProperties.leftDimensionX
-        var uY = this.layoutProperties.upDimensionY
-        var dY = this.layoutProperties.downDimensionY
+        const rX = this.layoutProperties.rightDimensionX
+        const lX = this.layoutProperties.leftDimensionX
+        const uY = this.layoutProperties.upDimensionY
+        const dY = this.layoutProperties.downDimensionY
 
         return -lX <= mX && mX <= rX && -dY <= mY && mY <= uY
     }
 
     /**
      * Helper Function to set label of an element.
-     * @memberof CircuitElement
-     * @param {string} label - the label for element
+     * @param label - the label for element
      */
-    setLabel(label) {
+    setLabel(label: string): void {
         this.label = label || ''
     }
 
     /**
      * Method that draws the outline of the module and calls draw function on module Nodes.
-     * NOT OVERRIDABLE
      */
-    draw() {
+    draw(): void {
         //
-        var ctx = simulationArea.context
+        const ctx = simulationArea.context
         this.checkHover()
 
         if (
@@ -586,10 +603,10 @@ export default class CircuitElement {
             ctx.stroke()
         }
         if (this.label !== '') {
-            var rX = this.rightDimensionX
-            var lX = this.leftDimensionX
-            var uY = this.upDimensionY
-            var dY = this.downDimensionY
+            let rX = this.rightDimensionX
+            let lX = this.leftDimensionX
+            let uY = this.upDimensionY
+            let dY = this.downDimensionY
             if (!this.directionFixed) {
                 if (this.direction === 'LEFT') {
                     lX = this.rightDimensionX
@@ -635,8 +652,8 @@ export default class CircuitElement {
         }
 
         // calls the custom circuit design
-        if (this.customDraw) {
-            this.customDraw()
+        if ((this as any).customDraw) {
+            (this as any).customDraw()
         }
 
         // draws nodes - Moved to renderCanvas
@@ -645,15 +662,12 @@ export default class CircuitElement {
     }
 
     /**
-        Draws element in layout mode (inside the subcircuit)
-        @param {number} xOffset - x position of the subcircuit
-        @param {number} yOffset - y position of the subcircuit
-
-        Called by subcirucit.js/customDraw() - for drawing as a part of another circuit
-        and layoutMode.js/renderLayout() -  for drawing in layoutMode
-    **/
-    drawLayoutMode(xOffset = 0, yOffset = 0) {
-        var ctx = simulationArea.context
+     * Draws element in layout mode (inside the subcircuit)
+     * @param xOffset - x position of the subcircuit
+     * @param yOffset - y position of the subcircuit
+     */
+    drawLayoutMode(xOffset: number = 0, yOffset: number = 0): void {
+        const ctx = simulationArea.context
         if (layoutModeGet()) {
             this.checkHover()
         }
@@ -671,10 +685,10 @@ export default class CircuitElement {
             return
 
         if (this.subcircuitMetadata.showLabelInSubcircuit) {
-            var rX = this.layoutProperties.rightDimensionX
-            var lX = this.layoutProperties.leftDimensionX
-            var uY = this.layoutProperties.upDimensionY
-            var dY = this.layoutProperties.downDimensionY
+            const rX = this.layoutProperties.rightDimensionX
+            const lX = this.layoutProperties.leftDimensionX
+            const uY = this.layoutProperties.upDimensionY
+            const dY = this.layoutProperties.downDimensionY
 
             // this.subcircuitMetadata.labelDirection
             if (this.subcircuitMetadata.labelDirection == 'LEFT') {
@@ -728,12 +742,14 @@ export default class CircuitElement {
             }
         }
         // calls the subcircuitDraw function in the element to draw it to canvas
-        this.subcircuitDraw(xOffset, yOffset)
+        ;(this as any).subcircuitDraw?.(xOffset, yOffset)
     }
 
-    // method to delete object
-    // OVERRIDE WITH CAUTION
-    delete() {
+    /**
+     * method to delete object
+     * OVERRIDE WITH CAUTION
+     */
+    delete(): void {
         simulationArea.lastSelected = undefined
         this.scope[this.objectType] = this.scope[this.objectType].filter(x => x !== this)
         if (this.deleteNodesWhenDeleted) {
@@ -753,9 +769,8 @@ export default class CircuitElement {
     /**
      * method to delete object
      * OVERRIDE WITH CAUTION
-     * @memberof CircuitElement
      */
-    cleanDelete() {
+    cleanDelete(): void {
         this.deleteNodesWhenDeleted = true
         this.delete()
     }
@@ -763,7 +778,7 @@ export default class CircuitElement {
     /**
      * Helper Function to delete the element and all the node attached to it.
      */
-    deleteNodes() {
+    deleteNodes(): void {
         for (let i = 0; i < this.nodeList.length; i++) {
             this.nodeList[i].delete()
         }
@@ -772,9 +787,9 @@ export default class CircuitElement {
     /**
      * method to change direction
      * OVERRIDE WITH CAUTION
-     * @param {string} dir - new direction
+     * @param dir - new direction
      */
-    newDirection(dir) {
+    newDirection(dir: string): void {
         if (this.direction === dir) return
         // Leave this for now
         if (this.directionFixed && this.orientationFixed) return
@@ -791,11 +806,18 @@ export default class CircuitElement {
     }
 
     /**
-     * Helper Function to change label direction of the element.
-     * @memberof CircuitElement
-     * @param {string} dir - new direction
+     * Method to change orientation
+     * @param dir - new direction
      */
-    newLabelDirection(dir) {
+    newOrientation(dir: string): void {
+        // Override in subclass if needed
+    }
+
+    /**
+     * Helper Function to change label direction of the element.
+     * @param dir - new direction
+     */
+    newLabelDirection(dir: string): void {
         if (layoutModeGet()) this.subcircuitMetadata.labelDirection = dir
         else this.labelDirection = dir
     }
@@ -803,9 +825,9 @@ export default class CircuitElement {
     /**
      * Method to check if object can be resolved
      * OVERRIDE if necessary
-     * @return {boolean}
+     * @return boolean
      */
-    isResolvable() {
+    isResolvable(): boolean {
         if (this.alwaysResolve) return true
         for (let i = 0; i < this.nodeList.length; i++) {
             if (
@@ -820,9 +842,9 @@ export default class CircuitElement {
     /**
      * Method to change object Bitwidth
      * OVERRIDE if necessary
-     * @param {number} bitWidth - new bitwidth
+     * @param bitWidth - new bitwidth
      */
-    newBitWidth(bitWidth) {
+    newBitWidth(bitWidth: number): void {
         if (this.fixedBitWidth) return
         if (this.bitWidth === undefined) return
         if (this.bitWidth < 1) return
@@ -835,13 +857,13 @@ export default class CircuitElement {
     /**
      * Method to change object delay
      * OVERRIDE if necessary
-     * @param {number} delay - new delay
+     * @param delay - new delay
      */
-    changePropagationDelay(delay) {
+    changePropagationDelay(delay: any): void {
         if (this.propagationDelayFixed) return
         if (delay === undefined) return
         if (delay === '') return
-        var tmpDelay = parseInt(delay, 10)
+        const tmpDelay = parseInt(delay, 10)
         if (tmpDelay < 0) return
         this.propagationDelay = tmpDelay
     }
@@ -850,16 +872,15 @@ export default class CircuitElement {
      * Dummy resolve function
      * OVERRIDE if necessary
      */
-    resolve() {}
+    resolve(): void {}
 
     /**
      * Helper Function to process Verilog
-     * @return {string}
      */
-    processVerilog() {
+    processVerilog(): void {
         // Output count used to sanitize output
-        var output_total = 0
-        for (var i = 0; i < this.nodeList.length; i++) {
+        let output_total = 0
+        for (let i = 0; i < this.nodeList.length; i++) {
             if (
                 this.nodeList[i].type == NODE_OUTPUT &&
                 this.nodeList[i].connections.length > 0
@@ -867,8 +888,8 @@ export default class CircuitElement {
                 output_total++
         }
 
-        var output_count = 0
-        for (var i = 0; i < this.nodeList.length; i++) {
+        let output_count = 0
+        for (let i = 0; i < this.nodeList.length; i++) {
             if (this.nodeList[i].type == NODE_OUTPUT) {
                 if (
                     this.objectType != 'Input' &&
@@ -898,10 +919,10 @@ export default class CircuitElement {
 
     /**
      * Helper Function to check if verilog resolvable
-     * @return {boolean}
+     * @return boolean
      */
-    isVerilogResolvable() {
-        var backupValues = []
+    isVerilogResolvable(): boolean {
+        const backupValues: any[] = []
         for (let i = 0; i < this.nodeList.length; i++) {
             backupValues.push(this.nodeList[i].value)
             this.nodeList[i].value = undefined
@@ -913,7 +934,7 @@ export default class CircuitElement {
             }
         }
 
-        var res = this.isResolvable()
+        const res = this.isResolvable()
 
         for (let i = 0; i < this.nodeList.length; i++) {
             this.nodeList[i].value = backupValues[i]
@@ -925,7 +946,7 @@ export default class CircuitElement {
     /**
      * Helper Function to remove proporgation.
      */
-    removePropagation() {
+    removePropagation(): void {
         for (let i = 0; i < this.nodeList.length; i++) {
             if (this.nodeList[i].type === NODE_OUTPUT) {
                 if (this.nodeList[i].value !== undefined) {
@@ -938,18 +959,24 @@ export default class CircuitElement {
 
     /**
      * Helper Function to name the verilog.
-     * @return {string}
+     * @return string
      */
-    verilogName() {
+    verilogName(): string {
         return this.verilogType || this.objectType
     }
 
-    verilogBaseType() {
+    /**
+     * Returns base type for verilog
+     */
+    verilogBaseType(): string {
         return this.verilogName()
     }
 
-    verilogParametrizedType() {
-        var type = this.verilogBaseType()
+    /**
+     * Returns parametrized type for verilog
+     */
+    verilogParametrizedType(): string {
+        let type = this.verilogBaseType()
         // Suffix bitwidth for multi-bit inputs
         // Example: DflipFlop #(2) DflipFlop_0
         if (this.bitWidth != undefined && this.bitWidth > 1)
@@ -959,14 +986,14 @@ export default class CircuitElement {
 
     /**
      * Helper Function to generate Verilog.
-     * @return {string}
+     * @return string
      */
-    generateVerilog() {
+    generateVerilog(): string {
         // Example: and and_1(_out, _out, _Q[0]);
-        var inputs = []
-        var outputs = []
+        const inputs: any[] = []
+        const outputs: any[] = []
 
-        for (var i = 0; i < this.nodeList.length; i++) {
+        for (let i = 0; i < this.nodeList.length; i++) {
             if (this.nodeList[i].type == NODE_INPUT) {
                 inputs.push(this.nodeList[i])
             } else {
@@ -976,17 +1003,17 @@ export default class CircuitElement {
             }
         }
 
-        var list = outputs.concat(inputs)
-        var res = this.verilogParametrizedType()
-        var moduleParams = list.map((x) => x.verilogLabel).join(', ')
+        const list = outputs.concat(inputs)
+        let res = this.verilogParametrizedType()
+        const moduleParams = list.map((x) => x.verilogLabel).join(', ')
         res += ` ${this.verilogLabel}(${moduleParams});`
         return res
     }
 
     /**
-     * Toggles the visibility of the labels of subcircuit elements. Called by event handlers in ux.js
-     **/
-    toggleLabelInLayoutMode() {
+     * Toggles the visibility of the labels of subcircuit elements.
+     */
+    toggleLabelInLayoutMode(): void {
         this.subcircuitMetadata.showLabelInSubcircuit =
             !this.subcircuitMetadata.showLabelInSubcircuit
     }
