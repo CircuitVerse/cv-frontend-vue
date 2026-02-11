@@ -6,6 +6,7 @@ export interface SimulationArea {
     hover: boolean;
     clockState: number;
     clockEnabled: boolean;
+    simulationPlaying: boolean;
     // TODO: make this CircuitElement|null once converted to typescript
     lastSelected: any|null;
     stack: any[];

@@ -9,6 +9,7 @@ const simulationArea: SimulationArea = {
     hover: false,
     clockState: 0,
     clockEnabled: true,
+    simulationPlaying: true,
     lastSelected: null,
     stack: [],
     prevScale: 0,
