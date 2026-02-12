@@ -2,7 +2,7 @@
     <div
         id="tabsBar"
         class="noSelect pointerCursor"
-        :class="[embedClass(), { maxHeightStyle: showMaxHeight }]"
+        :class="[embedClass(), showMaxHeight ? 'maxHeightStyle' : 'minHeightStyle']"
     >
         <draggable
             :key="updateCount"
@@ -282,7 +282,6 @@ function isEmbed(): boolean {
 #tabsBar {
     padding-right: 50px;
     position: relative;
-    overflow: hidden;
     padding-bottom: 2.5px;
     z-index: 1;
 }
@@ -331,6 +330,13 @@ function isEmbed(): boolean {
 .maxHeightStyle {
     height: 30px;
     max-height: 30px;
+    overflow: hidden;
+}
+
+.minHeightStyle {
+    height: auto;
+    min-height: 30px;
+    overflow: visible;
 }
 
 .toolbarButton {
