@@ -12,21 +12,37 @@ import { layoutModeGet, toggleLayoutMode } from '../layoutMode'
 import { verilogModeGet } from '../Verilog2CV'
 import domtoimage from 'dom-to-image'
 import canvasToSvg from "canvas-to-svg"
-import { useProjectStore } from '#/store/projectStore'
-import { provideProjectName } from '#/components/helpers/promptComponent/PromptComponent.vue'
-import { UpdateProjectDetail } from '#/components/helpers/createNewProject/UpdateProjectDetail.vue'
-import { confirmOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
-import { getToken } from '#/pages/simulatorHandler.vue'
+import { useProjectStore } from '../../../store/projectStore'
+import { provideProjectName } from '../../../components/helpers/promptComponent/PromptComponent.vue'
+import { UpdateProjectDetail } from '../../../components/helpers/createNewProject/UpdateProjectDetail.vue'
+import { confirmOption } from '../../../components/helpers/confirmComponent/ConfirmComponent.vue'
+import { getToken } from '../../../pages/simulatorHandler.vue'
 import { renderOrder } from '../metadata'
 
-// var projectName = undefined
+// Extend Window interface to include global variables
+declare global {
+    interface Window {
+        globalScope: any
+        width: number
+        height: number
+        projectId: string | number | undefined
+        isUserLoggedIn: boolean
+        logixProjectId: string | number | undefined
+    }
+}
+
+// Get global variables from window
+const globalScope = window.globalScope
+let width = window.width
+let height = window.height
+const projectId = window.projectId
 
 /**
  * Function to set the name of project.
  * @param {string} name - name for project
  * @category data
  */
-export function setProjectName(name) {
+export function setProjectName(name: string | undefined): void {
     const projectStore = useProjectStore()
     if (name == undefined) {
         // $('#projectName').html('Untitled')
@@ -39,23 +55,24 @@ export function setProjectName(name) {
 }
 
 /**
- * Function to set the name of project.
- * @param {string} name - name for project
+ * Function to get the name of project.
+ * @returns {string | undefined} The project name if defined, otherwise undefined
  * @category data
  */
-export function getProjectName() {
+export function getProjectName(): string | undefined {
     const projectStore = useProjectStore()
     if (projectStore.getProjectNameDefined)
         return projectStore.getProjectName.trim()
     else return undefined
 }
+
 /**
  * Helper function to save canvas as image based on image type
  * @param {string} name -name of the circuit
  * @param {string} imgType - image type ex: png,jpg etc.
  * @category data
  */
-function downloadAsImg(name, imgType) {
+function downloadAsImg(name: string, imgType: string): void {
     const gh = simulationArea.canvas.toDataURL(`image/${imgType}`)
     const anchor = document.createElement('a')
     anchor.href = gh
@@ -66,13 +83,23 @@ function downloadAsImg(name, imgType) {
 /**
  * Returns the order of tabs in the project
  */
-export function getTabsOrder() {
-    var tabs = document.getElementById('tabsBar').firstChild.children
-    var order = []
-    for (let i = 0; i < tabs?.length; i++) {
-        order.push(tabs[i].id)
+export function getTabsOrder(): string[] {
+    const tabs = (document.getElementById('tabsBar')?.firstChild as HTMLElement)?.children
+    const order: string[] = []
+    for (let i = 0; i < (tabs?.length || 0); i++) {
+        order.push((tabs as HTMLCollection)[i].id)
     }
     return order
+}
+
+interface SaveData {
+    name: string
+    timePeriod: number
+    clockEnabled: boolean
+    projectId: string | number | undefined
+    focussedCircuit: string | number
+    orderedTabs: string[]
+    scopes: any[]
 }
 
 /**
@@ -81,16 +108,26 @@ export function getTabsOrder() {
  * @return {JSON}
  * @category data
  */
-export async function generateSaveData(name, setName = true) {
-    let data = {}
+export async function generateSaveData(name?: string, setName: boolean = true): Promise<string | Error> {
+    let data: SaveData = {
+        name: '',
+        timePeriod: 0,
+        clockEnabled: false,
+        projectId: undefined,
+        focussedCircuit: '',
+        orderedTabs: [],
+        scopes: []
+    }
 
     // Prompts for name, defaults to Untitled
-    name = getProjectName() || name || (await provideProjectName())
-    if (name instanceof Error) {
+    const projectName = getProjectName() || name || (await provideProjectName())
+    if (projectName instanceof Error) {
         return new Error('cancel')
         // throw 'save has been canceled'
-    } else if (name == '') {
+    } else if (projectName == '') {
         name = 'Untitled'
+    } else {
+        name = projectName
     }
     data.name = stripTags(name)
     if (setName) setProjectName(data.name)
@@ -104,16 +141,16 @@ export async function generateSaveData(name, setName = true) {
 
     // Project Circuits, each scope is one circuit
     data.scopes = []
-    const dependencyList = {}
-    const completed = {}
+    const dependencyList: { [key: string]: string[] } = {}
+    const completed: { [key: string]: boolean } = {}
     // Getting list of dependencies for each circuit
-    for (id in scopeList) {
+    for (const id in scopeList) {
         dependencyList[id] = scopeList[id].getDependencies()
     }
 
     // Helper function to save Scope
     // Recursively saves inner subcircuits first, before saving parent circuits
-    function saveScope(id) {
+    function saveScope(id: string): void {
         if (completed[id]) return
 
         for (let i = 0; i < dependencyList[id].length; i++) {
@@ -139,13 +176,13 @@ export async function generateSaveData(name, setName = true) {
     }
 
     // convert to text
-    data = JSON.stringify(data)
-    return data
+    const dataString = JSON.stringify(data)
+    return dataString
 }
 
 // Helper function to download text
-function download(filename, text) {
-    var pom = document.createElement('a')
+function download(filename: string, text: string): void {
+    const pom = document.createElement('a')
     pom.setAttribute(
         'href',
         'data:text/plain;charset=utf-8,' + encodeURIComponent(text)
@@ -153,7 +190,7 @@ function download(filename, text) {
     pom.setAttribute('download', filename)
 
     if (document.createEvent) {
-        var event = document.createEvent('MouseEvents')
+        const event = document.createEvent('MouseEvents')
         event.initEvent('click', true, true)
         pom.dispatchEvent(event)
     } else {
@@ -171,12 +208,12 @@ function download(filename, text) {
  * @category data
  */
 export function generateImage(
-    imgType,
-    view,
-    transparent,
-    resolution,
-    down = true
-) {
+    imgType: string,
+    view: string,
+    transparent: boolean,
+    resolution: number,
+    down: boolean = true
+): string | undefined {
     // Backup all data
     const backUpOx = globalScope.ox
     const backUpOy = globalScope.oy
@@ -204,7 +241,7 @@ export function generateImage(
     const scope = globalScope
 
     // Focus circuit
-    var flag = 1
+    const flag = 1
     if (flag) {
         if (view === 'full') {
             findDimensions()
@@ -228,6 +265,11 @@ export function generateImage(
     globalScope.ox = Math.round(globalScope.ox)
     globalScope.oy = Math.round(globalScope.oy)
 
+    if (!simulationArea.canvas || !backgroundArea.canvas) {
+        console.error('Canvas elements not initialized')
+        return
+    }
+
     simulationArea.canvas.width = width
     simulationArea.canvas.height = height
     backgroundArea.canvas.width = width
@@ -238,7 +280,7 @@ export function generateImage(
     simulationArea.clear()
 
     // Background
-    if (!transparent) {
+    if (!transparent && simulationArea.context) {
         simulationArea.context.fillStyle = colors['canvas_fill']
         simulationArea.context.rect(0, 0, width, height)
         simulationArea.context.fill()
@@ -251,11 +293,11 @@ export function generateImage(
         }
     }
 
-    let returnData
+    let returnData: string | undefined
     // If circuit is to be downloaded, download, other wise return dataURL
     if (down) {
         if (imgType === 'svg') {
-            const mySerializedSVG = simulationArea.context.getSerializedSvg() // true here, if you need to convert named to numbered entities.
+            const mySerializedSVG = (simulationArea.context as any).getSerializedSvg() // true here, if you need to convert named to numbered entities.
             download(`${globalScope.name}.svg`, mySerializedSVG)
         } else {
             downloadAsImg(globalScope.name, imgType)
@@ -267,10 +309,14 @@ export function generateImage(
     // Restore everything
     width = backUpWidth
     height = backUpHeight
-    simulationArea.canvas.width = width
-    simulationArea.canvas.height = height
-    backgroundArea.canvas.width = width
-    backgroundArea.canvas.height = height
+    if (simulationArea.canvas) {
+        simulationArea.canvas.width = width
+        simulationArea.canvas.height = height
+    }
+    if (backgroundArea.canvas) {
+        backgroundArea.canvas.width = width
+        backgroundArea.canvas.height = height
+    }
     globalScope.scale = backUpScale
     backgroundArea.context = backUpContextBackground
     simulationArea.context = backUpContextSimulation
@@ -282,24 +328,35 @@ export function generateImage(
     if (!down) return returnData
 }
 
-async function crop(dataURL, w, h) {
+async function crop(dataURL: string, w: number, h: number): Promise<string> {
     //get empty second canvas
-    var myCanvas = document.createElement('CANVAS')
+    const myCanvas = document.createElement('CANVAS') as HTMLCanvasElement
     myCanvas.width = w
     myCanvas.height = h
-    var myContext = myCanvas.getContext('2d')
-    var myImage
-    var img = new Image()
+    const myContext = myCanvas.getContext('2d')
+    const img = new Image()
     return new Promise(function (resolved, rejected) {
-        img.src = dataURL
+        // Timeout fallback in case neither onload nor onerror fire
+        const timeout = setTimeout(() => {
+            rejected(new Error('Image load timeout in crop()'))
+        }, 10000) // 10 second timeout
+
         img.onload = () => {
-            myContext.drawImage(img, 0, 0, w, h, 0, 0, w, h)
-            myContext.save()
+            clearTimeout(timeout)
+            myContext?.drawImage(img, 0, 0, w, h, 0, 0, w, h)
+            myContext?.save()
 
             //create a new data URL
-            myImage = myCanvas.toDataURL('image/jpeg')
+            const myImage = myCanvas.toDataURL('image/jpeg')
             resolved(myImage)
         }
+
+        img.onerror = (event) => {
+            clearTimeout(timeout)
+            rejected(new Error('Failed to load image in crop()'))
+        }
+
+        img.src = dataURL
     })
 }
 
@@ -308,22 +365,22 @@ async function crop(dataURL, w, h) {
  * @return {JSON}
  * @category data
  */
-async function generateImageForOnline() {
+async function generateImageForOnline(): Promise<string> {
     // Verilog Mode -> Different logic
     // Fix aspect ratio to 1.6
     // Ensure image is approximately 700 x 440
-    var ratio = 1.6
+    const ratio = 1.6
     if (verilogModeGet()) {
-        var node = document.getElementsByClassName('CodeMirror')[0]
+        const node = document.getElementsByClassName('CodeMirror')[0] as HTMLElement
         // var node = document.getElementsByClassName('CodeMirror')[0];
-        var prevHeight = window.getComputedStyle(node).height
-        var prevWidth = window.getComputedStyle(node).width
-        var baseWidth = 500
-        var baseHeight = Math.round(baseWidth / ratio)
+        const prevHeight = window.getComputedStyle(node).height
+        const prevWidth = window.getComputedStyle(node).width
+        const baseWidth = 500
+        const baseHeight = Math.round(baseWidth / ratio)
         node.style.height = baseHeight + 'px'
         node.style.width = baseWidth + 'px'
 
-        var data = await domtoimage.toJpeg(node)
+        let data = await domtoimage.toJpeg(node)
         node.style.width = prevWidth
         node.style.height = prevHeight
         data = await crop(data, baseWidth, baseHeight)
@@ -348,34 +405,49 @@ async function generateImageForOnline() {
         440 / (simulationArea.maxHeight - simulationArea.minHeight)
     )
 
-    data = generateImage('jpeg', 'current', false, resolution, false)
+    const data = generateImage('jpeg', 'current', false, resolution, false)
 
     // Restores Focus
     globalScope.centerFocus(false)
-    return data
+    return data as string
 }
+
+/**
+ * Helper function to hide the loading spinner
+ * @category data
+ */
+function hideLoadingSpinner(): void {
+    const loadingIcon = document.querySelector('.loadingIcon') as HTMLElement
+    if (loadingIcon) {
+        loadingIcon.style.transition = 'opacity 0.2s'
+        loadingIcon.style.opacity = '0'
+        // Clear any aria/loading state if present
+        loadingIcon.setAttribute('aria-busy', 'false')
+    }
+}
+
 /**
  * Function called when you save acircuit online
  * @category data
  * @exports save
  */
-export default async function save() {
+export default async function save(): Promise<void> {
     if (layoutModeGet()) toggleLayoutMode()
 
     projectSavedSet(true)
 
     const data = await generateSaveData()
     if (data instanceof Error) return
-    let loadingIcon = document.querySelector('.loadingIcon');
+    let loadingIcon = document.querySelector('.loadingIcon') as HTMLElement;
     loadingIcon.style.transition = 'opacity 0.5s linear';
     loadingIcon.style.opacity = '1';
 
     const projectName = getProjectName()
-    var imageData = await generateImageForOnline()
+    const imageData = await generateImageForOnline()
 
-    const headers = {
+    const headers: HeadersInit = {
         'Content-Type': 'application/json',
-        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
         Authorization: `Token ${getToken('cvt')}`,
     }
 
@@ -390,12 +462,10 @@ export default async function save() {
         )
             window.location.href = '/users/sign_in'
         else {
-            let loadingIcon = document.querySelector('.loadingIcon')
-            loadingIcon.style.transition = 'opacity 0.2s';
-            loadingIcon.style.opacity = '0';
+            hideLoadingSpinner()
         }
         // eslint-disable-next-line camelcase
-    } else if ([0, undefined, null, '', '0'].includes(window.logixProjectId)) {
+    } else if ([0, undefined, null, '', '0'].includes(window.logixProjectId as any)) {
         // Create new project - this part needs to be improved and optimised
         // const form = $('<form/>', {
         //     action: '/api/v1/simulator/create',
@@ -441,25 +511,41 @@ export default async function save() {
                 name: projectName,
             }),
         })
-            .then((response) => {
+            .then(async (response) => {
                 if (response.ok) {
                     showMessage(
                         `We have Created a new project: ${projectName} in our servers.`
                     )
-
-                    let loadingIcon = document.querySelector('.loadingIcon')
-                    loadingIcon.style.transition = 'opacity 0.2s';
-                    loadingIcon.style.opacity = '0';
-
-                    localStorage.removeItem('recover')
-                    const responseJson = response.json()
-                    responseJson.then((data) => {
+                    localStorage.removeItem('recover_login')
+                    
+                    try {
+                        const data = await response.json()
                         UpdateProjectDetail(data)
-                    })
+                    } catch (jsonError) {
+                        console.error('Error parsing response JSON:', jsonError)
+                        showMessage('Project created but failed to parse server response')
+                    }
+                } else {
+                    // Handle non-ok response
+                    let errorMessage = "There was an error, we couldn't create the project"
+                    try {
+                        const errorData = await response.text()
+                        if (errorData) {
+                            errorMessage += `: ${errorData}`
+                        }
+                    } catch (e) {
+                        console.error('Error reading error response:', e)
+                    }
+                    showMessage(errorMessage)
+                    console.error('Project creation failed with status:', response.status)
                 }
             })
             .catch((error) => {
-                console.error('Error:', error)
+                console.error('Network error creating project:', error)
+                showMessage("Network error: couldn't connect to the server. Please check your connection and try again.")
+            })
+            .finally(() => {
+                hideLoadingSpinner()
             })
     } else {
         // updates project - this part needs to be improved and optimised
@@ -509,23 +595,33 @@ export default async function save() {
                 name: projectName,
             }),
         })
-            .then((response) => {
+            .then(async (response) => {
                 if (response.ok) {
                     showMessage(
                         `We have saved your project: ${projectName} in our servers.`
                     )
-                    localStorage.removeItem('recover')
+                    localStorage.removeItem('recover_login')
                 } else {
-                    showMessage(
-                        "There was an error, we couldn't save to our servers"
-                    )
+                    // Handle non-ok response with detailed error message
+                    let errorMessage = "There was an error, we couldn't save to our servers"
+                    try {
+                        const errorData = await response.text()
+                        if (errorData) {
+                            errorMessage += `: ${errorData}`
+                        }
+                    } catch (e) {
+                        console.error('Error reading error response:', e)
+                    }
+                    showMessage(errorMessage)
+                    console.error('Project update failed with status:', response.status)
                 }
-                let loadingIcon = document.querySelector('.loadingIcon')
-                loadingIcon.style.transition = 'opacity 0.2s';
-                loadingIcon.style.opacity = '0';
             })
             .catch((error) => {
-                console.error('Error:', error)
+                console.error('Network error updating project:', error)
+                showMessage("Network error: couldn't connect to the server. Please check your connection and try again.")
+            })
+            .finally(() => {
+                hideLoadingSpinner()
             })
     }
 
