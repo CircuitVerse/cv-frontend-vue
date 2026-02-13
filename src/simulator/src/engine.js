@@ -440,6 +440,7 @@ export function play(scope = globalScope, resetNodes = false) {
         }
     }
     // Check for Contentions
+    let hadContention = false;
     if (simulationArea.contentionPending.size() > 0) {
         for (const [ourNode, theirNode] of simulationArea.contentionPending.nodes()) {
             ourNode.highlighted = true;
@@ -448,10 +449,13 @@ export function play(scope = globalScope, resetNodes = false) {
 
         forceResetNodesSet(true);
         showError('Contention Error: One or more bus contentions in the circuit (check highlighted nodes)');
+        hadContention = true;
     }
-// Post-stabilization hook: simulation queue drained, state fully resolved
-onSimulationStabilized(scope);
+// Post-stabilization hook: only when queue drained cleanly
+if (!hadContention) {
+    onSimulationStabilized(scope);
 
+}
 }
 
 export function resetNodeHighlights(scope) {
