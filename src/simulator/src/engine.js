@@ -449,10 +449,24 @@ export function play(scope = globalScope, resetNodes = false) {
         forceResetNodesSet(true);
         showError('Contention Error: One or more bus contentions in the circuit (check highlighted nodes)');
     }
+// Post-stabilization hook: generally used when the queue is fully drained and the circuit is stablized.
+onSimulationStabilized(scope);
 }
 
 export function resetNodeHighlights(scope) {
     for (const node of scope.allNodes) node.highlighted = false;
+}
+/**
+ * Internal hook invoked once after the simulation queue has been fully drained
+ * and the circuit has reached a stabilized state for the current tick.
+ *
+ * This is a no-op and exists to provide an explicit post-tick boundary for
+ * future debugging and instrumentation layers.
+ *
+ * @param {Scope} scope
+ */
+function onSimulationStabilized(scope) {
+    // intentionally empty
 }
 
 /**
