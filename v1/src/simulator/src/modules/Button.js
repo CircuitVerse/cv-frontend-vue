@@ -172,7 +172,7 @@ Button.prototype.tooltipText =
  * @category modules
  */
 Button.prototype.helplink =
-    'https://docs.circuitverse.org/#/chapter4/2input?id=button'
+    'https://docs.circuitverse.org/chapter4/chapter4-input#button'
 
 /**
  * @memberof Button
