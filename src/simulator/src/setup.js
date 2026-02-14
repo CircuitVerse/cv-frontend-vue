@@ -26,6 +26,8 @@ import '../vendor/jquery-ui.min'
 import { confirmSingleOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
 import { getToken } from '#/pages/simulatorHandler.vue'
 
+let isResettingUp = false
+
 /**
  * to resize window and setup things it
  * sets up new width for the canvas variables.
@@ -33,40 +35,46 @@ import { getToken } from '#/pages/simulatorHandler.vue'
  * @category setup
  */
 export function resetup() {
-    DPR = window.devicePixelRatio || 1
-    if (lightMode) {
-        DPR = 1
+    if (isResettingUp) return
+    isResettingUp = true
+    try {
+        DPR = window.devicePixelRatio || 1
+        if (lightMode) {
+            DPR = 1
+        }
+        width = document.getElementById('simulationArea').clientWidth * DPR
+        if (!embed) {
+            height =
+                (document.body.clientHeight -
+                    document.getElementById('toolbar')?.clientHeight) *
+                DPR
+        } else {
+            height = document.getElementById('simulation').clientHeight * DPR
+        }
+        // setup simulationArea and backgroundArea variables used to make changes to canvas.
+        backgroundArea.setup()
+        simulationArea.setup()
+        // redraw grid
+        dots()
+        document.getElementById('backgroundArea').style.height =
+            height / DPR + 100 + 'px'
+        document.getElementById('backgroundArea').style.width =
+            width / DPR + 100 + 'px'
+        document.getElementById('canvasArea').style.height = height / DPR + 'px'
+        simulationArea.canvas.width = width
+        simulationArea.canvas.height = height
+        backgroundArea.canvas.width = width + 100 * DPR
+        backgroundArea.canvas.height = height + 100 * DPR
+        if (!embed) {
+            plotArea.setup()
+        }
+        updateCanvasSet(true)
+        update() // INEFFICIENT, needs to be deprecated
+        simulationArea.prevScale = 0
+        dots()
+    } finally {
+        isResettingUp = false
     }
-    width = document.getElementById('simulationArea').clientWidth * DPR
-    if (!embed) {
-        height =
-            (document.body.clientHeight -
-                document.getElementById('toolbar')?.clientHeight) *
-            DPR
-    } else {
-        height = document.getElementById('simulation').clientHeight * DPR
-    }
-    // setup simulationArea and backgroundArea variables used to make changes to canvas.
-    backgroundArea.setup()
-    simulationArea.setup()
-    // redraw grid
-    dots()
-    document.getElementById('backgroundArea').style.height =
-        height / DPR + 100 + 'px'
-    document.getElementById('backgroundArea').style.width =
-        width / DPR + 100 + 'px'
-    document.getElementById('canvasArea').style.height = height / DPR + 'px'
-    simulationArea.canvas.width = width
-    simulationArea.canvas.height = height
-    backgroundArea.canvas.width = width + 100 * DPR
-    backgroundArea.canvas.height = height + 100 * DPR
-    if (!embed) {
-        plotArea.setup()
-    }
-    updateCanvasSet(true)
-    update() // INEFFICIENT, needs to be deprecated
-    simulationArea.prevScale = 0
-    dots()
 }
 
 window.onresize = resetup // listener
