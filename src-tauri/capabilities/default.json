@@ -9,6 +9,7 @@
     "core:default",
     "fs:default",
     "http:default",
+    "core:webview:allow-create-webview-window",
     {
       "identifier": "http:allow-fetch",
       "allow": [
