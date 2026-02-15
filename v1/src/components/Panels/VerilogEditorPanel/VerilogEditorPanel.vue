@@ -1,66 +1,68 @@
 <template>
-    <div id="code-window" class="code-window">
-        <textarea id="codeTextArea"></textarea>
-    </div>
-    <div
-        id="verilogEditorPanel"
-        class="noSelect defaultCursor draggable-panel draggable-panel-css"
-    >
-        <PanelHeader
-            :header-title="$t('simulator.panel_header.verilog_module')"
-        />
-
-        <div class="panel-body">
-            <div class="layout-body">
-                <button
-                    class="largeButton btn btn-xs custom-btn--tertiary"
-                    @click="resetVerilogCode"
-                >
-                    {{ $t('simulator.panel_body.verilog_module.reset_code') }}
-                </button>
-                <button
-                    class="largeButton btn btn-xs custom-btn--primary"
-                    @click="saveVerilogCode"
-                >
-                    {{ $t('simulator.panel_body.verilog_module.save_code') }}
-                </button>
-                <div id="verilogOutput">
-                    {{
-                        $t(
-                            'simulator.panel_body.verilog_module.module_in_experiment_notice'
-                        )
-                    }}
-                </div>
-            </div>
+    <div class="verilog-editor-container">
+        <div id="code-window" class="code-window">
+            <textarea id="codeTextArea"></textarea>
         </div>
+        <div
+            id="verilogEditorPanel"
+            class="noSelect defaultCursor draggable-panel draggable-panel-css"
+        >
+            <PanelHeader
+                :header-title="$t('simulator.panel_header.verilog_module')"
+            />
 
-        <div class="panel-header text-center">
-            {{ $t('simulator.panel_body.verilog_module.apply_themes') }}
-        </div>
-        <div class="panel-body">
-            <div class="layout-body">
-                <div>
-                    <p class="text-center mb-2">
+            <div class="panel-body">
+                <div class="layout-body">
+                    <button
+                        class="largeButton btn btn-xs custom-btn--tertiary"
+                        @click="resetVerilogCode"
+                    >
+                        {{ $t('simulator.panel_body.verilog_module.reset_code') }}
+                    </button>
+                    <button
+                        class="largeButton btn btn-xs custom-btn--primary"
+                        @click="saveVerilogCode"
+                    >
+                        {{ $t('simulator.panel_body.verilog_module.save_code') }}
+                    </button>
+                    <div id="verilogOutput">
                         {{
                             $t(
-                                'simulator.panel_body.verilog_module.select_theme'
+                                'simulator.panel_body.verilog_module.module_in_experiment_notice'
                             )
                         }}
-                    </p>
-                    <select v-model="selectedTheme" class="applyTheme">
-                        <optgroup
-                            v-for="optgroup in Themes"
-                            :key="optgroup.label"
-                            :label="optgroup.label"
-                        >
-                            <option
-                                v-for="option in optgroup.options"
-                                :key="option.value"
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-header text-center">
+                {{ $t('simulator.panel_body.verilog_module.apply_themes') }}
+            </div>
+            <div class="panel-body">
+                <div class="layout-body">
+                    <div>
+                        <p class="text-center mb-2">
+                            {{
+                                $t(
+                                    'simulator.panel_body.verilog_module.select_theme'
+                                )
+                            }}
+                        </p>
+                        <select v-model="selectedTheme" class="applyTheme">
+                            <optgroup
+                                v-for="optgroup in Themes"
+                                :key="optgroup.label"
+                                :label="optgroup.label"
                             >
-                                {{ option.value }}
-                            </option>
-                        </optgroup>
-                    </select>
+                                <option
+                                    v-for="option in optgroup.options"
+                                    :key="option.value"
+                                >
+                                    {{ option.value }}
+                                </option>
+                            </optgroup>
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>
