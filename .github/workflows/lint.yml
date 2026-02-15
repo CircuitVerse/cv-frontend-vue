@@ -19,6 +19,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Run Lint
-        run: npm run lint
+        run: npm run lint:ci
       - name: Run Format Check
-        run: npm run format:check
+        run: npm run fmt:check

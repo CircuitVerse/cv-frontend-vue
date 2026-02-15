@@ -9,8 +9,10 @@
     "tauri": "tauri",
     "preview": "vite preview",
     "lint": "find . -name \"*.ts\" -not -path \"*/node_modules/*\" | xargs oxlint --ignore-path .gitignore",
+    "lint:ci": "find . -name \"*.ts\" -not -path \"*/node_modules/*\" | xargs oxlint --ignore-path .gitignore --format=github",
     "format": "oxfmt --write \"**/*.ts\"",
     "format:check": "oxfmt --check \"**/*.ts\"",
+    "fmt:check": "npm run format:check",
     "postinstall": "husky install",
     "test": "vitest --silent"
   },
