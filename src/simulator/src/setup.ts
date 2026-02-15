@@ -25,6 +25,11 @@ import '../vendor/jquery-ui.min.css'
 import '../vendor/jquery-ui.min'
 import { confirmSingleOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
 import { getToken } from '#/pages/simulatorHandler.vue'
+import { ProjectData } from './types/setup.types'
+
+interface PlotArea {
+    setup: () => void
+}
 
 /**
  * to resize window and setup things it
@@ -32,36 +37,55 @@ import { getToken } from '#/pages/simulatorHandler.vue'
  * Also redraws the grid.
  * @category setup
  */
-export function resetup() {
-    DPR = window.devicePixelRatio || 1
-    if (lightMode) {
-        DPR = 1
+export function resetup(): void {
+    window.DPR = window.devicePixelRatio || 1
+    if (window.lightMode) {
+        window.DPR = 1
     }
-    width = document.getElementById('simulationArea').clientWidth * DPR
-    if (!embed) {
-        height =
-            (document.body.clientHeight -
-                document.getElementById('toolbar')?.clientHeight) *
-            DPR
+    const simulationAreaElement = document.getElementById('simulationArea')
+    if (!simulationAreaElement) {
+        throw new Error('simulationArea element not found')
+    }
+    window.width = simulationAreaElement.clientWidth * window.DPR
+    if (!window.embed) {
+        const toolbar = document.getElementById('toolbar')
+        window.height =
+            (document.body.clientHeight - (toolbar?.clientHeight || 0)) *
+            window.DPR
     } else {
-        height = document.getElementById('simulation').clientHeight * DPR
+        const simulationElement = document.getElementById('simulation')
+        if (!simulationElement) {
+            throw new Error('simulation element not found')
+        }
+        window.height = simulationElement.clientHeight * window.DPR
     }
     // setup simulationArea and backgroundArea variables used to make changes to canvas.
     backgroundArea.setup()
     simulationArea.setup()
     // redraw grid
     dots()
-    document.getElementById('backgroundArea').style.height =
-        height / DPR + 100 + 'px'
-    document.getElementById('backgroundArea').style.width =
-        width / DPR + 100 + 'px'
-    document.getElementById('canvasArea').style.height = height / DPR + 'px'
-    simulationArea.canvas.width = width
-    simulationArea.canvas.height = height
-    backgroundArea.canvas.width = width + 100 * DPR
-    backgroundArea.canvas.height = height + 100 * DPR
-    if (!embed) {
-        plotArea.setup()
+    const bgArea = document.getElementById('backgroundArea')
+    const canvasArea = document.getElementById('canvasArea')
+
+    if (bgArea) {
+        bgArea.style.height = window.height / window.DPR + 100 + 'px'
+        bgArea.style.width = window.width / window.DPR + 100 + 'px'
+    }
+
+    if (canvasArea) {
+        canvasArea.style.height = window.height / window.DPR + 'px'
+    }
+
+    simulationArea.canvas.width = window.width
+    simulationArea.canvas.height = window.height
+
+    if (backgroundArea.canvas) {
+        backgroundArea.canvas.width = window.width + 100 * window.DPR
+        backgroundArea.canvas.height = window.height + 100 * window.DPR
+    }
+
+    if (!window.embed) {
+        ;(plotArea as PlotArea).setup()
     }
     updateCanvasSet(true)
     update() // INEFFICIENT, needs to be deprecated
@@ -76,16 +100,17 @@ window.onorientationchange = resetup // listener
 window.addEventListener('orientationchange', resetup) // listener
 
 /**
- * function to setup environment variables like projectId and DPR
+ * Function to setup environment variables like projectId and DPR
  * @category setup
+ * @export
  */
-function setupEnvironment() {
+export function setupEnvironment(): void {
     setupModules()
     const projectId = generateId()
     window.projectId = projectId
     updateSimulationSet(true)
     // const DPR = window.devicePixelRatio || 1 // unused variable
-    newCircuit('Main')
+    newCircuit('Main', undefined, false, false)
     window.data = {}
     resetup()
     setupCodeMirrorEnvironment()
@@ -96,7 +121,7 @@ function setupEnvironment() {
  * @param {number} projectId The ID of the project to fetch data for
  * @category setup
  */
-async function fetchProjectData(projectId) {
+export async function fetchProjectData(projectId: number): Promise<void> {
     try {
         const response = await fetch(
             `/api/v1/projects/${projectId}/circuit_data`,
@@ -109,8 +134,26 @@ async function fetchProjectData(projectId) {
             }
         )
         if (response.ok) {
-            const data = await response.json()
-            await load(data)
+            const data: ProjectData = await response.json()
+            const simulatorVersion = data.simulatorVersion
+            const projectName = data.name
+            const safeName = encodeURIComponent(projectName ?? '')
+
+            if (!simulatorVersion) {
+                window.location.assign(`/simulator/edit/${safeName}`)
+                return
+            }
+
+            if (simulatorVersion !== 'v0') {
+                window.location.assign(
+                    `/simulatorvue/edit/${safeName}?simver=${encodeURIComponent(
+                        simulatorVersion
+                    )}`
+                )
+                return
+            }
+
+            await load(data as any)
             await simulationArea.changeClockTime(data.timePeriod || 500)
             $('.loadingIcon').fadeOut()
         } else {
@@ -128,18 +171,34 @@ async function fetchProjectData(projectId) {
  * Improvement to eliminate delay caused by setTimeout in previous implementation revert if issues arise.
  * @category setup
  */
-async function loadProjectData() {
+export async function loadProjectData(): Promise<void> {
     window.logixProjectId = window.logixProjectId ?? 0
     if (window.logixProjectId !== 0) {
         $('.loadingIcon').fadeIn()
-        await fetchProjectData(window.logixProjectId)
+        try {
+            await fetchProjectData(window.logixProjectId)
+        } catch (error) {
+            console.error('Failed to load project data:', error)
+            $('.loadingIcon').fadeOut()
+            showMessage('Failed to load project. Please try again.')
+        }
     } else if (localStorage.getItem('recover_login') && window.isUserLoggedIn) {
         // Restore unsaved data and save
-        const data = JSON.parse(localStorage.getItem('recover_login'))
-        await load(data)
-        localStorage.removeItem('recover')
-        localStorage.removeItem('recover_login')
-        await save()
+        try {
+            const item = localStorage.getItem('recover_login')
+            if (item) {
+                const data = JSON.parse(item) as unknown as ProjectData
+                await load(data as any)
+                localStorage.removeItem('recover')
+                localStorage.removeItem('recover_login')
+                await save()
+            }
+        } catch (error) {
+            console.error('Failed to recover project data:', error)
+            showMessage(
+                'Failed to recover project data. The saved data may be corrupted.'
+            )
+        }
     } else if (localStorage.getItem('recover')) {
         // Restore unsaved data which didn't get saved due to error
         showMessage(
@@ -152,9 +211,10 @@ async function loadProjectData() {
  * Show tour guide if it hasn't been completed yet.
  * The tour is shown after a delay of 2 seconds.
  * @category setup
+ * @export
  */
-function showTour() {
-    if (!localStorage.tutorials_tour_done && !embed) {
+export function showTour(): void {
+    if (!localStorage.getItem('tutorials_tour_done') && !window.embed) {
         setTimeout(() => {
             showTourGuide()
         }, 2000)
@@ -167,7 +227,7 @@ function showTour() {
  * loads the project data, and shows the tour guide.
  * @category setup
  */
-export function setup() {
+export function setup(): void {
     setupEnvironment()
     if (!embed) {
         setupUI()
