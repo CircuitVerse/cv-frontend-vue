@@ -10,6 +10,7 @@
     "preview": "vite preview",
     "lint": "find . -name \"*.ts\" -not -path \"*/node_modules/*\" | xargs oxlint --ignore-path .gitignore",
     "format": "oxfmt --write \"**/*.ts\"",
+    "format:check": "oxfmt --check \"**/*.ts\"",
     "postinstall": "husky install",
     "test": "vitest --silent"
   },
