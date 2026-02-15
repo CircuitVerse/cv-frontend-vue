@@ -937,7 +937,28 @@ export default class Node {
         this.parent.scope.allNodes = this.parent.scope.allNodes.filter(x => x !== this)
         this.parent.scope.nodes = this.parent.scope.nodes.filter(x => x !== this)
 
-        this.parent.scope.root.nodeList = this.parent.scope.root.nodeList.filter(x => x !== this) // Hope this works! - Can cause bugs
+        // Remove node from parent's nodeList (where it was originally added)
+        // Input/output nodes (type 0, 1) are added to parent.nodeList in constructor (line 167)
+        // We need to remove from the correct parent's nodeList, not always from root.nodeList
+        if (this.parent && this.parent.nodeList && Array.isArray(this.parent.nodeList)) {
+            const index = this.parent.nodeList.indexOf(this)
+            if (index !== -1) {
+                this.parent.nodeList.splice(index, 1)
+            } else {
+                // Fallback: use filter if indexOf doesn't work (shouldn't happen, but safer)
+                this.parent.nodeList = this.parent.nodeList.filter(x => x !== this)
+            }
+        }
+
+        // Also remove from root.nodeList if present (for safety and backward compatibility)
+        // Some edge cases might have nodes in root.nodeList
+        if (this.parent && this.parent.scope && this.parent.scope.root && 
+            this.parent.scope.root.nodeList && Array.isArray(this.parent.scope.root.nodeList)) {
+            const rootIndex = this.parent.scope.root.nodeList.indexOf(this)
+            if (rootIndex !== -1) {
+                this.parent.scope.root.nodeList.splice(rootIndex, 1)
+            }
+        }
 
         if (simulationArea.lastSelected == this)
             simulationArea.lastSelected = undefined
