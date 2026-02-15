@@ -19,7 +19,17 @@
                 </v-btn>
                 <div id="customShortcutDialog" title="Keybinding Preference">
                     <!-- Edit Panel -->
-                    <div id="edit" tabindex="0" @keydown="updateEdit($event)">
+                    <div 
+                        id="edit" 
+                        tabindex="0" 
+                        @keydown="updateEdit($event)"
+                        :style="{ 
+                            border: editBorder, 
+                            display: editDisplay,
+                            animation: editAnimation 
+                        }"
+                        ref="editRef"
+                    >
                         <span style="font-size: 14px">
                             {{
                                 $t(
@@ -122,6 +132,12 @@ const keyOptions = ref<KeyOption[]>([])
 const targetPref = ref<HTMLSpanElement | null>(null)
 const pressedKeys: Ref<string> = ref('')
 const warning: Ref<string> = ref('')
+const editRef = ref<HTMLElement | null>(null)
+
+// Reactive properties for edit element styling
+const editBorder = ref('none')
+const editDisplay = ref('none')
+const editAnimation = ref('none')
 
 onMounted(() => {
     if (localStorage.userKeys) {
@@ -144,9 +160,12 @@ onUpdated(() => {
 function updatePreference(e: MouseEvent) {
     pressedKeys.value = ''
     warning.value = ''
-    document.getElementById('edit')!.style.border = 'none'
-    document.getElementById('edit')!.style.display = 'block'
-    document.getElementById('edit')!.focus()
+    editBorder.value = 'none'
+    editDisplay.value = 'block'
+    // Focus the edit element using Vue ref
+    if (editRef.value) {
+        editRef.value.focus()
+    }
     ;[, targetPref.value] = e.target!.closest('div')!.children as [
         HTMLSpanElement,
         HTMLSpanElement
@@ -159,14 +178,13 @@ function updateEdit(e: KeyboardEvent) {
     e.preventDefault()
     const k = KeyCode
     let modifiers = ['CTRL', 'ALT', 'SHIFT', 'META']
-    document.getElementById('edit')!.style.animation = 'none'
+    editAnimation.value = 'none'
     warning.value = ''
     if (e.keyCode === 27) closeEdit()
     if (e.keyCode === 13) {
         if (pressedKeys.value === '') {
             warning.value = 'Please enter some key(s)'
-            document.getElementById('edit')!.style.animation =
-                'shake .3s linear'
+            editAnimation.value = 'shake .3s linear'
             return
         }
 
@@ -174,11 +192,10 @@ function updateEdit(e: KeyboardEvent) {
             override(pressedKeys.value)
             targetPref.value!.innerText = pressedKeys.value
             pressedKeys.value = ''
-            document.getElementById('edit')!.style.display = 'none'
+            editDisplay.value = 'none'
         } else {
             warning.value = 'Please enter different key(s).'
-            document.getElementById('edit')!.style.animation =
-                'shake .3s linear'
+            editAnimation.value = 'shake .3s linear'
             pressedKeys.value = ''
             return
         }
@@ -232,16 +249,14 @@ function saveKeybinding() {
 }
 
 function closeDialog() {
-    const editDialogState = document.getElementById('edit')!.style.display
-    if (editDialogState === 'block') {
-        document.getElementById('edit')!.style.display = 'none'
+    if (editDisplay.value === 'block') {
+        editDisplay.value = 'none'
     }
 }
 
 function closeAllDialog() {
-    const editDialogState = document.getElementById('edit')!.style.display
-    if (editDialogState === 'block') {
-        document.getElementById('edit')!.style.display = 'none'
+    if (editDisplay.value === 'block') {
+        editDisplay.value = 'none'
     }
     if (localStorage.userKeys) {
         updateHTML('user')
