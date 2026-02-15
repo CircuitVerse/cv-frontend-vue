@@ -1,37 +1,37 @@
-import logixFunction from '#/simulator/src/data'
-import { deleteSelected } from '#/simulator/src/ux'
-import undo from '#/simulator/src/data/undo'
-import redo from '#/simulator/src/data/redo'
-import { fullView } from '#/simulator/src/ux'
-import { ZoomIn, ZoomOut } from '#/simulator/src/listeners'
+import logixFunction from "#/simulator/src/data";
+import { deleteSelected } from "#/simulator/src/ux";
+import undo from "#/simulator/src/data/undo";
+import redo from "#/simulator/src/data/redo";
+import { fullView } from "#/simulator/src/ux";
+import { ZoomIn, ZoomOut } from "#/simulator/src/listeners";
 
 export function saveOnline(): void {
-    logixFunction.save()
+  logixFunction.save();
 }
 export function saveOffline(): void {
-    logixFunction.saveOffline()
+  logixFunction.saveOffline();
 }
 export function deleteSelectedItem(): void {
-    deleteSelected()
+  deleteSelected();
 }
 export function createSaveAsImgPrompt(): void {
-    logixFunction.createSaveAsImgPrompt()
+  logixFunction.createSaveAsImgPrompt();
 }
 export function zoomToFit(): void {
-    globalScope.centerFocus(false)
+  globalScope.centerFocus(false);
 }
 export function undoit(): void {
-    undo()
+  undo();
 }
 export function redoit(): void {
-    redo()
+  redo();
 }
 export function view(): void {
-    fullView()
+  fullView();
 }
 export function decrement(): void {
-    ZoomOut()
+  ZoomOut();
 }
 export function increment(): void {
-    ZoomIn()
+  ZoomIn();
 }

@@ -1,4 +1,4 @@
-import { simulationArea } from './simulationArea'
+import { simulationArea } from "./simulationArea";
 
 /**
  * a global function as a helper for simulationArea.changeClockEnable
@@ -6,5 +6,5 @@ import { simulationArea } from './simulationArea'
  * @param val - boolean value to enable/disable clock
  */
 export function changeClockEnable(val: boolean): void {
-    simulationArea.clockEnabled = val
+  simulationArea.clockEnabled = val;
 }

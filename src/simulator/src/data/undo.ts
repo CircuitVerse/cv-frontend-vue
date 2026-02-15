@@ -1,13 +1,13 @@
 /* eslint-disable import/no-cycle */
-import { layoutModeGet } from '../layoutMode'
-import Scope, { scopeList } from '../circuit'
-import { loadScope } from './load'
-import { updateRestrictedElementsInScope } from '../restrictedElementDiv'
-import { forceResetNodesSet } from '../engine'
+import { layoutModeGet } from "../layoutMode";
+import Scope, { scopeList } from "../circuit";
+import { loadScope } from "./load";
+import { updateRestrictedElementsInScope } from "../restrictedElementDiv";
+import { forceResetNodesSet } from "../engine";
 
 // Declare global variables
-declare let globalScope: Scope
-declare let loading: boolean
+declare let globalScope: Scope;
+declare let loading: boolean;
 
 /**
  * Function to restore copy from backup
@@ -15,68 +15,68 @@ declare let loading: boolean
  * @category data
  */
 export default function undo(scope: Scope = globalScope): void {
-    if (layoutModeGet() || scope.backups.length < 2) return
+  if (layoutModeGet() || scope.backups.length < 2) return;
 
-    const { ox, oy, scale } = saveGlobalScopePosition()
-    resetGlobalScopePosition()
+  const { ox, oy, scale } = saveGlobalScopePosition();
+  resetGlobalScopePosition();
 
-    loading = true
-    const undoData = popLastBackup(scope)
-    if (!undoData) return
+  loading = true;
+  const undoData = popLastBackup(scope);
+  if (!undoData) return;
 
-    scope.history.push(undoData)
+  scope.history.push(undoData);
 
-    const tempScope = createTempScope(scope)
-    if (!tempScope) return
+  const tempScope = createTempScope(scope);
+  if (!tempScope) return;
 
-    updateGlobalScope(tempScope, ox, oy, scale)
-    forceResetNodesSet(true)
-    updateRestrictedElementsInScope()
+  updateGlobalScope(tempScope, ox, oy, scale);
+  forceResetNodesSet(true);
+  updateRestrictedElementsInScope();
 }
 
 function saveGlobalScopePosition() {
-    return {
-        ox: globalScope.ox,
-        oy: globalScope.oy,
-        scale: globalScope.scale,
-    }
+  return {
+    ox: globalScope.ox,
+    oy: globalScope.oy,
+    scale: globalScope.scale,
+  };
 }
 
 function resetGlobalScopePosition() {
-    globalScope.ox = 0
-    globalScope.oy = 0
+  globalScope.ox = 0;
+  globalScope.oy = 0;
 }
 
 function popLastBackup(scope: Scope): string | undefined {
-    return scope.backups.pop()
+  return scope.backups.pop();
 }
 
 function createTempScope(scope: Scope): Scope | undefined {
-    const tempScope = new Scope(scope.name)
-    if (scope.backups.length === 0) return tempScope
+  const tempScope = new Scope(scope.name);
+  if (scope.backups.length === 0) return tempScope;
 
-    try {
-        loadScope(tempScope, JSON.parse(scope.backups[scope.backups.length - 1]))
-    } catch (error) {
-        console.error('Failed to parse backup data:', error)
-        loading = false
-        return undefined
-    }
+  try {
+    loadScope(tempScope, JSON.parse(scope.backups[scope.backups.length - 1]));
+  } catch (error) {
+    console.error("Failed to parse backup data:", error);
+    loading = false;
+    return undefined;
+  }
 
-    tempScope.backups = scope.backups
-    tempScope.history = scope.history
-    tempScope.id = scope.id
-    tempScope.name = scope.name
-    tempScope.testbenchData = scope.testbenchData
+  tempScope.backups = scope.backups;
+  tempScope.history = scope.history;
+  tempScope.id = scope.id;
+  tempScope.name = scope.name;
+  tempScope.testbenchData = scope.testbenchData;
 
-    return tempScope
+  return tempScope;
 }
 
 function updateGlobalScope(tempScope: Scope, ox: number, oy: number, scale: number) {
-    scopeList[tempScope.id] = tempScope
-    globalScope = tempScope
-    globalScope.ox = ox
-    globalScope.oy = oy
-    globalScope.scale = scale
-    loading = false
+  scopeList[tempScope.id] = tempScope;
+  globalScope = tempScope;
+  globalScope.ox = ox;
+  globalScope.oy = oy;
+  globalScope.scale = scale;
+  loading = false;
 }

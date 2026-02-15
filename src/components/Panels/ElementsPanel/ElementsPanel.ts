@@ -1,16 +1,15 @@
-import { simulationArea } from "#/simulator/src/simulationArea"
-import modules from "#/simulator/src/modules"
-import { uxvar } from "#/simulator/src/ux"
+import { simulationArea } from "#/simulator/src/simulationArea";
+import modules from "#/simulator/src/modules";
+import { uxvar } from "#/simulator/src/ux";
 
 export function createElement(elementName: string) {
-  if (simulationArea.lastSelected?.newElement)
-      simulationArea.lastSelected.delete()
-  var obj = new modules[elementName]()
-  simulationArea.lastSelected = obj
-  uxvar.smartDropXX += 70
+  if (simulationArea.lastSelected?.newElement) simulationArea.lastSelected.delete();
+  var obj = new modules[elementName]();
+  simulationArea.lastSelected = obj;
+  uxvar.smartDropXX += 70;
   if (uxvar.smartDropXX / globalScope.scale > width) {
-      uxvar.smartDropXX = 50
-      uxvar.smartDropYY += 80
+    uxvar.smartDropXX = 50;
+    uxvar.smartDropYY += 80;
   }
 }
 
@@ -20,6 +19,6 @@ export function getImgUrl(elementName: string) {
     return elementImg;
   } catch (e) {
     console.error("Error loading image:", e);
-    return '';
+    return "";
   }
 }

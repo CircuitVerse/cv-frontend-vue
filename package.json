@@ -10,6 +10,7 @@
     "preview": "vite preview",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src",
     "format": "prettier .  --write",
+    "format:ts": "oxfmt --write \"**/*.ts\"",
     "postinstall": "husky install",
     "test": "vitest --silent"
   },
@@ -62,6 +63,7 @@
     "husky": "^8.0.1",
     "jsdoc": "^4.0.3",
     "jsdom": "^27.4.0",
+    "oxfmt": "^0.32.0",
     "prettier": "2.6.2",
     "sass": "^1.77.6",
     "typescript": "^4.5.4",
