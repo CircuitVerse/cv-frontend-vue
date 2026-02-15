@@ -3,8 +3,7 @@
         <v-card class="testbench-creator-card">
             <v-card-title class="headline-container">
                 <h1 class="headline-title">{{ dialogTitle }}</h1>
-                <v-btn icon size="small" variant="text" @click="testBenchStore.showTestBenchCreator = false"
-                    class="close-button">
+                <v-btn icon size="small" variant="text" @click="testBenchStore.showTestBenchCreator = false" class="close-button">
                     <v-icon>mdi-close</v-icon>
                 </v-btn>
             </v-card-title>
@@ -13,12 +12,18 @@
                     <input v-model="testTitle" class="title-input" type="text" placeholder="Enter Test Title" />
                 </div>
                 <div class="test-type-container">
-                    <v-btn :class="['test-type-btn', { 'active': testType === 'seq' }]" @click="testType = 'seq'"
-                        elevation="0">
+                    <v-btn
+                        :class="['test-type-btn', { 'active': testType === 'seq' }]"
+                        @click="testType = 'seq'"
+                        elevation="0"
+                    >
                         Sequential Test
                     </v-btn>
-                    <v-btn :class="['test-type-btn', { 'active': testType === 'comb' }]" @click="testType = 'comb'"
-                        elevation="0">
+                    <v-btn
+                        :class="['test-type-btn', { 'active': testType === 'comb' }]"
+                        @click="testType = 'comb'"
+                        elevation="0"
+                    >
                         Combinational Test
                     </v-btn>
                 </div>
@@ -32,13 +37,11 @@
                         <div class="grid-cell header-cell label-col"></div>
                         <div class="grid-cell header-cell inputs-col">
                             <span>Inputs</span>
-                            <v-btn icon size="x-small" variant="flat" class="ml-2 action-icon"
-                                @click="increInputs"><v-icon>mdi-plus</v-icon></v-btn>
+                            <v-btn icon size="x-small" variant="flat" class="ml-2 action-icon" @click="increInputs"><v-icon>mdi-plus</v-icon></v-btn>
                         </div>
                         <div class="grid-cell header-cell outputs-col">
                             <span>Outputs</span>
-                            <v-btn icon size="x-small" variant="flat" class="ml-2 action-icon"
-                                @click="increOutputs"><v-icon>mdi-plus</v-icon></v-btn>
+                             <v-btn icon size="x-small" variant="flat" class="ml-2 action-icon" @click="increOutputs"><v-icon>mdi-plus</v-icon></v-btn>
                         </div>
                         <div v-if="testBenchStore.showResults" class="grid-cell header-cell results-col">
                             Results
@@ -46,113 +49,93 @@
                     </div>
                 </div>
 
-                <div class="data-grid labels-grid" :class="{ 'with-results': testBenchStore.showResults }">
-                    <div class="grid-cell label-col">
-                        Label
-                    </div>
-                    <div class="grid-cell inputs-col">
-                        <div v-for="(name, i) in inputsName" :key="`in-name-${i}`" class="io-cell">
-                            <input class="io-input" type="text" v-model="inputsName[i]" />
-                            <v-btn icon size="x-small" variant="text" class="delete-io-btn"
-                                @click="deleteInput(i)"><v-icon size="small">mdi-minus-circle-outline</v-icon></v-btn>
-                        </div>
-                    </div>
-                    <div class="grid-cell outputs-col">
-                        <div v-for="(name, i) in outputsName" :key="`out-name-${i}`" class="io-cell">
-                            <input class="io-input" type="text" v-model="outputsName[i]" />
-                            <v-btn icon size="x-small" variant="text" class="delete-io-btn"
-                                @click="deleteOutput(i)"><v-icon size="small">mdi-minus-circle-outline</v-icon></v-btn>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="data-grid bitwidth-grid" :class="{ 'with-results': testBenchStore.showResults }">
-                    <div class="grid-cell label-col">Bitwidth</div>
-                    <div class="grid-cell inputs-col">
-                        <div v-for="(bw, i) in inputsBandWidth" :key="`in-bw-${i}`" class="io-cell bitwidth-row">
-                            <v-btn icon size="x-small" variant="text"
-                                @click="inputsBandWidth[i] = Math.max(1, inputsBandWidth[i] - 1)"
-                                title="Decrease bitwidth">
-                                <v-icon>mdi-minus</v-icon>
-                            </v-btn>
-                            <input class="io-input bitwidth-input no-spinner" v-model="inputsBandWidth[i]" min="1"
-                                max="64" @blur="inputsBandWidth[i] = clamp(inputsBandWidth[i])" />
-                            <v-btn icon size="x-small" variant="text"
-                                @click="inputsBandWidth[i] = Math.min(64, inputsBandWidth[i] + 1)"
-                                title="Increase bitwidth">
-                                <v-icon>mdi-plus</v-icon>
-                            </v-btn>
-                        </div>
-                    </div>
-                    <div class="grid-cell outputs-col">
-                        <div v-for="(bw, i) in outputsBandWidth" :key="`out-bw-${i}`" class="io-cell bitwidth-row">
-                            <v-btn icon size="x-small" variant="text"
-                                @click="outputsBandWidth[i] = Math.max(1, outputsBandWidth[i] - 1)"
-                                title="Decrease bitwidth">
-                                <v-icon>mdi-minus</v-icon>
-                            </v-btn>
-                            <input class="io-input bitwidth-input no-spinner" v-model="outputsBandWidth[i]" min="1"
-                                max="64" @blur="outputsBandWidth[i] = clamp(outputsBandWidth[i])" />
-                            <v-btn icon size="x-small" variant="text"
-                                @click="outputsBandWidth[i] = Math.min(64, outputsBandWidth[i] + 1)"
-                                title="Increase bitwidth">
-                                <v-icon>mdi-plus</v-icon>
-                            </v-btn>
-                        </div>
-                    </div>
-                </div>
-
-                <div v-for="(group, groupIndex) in groups" class="group-container" :key="groupIndex">
-                    <div class="group-header">
-                        <input v-model="group.title" class="group-title-input" type="text" />
-                        <div class="group-actions">
-
-                            <v-btn size="small" class="add-test-btn" variant="tonal"
-                                @click="addTestToGroup(groupIndex)">
-                                <v-icon left>mdi-plus</v-icon>
-                                Add Test
-                            </v-btn>
-
-                            <v-btn icon size="small" variant="text" color="black" @click="deleteGroup(groupIndex)"
-                                title="Delete Group">
-                                <v-icon>mdi-delete</v-icon>
-                            </v-btn>
-                        </div>
-                    </div>
-
-
-
-                    <div v-for="(_, testIndex) in (group.inputs[0] || [])" class="data-grid data-row" :key="testIndex"
-                        :class="{ 'with-results': testBenchStore.showResults }">
-                        <div class="grid-cell label-col action-col">
-                            <v-btn icon size="x-small" variant="text" class="delete-io-btn"
-                                @click="deleteTestFromGroup(groupIndex, testIndex)"><v-icon
-                                    size="small">mdi-close</v-icon></v-btn>
+                    <div class="data-grid labels-grid" :class="{ 'with-results': testBenchStore.showResults }">
+                        <div class="grid-cell label-col">
+                            Label
                         </div>
                         <div class="grid-cell inputs-col">
-                            <div v-for="(_, i) in group.inputs" class="io-cell"
-                                :key="`g${groupIndex}-in-${i}-${testIndex}`">
-                                <input class="io-input data-input" type="text" v-model="group.inputs[i][testIndex]"
-                                    :disabled="testBenchStore.readOnly" :maxlength="inputsBandWidth[i] as number" />
+                            <div v-for="(name, i) in inputsName" :key="`in-name-${i}`" class="io-cell">
+                                <input class="io-input" type="text" v-model="inputsName[i]" />
+                                <v-btn icon size="x-small" variant="text" class="delete-io-btn" @click="deleteInput(i)"><v-icon size="small">mdi-minus-circle-outline</v-icon></v-btn>
                             </div>
                         </div>
                         <div class="grid-cell outputs-col">
-                            <div v-for="(_, i) in group.outputs" class="io-cell"
-                                :key="`g${groupIndex}-out-${i}-${testIndex}`">
-                                <input class="io-input data-input" type="text" v-model="group.outputs[i][testIndex]"
-                                    :disabled="testBenchStore.readOnly" :maxlength="outputsBandWidth[i]" />
+                            <div v-for="(name, i) in outputsName" :key="`out-name-${i}`" class="io-cell">
+                                <input class="io-input" type="text" v-model="outputsName[i]" />
+                                <v-btn icon size="x-small" variant="text" class="delete-io-btn" @click="deleteOutput(i)"><v-icon size="small">mdi-minus-circle-outline</v-icon></v-btn>
                             </div>
                         </div>
-                        <div v-if="testBenchStore.showResults" class="grid-cell results-col">
-                            <div v-for="(_, i) in results[groupIndex]" class="io-cell result-cell"
-                                :key="`g${groupIndex}-res-${i}-${testIndex}`"
-                                :class="results[groupIndex][i][testIndex] ? 'success' : 'fail'">
-                                <div v-for="(_, i) in (results[groupIndex] || [])" class="io-cell result-cell"
-                                    :key="`g${groupIndex}-res-${i}-${testIndex}`"
-                                    :class="(results[groupIndex]?.[i]?.[testIndex]) ? 'success' : 'fail'">
+                    </div>
+
+                    <div class="data-grid bitwidth-grid" :class="{ 'with-results': testBenchStore.showResults }">
+                      <div class="grid-cell label-col">Bitwidth</div>
+                      <div class="grid-cell inputs-col">
+                        <div v-for="(bw, i) in inputsBandWidth" :key="`in-bw-${i}`" class="io-cell bitwidth-row">
+                          <v-btn icon size="x-small" variant="text" @click="inputsBandWidth[i] = Math.max(1, inputsBandWidth[i] - 1)" title="Decrease bitwidth">
+                            <v-icon>mdi-minus</v-icon>
+                          </v-btn>
+                          <input class="io-input bitwidth-input no-spinner" v-model="inputsBandWidth[i]" min="1" max="64" @blur="inputsBandWidth[i] = clamp(inputsBandWidth[i])"/>
+                          <v-btn icon size="x-small" variant="text" @click="inputsBandWidth[i] = Math.min(64, inputsBandWidth[i] + 1)" title="Increase bitwidth">
+                            <v-icon>mdi-plus</v-icon>
+                          </v-btn>
+                        </div>
+                      </div>
+                      <div class="grid-cell outputs-col">
+                        <div v-for="(bw, i) in outputsBandWidth" :key="`out-bw-${i}`" class="io-cell bitwidth-row">
+                          <v-btn icon size="x-small" variant="text" @click="outputsBandWidth[i] = Math.max(1, outputsBandWidth[i] - 1)" title="Decrease bitwidth">
+                            <v-icon>mdi-minus</v-icon>
+                          </v-btn>
+                          <input class="io-input bitwidth-input no-spinner" v-model="outputsBandWidth[i]" min="1" max="64" @blur="outputsBandWidth[i] = clamp(outputsBandWidth[i])"/>
+                          <v-btn icon size="x-small" variant="text" @click="outputsBandWidth[i] = Math.min(64, outputsBandWidth[i] + 1)" title="Increase bitwidth">
+                            <v-icon>mdi-plus</v-icon>
+                          </v-btn>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div v-for="(group, groupIndex) in groups" class="group-container" :key="groupIndex">
+                      <div class="group-header">
+                     <input v-model="group.title" class="group-title-input" type="text" />
+                     <div class="group-actions">
+                    
+                     <v-btn size="small" class="add-test-btn" variant="tonal" @click="addTestToGroup(groupIndex)">
+                     <v-icon left>mdi-plus</v-icon>
+                     Add Test
+                     </v-btn>
+
+                     <v-btn icon size="small" variant="text" color="black" @click="deleteGroup(groupIndex)" title="Delete Group">
+                     <v-icon>mdi-delete</v-icon>
+                     </v-btn>
+                     </div>
+                     </div>
+
+                        
+
+                        <div v-for="(_, testIndex) in (group.inputs[0] || [])" class="data-grid data-row" :key="testIndex" :class="{ 'with-results': testBenchStore.showResults }">
+                             <div class="grid-cell label-col action-col">
+                                 <v-btn icon size="x-small" variant="text" class="delete-io-btn" @click="deleteTestFromGroup(groupIndex, testIndex)"><v-icon size="small">mdi-close</v-icon></v-btn>
+                             </div>
+                             <div class="grid-cell inputs-col">
+                                 <div v-for="(_, i) in group.inputs" class="io-cell" :key="`g${groupIndex}-in-${i}-${testIndex}`">
+                                     <input class="io-input data-input" type="text" v-model="group.inputs[i][testIndex]" :disabled="testBenchStore.readOnly" :maxlength="inputsBandWidth[i] as number" />
+                                 </div>
+                             </div>
+                             <div class="grid-cell outputs-col">
+                                 <div v-for="(_, i) in group.outputs" class="io-cell" :key="`g${groupIndex}-out-${i}-${testIndex}`">
+                                     <input class="io-input data-input" type="text" v-model="group.outputs[i][testIndex]" :disabled="testBenchStore.readOnly" :maxlength="outputsBandWidth[i]" />
+                                 </div>
+                             </div>
+                             <div v-if="testBenchStore.showResults" class="grid-cell results-col">
+                                <div v-for="(_, i) in results[groupIndex]" class="io-cell result-cell" :key="`g${groupIndex}-res-${i}-${testIndex}`" :class="results[groupIndex][i][testIndex] ? 'success' : 'fail'">
+                                <div
+                                  v-for="(_, i) in (results[groupIndex] || [])"
+                                  class="io-cell result-cell"
+                                  :key="`g${groupIndex}-res-${i}-${testIndex}`"
+                                  :class="(results[groupIndex]?.[i]?.[testIndex]) ? 'success' : 'fail'"
+                                >
                                     {{ (results[groupIndex]?.[i]?.[testIndex]) ? '✔' : '✘' }}
-                                </div>
-                            </div>
+                                 </div>
+                             </div>
                         </div>
                     </div>
                 </div>
@@ -189,10 +172,10 @@ const outputsBandWidth = ref([1]);
 const inputsName = ref<string[]>(["inp1"]);
 const outputsName = ref<string[]>(["out1"]);
 const clamp = (val) => {
-    if (!val) return 1
-    const n = Number(val)
-    if (isNaN(n)) return 1
-    return Math.min(Math.max(n, 1), 64)
+  if (!val) return 1
+  const n = Number(val)
+  if (isNaN(n)) return 1
+  return Math.min(Math.max(n, 1), 64)
 }
 
 interface Group {
@@ -202,11 +185,11 @@ interface Group {
 }
 
 const groups = reactive<Group[]>([
-    {
-        title: 'Group 1',
-        inputs: Array.from({ length: inputsName.value.length }, () => []),
-        outputs: Array.from({ length: outputsName.value.length }, () => []),
-    }
+  {
+    title: 'Group 1',
+    inputs: Array.from({ length: inputsName.value.length }, () => []),
+    outputs: Array.from({ length: outputsName.value.length }, () => []),
+  }
 ]);
 
 watch(() => testBenchStore.testbenchData.testData.groups, () => {
@@ -241,8 +224,8 @@ watch(() => testBenchStore.testbenchData.testData.groups, () => {
         results.push([]);
         group.outputs.map((output) => {
             results[results.length - 1].push([]);
-            for (let i = 0; i < output.values.length; i++) {
-                if (output.results && output.values[i] === output.results[i]) {
+            for(let i = 0; i < output.values.length; i++) {
+                if(output.results && output.values[i] === output.results[i]) {
                     results[results.length - 1][results[results.length - 1].length - 1].push(true);
                 } else {
                     results[results.length - 1][results[results.length - 1].length - 1].push(false);
@@ -328,15 +311,15 @@ const deleteTestFromGroup = (groupIndex: number, testIndex: number) => {
 };
 
 const addNewGroup = () => {
-    groups.push({
-        title: `Group ${groups.length + 1}`,
-        inputs: Array.from({ length: inputsName.value.length }, () => []),
-        outputs: Array.from({ length: outputsName.value.length }, () => []),
-    });
+  groups.push({
+    title: `Group ${groups.length + 1}`,
+    inputs: Array.from({ length: inputsName.value.length }, () => []),
+    outputs: Array.from({ length: outputsName.value.length }, () => []),
+  });
 };
 
 const deleteGroup = (groupIndex: number) => {
-    if (groups.length === 1) return;
+    if (groups.length === 1) return; // prevent deleting last group
     groups.splice(groupIndex, 1);
 };
 
@@ -356,8 +339,8 @@ const increInputs = () => {
     inputsName.value.push(`inp${inputsName.value.length + 1}`);
 };
 
-const deleteInput = (index: number) => {
-    if (inputsName.value.length === 1) return;
+const deleteInput = (index:number) => {
+    if(inputsName.value.length === 1) return;
     groups.forEach((group) => {
         if (group.inputs.length === 0) return;
 
@@ -383,8 +366,8 @@ const increOutputs = () => {
     outputsName.value.push(`out${outputsName.value.length + 1}`);
 };
 
-const deleteOutput = (index: number) => {
-    if (outputsName.value.length === 1) return;
+const deleteOutput = (index:number) => {
+    if(outputsName.value.length === 1) return;
     groups.forEach((group) => {
         if (group.outputs.length === 0) return;
 
@@ -403,9 +386,9 @@ const resetData = () => {
     inputsName.value = ["inp1"];
     outputsName.value = ["out1"];
     groups.splice(0, groups.length, {
-        title: 'Group 1',
-        inputs: Array.from({ length: inputsName.value.length }, () => []),
-        outputs: Array.from({ length: outputsName.value.length }, () => []),
+      title: 'Group 1',
+      inputs: Array.from({ length: inputsName.value.length }, () => []),
+      outputs: Array.from({ length: outputsName.value.length }, () => []),
     });
 };
 
@@ -598,32 +581,19 @@ const importFromCSV = () => {
 .data-table-container {
     padding: 0 16px;
 }
-
 .data-grid {
     display: grid;
     gap: 16px;
     align-items: center;
     padding: 8px 0;
 }
-
-.data-grid:not(.data-row) {
-    grid-template-columns: 120px 1fr 1fr;
-}
-
-.data-grid.data-row {
-    grid-template-columns: 40px 1fr 1fr;
-}
-
-.data-grid.with-results:not(.data-row) {
-    grid-template-columns: 120px 1fr 1fr 120px;
-}
-
-.data-grid.data-row.with-results {
-    grid-template-columns: 40px 1fr 1fr 120px;
-}
+.data-grid:not(.data-row) { grid-template-columns: 120px 1fr 1fr; }
+.data-grid.data-row { grid-template-columns: 40px 1fr 1fr; }
+.data-grid.with-results:not(.data-row) { grid-template-columns: 120px 1fr 1fr 120px; }
+.data-grid.data-row.with-results { grid-template-columns: 40px 1fr 1fr 120px; }
 
 .data-row {
-    border-top: 1px solid var(--cv-border);
+     border-top: 1px solid var(--cv-border);
 }
 
 .grid-cell {
@@ -638,7 +608,6 @@ const importFromCSV = () => {
     font-size: 1rem;
     justify-content: center;
 }
-
 .action-icon {
     background-color: #e0e0e0;
     color: #616161;
@@ -649,14 +618,11 @@ const importFromCSV = () => {
     color: var(--cv-text-secondary);
     padding-left: 12px;
 }
-
 .action-col {
     justify-content: center;
 }
 
-.inputs-col,
-.outputs-col,
-.results-col {
+.inputs-col, .outputs-col, .results-col {
     background-color: var(--cv-surface);
     border: 1px solid var(--cv-border);
     border-radius: 8px;
@@ -679,32 +645,26 @@ const importFromCSV = () => {
     background-color: transparent;
     font-size: 0.9rem;
 }
-
 .io-input:focus {
     outline: none;
 }
-
 .bitwidth-input {
     max-width: 40px;
     background-color: #f5f5f5;
     border-radius: 4px;
 }
-
 .no-spinner::-webkit-inner-spin-button,
 .no-spinner::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+  -webkit-appearance: none;
+  margin: 0;
 }
-
 .no-spinner[type=number] {
-    -moz-appearance: textfield;
+  -moz-appearance: textfield;
 }
-
 .data-input {
     border: 1px solid transparent;
     border-radius: 4px;
 }
-
 .data-input:focus {
     border-color: var(--cv-green);
 }
@@ -714,16 +674,13 @@ const importFromCSV = () => {
     transition: opacity 0.2s;
     color: var(--cv-text-secondary);
 }
-
-.io-cell:hover .delete-io-btn,
-.action-col:hover .delete-io-btn {
+.io-cell:hover .delete-io-btn, .action-col:hover .delete-io-btn {
     opacity: 1;
 }
 
 .group-container {
     margin-top: 24px;
 }
-
 .group-header {
     display: flex;
     align-items: center;
@@ -740,24 +697,19 @@ const importFromCSV = () => {
     padding: 4px 0;
     flex: 0 0 auto;
 }
-
 .group-title-input:focus {
     outline: none;
     border-bottom-color: var(--cv-green);
 }
-
 .add-test-btn {
     color: var(--cv-green);
 }
-
 .result-cell {
     font-weight: bold;
 }
-
 .result-cell.success {
     color: var(--cv-green);
 }
-
 .result-cell.fail {
     color: var(--cv-red);
 }
@@ -783,7 +735,6 @@ const importFromCSV = () => {
     background-color: var(--cv-green);
     color: white;
 }
-
 .new-group-btn:hover {
     background-color: var(--cv-green-dark);
 }
@@ -793,7 +744,6 @@ const importFromCSV = () => {
     color: var(--cv-red);
     border: 1px solid var(--cv-red);
 }
-
 .reset-btn:hover {
     background-color: rgba(244, 67, 54, 0.1);
 }
@@ -803,7 +753,6 @@ const importFromCSV = () => {
     color: var(--cv-text-secondary);
     border: 1px solid var(--cv-border);
 }
-
 .secondary-btn:hover {
     background-color: #f5f5f5;
     border-color: #bdbdbd;
@@ -813,7 +762,6 @@ const importFromCSV = () => {
     background-color: #626262;
     color: white;
 }
-
 .attach-btn:hover {
     background-color: #424242;
 }
@@ -822,10 +770,12 @@ const importFromCSV = () => {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-left: auto;
+    margin-left: auto;  /* Push to the right */
 }
 
 .add-test-btn {
     color: var(--cv-green);
 }
+
 </style>
+
