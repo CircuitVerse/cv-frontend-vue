@@ -48,12 +48,14 @@ export function layoutModeGet() {
 export var tempBuffer: LayoutBuffer
 
 /**
- * Helper function to determine alignment and position of nodes for rendering
+ * Helper function to determine alignment and position of nodes for rendering with dynamic spacing
  * @category layoutMode
  */
 export function determineLabel(x: number, y: number) {
-    if (x === 0) return ['left', 5, 5]
-    if (x === tempBuffer.layout.width) return ['right', -5, 5]
+    // Labels align exactly with their node's Y coordinate
+    // No artificial spacing needed - circuit layout already spaces nodes properly
+    if (x === 0) return ['left', 5, 0]  // Left side - align with node position
+    if (x === tempBuffer.layout.width) return ['right', -5, 0]  // Right side - align with node position
     if (y === 0) return ['center', 0, 13]
     return ['center', 0, -6]
 }
@@ -135,40 +137,75 @@ export function renderLayout(scope = globalScope) {
         )
     }
 
-    // Draw labels
-    var info
+    // Draw labels - collect all labeled nodes first
+    const labeledNodes: Array<{ x: number, y: number, label: string, type: string }> = []
+
     for (let i = 0; i < tempBuffer.Input.length; i++) {
         if (!tempBuffer.Input[i].label) continue
-        info = determineLabel(
-            tempBuffer.Input[i].x,
-            tempBuffer.Input[i].y,
-            scope
-        )
-        ;[ctx.textAlign] = info
-        fillText(
-            ctx,
-            tempBuffer.Input[i].label,
-            tempBuffer.Input[i].x + typeof info[1] === 'number' ? info[1] : parseInt(info[1] as string),
-            tempBuffer.Input[i].y + typeof info[2] === 'number' ? info[2] : parseInt(info[2] as string),
-            12
-        )
+        labeledNodes.push({
+            x: tempBuffer.Input[i].x,
+            y: tempBuffer.Input[i].y,
+            label: tempBuffer.Input[i].label,
+            type: 'input'
+        })
     }
+
     for (let i = 0; i < tempBuffer.Output.length; i++) {
         if (!tempBuffer.Output[i].label) continue
-        info = determineLabel(
-            tempBuffer.Output[i].x,
-            tempBuffer.Output[i].y,
-            scope
-        )
-        ;[ctx.textAlign] = info
+        labeledNodes.push({
+            x: tempBuffer.Output[i].x,
+            y: tempBuffer.Output[i].y,
+            label: tempBuffer.Output[i].label,
+            type: 'output'
+        })
+    }
+
+    // Group nodes by side (x position) and sort by Y within each group
+    const leftNodes = labeledNodes.filter(n => n.x === 0).sort((a, b) => a.y - b.y)
+    const rightNodes = labeledNodes.filter(n => n.x === tempBuffer.layout.width).sort((a, b) => a.y - b.y)
+    const topNodes = labeledNodes.filter(n => n.y === 0 && n.x !== 0 && n.x !== tempBuffer.layout.width)
+    const bottomNodes = labeledNodes.filter(n => n.y !== 0 && n.x !== 0 && n.x !== tempBuffer.layout.width)
+
+    // Draw left side labels with collective spacing
+    var info
+    leftNodes.forEach((node) => {
+        info = determineLabel(node.x, node.y)
+            ;[ctx.textAlign] = info
         fillText(
             ctx,
-            tempBuffer.Output[i].label,
-            tempBuffer.Output[i].x + typeof info[1] === 'number' ? info[1] : parseInt(info[1] as string),
-            tempBuffer.Output[i].y + typeof info[2] === 'number' ? info[2] : parseInt(info[2] as string),
+            node.label,
+            node.x + (typeof info[1] === 'number' ? info[1] : parseInt(info[1] as string)),
+            node.y + (typeof info[2] === 'number' ? info[2] : parseInt(info[2] as string)),
             12
         )
-    }
+    })
+
+    // Draw right side labels with collective spacing
+    rightNodes.forEach((node) => {
+        info = determineLabel(node.x, node.y)
+            ;[ctx.textAlign] = info
+        fillText(
+            ctx,
+            node.label,
+            node.x + (typeof info[1] === 'number' ? info[1] : parseInt(info[1] as string)),
+            node.y + (typeof info[2] === 'number' ? info[2] : parseInt(info[2] as string)),
+            12
+        )
+    })
+
+    // Draw top and bottom labels (less common, use original positioning)
+    topNodes.concat(bottomNodes).forEach(node => {
+        info = determineLabel(node.x, node.y)
+            ;[ctx.textAlign] = info
+        fillText(
+            ctx,
+            node.label,
+            node.x + (typeof info[1] === 'number' ? info[1] : parseInt(info[1] as string)),
+            node.y + (typeof info[2] === 'number' ? info[2] : parseInt(info[2] as string)),
+            12
+        )
+    })
+
     ctx.fill()
 
     // Draw points
