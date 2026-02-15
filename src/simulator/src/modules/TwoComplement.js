@@ -69,7 +69,7 @@ export default class TwoComplement extends CircuitElement {
         const yy = this.y
         ctx.beginPath()
         ctx.fillStyle = 'black'
-        fillText(ctx, "2'", xx, yy, 10)
+        fillText(ctx, "2's", xx, yy, 10)
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected === this ||
@@ -93,6 +93,8 @@ export default class TwoComplement extends CircuitElement {
  * @type {string}
  * @category modules
  */
+
+TwoComplement.prototype.helplink = 'https://docs.circuitverse.org/chapter4/chapter4-misc#twos-complement'
 TwoComplement.prototype.tooltipText =
     "Two's Complement ToolTip : Calculates the two's complement"
 TwoComplement.prototype.helplink =
