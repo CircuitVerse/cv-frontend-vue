@@ -7,6 +7,7 @@ import ImageAnnotation from './modules/ImageAnnotation'
 import BitSelector from './modules/BitSelector'
 import Buffer from './modules/Buffer'
 import Button from './modules/Button'
+import ClockDivider from './modules/ClockDivider'
 import ConstantVal from './modules/ConstantVal'
 import ControlledInverter from './modules/ControlledInverter'
 import Counter from './modules/Counter'
@@ -123,6 +124,7 @@ export default function setupModules() {
         TTY,
         Keyboard,
         Clock,
+        ClockDivider,
         Rom,
         EEPROM,
         RAM,
