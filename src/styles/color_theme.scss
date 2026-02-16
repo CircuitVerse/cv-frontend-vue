@@ -60,8 +60,8 @@
     --output-rect: blue;
 }
 
-/* helper class used to animate theme changes */
-.theme-transition * {
+:root.theme-transition,
+:root.theme-transition * {
     transition: background-color 260ms ease, color 260ms ease, border-color 260ms ease, box-shadow 260ms ease;
 }
 

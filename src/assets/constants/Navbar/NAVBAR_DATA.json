@@ -126,22 +126,13 @@
                 "attributes": []
             },
             {
-                "id": "99",
+                "id": "5",
                 "item": "theme_editor",
                 "itemid": "openThemeEditor",
-                "attributes": [
-                    {
-                        "name": "href",
-                        "value": "/theme-editor"
-                    },
-                    {
-                        "name": "role",
-                        "value": "button"
-                    }
-                ]
+                "attributes": []
             },
             {
-                "id": "5",
+                "id": "6",
                 "item": "custom_shortcut",
                 "itemid": "customShortcut",
                 "attributes": []

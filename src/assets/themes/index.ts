@@ -1,4 +1,4 @@
-import type { ThemeMap } from '#/plugins/themeEditor'
+import type { ThemeMap } from "#/plugins/themeEditor";
 
 export const DEFAULT_THEMES: Record<string, ThemeMap> = {
   cute: {

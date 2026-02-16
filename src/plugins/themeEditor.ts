@@ -1,4 +1,4 @@
-import { DEFAULT_THEMES } from '#/assets/themes'
+import { DEFAULT_THEMES } from "#/assets/themes";
 
 export type ThemeMap = Record<string, string>;
 
@@ -76,10 +76,26 @@ export function exportTheme(name: string, theme: ThemeMap) {
 export function importThemeFromJSON(json: string) {
   try {
     const parsed = JSON.parse(json);
-    if (parsed && parsed.name && parsed.theme) {
-      saveTheme(parsed.name, parsed.theme);
-      return parsed;
+    if (!parsed || typeof parsed !== "object" || !parsed.name || !parsed.theme) {
+      return null;
     }
+    
+    // Validate theme object
+    const theme = parsed.theme;
+    if (typeof theme !== "object" || Array.isArray(theme)) {
+      return null;
+    }
+    
+    // Validate each key-value pair
+    const cssCustomPropertyPattern = /^--[A-Za-z0-9\-_]+$/;
+    for (const [key, val] of Object.entries(theme)) {
+      if (!cssCustomPropertyPattern.test(key) || typeof val !== "string") {
+        return null;
+      }
+    }
+    
+    saveTheme(parsed.name, parsed.theme);
+    return parsed;
   } catch (e) {
     // ignore
   }
@@ -128,6 +144,9 @@ export function applyDefaultTheme(name: string) {
 export default {
   getRootTheme,
   applyTheme,
+  applyThemeWithTransition,
+  exportTheme,
+  importThemeFromJSON,
   saveTheme,
   getAllSavedThemes,
   deleteTheme,

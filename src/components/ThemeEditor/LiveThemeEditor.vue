@@ -9,13 +9,13 @@
             v-if="isColor(val)"
             type="color"
             :value="toHex(val)"
-            @input="onChange(key, $event.target.value)"
+            @input="onChange(key, ($event.target as HTMLInputElement).value)"
           />
           <input
             v-else
             type="text"
             :value="val"
-            @input="onChange(key, $event.target.value)"
+            @input="onChange(key, ($event.target as HTMLInputElement).value)"
           />
           <span class="var-val">{{ val }}</span>
         </div>
@@ -62,15 +62,14 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, onMounted, computed } from 'vue'
-import themeEditor, { ThemeMap } from '#/plugins/themeEditor'
-import ThemePicker from './ThemePicker.vue'
-import { ref as vueRef } from 'vue'
+import { reactive, ref, onMounted } from "vue"
+import themeEditor, { ThemeMap } from "#/plugins/themeEditor"
+import ThemePicker from "./ThemePicker.vue"
 
 const variables = reactive<ThemeMap>({})
 const savedThemes = reactive<Record<string, ThemeMap>>({})
-const themeName = ref('')
-const contrastText = ref('')
+const themeName = ref("")
+const contrastText = ref("")
 const contrastOk = ref(true)
 
 function normalize(v: string) {
@@ -80,16 +79,21 @@ function normalize(v: string) {
 function isColorString(v: string) {
   if (!v) return false
   // basic checks for hex, rgb, rgba
-  return /^#/.test(v) || /^rgb/.test(v) || /^hsl/.test(v)
+  return /^#/.test(v) || /^rgb/.test(v)
 }
 
 function toHex(v: string) {
   // try to normalize rgb(...) to hex if possible; else return v
   try {
-    if (/^#/.test(v)) return v.trim()
+    if (/^#[0-9a-fA-F]{6}$/.test(v.trim())) return v.trim()
+    // Handle 3-digit hex
+    if (/^#[0-9a-fA-F]{3}$/.test(v.trim())) {
+      const shortHex = v.trim()
+      return "#" + Array.from(shortHex.slice(1)).map(c => c + c).join("")
+    }
     if (/^rgb/.test(v)) {
-      const nums = v.replace(/rgba?\(|\)/g, '').split(',').map(s => parseInt(s.trim(), 10))
-      return '#'+nums.slice(0,3).map(n=>n.toString(16).padStart(2,'0')).join('')
+      const nums = v.replace(/rgba?\(|\)/g, "").split(",").map(s => parseInt(s.trim(), 10))
+      return "#" + nums.slice(0,3).map(n => n.toString(16).padStart(2, "0")).join("")
     }
   } catch(e){}
   return v
@@ -136,20 +140,25 @@ onMounted(() => {
 function luminance(hexOrRgb: string) {
   try {
     let r = 0, g = 0, b = 0
-    if (hexOrRgb.startsWith('#')) {
-      const hex = hexOrRgb.replace('#', '')
-      r = parseInt(hex.substring(0,2),16)
-      g = parseInt(hex.substring(2,4),16)
-      b = parseInt(hex.substring(4,6),16)
-    } else if (hexOrRgb.startsWith('rgb')) {
-      const nums = hexOrRgb.replace(/rgba?\(|\)/g,'').split(',').map(s=>parseFloat(s))
+    const normalized = hexOrRgb.trim()
+    if (normalized.startsWith("#")) {
+      let hex = normalized.replace("#", "")
+      // Handle 3-digit hex
+      if (hex.length === 3) {
+        hex = Array.from(hex).map(c => c + c).join("")
+      }
+      r = parseInt(hex.substring(0, 2), 16)
+      g = parseInt(hex.substring(2, 4), 16)
+      b = parseInt(hex.substring(4, 6), 16)
+    } else if (normalized.startsWith("rgb")) {
+      const nums = normalized.replace(/rgba?\(|\)/g, "").split(",").map(s => parseFloat(s))
       r = nums[0]; g = nums[1]; b = nums[2]
     }
-    const Rs = r/255; const Gs = g/255; const Bs = b/255
-    const R = Rs <= 0.03928 ? Rs/12.92 : Math.pow((Rs+0.055)/1.055, 2.4)
-    const G = Gs <= 0.03928 ? Gs/12.92 : Math.pow((Gs+0.055)/1.055, 2.4)
-    const B = Bs <= 0.03928 ? Bs/12.92 : Math.pow((Bs+0.055)/1.055, 2.4)
-    return 0.2126*R + 0.7152*G + 0.0722*B
+    const Rs = r / 255; const Gs = g / 255; const Bs = b / 255
+    const R = Rs <= 0.03928 ? Rs / 12.92 : Math.pow((Rs + 0.055) / 1.055, 2.4)
+    const G = Gs <= 0.03928 ? Gs / 12.92 : Math.pow((Gs + 0.055) / 1.055, 2.4)
+    const B = Bs <= 0.03928 ? Bs / 12.92 : Math.pow((Bs + 0.055) / 1.055, 2.4)
+    return 0.2126 * R + 0.7152 * G + 0.0722 * B
   } catch(e){ return 0 }
 }
 
@@ -169,7 +178,7 @@ function checkContrast() {
   contrastText.value = `${Math.round(ratio*10)/10}: ${contrastOk.value ? 'Good (>=4.5)' : 'Low (<4.5)'}`
 }
 
-const importFile = vueRef<HTMLInputElement | null>(null)
+const importFile = ref<HTMLInputElement | null>(null)
 
 function triggerImport() {
   importFile.value?.click()
@@ -183,6 +192,10 @@ function handleImportFile(e: Event) {
     const parsed = themeEditor.importThemeFromJSON(String(reader.result))
     if (parsed) {
       Object.assign(savedThemes, themeEditor.getAllSavedThemes())
+      // Reset file input
+      if (importFile.value) {
+        importFile.value.value = ""
+      }
     }
   }
   reader.readAsText(f)
