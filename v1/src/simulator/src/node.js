@@ -930,6 +930,17 @@ export default class Node {
 
     /**
      * function delete a node
+     * 
+     * Real-world impact if deletion fails:
+     * - Memory leaks: Orphaned nodes remain in nodeList, preventing garbage collection
+     * - Simulation errors: Deleted nodes still referenced, causing "node not found" errors
+     * - UI glitches: Deleted nodes may still appear in properties panel or cause crashes
+     * - Example scenario: User deletes a gate's input node, but it remains in parent.nodeList.
+     *   Later, when the circuit simulates, it tries to access the deleted node, causing:
+     *   * Simulation to fail or produce incorrect results
+     *   * Browser console errors
+     *   * Circuit becoming unresponsive
+     *   * Need to reload the page to fix
      */
     delete() {
         updateSimulationSet(true)
@@ -940,6 +951,9 @@ export default class Node {
         // Remove node from parent's nodeList (where it was originally added)
         // Input/output nodes (type 0, 1) are added to parent.nodeList in constructor (line 167)
         // We need to remove from the correct parent's nodeList, not always from root.nodeList
+        // 
+        // Previous bug: Code tried to remove from root.nodeList, but nodes are in parent.nodeList
+        // This mismatch meant nodes weren't properly removed, causing the issues above
         if (this.parent && this.parent.nodeList && Array.isArray(this.parent.nodeList)) {
             const index = this.parent.nodeList.indexOf(this)
             if (index !== -1) {
