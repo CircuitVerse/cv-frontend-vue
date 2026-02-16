@@ -1,3 +1,37 @@
+# Pull Request
+
+Please fill out the following and ensure CI passes before requesting review.
+
+## Summary
+- What does this PR do? (one-line summary)
+
+## Related Issue(s)
+- Link to issue or feature request
+
+## Changes
+- Bullet list of changes made (files, components, behavior)
+
+## How to test
+1. Install dependencies: `npm install`
+2. Run dev server: `npm run dev`
+3. Open `/theme-editor` and verify Live Theme Editor works:
+   - Edit variables, save a theme
+   - Export, import, and apply default themes (`cute`, `night-sky`)
+
+## Screenshots (if applicable)
+- Add before/after visuals or animated gif
+
+## Checklist
+- [ ] Code builds locally
+- [ ] No failing tests (run `npm test`)
+- [ ] All new code is covered by tests or is UI-only change
+- [ ] Added documentation / README updates
+
+## Author
+- Implemented by `s1dhu98` (please ensure commits are authored by this account)
+
+## Notes for reviewers
+- Any specific review guidance, edge-cases to check, or known limitations
 Fixes #
 
 <!-- Add issue number above --> 

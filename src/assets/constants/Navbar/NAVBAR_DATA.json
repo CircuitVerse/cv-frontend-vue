@@ -126,6 +126,21 @@
                 "attributes": []
             },
             {
+                "id": "99",
+                "item": "theme_editor",
+                "itemid": "openThemeEditor",
+                "attributes": [
+                    {
+                        "name": "href",
+                        "value": "/theme-editor"
+                    },
+                    {
+                        "name": "role",
+                        "value": "button"
+                    }
+                ]
+            },
+            {
                 "id": "5",
                 "item": "custom_shortcut",
                 "itemid": "customShortcut",
