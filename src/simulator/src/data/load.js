@@ -85,8 +85,8 @@ function loadModule(data, scope) {
 
 /**
  * @deprecated This function has been removed as the root cause has been fixed.
- * Nodes are now loaded correctly: only intermediate nodes are loaded before modules,
- * and input/output nodes are created as part of their circuit elements.
+ * Nodes are now loaded correctly and orphaned nodes are cleaned up properly.
+ * The removeBugNodes() workaround is no longer needed.
  * @category data
  */
 
@@ -130,6 +130,13 @@ export function loadScope(scope, data) {
     // or when a node's circuit element wasn't loaded.
     // Input/output nodes should belong to circuit elements, not scope.root
     // Intermediate nodes (type 2) correctly belong to scope.root
+    //
+    // Real-world impact if not fixed:
+    // - Orphaned nodes can cause simulation errors (nodes not connected properly)
+    // - Memory leaks (nodes not garbage collected)
+    // - Circuit loading failures or incorrect behavior
+    // - Example: Loading a saved circuit with gates might show missing connections
+    //   or the circuit might not simulate correctly due to orphaned input/output nodes
     const nodesToRemove = []
     for (let i = scope.allNodes.length - 1; i >= 0; i--) {
         const node = scope.allNodes[i]
