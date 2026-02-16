@@ -46,6 +46,11 @@ var ctxPos = {
 }
 let isFullViewActive = false
 let prevMobileState = null
+
+// Debounce timers for clock properties to prevent excessive updates
+let clockTimeDebounceTimer = null
+let clockEnableDebounceTimer = null
+const DEBOUNCE_DELAY = 300 // milliseconds
 // FUNCTION TO SHOW AND HIDE CONTEXT MENU
 function hideContextMenu() {
     var el = document.getElementById('contextMenu')
@@ -184,6 +189,33 @@ function checkValidBitWidth() {
 }
 
 export function objectPropertyAttributeUpdate() {
+    const propertyName = this.name
+    
+    // Special handling for clock time - debounce and skip heavy updates
+    // Clock time changes don't require canvas resets, only interval updates
+    if (propertyName === 'changeClockTime') {
+        if (clockTimeDebounceTimer) {
+            clearTimeout(clockTimeDebounceTimer)
+        }
+        
+        clockTimeDebounceTimer = setTimeout(() => {
+            checkValidBitWidth()
+            let { value } = this
+            if (this.type === 'number') {
+                value = parseFloat(value)
+            }
+            // Only update clock time, skip canvas updates to prevent crashes
+            if (simulationArea.lastSelected && simulationArea.lastSelected[propertyName]) {
+                simulationArea.lastSelected[propertyName](value)
+            } else {
+                circuitProperty[propertyName](value)
+            }
+            clockTimeDebounceTimer = null
+        }, DEBOUNCE_DELAY)
+        return
+    }
+    
+    // Default behavior for other properties
     checkValidBitWidth()
     scheduleUpdate()
     updateCanvasSet(true)
@@ -200,7 +232,31 @@ export function objectPropertyAttributeUpdate() {
 }
 
 export function objectPropertyAttributeCheckedUpdate() {
-    if (this.name === 'toggleLabelInLayoutMode') return // Hack to prevent toggleLabelInLayoutMode from toggling twice
+    const propertyName = this.name
+    
+    // Hack to prevent toggleLabelInLayoutMode from toggling twice
+    if (propertyName === 'toggleLabelInLayoutMode') return
+    
+    // Special handling for clock enable - debounce and skip heavy updates
+    // Clock enable changes don't require canvas resets, only state updates
+    if (propertyName === 'changeClockEnable') {
+        if (clockEnableDebounceTimer) {
+            clearTimeout(clockEnableDebounceTimer)
+        }
+        
+        clockEnableDebounceTimer = setTimeout(() => {
+            // Only update clock enable, skip canvas updates to prevent crashes
+            if (simulationArea.lastSelected && simulationArea.lastSelected[propertyName]) {
+                simulationArea.lastSelected[propertyName](this.checked)
+            } else {
+                circuitProperty[propertyName](this.checked)
+            }
+            clockEnableDebounceTimer = null
+        }, DEBOUNCE_DELAY)
+        return
+    }
+    
+    // Default behavior for other properties
     scheduleUpdate()
     updateCanvasSet(true)
     wireToBeCheckedSet(1)

@@ -84,25 +84,10 @@ function loadModule(data, scope) {
 }
 
 /**
- * This function shouldn't ideally exist. But temporary fix
- * for some issues while loading nodes.
+ * @deprecated This function has been removed as the root cause has been fixed.
+ * Nodes are now loaded correctly and orphaned nodes are cleaned up properly.
  * @category data
  */
-function removeBugNodes(scope = globalScope) {
-    let x = scope.allNodes.length
-    for (let i = 0; i < x; i++) {
-        if (
-            scope.allNodes[i].type !== 2 &&
-            scope.allNodes[i].parent.objectType === 'CircuitElement'
-        ) {
-            scope.allNodes[i].delete()
-        }
-        if (scope.allNodes.length !== x) {
-            i = 0
-            x = scope.allNodes.length
-        }
-    }
-}
 
 /**
  * Function to load a full circuit
@@ -137,11 +122,19 @@ export function loadScope(scope, data) {
             }
         }
     }
+    // Clean up orphaned input/output nodes that weren't properly replaced
+    // Delete inline during reverse iteration to avoid index staling (delete() reassigns scope.allNodes)
+    for (let i = scope.allNodes.length - 1; i >= 0; i--) {
+        const node = scope.allNodes[i]
+        if (node.type !== 2 && node.parent === scope.root) {
+            node.delete()
+        }
+    }
+
     // Update wires according
     scope.wires.map((x) => {
         x.updateData(scope)
     })
-    removeBugNodes(scope) // To be deprecated
 
     // If Verilog Circuit Metadata exists, then restore
     if (data.verilogMetadata) {

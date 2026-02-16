@@ -259,4 +259,5 @@ type SimulatorStateType = {
 }
 </style>
 
-<!-- TODO: add type to scopeList and fix clock timer and clock enable and lite mode (crashing with continuous resetup() calls) -->
+<!-- TODO: add type to scopeList -->
+<!-- Note: Clock timer and clock enable crash issue fixed with debouncing in ux.js -->
