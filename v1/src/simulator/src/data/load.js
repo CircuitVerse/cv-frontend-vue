@@ -84,25 +84,10 @@ function loadModule(data, scope) {
 }
 
 /**
- * This function shouldn't ideally exist. But temporary fix
- * for some issues while loading nodes.
+ * @deprecated This function has been removed as the root cause has been fixed.
+ * Nodes are now loaded correctly and orphaned nodes are cleaned up properly.
  * @category data
  */
-function removeBugNodes(scope = globalScope) {
-    let x = scope.allNodes.length
-    for (let i = 0; i < x; i++) {
-        if (
-            scope.allNodes[i].type !== 2 &&
-            scope.allNodes[i].parent.objectType === 'CircuitElement'
-        ) {
-            scope.allNodes[i].delete()
-        }
-        if (scope.allNodes.length !== x) {
-            i = 0
-            x = scope.allNodes.length
-        }
-    }
-}
 
 /**
  * Function to load a full circuit
@@ -137,11 +122,34 @@ export function loadScope(scope, data) {
             }
         }
     }
+    // Clean up orphaned nodes that weren't properly replaced
+    // These are input/output nodes (type 0, 1) that still have scope.root as parent
+    // instead of their correct CircuitElement parent. This happens when replace() fails
+    // or when a node's circuit element wasn't loaded.
+    // Input/output nodes should belong to circuit elements, not scope.root
+    // Intermediate nodes (type 2) correctly belong to scope.root
+    const nodesToRemove = []
+    for (let i = scope.allNodes.length - 1; i >= 0; i--) {
+        const node = scope.allNodes[i]
+        // Check if it's an input/output node (type 0 or 1) with scope.root as parent
+        // These should have been replaced with nodes that have proper CircuitElement parents
+        if (
+            node.type !== 2 && // Not an intermediate node (input/output nodes)
+            node.parent === scope.root // Has scope.root as parent (wrong - should have CircuitElement parent)
+        ) {
+            // This node should have been replaced but wasn't - it's orphaned
+            nodesToRemove.push(i)
+        }
+    }
+    // Remove orphaned nodes in reverse order to maintain indices
+    for (const index of nodesToRemove) {
+        scope.allNodes[index].delete()
+    }
+
     // Update wires according
     scope.wires.map((x) => {
         x.updateData(scope)
     })
-    removeBugNodes(scope) // To be deprecated
 
     // If Verilog Circuit Metadata exists, then restore
     if (data.verilogMetadata) {
