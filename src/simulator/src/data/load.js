@@ -124,34 +124,11 @@ export function loadScope(scope, data) {
         }
     }
 
-    // Clean up orphaned nodes that weren't properly replaced
-    // These are input/output nodes (type 0, 1) that still have scope.root as parent
-    // instead of their correct CircuitElement parent. This happens when replace() fails
-    // or when a node's circuit element wasn't loaded.
-    // Input/output nodes should belong to circuit elements, not scope.root
-    // Intermediate nodes (type 2) correctly belong to scope.root
-    //
-    // Real-world impact if not fixed:
-    // - Orphaned nodes can cause simulation errors (nodes not connected properly)
-    // - Memory leaks (nodes not garbage collected)
-    // - Circuit loading failures or incorrect behavior
-    // - Example: Loading a saved circuit with gates might show missing connections
-    //   or the circuit might not simulate correctly due to orphaned input/output nodes
-    //
-    // Delete inline during reverse iteration to avoid index staling bug:
-    // node.delete() reassigns scope.allNodes with filter(), so collecting indices first
-    // would make them stale after the first deletion. Since we iterate backwards,
-    // deleting higher indices first keeps lower indices valid.
+    // Clean up orphaned input/output nodes that weren't properly replaced
+    // Delete inline during reverse iteration to avoid index staling (delete() reassigns scope.allNodes)
     for (let i = scope.allNodes.length - 1; i >= 0; i--) {
         const node = scope.allNodes[i]
-        // Check if it's an input/output node (type 0 or 1) with scope.root as parent
-        // These should have been replaced with nodes that have proper CircuitElement parents
-        if (
-            node.type !== 2 && // Not an intermediate node (input/output nodes)
-            node.parent === scope.root // Has scope.root as parent (wrong - should have CircuitElement parent)
-        ) {
-            // This node should have been replaced but wasn't - it's orphaned
-            // Delete inline to avoid index staling (delete() reassigns scope.allNodes)
+        if (node.type !== 2 && node.parent === scope.root) {
             node.delete()
         }
     }
