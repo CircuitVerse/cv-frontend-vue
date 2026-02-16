@@ -135,7 +135,11 @@ export function loadScope(scope, data) {
     // - Circuit loading failures or incorrect behavior
     // - Example: Loading a saved circuit with gates might show missing connections
     //   or the circuit might not simulate correctly due to orphaned input/output nodes
-    const nodesToRemove = []
+    //
+    // Delete inline during reverse iteration to avoid index staling bug:
+    // node.delete() reassigns scope.allNodes with filter(), so collecting indices first
+    // would make them stale after the first deletion. Since we iterate backwards,
+    // deleting higher indices first keeps lower indices valid.
     for (let i = scope.allNodes.length - 1; i >= 0; i--) {
         const node = scope.allNodes[i]
         // Check if it's an input/output node (type 0 or 1) with scope.root as parent
@@ -145,12 +149,9 @@ export function loadScope(scope, data) {
             node.parent === scope.root // Has scope.root as parent (wrong - should have CircuitElement parent)
         ) {
             // This node should have been replaced but wasn't - it's orphaned
-            nodesToRemove.push(i)
+            // Delete inline to avoid index staling (delete() reassigns scope.allNodes)
+            node.delete()
         }
-    }
-    // Remove orphaned nodes in reverse order to maintain indices
-    for (const index of nodesToRemove) {
-        scope.allNodes[index].delete()
     }
 
     // Update wires according
