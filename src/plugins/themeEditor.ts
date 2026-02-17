@@ -17,10 +17,10 @@ function parseRootVariables(): ThemeMap {
       if (!rules) continue;
       for (const r of Array.from(rules)) {
         // Look for :root rule
-        if (r.type === CSSRule.STYLE_RULE) {
-          const sr = r as CSSStyleRule;
-          if (sr.selectorText && sr.selectorText.includes(":root")) {
-            const cssText = sr.style.cssText;
+        // Note: This only inspects top-level rules and will miss :root declarations nested inside @media/@supports blocks
+        if (r instanceof CSSStyleRule) {
+          if (r.selectorText && r.selectorText.includes(":root")) {
+            const cssText = r.style.cssText;
             const re = /(--[a-zA-Z0-9-_]+)\s*:\s*([^;]+);/g;
             let m: RegExpExecArray | null;
             while ((m = re.exec(cssText))) {
@@ -77,7 +77,13 @@ export function exportTheme(name: string, theme: ThemeMap) {
   return JSON.stringify({ name, theme }, null, 2);
 }
 
-export function importThemeFromJSON(json: string) {
+interface ParsedTheme {
+  name: string;
+  theme: ThemeMap;
+}
+
+// Pure function to parse and validate theme JSON without side effects
+function parseThemeJSON(json: string): ParsedTheme | null {
   try {
     const parsed = JSON.parse(json);
     if (!parsed || typeof parsed !== "object" || typeof parsed.name !== "string" || !parsed.theme) {
@@ -98,12 +104,15 @@ export function importThemeFromJSON(json: string) {
       }
     }
 
-    saveTheme(parsed.name, parsed.theme);
-    return parsed;
+    return { name: parsed.name, theme };
   } catch {
     // ignore
   }
   return null;
+}
+
+export function importThemeFromJSON(json: string) {
+  return parseThemeJSON(json);
 }
 
 export function saveTheme(name: string, theme: ThemeMap) {
@@ -116,7 +125,12 @@ export function getAllSavedThemes(): Record<string, ThemeMap> {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return {};
-    return JSON.parse(raw) || {};
+    const parsed = JSON.parse(raw);
+    // Validate that parsed value is a plain object (not array, not null)
+    if (typeof parsed === "object" && parsed !== null && !Array.isArray(parsed)) {
+      return parsed as Record<string, ThemeMap>;
+    }
+    return {};
   } catch {
     return {};
   }

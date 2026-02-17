@@ -191,6 +191,8 @@ function handleImportFile(e: Event) {
   reader.onload = () => {
     const parsed = themeEditor.importThemeFromJSON(String(reader.result))
     if (parsed) {
+      // Explicitly save the imported theme
+      themeEditor.saveTheme(parsed.name, parsed.theme)
       Object.assign(savedThemes, themeEditor.getAllSavedThemes())
       // Reset file input
       if (importFile.value) {

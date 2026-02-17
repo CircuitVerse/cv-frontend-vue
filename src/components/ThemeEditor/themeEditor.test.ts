@@ -58,6 +58,11 @@ describe("themeEditor plugin", () => {
     expect(result).toBeDefined();
     expect(result?.name).toBe("imported-theme");
 
+    // Explicitly save the theme after importing
+    if (result) {
+      themeEditor.saveTheme(result.name, result.theme);
+    }
+
     const saved = themeEditor.getAllSavedThemes();
     expect(saved["imported-theme"]).toBeDefined();
   });
