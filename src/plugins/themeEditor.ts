@@ -64,11 +64,11 @@ export function applyThemeWithTransition(theme: ThemeMap, ms = 260) {
   const root = document.documentElement;
   if (themeTransitionTimeout) clearTimeout(themeTransitionTimeout);
   // add transition class
-  root.classList.add('theme-transition');
+  root.classList.add("theme-transition");
   applyTheme(theme);
   // remove class after timeout
   themeTransitionTimeout = window.setTimeout(() => {
-    root.classList.remove('theme-transition');
+    root.classList.remove("theme-transition");
     themeTransitionTimeout = null;
   }, ms + 20);
 }
@@ -83,13 +83,13 @@ export function importThemeFromJSON(json: string) {
     if (!parsed || typeof parsed !== "object" || typeof parsed.name !== "string" || !parsed.theme) {
       return null;
     }
-    
+
     // Validate theme object
     const theme = parsed.theme;
     if (typeof theme !== "object" || Array.isArray(theme)) {
       return null;
     }
-    
+
     // Validate each key-value pair
     const cssCustomPropertyPattern = /^--[A-Za-z0-9\-_]+$/;
     for (const [key, val] of Object.entries(theme)) {
@@ -97,7 +97,7 @@ export function importThemeFromJSON(json: string) {
         return null;
       }
     }
-    
+
     saveTheme(parsed.name, parsed.theme);
     return parsed;
   } catch {

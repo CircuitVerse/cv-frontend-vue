@@ -1,4 +1,4 @@
-import type { ThemeMap } from "/workspaces/cv-frontend-vue/src/plugins/themeEditor";
+import type { ThemeMap } from "#/plugins/themeEditor";
 
 export const DEFAULT_THEMES: Record<string, ThemeMap> = {
   cute: {
@@ -108,7 +108,7 @@ export const DEFAULT_THEMES: Record<string, ThemeMap> = {
     "--node-norm": "#10b981",
     "--splitter": "#374151",
     "--output-rect": "#60a5fa",
-  }
-}
+  },
+};
 
 export default DEFAULT_THEMES;
