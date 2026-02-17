@@ -116,9 +116,13 @@ export function importThemeFromJSON(json: string) {
 }
 
 export function saveTheme(name: string, theme: ThemeMap) {
-  const all = getAllSavedThemes();
-  all[name] = theme;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+  try {
+    const all = getAllSavedThemes();
+    all[name] = theme;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+  } catch (e) {
+    console.warn("Failed to save theme — storage may be full", e);
+  }
 }
 
 export function getAllSavedThemes(): Record<string, ThemeMap> {
@@ -137,9 +141,13 @@ export function getAllSavedThemes(): Record<string, ThemeMap> {
 }
 
 export function deleteTheme(name: string) {
-  const all = getAllSavedThemes();
-  delete all[name];
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+  try {
+    const all = getAllSavedThemes();
+    delete all[name];
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+  } catch (e) {
+    console.warn("Failed to delete theme — storage may be full", e);
+  }
 }
 
 export function loadAndApplyTheme(name: string) {
