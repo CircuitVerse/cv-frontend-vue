@@ -146,13 +146,46 @@ onMounted(() => {
   checkContrast()
 })
 
+function hslToRgb(h: number, s: number, l: number): [number, number, number] {
+  // Convert HSL (h: 0-360, s: 0-100, l: 0-100) to RGB (0-255)
+  h = h % 360
+  if (h < 0) h += 360
+  s = s / 100
+  l = l / 100
+
+  const c = (1 - Math.abs(2 * l - 1)) * s
+  const x = c * (1 - Math.abs(((h / 60) % 2) - 1))
+  const m = l - c / 2
+  let r = 0, g = 0, b = 0
+
+  if (h >= 0 && h < 60) {
+    r = c; g = x; b = 0
+  } else if (h >= 60 && h < 120) {
+    r = x; g = c; b = 0
+  } else if (h >= 120 && h < 180) {
+    r = 0; g = c; b = x
+  } else if (h >= 180 && h < 240) {
+    r = 0; g = x; b = c
+  } else if (h >= 240 && h < 300) {
+    r = x; g = 0; b = c
+  } else if (h >= 300 && h < 360) {
+    r = c; g = 0; b = x
+  }
+
+  return [
+    Math.round((r + m) * 255),
+    Math.round((g + m) * 255),
+    Math.round((b + m) * 255),
+  ]
+}
+
 function luminance(hexOrRgb: string) {
   try {
     let r = 0, g = 0, b = 0
     const normalized = hexOrRgb.trim()
     if (normalized.startsWith("#")) {
       let hex = normalized.replace("#", "")
-      // Handle 3-digit hex
+      // Handle 3-digit hex: expand by duplicating each character
       if (hex.length === 3) {
         hex = Array.from(hex).map(c => c + c).join("")
       }
@@ -162,6 +195,17 @@ function luminance(hexOrRgb: string) {
     } else if (normalized.startsWith("rgb")) {
       const nums = normalized.replace(/rgba?\(|\)/g, "").split(",").map(s => parseFloat(s))
       r = nums[0]; g = nums[1]; b = nums[2]
+    } else if (normalized.startsWith("hsl")) {
+      // Handle HSL/HSLA: hsla(h, s%, l%, a) or hsl(h, s%, l%)
+      const match = normalized.match(/hsla?\(([^)]+)\)/)
+      if (match) {
+        const parts = match[1].split(",").map(s => parseFloat(s.trim()))
+        if (parts.length >= 3) {
+          const [h, s, l] = parts
+          const [rgb_r, rgb_g, rgb_b] = hslToRgb(h, s, l)
+          r = rgb_r; g = rgb_g; b = rgb_b
+        }
+      }
     }
     const Rs = r / 255; const Gs = g / 255; const Bs = b / 255
     const R = Rs <= 0.03928 ? Rs / 12.92 : Math.pow((Rs + 0.055) / 1.055, 2.4)
