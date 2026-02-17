@@ -20,6 +20,7 @@ import { bitConverterDialog } from './utils'
 import { keyBinder } from '#/components/DialogBox/CustomShortcut.vue'
 import { ExportProject } from '#/components/DialogBox/ExportProject.vue'
 import { ImportProject } from '#/components/DialogBox/ImportProject.vue'
+import router from '#/router'
 
 const logixFunction = {}
 logixFunction.save = save
@@ -41,6 +42,9 @@ logixFunction.generateVerilog = generateVerilog
 logixFunction.bitconverter = bitConverterDialog
 logixFunction.createNewCircuitScope = createNewCircuit
 logixFunction.customShortcut = keyBinder
+logixFunction.openThemeEditor = () => {
+    router.push('/theme-editor')
+}
 logixFunction.ExportProject = ExportProject
 logixFunction.ImportProject = ImportProject
 export default logixFunction

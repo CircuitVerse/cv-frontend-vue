@@ -138,7 +138,7 @@
                 "attributes": []
             },
             {
-                "id": "6",
+                "id": "7",
                 "item": "export_verilog",
                 "itemid": "generateVerilog",
                 "attributes": []

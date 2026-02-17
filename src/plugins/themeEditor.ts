@@ -11,7 +11,7 @@ function parseRootVariables(): ThemeMap {
       let rules: CSSRuleList | null = null;
       try {
         rules = (sheet as CSSStyleSheet).cssRules;
-      } catch (e) {
+      } catch {
         continue;
       }
       if (!rules) continue;
@@ -32,7 +32,7 @@ function parseRootVariables(): ThemeMap {
         }
       }
     }
-  } catch (e) {
+  } catch {
     // best-effort; return whatever we have
   }
   return vars;
@@ -57,15 +57,19 @@ export function applyTheme(theme: ThemeMap) {
   }
 }
 
+let themeTransitionTimeout: ReturnType<typeof setTimeout> | null = null;
+
 // Apply with a short animated transition by toggling a helper class
 export function applyThemeWithTransition(theme: ThemeMap, ms = 260) {
   const root = document.documentElement;
+  if (themeTransitionTimeout) clearTimeout(themeTransitionTimeout);
   // add transition class
   root.classList.add('theme-transition');
   applyTheme(theme);
   // remove class after timeout
-  window.setTimeout(() => {
+  themeTransitionTimeout = window.setTimeout(() => {
     root.classList.remove('theme-transition');
+    themeTransitionTimeout = null;
   }, ms + 20);
 }
 
@@ -76,7 +80,7 @@ export function exportTheme(name: string, theme: ThemeMap) {
 export function importThemeFromJSON(json: string) {
   try {
     const parsed = JSON.parse(json);
-    if (!parsed || typeof parsed !== "object" || !parsed.name || !parsed.theme) {
+    if (!parsed || typeof parsed !== "object" || typeof parsed.name !== "string" || !parsed.theme) {
       return null;
     }
     
@@ -96,7 +100,7 @@ export function importThemeFromJSON(json: string) {
     
     saveTheme(parsed.name, parsed.theme);
     return parsed;
-  } catch (e) {
+  } catch {
     // ignore
   }
   return null;
@@ -113,7 +117,7 @@ export function getAllSavedThemes(): Record<string, ThemeMap> {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return {};
     return JSON.parse(raw) || {};
-  } catch (e) {
+  } catch {
     return {};
   }
 }

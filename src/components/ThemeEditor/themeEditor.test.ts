@@ -61,5 +61,38 @@ describe("themeEditor plugin", () => {
     const saved = themeEditor.getAllSavedThemes();
     expect(saved["imported-theme"]).toBeDefined();
   })
+
+  it("importThemeFromJSON rejects invalid input", () => {
+    // Invalid JSON string
+    expect(themeEditor.importThemeFromJSON("not json")).toBeNull();
+
+    // JSON missing name
+    expect(themeEditor.importThemeFromJSON(JSON.stringify({ theme: { "--ok": "#fff" } }))).toBeNull();
+
+    // JSON missing theme
+    expect(themeEditor.importThemeFromJSON(JSON.stringify({ name: "test" }))).toBeNull();
+
+    // Non-string name
+    expect(themeEditor.importThemeFromJSON(JSON.stringify({
+      name: 123,
+      theme: { "--ok": "#fff" }
+    }))).toBeNull();
+
+    // Theme keys not starting with "--"
+    expect(themeEditor.importThemeFromJSON(JSON.stringify({
+      name: "bad",
+      theme: { "no-dash": "#fff" }
+    }))).toBeNull();
+
+    // Theme values that are non-strings
+    expect(themeEditor.importThemeFromJSON(JSON.stringify({
+      name: "bad",
+      theme: { "--ok": 123 }
+    }))).toBeNull();
+
+    // Verify invalid themes are not saved
+    const saved = themeEditor.getAllSavedThemes();
+    expect(saved["bad"]).toBeUndefined();
+  })
 })
 

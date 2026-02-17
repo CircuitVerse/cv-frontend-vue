@@ -14,9 +14,9 @@ Please fill out the following and ensure CI passes before requesting review.
 ## How to test
 1. Install dependencies: `npm install`
 2. Run dev server: `npm run dev`
-3. Open `/theme-editor` and verify Live Theme Editor works:
-   - Edit variables, save a theme
-   - Export, import, and apply default themes (`cute`, `night-sky`)
+3. Verify the feature works as expected:
+   - Add specific manual verification steps here
+   - Test edge cases if applicable
 
 ## Screenshots (if applicable)
 - Add before/after visuals or animated gif
@@ -28,7 +28,7 @@ Please fill out the following and ensure CI passes before requesting review.
 - [ ] Added documentation / README updates
 
 ## Author
-- Implemented by `s1dhu98` (please ensure commits are authored by this account)
+- Implemented by `@your-username` (please ensure commits are authored by this account)
 
 ## Notes for reviewers
 - Any specific review guidance, edge-cases to check, or known limitations
