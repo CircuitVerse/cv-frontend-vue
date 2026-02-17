@@ -53,7 +53,7 @@ export const useAuthStore = defineStore({
         // Optional: persist token for session restore (guarded for web/tauri)
         try {
           if (typeof localStorage !== "undefined") localStorage.setItem("cv_token", token);
-        } catch { }
+        } catch {}
       } catch (err) {
         console.error("[authStore] Invalid JWT:", err);
         this.signOut();
@@ -80,7 +80,7 @@ export const useAuthStore = defineStore({
       // Clear persisted token so stale sessions don't survive app restarts
       try {
         if (typeof localStorage !== "undefined") localStorage.removeItem("cv_token");
-      } catch { }
+      } catch {}
     },
   },
   getters: {
