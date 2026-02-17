@@ -21,23 +21,22 @@
         </div>
       </div>
       <div class="controls">
-            <ThemePicker />
-              <div class="preview">
-                <h4>Preview</h4>
-                <div class="preview-box">
-                  <div class="preview-navbar">CircuitVerse Preview</div>
-                  <div class="preview-panel">
-                    <button class="custom-btn--primary">Primary</button>
-                    <button class="custom-btn--secondary">Secondary</button>
-                  </div>
-                  <div class="preview-canvas">wire • node • text</div>
-                </div>
-                <div class="contrast-status">
-                  <strong>Contrast:</strong>
-                  <span :style="{color: contrastOk ? 'green' : 'crimson'}">{{ contrastText }}</span>
-                </div>
-              </div>
-
+        <ThemePicker />
+        <div class="preview">
+          <h4>Preview</h4>
+          <div class="preview-box">
+            <div class="preview-navbar">CircuitVerse Preview</div>
+            <div class="preview-panel">
+              <button class="custom-btn--primary">Primary</button>
+              <button class="custom-btn--secondary">Secondary</button>
+            </div>
+            <div class="preview-canvas">wire • node • text</div>
+          </div>
+          <div class="contrast-status">
+            <strong>Contrast:</strong>
+            <span :style="{color: contrastOk ? 'green' : 'crimson'}">{{ contrastText }}</span>
+          </div>
+        </div>
         <div class="save">
           <input v-model="themeName" placeholder="Theme name" />
           <button @click="save">Save Theme</button>
@@ -45,7 +44,6 @@
           <input ref="importFile" type="file" style="display:none" @change="handleImportFile" />
           <button @click="triggerImport">Import</button>
         </div>
-
         <div class="saved">
           <h4>Saved Themes</h4>
           <ul>
@@ -83,19 +81,26 @@ function isColorString(v: string) {
 }
 
 function toHex(v: string) {
-  // try to normalize rgb(...) to hex if possible; else return v
+  // try to normalize hex or rgb(...) to 6-digit hex if possible; else return v
   try {
-    if (/^#[0-9a-fA-F]{6}$/.test(v.trim())) return v.trim()
-    // Handle 3-digit hex
-    if (/^#[0-9a-fA-F]{3}$/.test(v.trim())) {
-      const shortHex = v.trim()
-      return "#" + Array.from(shortHex.slice(1)).map(c => c + c).join("")
+    const normalized = v.trim()
+    // Handle 6-digit hex
+    if (/^#[0-9a-fA-F]{6}$/.test(normalized)) return normalized
+    // Handle 8-digit hex with alpha
+    if (/^#[0-9a-fA-F]{8}$/.test(normalized)) return normalized
+    // Handle 4-digit hex with alpha (#rgba)
+    if (/^#[0-9a-fA-F]{4}$/.test(normalized)) {
+      return "#" + Array.from(normalized.slice(1)).map(c => c + c).join("")
     }
-    if (/^rgb/.test(v)) {
-      const nums = v.replace(/rgba?\(|\)/g, "").split(",").map(s => parseInt(s.trim(), 10))
-      return "#" + nums.slice(0,3).map(n => n.toString(16).padStart(2, "0")).join("")
+    // Handle 3-digit hex (#rgb)
+    if (/^#[0-9a-fA-F]{3}$/.test(normalized)) {
+      return "#" + Array.from(normalized.slice(1)).map(c => c + c).join("")
     }
-  } catch(e){}
+    if (/^rgb/.test(normalized)) {
+      const nums = normalized.replace(/rgba?\(|\)/g, "").split(",").map(s => parseInt(s.trim(), 10))
+      return "#" + nums.slice(0, 3).map(n => n.toString(16).padStart(2, "0")).join("")
+    }
+  } catch (e) {}
   return v
 }
 
@@ -119,7 +124,11 @@ function save() {
 
 function apply(name: string) {
   const t = themeEditor.loadAndApplyTheme(name)
-  if (t) Object.assign(variables, t)
+  if (t) {
+    // Clear old theme keys before applying new theme
+    for (const k in variables) delete variables[k]
+    Object.assign(variables, t)
+  }
   checkContrast()
 }
 
@@ -189,16 +198,27 @@ function handleImportFile(e: Event) {
   if (!f) return
   const reader = new FileReader()
   reader.onload = () => {
-    const parsed = themeEditor.importThemeFromJSON(String(reader.result))
-    if (parsed) {
-      // Explicitly save the imported theme
-      themeEditor.saveTheme(parsed.name, parsed.theme)
-      Object.assign(savedThemes, themeEditor.getAllSavedThemes())
-      // Reset file input
-      if (importFile.value) {
-        importFile.value.value = ""
+    try {
+      const parsed = themeEditor.importThemeFromJSON(String(reader.result))
+      if (parsed) {
+        // Explicitly save the imported theme
+        themeEditor.saveTheme(parsed.name, parsed.theme)
+        Object.assign(savedThemes, themeEditor.getAllSavedThemes())
+        // Reset file input
+        if (importFile.value) {
+          importFile.value.value = ""
+        }
+      } else {
+        alert("Invalid theme file format. Please check the file and try again.")
       }
+    } catch (err) {
+      console.error("Error importing theme:", err)
+      alert("Failed to import theme. Please check the file format.")
     }
+  }
+  reader.onerror = () => {
+    console.error("Error reading file")
+    alert("Failed to read file. Please try again.")
   }
   reader.readAsText(f)
 }
