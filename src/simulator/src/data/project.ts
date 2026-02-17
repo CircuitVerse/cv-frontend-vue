@@ -10,6 +10,7 @@ import { generateSaveData, getProjectName, setProjectName } from "./save";
 import load from "./load";
 import { SimulatorStore } from "#/store/SimulatorStore/SimulatorStore";
 import { confirmOption } from "#/components/helpers/confirmComponent/ConfirmComponent.vue";
+import { getApiBaseUrl } from '#/utils/api';
 
 /**
  * Helper function to recover unsaved data
@@ -162,7 +163,7 @@ export async function newProject(verify: boolean) {
     clearProject();
     localStorage.removeItem("recover");
     const baseUrl =
-      window.location.origin !== "null" ? window.location.origin : "http://localhost:4000";
+      window.location.origin !== "null" ? window.location.origin : (getApiBaseUrl() || "http://localhost:4000");
     window.location.assign(`${baseUrl}/simulatorvue/`);
 
     setProjectName(undefined);

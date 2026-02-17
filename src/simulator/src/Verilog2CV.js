@@ -32,6 +32,7 @@ import 'codemirror/addon/hint/show-hint.js'
 import 'codemirror/addon/display/autorefresh.js'
 import { showError, showMessage } from './utils'
 import { showProperties } from './ux'
+import { apiFetch } from '#/utils/api'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { toRefs } from 'vue'
 
@@ -118,24 +119,24 @@ export function verilogModeSet(mode) {
     verilogMode = mode
     if (mode) {
         const code_window = document.getElementById('code-window')
-        if(code_window)
-        document.getElementById('code-window').style.display = 'block'
+        if (code_window)
+            document.getElementById('code-window').style.display = 'block'
 
         const elementPanel = document.querySelector('.elementPanel')
-        if(elementPanel)
-        document.querySelector('.elementPanel').style.display = 'none'
+        if (elementPanel)
+            document.querySelector('.elementPanel').style.display = 'none'
 
         const timingDiagramPanel = document.querySelector('.timing-diagram-panel')
-        if(timingDiagramPanel)
-        document.querySelector('.timing-diagram-panel').style.display = 'none'
+        if (timingDiagramPanel)
+            document.querySelector('.timing-diagram-panel').style.display = 'none'
 
         const quickBtn = document.querySelector('.quick-btn')
-        if(quickBtn)
-        document.querySelector('.quick-btn').style.display = 'none'
+        if (quickBtn)
+            document.querySelector('.quick-btn').style.display = 'none'
 
         const verilogEditorPanel = document.getElementById('verilogEditorPanel')
-        if(verilogEditorPanel)
-        document.getElementById('verilogEditorPanel').style.display = 'block'
+        if (verilogEditorPanel)
+            document.getElementById('verilogEditorPanel').style.display = 'block'
 
         if (!embed) {
             simulationArea.lastSelected = globalScope.root
@@ -145,24 +146,24 @@ export function verilogModeSet(mode) {
         resetVerilogCode()
     } else {
         const code_window = document.getElementById('code-window')
-        if(code_window)
-        document.getElementById('code-window').style.display = 'none'
+        if (code_window)
+            document.getElementById('code-window').style.display = 'none'
 
         const elementPanel = document.querySelector('.elementPanel')
-        if(elementPanel)
-        document.querySelector('.elementPanel').style.display = ''
+        if (elementPanel)
+            document.querySelector('.elementPanel').style.display = ''
 
         const timingDiagramPanel = document.querySelector('.timing-diagram-panel')
-        if(timingDiagramPanel)
-        document.querySelector('.timing-diagram-panel').style.display = ''
+        if (timingDiagramPanel)
+            document.querySelector('.timing-diagram-panel').style.display = ''
 
         const quickBtn = document.querySelector('.quick-btn')
-        if(quickBtn)
-        document.querySelector('.quick-btn').style.display = ''
+        if (quickBtn)
+            document.querySelector('.quick-btn').style.display = ''
 
         const verilogEditorPanel = document.getElementById('verilogEditorPanel')
-        if(verilogEditorPanel)
-        document.getElementById('verilogEditorPanel').style.display = 'none'
+        if (verilogEditorPanel)
+            document.getElementById('verilogEditorPanel').style.display = 'none'
     }
 }
 
@@ -263,9 +264,9 @@ export default function generateVerilogCircuit(
 ) {
     clearVerilogOutput()
     setVerilogOutput('Compiling Verilog code...', 'info')
-    
+
     var params = { code: verilogCode }
-    fetch('/api/v1/simulator/verilogcv', {
+    apiFetch('/api/v1/simulator/verilogcv', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

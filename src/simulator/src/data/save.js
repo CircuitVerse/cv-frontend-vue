@@ -16,7 +16,7 @@ import { useProjectStore } from '#/store/projectStore'
 import { provideProjectName } from '#/components/helpers/promptComponent/PromptComponent.vue'
 import { UpdateProjectDetail } from '#/components/helpers/createNewProject/UpdateProjectDetail.vue'
 import { confirmOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
-import { getToken } from '#/pages/simulatorHandler.vue'
+import { apiFetch, getAuthToken } from '#/utils/api'
 import { renderOrder } from '../metadata'
 
 // var projectName = undefined
@@ -375,8 +375,7 @@ export default async function save() {
 
     const headers = {
         'Content-Type': 'application/json',
-        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
-        Authorization: `Token ${getToken('cvt')}`,
+        ...(getAuthToken() ? { Authorization: `Token ${getAuthToken()}` } : {}),
     }
 
     if (!window.isUserLoggedIn) {
@@ -432,7 +431,7 @@ export default async function save() {
         // $('body').append(form)
         // form.submit()
 
-        fetch('/api/v1/projects', {
+        apiFetch('/api/v1/projects', {
             method: 'POST',
             headers,
             body: JSON.stringify({
@@ -499,7 +498,7 @@ export default async function save() {
         // if (parts.length === 2) return parts.pop().split(';').shift();
         // }
 
-        fetch('/api/v1/projects/update_circuit', {
+        apiFetch('/api/v1/projects/update_circuit', {
             method: 'PATCH',
             headers,
             body: JSON.stringify({
