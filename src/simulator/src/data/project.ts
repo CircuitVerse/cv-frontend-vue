@@ -10,7 +10,7 @@ import { generateSaveData, getProjectName, setProjectName } from "./save";
 import load from "./load";
 import { SimulatorStore } from "#/store/SimulatorStore/SimulatorStore";
 import { confirmOption } from "#/components/helpers/confirmComponent/ConfirmComponent.vue";
-import { getApiBaseUrl } from '#/utils/api';
+import { getApiBaseUrl } from "#/utils/api";
 
 /**
  * Helper function to recover unsaved data
@@ -37,24 +37,24 @@ export function openOffline() {
   const simulatorStore = SimulatorStore();
   simulatorStore.dialogBox.open_project_dialog = true;
   /*
-    $('#openProjectDialog').empty()
-    const projectList = JSON.parse(localStorage.getItem('projectList'))
-    let flag = true
-    for (id in projectList) {
-        flag = false
-        $('#openProjectDialog').append(
-            `<label class="option custom-radio"><input type="radio" name="projectId" value="${id}" />${projectList[id]}<span></span><i class="fa fa-trash deleteOfflineProject" onclick="deleteOfflineProject('${id}')"></i></label>`
-        )
-    }
-    if (flag)
-        $('#openProjectDialog').append(
-            '<p>Looks like no circuit has been saved yet. Create a new one and save it!</p>'
-        )
-    $('#openProjectDialog').dialog({
-        resizable: false,
-        width: 'auto',
-        buttons: !flag
-            ? [
+  $('#openProjectDialog').empty()
+  const projectList = JSON.parse(localStorage.getItem('projectList'))
+  let flag = true
+  for (id in projectList) {
+    flag = false
+    $('#openProjectDialog').append(
+      `<label class="option custom-radio"><input type="radio" name="projectId" value="${id}" />${projectList[id]}<span></span><i class="fa fa-trash deleteOfflineProject" onclick="deleteOfflineProject('${id}')"></i></label>`
+    )
+  }
+  if (flag)
+    $('#openProjectDialog').append(
+      '<p>Looks like no circuit has been saved yet. Create a new one and save it!</p>'
+    )
+  $('#openProjectDialog').dialog({
+    resizable: false,
+    width: 'auto',
+    buttons: !flag
+      ? [
                   {
                       id: 'Open_offline_btn',
                       text: 'Open Project',
@@ -74,9 +74,9 @@ export function openOffline() {
                       },
                   },
               ]
-            : [],
-    })
-    */
+      : [],
+  })
+  */
 }
 /**
  * Flag for project saved or not
@@ -165,7 +165,7 @@ export async function newProject(verify: boolean) {
     const baseUrl =
       window.location.origin !== "null"
         ? window.location.origin
-        : (getApiBaseUrl() || "http://localhost:4000");
+        : getApiBaseUrl() || "http://localhost:4000";
     window.location.assign(`${baseUrl}/simulatorvue/`);
 
     setProjectName(undefined);
