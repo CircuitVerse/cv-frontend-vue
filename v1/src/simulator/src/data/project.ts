@@ -16,47 +16,47 @@ import { confirmOption } from "#/components/helpers/confirmComponent/ConfirmComp
  * @category data
  */
 export async function recoverProject() {
-    const recoverData = localStorage.getItem('recover')
-    
-    if (!recoverData) {
-        showError('No recover project found')
-        return
+  const recoverData = localStorage.getItem("recover");
+
+  if (!recoverData) {
+    showError("No recover project found");
+    return;
+  }
+
+  try {
+    const data = JSON.parse(recoverData);
+
+    if (!data || typeof data !== "object") {
+      showError("Recovery data is invalid");
+      localStorage.removeItem("recover");
+      return;
     }
-    
-    try {
-        const data = JSON.parse(recoverData)
-        
-        if (!data || typeof data !== 'object') {
-            showError('Recovery data is invalid')
-            localStorage.removeItem('recover')
-            return
-        }
-        
-        if (!data.scopes || !Array.isArray(data.scopes) || data.scopes.length === 0) {
-            showError('Recovery data contains no valid circuits')
-            localStorage.removeItem('recover')
-            return
-        }
-        
-        const projectName = data.name || 'Untitled'
-        
-        if (await confirmOption(`Would you like to recover: ${projectName}?`)) {
-            try {
-                load(data)
-                showMessage(`Project "${projectName}" recovered successfully`)
-                localStorage.removeItem('recover')
-            } catch (loadError) {
-                showError('Failed to load recovered project')
-                console.error('Load error:', loadError)
-            }
-        } else {
-            localStorage.removeItem('recover')
-        }
-    } catch (parseError) {
-        showError('Recovery data is corrupted and cannot be parsed')
-        localStorage.removeItem('recover')
-        console.error('Parse error:', parseError)
+
+    if (!data.scopes || !Array.isArray(data.scopes) || data.scopes.length === 0) {
+      showError("Recovery data contains no valid circuits");
+      localStorage.removeItem("recover");
+      return;
     }
+
+    const projectName = data.name || "Untitled";
+
+    if (await confirmOption(`Would you like to recover: ${projectName}?`)) {
+      try {
+        load(data);
+        showMessage(`Project "${projectName}" recovered successfully`);
+        localStorage.removeItem("recover");
+      } catch (loadError) {
+        showError("Failed to load recovered project");
+        console.error("Load error:", loadError);
+      }
+    } else {
+      localStorage.removeItem("recover");
+    }
+  } catch (parseError) {
+    showError("Recovery data is corrupted and cannot be parsed");
+    localStorage.removeItem("recover");
+    console.error("Parse error:", parseError);
+  }
 }
 
 /**
