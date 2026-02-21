@@ -3,7 +3,8 @@
 </div>
 
 # CircuitVerse Frontend Vue
-[CircuitVerse Frontend Vue](https://circuitverse.netlify.app/simulatorvue) is dedicated to enhancing the CircuitVerse platform in several key ways. Our primary focus is on decoupling the [CircuitVerse Simulator](https://circuitverse.org/simulator) from the backend, allowing it to function independently and with greater flexibility. Additionally, we're working to remove the reliance on jQueryUI, opting for cleaner and more contemporary code practices. To improve performance and code readability, we're transitioning from traditional DOM mutations to string-based manipulation. Furthermore, we're actively integrating internationalization features to ensure the platform is accessible to users worldwide. In summary, our repository aims to elevate the capabilities and user experience of CircuitVerse through targeted improvements and optimizations.
+[CircuitVerse Frontend Vue](https://circuitverse.netlify.app/simulatorvue) is dedicated to enhancing the CircuitVerse platform in several key ways. Our primary focus is on decoupling the [CircuitVerse Simulator](https://circuitverse.org/simulator) from the backend, allowing it to function independently and with greater flexibility. Additionally, we're working to remove the reliance on jQueryUI, opting for 
+cleaner and more contemporary code practices. To improve performance and code readability, we're transitioning from traditional DOM mutations to string-based manipulation. Furthermore, we're actively integrating internationalization features to ensure the platform is accessible to users worldwide. In summary, our repository aims to elevate the capabilities and user experience of CircuitVerse through targeted improvements and optimizations.
 
 ## Community
 We would love to hear from you! We communicate on Slack:
@@ -54,6 +55,38 @@ To build a specific version:
 ```bash
 npm run build -- v1
 ```
+
+## Desktop (Tauri) — Prerequisites & running
+
+This repository includes a Tauri-based desktop application wrapper. To run or build the desktop app you need a working Node.js environment and the Rust toolchain.
+
+Prerequisites (minimum):
+
+- Node.js (recommended: 16+ / compatible LTS)
+- npm (comes with Node.js)
+- Rust toolchain (stable) with `cargo` (https://www.rust-lang.org/tools/install)
+- On macOS: Xcode Command Line Tools (install via `xcode-select --install`) and a working C toolchain
+
+Install JavaScript dependencies first:
+
+```bash
+npm install
+```
+
+Run the Tauri development desktop app (hot reload):
+
+```bash
+npm run tauri dev
+```
+
+Build a production desktop bundle:
+
+```bash
+npm run tauri build
+```
+
+Note: If you haven't installed the Tauri CLI or other native prerequisites, follow the official Tauri setup docs for your platform: https://tauri.app/v1/guides/getting-started/prerequisites
+
 
 ### Custom Mounting Point (e.g. for Rails)
 If you mount the simulator on a different path than the default `/simulatorvue/`, you must specify the `VITE_BASE` environment variable during build:
