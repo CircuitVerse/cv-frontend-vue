@@ -34,7 +34,7 @@ These labels describe **the nature of the issue**.
 | `ui/ux`           | User interface or user experience-related issues.                        |
 | `security`        | Issues that may impact application or user security.                     |
 | `breaking change` | Changes that may break existing functionality or backward compatibility. |
-
+| `issue-metadata-needs-fix` | The issue template is either not followed correctly. Please update the issue description. |
 ---
 
 ## Platform Labels
