@@ -116,7 +116,7 @@ export function gateGenerateVerilog(gate, invert = false) {
 }
 
 // Helper function to download text
-export function downloadFile(filename: string, text: string | number | boolean | JSON) {
+export async function downloadFile(filename: string, text: string | number | boolean | JSON): Promise<string> {
   if (isTauri()) {
     return downloadFileDesktop(filename, text);
   } else {
@@ -125,7 +125,7 @@ export function downloadFile(filename: string, text: string | number | boolean |
 }
 
 // For Web Application
-export function downloadFileWeb(filename: string, text: string | number | boolean) {
+export function downloadFileWeb(filename: string, text: string | number | boolean): string {
   const pom = document.createElement("a");
   pom.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(text));
   pom.setAttribute("download", filename);
@@ -137,13 +137,15 @@ export function downloadFileWeb(filename: string, text: string | number | boolea
   } else {
     pom.click();
   }
+
+  return "Downloads";
 }
 
 // For Desktop Application
 export async function downloadFileDesktop(
   filename: string,
   text: string | number | boolean | JSON,
-) {
+): Promise<string> {
   const downloadsDirectory = await downloadDir();
   let path = filename;
 
@@ -152,6 +154,7 @@ export async function downloadFileDesktop(
   }
 
   await writeTextFile(path, text.toString());
+  return downloadsDirectory;
 }
 
 // Helper function to open a new tab
