@@ -40,17 +40,22 @@ export async function recoverProject() {
 
     const projectName = data.name || "Untitled";
 
-    if (await confirmOption(`Would you like to recover: ${projectName}?`)) {
-      try {
-        load(data);
-        showMessage(`Project "${projectName}" recovered successfully`);
+    try {
+      if (await confirmOption(`Would you like to recover: ${projectName}?`)) {
+        try {
+          load(data);
+          showMessage(`Project "${projectName}" recovered successfully`);
+          localStorage.removeItem("recover");
+        } catch (loadError) {
+          showError("Failed to load recovered project");
+          console.error("Load error:", loadError);
+        }
+      } else {
         localStorage.removeItem("recover");
-      } catch (loadError) {
-        showError("Failed to load recovered project");
-        console.error("Load error:", loadError);
       }
-    } else {
-      localStorage.removeItem("recover");
+    } catch (confirmError) {
+      showError("Recovery confirmation failed");
+      console.error("Confirm error:", confirmError);
     }
   } catch (parseError) {
     showError("Recovery data is corrupted and cannot be parsed");
