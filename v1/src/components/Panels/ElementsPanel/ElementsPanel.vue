@@ -146,6 +146,7 @@ import { createElement, getImgUrl } from './ElementsPanel'
 import modules from '#/simulator/src/modules'
 import { onBeforeMount, onMounted, ref } from 'vue'
 import { useLayoutStore } from '#/store/layoutStore'
+import { setupPanelListeners } from '#/simulator/src/ux'
 var panelData = []
 window.elementPanelList = []
 const layoutStore = useLayoutStore()
@@ -169,6 +170,7 @@ onBeforeMount(() => {
 
 onMounted(() => {
     layoutStore.elementsPanelRef = elementsPanelRef.value
+    setupPanelListeners('.elementPanel')
 })
 
 var elementInput = ref('')
