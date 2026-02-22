@@ -116,7 +116,10 @@ export function gateGenerateVerilog(gate, invert = false) {
 }
 
 // Helper function to download text
-export async function downloadFile(filename: string, text: string | number | boolean | JSON): Promise<string> {
+export async function downloadFile(
+  filename: string,
+  text: string | number | boolean | JSON,
+): Promise<string> {
   if (isTauri()) {
     return downloadFileDesktop(filename, text);
   } else {
