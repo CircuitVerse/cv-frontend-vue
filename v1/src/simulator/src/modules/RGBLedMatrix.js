@@ -378,3 +378,4 @@ RGBLedMatrix.prototype.mutableProperties = {
     },
 }
 RGBLedMatrix.prototype.objectType = 'RGBLedMatrix'
+RGBLedMatrix.prototype.helplink = 'https://docs.circuitverse.org/chapter4/chapter4-output#rgb-led-matrix'

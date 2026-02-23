@@ -155,6 +155,6 @@ endmodule
 DflipFlop.prototype.tooltipText =
     'D FlipFlop ToolTip : Introduces delay in timing circuit.'
 DflipFlop.prototype.helplink =
-    'https://docs.circuitverse.org/#/chapter4/6sequentialelements?id=d-flip-flop'
+    'https://docs.circuitverse.org/chapter4/chapter4-sequentialelements/#d-flip-flop'
 
 DflipFlop.prototype.objectType = 'DflipFlop'
