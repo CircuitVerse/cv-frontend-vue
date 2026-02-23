@@ -23,46 +23,52 @@ export async function recoverProject() {
     return;
   }
 
+  let data: any;
   try {
-    //error handling for JSON parse and load function
-    const data = JSON.parse(recoverData);
-
-    if (!data || typeof data !== "object") {
-      showError("Recovery data is invalid");
-      localStorage.removeItem("recover");
-      return;
-    }
-
-    if (!data.scopes || !Array.isArray(data.scopes) || data.scopes.length === 0) {
-      showError("Recovery data contains no valid circuits");
-      localStorage.removeItem("recover");
-      return;
-    }
-
-    const projectName = data.name || "Untitled";
-
-    try {
-      if (await confirmOption(`Would you like to recover: ${projectName}?`)) {
-        try {
-          load(data);
-          showMessage(`Project "${projectName}" recovered successfully`);
-          localStorage.removeItem("recover");
-        } catch (loadError) {
-          showError("Failed to load recovered project");
-          localStorage.removeItem("recover");
-          console.error("Load error:", loadError);
-        }
-      } else {
-        // Keep recovery data so the user can retry via Project → Recover Project
-      }
-    } catch (confirmError) {
-      showError("Recovery confirmation failed");
-      console.error("Confirm error:", confirmError);
-    }
+    data = JSON.parse(recoverData);
   } catch (parseError) {
     showError("Recovery data is corrupted and cannot be parsed");
     localStorage.removeItem("recover");
     console.error("Parse error:", parseError);
+    return;
+  }
+
+  if (!data || typeof data !== "object") {
+    showError("Recovery data is invalid");
+    localStorage.removeItem("recover");
+    return;
+  }
+
+  if (!data.scopes || !Array.isArray(data.scopes) || data.scopes.length === 0) {
+    showError("Recovery data contains no valid circuits");
+    localStorage.removeItem("recover");
+    return;
+  }
+
+  const projectName = data.name || "Untitled";
+
+  let confirmed: boolean;
+  try {
+    confirmed = await confirmOption(`Would you like to recover: ${projectName}?`);
+  } catch (confirmError) {
+    showError("Recovery confirmation failed");
+    console.error("Confirm error:", confirmError);
+    return;
+  }
+
+  if (!confirmed) {
+    // Keep recovery data so the user can retry via Project → Recover Project
+    return;
+  }
+
+  try {
+    load(data);
+    showMessage(`Project "${projectName}" recovered successfully`);
+    localStorage.removeItem("recover");
+  } catch (loadError) {
+    showError("Failed to load recovered project");
+    localStorage.removeItem("recover");
+    console.error("Load error:", loadError);
   }
 }
 
