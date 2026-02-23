@@ -69,6 +69,12 @@ export function showMessage(mes: string) {
   useActions().showMessage(mes, "success");
 }
 
+// Variant that bypasses dedupe so repeated identical messages are always shown
+export function showMessageImmediate(mes: string) {
+  prevShowMessage = undefined;
+  showMessage(mes);
+}
+
 export function distance(x1: number, y1: number, x2: number, y2: number) {
   return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
 }

@@ -41,7 +41,7 @@ import { ref } from 'vue'
 import { useState } from '#/store/SimulatorStore/state'
 import { useProjectStore } from '#/store/projectStore'
 import { generateSaveData } from '#/simulator/src/data/save'
-import { downloadFile, showMessage } from '#/simulator/src/utils'
+import { downloadFile, showMessageImmediate } from '#/simulator/src/utils'
 import { escapeHtml } from '#/simulator/src/utils'
 
 export function ExportProject() {
@@ -74,7 +74,7 @@ const exportAsFile = async () => {
     )
     fileName = `${fileName.replace(/[^a-z0-9]/gi, '_')}.cv`
     const downloadDir = await downloadFile(fileName, circuitData)
-    showMessage(`"${fileName}" saved successfully to ${downloadDir}`)
+    showMessageImmediate(`"${fileName}" saved successfully to ${downloadDir}`)
     SimulatorState.dialogBox.export_project_dialog = false
 }
 </script>
