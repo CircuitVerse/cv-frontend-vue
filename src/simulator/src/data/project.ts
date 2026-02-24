@@ -67,7 +67,6 @@ export async function recoverProject() {
     localStorage.removeItem("recover");
   } catch (loadError) {
     showError("Failed to load recovered project");
-    localStorage.removeItem("recover");
     console.error("Load error:", loadError);
   }
 }
