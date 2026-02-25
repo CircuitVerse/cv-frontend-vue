@@ -7,7 +7,12 @@
   ],
   "permissions": [
     "core:default",
-    "core:webview:allow-create-webview-window",
+    {
+      "identifier": "opener:allow-open-url",
+      "allow": [
+        { "url": "https://**" }
+           ]
+    },
     "fs:default",
     "http:default",
     {

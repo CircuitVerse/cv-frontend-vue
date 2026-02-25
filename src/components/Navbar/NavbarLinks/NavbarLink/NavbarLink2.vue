@@ -73,18 +73,12 @@ async function handleItemClick(listItem: { itemid: string; attributes: AttrType[
     try {
       const { isTauri } = await import('@tauri-apps/api/core')
       if (isTauri()) {
-        const { WebviewWindow } = await import('@tauri-apps/api/webviewWindow')
-        const label = `help-${Date.now()}`
-        new WebviewWindow(label, {
-          url,
-          title: 'CircuitVerse Help',
-          width: 1000,
-          height: 700,
-        })
+        const { openUrl } = await import('@tauri-apps/plugin-opener')
+        await openUrl(url)
         return
       }
     } catch (e) {
-      console.warn('Tauri WebviewWindow failed, using fallback:', e)
+      console.warn('Tauri opener failed, using fallback:', e)
     }
     window.open(url, '_blank')
   } else {
