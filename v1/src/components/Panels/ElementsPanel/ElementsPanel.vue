@@ -128,14 +128,13 @@
                     </v-expansion-panel-text>
                 </v-expansion-panel>
             </v-expansion-panels>
-            <div
-                id="Help"
-                lines="one"
-                :class="tooltipText != 'null' ? 'show' : ''"
-            >
-                {{ tooltipText }}
-            </div>
         </div>
+    </div>
+    <div
+        id="Help"
+        :class="tooltipText !== 'null' ? 'show' : ''"
+    >
+        {{ tooltipText }}
     </div>
 </template>
 
