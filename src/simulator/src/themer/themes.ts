@@ -318,7 +318,6 @@ const themes: Themes = {
     "--wire-norm": "#333",
     "--node-norm": "#FFC231",
     "--splitter": "#0284A8",
-    "--disable": "#a18f8f",
     "--table-head-dark": "#000000",
   },
 
