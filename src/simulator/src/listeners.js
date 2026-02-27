@@ -870,7 +870,7 @@ listen('user-manual', () => {
     logixFunction.showUserManual();
 });
 
-listen('learn-digital-circuit', () => {
+listen('learn-digital-logic', () => {
     logixFunction.showDigitalCircuit();
 });
 
