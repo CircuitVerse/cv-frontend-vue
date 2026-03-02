@@ -37,7 +37,7 @@ const themes: Themes = {
     "--node": "green",
     "--stroke": "black",
     "--fill": "white",
-    "--hover-and-sel": "rgba(255, 255, 32, 0.8)",
+    "--hover-and-sel": "rgba(255, 193, 7, 0.22)",
     "--wire-draw": "black",
     "--wire-cnt": "green",
     "--wire-pow": "lightgreen",
@@ -89,7 +89,7 @@ const themes: Themes = {
     "--node": "#285963",
     "--stroke": "#35aea9",
     "--fill": "#DEFFFE",
-    "--hover-and-sel": "#E3B924",
+    "--hover-and-sel": "rgba(255, 193, 7, 0.22)",
     "--wire-draw": "#77878C",
     "--wire-cnt": "#3B7F58",
     "--wire-pow": "#75FFB0",
@@ -144,7 +144,7 @@ const themes: Themes = {
     "--node": "#42B983",
     "--stroke": "#6B6B6B",
     "--fill": "#EAEAEB",
-    "--hover-and-sel": "#FFE99B", //yellow
+    "--hover-and-sel": "rgba(255, 193, 7, 0.22)", // replaced with a more contrasting amber
     "--wire-draw": "#6B6B6B", //black
     "--wire-cnt": "#42B983", //
     "--wire-pow": "#52E539",
@@ -199,7 +199,7 @@ const themes: Themes = {
     "--node": "#42B983",
     "--stroke": "#6B6B6B",
     "--fill": "#EAEAEB",
-    "--hover-and-sel": "#FFE99B", //yellow
+    "--hover-and-sel": "rgba(255, 193, 7, 0.22)",
     "--wire-draw": "#6B6B6B", //black
     "--wire-cnt": "#42B983", //
     "--wire-pow": "#52E539",
@@ -254,7 +254,7 @@ const themes: Themes = {
     "--node": "#26a841",
     "--stroke": "#626262",
     "--fill": "#d4d4d4",
-    "--hover-and-sel": "#ffdf6c", //yellow
+    "--hover-and-sel": "rgba(255, 193, 7, 0.22)", // replaced
     "--wire-draw": "#909090", //black
     "--wire-cnt": "#3bb15b", //
     "--wire-pow": "#3ac53c",
@@ -272,55 +272,6 @@ const themes: Themes = {
     "--disable": "#262626",
     "--table-head-dark": "#000000",
   },
-  "Sunset Glow": {
-    "--text-navbar--alt": "#fff",
-    "--br-secondary": "#ffa07a",
-    "--cus-radio_label": "#ffa07a",
-    "--primary": "linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%)",
-    "--text-lite": "#fff",
-    "--text-dark": "#333",
-    "--text-panel": "#fff",
-    "--bg-navbar": "linear-gradient(90deg, #ff7e5f 0%, #feb47b 100%)",
-    "--bg-circuit": "#ffe4e1",
-    "--br-circuit": "#ff7e5f",
-    "--br-primary": "#ff7e5f",
-    "--bg-primary-moz": "#ff7e5fe6",
-    "--bg-primary-chr": "#ff7e5fb3",
-    "--bg-tabs": "#ffb47b",
-    "--bg-icons": "#ffaf87",
-    "--bg-text": "#ffe4e1",
-    "--bg-secondary": "#feb47b",
-    "--canvas-fill": "#fff5f2",
-    "--canvas-stroke": "#ffd1cc",
-    "--context-text": "#333",
-    "--bg-toggle-btn-primary": "#ff7e5f",
-    "--primary-btn-hov": "#e76e4b",
-    "--btn-danger": "#d9534f",
-    "--btn-danger-darken": "#b5373b",
-    "--disable": "#a18f8f",
-    "--cus-btn-hov--bg": "#ffb47b",
-    "--cus-btn-hov-text": "#333",
-    "--node": "#ff7e5f",
-    "--stroke": "#333",
-    "--fill": "#fff",
-    "--hover-and-sel": "rgba(255, 126, 95, 0.8)",
-    "--wire-draw": "#333",
-    "--wire-cnt": "#ff7e5f",
-    "--wire-pow": "#ffb47b",
-    "--wire-sel": "#208CC9",
-    "--wire-lose": "#bf0426",
-    "--mini-map": "#ff7e5f",
-    "--mini-map-stroke": "#e76e4b",
-    "--input-text": "#ff7e5f",
-    "--output-rect": "#0487D9",
-    "--secondary-stroke": "#bf0426",
-    "--text": "#333",
-    "--wire-norm": "#333",
-    "--node-norm": "#FFC231",
-    "--splitter": "#0284A8",
-    "--table-head-dark": "#000000",
-  },
-
   "Color Blind": {
     "--text-navbar--alt": "#000",
     "--br-secondary": "#e2dad1",
@@ -358,7 +309,7 @@ const themes: Themes = {
     "--node": "#c59434",
     "--stroke": "#342a1f",
     "--fill": "#e0dcd3",
-    "--hover-and-sel": "#f4d4d4", //yellow
+    "--hover-and-sel": "rgba(255, 193, 7, 0.22)", // replaced
     "--wire-draw": "#4c4c4c", //black
     "--wire-cnt": "#908eb9", //
     "--wire-pow": "#b3b1cf",
@@ -411,7 +362,7 @@ const themes: Themes = {
     "--node": "#008000",
     "--stroke": "#000",
     "--fill": "#ffffff",
-    "--hover-and-sel": "#ffff20cc",
+    "--hover-and-sel": "rgba(255, 193, 7, 0.22)",
     "--wire-draw": "#000",
     "--wire-cnt": "#008000",
     "--wire-pow": "#90ee90",
