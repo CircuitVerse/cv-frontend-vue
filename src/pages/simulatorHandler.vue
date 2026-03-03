@@ -76,7 +76,6 @@ async function getLoginData() {
             ;(window as any).isUserLoggedIn = true
         } else if (response.status === 401) {
             ;(window as any).isUserLoggedIn = false
-            authStore.signOut()
         }
     } catch (err) {
         console.error(err)
@@ -101,14 +100,7 @@ onBeforeMount(() => {
 
 onMounted(() => {
     window.addEventListener('resize', checkShowSidebar)
-    document.addEventListener('visibilitychange', onVisibilityChange)
 })
-
-function onVisibilityChange() {
-    if (document.visibilityState === 'visible') {
-        getLoginData()
-    }
-}
 function checkShowSidebar() {
     simulatorMobileStore.showMobileView = window.innerWidth < simulatorMobileStore.minWidthToShowMobile ? true : false
 }

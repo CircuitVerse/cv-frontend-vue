@@ -77,9 +77,6 @@ export const useAuthStore = defineStore({
       this.userAvatar = "default";
       this.locale = "en";
       this.isAdmin = false;
-      try {
-        if (typeof localStorage !== "undefined") localStorage.removeItem("cv_token");
-      } catch {}
     },
   },
   getters: {

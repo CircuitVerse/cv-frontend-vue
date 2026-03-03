@@ -48,16 +48,7 @@ export default function redo(scope: ExtendedScope = globalScope): void {
   scope.backups.push(redoData);
 
   // Load the scope data
-  try {
-    loadScope(tempScope, JSON.parse(redoData));
-  } catch (error) {
-    console.error("Failed to parse redo data:", error);
-    // Restore history and backups to pre-redo state
-    scope.backups.pop();
-    scope.history.push(redoData);
-    loading = false;
-    return;
-  }
+  loadScope(tempScope, JSON.parse(redoData));
 
   // Transfer persistent properties
   tempScope.backups = scope.backups;
