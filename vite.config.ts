@@ -42,7 +42,7 @@ export default defineConfig(() => {
       rollupOptions: {
         input: {
           simulator: fileURLToPath(new URL(`./${version}/index.html`, import.meta.url)),
-          'simulator-embed': fileURLToPath(new URL(`./${version}/embed.html`, import.meta.url)),
+          "simulator-embed": fileURLToPath(new URL(`./${version}/embed.html`, import.meta.url)),
         },
         output: {
           entryFileNames: `[name]-${version}.js`,

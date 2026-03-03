@@ -12,18 +12,18 @@ import "./styles/simulator.scss";
 import "@fortawesome/fontawesome-free/css/all.css";
 
 const embedRouter = createRouter({
-    history: createWebHistory(),
-    routes: [
-        {
-            path: "/embed/:projectId?",
-            name: "embed",
-            component: Embed,
-        },
-        {
-            path: "/:pathMatch(.*)*",
-            redirect: "/embed",
-        },
-    ],
+  history: createWebHistory(),
+  routes: [
+    {
+      path: "/embed/:projectId?",
+      name: "embed",
+      component: Embed,
+    },
+    {
+      path: "/:pathMatch(.*)*",
+      redirect: "/embed",
+    },
+  ],
 });
 
 const EmbedApp = defineComponent({ template: "<router-view />" });
