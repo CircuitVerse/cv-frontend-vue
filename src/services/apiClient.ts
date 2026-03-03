@@ -17,6 +17,19 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
   return prototype === Object.prototype || prototype === null;
 }
 
+function isSameOrigin(target: string | URL): boolean {
+  if (typeof window === "undefined") {
+    return true;
+  }
+
+  try {
+    const resolved = new URL(target.toString(), window.location.href);
+    return resolved.origin === window.location.origin;
+  } catch {
+    return false;
+  }
+}
+
 export function getCookie(name: string): string | null {
   if (typeof document === "undefined" || !document.cookie) {
     return null;
@@ -64,24 +77,27 @@ export function getAuthToken(): string | null {
 }
 
 export async function apiFetch(
+  // Keep string | URL for this incremental wrapper; can widen later if needed.
   url: string | URL,
   options: ApiFetchOptions = {}
 ): Promise<Response> {
   const { onUnauthorized, headers: callerHeaders, body: callerBody, ...rest } =
     options;
   const headers = new Headers(callerHeaders);
+  const method = (rest.method ?? "GET").toUpperCase();
+  const shouldAttachBody = method !== "GET" && method !== "HEAD";
 
   if (!headers.has("Accept")) {
     headers.set("Accept", "application/json");
   }
 
   const token = getAuthToken();
-  if (token && !headers.has("Authorization")) {
+  if (token && isSameOrigin(url) && !headers.has("Authorization")) {
     headers.set("Authorization", `Token ${token}`);
   }
 
   let requestBody: BodyInit | null | undefined = callerBody;
-  if (isPlainObject(callerBody)) {
+  if (shouldAttachBody && isPlainObject(callerBody)) {
     requestBody = JSON.stringify(callerBody);
     if (!headers.has("Content-Type")) {
       headers.set("Content-Type", "application/json");
@@ -89,14 +105,14 @@ export async function apiFetch(
   }
 
   const requestOptions: RequestInit = { ...rest, headers };
-  if (requestBody !== undefined) {
+  if (shouldAttachBody && requestBody !== undefined) {
     requestOptions.body = requestBody;
   }
 
   const response = await fetch(url, requestOptions);
 
   if (response.status === 401 && onUnauthorized) {
-    await onUnauthorized(response);
+    await onUnauthorized(response.clone());
   }
 
   return response;
