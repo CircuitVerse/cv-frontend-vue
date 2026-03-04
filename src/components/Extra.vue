@@ -247,6 +247,7 @@
 
 <script lang="ts" setup>
 import VerilogEditorPanel from './Panels/VerilogEditorPanel/VerilogEditorPanel.vue'
+import { setupPanelsWhenReady } from '#/simulator/src/ux'
 import VerilogEditorPanelMobile from './Panels/VerilogEditorPanel/VerilogEditorPanelMobile.vue'
 import ElementsPanel from './Panels/ElementsPanel/ElementsPanel.vue'
 import PropertiesPanel from './Panels/PropertiesPanel/PropertiesPanel.vue'
@@ -274,7 +275,7 @@ import { paste } from '#/simulator/src/events'
 import  { panStart, panMove, panStop } from '#/simulator/src/listeners'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { useState } from '#/store/SimulatorStore/state'
-import { reactive, ref, watch } from 'vue'
+import { reactive, ref, watch, onMounted, nextTick } from 'vue'
 
 const simulatorMobileStore = useSimulatorMobileStore()
 const selectMultiple = ref(false)
@@ -307,6 +308,24 @@ const pasteBtnClick = () => {
 const propertiesBtnClick = () => {
     simulatorMobileStore.showPropertiesPanel = !simulatorMobileStore.showPropertiesPanel
 }
+onMounted(async () => {
+  await nextTick()
+  setupPanelsWhenReady?.()
+})
+
+watch(
+  () => [
+    simulatorMobileStore.showMobileView,
+    simulatorMobileStore.isVerilog,
+    simulatorMobileStore.showPropertiesPanel,
+  ],
+  async () => {
+    await nextTick()
+    setupPanelsWhenReady?.()
+  },
+  { immediate: true }
+)
+
 </script>
 
 <style scoped>
