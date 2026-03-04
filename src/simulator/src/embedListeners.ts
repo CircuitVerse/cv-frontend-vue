@@ -5,7 +5,7 @@
 /* eslint-disable prefer-const */
 /* eslint-disable max-len */
 // Refer listeners.js
-import { simulationArea } from './simulationArea'
+import { simulationArea } from './simulationArea';
 import {
     scheduleUpdate,
     update,
@@ -16,35 +16,41 @@ import {
     updateCanvasSet,
     gridUpdateSet,
     errorDetectedSet,
-} from './engine'
-import { changeScale } from './canvasApi'
-import { ZoomIn, ZoomOut, pinchZoom, getCoordinate, } from './listeners';
+} from './engine';
+import { changeScale } from './canvasApi';
+import { ZoomIn, ZoomOut, pinchZoom, getCoordinate } from './listeners';
 
-const unit = 10
-let embedCoordinate;
+declare const globalScope: any;
+declare const DPR: any;
+declare const width: any;
+declare const height: any;
+
+const unit: number = 10;
+let embedCoordinate: any;
+
 /** *Function embedPanStart
     *This function hepls to initialize mouse and touch
     *For now variable name starts with mouse like mouseDown are used both
      touch and mouse will change in future
 */
-function embedPanStart(e) {
+function embedPanStart(e: any): void {
     embedCoordinate = getCoordinate(e);
     errorDetectedSet(false);
     updateSimulationSet(true);
     updatePositionSet(true);
     updateCanvasSet(true);
 
-    simulationArea.lastSelected = undefined;
+    simulationArea.lastSelected = undefined as any;
     simulationArea.selected = false;
-    simulationArea.hover = undefined;
-    const rect = simulationArea.canvas.getBoundingClientRect();
-    simulationArea.mouseDownRawX = (embedCoordinate.x - rect.left) * DPR;
-    simulationArea.mouseDownRawY = (embedCoordinate.y - rect.top) * DPR;
-    simulationArea.mouseDownX = Math.round(((simulationArea.mouseDownRawX - globalScope.ox) / globalScope.scale) / unit) * unit;
-    simulationArea.mouseDownY = Math.round(((simulationArea.mouseDownRawY - globalScope.oy) / globalScope.scale) / unit) * unit;
-    simulationArea.mouseDown = true;
-    simulationArea.oldx = globalScope.ox;
-    simulationArea.oldy = globalScope.oy;
+    simulationArea.hover = undefined as any;
+    const rect = (simulationArea as any).canvas.getBoundingClientRect();
+    (simulationArea as any).mouseDownRawX = (embedCoordinate.x - rect.left) * (DPR as any);
+    (simulationArea as any).mouseDownRawY = (embedCoordinate.y - rect.top) * (DPR as any);
+    (simulationArea as any).mouseDownX = Math.round((((simulationArea as any).mouseDownRawX - (globalScope as any).ox) / (globalScope as any).scale) / unit) * unit;
+    (simulationArea as any).mouseDownY = Math.round((((simulationArea as any).mouseDownRawY - (globalScope as any).oy) / (globalScope as any).scale) / unit) * unit;
+    (simulationArea as any).mouseDown = true;
+    (simulationArea as any).oldx = (globalScope as any).ox;
+    (simulationArea as any).oldy = (globalScope as any).oy;
     e.preventDefault();
     scheduleUpdate(1);
 }
@@ -53,20 +59,20 @@ function embedPanStart(e) {
     *For now variable name starts with mouse like mouseDown are used both
      touch and mouse will change in future
 */
-function embedPanMove(e) {
+function embedPanMove(e: any): void {
     embedCoordinate = getCoordinate(e);
     if (!simulationArea.touch || e.touches.length === 1) {
-        const rect = simulationArea.canvas.getBoundingClientRect();
-        simulationArea.mouseRawX = (embedCoordinate.x - rect.left) * DPR;
-        simulationArea.mouseRawY = (embedCoordinate.y - rect.top) * DPR;
-        simulationArea.mouseXf = (simulationArea.mouseRawX - globalScope.ox) / globalScope.scale;
-        simulationArea.mouseYf = (simulationArea.mouseRawY - globalScope.oy) / globalScope.scale;
-        simulationArea.mouseX = Math.round(simulationArea.mouseXf / unit) * unit;
-        simulationArea.mouseY = Math.round(simulationArea.mouseYf / unit) * unit;
+        const rect = (simulationArea as any).canvas.getBoundingClientRect();
+        (simulationArea as any).mouseRawX = (embedCoordinate.x - rect.left) * (DPR as any);
+        (simulationArea as any).mouseRawY = (embedCoordinate.y - rect.top) * (DPR as any);
+        (simulationArea as any).mouseXf = ((simulationArea as any).mouseRawX - (globalScope as any).ox) / (globalScope as any).scale;
+        (simulationArea as any).mouseYf = ((simulationArea as any).mouseRawY - (globalScope as any).oy) / (globalScope as any).scale;
+        (simulationArea as any).mouseX = Math.round((simulationArea as any).mouseXf / unit) * unit;
+        (simulationArea as any).mouseY = Math.round((simulationArea as any).mouseYf / unit) * unit;
         updateCanvasSet(true);
-        if (simulationArea.lastSelected == globalScope.root) {
+        if ((simulationArea as any).lastSelected == (globalScope as any).root) {
             updateCanvasSet(true);
-            let fn;
+            let fn: any;
             fn = function () {
                 updateSelectionsAndPane();
             };
@@ -84,8 +90,8 @@ function embedPanMove(e) {
     *For now variable name starts with mouse like mouseDown are used both
      touch and mouse will change in future
 */
-function embedPanEnd() {
-    simulationArea.mouseDown = false;
+function embedPanEnd(): void {
+    (simulationArea as any).mouseDown = false;
     errorDetectedSet(false);
     updateSimulationSet(true);
     updatePositionSet(true);
@@ -98,31 +104,31 @@ function embedPanEnd() {
     *This function block the pan of elements since in embed simulator you can only view simulator NOT update
 */
 
-function BlockElementPan() {
+function BlockElementPan(): void {
     const ele = document.getElementById('elementName');
     if (globalScope && simulationArea && simulationArea.objectList) {
         let { objectList } = simulationArea;
-        objectList = objectList.filter((val) => val !== 'wires');
+        objectList = objectList.filter((val: any) => val !== 'wires');
         for (let i = 0; i < objectList.length; i++) {
             for (let j = 0; j < globalScope[objectList[i]].length; j++) {
                 if (globalScope[objectList[i]][j].isHover()) {
-                    ele.style.display = 'block';
+                    ele!.style.display = 'block';
                     if (objectList[i] === 'SubCircuit') {
-                        ele.innerHTML = `Subcircuit: ${globalScope.SubCircuit[j].data.name}`;
+                        ele!.innerHTML = `Subcircuit: ${globalScope.SubCircuit[j].data.name}`;
                     } else {
-                        ele.innerHTML = `CircuitElement: ${objectList[i]}`;
+                        ele!.innerHTML = `CircuitElement: ${objectList[i]}`;
                     }
                     return;
                 }
             }
         }
     }
-    ele.style.display = 'none';
-    document.getElementById('elementName').innerHTML = '';
+    ele!.style.display = 'none';
+    document.getElementById('elementName')!.innerHTML = '';
 }
 
-export default function startListeners() {
-    window.addEventListener('keyup', (e) => {
+export default function startListeners(): void {
+    window.addEventListener('keyup', (e: any) => {
         scheduleUpdate(1);
         if (e.keyCode == 16) {
             simulationArea.shiftDown = false;
@@ -132,26 +138,26 @@ export default function startListeners() {
         }
     });
     // All event listeners starts from here
-    document.getElementById('simulationArea').addEventListener('mousedown', (e) => {
+    document.getElementById('simulationArea')!.addEventListener('mousedown', (e: any) => {
         simulationArea.touch = false;
         embedPanStart(e);
     });
-    document.getElementById('simulationArea').addEventListener('mousemove', () => {
+    document.getElementById('simulationArea')!.addEventListener('mousemove', () => {
         simulationArea.touch = false;
         BlockElementPan();
     });
-    document.getElementById('simulationArea').addEventListener('touchstart', (e) => {
+    document.getElementById('simulationArea')!.addEventListener('touchstart', (e: any) => {
         simulationArea.touch = true;
         embedPanStart(e);
     });
-    document.getElementById('simulationArea').addEventListener('touchmove', () => {
+    document.getElementById('simulationArea')!.addEventListener('touchmove', () => {
         simulationArea.touch = true;
         BlockElementPan();
     });
-    window.addEventListener('mousemove', (e) => {
+    window.addEventListener('mousemove', (e: any) => {
         embedPanMove(e);
     });
-    window.addEventListener('touchmove', (e) => {
+    window.addEventListener('touchmove', (e: any) => {
         embedPanMove(e);
     });
     window.addEventListener('mouseup', () => {
@@ -166,10 +172,10 @@ export default function startListeners() {
     window.addEventListener('touchstart', function () {
         this.focus();
     });
-    document.getElementById('simulationArea').addEventListener('mousewheel', MouseScroll);
-    document.getElementById('simulationArea').addEventListener('DOMMouseScroll', MouseScroll);
+    document.getElementById('simulationArea')!.addEventListener('mousewheel', MouseScroll);
+    document.getElementById('simulationArea')!.addEventListener('DOMMouseScroll', MouseScroll);
 
-    window.addEventListener('keydown', (e) => {
+    window.addEventListener('keydown', (e: any) => {
         errorDetectedSet(false);
         updateSimulationSet(true);
         updatePositionSet(true);
@@ -215,16 +221,20 @@ export default function startListeners() {
         // }
 
         if (e.key == 'T' || e.key == 't') {
-            simulationArea.changeClockTime(prompt('Enter Time:'));
+            const input = prompt('Enter Time:');
+            if (input !== null) {
+                simulationArea.changeClockTime?.(Number(input));
+            }
+
         }
     });
-    document.getElementById('simulationArea').addEventListener('dblclick', () => {
+    document.getElementById('simulationArea')!.addEventListener('dblclick', () => {
         scheduleUpdate(2);
         if (simulationArea.lastSelected && simulationArea.lastSelected.dblclick !== undefined) {
             simulationArea.lastSelected.dblclick();
         }
     });
-    function MouseScroll(event) {
+    function MouseScroll(event: any): void {
         updateCanvasSet(true);
 
         event.preventDefault();
@@ -257,4 +267,4 @@ export default function startListeners() {
 // eslint-disable-next-line no-unused-vars
 var isIe =
     navigator.userAgent.toLowerCase().indexOf('msie') != -1 ||
-    navigator.userAgent.toLowerCase().indexOf('trident') != -1
+    navigator.userAgent.toLowerCase().indexOf('trident') != -1;
