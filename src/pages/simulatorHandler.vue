@@ -23,6 +23,7 @@ import { onBeforeMount, ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '#/store/authStore'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
+import { apiFetch, getAuthToken } from '#/utils/api'
 
 const route = useRoute()
 const hasAccess = ref(true)
@@ -32,11 +33,11 @@ const simulatorMobileStore = useSimulatorMobileStore()
 
 // check if user has edit access to the project
 async function checkEditAccess() {
-    await fetch(`/api/v1/projects/${window.logixProjectId}/check_edit_access`, {
+    await apiFetch(`/api/v1/projects/${window.logixProjectId}/check_edit_access`, {
         method: 'GET',
         headers: {
             Accept: 'application/json',
-            Authorization: `Token ${getToken('cvt')}`,
+            ...( getAuthToken() ? { Authorization: `Token ${getAuthToken()}` } : {} ),
         },
     }).then((res) => {
         // if user has edit access load circuit data
@@ -63,11 +64,11 @@ async function checkEditAccess() {
 // get logged in user informaton when blank simulator is opened
 async function getLoginData() {
     try {
-        const response = await fetch('/api/v1/me', {
+        const response = await apiFetch('/api/v1/me', {
             method: 'GET',
             headers: {
                 Accept: 'application/json',
-                Authorization: `Token ${getToken('cvt')}`,
+                ...( getAuthToken() ? { Authorization: `Token ${getAuthToken()}` } : {} ),
             },
         })
         if (response.ok) {

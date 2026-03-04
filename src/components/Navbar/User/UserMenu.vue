@@ -241,7 +241,7 @@ import { useI18n } from 'vue-i18n'
 import { availableLocale } from '#/locales/i18n'
 import { useAuthStore } from '#/store/authStore'
 import { mdiClose } from '@mdi/js'
-// import { fetch } from '@tauri-apps/plugin-http' // Uncomment if using Tauri's HTTP plugin
+import { apiFetch } from '#/utils/api'
 import './User.scss'
 
 const authStore = useAuthStore()
@@ -288,15 +288,15 @@ async function handleAuthSubmit() {
   isLoading.value = true
 
   try {
-    const url = isLoginMode.value
-      ? 'http://localhost:4000/api/v1/auth/login'
-      : 'http://localhost:4000/api/v1/auth/signup'
+    const path = isLoginMode.value
+      ? '/api/v1/auth/login'
+      : '/api/v1/auth/signup'
 
     const body = isLoginMode.value
       ? { email: email.value, password: password.value }
       : { email: email.value, password: password.value, name: name.value }
 
-    const response = await fetch(url, {
+    const response = await apiFetch(path, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -328,8 +328,10 @@ async function handleAuthSubmit() {
       'success'
     )
     authModal.value = false
-  } catch (error) {
-    showSnackbar(`Authentication failed: ${error.message}`, 'error')
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : String(error)
+    console.error('[Login] Authentication failed:', error)
+    showSnackbar(`Authentication failed: ${msg}`, 'error')
   } finally {
     isLoading.value = false
   }

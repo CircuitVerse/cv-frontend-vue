@@ -77,6 +77,10 @@ export const useAuthStore = defineStore({
       this.userAvatar = "default";
       this.locale = "en";
       this.isAdmin = false;
+      // Clear persisted token so stale sessions don't survive app restarts
+      try {
+        if (typeof localStorage !== "undefined") localStorage.removeItem("cv_token");
+      } catch {}
     },
   },
   getters: {

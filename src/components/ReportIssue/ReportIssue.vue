@@ -124,7 +124,7 @@ import { generateSaveData, generateImage } from '#/simulator/src/data/save'
 import ReportIssueButton from './ReportIssueButton.vue'
 import { ref, Ref } from 'vue'
 import { useAuthStore } from '#/store/authStore'
-import { getToken } from '#/pages/simulatorHandler.vue'
+import { apiFetch, getAuthToken } from '#/utils/api'
 
 const authStore = useAuthStore()
 const reportIssueOpen: Ref<boolean> = ref(false)
@@ -191,7 +191,7 @@ async function postUserIssue(message: string): Promise<void> {
         const img = await generateImage('jpeg', 'full', false, 1, false).split(
             ','
         )[1]
-        const response = await fetch('https://api.imgur.com/3/image', {
+        const response = await apiFetch('https://api.imgur.com/3/image', {
             method: 'POST',
             headers: {
                 Authorization: 'Client-ID 9a33b3b370f1054', // eslint-disable-line
@@ -220,11 +220,11 @@ async function postUserIssue(message: string): Promise<void> {
         // delay between requests
         await new Promise((resolve) => setTimeout(resolve, 1000))
 
-        const response = await fetch('/api/v1/simulator/post_issue', {
+        const response = await apiFetch('/api/v1/simulator/post_issue', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: `Token ${getToken('cvt')}`,
+                ...( getAuthToken() ? { Authorization: `Token ${getAuthToken()}` } : {} ),
             },
             body: JSON.stringify({
                 text: message,

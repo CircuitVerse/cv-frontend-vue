@@ -91,7 +91,7 @@ import {
     confirmMultiOption,
     confirmSingleOption,
 } from '../confirmComponent/ConfirmComponent.vue'
-import { getToken } from '#/pages/simulatorHandler.vue'
+import { apiFetch, getAuthToken } from '#/utils/api'
 
 interface dataType {
     project: {
@@ -155,12 +155,12 @@ function updateProjectButton(selectedOption: string) {
 
         const projectJson = JSON.stringify(projectData)
 
-        fetch(`/api/v1/projects/${promptStore.getProjectId}?include=author`, {
+        apiFetch(`/api/v1/projects/${promptStore.getProjectId}?include=author`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
-                Authorization: `Token ${getToken('cvt')}`,
+                ...( getAuthToken() ? { Authorization: `Token ${getAuthToken()}` } : {} ),
             },
             body: projectJson,
         })
