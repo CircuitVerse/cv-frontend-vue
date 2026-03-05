@@ -205,7 +205,14 @@ async function exportAsFile() {
     }
 
     fileName = `${fileName.replace(/[^a-z0-9]/gi, '_')}.cv`
-    downloadFile(fileName, dataStr)
+    try {
+        await downloadFile(fileName, dataStr)
+    } catch (err) {
+        console.error('Export failed:', err)
+        showMessage('Export failed – could not save the file.')
+        isLoading.value = false
+        return
+    }
     closeDialog()
 }
 
@@ -221,8 +228,12 @@ async function copyClipboard() {
         return
     }
 
-    await copyToClipboard(dataStr)
-    showMessage('Circuit data copied to clipboard')
+    const success = await copyToClipboard(dataStr)
+    if (success) {
+        showMessage('Circuit data copied to clipboard')
+    } else {
+        showMessage('Failed to copy circuit data to clipboard.')
+    }
     closeDialog()
 }
 </script>
