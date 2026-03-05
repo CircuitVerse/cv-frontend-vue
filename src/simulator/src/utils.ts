@@ -160,7 +160,18 @@ export function openInNewTab(url: string | URL | undefined) {
   win?.focus();
 }
 
-export function copyToClipboard(text: string) {
+export async function copyToClipboard(text: string): Promise<boolean> {
+  // Modern Clipboard API — works reliably inside dialogs & focus-traps
+  if (navigator.clipboard?.writeText) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+      // Fall through to legacy method
+    }
+  }
+
+  // Legacy fallback using execCommand for older browsers
   const textarea = document.createElement("textarea");
 
   // Move it off-screen.
