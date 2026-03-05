@@ -41,10 +41,11 @@ export default defineConfig(() => {
       chunkSizeWarningLimit: 1600,
       rollupOptions: {
         input: {
-          main: fileURLToPath(new URL(`./${version}/index.html`, import.meta.url)),
+          simulator: fileURLToPath(new URL(`./${version}/index.html`, import.meta.url)),
+          "simulator-embed": fileURLToPath(new URL(`./${version}/embed.html`, import.meta.url)),
         },
         output: {
-          entryFileNames: `simulator-${version}.js`,
+          entryFileNames: `[name]-${version}.js`,
           chunkFileNames: `assets/[name].js`,
           assetFileNames: `assets/[name].[ext]`,
         },
