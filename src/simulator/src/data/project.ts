@@ -16,15 +16,58 @@ import { confirmOption } from "#/components/helpers/confirmComponent/ConfirmComp
  * @category data
  */
 export async function recoverProject() {
-  if (localStorage.getItem("recover")) {
-    const recover = localStorage.getItem("recover");
-    const data = recover ? JSON.parse(recover) : {};
-    if (await confirmOption(`Would you like to recover: ${data.name}`)) {
-      load(data);
-    }
-    localStorage.removeItem("recover");
-  } else {
+  const recoverData = localStorage.getItem("recover");
+
+  if (!recoverData) {
     showError("No recover project found");
+    return;
+  }
+
+  let data: any;
+  try {
+    data = JSON.parse(recoverData);
+  } catch (parseError) {
+    showError("Recovery data is corrupted and cannot be parsed");
+    localStorage.removeItem("recover");
+    console.error("Parse error:", parseError);
+    return;
+  }
+
+  if (!data || typeof data !== "object") {
+    showError("Recovery data is invalid");
+    localStorage.removeItem("recover");
+    return;
+  }
+
+  if (!data.scopes || !Array.isArray(data.scopes) || data.scopes.length === 0) {
+    showError("Recovery data contains no valid circuits");
+    localStorage.removeItem("recover");
+    return;
+  }
+
+  const projectName = data.name || "Untitled";
+
+  let confirmed: boolean;
+  try {
+    confirmed = await confirmOption(`Would you like to recover: ${projectName}?`);
+  } catch (confirmError) {
+    showError("Recovery confirmation failed");
+    console.error("Confirm error:", confirmError);
+    return;
+  }
+
+  if (!confirmed) {
+    // Keep recovery data so the user can retry via Project → Recover Project
+    return;
+  }
+
+  try {
+    load(data);
+    showMessage(`Project "${projectName}" recovered successfully`);
+    localStorage.removeItem("recover");
+  } catch (loadError) {
+    showError("Failed to load recovered project");
+    console.error("Load error:", loadError);
   }
 }
 
