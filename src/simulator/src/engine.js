@@ -440,6 +440,7 @@ export function play(scope = globalScope, resetNodes = false) {
         }
     }
     // Check for Contentions
+    let hadContention = false;
     if (simulationArea.contentionPending.size() > 0) {
         for (const [ourNode, theirNode] of simulationArea.contentionPending.nodes()) {
             ourNode.highlighted = true;
@@ -448,12 +449,34 @@ export function play(scope = globalScope, resetNodes = false) {
 
         forceResetNodesSet(true);
         showError('Contention Error: One or more bus contentions in the circuit (check highlighted nodes)');
+        hadContention = true;
     }
+// Post-stabilization hook: only when queue drained cleanly
+if (!hadContention) {
+    onSimulationStabilized(scope);
+
+}
 }
 
 export function resetNodeHighlights(scope) {
     for (const node of scope.allNodes) node.highlighted = false;
 }
+
+/**
+ * Internal hook invoked once after the simulation queue has been fully drained
+ * and the circuit has reached a stabilized state for the current tick.
+ *
+ * This provides an explicit post-tick boundary for future debugging,
+ * deterministic snapshotting, and runtime instrumentation layers.
+ *
+ * The function is intentionally a no-op and does not modify simulation behavior.
+ *
+ * @param {Scope} scope
+ */
+function onSimulationStabilized(scope) {
+    // intentionally empty
+}
+
 
 /**
  * Function to check for any UI update, it is throttled by time
