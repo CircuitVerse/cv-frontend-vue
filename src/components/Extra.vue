@@ -183,6 +183,7 @@
       @mousedown="simulatorMobileStore.showElementsPanel = !simulatorMobileStore.showElementsPanel"
       :style="{bottom: simulatorMobileStore.showElementsPanel ? '10rem' : '2rem'}"
       v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.showMobileView && !simulatorMobileStore.isVerilog"
+      :title="$t('simulator.tooltip.circuit_elements')"
     >
         <i class="fas fa-bezier-curve"></i>
     </v-btn>
@@ -202,6 +203,7 @@
       }"
       :style="{bottom: simulatorMobileStore.showElementsPanel ? '10rem' : '2rem', backgroundColor: selectMultiple ? 'var(--primary)' : 'var(--bg-toggle-btn-primary)'}"
       v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.showMobileView && !simulatorMobileStore.isVerilog"
+      :title="$t('simulator.tooltip.wiring_mode')"
     >
         <i class="fa-solid fa-vector-square"></i>
     </v-btn>
@@ -210,6 +212,7 @@
       class="cir-verilog-btn"
       @mousedown="simulatorMobileStore.showVerilogPanel = !simulatorMobileStore.showVerilogPanel"
       v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.isVerilog && simulatorMobileStore.showMobileView"
+      :title="$t('simulator.tooltip.verilog_panel')"
     >
         <i class="fa-solid fa-gears"></i>
     </v-btn>
@@ -219,6 +222,7 @@
       @mousedown="copyBtnClick()"
       :style="{bottom: simulatorMobileStore.showElementsPanel ? '16rem' : '8rem'}"
       v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.showMobileView && !simulatorMobileStore.isCopy && !simulatorMobileStore.isVerilog"
+      :title="$t('simulator.tooltip.copy')"
     >
         <i class="fa-solid fa-copy"></i>
     </v-btn>
@@ -228,6 +232,7 @@
       @mousedown="pasteBtnClick()"
       :style="{bottom: simulatorMobileStore.showElementsPanel ? '16rem' : '8rem'}"
       v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.showMobileView && simulatorMobileStore.isCopy && !simulatorMobileStore.isVerilog"
+      :title="$t('simulator.tooltip.paste')"
     >
         <i class="fa-solid fa-paste"></i>
     </v-btn>
@@ -237,6 +242,7 @@
       @mousedown="propertiesBtnClick()"
       :style="{bottom: simulatorMobileStore.showElementsPanel ? `${propertiesPanelPos.up}rem` : `${propertiesPanelPos.down}rem`}"
       v-if="simulatorMobileStore.showMobileButtons && simulatorMobileStore.showMobileView"
+      :title="$t('simulator.tooltip.properties')"
     >
         <i class="fa-solid fa-sliders"></i>
     </v-btn>
