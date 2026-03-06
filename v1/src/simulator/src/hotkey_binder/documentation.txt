@@ -1,5 +1,5 @@
 The feature includes two libraries:
-1. shortcuts.plugin.js: It consists of a few function(s) 
+1. shortcuts.plugin.js: It consists of a few function(s)
     a. Add
     b. Remove
     c. RemoveAll
