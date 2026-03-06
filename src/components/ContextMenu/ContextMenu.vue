@@ -1,5 +1,5 @@
 <template>
-    <div id="contextMenu" oncontextmenu="return false;">
+    <div id="contextMenu" oncontextmenu="return false;" @mousedown.stop>
         <ul>
             <li
                 v-for="(menuOption, index) in contextMenuOptions"
