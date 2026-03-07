@@ -336,7 +336,6 @@ function isEmbed(): boolean {
 .minHeightStyle {
     height: auto;
     min-height: 30px;
-    overflow: visible;
 }
 
 .toolbarButton {
