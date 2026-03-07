@@ -450,6 +450,9 @@ const plotArea = {
         // Check if canvas is available (may be unmounted in Verilog mode)
         if (!this.canvas) {
             this.canvas = document.getElementById('plotArea')
+            if (this.canvas && !embed) {
+                this.ctx = this.canvas.getContext('2d')
+            }
         }
         if (!this.canvas) return
 
