@@ -53,9 +53,9 @@ export default defineConfig(() => {
     },
     server: {
       port: 4000,
-    },
-    fs: {
-      allow: [".."],
+      fs: {
+        allow: [".."],
+      },
     },
     preview: {
       port: 4173,
