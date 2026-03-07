@@ -282,6 +282,7 @@ function isEmbed(): boolean {
 #tabsBar {
     padding-right: 50px;
     position: relative;
+    overflow: hidden;
     padding-bottom: 2.5px;
     z-index: 1;
 }
@@ -330,7 +331,6 @@ function isEmbed(): boolean {
 .maxHeightStyle {
     height: 30px;
     max-height: 30px;
-    overflow: hidden;
 }
 
 .minHeightStyle {
