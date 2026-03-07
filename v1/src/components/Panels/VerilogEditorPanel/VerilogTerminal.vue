@@ -9,15 +9,15 @@
                 <i class="fas fa-terminal"></i>
                 <span>Verilog Output</span>
             </div>
-          <button
-             class="terminal-toggle-btn"
-             @mousedown.stop
-             @click.stop="verilogStore.hideTerminal()"
-            aria-label="Hide Verilog Output Terminal"
-            title="Hide Terminal"
-            >
-            ✕
-            </button>
+        <button
+        class="terminal-toggle-btn"
+        @mousedown.stop
+        @click.stop="verilogStore.hideTerminal()"
+        aria-label="Hide Verilog Output Terminal"
+        title="Hide Terminal"
+        >
+        ✕
+        </button>
 
         </div>
 
@@ -40,8 +40,8 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted, nextTick, readonly, watch } from 'vue'
-import { useVerilogStore } from '../../../store/verilogStore'
+import { ref, onUnmounted, nextTick, readonly, watch } from 'vue'
+import { useVerilogStore } from '#/store/verilogStore'
 
 interface Message {
     text: string
@@ -65,6 +65,7 @@ watch(
         adjustCodeWindowHeight()
     }
 )
+
 
 const adjustCodeWindowHeight = () => {
     const codeWindow = document.getElementById('code-window')
