@@ -57,7 +57,6 @@ function increaseValue() {
     step = isNaN(step) ? 1 : step
     if (value + step <= props.valueMax) value = value + step
     else return
-    props.propertyValue = value
     ele.value = value
     // manually triggering on change event
     const e = new Event('change')
@@ -72,7 +71,6 @@ function decreaseValue() {
     step = isNaN(step) ? 1 : step
     if (value - step >= props.valueMin) value = value - step
     else return
-    props.propertyValue = value
     ele.value = value
     // manually triggering on change event
     const e = new Event('change')
