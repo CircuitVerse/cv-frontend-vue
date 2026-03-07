@@ -40,6 +40,12 @@ import { deleteCurrentCircuit } from '#/components/helpers/deleteCircuit/DeleteC
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { inputList, moduleList } from './metadata'
 
+declare var globalScope: Scope
+declare var embed: boolean
+declare var DPR: number
+declare var width: number
+declare var height: number
+
 export const circuitProperty = {
     toggleLayoutMode,
     setProjectName,
@@ -78,14 +84,19 @@ export function switchCircuit(id: string) {
     if (layoutModeGet()) {
         toggleLayoutMode()
     }
-    if (!scopeList[id].verilogMetadata.isVerilogCircuit) {
-        verilogModeSet(false)
-        simulatorMobileStore.isVerilog.value = false
+    if (!scopeList[id]) {
+        console.warn(`switchCircuit: scope with id "${id}" not found in scopeList`)
+        return
     }
 
     // globalScope.fixLayout();
     scheduleBackup()
     if (id === globalScope.id) return
+
+    if (!scopeList[id].verilogMetadata.isVerilogCircuit) {
+        verilogModeSet(false)
+        simulatorMobileStore.isVerilog.value = false
+    }
     // $(`.circuits`).removeClass('current')
     circuit_list.value.forEach((circuit) =>
         circuit.focussed ? (circuit.focussed = false) : null
@@ -116,6 +127,7 @@ export function switchCircuit(id: string) {
     simulationArea.lastSelected = globalScope.root
     if (!embed) {
         showProperties(simulationArea.lastSelected)
+        // @ts-ignore - plotArea is imported from JS, TS can't infer its shape
         plotArea.reset()
     }
     updateCanvasSet(true)
@@ -194,6 +206,7 @@ export async function createNewCircuitScope(
     newCircuit(name, id, isVerilog, isVerilogMain)
     if (!embed) {
         showProperties(simulationArea.lastSelected)
+        // @ts-ignore - plotArea is imported from JS, TS can't infer its shape
         plotArea.reset()
     }
     return true
@@ -292,6 +305,7 @@ export function changeCircuitName(name: string, id = globalScope.id) {
  * @category circuit
  */
 export default class Scope {
+    [key: string]: any;
     restrictedCircuitElementsUsed: any[];
     id: number | string;
     CircuitElement: any[];
@@ -449,7 +463,7 @@ export default class Scope {
     /**
      * Get dependency list - list of all circuits, this circuit depends on
      */
-    getDependencies() {
+    getDependencies(): any[] {
         var list = []
         if (this.SubCircuit) {
             for (let i = 0; i < this.SubCircuit.length; i++) {
