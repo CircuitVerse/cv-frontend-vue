@@ -1,6 +1,7 @@
 $fa-font-path: '../../node_modules/@fortawesome/fontawesome-free/webfonts';
-@import '../../node_modules/@fortawesome/fontawesome-free/scss/fontawesome.scss';
-@import '../../node_modules/@fortawesome/fontawesome-free/scss/solid.scss';
+@import '../../node_modules/@fortawesome/fontawesome-free/scss/fontawesome.scss',
+        '../../node_modules/@fortawesome/fontawesome-free/scss/solid.scss';
+
 
 .subcircuitdialog {
     display: none;
@@ -8,12 +9,12 @@ $fa-font-path: '../../node_modules/@fortawesome/fontawesome-free/webfonts';
     overflow-y: auto;
 }
 
-.side {
-    width: 330px;
-    max-width: 500px;
-    min-width: 200px;
-    overflow-x: hidden;
-    overflow-y: scroll;
+.sidebar {
+  width: 30%;
+  max-width: 500px;
+  min-width: 200px;
+  overflow-x: hidden;
+  overflow-y: scroll;
 }
 
 .report-sidebar a {
