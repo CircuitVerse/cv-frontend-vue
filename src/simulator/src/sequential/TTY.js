@@ -217,7 +217,7 @@ export default class TTY extends CircuitElement {
 }
 
 TTY.prototype.tooltipText = 'TTY ToolTip : Tele typewriter selected.'
-TTY.prototype.helplink = 'https://docs.circuitverse.org/#/chapter4/6sequentialelements?id=tty'
+TTY.prototype.helplink = 'https://docs.circuitverse.org/chapter4/chapter4-sequentialelements/#tty'
 
 TTY.prototype.mutableProperties = {
     cols: {

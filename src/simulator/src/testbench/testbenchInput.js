@@ -327,7 +327,7 @@ TB_Input.prototype.tooltipText = 'Test Bench Input Selected'
  */
 TB_Input.prototype.centerElement = true
 
-TB_Input.prototype.helplink = 'https://docs.circuitverse.org/#/chapter7/3testcircuits'
+TB_Input.prototype.helplink = 'https://docs.circuitverse.org/chapter7/chapter7-testcircuits'
 
 TB_Input.prototype.mutableProperties = {
     identifier: {

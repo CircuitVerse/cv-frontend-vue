@@ -85,6 +85,7 @@ export default class EEPROM extends RAM {
 EEPROM.prototype.tooltipText =
     'Electrically Erasable Programmable Read-Only Memory'
 EEPROM.prototype.shortName = 'EEPROM'
+EEPROM.prototype.helplink = 'https://docs.circuitverse.org/chapter4/chapter4-sequentialelements/#eeprom'
 EEPROM.prototype.maxAddressWidth = 10
 EEPROM.prototype.mutableProperties = {
     addressWidth: {
