@@ -92,9 +92,7 @@ export function switchCircuit(id: string) {
   }
 
   // $(`.circuits`).removeClass('current')
-  circuit_list.value.forEach((circuit) =>
-    circuit.focussed ? (circuit.focussed = false) : null
-  );
+  circuit_list.value.forEach((circuit) => (circuit.focussed ? (circuit.focussed = false) : null));
   simulationArea.lastSelected = undefined;
   simulationArea.multipleObjectSelections = [];
   simulationArea.copyList = [];
@@ -184,7 +182,7 @@ export async function createNewCircuitScope(
   name: string | Error | undefined = undefined,
   id: string | undefined = undefined,
   isVerilog = false,
-  isVerilogMain = false
+  isVerilogMain = false,
 ) {
   name = name ?? (await provideCircuitName());
   if (name instanceof Error) return; // if user cancels the prompt
@@ -212,7 +210,7 @@ export function newCircuit(
   name: string | undefined,
   id: string | undefined,
   isVerilog = false,
-  isVerilogMain = false
+  isVerilogMain = false,
 ) {
   const simulatorStore = SimulatorStore();
   const { circuit_list } = toRefs(simulatorStore);
@@ -517,10 +515,7 @@ export default class Scope {
     var reqWidth = maxX - minX + 75 * DPR;
     var reqHeight = maxY - minY + 75 * DPR;
 
-    this.scale = Math.min(
-      width / reqWidth,
-      (height - ytoolbarOffset) / reqHeight
-    );
+    this.scale = Math.min(width / reqWidth, (height - ytoolbarOffset) / reqHeight);
 
     if (!zoomIn) {
       this.scale = Math.min(this.scale, DPR);
@@ -528,8 +523,6 @@ export default class Scope {
     this.scale = Math.max(this.scale, DPR / 10);
 
     this.ox = -minX * this.scale + (width - (maxX - minX) * this.scale) / 2;
-    this.oy =
-      -minY * this.scale +
-      (height - ytoolbarOffset - (maxY - minY) * this.scale) / 2;
+    this.oy = -minY * this.scale + (height - ytoolbarOffset - (maxY - minY) * this.scale) / 2;
   }
 }
