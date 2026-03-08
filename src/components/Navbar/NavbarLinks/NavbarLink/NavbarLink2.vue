@@ -25,13 +25,15 @@
                   :key="index"
                   density="compact"
                   :id="listItem.itemid"
-                  @click.stop="logixFunction[listItem.itemid]()"
+                  @click.stop="handleItemClick(listItem)"
                   v-bind="
                   Object.fromEntries(
-                      listItem.attributes.map((attr:AttrType) => [
-                          attr.name,
-                          attr.value,
-                      ])
+                      listItem.attributes
+                          .filter((attr:AttrType) => attr.name !== 'href' && attr.name !== 'target')
+                          .map((attr:AttrType) => [
+                              attr.name,
+                              attr.value,
+                          ])
                   )
               "
               >
@@ -63,6 +65,27 @@ const menuButtonIsActive = ref(false)
 const closeMenu = () => {
   menuButtonIsActive.value = false
 }
+
+async function handleItemClick(listItem: { itemid: string; attributes: AttrType[] }) {
+  const hrefAttr = listItem.attributes.find((attr: AttrType) => attr.name === 'href')
+  if (hrefAttr) {
+    const url = hrefAttr.value
+    try {
+      const { isTauri } = await import('@tauri-apps/api/core')
+      if (isTauri()) {
+        const { openUrl } = await import('@tauri-apps/plugin-opener')
+        await openUrl(url)
+        return
+      }
+    } catch (e) {
+      console.warn('Tauri opener failed, using fallback:', e)
+    }
+    window.open(url, '_blank')
+  } else {
+    logixFunction[listItem.itemid]()
+  }
+}
+
 onMounted(() => {
   document.addEventListener('ui:close-menus', closeMenu)
 })
