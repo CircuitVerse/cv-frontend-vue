@@ -352,6 +352,11 @@ $('#octalInput').on('keyup', () => {
     setBaseValues(x)
 })
 
+
+export function minimizePanel(panelSelector) {
+    $(panelSelector + ' .minimize').trigger('click')
+}
+
 export function setupPanels() {
     dragging('#dragQPanel', '.quick-btn')
 
@@ -364,17 +369,17 @@ export function setupPanels() {
     setupPanelListeners('.testbench-manual-panel')
 
     // Minimize Timing Diagram (takes too much space)
-    $('.timing-diagram-panel .minimize').trigger('click')
+    minimizePanel('.timing-diagram-panel')
 
     // Minimize Testbench UI
-    $('.testbench-manual-panel .minimize').trigger('click')
+    minimizePanel('.testbench-manual-panel')
 
     $('#projectName').on('click', () => {
         $("input[name='setProjectName']").focus().select()
     })
 }
 
-function setupPanelListeners(panelSelector) {
+export function setupPanelListeners(panelSelector) {
     var headerSelector = `${panelSelector} .panel-header`
     var minimizeSelector = `${panelSelector} .minimize`
     var maximizeSelector = `${panelSelector} .maximize`
@@ -383,25 +388,31 @@ function setupPanelListeners(panelSelector) {
     dragging(headerSelector, panelSelector)
     // Current Panel on Top
     var minimized = false
-    $(headerSelector).on('dblclick', () =>
-        minimized
-            ? $(maximizeSelector).trigger('click')
-            : $(minimizeSelector).trigger('click')
-    )
+    $(headerSelector)
+        .off('dblclick.panelListeners')
+        .on('dblclick.panelListeners', () =>
+            minimized
+                ? $(maximizeSelector).trigger('click')
+                : $(minimizeSelector).trigger('click')
+        )
     // Minimize
-    $(minimizeSelector).on('click', () => {
-        $(bodySelector).hide()
-        $(minimizeSelector).hide()
-        $(maximizeSelector).show()
-        minimized = true
-    })
+    $(minimizeSelector)
+        .off('click.panelListeners')
+        .on('click.panelListeners', () => {
+            $(bodySelector).hide()
+            $(minimizeSelector).hide()
+            $(maximizeSelector).show()
+            minimized = true
+        })
     // Maximize
-    $(maximizeSelector).on('click', () => {
-        $(bodySelector).show()
-        $(minimizeSelector).show()
-        $(maximizeSelector).hide()
-        minimized = false
-    })
+    $(maximizeSelector)
+        .off('click.panelListeners')
+        .on('click.panelListeners', () => {
+            $(bodySelector).show()
+            $(minimizeSelector).show()
+            $(maximizeSelector).hide()
+            minimized = false
+        })
 }
 
 export function exitFullView() {

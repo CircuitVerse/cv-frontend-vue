@@ -2,14 +2,7 @@ import CircuitElement from '../circuitElement'
 import { simulationArea } from '../simulationArea'
 import { correctWidth, fillText } from '../canvasApi'
 import Node, { findNode } from '../node'
-
-// helper function to convert decimal to binary
-function dec2bin(dec, bitWidth = undefined) {
-    // only for positive nos
-    var bin = dec.toString(2)
-    if (bitWidth == undefined) return bin
-    return '0'.repeat(bitWidth - bin.length) + bin
-}
+import { dec2bin } from '../node'
 
 /**
  * TestBench Output has a node for it's  input which is

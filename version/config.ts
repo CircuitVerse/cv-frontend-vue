@@ -1,5 +1,4 @@
 export const getConfiguredVersion = (): string => {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('simver') || "v0";
-  };
-  
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get("simver") || "v0";
+};
