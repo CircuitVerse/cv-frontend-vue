@@ -322,7 +322,7 @@ export function updateSelectionsAndPane(scope = globalScope) {
         simulationArea.lastSelected === scope.root &&
         simulationArea.mouseDown
     ) {
-        // pane canvas to give an idea of grid moving
+        // Original behavior: pan canvas when dragging on empty space (not selecting objects)
         if (!objectSelection) {
             globalScope.ox =
                 simulationArea.mouseRawX -
