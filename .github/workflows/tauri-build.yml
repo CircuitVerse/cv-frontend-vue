@@ -62,7 +62,7 @@ jobs:
         working-directory: ./src
 
       - name: Build Tauri App
-            if: ${{ !(github.event_name == 'pull_request' && matrix.platform == 'macos-latest' && matrix.args == '--target aarch64-apple-darwin') }}
+    if: ${{ !(github.event_name == 'pull_request' && matrix.platform == 'macos-latest' && matrix.args == '--target aarch64-apple-darwin') }}
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
