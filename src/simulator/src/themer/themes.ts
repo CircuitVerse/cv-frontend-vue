@@ -327,6 +327,10 @@ const themes: Themes = {
     "--disable": "#956c6a",
     "--table-head-dark": "#2e2b21",
   },
+    "Sunset Glow": {
+          "--bg-navbar": "linear-gradient(to right, #ff6b6b, #feca57, #48dbfb, #ff9ff3)",
+              "--hover-and-sel": "rgba(255, 193, 7, 0.22)"
+                },
   "Custom Theme": JSON.parse(localStorage.getItem("Custom Theme") || "{}") || {
     "--text-navbar--alt": "#000",
     "--br-secondary": "#7d7d7d",
