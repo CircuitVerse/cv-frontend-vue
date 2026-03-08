@@ -1,0 +1,3 @@
+#!/bin/sh
+# post-checkout hook
+exit 0
