@@ -52,11 +52,11 @@ function changeClockTime(t: number) {
   simulationArea.changeClockTime(t);
 }
 
-export let scopeList: { [key: string]: Scope } = {};
+export let scopeList: { [key: string]: Scope } = Object.create(null);
 export function resetScopeList() {
   const simulatorStore = SimulatorStore();
   const { circuit_list } = toRefs(simulatorStore);
-  scopeList = {};
+  scopeList = Object.create(null);
   circuit_list.value = [];
 }
 /**
@@ -75,14 +75,22 @@ export function switchCircuit(id: string) {
   if (layoutModeGet()) {
     toggleLayoutMode();
   }
+  if (!scopeList[id]) {
+    console.warn(`switchCircuit: scope with id "${id}" not found in scopeList`);
+    return;
+  }
+
+  // Early return if switching to the same circuit — no state changes needed
+  // globalScope.fixLayout();
+  scheduleBackup();
+  if (id === globalScope.id) return;
+
+  // Now that we know we're switching to a different circuit, update verilog mode
   if (!scopeList[id].verilogMetadata.isVerilogCircuit) {
     verilogModeSet(false);
     simulatorMobileStore.isVerilog.value = false;
   }
 
-  // globalScope.fixLayout();
-  scheduleBackup();
-  if (id === globalScope.id) return;
   // $(`.circuits`).removeClass('current')
   circuit_list.value.forEach((circuit) => (circuit.focussed ? (circuit.focussed = false) : null));
   simulationArea.lastSelected = undefined;
@@ -212,7 +220,7 @@ export function newCircuit(
   if (layoutModeGet()) {
     toggleLayoutMode();
   }
-  if (verilogModeGet()) {
+  if (verilogModeGet() && isVerilogMain) {
     verilogModeSet(false);
     simulatorMobileStore.isVerilog.value = false;
   }
@@ -231,7 +239,11 @@ export function newCircuit(
   if (isVerilog) {
     scope.verilogMetadata.isVerilogCircuit = true;
     // TODO: remove later if not required after fixing verilog code loading from saved file
-    circuit_list.value.forEach((circuit) => (circuit.isVerilog = false));
+    circuit_list.value.forEach((circuit) => {
+      if (circuit.focussed) {
+        circuit.focussed = false;
+      }
+    });
     circuit_list.value[circuit_list.value.length - 1].isVerilog = true;
     scope.verilogMetadata.isMainCircuit = isVerilogMain;
   }
@@ -239,7 +251,7 @@ export function newCircuit(
   // $('.circuits').removeClass('current')
   circuit_list.value.forEach((circuit) => (circuit.focussed = false));
   circuit_list.value[circuit_list.value.length - 1].focussed = true;
-  if (activeCircuit.value) {
+  if (activeCircuit.value && (!isVerilog || isVerilogMain)) {
     activeCircuit.value.id = scope.id;
     activeCircuit.value.name = scope.name;
   }

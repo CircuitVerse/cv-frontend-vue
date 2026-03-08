@@ -44,10 +44,6 @@
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Verilog Editor Panel -->
     <VerilogEditorPanel v-if="!simulatorMobileStore.showMobileView" />
-
-    <div id="code-window" class="code-window">
-        <textarea id="codeTextArea"></textarea>
-    </div>
     <VerilogEditorPanelMobile v-if="simulatorMobileStore.showMobileView && simulatorMobileStore.showVerilogPanel" />
     <!-- --------------------------------------------------------------------------------------------- -->
 
@@ -189,10 +185,10 @@
 
     <v-btn
       class="cir-btn"
-      @mousedown="(e: React.MouseEvent) => {
+      @mousedown="(e: MouseEvent) => {
         if(simulationArea.shiftDown == false) {
             simulationArea.shiftDown = true;
-            selectMultiple = true;
+            selectMultiple= true;
         }
         else {
             simulationArea.shiftDown = false;
