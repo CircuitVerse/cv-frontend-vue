@@ -121,3 +121,4 @@ export default class ControlledInverter extends CircuitElement {
 ControlledInverter.prototype.tooltipText =
     'Controlled Inverter ToolTip : Controlled buffer and NOT gate.'
 ControlledInverter.prototype.objectType = 'ControlledInverter'
+ControlledInverter.prototype.helplink = 'https://docs.circuitverse.org/chapter4/chapter4-misc/#controlled-inverter'
