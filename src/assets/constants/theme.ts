@@ -5,6 +5,7 @@ export type ThemeType = {
   "g-and-w": string;
   "high-contrast": string;
   "color-blind": string;
+  "sunset-glow": string;
 };
 
 export const THEME: ThemeType = {
@@ -14,4 +15,5 @@ export const THEME: ThemeType = {
   "g-and-w": "G&W",
   "high-contrast": "High Contrast",
   "color-blind": "Color Blind",
+  "sunset-glow": "Sunset Glow",
 };
