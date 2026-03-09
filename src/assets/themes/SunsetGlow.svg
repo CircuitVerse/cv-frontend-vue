@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 150" width="200" height="150">
+  <!-- Background / Canvas -->
+  <rect width="200" height="150" fill="#fffacd"/>
+
+  <!-- Navbar (gradient) -->
+  <defs>
+    <linearGradient id="navbarGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ff6b6b"/>
+      <stop offset="33%" style="stop-color:#feca57"/>
+      <stop offset="66%" style="stop-color:#48dbfb"/>
+      <stop offset="100%" style="stop-color:#ff9ff3"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="200" height="22" fill="url(#navbarGrad)"/>
+
+  <!-- Navbar text label -->
+  <text x="8" y="15" font-family="Arial, sans-serif" font-size="9" fill="#333" font-weight="bold">CircuitVerse</text>
+
+  <!-- Left panel -->
+  <rect x="0" y="22" width="38" height="128" fill="#feca57" opacity="0.85"/>
+  <text x="4" y="38" font-family="Arial, sans-serif" font-size="6" fill="#333">Gates</text>
+  <!-- Gate icons placeholder -->
+  <rect x="6" y="42" width="24" height="10" rx="2" fill="#ff6b6b" opacity="0.7"/>
+  <rect x="6" y="56" width="24" height="10" rx="2" fill="#ff9ff3" opacity="0.7"/>
+  <rect x="6" y="70" width="24" height="10" rx="2" fill="#feca57" opacity="0.9" stroke="#ff6b6b" stroke-width="1"/>
+
+  <!-- Circuit area -->
+  <rect x="38" y="22" width="162" height="128" fill="#fff8e1"/>
+  <!-- Grid lines -->
+  <line x1="58" y1="22" x2="58" y2="150" stroke="#ff6b6b" stroke-width="0.3" opacity="0.4"/>
+  <line x1="78" y1="22" x2="78" y2="150" stroke="#ff6b6b" stroke-width="0.3" opacity="0.4"/>
+  <line x1="98" y1="22" x2="98" y2="150" stroke="#ff6b6b" stroke-width="0.3" opacity="0.4"/>
+  <line x1="118" y1="22" x2="118" y2="150" stroke="#ff6b6b" stroke-width="0.3" opacity="0.4"/>
+  <line x1="138" y1="22" x2="138" y2="150" stroke="#ff6b6b" stroke-width="0.3" opacity="0.4"/>
+  <line x1="158" y1="22" x2="158" y2="150" stroke="#ff6b6b" stroke-width="0.3" opacity="0.4"/>
+  <line x1="178" y1="22" x2="178" y2="150" stroke="#ff6b6b" stroke-width="0.3" opacity="0.4"/>
+
+  <line x1="38" y1="42" x2="200" y2="42" stroke="#ff6b6b" stroke-width="0.3" opacity="0.4"/>
+  <line x1="38" y1="62" x2="200" y2="62" stroke="#ff6b6b" stroke-width="0.3" opacity="0.4"/>
+  <line x1="38" y1="82" x2="200" y2="82" stroke="#ff6b6b" stroke-width="0.3" opacity="0.4"/>
+  <line x1="38" y1="102" x2="200" y2="102" stroke="#ff6b6b" stroke-width="0.3" opacity="0.4"/>
+  <line x1="38" y1="122" x2="200" y2="122" stroke="#ff6b6b" stroke-width="0.3" opacity="0.4"/>
+
+  <!-- Sample circuit components -->
+  <!-- AND gate approximate -->
+  <rect x="70" y="55" width="28" height="20" rx="4" fill="#fffacd" stroke="#ff6b6b" stroke-width="1.5"/>
+  <text x="76" y="68" font-family="Arial, sans-serif" font-size="7" fill="#333">AND</text>
+
+  <!-- Wire lines -->
+  <line x1="50" y1="60" x2="70" y2="60" stroke="#333" stroke-width="1.2"/>
+  <line x1="50" y1="70" x2="70" y2="70" stroke="#333" stroke-width="1.2"/>
+  <line x1="98" y1="65" x2="130" y2="65" stroke="#ff6b6b" stroke-width="1.2"/>
+
+  <!-- OR gate approximate -->
+  <rect x="130" y="55" width="28" height="20" rx="4" fill="#fffacd" stroke="#ff6b6b" stroke-width="1.5"/>
+  <text x="137" y="68" font-family="Arial, sans-serif" font-size="7" fill="#333">OR</text>
+
+  <!-- Output wire -->
+  <line x1="158" y1="65" x2="175" y2="65" stroke="#48dbfb" stroke-width="1.5"/>
+
+  <!-- Node dots -->
+  <circle cx="50" cy="60" r="2.5" fill="#ff6b6b"/>
+  <circle cx="50" cy="70" r="2.5" fill="#ff6b6b"/>
+  <circle cx="175" cy="65" r="3" fill="#feca57" stroke="#ff6b6b" stroke-width="1"/>
+</svg>

@@ -1,0 +1,3 @@
+#!/bin/sh
+# post-commit hook
+exit 0
