@@ -1,7 +1,6 @@
 <template>
     <div class="quick-btn" id='quick-btn-id' @ondragover="dragover">
         <div id="dragQPanel" class="panel-drag">
-            <!-- <DragSvgDots /> -->
             <div class="drag-dot-svg"></div>
         </div>
         <div>
@@ -100,17 +99,11 @@ function dragover(): void {
 </script>
 
 <style>
-/* @import url('./QuickButton.css'); */
-
 .panel-drag {
     cursor: move;
     opacity: 0.6;
-    /* display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
-  padding: 6px 0;
-  width: 1px; */
 }
+
 .quick-btn {
     background: var(--bg-navbar);
     border-top: 1.5px solid var(--qp-br-tl);
@@ -205,56 +198,93 @@ function dragover(): void {
 
 .zoom-slider {
     color: white;
-    font-size: 20px;
-    padding-top: 0.2rem;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    font-weight: 500;
 }
 
-.zoom-slider-decrement {
-    position: relative;
-    padding-right: 4px;
-    bottom: 0.3rem;
-}
+.zoom-slider-decrement,
 .zoom-slider-increment {
-    position: relative;
-    padding-left: 4px;
-    bottom: 0.3rem;
+    background: none;
+    color: white;
+    border: none;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    opacity: 0.8;
+    transition: opacity 0.2s;
 }
 
-.custom-range {
-    width: 80px !important;
+.zoom-slider-decrement:hover,
+.zoom-slider-increment:hover {
+    opacity: 1;
 }
+
+.quick-btn .zoom-slider .custom-range {
+    width: 100px;
+    margin: 0 4px;
+    height: 16px;
+}
+
 .custom-range::-moz-range-track {
-    height: 1px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.4);
+    border: none;
+    border-radius: 1px;
 }
 
 .custom-range::-moz-range-thumb {
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
     background-color: white;
     border: 0;
     border-radius: 50%;
     cursor: pointer;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.2s ease;
 }
-.custom-range:focus::-moz-range-thumb {
-    box-shadow: 0 0 0 1px #fff, 0 0 0 0.2rem rgba(75, 86, 99, 0.25);
+
+.custom-range:focus-visible::-moz-range-thumb {
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.6);
 }
 
 input[type='range'] {
     -webkit-appearance: none;
+    background: transparent;
+    cursor: pointer;
 }
 
 input[type='range']::-webkit-slider-runnable-track {
-    height: 1px;
+    height: 2px;
+    background: white;
+    border-radius: 1px;
+    border: none;
 }
 
 input[type='range']::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
     background-color: white;
     border: 0;
     border-radius: 50%;
     cursor: pointer;
+    margin-top: -5px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.2s ease;
+}
+
+input[type='range']:focus-visible::-webkit-slider-thumb {
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.6);
 }
 
 @media (max-width: 991px) {

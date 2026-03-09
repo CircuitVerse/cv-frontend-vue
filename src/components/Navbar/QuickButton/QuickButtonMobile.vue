@@ -1,7 +1,9 @@
 <template>
-  <div class="quick-mobile">
-    <div class="quick-btn-mobile">
-      <div class="btn-container">
+  <div class="quick-btn" id='quick-btn-id' @ondragover="dragover">
+      <div id="dragQPanel" class="panel-drag">
+          <div class="drag-dot-svg"></div>
+      </div>
+      <div>
           <button
               type="button"
               class="quick-btn-save-online"
@@ -9,7 +11,7 @@
               @click="saveOnline"
           ></button>
       </div>
-      <div class="btn-container">
+      <div>
           <button
               type="button"
               class="quick-btn-save"
@@ -17,7 +19,7 @@
               @click="saveOffline"
           ></button>
       </div>
-      <div class="btn-container">
+      <div>
           <button
               type="button"
               class="quick-btn-delete"
@@ -25,7 +27,7 @@
               @click="deleteSelectedItem"
           ></button>
       </div>
-      <div class="btn-container">
+      <div>
           <button
               type="button"
               class="quick-btn-download"
@@ -33,7 +35,7 @@
               @click="createSaveAsImgPrompt"
           ></button>
       </div>
-      <div class="btn-container">
+      <div>
           <button
               type="button"
               class="quick-btn-zoom-fit"
@@ -41,7 +43,7 @@
               @click="zoomToFit"
           ></button>
       </div>
-      <div class="btn-container">
+      <div>
           <button
               type="button"
               class="quick-btn-undo"
@@ -49,7 +51,7 @@
               @click="undoit"
           ></button>
       </div>
-      <div class="btn-container">
+      <div>
           <button
               type="button"
               class="quick-btn-redo"
@@ -57,30 +59,16 @@
               @click="redoit"
           ></button>
       </div>
-      <div class="btn-container">
+      <div>
           <button
               type="button"
               class="quick-btn-view"
               title="Preview Circuit"
               @click="view"
           >
-          <i :style="{ color: '#ddd', transform: simulatorMobileStore.showMobileView ? 'scale(1)' : 'scale(1.25)' }" class="fas fa-expand-arrows-alt"></i>
+              <i style="color: #ddd" class="fas fa-expand-arrows-alt"></i>
           </button>
       </div>
-      <div class="btn-container">
-          <button
-              type="button"
-              class="quick-btn-timing"
-              @mousedown="simulatorMobileStore.showTimingDiagram = !simulatorMobileStore.showTimingDiagram"
-          >
-          <i :style="{ transform: simulatorMobileStore.showMobileView ? 'scale(1)' : 'scale(1.25)' }" class="fa-solid fa-timeline"></i>
-          </button>
-    </div>
-    <nav class="navbar mobile-nav navbar-expand-lg navbar-dark">
-      <Hamburger2 v-if="simulatorMobileStore.showMobileView" :navbar-data="navbarData" />
-    </nav>
-    </div>
-    <div class="slider-container">
       <div class="zoom-slider">
           <button class="zoom-slider-decrement" @click="decrement">-</button>
           <input
@@ -95,32 +83,28 @@
           <button class="zoom-slider-increment" @click="increment">+</button>
       </div>
   </div>
-  </div>
   <div id="exitView"></div>
 </template>
 
 <script lang="ts" setup>
-import Hamburger2 from '../Hamburger/Hamburger2.vue'
-import navbarData from '#/assets/constants/Navbar/NAVBAR_DATA.json'
-import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { saveOnline, saveOffline, deleteSelectedItem, createSaveAsImgPrompt, zoomToFit, undoit, redoit, view, decrement, increment } from './QuickButton';
 
-const simulatorMobileStore = useSimulatorMobileStore()
+function dragover(): void {
+  const quickBtn: HTMLElement | null = document.querySelector('.quick-btn')
+  if (quickBtn) {
+      quickBtn.style.boxShadow = 'none'
+      quickBtn.style.background = 'var(--bg-navbar)'
+  }
+}
 </script>
 
-<style scoped>
-/* @import url('./QuickButton.css'); */
-
-.mobile-nav {
-  padding: 0 0 !important;
+<style>
+.panel-drag {
+  cursor: move;
+  opacity: 0.6;
 }
 
-.slider-container {
-  display: flex;
-  justify-content: center;
-}
-
-.quick-btn-mobile {
+.quick-btn {
   background: var(--bg-navbar);
   border-top: 1.5px solid var(--qp-br-tl);
   border-left: 1.5px solid var(--qp-br-tl);
@@ -128,45 +112,237 @@ const simulatorMobileStore = useSimulatorMobileStore()
   border-bottom: 1.5px solid var(--qp-br-rd);
 }
 
-.quick-btn-mobile {
+.quick-btn {
   display: flex;
-  align-items: center;
-  z-index: 99;
-  justify-content: space-between;
-  padding: 0 1.5rem;
+  position: absolute;
+  width: 400px;
+  height: 33px;
+  top: 90px;
+  right: 280px;
+  border-radius: 7px;
+  z-index: 100;
 }
 
-.quick-btn-mobile > div > button {
+.quick-btn > div {
+  margin: auto;
+}
+
+.quick-btn > div > button {
+  margin: auto;
   border: none;
 }
 
-.quick-mobile {
-  display: flex;
-  flex-direction: column;
-  background: var(--bg-navbar);
+.drag-dot-svg {
+  width: 12px;
+  height: 20px;
+  background: url(../../../styles/css/assets/shorcuts/dragDots.svg)
+      center/contain;
+  display: block;
+  margin-left: 4px;
 }
 
-.btn-container {
-  padding: 0.75rem 0;
+.quick-btn-save-online {
+  background: url(../../../styles/css/assets/shorcuts/save-online.svg)
+      center/cover;
+  width: 21.43px;
+  height: 15.2px;
+  display: block;
 }
 
-.quick-btn-view, .quick-btn-timing {
-  color: white;
+.quick-btn-save {
+  background: url(../../../styles/css/assets/shorcuts/save.svg) center/cover;
+  width: 15.2px;
+  height: 15.2px;
+  display: block;
+}
+
+.quick-btn-delete {
+  background: url(../../../styles/css/assets/shorcuts/delete.svg) center/cover;
+  width: 20px;
+  height: 15.2px;
+  display: block;
+}
+
+.quick-btn-download {
+  background: url(../../../styles/css/assets/shorcuts/download.svg)
+      center/cover;
+  width: 15.2px;
+  height: 15.2px;
+  display: block;
+}
+
+.quick-btn-zoom-fit {
+  background: url(../../../styles/css/assets/shorcuts/fit.svg) center/cover;
+  width: 15.2px;
+  height: 15.2px;
+  display: block;
+}
+
+.quick-btn-undo {
+  background: url(../../../styles/css/assets/shorcuts/undo.svg) center/cover;
+  width: 15.2px;
+  height: 16.2px;
+  display: block;
+}
+
+.quick-btn-redo {
+  background: url(../../../styles/css/assets/shorcuts/redo.svg) center/cover;
+  width: 15.2px;
+  height: 16.2px;
+  display: block;
+}
+
+.quick-btn-view {
+  color: white
 }
 
 .zoom-slider {
+  color: white;
+  font-size: 14px;
   display: flex;
-  gap: 1rem;
-  width: 90%;
+  align-items: center;
+  gap: 2px;
+  font-weight: 500;
 }
 
-.custom-range {
-  width: 90% !important;
+.zoom-slider-decrement,
+.zoom-slider-increment {
+  background: none;
+  color: white;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  opacity: 0.8;
+  transition: opacity 0.2s;
 }
 
-@media (max-width: 768px) {
-  .quick-btn-mobile {
-    padding: 0 0.75rem;
+.zoom-slider-decrement:hover,
+.zoom-slider-increment:hover {
+  opacity: 1;
+}
+
+.quick-btn .zoom-slider .custom-range {
+  width: 100px;
+  margin: 0 4px;
+  height: 16px;
+}
+
+.custom-range::-moz-range-track {
+  height: 2px;
+  background: rgba(255, 255, 255, 0.4);
+  border: none;
+  border-radius: 1px;
+}
+
+.custom-range::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  background-color: white;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.2s ease;
+}
+
+.custom-range:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.6);
+}
+
+input[type='range'] {
+  -webkit-appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+input[type='range']::-webkit-slider-runnable-track {
+  height: 2px;
+  background: white;
+  border-radius: 1px;
+  border: none;
+}
+
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  background-color: white;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  margin-top: -5px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.2s ease;
+}
+
+input[type='range']:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.6);
+}
+
+@media (max-width: 991px) {
+  .quick-btn-save-online {
+      background: url(../../../styles/css/assets/shorcuts/save-online.svg) center/cover;
+      width: 25.45px;
+      height: 17.85px;
+      display: block;
+  }
+
+  .quick-btn-save {
+      background: url(../../../styles/css/assets/shorcuts/save.svg) center/cover;
+      width: 19px;
+      height: 19px;
+      display: block;
+  }
+
+  .quick-btn-delete {
+      background: url(../../../styles/css/assets/shorcuts/delete.svg) center/cover;
+      width: 25px;
+      height: 19px;
+      display: block;
+  }
+
+  .quick-btn-download {
+      background: url(../../../styles/css/assets/shorcuts/download.svg) center/cover;
+      width: 19px;
+      height: 19px;
+      display: block;
+  }
+
+  .quick-btn-zoom-fit {
+      background: url(../../../styles/css/assets/shorcuts/fit.svg) center/cover;
+      width: 19px;
+      height: 19px;
+      display: block;
+  }
+
+  .quick-btn-undo {
+      background: url(../../../styles/css/assets/shorcuts/undo.svg) center/cover;
+      width: 19px;
+      height: 20.25px;
+      display: block;
+  }
+
+  .quick-btn-redo {
+      background: url(../../../styles/css/assets/shorcuts/redo.svg) center/cover;
+      width: 19px;
+      height: 20.25px;
+      display: block;
+  }
+
+  .quick-btn-timing {
+      font-size: 1.2rem;
+  }
+
+  .quick-btn-view {
+      font-size: 1.25rem;
   }
 }
 </style>
