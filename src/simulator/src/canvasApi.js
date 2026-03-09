@@ -56,6 +56,69 @@ export function findDimensions(scope = globalScope) {
     }
     simulationArea.objectList = updateOrder
 }
+/**
+ * Creates a derived scope object containing only the selected elements.
+ * This scoped object mirrors the engine's updateOrder structure and is
+ * used to compute bounding dimensions without mutating global state.
+ *
+ * @param {Array} selectedElements - List of currently selected circuit elements
+ * @returns {Object} Scoped object matching engine updateOrder
+ */
+function buildSelectionScope(selectedElements) {
+    const scope = {}
+
+    updateOrder.forEach(type => {
+        scope[type] = []
+    })
+
+    selectedElements.forEach(el => {
+        updateOrder.forEach(type => {
+            if (
+                Array.isArray(globalScope[type]) &&
+                globalScope[type].includes(el)
+            ) {
+                scope[type].push(el)
+            }
+        })
+    })
+
+    return scope
+}
+
+/**
+ * Fits the viewport to the bounding box of the given selection.
+ * - Uses a derived scope so global circuit state is not mutated
+ * - Falls back to Reset View behavior when selection is empty
+ * - Viewport-only operation (no simulation logic affected)
+ */
+export function fitToSelection(selected) {
+    if (!selected || selected.length === 0) {
+        globalScope.centerFocus(false)
+        return
+    }
+
+    const selectionScope = buildSelectionScope(selected)
+
+    // Compute bounds ONLY for selected elements
+    findDimensions(selectionScope)
+
+    // Guard: wire-only or invalid bounds → fallback to Reset View
+    if (
+        simulationArea.minWidth === undefined ||
+        simulationArea.maxWidth === undefined ||
+        simulationArea.minHeight === undefined ||
+        simulationArea.maxHeight === undefined
+    ) {
+        globalScope.centerFocus(false)
+        return
+    }
+
+    // Let engine handle centering + zoom
+    globalScope.centerFocus(true)
+}
+
+
+
 
 // Function used to change the zoom level wrt to a point
 // fn to change scale (zoom) - It also shifts origin so that the position
