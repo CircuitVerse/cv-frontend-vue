@@ -1,5 +1,5 @@
 The feature includes two libraries:
-1. shortcuts.plugin.js: It consists of a few function(s) 
+1. shortcuts.plugin.js: It consists of a few function(s)
     a. Add
     b. Remove
     c. RemoveAll
@@ -29,13 +29,13 @@ MAIN FILEs:
     * Others
 
 USAGE:
-    TO ADD SHORCUTS:
+    TO ADD SHORTCUTS:
         #1 add the shortcut in the defaultKeys.json file
-        #2 Assign the callback in addShorcut.js:
+        #2 Assign the callback in addShortcut.js:
             * the callback should be a func reference,if function to be invoked is already defined in the codebase just set it as it is. (for some func reference may not work, refer next step)
 
             *for callback not present in the codebase, or is present but doesn't work as intended, defined the function that will invoke the required callback in action.js, note that callback must be func reference hence define it as a higher-order func if necessary in action.js
-    TO REMOVE SHORCUTS:
+    TO REMOVE SHORTCUTS:
         #1. Remove the option from defaultKeys.json
         #2. Remove the case from addShortcut.js
     RESTRICTION:
