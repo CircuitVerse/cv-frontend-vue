@@ -1,11 +1,75 @@
 use tauri::menu::{MenuBuilder, SubmenuBuilder};
 use tauri::Emitter;
+use serde::Serialize;
+
+#[derive(Serialize)]
+struct HttpResponse {
+    status: u16,
+    status_text: String,
+    headers: Vec<(String, String)>,
+    body: String,
+}
+
+#[tauri::command]
+async fn http_request(
+    method: String,
+    url: String,
+    headers: Vec<(String, String)>,
+    body: Option<String>,
+) -> Result<HttpResponse, String> {
+    let client = reqwest::Client::new();
+
+    let mut req = match method.to_uppercase().as_str() {
+        "GET" => client.get(&url),
+        "POST" => client.post(&url),
+        "PATCH" => client.patch(&url),
+        "PUT" => client.put(&url),
+        "DELETE" => client.delete(&url),
+        "HEAD" => client.head(&url),
+        other => return Err(format!("Unsupported HTTP method: {}", other)),
+    };
+
+    for (key, value) in &headers {
+        req = req.header(key.as_str(), value.as_str());
+    }
+
+    if let Some(b) = body {
+        req = req.body(b);
+    }
+
+    let response = req.send().await.map_err(|e| format!("Request failed: {}", e))?;
+
+    let status = response.status().as_u16();
+    let status_text = response
+        .status()
+        .canonical_reason()
+        .unwrap_or("")
+        .to_string();
+    let resp_headers: Vec<(String, String)> = response
+        .headers()
+        .iter()
+        .map(|(k, v)| (k.to_string(), v.to_str().unwrap_or("").to_string()))
+        .collect();
+
+    let resp_body = response
+        .text()
+        .await
+        .map_err(|e| format!("Failed to read body: {}", e))?;
+
+    Ok(HttpResponse {
+        status,
+        status_text,
+        headers: resp_headers,
+        body: resp_body,
+    })
+}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_fs::init())
+        .invoke_handler(tauri::generate_handler![http_request])
         .setup(|app| {
             if cfg!(debug_assertions) {
                 app.handle().plugin(
