@@ -65,6 +65,11 @@
                                     src="../../../assets/themes/ColorBlind.svg"
                                     style="display: block"
                                 />
+                                <img
+                                    v-if="theme == 'Sunset Glow'"
+                                    src="../../../assets/themes/SunsetGlow.svg"
+                                    style="display: block"
+                                />
                             </span>
                             <span id="themeNameBox" class="themeNameBox">
                                 <input
