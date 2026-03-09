@@ -1,21 +1,11 @@
 <template>
-    <router-view />
+    <Embed v-if="isEmbed" />
+    <router-view v-else />
 </template>
 
 <script lang="ts" setup>
-// import { defineComponent } from 'vue'
+import { computed } from 'vue'
+import Embed from './pages/embed.vue'
 
-// export default defineComponent({
-//   name: 'App',
-
-//   components: {
-//     HelloWorld,
-//   },
-
-//   data () {
-//     return {
-//       //
-//     }
-//   },
-// })
+const isEmbed = computed(() => (window as any).embed === true)
 </script>

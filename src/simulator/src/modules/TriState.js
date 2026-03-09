@@ -117,5 +117,5 @@ export default class TriState extends CircuitElement {
 TriState.prototype.tooltipText =
     'TriState ToolTip : Effectively removes the output from the circuit.'
 TriState.prototype.helplink =
-    'https://docs.circuitverse.org/#/chapter4/8misc?id=tristate-buffer'
+    'https://docs.circuitverse.org/chapter4/chapter4-misc#tristate-buffer'
 TriState.prototype.objectType = 'TriState'

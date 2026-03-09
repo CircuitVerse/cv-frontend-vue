@@ -1,5 +1,5 @@
-import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore';
-import Scope from '../circuit'; 
+import { SimulatorStore } from "#/store/SimulatorStore/SimulatorStore";
+import Scope from "../circuit";
 
 // Type declaration for global variable
 declare var globalScope: Scope;
@@ -11,6 +11,6 @@ declare var globalScope: Scope;
  * @exports createSaveAsImgPrompt
  */
 export default function createSaveAsImgPrompt(scope: Scope = globalScope): void {
-    const simulatorStore = SimulatorStore();
-    simulatorStore.dialogBox.saveimage_dialog = true;
+  const simulatorStore = SimulatorStore();
+  simulatorStore.dialogBox.saveimage_dialog = true;
 }
