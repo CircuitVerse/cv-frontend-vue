@@ -251,26 +251,48 @@ export function renderCanvas(scope) {
         gridUpdateSet(false)
         dots()
     }
+
+    // Reset canvasMessageData (used by other canvas messages)
     canvasMessageData = {
         x: undefined,
         y: undefined,
         string: undefined,
-    } //  Globally set in draw fn ()
+    } 
+    // Show a subtle helper message when the canvas is empty
+    const isCanvasEmpty = renderOrder.every(
+        type => scope[type].length === 0
+    )
+    const showEmptyHint =
+    isCanvasEmpty && !simulationArea.mouseDown && !objectSelection
+
+
+    //  Globally set in draw fn ()
     // Render objects
     for (let i = 0; i < renderOrder.length; i++) {
         for (var j = 0; j < scope[renderOrder[i]].length; j++) {
             scope[renderOrder[i]][j].draw()
         }
     }
-    // Show any message
-    if (canvasMessageData.string !== undefined) {
-        canvasMessage(
-            ctx,
-            canvasMessageData.string,
-            canvasMessageData.x,
-            canvasMessageData.y
+
+
+    // Subtle empty-canvas onboarding hint (Excalidraw-style)
+    if (showEmptyHint) {
+        ctx.save()
+
+        ctx.fillStyle = '#777'
+        ctx.globalAlpha = 0.6
+        ctx.font = '18px Raleway'
+        ctx.textAlign = 'center'
+
+        ctx.fillText(
+            'Drag components from the left panel to start building your circuit',
+            simulationArea.canvas.width / 2,
+            simulationArea.canvas.height / 2 - 20
         )
+
+        ctx.restore()
     }
+
     // If multiple object selections are going on, show selected area
     if (objectSelection) {
         ctx.beginPath()
