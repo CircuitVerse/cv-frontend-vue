@@ -43,7 +43,7 @@
     --node: green;
     --stroke: black;
     --fill: white;
-    --hover-and-sel: rgba(255, 255, 32, 0.8);
+    --hover-and-sel: rgba(255, 193, 7, 0.22);
     --wire-draw: #000;
     --wire-cnt: green;
     --wire-pow: Lime;
@@ -261,16 +261,22 @@
     border: 1px solid var(--br-circuit-cur);
 }
 
-.moduleProperty input,
-.moduleProperty textarea {
-    color: var(--text-panel);
-}
-
 .moduleProperty {
     background: var(--primary);
     border: 2px solid var(--br-primary);
     box-shadow: 0px 0px 10px #4545457f;
     color: var(--text-panel);
+}
+
+.moduleProperty input,
+.moduleProperty textarea,
+.moduleProperty .objectPropertyAttribute {
+    /* make input fields stand out from the dark properties background */
+    background-color: #ffffff;
+    color: var(--text-dark);
+    border: 1px solid rgba(0,0,0,0.18) !important;
+    padding: 6px 8px;
+    border-radius: 4px;
 }
 
 #moduleProperty-title {
@@ -280,15 +286,19 @@
 .moduleProperty input,
 .moduleProperty select,
 .moduleProperty textarea {
-    border: 1px solid var(--br-secondary) !important;
-    color: var(--text-panel);
+    border: 1px solid rgba(0,0,0,0.12) !important;
+    color: var(--text-dark);
 }
 
 .moduleProperty input:focus,
 .moduleProperty select:focus,
-.moduleProperty textarea:focus {
-    color: var(--text-panel);
-    border-color: var(--br-primary) !important;
+.moduleProperty textarea:focus,
+.moduleProperty .objectPropertyAttribute:focus {
+    color: var(--text-dark);
+    border-color: rgba(255,193,7,0.9) !important;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 5px rgba(255,193,7,0.12);
+    outline: none;
 }
 
 .input-group div button {

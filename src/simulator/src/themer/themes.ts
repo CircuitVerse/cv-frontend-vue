@@ -37,7 +37,7 @@ const themes: Themes = {
     "--node": "green",
     "--stroke": "black",
     "--fill": "white",
-    "--hover-and-sel": "rgba(255, 255, 32, 0.8)",
+    "--hover-and-sel": "rgba(255, 193, 7, 0.22)",
     "--wire-draw": "black",
     "--wire-cnt": "green",
     "--wire-pow": "lightgreen",
@@ -89,7 +89,7 @@ const themes: Themes = {
     "--node": "#285963",
     "--stroke": "#35aea9",
     "--fill": "#DEFFFE",
-    "--hover-and-sel": "#E3B924",
+    "--hover-and-sel": "rgba(255, 193, 7, 0.22)",
     "--wire-draw": "#77878C",
     "--wire-cnt": "#3B7F58",
     "--wire-pow": "#75FFB0",
@@ -144,7 +144,7 @@ const themes: Themes = {
     "--node": "#42B983",
     "--stroke": "#6B6B6B",
     "--fill": "#EAEAEB",
-    "--hover-and-sel": "#FFE99B", //yellow
+    "--hover-and-sel": "rgba(255, 193, 7, 0.22)", // replaced with a more contrasting amber
     "--wire-draw": "#6B6B6B", //black
     "--wire-cnt": "#42B983", //
     "--wire-pow": "#52E539",
@@ -199,7 +199,7 @@ const themes: Themes = {
     "--node": "#42B983",
     "--stroke": "#6B6B6B",
     "--fill": "#EAEAEB",
-    "--hover-and-sel": "#FFE99B", //yellow
+    "--hover-and-sel": "rgba(255, 193, 7, 0.22)",
     "--wire-draw": "#6B6B6B", //black
     "--wire-cnt": "#42B983", //
     "--wire-pow": "#52E539",
@@ -254,7 +254,7 @@ const themes: Themes = {
     "--node": "#26a841",
     "--stroke": "#626262",
     "--fill": "#d4d4d4",
-    "--hover-and-sel": "#ffdf6c", //yellow
+    "--hover-and-sel": "rgba(255, 193, 7, 0.22)", // replaced
     "--wire-draw": "#909090", //black
     "--wire-cnt": "#3bb15b", //
     "--wire-pow": "#3ac53c",
@@ -309,7 +309,7 @@ const themes: Themes = {
     "--node": "#c59434",
     "--stroke": "#342a1f",
     "--fill": "#e0dcd3",
-    "--hover-and-sel": "#f4d4d4", //yellow
+    "--hover-and-sel": "rgba(255, 193, 7, 0.22)", // replaced
     "--wire-draw": "#4c4c4c", //black
     "--wire-cnt": "#908eb9", //
     "--wire-pow": "#b3b1cf",
@@ -327,6 +327,10 @@ const themes: Themes = {
     "--disable": "#956c6a",
     "--table-head-dark": "#2e2b21",
   },
+    "Sunset Glow": {
+          "--bg-navbar": "linear-gradient(to right, #ff6b6b, #feca57, #48dbfb, #ff9ff3)",
+              "--hover-and-sel": "rgba(255, 193, 7, 0.22)"
+                },
   "Custom Theme": JSON.parse(localStorage.getItem("Custom Theme") || "{}") || {
     "--text-navbar--alt": "#000",
     "--br-secondary": "#7d7d7d",
@@ -362,7 +366,7 @@ const themes: Themes = {
     "--node": "#008000",
     "--stroke": "#000",
     "--fill": "#ffffff",
-    "--hover-and-sel": "#ffff20cc",
+    "--hover-and-sel": "rgba(255, 193, 7, 0.22)",
     "--wire-draw": "#000",
     "--wire-cnt": "#008000",
     "--wire-pow": "#90ee90",
