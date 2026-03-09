@@ -21,6 +21,7 @@ import 'codemirror/addon/edit/closebrackets'
 import 'codemirror/addon/hint/anyword-hint'
 import 'codemirror/addon/hint/show-hint'
 import { setupCodeMirrorEnvironment } from './Verilog2CV'
+import { buildApiUrl } from './apiBase'
 import '../vendor/jquery-ui.min.css'
 import '../vendor/jquery-ui.min'
 import { confirmSingleOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
@@ -99,7 +100,7 @@ function setupEnvironment() {
 async function fetchProjectData(projectId) {
     try {
         const response = await fetch(
-            `/api/v1/projects/${projectId}/circuit_data`,
+            buildApiUrl(`/v1/projects/${projectId}/circuit_data`),
             {
                 method: 'GET',
                 headers: {
