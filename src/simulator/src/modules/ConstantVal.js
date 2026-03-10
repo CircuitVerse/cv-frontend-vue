@@ -3,17 +3,7 @@ import Node, { findNode } from '../node'
 import { simulationArea } from '../simulationArea'
 import { correctWidth, rect2, fillText, oppositeDirection } from '../canvasApi'
 import { colors } from '../themer/themer'
-
-function bin2dec(binString) {
-    return parseInt(binString, 2)
-}
-
-function dec2bin(dec, bitWidth = undefined) {
-    // only for positive nos
-    var bin = dec.toString(2)
-    if (bitWidth == undefined) return bin
-    return '0'.repeat(bitWidth - bin.length) + bin
-}
+import { dec2bin, bin2dec } from '../node'
 
 /**
  * @class
@@ -198,7 +188,7 @@ ConstantVal.prototype.tooltipText =
  * @category modules
  */
 ConstantVal.prototype.helplink =
-    'https://docs.circuitverse.org/#/chapter4/2input?id=constantval'
+    'https://docs.circuitverse.org/chapter4/chapter4-input#constantval'
 
 /**
  * @memberof ConstantVal

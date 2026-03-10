@@ -1,4 +1,4 @@
-import { Themes } from './themer.types'
+import { Themes } from "./themer.types";
 
 const themes: Themes = {
     'Default Theme': {
