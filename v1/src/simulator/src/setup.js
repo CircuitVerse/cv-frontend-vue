@@ -21,6 +21,7 @@ import 'codemirror/addon/edit/closebrackets'
 import 'codemirror/addon/hint/anyword-hint'
 import 'codemirror/addon/hint/show-hint'
 import { setupCodeMirrorEnvironment } from './Verilog2CV'
+import { buildApiUrl, buildVueSimulatorEditUrl, buildLegacySimulatorEditUrl } from './apiBase'
 import '../vendor/jquery-ui.min.css'
 import '../vendor/jquery-ui.min'
 import { confirmSingleOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
@@ -99,7 +100,7 @@ function setupEnvironment() {
 async function fetchProjectData(projectId) {
     try {
         const response = await fetch(
-            `/api/v1/projects/${projectId}/circuit_data`,
+            buildApiUrl(`/v1/projects/${projectId}/circuit_data`),
             {
                 method: 'GET',
                 headers: {
@@ -113,10 +114,10 @@ async function fetchProjectData(projectId) {
             const simulatorVersion = data.simulatorVersion  
             const projectName = data.name
             if(!simulatorVersion){                 
-                window.location.href = `/simulator/edit/${projectName}`             
+                window.location.href = buildLegacySimulatorEditUrl(projectName)             
             }           
             if(simulatorVersion && simulatorVersion != "v0"){                 
-                window.location.href = `/simulatorvue/edit/${projectName}?simver=${simulatorVersion}`             
+                window.location.href = buildVueSimulatorEditUrl(projectName, simulatorVersion)             
             }
             await load(data)
             await simulationArea.changeClockTime(data.timePeriod || 500)
