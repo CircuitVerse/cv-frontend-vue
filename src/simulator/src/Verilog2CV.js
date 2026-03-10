@@ -34,6 +34,7 @@ import { showError, showMessage } from './utils'
 import { showProperties } from './ux'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { toRefs } from 'vue'
+import { yosys2digitaljs as toGraphJson } from 'yosys2digitaljs/core'
 
 var editor
 var verilogMode = false
@@ -398,26 +399,15 @@ function doWasmSynthesis(verilogCode, scope) {
     wasmWorker.onmessage = function(e) {
         var msg = e.data
         if (msg.type === 'ready') {
-            // Worker already ready, ignore
             return
         }
 
         if (msg.type === 'success') {
             try {
                 setVerilogOutput('Synthesis complete. Rendering circuit...', 'info')
-
-                // The server endpoint returns yosys2digitaljs-transformed data.
-                // With WASM we get raw Yosys JSON, so we need to transform it ourselves.
-                // yosys2digitaljs is loaded via the render-bundle or needs to be imported.
-                if (window.__yosys2digitaljs) {
-                    var circuitData = window.__yosys2digitaljs(msg.json, {})
-                    renderVerilogCircuit(circuitData, verilogCode, scope)
-                } else {
-                    // If yosys2digitaljs isn't available client-side,
-                    // fall back to sending the raw JSON to server for transformation
-                    setVerilogOutput('Client-side transform not available. Falling back to server...', 'info')
-                    synthesizeWithServer(verilogCode, scope)
-                }
+                // Transform raw Yosys JSON to yosys2digitaljs format
+                var circuitData = toGraphJson(msg.json)
+                renderVerilogCircuit(circuitData, verilogCode, scope)
             } catch (err) {
                 setVerilogOutput('Render failed: ' + err.message, 'error')
                 showError('Circuit render failed: ' + err.message)
@@ -454,7 +444,7 @@ function renderVerilogCircuit(circuitData, verilogCode, scope) {
     )
     changeCircuitName(circuitData.name)
     showMessage('Verilog Circuit Successfully Created')
-    setVerilogOutput('Verilog Circuit Successfully Created (via WASM - no server)', 'success')
+    setVerilogOutput('Verilog Circuit Successfully Created (via WASM)', 'success')
 }
 
 export function setupCodeMirrorEnvironment() {
