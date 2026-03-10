@@ -180,3 +180,41 @@ pub fn run() {
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
+
+#[cfg(test)]
+mod tests {
+    use tauri::test::{mock_builder, mock_context, noop_assets};
+
+    #[test]
+    fn test_app_builds_with_plugins() {
+        let _app = mock_builder()
+            .plugin(tauri_plugin_http::init())
+            .plugin(tauri_plugin_fs::init())
+            .build(mock_context(noop_assets()))
+            .expect("failed to build app with plugins");
+    }
+
+    #[test]
+    fn test_tauri_config_is_valid() {
+        let config_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tauri.conf.json");
+        let config_str = std::fs::read_to_string(&config_path)
+            .expect("failed to read tauri.conf.json");
+        let config: serde_json::Value = serde_json::from_str(&config_str)
+            .expect("tauri.conf.json is not valid JSON");
+
+        assert_eq!(config["productName"], "CircuitVerse");
+        assert_eq!(config["identifier"], "org.circuitVerse.simulator");
+
+        let windows = config["app"]["windows"]
+            .as_array()
+            .expect("windows must be an array");
+        assert!(!windows.is_empty(), "at least one window must be configured");
+
+        let main_window = &windows[0];
+        assert_eq!(main_window["title"], "CircuitVerse");
+        assert_eq!(main_window["width"], 800);
+        assert_eq!(main_window["height"], 600);
+        assert_eq!(main_window["resizable"], true);
+    }
+}
