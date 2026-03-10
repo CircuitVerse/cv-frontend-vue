@@ -24,6 +24,7 @@ export default defineConfig(() => {
       alias: {
         "#": fileURLToPath(new URL(`./${version}/src`, import.meta.url)),
         "@": fileURLToPath(new URL(`./${version}/src/components`, import.meta.url)),
+        "yosys2digitaljs": fileURLToPath(new URL("./node_modules/yosys2digitaljs/dist/core.js", import.meta.url)),
       },
     },
     define: {
