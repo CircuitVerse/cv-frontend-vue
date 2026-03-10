@@ -34,7 +34,7 @@ import { showError, showMessage } from './utils'
 import { showProperties } from './ux'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { toRefs } from 'vue'
-import { yosys2digitaljs as toGraphJson } from 'yosys2digitaljs/dist/core.js'
+import { yosys2digitaljs as toGraphJson } from 'yosys2digitaljs/node'
 
 var editor
 var verilogMode = false
