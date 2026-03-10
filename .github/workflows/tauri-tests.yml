@@ -6,7 +6,8 @@ on:
       - main
   pull_request:
 
-permissions: {}
+permissions:
+  contents: read
 
 concurrency:
   group: tauri-ci-${{ github.event.pull_request.number || github.ref }}
@@ -18,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ubuntu-22.04, windows-latest, macos-latest]
+        platform: [ubuntu-22.04, macos-latest]
     runs-on: ${{ matrix.platform }}
     timeout-minutes: 15
 
@@ -115,5 +116,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          projectPath: ./src-tauri
+          projectPath: .
           args: ${{ matrix.args }}
