@@ -40,17 +40,20 @@
     "interactjs": "^1.10.17",
     "jquery": "^3.6.0",
     "pinia": "^2.0.14",
+    "process": "^0.11.10",
     "vue": "^3.2.25",
     "vue-i18n": "^9.14.3",
     "vue-router": "^4.0.15",
     "vuedraggable": "^4.1.0",
     "vuetify": "~3.0.5",
-    "webfontloader": "^1.0.0"
+    "webfontloader": "^1.0.0",
+    "yosys2digitaljs": "^0.10.3"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.0.2",
     "@commitlint/config-conventional": "^17.0.2",
     "@intlify/vite-plugin-vue-i18n": "^3.4.0",
+    "@rollup/plugin-inject": "^5.0.5",
     "@tauri-apps/cli": "2.3.1",
     "@types/jquery": "^3.5.14",
     "@types/webfontloader": "^1.0.0",
