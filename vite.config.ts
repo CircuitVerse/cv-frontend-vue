@@ -26,13 +26,6 @@ export default defineConfig(() => {
         "@": fileURLToPath(new URL(`./${version}/src/components`, import.meta.url)),
       },
     },
-    define: {
-      "process.env": "{}",
-      "process.version": '"v18.0.0"',
-      "process.platform": '"browser"',
-      "process.browser": "true",
-      "process.argv": "[]",
-    },
     base: process.env.VITE_BASE || (isDesktop ? "/" : `/simulatorvue/${version}/`),
     build: {
       outDir: `./dist/simulatorvue/${version}/`,
