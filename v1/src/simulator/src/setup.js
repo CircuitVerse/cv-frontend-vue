@@ -111,13 +111,19 @@ async function fetchProjectData(projectId) {
         )
         if (response.ok) {
             const data = await response.json()
-            const simulatorVersion = data.simulatorVersion  
+            const simulatorVersion = data.simulatorVersion
             const projectName = data.name
-            if(!simulatorVersion){                 
-                window.location.href = buildLegacySimulatorEditUrl(projectName)             
-            }           
-            if(simulatorVersion && simulatorVersion != "v0"){                 
-                window.location.href = buildVueSimulatorEditUrl(projectName, simulatorVersion)             
+            if (!simulatorVersion) {
+                window.location.href =
+                    buildLegacySimulatorEditUrl(projectName)
+                return
+            }
+            if (simulatorVersion && simulatorVersion !== 'v0') {
+                window.location.href = buildVueSimulatorEditUrl(
+                    projectName,
+                    simulatorVersion
+                )
+                return
             }
             await load(data)
             await simulationArea.changeClockTime(data.timePeriod || 500)

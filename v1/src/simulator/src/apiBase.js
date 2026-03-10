@@ -43,7 +43,11 @@ export function getSimulatorBase() {
         typeof window !== 'undefined' ? window : /** @type {any} */ ({})
 
     if (win.SIM_BASE) {
-        return String(win.SIM_BASE).replace(/\/+$/, '')
+        let base = String(win.SIM_BASE).replace(/\/+$/, '')
+        if (/\/v[01]$/.test(base)) {
+            base = base.replace(/\/v[01]$/, '')
+        }
+        return base || '/'
     }
 
     const baseUrl = (import.meta.env && import.meta.env.BASE_URL) || '/'
