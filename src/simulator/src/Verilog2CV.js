@@ -34,7 +34,6 @@ import { showError, showMessage } from './utils'
 import { showProperties } from './ux'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { toRefs } from 'vue'
-import { yosys2digitaljs as toGraphJson } from 'yosys2digitaljs/node'
 
 var editor
 var verilogMode = false
@@ -218,13 +217,13 @@ class verilogSubCircuit {
         var numInputs = this.circuit.inputNodes.length
         var numOutputs = this.circuit.outputNodes.length
 
-        for (var i = 0; i < numInputs; i++) {
+        for (let i = 0; i < numInputs; i++) {
             if (this.circuit.data.Input[i].label == portName) {
                 return this.circuit.inputNodes[i]
             }
         }
 
-        for (var i = 0; i < numOutputs; i++) {
+        for (let i = 0; i < numOutputs; i++) {
             if (this.circuit.data.Output[i].label == portName) {
                 return this.circuit.outputNodes[i]
             }
@@ -261,7 +260,7 @@ export function YosysJSON2CV(
     for (var device in JSON.devices) {
         var deviceType = JSON.devices[device].type
         if (deviceType == 'Subcircuit') {
-            var subCircuitName = JSON.devices[device].celltype
+            const subCircuitName = JSON.devices[device].celltype
             circuitDevices[device] = new verilogSubCircuit(
                 new SubCircuit(
                     500,
@@ -337,7 +336,7 @@ function synthesizeWithServer(verilogCode, scope) {
             return response.json()
         })
         .then((circuitData) => {
-            renderVerilogCircuit(circuitData, verilogCode, scope)
+            renderVerilogCircuit(circuitData, verilogCode, scope, 'server')
         })
         .catch((error) => {
             if (error.status == 500) {
@@ -354,8 +353,7 @@ function synthesizeWithServer(verilogCode, scope) {
 
 /**
  * Client-side WASM synthesis using @yowasp/yosys.
- * Used for Tauri desktop builds where offline synthesis is needed
- * and binary size is not a concern.
+ * Used for Tauri desktop builds where offline synthesis is needed.
  *
  * Pipeline: Verilog -> Yosys WASM -> JSON -> yosys2digitaljs -> YosysJSON2CV -> render
  */
@@ -396,8 +394,15 @@ function doWasmSynthesis(verilogCode, scope) {
     var topMatch = verilogCode.match(/module\s+(\w+)/)
     var topModule = topMatch ? topMatch[1] : 'top'
 
+    // Use request ID to prevent stale responses from previous synthesis runs
+    const requestId = Date.now()
+
     wasmWorker.onmessage = function(e) {
         var msg = e.data
+
+        // Ignore messages from previous synthesis requests
+        if (msg.requestId !== requestId) return
+
         if (msg.type === 'ready') {
             return
         }
@@ -405,9 +410,7 @@ function doWasmSynthesis(verilogCode, scope) {
         if (msg.type === 'success') {
             try {
                 setVerilogOutput('Synthesis complete. Rendering circuit...', 'info')
-                // Transform raw Yosys JSON to yosys2digitaljs format
-                var circuitData = toGraphJson(msg.json)
-                renderVerilogCircuit(circuitData, verilogCode, scope)
+                renderVerilogCircuit(msg.json, verilogCode, scope, 'WASM')
             } catch (err) {
                 setVerilogOutput('Render failed: ' + err.message, 'error')
                 showError('Circuit render failed: ' + err.message)
@@ -420,17 +423,19 @@ function doWasmSynthesis(verilogCode, scope) {
 
     wasmWorker.postMessage({
         verilog: verilogCode,
-        topModule: topModule
+        topModule: topModule,
+        requestId: requestId
     })
 }
 
 /**
  * Shared rendering function used by both server and WASM synthesis paths.
  * Takes yosys2digitaljs-formatted circuit data and renders it in CircuitVerse.
+ * @param {string} source - 'WASM' or 'server', used for the success message
  */
-function renderVerilogCircuit(circuitData, verilogCode, scope) {
+function renderVerilogCircuit(circuitData, verilogCode, scope, source = 'server') {
     scope.initialize()
-    for (var id in scope.verilogMetadata.subCircuitScopeIds)
+    for (var id of scope.verilogMetadata.subCircuitScopeIds)
         delete scopeList[id]
     scope.verilogMetadata.subCircuitScopeIds = []
     scope.verilogMetadata.code = verilogCode
@@ -442,9 +447,10 @@ function renderVerilogCircuit(circuitData, verilogCode, scope) {
         subCircuitScope,
         true
     )
+    scope.verilogMetadata.subCircuitScopeIds = Object.values(subCircuitScope)
     changeCircuitName(circuitData.name)
     showMessage('Verilog Circuit Successfully Created')
-    setVerilogOutput('Verilog Circuit Successfully Created (via WASM)', 'success')
+    setVerilogOutput(`Verilog Circuit Successfully Created (via ${source})`, 'success')
 }
 
 export function setupCodeMirrorEnvironment() {
