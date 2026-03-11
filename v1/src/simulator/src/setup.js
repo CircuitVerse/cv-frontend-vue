@@ -21,7 +21,7 @@ import 'codemirror/addon/edit/closebrackets'
 import 'codemirror/addon/hint/anyword-hint'
 import 'codemirror/addon/hint/show-hint'
 import { setupCodeMirrorEnvironment } from './Verilog2CV'
-import { buildApiUrl, buildVueSimulatorEditUrl, buildLegacySimulatorEditUrl } from './apiBase'
+import { buildApiUrl, buildLegacySimulatorEditUrl } from './apiBase'
 import '../vendor/jquery-ui.min.css'
 import '../vendor/jquery-ui.min'
 import { confirmSingleOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
@@ -116,13 +116,6 @@ async function fetchProjectData(projectId) {
             if (!simulatorVersion) {
                 window.location.href =
                     buildLegacySimulatorEditUrl(projectName)
-                return
-            }
-            if (simulatorVersion && simulatorVersion !== 'v0') {
-                window.location.href = buildVueSimulatorEditUrl(
-                    projectName,
-                    simulatorVersion
-                )
                 return
             }
             await load(data)
