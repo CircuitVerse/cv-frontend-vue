@@ -89,6 +89,10 @@
 import load from '#/simulator/src/data/load'
 import { useState } from '#/store/SimulatorStore/state'
 import { onMounted, onUpdated, ref } from '@vue/runtime-core'
+import {
+    buildLegacySimulatorEditUrl,
+    buildVueSimulatorEditUrl,
+} from '#/simulator/src/apiBase'
 const SimulatorState = useState()
 const projectList = ref<{ [key: string]: string }>({})
 const selectedProjectId = ref<string | null>(null)
@@ -143,10 +147,13 @@ function openProjectOffline() {
 function confirmOpenProject() {
     SimulatorState.dialogBox.version_mismatch_dialog = false
     // Redirect to the appropriate version after confirmation
-    if(targetVersion.value == "Legacy") {
-        window.location.href = `/simulator/edit/${projectName}`  
+    if (targetVersion.value == 'Legacy') {
+        window.location.href = buildLegacySimulatorEditUrl(projectName)
     } else {
-        window.location.href = `/simulatorvue/edit/${projectName}?simver=${targetVersion.value}`
+        window.location.href = buildVueSimulatorEditUrl(
+            projectName,
+            targetVersion.value
+        )
     }
 }
 

@@ -92,6 +92,7 @@ import {
     confirmSingleOption,
 } from '../confirmComponent/ConfirmComponent.vue'
 import { getToken } from '#/pages/simulatorHandler.vue'
+import { buildVueSimulatorEditUrl } from '#/simulator/src/apiBase'
 
 interface dataType {
     project: {
@@ -111,6 +112,8 @@ export const UpdateProjectDetail = (data: dataType) => {
 </script>
 
 <script lang="ts" setup>
+import { buildVueSimulatorEditUrl } from '#/simulator/src/apiBase'
+
 const promptStore = usePromptStore()
 const isFullscreen = ref(false)
 const projectTypes = ref(['Public', 'Private', 'Limited access'])
@@ -136,7 +139,10 @@ function toggleFullscreen() {
 function updateProjectButton(selectedOption: string) {
     promptStore.UpdateProjectDetail.activate = false
     if (selectedOption == 'cancel') {
-        window.location.href = `/simulatorvue/edit/${promptStore.getProjectId}`
+        window.location.href = buildVueSimulatorEditUrl(
+            String(promptStore.getProjectId),
+            'v1'
+        )
     }
     if (selectedOption == 'openEditPage') {
         window.location.href = `/users/${useAuthStore().getUserId}/projects/${
@@ -188,7 +194,10 @@ async function successPrompt() {
             promptStore.getProjectId
         }`
     } else {
-        window.location.href = `/simulatorvue/edit/${promptStore.getProjectId}`
+        window.location.href = buildVueSimulatorEditUrl(
+            String(promptStore.getProjectId),
+            'v1'
+        )
     }
 }
 
