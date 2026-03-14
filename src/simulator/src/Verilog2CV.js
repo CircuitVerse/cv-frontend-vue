@@ -24,6 +24,10 @@ import 'codemirror/theme/monokai.css'
 import 'codemirror/theme/midnight.css'
 
 import 'codemirror/addon/hint/show-hint.css'
+import 'codemirror/addon/lint/lint.js'
+import 'codemirror/addon/lint/lint.css'
+import { lintVerilog } from './verilogLinter.js'
+
 import 'codemirror/mode/verilog/verilog.js'
 import 'codemirror/addon/edit/closebrackets.js'
 import 'codemirror/addon/edit/matchbrackets.js'
@@ -118,24 +122,24 @@ export function verilogModeSet(mode) {
     verilogMode = mode
     if (mode) {
         const code_window = document.getElementById('code-window')
-        if(code_window)
-        document.getElementById('code-window').style.display = 'block'
+        if (code_window)
+            document.getElementById('code-window').style.display = 'block'
 
         const elementPanel = document.querySelector('.elementPanel')
-        if(elementPanel)
-        document.querySelector('.elementPanel').style.display = 'none'
+        if (elementPanel)
+            document.querySelector('.elementPanel').style.display = 'none'
 
         const timingDiagramPanel = document.querySelector('.timing-diagram-panel')
-        if(timingDiagramPanel)
-        document.querySelector('.timing-diagram-panel').style.display = 'none'
+        if (timingDiagramPanel)
+            document.querySelector('.timing-diagram-panel').style.display = 'none'
 
         const quickBtn = document.querySelector('.quick-btn')
-        if(quickBtn)
-        document.querySelector('.quick-btn').style.display = 'none'
+        if (quickBtn)
+            document.querySelector('.quick-btn').style.display = 'none'
 
         const verilogEditorPanel = document.getElementById('verilogEditorPanel')
-        if(verilogEditorPanel)
-        document.getElementById('verilogEditorPanel').style.display = 'block'
+        if (verilogEditorPanel)
+            document.getElementById('verilogEditorPanel').style.display = 'block'
 
         if (!embed) {
             simulationArea.lastSelected = globalScope.root
@@ -145,24 +149,24 @@ export function verilogModeSet(mode) {
         resetVerilogCode()
     } else {
         const code_window = document.getElementById('code-window')
-        if(code_window)
-        document.getElementById('code-window').style.display = 'none'
+        if (code_window)
+            document.getElementById('code-window').style.display = 'none'
 
         const elementPanel = document.querySelector('.elementPanel')
-        if(elementPanel)
-        document.querySelector('.elementPanel').style.display = ''
+        if (elementPanel)
+            document.querySelector('.elementPanel').style.display = ''
 
         const timingDiagramPanel = document.querySelector('.timing-diagram-panel')
-        if(timingDiagramPanel)
-        document.querySelector('.timing-diagram-panel').style.display = ''
+        if (timingDiagramPanel)
+            document.querySelector('.timing-diagram-panel').style.display = ''
 
         const quickBtn = document.querySelector('.quick-btn')
-        if(quickBtn)
-        document.querySelector('.quick-btn').style.display = ''
+        if (quickBtn)
+            document.querySelector('.quick-btn').style.display = ''
 
         const verilogEditorPanel = document.getElementById('verilogEditorPanel')
-        if(verilogEditorPanel)
-        document.getElementById('verilogEditorPanel').style.display = 'none'
+        if (verilogEditorPanel)
+            document.getElementById('verilogEditorPanel').style.display = 'none'
     }
 }
 
@@ -263,7 +267,13 @@ export default function generateVerilogCircuit(
 ) {
     clearVerilogOutput()
     setVerilogOutput('Compiling Verilog code...', 'info')
-    
+
+    // clear any previous Yosys error markers from the editor
+    if (editor && editor.state) {
+        editor.state.yosysAnnotations = []
+        editor.performLint()
+    }
+
     var params = { code: verilogCode }
     fetch('/api/v1/simulator/verilogcv', {
         method: 'POST',
@@ -303,10 +313,77 @@ export default function generateVerilogCircuit(
             } else {
                 showError('There is some issue with the code')
                 error.json().then((errorMessage) => {
-                    setVerilogOutput(errorMessage.message, 'error')
+                    const raw = errorMessage.message || ''
+                    setVerilogOutput(raw, 'error')
+                    // parse Yosys errors and show them as gutter markers in the editor
+                    const annotations = parseYosysErrors(raw)
+                    if (annotations.length > 0) {
+                        showYosysErrors(annotations)
+                    }
                 })
             }
         })
+}
+
+/**
+ * Parses raw Yosys error output and converts it into CodeMirror annotation objects.
+ * Yosys errors look like: "input.v:5: ERROR: syntax error, unexpected TOK_ID"
+ * We extract the line number, severity (error/warning), and message from each line.
+ * @param {string} yosysOutput - Raw error string returned from the Yosys server
+ * @returns {Object[]} Array of CodeMirror lint annotation objects with from, to, message, severity
+ */
+function parseYosysErrors(yosysOutput) {
+    const annotations = []
+    const lines = yosysOutput.split('\n')
+
+    // matches "filename:lineNumber: ERROR/WARNING: message"
+    const errorRegex = /(?:[\w./\\-]*):(\d+):\s*(ERROR|WARNING|error|warning)[:\s]+(.*)/
+
+    lines.forEach((line) => {
+        const match = line.match(errorRegex)
+        if (match) {
+            // CodeMirror lines are 0-indexed, Yosys lines are 1-indexed
+            const lineNum = parseInt(match[1], 10) - 1
+            const severity = match[2].toLowerCase().startsWith('w') ? 'warning' : 'error'
+            const message = match[3].trim()
+
+            annotations.push({
+                from: { line: lineNum, ch: 0 },
+                to: { line: lineNum, ch: 999 },
+                message: `[Yosys] ${message}`,
+                severity: severity,
+            })
+        }
+    })
+
+    return annotations
+}
+
+/**
+ * Takes Yosys error annotations and displays them as lint markers in the CodeMirror editor.
+ * We store them on editor.state so they persist until the next compilation run.
+ * Both the static linter errors and the Yosys errors are shown together in the gutter.
+ * @param {Object[]} annotations - Array of CodeMirror lint annotation objects
+ * @returns {void}
+ */
+function showYosysErrors(annotations) {
+    if (!editor) return
+
+    // store Yosys errors so the lint getAnnotations function can include them
+    editor.state.yosysAnnotations = annotations
+
+    // merge Yosys errors with the static linter errors and re-run lint
+    editor.setOption('lint', {
+        getAnnotations: function(code) {
+            const linterErrors = lintVerilog(code)
+            const yosysErrors = editor.state.yosysAnnotations || []
+            return [...linterErrors, ...yosysErrors]
+        },
+        async: false,
+    })
+
+    // force the gutter markers to update immediately
+    editor.performLint()
 }
 
 export function setupCodeMirrorEnvironment() {
@@ -326,6 +403,17 @@ export function setupCodeMirrorEnvironment() {
         smartIndent: true,
         indentWithTabs: true,
         extraKeys: { 'Ctrl-Space': 'autocomplete' },
+        // real-time linter - runs on every keystroke
+        // also shows Yosys errors after compilation
+        lint: {
+            getAnnotations: function(code) {
+                const linterErrors = lintVerilog(code)
+                const yosysErrors = (editor && editor.state && editor.state.yosysAnnotations) || []
+                return [...linterErrors, ...yosysErrors]
+            },
+            async: false,
+        },
+        gutters: ['CodeMirror-linenumbers', 'CodeMirror-lint-markers'],
     })
 
     if (!localStorage.getItem('verilog-theme')) {
