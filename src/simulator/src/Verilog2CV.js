@@ -24,6 +24,10 @@ import 'codemirror/theme/monokai.css'
 import 'codemirror/theme/midnight.css'
 
 import 'codemirror/addon/hint/show-hint.css'
+import 'codemirror/addon/lint/lint.js'
+import 'codemirror/addon/lint/lint.css'
+import { lintVerilog } from './verilogLinter.js'
+
 import 'codemirror/mode/verilog/verilog.js'
 import 'codemirror/addon/edit/closebrackets.js'
 import 'codemirror/addon/edit/matchbrackets.js'
@@ -317,16 +321,24 @@ export function setupCodeMirrorEnvironment() {
     }
 
     editor = CodeMirror.fromTextArea(myTextarea, {
-        mode: 'verilog',
-        autoRefresh: true,
-        styleActiveLine: true,
-        lineNumbers: true,
-        autoCloseBrackets: true,
-        matchBrackets: true,
-        smartIndent: true,
-        indentWithTabs: true,
-        extraKeys: { 'Ctrl-Space': 'autocomplete' },
-    })
+    mode: 'verilog',
+    autoRefresh: true,
+    styleActiveLine: true,
+    lineNumbers: true,
+    autoCloseBrackets: true,
+    matchBrackets: true,
+    smartIndent: true,
+    indentWithTabs: true,
+    extraKeys: { 'Ctrl-Space': 'autocomplete' },
+    // Verilog Linter integration
+    lint: {
+        getAnnotations: function(code) {
+            return lintVerilog(code)
+        },
+        async: false,
+    },
+    gutters: ['CodeMirror-lint-markers', 'CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
+})
 
     if (!localStorage.getItem('verilog-theme')) {
         localStorage.setItem('verilog-theme', 'default')
