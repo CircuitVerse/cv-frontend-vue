@@ -930,6 +930,17 @@ export default class Node {
 
     /**
      * function delete a node
+     * 
+     * Real-world impact if deletion fails:
+     * - Memory leaks: Orphaned nodes remain in nodeList, preventing garbage collection
+     * - Simulation errors: Deleted nodes still referenced, causing "node not found" errors
+     * - UI glitches: Deleted nodes may still appear in properties panel or cause crashes
+     * - Example scenario: User deletes a gate's input node, but it remains in parent.nodeList.
+     *   Later, when the circuit simulates, it tries to access the deleted node, causing:
+     *   * Simulation to fail or produce incorrect results
+     *   * Browser console errors
+     *   * Circuit becoming unresponsive
+     *   * Need to reload the page to fix
      */
     delete() {
         updateSimulationSet(true)
@@ -937,7 +948,31 @@ export default class Node {
         this.parent.scope.allNodes = this.parent.scope.allNodes.filter(x => x !== this)
         this.parent.scope.nodes = this.parent.scope.nodes.filter(x => x !== this)
 
-        this.parent.scope.root.nodeList = this.parent.scope.root.nodeList.filter(x => x !== this) // Hope this works! - Can cause bugs
+        // Remove node from parent's nodeList (where it was originally added)
+        // Input/output nodes (type 0, 1) are added to parent.nodeList in constructor (line 167)
+        // We need to remove from the correct parent's nodeList, not always from root.nodeList
+        // 
+        // Previous bug: Code tried to remove from root.nodeList, but nodes are in parent.nodeList
+        // This mismatch meant nodes weren't properly removed, causing the issues above
+        if (this.parent && this.parent.nodeList && Array.isArray(this.parent.nodeList)) {
+            const index = this.parent.nodeList.indexOf(this)
+            if (index !== -1) {
+                this.parent.nodeList.splice(index, 1)
+            } else {
+                // Fallback: use filter if indexOf doesn't work (shouldn't happen, but safer)
+                this.parent.nodeList = this.parent.nodeList.filter(x => x !== this)
+            }
+        }
+
+        // Also remove from root.nodeList if present (for safety and backward compatibility)
+        // Some edge cases might have nodes in root.nodeList
+        if (this.parent && this.parent.scope && this.parent.scope.root && 
+            this.parent.scope.root.nodeList && Array.isArray(this.parent.scope.root.nodeList)) {
+            const rootIndex = this.parent.scope.root.nodeList.indexOf(this)
+            if (rootIndex !== -1) {
+                this.parent.scope.root.nodeList.splice(rootIndex, 1)
+            }
+        }
 
         if (simulationArea.lastSelected == this)
             simulationArea.lastSelected = undefined
