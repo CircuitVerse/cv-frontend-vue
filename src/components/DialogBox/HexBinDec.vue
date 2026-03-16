@@ -5,7 +5,9 @@
     >
         <v-card class="messageBoxContent">
             <v-card-text>
-                <p class="dialogHeader">Hex-Bin-Dec Converter</p>
+                <p class="dialogHeader">
+                    {{ $t('simulator.panel_header.bit_converter') }}
+                </p>
                 <v-btn
                     size="x-small"
                     icon
@@ -22,7 +24,14 @@
                     :key="value[0]"
                     title="Dec-Bin-Hex-Converter"
                 >
-                    <label>{{ value[1].label }}</label>
+                    <label>{{
+                        $t(
+                            'simulator.panel_body.bit_converter.' +
+                                value[1].label
+                                    .toLocaleLowerCase()
+                                    .replace(' ', '_')
+                        )
+                    }}</label>
                     <br />
                     <input
                         :id="value[0]"
@@ -103,7 +112,7 @@ const inputArr = ref({
     },
     bcdInput: {
         val: '00010110',
-        label: 'Binary-coded decimal value',
+        label: 'Binary coded decimal value',
     },
     octalInput: {
         val: '020',
