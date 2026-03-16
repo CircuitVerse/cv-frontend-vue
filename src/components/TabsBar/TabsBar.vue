@@ -47,7 +47,15 @@
             &#43;
         </button>
         <button class="tabsbar-toggle" @click="toggleHeight">
-            <i :class="showMaxHeight ? 'fa fa-chevron-down' : 'fa fa-chevron-up'"></i>
+            <i
+                class="fa fa-chevron-up"
+                :style="
+                    showMaxHeight
+                        ? 'transform: rotate(180deg); transition: transform 0.5s'
+                        : 'transform: rotate(0deg); transition: transform 0.5s'
+                "
+            >
+            </i>
         </button>
     </div>
     <!-- <MessageBox
