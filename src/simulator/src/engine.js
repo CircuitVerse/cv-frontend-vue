@@ -529,6 +529,19 @@ export function update(scope = globalScope, updateEverything = false) {
             }
         }
     }
+    // Note: simulationArea.hover may already be set by nodes/gates in update()
+    // Wires act only as a fallback hover target
+
+    if (!simulationArea.mouseDown && simulationArea.hover === undefined) {
+        for (let i = scope.wires.length - 1; i >= 0; i--) {
+            const wire = scope.wires[i]
+        if (wire.checkWithin(simulationArea.mouseX, simulationArea.mouseY)) {
+            simulationArea.hover = wire
+            break
+            }
+        }
+    }
+
     // Updates multiple objectselections and panes window
     if (updatePosition || updateEverything) {
         updateSelectionsAndPane(scope)
