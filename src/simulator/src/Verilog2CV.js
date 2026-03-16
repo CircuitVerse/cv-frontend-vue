@@ -1,4 +1,4 @@
-import {
+﻿import {
     createNewCircuitScope,
     switchCircuit,
     changeCircuitName,
@@ -8,7 +8,6 @@ import { simulationArea } from './simulationArea'
 import CodeMirror from 'codemirror/lib/codemirror.js'
 import 'codemirror/lib/codemirror.css'
 
-// Importing CodeMirror themes
 import 'codemirror/theme/3024-day.css'
 import 'codemirror/theme/solarized.css'
 import 'codemirror/theme/elegant.css'
@@ -31,6 +30,7 @@ import 'codemirror/addon/hint/anyword-hint.js'
 import 'codemirror/addon/hint/show-hint.js'
 import 'codemirror/addon/display/autorefresh.js'
 import { showError, showMessage } from './utils'
+import { update } from './engine'
 import { showProperties } from './ux'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { toRefs } from 'vue'
@@ -38,38 +38,37 @@ import { toRefs } from 'vue'
 var editor
 var verilogMode = false
 
-// WASM synthesis worker (lazy initialized)
+// â”€â”€â”€ WASM worker state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 var wasmWorker = null
 var wasmReady = false
 
-/**
- * Initialize the Yosys WASM Web Worker for client-side synthesis.
- * This is used for Tauri desktop builds where offline synthesis is needed.
- */
 function initWasmWorker() {
     if (wasmWorker) return
-
     try {
         wasmWorker = new Worker('/yosys-worker.js', { type: 'module' })
-        wasmWorker.onmessage = function(e) {
+        wasmWorker.onmessage = function (e) {
             if (e.data.type === 'ready') {
                 wasmReady = true
-                console.log('[Yosys WASM] Worker ready for client-side synthesis')
+                console.log('[Yosys WASM] Worker ready')
+            } else if (e.data.type === 'error' && !wasmReady) {
+                // A load-time error before we've ever gone ready
+                console.warn('[Yosys WASM] Worker failed to initialize:', e.data.message)
+                wasmWorker = null
+                wasmReady = false
             }
         }
+        wasmWorker.onerror = function (err) {
+            console.warn('[Yosys WASM] Worker init error:', err.message)
+            wasmWorker = null
+            wasmReady = false
+        }
     } catch (err) {
-        console.warn('[Yosys WASM] Failed to initialize worker:', err.message)
+        console.warn('[Yosys WASM] Failed to init worker:', err.message)
     }
 }
 
-/**
- * Check if WASM synthesis should be used.
- * Enable via: window.__yosysWasmEnabled = true (or via Tauri environment detection)
- */
 function shouldUseWasm() {
-    // Check for Tauri desktop environment
     if (window.__TAURI__) return true
-    // Check for manual override (for testing)
     if (window.__yosysWasmEnabled) return true
     return false
 }
@@ -85,7 +84,6 @@ export async function createVerilogCircuit() {
     if (returned) {
         verilogModeSet(true)
 
-        // Pre-initialize WASM worker if in desktop mode
         if (shouldUseWasm()) {
             initWasmWorker()
         }
@@ -100,7 +98,18 @@ export async function createVerilogCircuit() {
 }
 
 export function saveVerilogCode() {
-    var code = editor.getValue()
+    var code = editor ? editor.getValue() : ''
+
+    // Guard: don't synthesize the placeholder comment
+    if (!code || code.trim() === '// Write Some Verilog Code Here!') {
+        const ta = document.getElementById('codeTextArea')
+        if (ta && ta.value && ta.value.trim() !== '// Write Some Verilog Code Here!') {
+            code = ta.value
+        }
+    }
+
+    console.log('[SaveCode] length:', code.length)
+    console.log('[SaveCode] preview:', code.substring(0, 100))
     globalScope.verilogMetadata.code = code
     generateVerilogCircuit(code)
 }
@@ -153,56 +162,78 @@ export function verilogModeGet() {
     return verilogMode
 }
 
+// â”€â”€ Helper: does the saved code contain a real module? â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function savedCodeHasModule() {
+    const code = globalScope.verilogMetadata && globalScope.verilogMetadata.code
+    if (!code) return false
+    const stripped = code
+        .replace(/\/\/.*$/gm, '')
+        .replace(/\/\*[\s\S]*?\*\//g, '')
+    return /\bmodule\s+\w+/.test(stripped)
+}
+
 export function verilogModeSet(mode) {
     if (mode == verilogMode) return
     verilogMode = mode
     if (mode) {
         const code_window = document.getElementById('code-window')
-        if(code_window)
-        document.getElementById('code-window').style.display = 'block'
+        if (code_window)
+            document.getElementById('code-window').style.display = 'block'
 
         const elementPanel = document.querySelector('.elementPanel')
-        if(elementPanel)
-        document.querySelector('.elementPanel').style.display = 'none'
+        if (elementPanel)
+            document.querySelector('.elementPanel').style.display = 'none'
 
         const timingDiagramPanel = document.querySelector('.timing-diagram-panel')
-        if(timingDiagramPanel)
-        document.querySelector('.timing-diagram-panel').style.display = 'none'
+        if (timingDiagramPanel)
+            document.querySelector('.timing-diagram-panel').style.display = 'none'
 
         const quickBtn = document.querySelector('.quick-btn')
-        if(quickBtn)
-        document.querySelector('.quick-btn').style.display = 'none'
+        if (quickBtn)
+            document.querySelector('.quick-btn').style.display = 'none'
 
         const verilogEditorPanel = document.getElementById('verilogEditorPanel')
-        if(verilogEditorPanel)
-        document.getElementById('verilogEditorPanel').style.display = 'block'
+        if (verilogEditorPanel)
+            document.getElementById('verilogEditorPanel').style.display = 'block'
+
+        // Refresh CodeMirror after the panel becomes visible â€”
+        // without this it doesn't know its dimensions and getValue() may
+        // return stale content.
+        if (editor) {
+            setTimeout(() => editor.refresh(), 10)
+        }
 
         if (!embed) {
             simulationArea.lastSelected = globalScope.root
             showProperties(undefined)
             showProperties(simulationArea.lastSelected)
         }
-        resetVerilogCode()
+
+        // Only restore saved code if it actually contains a real Verilog module.
+        if (savedCodeHasModule()) {
+            resetVerilogCode()
+        }
+
     } else {
         const code_window = document.getElementById('code-window')
-        if(code_window)
-        document.getElementById('code-window').style.display = 'none'
+        if (code_window)
+            document.getElementById('code-window').style.display = 'none'
 
         const elementPanel = document.querySelector('.elementPanel')
-        if(elementPanel)
-        document.querySelector('.elementPanel').style.display = ''
+        if (elementPanel)
+            document.querySelector('.elementPanel').style.display = ''
 
         const timingDiagramPanel = document.querySelector('.timing-diagram-panel')
-        if(timingDiagramPanel)
-        document.querySelector('.timing-diagram-panel').style.display = ''
+        if (timingDiagramPanel)
+            document.querySelector('.timing-diagram-panel').style.display = ''
 
         const quickBtn = document.querySelector('.quick-btn')
-        if(quickBtn)
-        document.querySelector('.quick-btn').style.display = ''
+        if (quickBtn)
+            document.querySelector('.quick-btn').style.display = ''
 
         const verilogEditorPanel = document.getElementById('verilogEditorPanel')
-        if(verilogEditorPanel)
-        document.getElementById('verilogEditorPanel').style.display = 'none'
+        if (verilogEditorPanel)
+            document.getElementById('verilogEditorPanel').style.display = 'none'
     }
 }
 
@@ -297,17 +328,13 @@ export function YosysJSON2CV(
     }
 }
 
-/**
- * Main entry point for Verilog synthesis.
- * Routes to either WASM (client-side) or server-side synthesis
- * based on the environment (Tauri desktop vs web browser).
- */
 export default function generateVerilogCircuit(
     verilogCode,
     scope = globalScope
 ) {
     clearVerilogOutput()
     setVerilogOutput('Compiling Verilog code...', 'info')
+    const synthBtn = document.querySelector('.save-btn, #saveVerilog, button[onclick*="save"]'); if (synthBtn) { synthBtn.disabled = true; synthBtn.textContent = 'Synthesizing...'; }
 
     if (shouldUseWasm()) {
         synthesizeWithWasm(verilogCode, scope)
@@ -316,23 +343,15 @@ export default function generateVerilogCircuit(
     }
 }
 
-/**
- * Server-side synthesis (original approach).
- * Used for web browser builds where the Yosys server is available.
- */
 function synthesizeWithServer(verilogCode, scope) {
     var params = { code: verilogCode }
     fetch('/api/v1/simulator/verilogcv', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(params),
     })
         .then((response) => {
-            if (!response.ok) {
-                throw response
-            }
+            if (!response.ok) throw response
             return response.json()
         })
         .then((circuitData) => {
@@ -351,37 +370,42 @@ function synthesizeWithServer(verilogCode, scope) {
         })
 }
 
-/**
- * Client-side WASM synthesis using @yowasp/yosys.
- * Used for Tauri desktop builds where offline synthesis is needed.
- *
- * Pipeline: Verilog -> Yosys WASM -> JSON -> yosys2digitaljs -> YosysJSON2CV -> render
- */
+function extractTopModule(code) {
+    const stripped = code
+        .replace(/\/\/.*$/gm, '')
+        .replace(/\/\*[\s\S]*?\*\//g, '')
+    const moduleNames = []
+    const re = /\bmodule\s+(\w+)/g
+    let match
+    while ((match = re.exec(stripped)) !== null) {
+        moduleNames.push(match[1])
+    }
+    if (moduleNames.length === 0) return 'top'
+    return moduleNames[moduleNames.length - 1]
+}
+
 function synthesizeWithWasm(verilogCode, scope) {
     setVerilogOutput('Synthesizing with Yosys WASM (client-side, no server)...', 'info')
 
-    // Initialize worker if not already done
     if (!wasmWorker) {
         initWasmWorker()
     }
 
-    // Wait for worker to be ready
     if (!wasmReady) {
-        setVerilogOutput('Yosys WASM is loading (first load takes ~10-30s)...', 'info')
+        setVerilogOutput('Yosys WASM loading (first load ~10-30s)...', 'info')
 
-        var checkReady = setInterval(function() {
+        var checkReady = setInterval(function () {
             if (wasmReady) {
                 clearInterval(checkReady)
                 doWasmSynthesis(verilogCode, scope)
             }
         }, 500)
 
-        // Timeout after 60 seconds
-        setTimeout(function() {
+        setTimeout(function () {
             if (!wasmReady) {
                 clearInterval(checkReady)
-                setVerilogOutput('WASM loading timed out. Falling back to server...', 'error')
-                synthesizeWithServer(verilogCode, scope)
+                setVerilogOutput('WASM load timed out after 60s', 'error')
+                showError('Yosys WASM failed to load in time')
             }
         }, 60000)
     } else {
@@ -390,35 +414,58 @@ function synthesizeWithWasm(verilogCode, scope) {
 }
 
 function doWasmSynthesis(verilogCode, scope) {
-    // Extract top module name from Verilog code
-    var topMatch = verilogCode.match(/module\s+(\w+)/)
-    var topModule = topMatch ? topMatch[1] : 'top'
+    const topModule = extractTopModule(verilogCode)
+    const requestId = 'synth-' + Date.now()
 
-    // Use request ID to prevent stale responses from previous synthesis runs
-    const requestId = Date.now()
+    console.log('[WASM] Top module:', topModule)
+    console.log('[WASM] Code length:', verilogCode.length)
 
-    wasmWorker.onmessage = function(e) {
+    // Replace the onmessage handler for this synthesis request.
+    // Using requestId lets us safely ignore stale messages from prior runs.
+    wasmWorker.onmessage = function (e) {
         var msg = e.data
 
-        // Ignore messages from previous synthesis requests
-        if (msg.requestId !== requestId) return
-
-        if (msg.type === 'ready') {
-            return
-        }
+        // Ignore ready pings and messages from other requests
+        if (msg.type === 'ready') return
+        if (msg.requestId && msg.requestId !== requestId) return
 
         if (msg.type === 'success') {
             try {
+                // The worker sends raw Yosys JSON.
+                // Convert it to the CircuitVerse device/connector format.
+                var circuitData = convertYosysToDigitalJs(msg.json, topModule)
+
+                if (!circuitData.devices || Object.keys(circuitData.devices).length === 0) {
+                    setVerilogOutput(
+                        'Synthesis succeeded but no devices were produced. ' +
+                        'Check that all module outputs are driven.',
+                        'error'
+                    )
+                    return
+                }
+
+                console.log('[WASM] Devices:', Object.keys(circuitData.devices).length)
                 setVerilogOutput('Synthesis complete. Rendering circuit...', 'info')
-                renderVerilogCircuit(msg.json, verilogCode, scope, 'WASM')
+                renderVerilogCircuit(circuitData, verilogCode, scope, 'WASM')
             } catch (err) {
+                console.error('[WASM] Render error:', err)
                 setVerilogOutput('Render failed: ' + err.message, 'error')
                 showError('Circuit render failed: ' + err.message)
             }
-        } else if (msg.type === 'error') {
-            setVerilogOutput('Synthesis error: ' + msg.message, 'error')
-            showError('Yosys WASM: ' + msg.message)
         }
+
+        if (msg.type === 'error') {
+            console.error('[WASM] Synthesis error:', msg.message)
+            setVerilogOutput('Synthesis error:\n' + msg.message, 'error')
+            showError('Yosys WASM synthesis failed')
+        }
+    }
+
+    wasmWorker.onerror = function (err) {
+        console.error('[WASM] Worker crashed:', err)
+        setVerilogOutput('Worker error: ' + err.message, 'error')
+        wasmWorker = null
+        wasmReady = false
     }
 
     wasmWorker.postMessage({
@@ -428,12 +475,135 @@ function doWasmSynthesis(verilogCode, scope) {
     })
 }
 
-/**
- * Shared rendering function used by both server and WASM synthesis paths.
- * Takes yosys2digitaljs-formatted circuit data and renders it in CircuitVerse.
- * @param {string} source - 'WASM' or 'server', used for the success message
- */
-function renderVerilogCircuit(circuitData, verilogCode, scope, source = 'server') {
+// â”€â”€â”€ Yosys JSON â†’ CircuitVerse device/connector format â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Converts the raw Yosys JSON (produced by write_json after techmap) into
+// the flat { name, devices, connectors, subcircuits } shape that YosysJSON2CV
+// and the rest of the CV simulator expect.
+
+function findTopModule(modules, preferred) {
+    const names = Object.keys(modules)
+    if (preferred && modules[preferred]) return preferred
+    for (const n of names) {
+        const a = modules[n].attributes || {}
+        if (a.top === 1 || a.top === '1') return n
+    }
+    return names[names.length - 1]
+}
+
+function convertYosysToDigitalJs(yosysJson, preferredTop) {
+    const modules = yosysJson.modules || {}
+    if (!Object.keys(modules).length) throw new Error('No modules in Yosys output')
+
+    const topName = findTopModule(modules, preferredTop)
+    const top = modules[topName]
+
+    console.log('[Converter] Top module:', topName)
+    console.log('[Converter] Ports:', Object.keys(top.ports || {}))
+    console.log('[Converter] Cells:', Object.keys(top.cells || {}))
+
+    const devices = {}
+    const connectors = []
+    let dc = 0
+    const drivers = {}   // bit-index â†’ { id, port }
+    const receivers = [] // { bit, id, port }
+    let po = 0
+
+    // â”€â”€ Ports â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    for (const pName in top.ports) {
+        const p = top.ports[pName]
+        const id = 'dev' + dc++
+        const bits = p.bits || []
+        if (p.direction === 'input') {
+            devices[id] = { type: 'Input', net: pName, order: po++, bits: bits.length }
+            bits.forEach(b => {
+                if (typeof b === 'number') drivers[b] = { id, port: 'out' }
+            })
+        } else if (p.direction === 'output') {
+            devices[id] = { type: 'Output', net: pName, order: po++, bits: bits.length }
+            bits.forEach(b => {
+                if (typeof b === 'number') receivers.push({ bit: b, id, port: 'in' })
+            })
+        }
+    }
+
+    // â”€â”€ Cell type map â€” gate-level primitives produced by techmap â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // techmap emits $_AND_, $_OR_, etc. We also cover the non-gate-level
+    // names in case prep was used or techmap is partial.
+    const CMAP = {
+        '$_AND_':    'And',      '$_OR_':     'Or',       '$_NOT_':   'Not',
+        '$_NAND_':   'Nand',     '$_NOR_':    'Nor',      '$_XOR_':   'Xor',
+        '$_XNOR_':   'Xnor',    '$_BUF_':    'Repeater', '$_MUX_':   'Mux',
+        '$_DFF_P_':  'Dff',      '$_DFF_N_':  'Dff',
+        '$_DFFE_PP_':'Dff',      '$_SR_PP_':  'Dff',
+        // High-level (pre-techmap) fallbacks
+        '$and':      'And',      '$or':       'Or',       '$not':     'Not',
+        '$xor':      'Xor',      '$xnor':     'Xnor',
+        '$mux':      'Mux',      '$pmux':     'Mux',
+        '$reduce_and':'And',     '$reduce_or':'Or',       '$reduce_xor':'Xor',
+        '$reduce_bool':'Or',     '$logic_not':'Not',
+        '$logic_and':'And',      '$logic_or': 'Or',
+        '$dff':      'Dff',      '$adff':     'Dff',      '$buf':     'Repeater',
+    }
+
+    // Port name â†’ canonical CV port name
+    const IMAP = {
+        'A': 'in1', 'B': 'in2', 'S': 'sel',
+        'C': 'clk', 'D': 'in',  'R': 'rst', 'E': 'en',
+        'CLK': 'clk', 'ARST': 'rst', 'EN': 'en',
+    }
+    const OMAP = { 'Y': 'out', 'Q': 'out' }
+
+    // â”€â”€ Cells â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    for (const cName in top.cells) {
+        const cell = top.cells[cName]
+        const type = CMAP[cell.type]
+        if (!type) {
+            console.warn('[Converter] Skipping unknown cell type:', cell.type)
+            continue
+        }
+        const id = 'dev' + dc++
+        devices[id] = { type, label: cName }
+
+        for (const pName in cell.connections) {
+            const bits = cell.connections[pName]
+            const dir = cell.port_directions?.[pName]
+                || (OMAP[pName] ? 'output' : 'input')
+
+            if (dir === 'input') {
+                const port = IMAP[pName] || pName.toLowerCase()
+                bits.forEach(b => {
+                    if (typeof b === 'number') receivers.push({ bit: b, id, port })
+                })
+            } else if (dir === 'output') {
+                const port = OMAP[pName] || pName.toLowerCase()
+                bits.forEach(b => {
+                    if (typeof b === 'number') drivers[b] = { id, port }
+                })
+            }
+        }
+    }
+
+    // â”€â”€ Wire up connectors â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    for (const r of receivers) {
+        const d = drivers[r.bit]
+        if (d) {
+            connectors.push({
+                from: { id: d.id, port: d.port },
+                to:   { id: r.id, port: r.port },
+                source_positions: []
+            })
+        } else {
+            console.warn('[Converter] No driver for bit', r.bit, 'â€” receiver:', r)
+        }
+    }
+
+    console.log('[Converter] Devices:', Object.keys(devices).length,
+        '| Connectors:', connectors.length)
+
+    return { name: topName, devices, connectors, subcircuits: {} }
+}
+
+function renderVerilogCircuit(circuitData, verilogCode, scope, source) {
     scope.initialize()
     for (var id of scope.verilogMetadata.subCircuitScopeIds)
         delete scopeList[id]
@@ -450,7 +620,9 @@ function renderVerilogCircuit(circuitData, verilogCode, scope, source = 'server'
     scope.verilogMetadata.subCircuitScopeIds = Object.values(subCircuitScope)
     changeCircuitName(circuitData.name)
     showMessage('Verilog Circuit Successfully Created')
-    setVerilogOutput(`Verilog Circuit Successfully Created (via ${source})`, 'success')
+    setVerilogOutput('Verilog Circuit Successfully Created (via ' + source + ')', 'success')
+    update(scope)
+    verilogModeSet(false)
 }
 
 export function setupCodeMirrorEnvironment() {
@@ -480,7 +652,12 @@ export function setupCodeMirrorEnvironment() {
     }
 
     editor.setValue('// Write Some Verilog Code Here!')
-    setTimeout(function () {
-        editor.refresh()
-    }, 1)
+
+    // Force a layout pass once the editor is in the DOM
+    requestAnimationFrame(() => editor.refresh())
+    setTimeout(() => editor.refresh(), 1)
 }
+
+
+
+
