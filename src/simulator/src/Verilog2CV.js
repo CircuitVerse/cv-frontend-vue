@@ -40,30 +40,34 @@ var verilogMode = false
 
 // ─── WASM worker state ──────────────────────────────────────────────────────
 var wasmWorker = null
-var wasmReady = false
+var wasmReadyPromise = null  // single shared promise — prevents duplicate polling
 
 function initWasmWorker() {
-    if (wasmWorker) return
-    try {
-        wasmWorker = new Worker('/yosys-worker.js', { type: 'module' })
-        wasmWorker.onmessage = function (e) {
-            if (e.data.type === 'ready') {
-                wasmReady = true
-                console.log('[Yosys WASM] Worker ready')
-            } else if (e.data.type === 'error' && !wasmReady) {
-                console.warn('[Yosys WASM] Worker failed to initialize:', e.data.message)
-                wasmWorker = null
-                wasmReady = false
+    if (wasmReadyPromise) return wasmReadyPromise
+
+    wasmReadyPromise = new Promise(function (resolve, reject) {
+        try {
+            wasmWorker = new Worker('/yosys-worker.js')
+            wasmWorker.onmessage = function (e) {
+                if (e.data.type === 'ready') {
+                    console.log('[Yosys WASM] Worker ready')
+                    resolve()
+                } else if (e.data.type === 'error') {
+                    reject(new Error(e.data.message))
+                }
             }
+            wasmWorker.onerror = function (err) {
+                wasmWorker = null
+                wasmReadyPromise = null
+                reject(new Error(err.message))
+            }
+        } catch (err) {
+            wasmReadyPromise = null
+            reject(err)
         }
-        wasmWorker.onerror = function (err) {
-            console.warn('[Yosys WASM] Worker init error:', err.message)
-            wasmWorker = null
-            wasmReady = false
-        }
-    } catch (err) {
-        console.warn('[Yosys WASM] Failed to init worker:', err.message)
-    }
+    })
+
+    return wasmReadyPromise
 }
 
 function shouldUseWasm() {
@@ -300,7 +304,7 @@ export function YosysJSON2CV(
         }
     }
 
-    // ── FIXED: skip bad connections instead of crashing ──────────────────
+    // ── skip bad connections instead of crashing ──────────────────────────
     for (var connection in JSON.connectors) {
         var fromId   = JSON.connectors[connection]['from']['id']
         var fromPort = JSON.connectors[connection]['from']['port']
@@ -335,7 +339,6 @@ export function YosysJSON2CV(
 
         fromPortNode.connect(toPortNode)
     }
-    // ── END FIX ───────────────────────────────────────────────────────────
 
     if (!root) {
         switchCircuit(parentID)
@@ -388,50 +391,61 @@ function extractTopModule(code) {
     const stripped = code
         .replace(/\/\/.*$/gm, '')
         .replace(/\/\*[\s\S]*?\*\//g, '')
+
     const moduleNames = []
     const re = /\bmodule\s+(\w+)/g
     let match
     while ((match = re.exec(stripped)) !== null) {
         moduleNames.push(match[1])
     }
-    if (moduleNames.length === 0) return 'top'
-    return moduleNames[moduleNames.length - 1]
+
+    // No modules found — let Yosys use -auto-top
+    if (moduleNames.length === 0) return null
+
+    // Only one module — unambiguous
+    if (moduleNames.length === 1) return moduleNames[0]
+
+    // Multiple modules — find the one that is NOT instantiated inside another
+    const instantiated = new Set()
+    moduleNames.forEach(name => {
+        const instanceRe = new RegExp('\\b' + name + '\\s+\\w+\\s*\\(', 'g')
+        if (instanceRe.test(stripped)) instantiated.add(name)
+    })
+
+    const topCandidates = moduleNames.filter(n => !instantiated.has(n))
+    if (topCandidates.length === 1) return topCandidates[0]
+
+    // Ambiguous — let Yosys decide with -auto-top
+    return null
 }
 
 function synthesizeWithWasm(verilogCode, scope) {
     setVerilogOutput('Synthesizing with Yosys WASM (client-side, no server)...', 'info')
 
-    if (!wasmWorker) {
-        initWasmWorker()
-    }
+    var readyPromise = initWasmWorker()
 
-    if (!wasmReady) {
-        setVerilogOutput('Yosys WASM loading (first load ~10-30s)...', 'info')
-
-        var checkReady = setInterval(function () {
-            if (wasmReady) {
-                clearInterval(checkReady)
-                doWasmSynthesis(verilogCode, scope)
-            }
-        }, 500)
-
+    var timeoutPromise = new Promise(function (_, reject) {
         setTimeout(function () {
-            if (!wasmReady) {
-                clearInterval(checkReady)
-                setVerilogOutput('WASM load timed out after 60s', 'error')
-                showError('Yosys WASM failed to load in time')
-            }
+            reject(new Error('WASM load timed out after 60s'))
         }, 60000)
-    } else {
-        doWasmSynthesis(verilogCode, scope)
-    }
+    })
+
+    Promise.race([readyPromise, timeoutPromise])
+        .then(function () {
+            doWasmSynthesis(verilogCode, scope)
+        })
+        .catch(function (err) {
+            setVerilogOutput('WASM error: ' + err.message, 'error')
+            showError('Yosys WASM failed: ' + err.message)
+            wasmReadyPromise = null
+        })
 }
 
 function doWasmSynthesis(verilogCode, scope) {
-    const topModule = extractTopModule(verilogCode)
+    const topModule = extractTopModule(verilogCode)  // null = use -auto-top
     const requestId = 'synth-' + Date.now()
 
-    console.log('[WASM] Top module:', topModule)
+    console.log('[WASM] Top module:', topModule || '(auto-top)')
     console.log('[WASM] Code length:', verilogCode.length)
 
     wasmWorker.onmessage = function (e) {
@@ -478,7 +492,7 @@ function doWasmSynthesis(verilogCode, scope) {
         console.error('[WASM] Worker crashed:', err)
         setVerilogOutput('Worker error: ' + err.message, 'error')
         wasmWorker = null
-        wasmReady = false
+        wasmReadyPromise = null
     }
 
     wasmWorker.postMessage({
@@ -516,7 +530,7 @@ function computeLayeredLayout(circuitData) {
     const visited = new Set()
 
     allIds.forEach(id => {
-        if (devices[id].type === 'Input') {
+        if (devices[id].type === 'Input' || devices[id].type === 'Constant') {
             layer[id] = 0
             visited.add(id)
         }
@@ -643,6 +657,20 @@ function findTopModule(modules, preferred) {
     return names[names.length - 1]
 }
 
+// ── Emit a Constant device for Yosys literal bits ("0","1","x","z") ─────────
+function emitConstantBit(bit, receiverId, receiverPort, devices, connectors) {
+    if (typeof bit !== 'string') return false
+    const constId = 'const_' + receiverId + '_' + receiverPort + '_' + bit
+    const val = (bit === '1') ? 1 : 0
+    devices[constId] = { type: 'Constant', value: val, bits: 1 }
+    connectors.push({
+        from: { id: constId, port: 'out' },
+        to:   { id: receiverId, port: receiverPort },
+        source_positions: []
+    })
+    return true
+}
+
 function convertYosysToDigitalJs(yosysJson, preferredTop) {
     const modules = yosysJson.modules || {}
     if (!Object.keys(modules).length) throw new Error('No modules in Yosys output')
@@ -721,12 +749,16 @@ function convertYosysToDigitalJs(yosysJson, preferredTop) {
             if (dir === 'input') {
                 const port = IMAP[pName] || pName.toLowerCase()
                 bits.forEach(b => {
-                    if (typeof b === 'number') receivers.push({ bit: b, id, port })
+                    if (typeof b === 'number') {
+                        receivers.push({ bit: b, id, port })
+                    } else if (typeof b === 'string') {
+                        // ── Constant bit ("0","1","x","z") — emit Constant device ──
+                        emitConstantBit(b, id, port, devices, connectors)
+                    }
                 })
             } else if (dir === 'output') {
                 const port = OMAP[pName] || pName.toLowerCase()
                 bits.forEach(b => {
-                    // ── FIXED: skip duplicate drivers (feedback wires) ──
                     if (typeof b === 'number') {
                         if (!drivers[b]) {
                             drivers[b] = { id, port }
@@ -789,7 +821,6 @@ function renderVerilogCircuit(circuitData, verilogCode, scope, source) {
     verilogModeSet(false)
 }
 
-// ── FIXED: handle both offset.x and ox naming conventions ─────────────────
 function centerViewportOnScope(scope) {
     try {
         if (!scope || !scope.CircuitElement || !scope.CircuitElement.length) return
@@ -811,7 +842,6 @@ function centerViewportOnScope(scope) {
         const circW = maxX - minX
         const circH = maxY - minY
 
-        // canvas dimensions — try multiple fallbacks
         const canvas = simulationArea?.canvas
             || document.getElementById('mycanvas')
             || document.querySelector('canvas')
@@ -831,12 +861,10 @@ function centerViewportOnScope(scope) {
             const newOx = vpW / 2 - centerX * scale
             const newOy = vpH / 2 - centerY * scale
 
-            // CV uses either offset.x/.y or ox/oy depending on version
             if (simulationArea.offset && typeof simulationArea.offset === 'object') {
                 simulationArea.offset.x = newOx
                 simulationArea.offset.y = newOy
             } else {
-                // fallback: direct properties
                 simulationArea.ox = newOx
                 simulationArea.oy = newOy
             }

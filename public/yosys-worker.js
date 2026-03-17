@@ -1,6 +1,5 @@
 ﻿// yosys-worker.js
 // Place in /public/yosys-worker.js
-// Register with: new Worker('/yosys-worker.js')   <-- NO { type: 'module' }
 
 'use strict';
 
@@ -48,7 +47,7 @@ self.onmessage = function (e) {
 
 function handleMessage(e) {
     var verilog = e.data.verilog;
-    var topModule = e.data.topModule;
+    var topModule = e.data.topModule;  // null = use -auto-top
     var requestId = e.data.requestId;
 
     if (typeof runYosys !== 'function') {
@@ -65,10 +64,14 @@ function handleMessage(e) {
         return;
     }
 
-    var top = topModule || 'top';
+    // Use -auto-top when topModule is null (ambiguous multi-module files)
+    var hierarchyCmd = topModule
+        ? 'hierarchy -top ' + topModule
+        : 'hierarchy -auto-top';
+
     var script = [
         'read_verilog input.v',
-        'hierarchy -top ' + top,
+        hierarchyCmd,
         'proc', 'opt', 'memory', 'techmap', 'opt', 'clean',
         'write_json output.json'
     ].join('; ');
@@ -105,4 +108,3 @@ function handleMessage(e) {
         postError(msg, requestId);
     });
 }
-
