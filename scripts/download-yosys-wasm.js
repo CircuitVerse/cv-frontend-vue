@@ -3,6 +3,7 @@ const path = require('path');
 
 const srcDir = path.join(__dirname, '..', 'node_modules', '@yowasp', 'yosys', 'gen');
 const destDir = path.join(__dirname, '..', 'public');
+fs.mkdirSync(destDir, { recursive: true });
 
 const files = [
   { src: 'bundle.js',           dest: 'yosys-bundle.js' },
