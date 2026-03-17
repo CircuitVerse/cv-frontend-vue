@@ -38,7 +38,7 @@ import { toRefs } from 'vue'
 var editor
 var verilogMode = false
 
-// â”€â”€â”€ WASM worker state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── WASM worker state ──────────────────────────────────────────────────────
 var wasmWorker = null
 var wasmReady = false
 
@@ -51,7 +51,6 @@ function initWasmWorker() {
                 wasmReady = true
                 console.log('[Yosys WASM] Worker ready')
             } else if (e.data.type === 'error' && !wasmReady) {
-                // A load-time error before we've ever gone ready
                 console.warn('[Yosys WASM] Worker failed to initialize:', e.data.message)
                 wasmWorker = null
                 wasmReady = false
@@ -100,7 +99,6 @@ export async function createVerilogCircuit() {
 export function saveVerilogCode() {
     var code = editor ? editor.getValue() : ''
 
-    // Guard: don't synthesize the placeholder comment
     if (!code || code.trim() === '// Write Some Verilog Code Here!') {
         const ta = document.getElementById('codeTextArea')
         if (ta && ta.value && ta.value.trim() !== '// Write Some Verilog Code Here!') {
@@ -162,7 +160,6 @@ export function verilogModeGet() {
     return verilogMode
 }
 
-// â”€â”€ Helper: does the saved code contain a real module? â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function savedCodeHasModule() {
     const code = globalScope.verilogMetadata && globalScope.verilogMetadata.code
     if (!code) return false
@@ -196,9 +193,6 @@ export function verilogModeSet(mode) {
         if (verilogEditorPanel)
             document.getElementById('verilogEditorPanel').style.display = 'block'
 
-        // Refresh CodeMirror after the panel becomes visible â€”
-        // without this it doesn't know its dimensions and getValue() may
-        // return stale content.
         if (editor) {
             setTimeout(() => editor.refresh(), 10)
         }
@@ -209,7 +203,6 @@ export function verilogModeSet(mode) {
             showProperties(simulationArea.lastSelected)
         }
 
-        // Only restore saved code if it actually contains a real Verilog module.
         if (savedCodeHasModule()) {
             resetVerilogCode()
         }
@@ -307,20 +300,42 @@ export function YosysJSON2CV(
         }
     }
 
+    // ── FIXED: skip bad connections instead of crashing ──────────────────
     for (var connection in JSON.connectors) {
-        var fromId = JSON.connectors[connection]['from']['id']
+        var fromId   = JSON.connectors[connection]['from']['id']
         var fromPort = JSON.connectors[connection]['from']['port']
-        var toId = JSON.connectors[connection]['to']['id']
-        var toPort = JSON.connectors[connection]['to']['port']
+        var toId     = JSON.connectors[connection]['to']['id']
+        var toPort   = JSON.connectors[connection]['to']['port']
 
         var fromObj = circuitDevices[fromId]
-        var toObj = circuitDevices[toId]
+        var toObj   = circuitDevices[toId]
+
+        if (!fromObj) {
+            console.warn('[YosysJSON2CV] Missing device:', fromId)
+            continue
+        }
+        if (!toObj) {
+            console.warn('[YosysJSON2CV] Missing device:', toId)
+            continue
+        }
 
         var fromPortNode = fromObj.getPort(fromPort)
-        var toPortNode = toObj.getPort(toPort)
+        var toPortNode   = toObj.getPort(toPort)
+
+        if (!fromPortNode) {
+            console.warn('[YosysJSON2CV] Missing port "' + fromPort + '" on ' + fromId
+                + ' (' + (JSON.devices[fromId]?.type || '?') + ')')
+            continue
+        }
+        if (!toPortNode) {
+            console.warn('[YosysJSON2CV] Missing port "' + toPort + '" on ' + toId
+                + ' (' + (JSON.devices[toId]?.type || '?') + ')')
+            continue
+        }
 
         fromPortNode.connect(toPortNode)
     }
+    // ── END FIX ───────────────────────────────────────────────────────────
 
     if (!root) {
         switchCircuit(parentID)
@@ -334,7 +349,6 @@ export default function generateVerilogCircuit(
 ) {
     clearVerilogOutput()
     setVerilogOutput('Compiling Verilog code...', 'info')
-    const synthBtn = document.querySelector('.save-btn, #saveVerilog, button[onclick*="save"]'); if (synthBtn) { synthBtn.disabled = true; synthBtn.textContent = 'Synthesizing...'; }
 
     if (shouldUseWasm()) {
         synthesizeWithWasm(verilogCode, scope)
@@ -420,19 +434,14 @@ function doWasmSynthesis(verilogCode, scope) {
     console.log('[WASM] Top module:', topModule)
     console.log('[WASM] Code length:', verilogCode.length)
 
-    // Replace the onmessage handler for this synthesis request.
-    // Using requestId lets us safely ignore stale messages from prior runs.
     wasmWorker.onmessage = function (e) {
         var msg = e.data
 
-        // Ignore ready pings and messages from other requests
         if (msg.type === 'ready') return
         if (msg.requestId && msg.requestId !== requestId) return
 
         if (msg.type === 'success') {
             try {
-                // The worker sends raw Yosys JSON.
-                // Convert it to the CircuitVerse device/connector format.
                 var circuitData = convertYosysToDigitalJs(msg.json, topModule)
 
                 if (!circuitData.devices || Object.keys(circuitData.devices).length === 0) {
@@ -445,7 +454,11 @@ function doWasmSynthesis(verilogCode, scope) {
                 }
 
                 console.log('[WASM] Devices:', Object.keys(circuitData.devices).length)
-                setVerilogOutput('Synthesis complete. Rendering circuit...', 'info')
+                setVerilogOutput('Synthesis complete. Running layout...', 'info')
+
+                circuitData = computeLayeredLayout(circuitData)
+
+                setVerilogOutput('Rendering circuit on canvas...', 'info')
                 renderVerilogCircuit(circuitData, verilogCode, scope, 'WASM')
             } catch (err) {
                 console.error('[WASM] Render error:', err)
@@ -475,10 +488,150 @@ function doWasmSynthesis(verilogCode, scope) {
     })
 }
 
-// â”€â”€â”€ Yosys JSON â†’ CircuitVerse device/connector format â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// Converts the raw Yosys JSON (produced by write_json after techmap) into
-// the flat { name, devices, connectors, subcircuits } shape that YosysJSON2CV
-// and the rest of the CV simulator expect.
+// ════════════════════════════════════════════════════════════════════════════
+//  LAYERED AUTO-LAYOUT ENGINE
+// ════════════════════════════════════════════════════════════════════════════
+
+function computeLayeredLayout(circuitData) {
+    const devices    = circuitData.devices
+    const connectors = circuitData.connectors
+
+    if (!devices || Object.keys(devices).length === 0) return circuitData
+
+    const allIds   = Object.keys(devices)
+    const outEdges = {}
+    const inEdges  = {}
+    allIds.forEach(id => { outEdges[id] = []; inEdges[id] = [] })
+
+    connectors.forEach(conn => {
+        const src = conn.from?.id
+        const dst = conn.to?.id
+        if (src && dst && src !== dst) {
+            if (!outEdges[src].includes(dst)) outEdges[src].push(dst)
+            if (!inEdges[dst].includes(src))  inEdges[dst].push(src)
+        }
+    })
+
+    const layer   = {}
+    const visited = new Set()
+
+    allIds.forEach(id => {
+        if (devices[id].type === 'Input') {
+            layer[id] = 0
+            visited.add(id)
+        }
+    })
+
+    let changed = true
+    let safetyCounter = 0
+    while (changed && safetyCounter++ < 1000) {
+        changed = false
+        allIds.forEach(id => {
+            if (visited.has(id)) return
+            const preds = inEdges[id]
+            if (preds.length === 0) {
+                layer[id] = 0
+                visited.add(id)
+                changed = true
+                return
+            }
+            if (preds.every(p => visited.has(p))) {
+                const maxPredLayer = Math.max(...preds.map(p => layer[p] ?? 0))
+                layer[id] = maxPredLayer + 1
+                visited.add(id)
+                changed = true
+            }
+        })
+    }
+
+    const maxLayerSoFar = Math.max(0, ...Object.values(layer))
+    allIds.forEach(id => {
+        if (!visited.has(id)) {
+            layer[id] = Math.floor(maxLayerSoFar / 2) + 1
+        }
+    })
+
+    const maxLogicLayer = Math.max(0, ...allIds
+        .filter(id => devices[id].type !== 'Output')
+        .map(id => layer[id] ?? 0))
+
+    allIds.forEach(id => {
+        if (devices[id].type === 'Output') {
+            layer[id] = maxLogicLayer + 1
+        }
+    })
+
+    const numLayers = maxLogicLayer + 2
+
+    const layerNodes = {}
+    for (let l = 0; l < numLayers; l++) layerNodes[l] = []
+    allIds.forEach(id => {
+        const l = layer[id] ?? 0
+        layerNodes[l] = layerNodes[l] || []
+        layerNodes[l].push(id)
+    })
+
+    for (let sweep = 0; sweep < 3; sweep++) {
+        for (let l = 1; l < numLayers; l++) {
+            if (!layerNodes[l]) continue
+            layerNodes[l].sort((a, b) => {
+                const predAvg = (id) => {
+                    const preds = inEdges[id]
+                    if (!preds.length) return 0
+                    const prevLayer = layerNodes[l - 1] || []
+                    const positions = preds
+                        .map(p => prevLayer.indexOf(p))
+                        .filter(i => i >= 0)
+                    if (!positions.length) return 0
+                    return positions.reduce((s, v) => s + v, 0) / positions.length
+                }
+                return predAvg(a) - predAvg(b)
+            })
+        }
+    }
+
+    const LAYER_WIDTH = 180
+    const NODE_HEIGHT = 90
+    const ORIGIN_X    = 150
+    const ORIGIN_Y    = 150
+
+    const newDevices = { ...devices }
+
+    for (let l = 0; l < numLayers; l++) {
+        const nodes  = layerNodes[l] || []
+        const totalH = nodes.length * NODE_HEIGHT
+        const startY = ORIGIN_Y + Math.max(0,
+            (maxNodesInAnyLayer(layerNodes, numLayers) * NODE_HEIGHT - totalH) / 2
+        )
+
+        nodes.forEach((id, rowIdx) => {
+            newDevices[id] = {
+                ...devices[id],
+                position: {
+                    x: ORIGIN_X + l * LAYER_WIDTH,
+                    y: startY + rowIdx * NODE_HEIGHT
+                }
+            }
+        })
+    }
+
+    console.log('[Layout] Layers:', numLayers,
+                '| Max nodes/layer:', maxNodesInAnyLayer(layerNodes, numLayers))
+
+    return { ...circuitData, devices: newDevices }
+}
+
+function maxNodesInAnyLayer(layerNodes, numLayers) {
+    let max = 0
+    for (let l = 0; l < numLayers; l++) {
+        if (layerNodes[l]) max = Math.max(max, layerNodes[l].length)
+    }
+    return max
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+//  Yosys JSON → CircuitVerse device/connector format
+// ════════════════════════════════════════════════════════════════════════════
 
 function findTopModule(modules, preferred) {
     const names = Object.keys(modules)
@@ -495,23 +648,23 @@ function convertYosysToDigitalJs(yosysJson, preferredTop) {
     if (!Object.keys(modules).length) throw new Error('No modules in Yosys output')
 
     const topName = findTopModule(modules, preferredTop)
-    const top = modules[topName]
+    const top     = modules[topName]
 
     console.log('[Converter] Top module:', topName)
     console.log('[Converter] Ports:', Object.keys(top.ports || {}))
     console.log('[Converter] Cells:', Object.keys(top.cells || {}))
 
-    const devices = {}
+    const devices    = {}
     const connectors = []
     let dc = 0
-    const drivers = {}   // bit-index â†’ { id, port }
-    const receivers = [] // { bit, id, port }
+    const drivers   = {}  // bit-index → { id, port }
+    const receivers = []  // { bit, id, port }
     let po = 0
 
-    // â”€â”€ Ports â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Ports ─────────────────────────────────────────────────────────────
     for (const pName in top.ports) {
-        const p = top.ports[pName]
-        const id = 'dev' + dc++
+        const p    = top.ports[pName]
+        const id   = 'dev' + dc++
         const bits = p.bits || []
         if (p.direction === 'input') {
             devices[id] = { type: 'Input', net: pName, order: po++, bits: bits.length }
@@ -526,26 +679,22 @@ function convertYosysToDigitalJs(yosysJson, preferredTop) {
         }
     }
 
-    // â”€â”€ Cell type map â€” gate-level primitives produced by techmap â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    // techmap emits $_AND_, $_OR_, etc. We also cover the non-gate-level
-    // names in case prep was used or techmap is partial.
+    // ── Cell type map ──────────────────────────────────────────────────────
     const CMAP = {
-        '$_AND_':    'And',      '$_OR_':     'Or',       '$_NOT_':   'Not',
-        '$_NAND_':   'Nand',     '$_NOR_':    'Nor',      '$_XOR_':   'Xor',
-        '$_XNOR_':   'Xnor',    '$_BUF_':    'Repeater', '$_MUX_':   'Mux',
-        '$_DFF_P_':  'Dff',      '$_DFF_N_':  'Dff',
-        '$_DFFE_PP_':'Dff',      '$_SR_PP_':  'Dff',
-        // High-level (pre-techmap) fallbacks
-        '$and':      'And',      '$or':       'Or',       '$not':     'Not',
-        '$xor':      'Xor',      '$xnor':     'Xnor',
-        '$mux':      'Mux',      '$pmux':     'Mux',
-        '$reduce_and':'And',     '$reduce_or':'Or',       '$reduce_xor':'Xor',
-        '$reduce_bool':'Or',     '$logic_not':'Not',
-        '$logic_and':'And',      '$logic_or': 'Or',
-        '$dff':      'Dff',      '$adff':     'Dff',      '$buf':     'Repeater',
+        '$_AND_':     'And',      '$_OR_':      'Or',       '$_NOT_':    'Not',
+        '$_NAND_':    'Nand',     '$_NOR_':     'Nor',      '$_XOR_':    'Xor',
+        '$_XNOR_':    'Xnor',    '$_BUF_':     'Repeater', '$_MUX_':    'Mux',
+        '$_DFF_P_':   'Dff',     '$_DFF_N_':   'Dff',
+        '$_DFFE_PP_': 'Dff',     '$_SR_PP_':   'Dff',
+        '$and':       'And',     '$or':        'Or',        '$not':      'Not',
+        '$xor':       'Xor',     '$xnor':      'Xnor',
+        '$mux':       'Mux',     '$pmux':      'Mux',
+        '$reduce_and':'And',     '$reduce_or': 'Or',        '$reduce_xor':'Xor',
+        '$reduce_bool':'Or',     '$logic_not': 'Not',
+        '$logic_and': 'And',     '$logic_or':  'Or',
+        '$dff':       'Dff',     '$adff':      'Dff',       '$buf':      'Repeater',
     }
 
-    // Port name â†’ canonical CV port name
     const IMAP = {
         'A': 'in1', 'B': 'in2', 'S': 'sel',
         'C': 'clk', 'D': 'in',  'R': 'rst', 'E': 'en',
@@ -553,7 +702,7 @@ function convertYosysToDigitalJs(yosysJson, preferredTop) {
     }
     const OMAP = { 'Y': 'out', 'Q': 'out' }
 
-    // â”€â”€ Cells â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Cells ──────────────────────────────────────────────────────────────
     for (const cName in top.cells) {
         const cell = top.cells[cName]
         const type = CMAP[cell.type]
@@ -566,7 +715,7 @@ function convertYosysToDigitalJs(yosysJson, preferredTop) {
 
         for (const pName in cell.connections) {
             const bits = cell.connections[pName]
-            const dir = cell.port_directions?.[pName]
+            const dir  = cell.port_directions?.[pName]
                 || (OMAP[pName] ? 'output' : 'input')
 
             if (dir === 'input') {
@@ -577,13 +726,19 @@ function convertYosysToDigitalJs(yosysJson, preferredTop) {
             } else if (dir === 'output') {
                 const port = OMAP[pName] || pName.toLowerCase()
                 bits.forEach(b => {
-                    if (typeof b === 'number') drivers[b] = { id, port }
+                    // ── FIXED: skip duplicate drivers (feedback wires) ──
+                    if (typeof b === 'number') {
+                        if (!drivers[b]) {
+                            drivers[b] = { id, port }
+                        }
+                        // else: feedback/multi-driver wire — silently skip
+                    }
                 })
             }
         }
     }
 
-    // â”€â”€ Wire up connectors â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Wire up connectors ─────────────────────────────────────────────────
     for (const r of receivers) {
         const d = drivers[r.bit]
         if (d) {
@@ -593,15 +748,19 @@ function convertYosysToDigitalJs(yosysJson, preferredTop) {
                 source_positions: []
             })
         } else {
-            console.warn('[Converter] No driver for bit', r.bit, 'â€” receiver:', r)
+            console.warn('[Converter] No driver for bit', r.bit, '— receiver:', r)
         }
     }
 
     console.log('[Converter] Devices:', Object.keys(devices).length,
-        '| Connectors:', connectors.length)
+                '| Connectors:', connectors.length)
 
     return { name: topName, devices, connectors, subcircuits: {} }
 }
+
+// ════════════════════════════════════════════════════════════════════════════
+//  Render
+// ════════════════════════════════════════════════════════════════════════════
 
 function renderVerilogCircuit(circuitData, verilogCode, scope, source) {
     scope.initialize()
@@ -610,6 +769,7 @@ function renderVerilogCircuit(circuitData, verilogCode, scope, source) {
     scope.verilogMetadata.subCircuitScopeIds = []
     scope.verilogMetadata.code = verilogCode
     var subCircuitScope = {}
+
     YosysJSON2CV(
         circuitData,
         globalScope,
@@ -617,12 +777,76 @@ function renderVerilogCircuit(circuitData, verilogCode, scope, source) {
         subCircuitScope,
         true
     )
+
     scope.verilogMetadata.subCircuitScopeIds = Object.values(subCircuitScope)
     changeCircuitName(circuitData.name)
+
+    centerViewportOnScope(scope)
+
     showMessage('Verilog Circuit Successfully Created')
     setVerilogOutput('Verilog Circuit Successfully Created (via ' + source + ')', 'success')
     update(scope)
     verilogModeSet(false)
+}
+
+// ── FIXED: handle both offset.x and ox naming conventions ─────────────────
+function centerViewportOnScope(scope) {
+    try {
+        if (!scope || !scope.CircuitElement || !scope.CircuitElement.length) return
+
+        let minX = Infinity, minY = Infinity
+        let maxX = -Infinity, maxY = -Infinity
+
+        scope.CircuitElement.forEach(el => {
+            const x = el.x ?? 0
+            const y = el.y ?? 0
+            minX = Math.min(minX, x - 60)
+            maxX = Math.max(maxX, x + 60)
+            minY = Math.min(minY, y - 60)
+            maxY = Math.max(maxY, y + 60)
+        })
+
+        if (minX === Infinity) return
+
+        const circW = maxX - minX
+        const circH = maxY - minY
+
+        // canvas dimensions — try multiple fallbacks
+        const canvas = simulationArea?.canvas
+            || document.getElementById('mycanvas')
+            || document.querySelector('canvas')
+        const vpW = canvas?.width  || window.innerWidth  || 800
+        const vpH = canvas?.height || window.innerHeight || 600
+
+        const scaleX = (vpW * 0.85) / (circW || 1)
+        const scaleY = (vpH * 0.85) / (circH || 1)
+        const scale  = Math.min(1.0, scaleX, scaleY)
+
+        const centerX = (minX + maxX) / 2
+        const centerY = (minY + maxY) / 2
+
+        if (simulationArea) {
+            simulationArea.scale = scale
+
+            const newOx = vpW / 2 - centerX * scale
+            const newOy = vpH / 2 - centerY * scale
+
+            // CV uses either offset.x/.y or ox/oy depending on version
+            if (simulationArea.offset && typeof simulationArea.offset === 'object') {
+                simulationArea.offset.x = newOx
+                simulationArea.offset.y = newOy
+            } else {
+                // fallback: direct properties
+                simulationArea.ox = newOx
+                simulationArea.oy = newOy
+            }
+        }
+
+        console.log('[Viewport] scale:', scale.toFixed(2),
+                    '| center:', centerX.toFixed(0), centerY.toFixed(0))
+    } catch (e) {
+        console.warn('[Viewport] Could not centre:', e.message)
+    }
 }
 
 export function setupCodeMirrorEnvironment() {
@@ -652,12 +876,6 @@ export function setupCodeMirrorEnvironment() {
     }
 
     editor.setValue('// Write Some Verilog Code Here!')
-
-    // Force a layout pass once the editor is in the DOM
     requestAnimationFrame(() => editor.refresh())
     setTimeout(() => editor.refresh(), 1)
 }
-
-
-
-
