@@ -13,7 +13,8 @@
     "format": "oxfmt --write \"**/*.ts\"",
     "format:check": "oxfmt --check \"**/*.ts\"",
     "fmt:check": "npm run format:check",
-    "postinstall": "husky install",
+    "postinstall": "husky install && node scripts/download-yosys-wasm.js",
+    "download:yosys-wasm": "node scripts/download-yosys-wasm.js",
     "test": "vitest --silent"
   },
   "dependencies": {
