@@ -5,6 +5,7 @@ import router from './router/index'
 import { createPinia } from 'pinia'
 import { loadFonts } from './plugins/webfontloader'
 import i18n from './locales/i18n'
+import { initSentry } from './sentry'
 
 import 'bootstrap'
 
@@ -20,6 +21,8 @@ import '@fortawesome/fontawesome-free/css/all.css'
 loadFonts()
 
 const app = createApp(App)
+
+initSentry(app)   
 
 app.use(createPinia())
 app.use(vuetify)
