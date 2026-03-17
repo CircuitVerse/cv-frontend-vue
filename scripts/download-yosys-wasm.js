@@ -3,6 +3,13 @@ const path = require('path');
 
 const srcDir = path.join(__dirname, '..', 'node_modules', '@yowasp', 'yosys', 'gen');
 const destDir = path.join(__dirname, '..', 'public');
+
+// Gracefully skip if @yowasp/yosys is not installed (e.g. Netlify/web builds)
+if (!fs.existsSync(srcDir)) {
+  console.log('Skipping Yosys WASM copy — @yowasp/yosys not found (web build, skipping).');
+  process.exit(0); // EXIT 0 = success, not an error
+}
+
 fs.mkdirSync(destDir, { recursive: true });
 
 const files = [
@@ -13,11 +20,6 @@ const files = [
   { src: 'yosys.core3.wasm',    dest: 'yosys.core3.wasm' },
   { src: 'yosys.core4.wasm',    dest: 'yosys.core4.wasm' },
 ];
-
-if (!fs.existsSync(srcDir)) {
-  console.error('ERROR: @yowasp/yosys not found. Run: npm install first.');
-  process.exit(1);
-}
 
 files.forEach(function(file) {
   var src  = path.join(srcDir, file.src);
