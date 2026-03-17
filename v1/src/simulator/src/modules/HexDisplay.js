@@ -387,7 +387,7 @@ HexDisplay.prototype.tooltipText =
  * @category modules
  */
 HexDisplay.prototype.helplink =
-    'https://docs.circuitverse.org/#/chapter4/3output?id=hexdisplay'
+    'https://docs.circuitverse.org/chapter4/chapter4-output#hexdisplay'
 HexDisplay.prototype.objectType = 'HexDisplay'
 HexDisplay.prototype.canShowInSubcircuit = true
 HexDisplay.prototype.layoutProperties = {
