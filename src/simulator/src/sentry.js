@@ -7,26 +7,24 @@ export function initSentry() {
 
   const dsn = import.meta.env.VITE_SENTRY_DSN;
 
-  // Validate DSN before initializing
   if (!dsn) {
     console.warn("⚠️ Sentry DSN not found. Error tracking is disabled.");
     return;
   }
 
+  const getTracesSampleRate = () => {
+    if (isLocalDev) return 1.0;
+    const rate = parseFloat(import.meta.env.VITE_SENTRY_TRACES_SAMPLE_RATE);
+    return Number.isFinite(rate) ? rate : 0.1;
+  };
+
   Sentry.init({
     dsn,
-
     integrations: [
       Sentry.browserTracingIntegration(),
     ],
-
     environment: isLocalDev ? "development" : "production",
-
-    // Use lower sample rate in production to avoid excessive costs
-    tracesSampleRate: isLocalDev
-      ? 1.0
-      : parseFloat(import.meta.env.VITE_SENTRY_TRACES_SAMPLE_RATE ?? "0.1"),
-
+    tracesSampleRate: getTracesSampleRate(),
     beforeSend(event) {
       if (isLocalDev) {
         console.log("⚠️ Sentry blocked (development mode):", event);
@@ -34,7 +32,6 @@ export function initSentry() {
       }
       return event;
     },
-
     initialScope: {
       tags: {
         application: "circuitverse-simulator",
