@@ -182,8 +182,8 @@ window.onbeforeunload = async function () {
 /**
  * Function to clear project
  */
-export async function clearProject() {
-  if (await confirmOption("Would you like to clear the project?")) {
+export async function clearProject(verify: boolean = true) {
+  if (!verify || await confirmOption("Would you like to clear the project?")) {
     globalScope = undefined;
     resetScopeList();
     // $('.circuits').remove()
@@ -202,7 +202,7 @@ export async function newProject(verify: boolean) {
     !checkToSave() ||
     (await confirmOption("What you like to start a new project? Any unsaved changes will be lost."))
   ) {
-    clearProject();
+    clearProject(false);
     localStorage.removeItem("recover");
     const baseUrl =
       window.location.origin !== "null" ? window.location.origin : "http://localhost:4000";
