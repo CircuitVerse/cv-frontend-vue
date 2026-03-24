@@ -57,6 +57,26 @@ To build a specific version:
 npm run build -- v1
 ```
 
+## Desktop Application (Tauri)
+
+CircuitVerse can also be run as a native desktop application using [Tauri](https://tauri.app/). Make sure you have the [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/) installed before running the following commands.
+
+### Development
+
+To start the Tauri desktop app in development mode:
+
+```bash
+npm run tauri dev
+```
+
+### Build
+
+To build the Tauri desktop app for production:
+
+```bash
+npm run tauri build
+```
+
 ### Custom Mounting Point (e.g. for Rails)
 If you mount the simulator on a different path than the default `/simulatorvue/`, you must specify the `VITE_BASE` environment variable during build:
 
