@@ -60,7 +60,7 @@ async function checkEditAccess() {
     })
 }
 
-// get logged in user informaton when blank simulator is opened
+// get logged in user information when blank simulator is opened
 async function getLoginData() {
     try {
         const response = await fetch('/api/v1/me', {
