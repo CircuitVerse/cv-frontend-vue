@@ -35,10 +35,9 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Message Display -->
-<div id="MessageDiv">
-  <div v-for="(mes, index) in useState().successMessages" :key="'success-' + index">{{ mes }}</div>
-  <div v-for="(error, index) in useState().errorMessages" :key="'error-' + index">{{ error }}</div>
-
+    <div id="MessageDiv">
+  <div v-for="(mes) in useState().successMessages" :key="'success-' + mes">{{ mes }}</div>
+  <div v-for="(error) in useState().errorMessages" :key="'error-' + error">{{ error }}</div>
 </div>
     <!-- --------------------------------------------------------------------------------------------- -->
 
