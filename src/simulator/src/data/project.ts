@@ -200,9 +200,13 @@ export async function newProject(verify: boolean) {
     verify ||
     projectSaved ||
     !checkToSave() ||
-    (await confirmOption("What you like to start a new project? Any unsaved changes will be lost."))
+    (await confirmOption("Would you like to start a new project? Any unsaved changes will be lost."))
   ) {
-    clearProject();
+    // Directly reset project state without calling clearProject(), which
+    // would show a second confirmation dialog (fixes #399).
+    globalScope = undefined;
+    resetScopeList();
+    newCircuit("main");
     localStorage.removeItem("recover");
     const baseUrl =
       window.location.origin !== "null" ? window.location.origin : "http://localhost:4000";
