@@ -35,10 +35,10 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Message Display -->
-<div id="MessageDiv">
-<div v-for="(mes) in useState().successMessages" :key="'success-' + mes">{{ mes }}</div>
-  <div v-for="(error) in useState().errorMessages" :key="'error-' + error">{{ error }}</div>
-</div>
+    <div id="MessageDiv">
+        <div v-for="mes in useState().successMessages" class='alert alert-success' role='alert'> {{ mes }}</div>
+        <div v-for="error in useState().errorMessages" class='alert alert-danger' role='alert'> {{ error }}</div>
+    </div>
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
