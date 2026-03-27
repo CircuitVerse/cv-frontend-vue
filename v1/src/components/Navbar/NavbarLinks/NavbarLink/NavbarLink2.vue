@@ -22,7 +22,7 @@
               <v-list-item
                   class="menuListItem"
                   v-for="(listItem, index) in navbarItem.dropdownItems"
-                  :key="index"
+                  :key="listItem.itemid ?? index"
                   density="compact"
                   :id="listItem.itemid"
                   @click.stop="logixFunction[listItem.itemid]()"
