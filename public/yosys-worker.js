@@ -1,6 +1,4 @@
 ﻿// yosys-worker.js
-// Place in /public/yosys-worker.js
-
 'use strict';
 
 var runYosys = null;
