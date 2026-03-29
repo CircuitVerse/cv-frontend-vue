@@ -38,7 +38,7 @@ import { toRefs } from 'vue'
 var editor
 var verilogMode = false
 
-// ─── WASM worker state ──────────────────────────────────────────────────────
+// WASM worker state 
 var wasmWorker = null
 var wasmReadyPromise = null  // single shared promise — prevents duplicate polling
 
@@ -399,13 +399,13 @@ function extractTopModule(code) {
         moduleNames.push(match[1])
     }
 
-    // No modules found — let Yosys use -auto-top
+    // No modules found, so we let Yosys use -auto-top
     if (moduleNames.length === 0) return null
 
-    // Only one module — unambiguous
+    // Only one module 
     if (moduleNames.length === 1) return moduleNames[0]
 
-    // Multiple modules — find the one that is NOT instantiated inside another
+    // Multiple modules(find the one that is not instantiated inside another)
     const instantiated = new Set()
     moduleNames.forEach(name => {
         const instanceRe = new RegExp('\\b' + name + '\\s+\\w+\\s*\\(', 'g')
@@ -415,7 +415,7 @@ function extractTopModule(code) {
     const topCandidates = moduleNames.filter(n => !instantiated.has(n))
     if (topCandidates.length === 1) return topCandidates[0]
 
-    // Ambiguous — let Yosys decide with -auto-top
+    // Ambiguous->let Yosys decide with auto-top
     return null
 }
 
@@ -502,10 +502,7 @@ function doWasmSynthesis(verilogCode, scope) {
     })
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-//  LAYERED AUTO-LAYOUT ENGINE
-// ════════════════════════════════════════════════════════════════════════════
-
+//Layered Auto-Layout Engine
 function computeLayeredLayout(circuitData) {
     const devices    = circuitData.devices
     const connectors = circuitData.connectors
@@ -643,9 +640,7 @@ function maxNodesInAnyLayer(layerNodes, numLayers) {
     return max
 }
 
-// ════════════════════════════════════════════════════════════════════════════
 //  Yosys JSON → CircuitVerse device/connector format
-// ════════════════════════════════════════════════════════════════════════════
 
 function findTopModule(modules, preferred) {
     const names = Object.keys(modules)
@@ -657,7 +652,7 @@ function findTopModule(modules, preferred) {
     return names[names.length - 1]
 }
 
-// ── Emit a Constant device for Yosys literal bits ("0","1","x","z") ─────────
+// Emit a Constant device for Yosys literal bits ("0","1","x","z") 
 function emitConstantBit(bit, receiverId, receiverPort, devices, connectors) {
     if (typeof bit !== 'string') return false
     const constId = 'const_' + receiverId + '_' + receiverPort + '_' + bit
@@ -689,7 +684,7 @@ function convertYosysToDigitalJs(yosysJson, preferredTop) {
     const receivers = []  // { bit, id, port }
     let po = 0
 
-    // ── Ports ─────────────────────────────────────────────────────────────
+    // Ports 
     for (const pName in top.ports) {
         const p    = top.ports[pName]
         const id   = 'dev' + dc++
@@ -707,7 +702,7 @@ function convertYosysToDigitalJs(yosysJson, preferredTop) {
         }
     }
 
-    // ── Cell type map ──────────────────────────────────────────────────────
+    // Cell type map 
     const CMAP = {
         '$_AND_':     'And',      '$_OR_':      'Or',       '$_NOT_':    'Not',
         '$_NAND_':    'Nand',     '$_NOR_':     'Nor',      '$_XOR_':    'Xor',
@@ -730,7 +725,7 @@ function convertYosysToDigitalJs(yosysJson, preferredTop) {
     }
     const OMAP = { 'Y': 'out', 'Q': 'out' }
 
-    // ── Cells ──────────────────────────────────────────────────────────────
+    // Cells
     for (const cName in top.cells) {
         const cell = top.cells[cName]
         const type = CMAP[cell.type]
@@ -790,10 +785,7 @@ function convertYosysToDigitalJs(yosysJson, preferredTop) {
     return { name: topName, devices, connectors, subcircuits: {} }
 }
 
-// ════════════════════════════════════════════════════════════════════════════
 //  Render
-// ════════════════════════════════════════════════════════════════════════════
-
 function renderVerilogCircuit(circuitData, verilogCode, scope, source) {
     scope.initialize()
     for (var id of scope.verilogMetadata.subCircuitScopeIds)
