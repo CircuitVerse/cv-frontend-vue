@@ -23,3 +23,15 @@ public/simulatorvue/*
 *.njsproj
 *.sln
 *.sw?
+
+# Yosys WASM binaries - too large for git (use CDN or npm instead)
+public/yosys-bundle.js
+public/yosys-resources.tar
+public/yosys.core.wasm
+public/yosys.core2.wasm
+public/yosys.core3.wasm
+public/yosys.core4.wasm
+
+# Local test files
+test-y2d.cjs
+test-yowasp.mjs
