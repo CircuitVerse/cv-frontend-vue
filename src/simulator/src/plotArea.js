@@ -1,4 +1,5 @@
 import { simulationArea } from './simulationArea'
+import { useTimingDiagramPanelStore } from '#/store/timingDiagramPanelStore'
 import { convertors } from './utils'
 import { join, downloadDir } from '@tauri-apps/api/path';
 import { writeFile } from '@tauri-apps/plugin-fs';
@@ -186,7 +187,7 @@ const plotArea = {
     calibrate() {
         var recommendedUnit = Math.max(20, Math.round(this.unitUsed * 3))
         this.cycleUnit = recommendedUnit
-        $('#timing-diagram-units').val(recommendedUnit)
+        useTimingDiagramPanelStore().cycleUnits = recommendedUnit
         this.reset()
     },
     // Get current time in clock cycles
@@ -209,21 +210,18 @@ const plotArea = {
         var unitUsed = this.unitUsed
         var units = this.cycleUnit
         var utilization = Math.round((unitUsed * 10000) / units) / 100
-        $('#timing-diagram-log').html(
-            `Utilization: ${Math.round(unitUsed)} Units (${utilization}%)`
-        )
+        const _timingStore = useTimingDiagramPanelStore()
+        let logMsg = `Utilization: ${Math.round(unitUsed)} Units (${utilization}%)`
         if (utilization >= 90 || utilization <= 10) {
             var recommendedUnit = Math.max(20, Math.round(unitUsed * 3))
-            $('#timing-diagram-log').append(
-                ` Recommended Units: ${recommendedUnit}`
-            )
-            $('#timing-diagram-log').css('background-color', dangerColor)
+            logMsg += ` Recommended Units: ${recommendedUnit}`
+            _timingStore.setLog(logMsg, dangerColor)
             if (utilization >= 100) {
                 this.clear()
                 return
             }
         } else {
-            $('#timing-diagram-log').css('background-color', normalColor)
+            _timingStore.setLog(logMsg, normalColor)
         }
 
         var width = this.width
