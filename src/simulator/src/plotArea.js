@@ -203,6 +203,7 @@ const plotArea = {
         this.resize()
         var dangerColor = '#dc5656'
         var normalColor = '#42b983'
+        const _timingStore = useTimingDiagramPanelStore()
         this.unitUsed = Math.max(
             this.unitUsed,
             simulationArea.simulationQueue.time
@@ -210,7 +211,6 @@ const plotArea = {
         var unitUsed = this.unitUsed
         var units = this.cycleUnit
         var utilization = Math.round((unitUsed * 10000) / units) / 100
-        const _timingStore = useTimingDiagramPanelStore()
         let logMsg = `Utilization: ${Math.round(unitUsed)} Units (${utilization}%)`
         if (utilization >= 90 || utilization <= 10) {
             var recommendedUnit = Math.max(20, Math.round(unitUsed * 3))

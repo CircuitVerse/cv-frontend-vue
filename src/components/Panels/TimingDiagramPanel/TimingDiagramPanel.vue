@@ -28,6 +28,7 @@
                 />
                 {{ $t('simulator.panel_body.timing_diagram.units') }}
                 <span
+                    v-if="timingDiagramPanelStore.logMessage"
                     class="timing-diagram-log"
                     :style="{ backgroundColor: timingDiagramPanelStore.logColor }"
                 >

@@ -24,11 +24,6 @@ export const useTimingDiagramPanelStore = defineStore("timingDiagramPanelStore",
     logColor.value = color;
   };
 
-  const clearLog = () => {
-    logMessage.value = "";
-    logColor.value = "#42b983";
-  };
-
   return {
     buttons,
     plotRef,
@@ -37,6 +32,5 @@ export const useTimingDiagramPanelStore = defineStore("timingDiagramPanelStore",
     logMessage,
     logColor,
     setLog,
-    clearLog,
   };
 });
