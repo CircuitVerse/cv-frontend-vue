@@ -1,6 +1,5 @@
 <template>
    <div class="timing-diagram-panel draggable-panel" ref="timingDiagramPanelRef" id="time-Diagram">
-        <!-- Timing Diagram Panel -->
         <PanelHeader
             :header-title="$t('simulator.panel_header.timing_diagram')"
         />
@@ -14,11 +13,7 @@
                     :btn-class="button.class"
                     class="timing-diagram-panel-button"
                     :type="button.type"
-                    @click="
-                        () => {
-                            handleButtonClick(button.click)
-                        }
-                    "
+                    @click="() => { handleButtonClick(button.click) }"
                 />
                 {{ $t('simulator.panel_body.timing_diagram.one_cycle') }}
                 <input
@@ -26,13 +21,19 @@
                     type="number"
                     min="1"
                     autocomplete="off"
-                    :value="timingDiagramPanelStore.cycleUnits"
+                    v-model.number="timingDiagramPanelStore.cycleUnits"
                     @change="handleUnitsChange"
                     @paste="handleUnitsChange"
                     @keyup="handleUnitsChange"
                 />
                 {{ $t('simulator.panel_body.timing_diagram.units') }}
-                <span id="timing-diagram-log"></span>
+                <span
+                    v-if="timingDiagramPanelStore.logMessage"
+                    class="timing-diagram-log"
+                    :style="{ backgroundColor: timingDiagramPanelStore.logColor }"
+                >
+                    {{ timingDiagramPanelStore.logMessage }}
+                </span>
             </div>
             <div id="plot" ref="plotRef">
                 <canvas id="plotArea"></canvas>
@@ -52,7 +53,7 @@ import { useTimingDiagramPanelStore } from '#/store/timingDiagramPanelStore'
 import { setupPanelListeners, minimizePanel } from '#/simulator/src/ux'
 
 const layoutStore = useLayoutStore()
-const timingDiagramPanelStore = useTimingDiagramPanelStore();
+const timingDiagramPanelStore = useTimingDiagramPanelStore()
 
 onMounted(() => {
     layoutStore.timingDiagramPanelRef = timingDiagramPanelStore.timingDiagramPanelRef
@@ -65,6 +66,13 @@ onMounted(() => {
 .timing-diagram-panel-button {
     margin-right: 5px;
 }
-</style>
 
-<!-- TODO: input element to vue, remove remaining dom manipulation, header component -->
+.timing-diagram-log {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #fff;
+    margin-left: 6px;
+}
+</style>
