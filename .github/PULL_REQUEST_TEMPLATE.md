@@ -58,17 +58,6 @@ This helps reviewers understand your thought process and ensures you understand 
 
 ---
 
-## Checklist before requesting a review
-- [ ] I have added proper PR title and linked to the issue
-- [ ] I have performed a self-review of my code
-- [ ] **I can explain the purpose of every function, class, and logic block I added**
-- [ ] I understand why my changes work and have tested them thoroughly
-- [ ] I have considered potential edge cases and how my code handles them
-- [ ] If it is a core feature, I have added thorough tests
-- [ ] My code follows the project's style guidelines and conventions
-
----
-
 
 
 Note: Please check **Allow edits from maintainers** if you would like us to assist in the PR.

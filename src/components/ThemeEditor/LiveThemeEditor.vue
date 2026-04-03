@@ -76,32 +76,59 @@ function normalize(v: string) {
 
 function isColorString(v: string) {
   if (!v) return false
-  // basic checks for hex, rgb, rgba
-  return /^#/.test(v) || /^rgb/.test(v)
+  // checks for hex, rgb, rgba, hsl, hsla
+  return /^#/.test(v) || /^rgb/.test(v) || /^hsl/.test(v)
+}
+
+function parseColor(v: string) {
+  let r = 0, g = 0, b = 0, a = 1
+  try {
+    const normalized = v.trim().toLowerCase()
+    if (normalized.startsWith("#")) {
+      let hex = normalized.replace("#", "")
+      if (hex.length === 3 || hex.length === 4) {
+        hex = Array.from(hex).map(c => c + c).join("")
+      }
+      if (hex.length >= 6) {
+        r = parseInt(hex.substring(0, 2), 16)
+        g = parseInt(hex.substring(2, 4), 16)
+        b = parseInt(hex.substring(4, 6), 16)
+        if (hex.length === 8) a = parseInt(hex.substring(6, 8), 16) / 255
+      }
+    } else if (normalized.startsWith("rgb")) {
+      const parts = normalized.replace(/rgba?\(|\)/g, "").split(",").map(s => parseFloat(s.trim()))
+      if (parts.length >= 3) {
+        r = parts[0]; g = parts[1]; b = parts[2]
+        if (parts.length >= 4) a = parts[3]
+      }
+    } else if (normalized.startsWith("hsl")) {
+      const match = normalized.match(/hsla?\(([^)]+)\)/)
+      if (match) {
+        const parts = match[1].split(",").map(s => parseFloat(s.trim()))
+        if (parts.length >= 3) {
+          const [h, s, l] = parts
+          const rgb = hslToRgb(h, s, l)
+          r = rgb[0]; g = rgb[1]; b = rgb[2]
+          if (parts.length >= 4) a = parts[3]
+        }
+      }
+    }
+  } catch (e) {}
+  return { r, g, b, a }
 }
 
 function toHex(v: string) {
-  // try to normalize hex or rgb(...) to 6-digit hex if possible; else return v
   try {
-    const normalized = v.trim()
-    // Handle 6-digit hex
-    if (/^#[0-9a-fA-F]{6}$/.test(normalized)) return normalized
-    // Handle 8-digit hex with alpha
-    if (/^#[0-9a-fA-F]{8}$/.test(normalized)) return normalized
-    // Handle 4-digit hex with alpha (#rgba)
-    if (/^#[0-9a-fA-F]{4}$/.test(normalized)) {
-      return "#" + Array.from(normalized.slice(1)).map(c => c + c).join("")
-    }
-    // Handle 3-digit hex (#rgb)
-    if (/^#[0-9a-fA-F]{3}$/.test(normalized)) {
-      return "#" + Array.from(normalized.slice(1)).map(c => c + c).join("")
-    }
-    if (/^rgb/.test(normalized)) {
-      const nums = normalized.replace(/rgba?\(|\)/g, "").split(",").map(s => parseInt(s.trim(), 10))
-      return "#" + nums.slice(0, 3).map(n => n.toString(16).padStart(2, "0")).join("")
-    }
-  } catch (e) {}
-  return v
+    if (!v) return v
+    const parsed = parseColor(v)
+    // Composite over white background for color input compatibility
+    const r = Math.round((1 - parsed.a) * 255 + parsed.a * parsed.r)
+    const g = Math.round((1 - parsed.a) * 255 + parsed.a * parsed.g)
+    const b = Math.round((1 - parsed.a) * 255 + parsed.a * parsed.b)
+    return "#" + [r, g, b].map(n => Math.max(0, Math.min(255, n)).toString(16).padStart(2, "0")).join("")
+  } catch (e) {
+    return v
+  }
 }
 
 function isColor(v: string) {
@@ -181,32 +208,7 @@ function hslToRgb(h: number, s: number, l: number): [number, number, number] {
 
 function luminance(hexOrRgb: string) {
   try {
-    let r = 0, g = 0, b = 0
-    const normalized = hexOrRgb.trim()
-    if (normalized.startsWith("#")) {
-      let hex = normalized.replace("#", "")
-      // Handle 3-digit hex: expand by duplicating each character
-      if (hex.length === 3) {
-        hex = Array.from(hex).map(c => c + c).join("")
-      }
-      r = parseInt(hex.substring(0, 2), 16)
-      g = parseInt(hex.substring(2, 4), 16)
-      b = parseInt(hex.substring(4, 6), 16)
-    } else if (normalized.startsWith("rgb")) {
-      const nums = normalized.replace(/rgba?\(|\)/g, "").split(",").map(s => parseFloat(s))
-      r = nums[0]; g = nums[1]; b = nums[2]
-    } else if (normalized.startsWith("hsl")) {
-      // Handle HSL/HSLA: hsla(h, s%, l%, a) or hsl(h, s%, l%)
-      const match = normalized.match(/hsla?\(([^)]+)\)/)
-      if (match) {
-        const parts = match[1].split(",").map(s => parseFloat(s.trim()))
-        if (parts.length >= 3) {
-          const [h, s, l] = parts
-          const [rgb_r, rgb_g, rgb_b] = hslToRgb(h, s, l)
-          r = rgb_r; g = rgb_g; b = rgb_b
-        }
-      }
-    }
+    const { r, g, b } = parseColor(hexOrRgb)
     const Rs = r / 255; const Gs = g / 255; const Bs = b / 255
     const R = Rs <= 0.03928 ? Rs / 12.92 : Math.pow((Rs + 0.055) / 1.055, 2.4)
     const G = Gs <= 0.03928 ? Gs / 12.92 : Math.pow((Gs + 0.055) / 1.055, 2.4)
