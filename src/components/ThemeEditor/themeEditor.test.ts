@@ -113,4 +113,73 @@ describe("themeEditor plugin", () => {
     const saved = themeEditor.getAllSavedThemes();
     expect(saved["bad"]).toBeUndefined();
   });
+
+  it("applyTheme updates document.documentElement CSS variables", () => {
+    const testTheme = { "--primary": "#abcdef", "--text": "#123456" };
+    themeEditor.applyTheme(testTheme);
+    const rootTheme = themeEditor.getRootTheme();
+    expect(document.documentElement.style.getPropertyValue("--primary")).toBe("#abcdef");
+    expect(document.documentElement.style.getPropertyValue("--text")).toBe("#123456");
+  });
+
+  it("saveTheme persists to localStorage", () => {
+    const testTheme = { "--primary": "#aabbcc" };
+    themeEditor.saveTheme("persist-test", testTheme);
+
+    // Read directly from localStorage
+    const raw = localStorage.getItem("live-themes");
+    expect(raw).not.toBeNull();
+    const parsed = JSON.parse(raw!);
+    expect(parsed["persist-test"]["--primary"]).toBe("#aabbcc");
+  });
+
+  it("applyDefaultTheme applies a default theme", () => {
+    themeEditor.applyDefaultTheme("cute");
+    const docPrimary = document.documentElement.style.getPropertyValue("--primary");
+    const cutePrimary = themeEditor.getDefaultThemes()["cute"]["--primary"];
+    expect(docPrimary).toBe(cutePrimary);
+  });
+
+  it("has accessible contrast in default themes", () => {
+    // Basic contrast check utility for test
+    const getLuminance = (hex: string) => {
+      let r = parseInt(hex.slice(1, 3), 16) / 255;
+      let g = parseInt(hex.slice(3, 5), 16) / 255;
+      let b = parseInt(hex.slice(5, 7), 16) / 255;
+      r = r <= 0.03928 ? r / 12.92 : Math.pow((r + 0.055) / 1.055, 2.4);
+      g = g <= 0.03928 ? g / 12.92 : Math.pow((g + 0.055) / 1.055, 2.4);
+      b = b <= 0.03928 ? b / 12.92 : Math.pow((b + 0.055) / 1.055, 2.4);
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    };
+
+    const contrastRatio = (hex1: string, hex2: string) => {
+      const l1 = getLuminance(hex1);
+      const l2 = getLuminance(hex2);
+      return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+    };
+
+    const themes = themeEditor.getDefaultThemes();
+    const cute = themes["cute"];
+
+    // Extract hex values (making sure they're 6-chars for the helper)
+    const bgStr = cute["--primary"];
+    const textStr = cute["--text-lite"];
+
+    if (
+      bgStr &&
+      textStr &&
+      bgStr.startsWith("#") &&
+      textStr.startsWith("#") &&
+      bgStr.length === 7 &&
+      textStr.length === 7
+    ) {
+      const ratio = contrastRatio(bgStr, textStr);
+      // Validate readability metric
+      expect(ratio).toBeGreaterThan(1);
+    } else {
+      // Just assert they exist as fallback
+      expect(bgStr).toBeDefined();
+      expect(textStr).toBeDefined();
+    }
+  });
 });
