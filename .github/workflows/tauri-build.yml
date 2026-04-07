@@ -22,6 +22,7 @@ jobs:
             args: ''
           - platform: 'windows-latest'
             args: ''
+          
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -51,12 +52,14 @@ jobs:
 
       - name: Install Frontend Dependencies
         run: npm install
+        working-directory: ./src  
 
       - name: Build Frontend (Vue)
         # Using npx ensures these tools work on Windows, Mac, and Linux
         run: |
           npx cross-env DESKTOP_MODE=true npm run build
           node -e "const fs = require('fs'); const src='./dist/index-cv.html'; const dest='./dist/index.html'; if (fs.existsSync(src)) { fs.copyFileSync(src, dest); console.log('Synced index files'); } else { console.log('index-cv.html not found, skipping sync'); }"
+        working-directory: ./src
 
       - name: Build Tauri App
         uses: tauri-apps/tauri-action@v0
