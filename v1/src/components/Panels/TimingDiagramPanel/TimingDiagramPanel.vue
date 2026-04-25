@@ -9,7 +9,7 @@
                 <TimingDiagramButtons
                     v-for="button in timingDiagramPanelStore.buttons"
                     :key="button.title"
-                    :title="button.title"
+                    :title="$t('simulator.tooltip.' + button.title.toLowerCase().replace(/ /g, '_').replace(/-/g, '_'))"
                     :icon="button.icon"
                     :btn-class="button.class"
                     class="timing-diagram-panel-button"

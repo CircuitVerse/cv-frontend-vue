@@ -5,7 +5,7 @@
     >
         <v-card class="messageBoxContent">
             <v-card-text>
-                <p class="dialogHeader">Export Verilog</p>
+                <p class="dialogHeader">{{ $t('simulator.export_verilog.heading') || $t('simulator.nav.tools.export_verilog') }}</p>
                 <v-btn
                     size="x-small"
                     icon
@@ -16,7 +16,7 @@
                 >
                     <v-icon>mdi-close</v-icon>
                 </v-btn>
-                <div id="verilog-export-code-window-div" title="Export Verilog">
+                <div id="verilog-export-code-window-div" :title="$t('simulator.nav.tools.export_verilog')">
                     <Codemirror
                         id="verilog-export-code-window"
                         :value="(code = verilog.exportVerilog())"
@@ -29,13 +29,13 @@
             </v-card-text>
             <v-card-actions>
                 <v-btn class="messageBtn" block @click="downloadVerilog()">
-                    Download Verilog File
+                    {{ $t('simulator.export_verilog.download') }}
                 </v-btn>
                 <v-btn class="messageBtn" block @click="copyClipboard()">
-                    Copy to Clipboard
+                    {{ $t('simulator.export_verilog.copy') }}
                 </v-btn>
                 <v-btn class="messageBtn" block @click="edaPlayground()">
-                    Try in EDA Playground
+                    {{ $t('simulator.export_verilog.eda_playground') }}
                 </v-btn>
             </v-card-actions>
         </v-card>
@@ -45,6 +45,8 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
 import { useState } from '#/store/SimulatorStore/state'
+import { useI18n } from 'vue-i18n'
+const { t } = useI18n()
 const SimulatorState = useState()
 import Codemirror from 'codemirror-editor-vue3'
 
@@ -87,7 +89,7 @@ function downloadVerilog() {
 }
 function copyClipboard() {
     copyToClipboard(code.value)
-    showMessage('Code has been copied')
+    showMessage(t('simulator.export_verilog.code_copied'))
     SimulatorState.dialogBox.exportverilog_dialog = false
 }
 function edaPlayground() {

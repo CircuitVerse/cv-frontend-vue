@@ -15,6 +15,9 @@
             >
                 {{ projectStore.getProjectName }}
             </span>
+        </div>
+        <div class="navbar-right-elements" v-if="!simulatorMobileStore.showMobileView">
+            <LanguageSelector />
             <UserMenu class="useMenuBtn" />
         </div>
     </nav>
@@ -30,6 +33,7 @@ import navbarData from '#/assets/constants/Navbar/NAVBAR_DATA.json'
 
 import Logo from '@/Logo/Logo.vue'
 import UserMenu from './User/UserMenu.vue'
+import LanguageSelector from './LanguageSelector/LanguageSelector.vue'
 import { ref } from 'vue'
 import { useProjectStore } from '#/store/projectStore'
 
@@ -42,6 +46,13 @@ const simulatorMobileStore = useSimulatorMobileStore()
 @import './Navbar.css';
 
 .useMenuBtn {
-    margin: 0 2rem 0 auto;
+    margin: 0;
+}
+
+.navbar-right-elements {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    margin-right: 2rem;
 }
 </style>

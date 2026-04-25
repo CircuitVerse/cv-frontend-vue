@@ -5,15 +5,15 @@
             <div class="">
                 <v-btn
                     id="decreaseLayoutWidth"
-                    title="Decrease Width"
+                    :title="$t('simulator.tooltip.decrease_width')"
                     variant="text"
                     icon="mdi-minus"
                     @click.prevent="layoutFunction('decreaseLayoutWidth')"
                 />
-                <span>Width</span>
+                <span>{{ $t('simulator.panel_body.layout.width') }}</span>
                 <v-btn
                     id="increaseLayoutWidth"
-                    title="Increase Width"
+                    :title="$t('simulator.tooltip.increase_width')"
                     variant="text"
                     icon="mdi-plus"
                     @click.prevent="layoutFunction('increaseLayoutWidth')"
@@ -22,22 +22,22 @@
             <div class="">
                 <v-btn
                     id="decreaseLayoutHeight"
-                    title="Decrease Height"
+                    :title="$t('simulator.tooltip.decrease_height')"
                     variant="text"
                     icon="mdi-minus"
                     @click.prevent="layoutFunction('decreaseLayoutHeight')"
                 />
-                <span>Height</span>
+                <span>{{ $t('simulator.panel_body.layout.height') }}</span>
                 <v-btn
                     id="increaseLayoutHeight"
-                    title="Increase Height"
+                    :title="$t('simulator.tooltip.increase_height')"
                     variant="text"
                     icon="mdi-plus"
                     @click.prevent="layoutFunction('increaseLayoutHeight')"
                 />
             </div>
             <div class="">
-                <span>Reset all nodes:</span>
+                <span>{{ $t('simulator.panel_body.layout.reset_all_nodes') }}</span>
                 <v-btn
                     id="layoutResetNodes"
                     variant="text"
@@ -46,7 +46,7 @@
                 />
             </div>
             <div class="layout-title">
-                <span>Title</span>
+                <span>{{ $t('simulator.panel_body.layout.title') }}</span>
                 <div class="layout--btn-group">
                     <v-btn
                         id="layoutTitleUp"
@@ -80,7 +80,7 @@
                 </div>
             </div>
             <div class="layout-title--enable">
-                <span>Title Enabled:</span>
+                <span>{{ $t('simulator.panel_body.layout.title_enabled') }}</span>
                 <label class="switch">
                     <input
                         id="toggleLayoutTitle"
@@ -96,7 +96,7 @@
                     class="Layout-btn custom-btn--primary"
                     @click.prevent="layoutFunction('saveLayout')"
                 >
-                    Save
+                    {{ $t('simulator.panel_body.layout.save') }}
                 </button>
 
                 <button
@@ -104,7 +104,7 @@
                     class="Layout-btn custom-btn--tertiary"
                     @click.prevent="layoutFunction('cancelLayout')"
                 >
-                    Cancel
+                    {{ $t('simulator.panel_body.layout.cancel') }}
                 </button>
             </div>
         </div>

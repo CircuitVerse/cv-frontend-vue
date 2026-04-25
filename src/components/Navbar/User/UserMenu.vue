@@ -6,7 +6,7 @@
         location="right"
         class="userMenu"
         temporary
-        width="270"
+        width="290"
       >
         <div class="close-parent">
           <v-btn
@@ -32,20 +32,6 @@
           color="white"
         ></v-list-item>
 
-        <v-list-item>
-          <v-select
-            :items="availableLocale"
-            label="Locale"
-            v-model="locale"
-            density="compact"
-            variant="outlined"
-            hide-details
-            single-line
-            color="white"
-            bg-color="rgba(255, 255, 255, 0.1)"
-          ></v-select>
-        </v-list-item>
-
         <v-divider class="my-2 bg-white"></v-divider>
 
         <!-- Authentication Section -->
@@ -54,7 +40,7 @@
             <v-list-item
               @click.stop="showAuthModal(true)"
               prepend-icon="mdi-login"
-              title="Sign In"
+              :title="$t('simulator.nav.sign_in')"
               value="sign_in"
               variant="text"
               color="white"
@@ -62,7 +48,7 @@
             <v-list-item
               @click.stop="showAuthModal(false)"
               prepend-icon="mdi-account-plus"
-              title="Register"
+              :title="$t('simulator.nav.user_dropdown.register')"
               value="register"
               variant="text"
               color="white"
@@ -76,7 +62,7 @@
             <v-list-item
               @click.stop="dashboard"
               prepend-icon="mdi-view-dashboard-outline"
-              title="Dashboard"
+              :title="$t('simulator.nav.user_dropdown.dashboard')"
               value="dashboard"
               variant="text"
               color="white"
@@ -84,7 +70,7 @@
             <v-list-item
               @click.stop="my_groups"
               prepend-icon="mdi-account-group-outline"
-              title="My Groups"
+              :title="$t('simulator.nav.user_dropdown.my_groups')"
               value="my_groups"
               variant="text"
               color="white"
@@ -92,7 +78,7 @@
             <v-list-item
               @click.stop="notifications"
               prepend-icon="mdi-bell-outline"
-              title="Notifications"
+              :title="$t('simulator.nav.user_dropdown.notifications')"
               value="notifications"
               variant="text"
               color="white"
@@ -108,7 +94,7 @@
           <v-list-item
             @click.stop="signout"
             prepend-icon="mdi-logout"
-            title="Logout"
+            :title="$t('simulator.nav.user_dropdown.logout')"
             value="logout"
             variant="text"
             color="white"
@@ -146,7 +132,7 @@
       <v-card class="auth-modal" style="background-color: white">
         <v-toolbar color="#43b984">
           <v-toolbar-title class="text-white">
-            {{ isLoginMode ? 'Sign In' : 'Register' }}
+            {{ isLoginMode ? $t('simulator.nav.sign_in') : $t('simulator.nav.user_dropdown.register') }}
           </v-toolbar-title>
           <v-spacer></v-spacer>
           <v-btn icon @click="authModal = false" color="white">
@@ -159,7 +145,7 @@
             <v-text-field 
               v-if="!isLoginMode" 
               v-model="name" 
-              label="Name" 
+              :label="$t('simulator.nav.user_dropdown.auth_modal.name')" 
               type="text"
               :rules="[requiredRule]"
               variant="outlined"
@@ -169,7 +155,7 @@
 
             <v-text-field
               v-model="email"
-              label="Email"
+              :label="$t('simulator.nav.user_dropdown.auth_modal.email')"
               type="email"
               :rules="[requiredRule, emailRule]"
               variant="outlined"
@@ -179,7 +165,7 @@
 
             <v-text-field
               v-model="password"
-              label="Password"
+              :label="$t('simulator.nav.user_dropdown.auth_modal.password')"
               type="password"
               :rules="[requiredRule, passwordRule]"
               variant="outlined"
@@ -197,7 +183,7 @@
                 block
                 class="mb-2"
               >
-                {{ isLoginMode ? 'Sign In' : 'Register' }}
+                {{ isLoginMode ? $t('simulator.nav.sign_in') : $t('simulator.nav.user_dropdown.register') }}
               </v-btn>
 
               <v-btn
@@ -206,7 +192,7 @@
                 size="small"
                 color="#43b984"
               >
-                {{ isLoginMode ? 'Need an account? Register' : 'Already have an account? Sign In' }}
+                {{ isLoginMode ? $t('simulator.nav.user_dropdown.auth_modal.need_account') : $t('simulator.nav.user_dropdown.auth_modal.already_have_account') }}
               </v-btn>
             </div>
           </v-form>
@@ -251,15 +237,15 @@ const isLoginMode = ref(true)
 const email = ref('')
 const password = ref('')
 const name = ref('')
-const { locale } = useI18n()
+const { t, locale } = useI18n()
 const isLoading = ref(false)
 const authForm = ref()
 const unreadCount = ref(0)
 
 // Form validation rules
-const requiredRule = (v: string) => !!v || 'This field is required'
-const emailRule = (v: string) => /.+@.+\..+/.test(v) || 'E-mail must be valid'
-const passwordRule = (v: string) => v.length >= 6 || 'Password must be at least 6 characters'
+const requiredRule = (v: string) => !!v || t('simulator.nav.user_dropdown.auth_modal.field_required')
+const emailRule = (v: string) => /.+@.+\..+/.test(v) || t('simulator.nav.user_dropdown.auth_modal.email_invalid')
+const passwordRule = (v: string) => v.length >= 6 || t('simulator.nav.user_dropdown.auth_modal.password_min_length')
 
 // Snackbar state
 const snackbar = ref({
@@ -310,7 +296,7 @@ async function handleAuthSubmit() {
       try {
         errorData = await response.json()
       } catch (e) {
-        errorData = { message: 'An error occurred' }
+        errorData = { message: t('simulator.nav.user_dropdown.auth_modal.auth_failed') }
       }
       handleLoginError(response.status, errorData)
       return
@@ -324,12 +310,12 @@ async function handleAuthSubmit() {
     
     authStore.setToken(data.token)
     showSnackbar(
-      isLoginMode.value ? 'Login successful!' : 'Registration successful!',
+      isLoginMode.value ? t('simulator.nav.user_dropdown.auth_modal.login_success') : t('simulator.nav.user_dropdown.auth_modal.registration_success'),
       'success'
     )
     authModal.value = false
   } catch (error) {
-    showSnackbar(`Authentication failed: ${error.message}`, 'error')
+    showSnackbar(`${t('simulator.nav.user_dropdown.auth_modal.auth_failed')}: ${error.message}`, 'error')
   } finally {
     isLoading.value = false
   }
@@ -338,19 +324,19 @@ async function handleAuthSubmit() {
 function handleLoginError(status: number, errorData: any) {
   switch (status) {
     case 401:
-      showSnackbar('Invalid credentials', 'error')
+      showSnackbar(t('simulator.nav.user_dropdown.auth_modal.invalid_credentials'), 'error')
       break
     case 404:
-      showSnackbar('User not found', 'error')
+      showSnackbar(t('simulator.nav.user_dropdown.auth_modal.user_not_found'), 'error')
       break
     case 409:
-      showSnackbar('User already exists', 'error')
+      showSnackbar(t('simulator.nav.user_dropdown.auth_modal.user_already_exists'), 'error')
       break
     case 422:
-      showSnackbar('Invalid input data', 'error')
+      showSnackbar(t('simulator.nav.user_dropdown.auth_modal.invalid_input'), 'error')
       break
     default:
-      showSnackbar(errorData.message || 'Authentication failed', 'error')
+      showSnackbar(errorData.message || t('simulator.nav.user_dropdown.auth_modal.auth_failed'), 'error')
   }
 }
 
@@ -376,6 +362,6 @@ function notifications() {
 
 function signout() {
   authStore.signOut()
-  showSnackbar('You have been logged out', 'info')
+  showSnackbar(t('simulator.nav.user_dropdown.auth_modal.logged_out'), 'info')
 }
 </script>
