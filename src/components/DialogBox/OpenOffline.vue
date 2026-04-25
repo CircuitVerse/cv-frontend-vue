@@ -5,7 +5,7 @@
     >
         <v-card class="messageBoxContent">
             <v-card-text>
-                <p class="dialogHeader">Open Offline</p>
+                <p class="dialogHeader">{{ $t('simulator.nav.project.open_offline') }}</p>
                 <v-btn
                     size="x-small"
                     icon
@@ -16,7 +16,7 @@
                 >
                     <v-icon>mdi-close</v-icon>
                 </v-btn>
-                <div id="openProjectDialog" title="Open Project">
+                <div id="openProjectDialog" :title="$t('simulator.panel_header.open_project')">
                     <label
                         v-for="(projectName, projectId) in projectList"
                         :key="projectId"
@@ -35,8 +35,7 @@
                         ></i>
                     </label>
                     <p v-if="JSON.stringify(projectList) == '{}'">
-                        Looks like no circuit has been saved yet. Create a new
-                        one and save it!
+                        {{ $t('simulator.open_offline.no_circuits') }}
                     </p>
                 </div>
             </v-card-text>
@@ -47,7 +46,7 @@
                     block
                     @click="openProjectOffline()"
                 >
-                    open project
+                    {{ $t('simulator.open_offline.open_project') }}
                 </v-btn>
                 <v-btn
                     v-else
@@ -55,7 +54,7 @@
                     block
                     @click.stop="OpenImportProjectDialog"
                 >
-                    open CV file
+                    {{ $t('simulator.open_offline.open_cv_file') }}
                 </v-btn>
             </v-card-actions>
         </v-card>

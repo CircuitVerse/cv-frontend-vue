@@ -48,7 +48,7 @@
             :property-value="
                 obj.subcircuitMetadata.labelDirection || obj.labelDirection
             "
-            property-input-name="Label Direction: "
+            :property-input-name="$t('simulator.panel_body.element_properties.label_direction') + ': '"
             property-select-id="subcircuitLabelDirection"
         />
     </div>

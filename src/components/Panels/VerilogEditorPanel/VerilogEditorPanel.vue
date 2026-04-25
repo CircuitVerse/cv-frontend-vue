@@ -29,7 +29,7 @@
                     @click="toggleTerminal"
                 >
                     <i class="fas fa-terminal"></i>
-                    {{ verilogStore.isTerminalVisible ? 'Hide' : 'Show' }} Terminal
+                    {{ verilogStore.isTerminalVisible ? $t('simulator.panel_body.verilog_module.hide_terminal') : $t('simulator.panel_body.verilog_module.show_terminal') }}
                 </button>
                 <div id="verilogOutput">
                     {{

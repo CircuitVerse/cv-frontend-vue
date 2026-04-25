@@ -45,9 +45,6 @@
     <!-- Verilog Editor Panel -->
     <VerilogEditorPanel v-if="!simulatorMobileStore.showMobileView" />
 
-    <div id="code-window" class="code-window">
-        <textarea id="codeTextArea"></textarea>
-    </div>
     <VerilogEditorPanelMobile v-if="simulatorMobileStore.showMobileView && simulatorMobileStore.showVerilogPanel" />
     <!-- --------------------------------------------------------------------------------------------- -->
 

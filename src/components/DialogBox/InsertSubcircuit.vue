@@ -5,7 +5,7 @@
     >
         <v-card class="messageBoxContent">
             <v-card-text>
-                <p class="dialogHeader">Insert Subcircuit</p>
+                <p class="dialogHeader">{{ $t('simulator.insert_subcircuit.insert_btn') }}</p>
                 <v-btn
                     size="x-small"
                     icon
@@ -19,7 +19,7 @@
                 <div
                     id="insertSubcircuitDialog"
                     class="subcircuitdialog"
-                    title="Insert SubCircuit"
+                    :title="$t('simulator.insert_subcircuit.insert_btn')"
                 >
                     <template
                         v-for="(value, scopeId) in scopeList"
@@ -39,8 +39,7 @@
                         </label>
                     </template>
                     <p v-if="flag == true">
-                        Looks like there are no other circuits which doesn't
-                        have this circuit as a dependency. Create a new one!
+                        {{ $t('simulator.insert_subcircuit.no_circuits') }}
                     </p>
                 </div>
             </v-card-text>
@@ -51,10 +50,10 @@
                     block
                     @click="insertSubcircuit()"
                 >
-                    Insert SubCircuit
+                    {{ $t('simulator.insert_subcircuit.insert_btn') }}
                 </v-btn>
                 <v-btn v-else class="messageBtn" block @click="newCircuit">
-                    New Circuit +
+                    {{ $t('simulator.insert_subcircuit.new_circuit_btn') }}
                 </v-btn>
             </v-card-actions>
         </v-card>

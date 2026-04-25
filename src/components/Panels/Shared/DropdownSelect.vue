@@ -12,7 +12,7 @@
                 :key="index"
                 :value="arrayItem"
             >
-                {{ arrayItem }}
+                {{ $t('simulator.directions.' + (arrayItem as string).toLowerCase()) }}
             </option>
         </select>
     </p>

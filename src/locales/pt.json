@@ -1,0 +1,325 @@
+{
+    "simulator": {
+        "directions": {
+            "right": "DIREITA",
+            "down": "BAIXO",
+            "left": "ESQUERDA",
+            "up": "CIMA"
+        },
+        "save_online": "Salvar Online",
+        "save_offline": "Salvar Offline",
+        "preview_circuit": "Visualizar Circuito",
+        "export_verilog": "Exportar Verilog",
+        "insert_subcircuit": "Inserir Subcircuito",
+        "undo": "Desfazer",
+        "report_issue": "Relatar um problema",
+        "restricted_elements_used": "Elementos restritos usados:",
+        "made_with_circuitverse": "Feito com CircuitVerse",
+        "layout": {
+            "layout_elements": "Elementos de Layout",
+            "no_elements_available": "Nenhum elemento de layout disponível"
+        },
+        "unlabeled": "Sem rótulo",
+        "embed": {
+            "full_screen": "Tela Cheia",
+            "time": "Tempo",
+            "clock": "Relógio"
+        },
+        "nav": {
+            "untitled_project": "Sem título",
+            "sign_out": "Sair",
+            "sign_in": "Entrar",
+            "user_dropdown": {
+                "dashboard": "Painel",
+                "my_groups": "Meus Grupos",
+                "notifications": "Notificações",
+                "locale": "Idioma",
+                "register": "Registrar",
+                "logout": "Sair",
+                "auth_modal": {
+                    "name": "Nome",
+                    "email": "E-mail",
+                    "password": "Senha",
+                    "need_account": "Precisa de uma conta? Registre-se",
+                    "already_have_account": "Já tem uma conta? Entrar",
+                    "field_required": "Este campo é obrigatório",
+                    "email_invalid": "E-mail deve ser válido",
+                    "password_min_length": "Senha deve ter pelo menos 6 caracteres",
+                    "login_success": "Login realizado com sucesso!",
+                    "registration_success": "Registro realizado com sucesso!",
+                    "auth_failed": "Falha na autenticação",
+                    "invalid_credentials": "Credenciais inválidas",
+                    "user_not_found": "Usuário não encontrado",
+                    "user_already_exists": "Usuário já existe",
+                    "invalid_input": "Dados de entrada inválidos",
+                    "logged_out": "Você saiu da conta"
+                }
+            },
+            "project": {
+                "heading": "Projeto",
+                "project_page": "Página do Projeto",
+                "new_project": "Novo Projeto",
+                "open_offline": "Abrir Offline",
+                "export_as_file": "Exportar como arquivo",
+                "import_project": "Importar Projeto",
+                "save_online": "Salvar Online",
+                "save_offline": "Salvar Offline",
+                "preview_circuit": "Visualizar Circuito",
+                "clear_project": "Limpar Projeto",
+                "recover_project": "Recuperar Projeto",
+                "view_previous_ui": "Ver UI anterior"
+            },
+            "circuit": {
+                "heading": "Circuito",
+                "new_circuit": "Novo Circuito +",
+                "insert_subcircuit": "Inserir Subcircuito",
+                "new_verilog_module_html": "Novo Módulo Verilog"
+            },
+            "tools": {
+                "heading": "Ferramentas",
+                "combinational_analysis_html": "Análise\nCombinatória",
+                "hex_bin_dec_converter_html": "Conversor\nHex-Bin-Dec",
+                "download_image": "Baixar Imagem",
+                "themes": "Temas",
+                "export_verilog": "Exportar Verilog",
+                "custom_shortcut": "Atalho Personalizado"
+            },
+            "help": {
+                "heading": "Ajuda",
+                "tutorial_guide": "Guia Tutorial",
+                "user_manual": "Manual do Usuário",
+                "learn_digital_logic": "Aprenda Lógica Digital",
+                "discussion_forum": "Fórum de Discussão"
+            }
+        },
+        "panel_header": {
+            "circuit_elements": "Elementos do Circuito",
+            "layout_elements": "Elementos de Layout",
+            "timing_diagram": "Diagrama de Tempo",
+            "verilog_module": "Módulo Verilog",
+            "properties": "Propriedades",
+            "layout": "Layout",
+            "keybinding_preference": "Preferência de Atalhos",
+            "render_image": "Renderizar Imagem",
+            "select_theme": "Selecionar Tema",
+            "boolean_logic_table": "Tabela de Lógica Booleana",
+            "open_project": "Abrir Projeto",
+            "bit_converter": "Conversor Dec-Bin-Hex"
+        },
+        "panel_body": {
+            "circuit_elements": {
+                "search": "Pesquisar...",
+                "search_result": "Nenhum elemento encontrado...",
+                "expansion_panel_title": {
+                    "Input": "Entrada",
+                    "Output": "Saída",
+                    "Gates": "Portas",
+                    "Decoders & Plexers": "Decodificadores & Plexers",
+                    "Sequential Elements": "Elementos Sequenciais",
+                    "Annotation": "Anotação",
+                    "Misc": "Diversos"
+                }
+            },
+            "timing_diagram": {
+                "one_cycle": "1 Ciclo =",
+                "units": "Unidades"
+            },
+            "verilog_module": {
+                "reset_code": "Redefinir Código",
+                "save_code": "Salvar Código",
+                "module_in_experiment_notice": "Este é um módulo experimental. O código não é salvo a menos que o botão \"Salvar Código\" seja clicado.",
+                "apply_themes": "Aplicar Temas",
+                "select_theme": "Selecione um tema:",
+                "hide_terminal": "Esconder Terminal",
+                "show_terminal": "Mostrar Terminal"
+            },
+            "themes": {
+                "apply_theme": "Aplicar Tema",
+                "custom_theme": "Tema Personalizado",
+                "import_theme": "Importar Tema",
+                "export_theme": "Exportar Tema",
+                "file_not_supported": "Arquivo não suportado!",
+                "names": {
+                    "Default Theme": "Tema Padrão",
+                    "Night Sky": "Céu Noturno",
+                    "Lite-born Spring": "Primavera Lite-born",
+                    "G&W": "G&W",
+                    "High Contrast": "Alto Contraste",
+                    "Color Blind": "Daltônico",
+                    "Custom Theme": "Tema Personalizado"
+                }
+            },
+            "layout": {
+                "width": "Largura",
+                "height": "Altura",
+                "reset_all_nodes": "Redefinir todos os nós:",
+                "title": "Título",
+                "title_enabled": "Título Habilitado:",
+                "save": "Salvar",
+                "cancel": "Cancelar"
+            },
+            "render_image": {
+                "full_circuit_view": "Visualização Completa do Circuito",
+                "current_view": "Visualização Atual",
+                "transparent_background": "Fundo Transparente",
+                "resolution": "Resolução:",
+                "render_btn": "Renderizar Imagem do Circuito"
+            },
+            "context_menu": {
+                "paste": "Colar",
+                "copy": "Copiar",
+                "cut": "Recortar",
+                "delete": "Excluir",
+                "new_circuit": "Novo Circuito",
+                "center_focus": "Centralizar Foco"
+            },
+            "bit_converter": {
+                "decimal_value": "Valor Decimal",
+                "binary_value": "Valor Binário",
+                "octal_value": "Valor Octal",
+                "hexadecimal_value": "Valor Hexadecimal",
+                "bcd_value": "Valor decimal codificado em binário",
+                "reset": "Redefinir"
+            },
+            "custom_shortcut": {
+                "esc_cancel": "Pressione a Combinação de Teclas Desejada e Enter",
+                "command": "Comando",
+                "keymapping": "Mapeamento de Teclas",
+                "reset_to_default": "Redefinir para Padrão",
+                "save": "Salvar",
+                "enter_keys": "Por favor, insira alguma(s) tecla(s)",
+                "different_keys": "Por favor, insira tecla(s) diferente(s).",
+                "system_shortcut": "A combinação acima é um atalho padrão do sistema e não pode ser definida.",
+                "reset_confirm": "Remover todas as teclas personalizadas e definir as teclas padrão?"
+            },
+            "report_issue": {
+                "describe_issue": "Descreva seu problema:",
+                "email": "E-mail",
+                "optional": " [Opcional]",
+                "report_btn": "Relatar",
+                "cancel_btn": "Cancelar",
+                "close_btn": "Fechar"
+            },
+            "project_properties": {
+                "header": "PROPRIEDADES DO PROJETO",
+                "project": "Projeto",
+                "circuit": "Circuito",
+                "clock_time": "Tempo do Relógio (ms)",
+                "clock_enabled": "Relógio Ativado",
+                "lite_mode": "Modo Leve",
+                "edit_layout": "Editar Layout",
+                "delete_circuit": "Excluir Circuito"
+            },
+            "element_properties": {
+                "bit_width": "Largura de bits",
+                "input_size": "Tamanho da Entrada",
+                "delay": "Atraso",
+                "label": "Rótulo",
+                "label_direction": "Direção do Rótulo",
+                "direction": "Direção",
+                "orientation": "Orientação"
+            }
+        },
+        "tooltip": {
+            "delete_selected": "Excluir Selecionado",
+            "download_as_image": "Baixar como Imagem",
+            "fit_to_screen": "Ajustar à Tela",
+            "redo": "Refazer",
+            "decrease_size": "Diminuir Tamanho",
+            "increase_size": "Aumentar Tamanho",
+            "decrease_height": "Diminuir Altura",
+            "increase_height": "Aumentar Altura",
+            "reset_timing_diagram": "Redefinir Diagrama de Tempo",
+            "autocalibrate_cycle_units": "Calibrar Unidades de Ciclo",
+            "zoom_in": "Aumentar Zoom",
+            "zoom_out": "Diminuir Zoom",
+            "resume_timing_diagram": "Retomar Diagrama de Tempo",
+            "pause_timing_diagram": "Pausar Diagrama de Tempo",
+            "decrease_width": "Diminuir Largura",
+            "increase_width": "Aumentar Largura",
+            "reset": "Redefinir"
+        },
+        "tooltips": {
+            "ALU": "Dica da ALU: 0: A&B, 1:A|B, 2:A+B, 4:A&~B, 5:A|~B, 6:A-B, 7:SLT ",
+            "LSB": "Dica do LSB: O bit menos significativo ou o bit de ordem baixa.",
+            "VariableLed": "Dica do LED Variável: O LED Variável recebe um valor de 8 bits e brilha com intensidade proporcional.",
+            "Text": "Dica de Texto: Use isto para documentar seu circuito.",
+            "Input": "Dica de Entrada: Alterne os bits individuais clicando neles.",
+            "verilogPower": "Dica do verilogPower: Realiza a adição de números.",
+            "Buffer": "Dica do Buffer: Isola a entrada da saída.",
+            "NorGate": "Dica da Porta NOR: Combinação das portas OR e NOT.",
+            "Rectangle": "Dica do Retângulo: Usado para envolver o circuito ou a área que você deseja destacar.",
+            "Button": "Dica do Botão: Alto(1) quando pressionado e Baixo(0) quando liberado.",
+            "SixteenSegDisplay": "Dica do Display de 16 Segmentos: Consiste em 16+1 entradas de bits.",
+            "PriorityEncoder": "Dica do Codificador de Prioridade: Comprime entradas binárias em um número menor de saídas.",
+            "Power": "Energia: Todos os bits são Alto(1).",
+            "Counter": "Contador: um contador binário de zero até um valor máximo determinado.",
+            "Output": "Dica de Saída: Elemento de saída simples mostrando a saída em binário.",
+            "DigitalLed": "Dica do LED Digital: O LED Digital brilha alto quando a entrada é Alto(1).",
+            "verilogDivider": "Dica do verilogDivider: Realiza a adição de números.",
+            "MSB": "Dica do MSB: O bit mais significativo ou o bit de ordem alta.",
+            "SevenSegDisplay": "Dica do Display de 7 Segmentos: Consiste em 7+1 entradas de bits únicos.",
+            "Adder": "Dica do Somador: Realiza a adição de números.",
+            "OrGate": "Dica da Porta OR: Implementa a disjunção lógica.",
+            "NotGate": "Dica da Porta NOT: Inverte o sinal digital de entrada.",
+            "Ground": "Terra: Todos os bits são Baixo(0).",
+            "verilogMultiplier": "Dica do verilogMultiplier: Realiza a adição de números.",
+            "ConstantVal": "Dica de Constante: Bits são fixos. Clique duas vezes no elemento para alterar os bits.",
+            "NandGate": "Dica da Porta NAND: Combinação das portas AND e NOT.",
+            "RGBLed": "Dica do LED RGB: O LED RGB recebe valores de 8 bits para as cores VERMELHO, VERDE e AZUL.",
+            "ImageAnnotation": "Dica de Imagem: Incorpora uma imagem no circuito para anotação.",
+            "BitSelector": "Dica do Seletor de Bits: Divide os bits de entrada em vários grupos de tamanhos iguais.",
+            "XnorGate": "Dica da Porta XNOR: Complemento lógico da porta XOR.",
+            "TriState": "Dica do TriState: Efetivamente remove a saída do circuito.",
+            "RGBLedMatrix": "Matriz de LED RGB",
+            "Multiplexer": "Dica do Multiplexador: Múltiplas entradas e uma única linha de saída.",
+            "Stepper": "Dica do Stepper: Aumente/Diminua o valor selecionando o stepper e usando as teclas +/-.",
+            "XorGate": "Dica da Porta XOR: Implementa um OR exclusivo.",
+            "Decoder": "Dica do Decodificador: Converte entradas codificadas em saídas codificadas.",
+            "Flag": "Dica de Flag: Use isto para depuração e plotagem.",
+            "Demultiplexer": "Dica do Demultiplexador: Múltiplas saídas e uma única linha de entrada.",
+            "Arrow": "Dica da Seta: Seta Selecionada.",
+            "verilogShiftLeft": "Dica do verilogShiftLeft: Realiza a adição de números.",
+            "HexDisplay": "Dica do Display Hexadecimal: Recebe um número hexadecimal de 4 bits e o exibe.",
+            "SquareRGBLed": "Dica do LED RGB Quadrado: O LED RGB recebe valores de 8 bits para as cores VERMELHO, VERDE e AZUL.",
+            "ControlledInverter": "Dica do Inversor Controlado: Buffer controlado e porta NOT.",
+            "Random": "Dica de Aleatório: Aleatório Selecionada.",
+            "AndGate": "Dica da Porta AND: Implementa a conjunção lógica.",
+            "Tunnel": "Dica do Túnel: Túnel Selecionado.",
+            "TwoComplement": "Dica do Complemento de Dois: Calcula o complemento de dois.",
+            "verilogShiftRight": "Dica do verilogShiftRight: Realiza a adição de números.",
+            "Splitter": "Dica do Divisor: Divide uma entrada multi-bit em larguras de bits menores ou vice-versa.",
+            "TB_Output": "Saída de Bancada de Teste Selecionada",
+            "TB_Input": "Entrada de Bancada de Teste Selecionada",
+            "ForceGate": "Dica da Porta de Força: Porta de Força Selecionada.",
+            "SRflipFlop": "Dica do Flip-Flop SR: Flip-Flop SR Selecionado.",
+            "JKflipFlop": "Dica do Flip-Flop JK: flip-flop SR com gate e a adição de uma entrada de clock.",
+            "EEPROM": "Memória Somente de Leitura Programável Apagável Eletricamente",
+            "RAM": "Memória de Acesso Aleatório",
+            "TflipFlop": "Dica do Flip-Flop T: Altera o estado / Alterna sempre que a entrada de clock é acionada.",
+            "Rom": "Memória somente de leitura",
+            "Dlatch": "Latch D: Flip-flop de entrada única ou Flip-Flop D",
+            "TTY": "Dica do TTY: Tele-teletipo selecionado.",
+            "Keyboard": "Teclado",
+            "Clock": "Relógio",
+            "DflipFlop": "Dica do Flip-Flop D: Introduz atraso no circuito de temporização.",
+            "verilogRAM": "Memória de Acesso Aleatório"
+        },
+        "export_verilog": {
+            "download": "Baixar Arquivo Verilog",
+            "copy": "Copiar para a Área de Transferência",
+            "eda_playground": "Tente no EDA Playground",
+            "code_copied": "O código foi copiado"
+        },
+        "open_offline": {
+            "no_circuits": "Parece que nenhum circuito foi salvo ainda. Crie um novo e salve-o!",
+            "open_project": "abrir projeto",
+            "open_cv_file": "abrir arquivo CV"
+        },
+        "insert_subcircuit": {
+            "no_circuits": "Parece que não há outros circuitos que não tenham este circuito como dependência. Crie um novo!",
+            "insert_btn": "Inserir Subcircuito",
+            "new_circuit_btn": "Novo Circuito +"
+        }
+    }
+}
