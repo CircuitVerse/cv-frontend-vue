@@ -44,7 +44,7 @@
             </div>
             <v-expansion-panels
                 v-if="elementInput && searchCategories().length"
-                id="menu"
+                id="search-menu"
                 class="accordion"
                 variant="accordion"
             >
@@ -129,7 +129,7 @@
                 </v-expansion-panel>
             </v-expansion-panels>
             <div
-                id="Help"
+                id="element-help"
                 lines="one"
                 :class="tooltipText != 'null' ? 'show' : ''"
             >
@@ -215,7 +215,9 @@ function searchCategories() {
 
 const tooltipText = ref('null')
 function getTooltipText(elementName: string) {
-    tooltipText.value = modules[elementName].prototype.tooltipText
+    const key = `simulator.tooltips.${elementName}`
+    const localized = t(key)
+    tooltipText.value = localized === key ? modules[elementName].prototype.tooltipText : localized
 }
 </script>
 

@@ -25,4 +25,5 @@ app.use(createPinia())
 app.use(vuetify)
 app.use(router)
 app.use(i18n)
+document.documentElement.lang = (window as any).locale || 'en'
 app.mount('#app')

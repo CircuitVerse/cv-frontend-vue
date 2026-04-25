@@ -32,7 +32,7 @@
       <div class="text-center">
           {{ $t('simulator.panel_body.verilog_module.apply_themes') }}
       </div>
-      <div id="moduleProperty-inner">
+      <div id="verilog-themes-inner">
           <div class="layout-body">
               <div>
                   <p class="text-center mb-2">

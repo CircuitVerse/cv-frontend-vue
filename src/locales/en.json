@@ -1,5 +1,11 @@
 {
     "simulator": {
+        "directions": {
+            "right": "RIGHT",
+            "down": "DOWN",
+            "left": "LEFT",
+            "up": "UP"
+        },
         "save_online": "Save Online",
         "save_offline": "Save Offline",
         "preview_circuit": "Preview Circuit",
@@ -14,6 +20,11 @@
             "no_elements_available": "No layout elements available"
         },
         "unlabeled": "Unlabeled",
+        "embed": {
+            "full_screen": "Full Screen",
+            "time": "Time",
+            "clock": "Clock"
+        },
         "nav": {
             "untitled_project": "Untitled",
             "sign_out": "Sign Out",
@@ -21,7 +32,28 @@
             "user_dropdown": {
                 "dashboard": "Dashboard",
                 "my_groups": "My Groups",
-                "notifications": "Notifications"
+                "notifications": "Notifications",
+                "locale": "Locale",
+                "register": "Register",
+                "logout": "Logout",
+                "auth_modal": {
+                    "name": "Name",
+                    "email": "Email",
+                    "password": "Password",
+                    "need_account": "Need an account? Register",
+                    "already_have_account": "Already have an account? Sign In",
+                    "field_required": "This field is required",
+                    "email_invalid": "E-mail must be valid",
+                    "password_min_length": "Password must be at least 6 characters",
+                    "login_success": "Login successful!",
+                    "registration_success": "Registration successful!",
+                    "auth_failed": "Authentication failed",
+                    "invalid_credentials": "Invalid credentials",
+                    "user_not_found": "User not found",
+                    "user_already_exists": "User already exists",
+                    "invalid_input": "Invalid input data",
+                    "logged_out": "You have been logged out"
+                }
             },
             "project": {
                 "heading": "Project",
@@ -97,7 +129,25 @@
                 "save_code": "Save Code",
                 "module_in_experiment_notice": "This is an experimental module. The code is not saved unless the \"Save Code\" button is clicked.",
                 "apply_themes": "Apply Themes",
-                "select_theme": "Select a theme:"
+                "select_theme": "Select a theme:",
+                "hide_terminal": "Hide Terminal",
+                "show_terminal": "Show Terminal"
+            },
+            "themes": {
+                "apply_theme": "Apply Theme",
+                "custom_theme": "Custom Theme",
+                "import_theme": "Import Theme",
+                "export_theme": "Export Theme",
+                "file_not_supported": "File Not Supported !",
+                "names": {
+                    "Default Theme": "Default Theme",
+                    "Night Sky": "Night Sky",
+                    "Lite-born Spring": "Lite-born Spring",
+                    "G&W": "G&W",
+                    "High Contrast": "High Contrast",
+                    "Color Blind": "Color Blind",
+                    "Custom Theme": "Custom Theme"
+                }
             },
             "layout": {
                 "width": "Width",
@@ -112,7 +162,8 @@
                 "full_circuit_view": "Full Circuit View",
                 "current_view": "Current View",
                 "transparent_background": "Transparent Background",
-                "resolution": "Resolution:"
+                "resolution": "Resolution:",
+                "render_btn": "Render Circuit Image"
             },
             "context_menu": {
                 "paste": "Paste",
@@ -126,14 +177,20 @@
                 "decimal_value": "Decimal Value",
                 "binary_value": "Binary value",
                 "octal_value": "Octal value",
-                "hexadecimal_value": "Hexadecimal value"
+                "hexadecimal_value": "Hexadecimal value",
+                "bcd_value": "Binary-coded decimal value",
+                "reset": "Reset"
             },
             "custom_shortcut": {
                 "esc_cancel": "Press Desire Key Combination & press Enter",
                 "command": "Command",
                 "keymapping": "Keymapping",
                 "reset_to_default": "Reset to Default",
-                "save": "Save"
+                "save": "Save",
+                "enter_keys": "Please enter some key(s)",
+                "different_keys": "Please enter different key(s).",
+                "system_shortcut": "The above combination is a system default shortcut & cannot be set.",
+                "reset_confirm": "Remove all custom keys & set the default keys?"
             },
             "report_issue": {
                 "describe_issue": "Describe your issue:",
@@ -142,6 +199,25 @@
                 "report_btn": "Report",
                 "cancel_btn": "Cancel",
                 "close_btn": "Close"
+            },
+            "project_properties": {
+                "header": "PROJECT PROPERTIES",
+                "project": "Project",
+                "circuit": "Circuit",
+                "clock_time": "Clock Time (ms)",
+                "clock_enabled": "Clock Enabled",
+                "lite_mode": "Lite Mode",
+                "edit_layout": "Edit Layout",
+                "delete_circuit": "Delete Circuit"
+            },
+            "element_properties": {
+                "bit_width": "BitWidth",
+                "input_size": "Input Size",
+                "delay": "Delay",
+                "label": "Label",
+                "label_direction": "Label Direction",
+                "direction": "Direction",
+                "orientation": "Orientation"
             }
         },
         "tooltip": {
@@ -162,6 +238,88 @@
             "decrease_width": "Decrease Width",
             "increase_width": "Increase Width",
             "reset": "Reset"
+        },
+        "tooltips": {
+            "ALU": "ALU ToolTip: 0: A&B, 1:A|B, 2:A+B, 4:A&~B, 5:A|~B, 6:A-B, 7:SLT ",
+            "LSB": "LSB ToolTip : The least significant bit or the low-order bit.",
+            "VariableLed": "Variable Led ToolTip: Variable LED inputs an 8 bit value and glows with a proportional intensity.",
+            "Text": "Text ToolTip: Use this to document your circuit.",
+            "Input": "Input ToolTip: Toggle the individual bits by clicking on them.",
+            "verilogPower": "verilogPower ToolTip : Performs addition of numbers.",
+            "Buffer": "Buffer ToolTip : Isolate the input from the output.",
+            "NorGate": "Nor Gate ToolTip : Combination of OR gate and NOT gate.",
+            "Rectangle": "Rectangle ToolTip : Used to Box the Circuit or area you want to highlight.",
+            "Button": "Button ToolTip: High(1) when pressed and Low(0) when released.",
+            "SixteenSegDisplay": "Sixteen Display ToolTip: Consists of 16+1 bit inputs.",
+            "PriorityEncoder": "Priority Encoder ToolTip : Compresses binary inputs into a smaller number of outputs.",
+            "Power": "Power: All bits are High(1).",
+            "Counter": "Counter: a binary counter from zero to a given maximum value",
+            "Output": "Output ToolTip: Simple output element showing output in binary.",
+            "DigitalLed": "Digital Led ToolTip: Digital LED glows high when input is High(1).",
+            "verilogDivider": "verilogDivider ToolTip : Performs addition of numbers.",
+            "MSB": "MSB ToolTip : The most significant bit or the high-order bit.",
+            "SevenSegDisplay": "Seven Display ToolTip: Consists of 7+1 single bit inputs.",
+            "Adder": "Adder ToolTip : Performs addition of numbers.",
+            "OrGate": "Or Gate ToolTip : Implements logical disjunction",
+            "NotGate": "Not Gate ToolTip : Inverts the input digital signal.",
+            "Ground": "Ground: All bits are Low(0).",
+            "verilogMultiplier": "verilogMultiplier ToolTip : Performs addition of numbers.",
+            "ConstantVal": "Constant ToolTip: Bits are fixed. Double click element to change the bits.",
+            "NandGate": "Nand Gate ToolTip : Combination of AND and NOT gates",
+            "RGBLed": "RGB Led ToolTip: RGB Led inputs 8 bit values for the colors RED, GREEN and BLUE.",
+            "ImageAnnotation": "Image ToolTip: Embed an image in the circuit for annotation",
+            "BitSelector": "BitSelector ToolTip : Divides input bits into several equal-sized groups.",
+            "XnorGate": "Xnor Gate ToolTip : Logical complement of the XOR gate",
+            "TriState": "TriState ToolTip : Effectively removes the output from the circuit.",
+            "RGBLedMatrix": "RGB Led Matrix",
+            "Multiplexer": "Multiplexer ToolTip : Multiple inputs and a single line output.",
+            "Stepper": "Stepper ToolTip: Increase/Decrease value by selecting the stepper and using +/- keys.",
+            "XorGate": "Xor Gate ToolTip : Implements an exclusive OR.",
+            "Decoder": "Decoder ToolTip : Converts coded inputs into coded outputs.",
+            "Flag": "FLag ToolTip: Use this for debugging and plotting.",
+            "Demultiplexer": "DeMultiplexer ToolTip : Multiple outputs and a single line input.",
+            "Arrow": "Arrow ToolTip : Arrow Selected.",
+            "verilogShiftLeft": "verilogShiftLeft ToolTip : Performs addition of numbers.",
+            "HexDisplay": "Hex Display ToolTip: Inputs a 4 Bit Hex number and displays it.",
+            "SquareRGBLed": "Square RGB Led ToolTip: RGB Led inputs 8 bit values for the colors RED, GREEN and BLUE.",
+            "ControlledInverter": "Controlled Inverter ToolTip : Controlled buffer and NOT gate.",
+            "Random": "Random ToolTip : Random Selected.",
+            "AndGate": "And Gate ToolTip : Implements logical conjunction",
+            "Tunnel": "Tunnel ToolTip : Tunnel Selected.",
+            "TwoComplement": "Two's Complement Tooltip : Calculates the two's complement",
+            "verilogShiftRight": "verilogShiftRight ToolTip : Performs addition of numbers.",
+            "Splitter": "Splitter ToolTip: Split multiBit Input into smaller bitwidths or vice versa.",
+            "TB_Output": "Test Bench Output Selected",
+            "TB_Input": "Test Bench Input Selected",
+            "ForceGate": "Force Gate ToolTip : ForceGate Selected.",
+            "SRflipFlop": "SR FlipFlop ToolTip : SR FlipFlop Selected.",
+            "JKflipFlop": "JK FlipFlop ToolTip : gated SR flip-flop with the addition of a clock input.",
+            "EEPROM": "Electrically Erasable Programmable Read-Only Memory",
+            "RAM": "Random Access Memory",
+            "TflipFlop": "T FlipFlop ToolTip :  Changes state / Toggles whenever the clock input is strobed.",
+            "Rom": "Read-only memory",
+            "Dlatch": "D Latch : Single input Flip flop or D FlipFlop",
+            "TTY": "TTY ToolTip : Tele typewriter selected.",
+            "Keyboard": "Keyboard",
+            "Clock": "Clock",
+            "DflipFlop": "D FlipFlop ToolTip : Introduces delay in timing circuit.",
+            "verilogRAM": "Random Access Memory"
+        },
+        "export_verilog": {
+            "download": "Download Verilog File",
+            "copy": "Copy to Clipboard",
+            "eda_playground": "Try in EDA Playground",
+            "code_copied": "Code has been copied"
+        },
+        "open_offline": {
+            "no_circuits": "Looks like no circuit has been saved yet. Create a new one and save it!",
+            "open_project": "open project",
+            "open_cv_file": "open CV file"
+        },
+        "insert_subcircuit": {
+            "no_circuits": "Looks like there are no other circuits which doesn't have this circuit as a dependency. Create a new one!",
+            "insert_btn": "Insert SubCircuit",
+            "new_circuit_btn": "New Circuit +"
         }
     }
 }

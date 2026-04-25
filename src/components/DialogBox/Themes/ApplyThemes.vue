@@ -6,7 +6,7 @@
         <v-card class="messageBoxContent">
             <v-card-text>
                 <template v-if="iscustomTheme == false">
-                    <p class="dialogHeader">Select Theme</p>
+                    <p class="dialogHeader">{{ $t('simulator.panel_header.select_theme') }}</p>
                     <v-btn
                         size="x-small"
                         icon
@@ -19,7 +19,7 @@
                         id="colorThemesDialog"
                         class="customScroll colorThemesDialog"
                         tabindex="0"
-                        title="Select Theme"
+                        :title="$t('simulator.panel_header.select_theme')"
                     >
                         <div
                             v-for="theme in themes"
@@ -66,7 +66,7 @@
                                     style="display: block"
                                 />
                             </span>
-                            <span id="themeNameBox" class="themeNameBox">
+                            <span class="themeNameBox">
                                 <input
                                     :id="theme.replace(' ', '')"
                                     type="radio"
@@ -75,14 +75,14 @@
                                     :checked="theme == selectedTheme || theme == 'Default Theme'"
                                 />
                                 <label :for="theme.replace(' ', '')">{{
-                                    theme
+                                    $t('simulator.panel_body.themes.names.' + theme)
                                 }}</label>
                             </span>
                         </div>
                     </div>
                 </template>
                 <template v-else>
-                    <p class="dialogHeader">Custom Theme</p>
+                    <p class="dialogHeader">{{ $t('simulator.panel_body.themes.custom_theme') }}</p>
                     <v-btn
                         size="x-small"
                         icon
@@ -116,11 +116,11 @@
             </v-card-text>
             <v-card-actions>
                 <v-btn class="messageBtn" block @click="applyTheme()">
-                    Apply Theme
+                    {{ $t('simulator.panel_body.themes.apply_theme') }}
                 </v-btn>
                 <template v-if="iscustomTheme == false">
                     <v-btn class="messageBtn" block @click="applyCustomTheme()">
-                        Custom Theme
+                        {{ $t('simulator.panel_body.themes.custom_theme') }}
                     </v-btn>
                 </template>
                 <template v-else>
@@ -129,14 +129,14 @@
                         block
                         @click="importCustomTheme()"
                     >
-                        Import Theme
+                        {{ $t('simulator.panel_body.themes.import_theme') }}
                     </v-btn>
                     <v-btn
                         class="messageBtn"
                         block
                         @click="exportCustomTheme()"
                     >
-                        Export Theme
+                        {{ $t('simulator.panel_body.themes.export_theme') }}
                     </v-btn>
                 </template>
             </v-card-actions>
@@ -147,6 +147,7 @@
 <script lang="ts" setup>
 import { useState } from '#/store/SimulatorStore/state'
 import { onMounted, onUpdated, ref, reactive } from '@vue/runtime-core'
+import { useI18n } from 'vue-i18n'
 import themeOptions from '#/simulator/src/themer/themes'
 import {
     getThemeCardSvg,
@@ -154,6 +155,7 @@ import {
     updateThemeForStyle,
 } from '#/simulator/src/themer/themer'
 const SimulatorState = useState()
+const { t } = useI18n()
 import { CreateAbstraction, Themes } from '#/simulator/src/themer/customThemeAbstraction'
 import { confirmSingleOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
 const themes = ref([''])
@@ -195,9 +197,9 @@ function changeCustomTheme(e: InputEvent) {
 
 function applyTheme() {
     if (iscustomTheme.value == false) {
-        if ($('.selected label').text()) {
+        if (selectedTheme.value) {
             localStorage.removeItem('Custom Theme')
-            localStorage.setItem('theme', $('.selected label').text())
+            localStorage.setItem('theme', selectedTheme.value)
         }
     } else {
         // update theme to Custom Theme
@@ -259,7 +261,7 @@ function importCustomTheme() {
             fr.onload = receivedText
             fr.readAsText(file)
         } else {
-            confirmSingleOption('File Not Supported !')
+            confirmSingleOption(t('simulator.panel_body.themes.file_not_supported'))
         }
     })
     document.body.appendChild(fileInput)

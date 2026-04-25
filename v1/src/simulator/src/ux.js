@@ -149,7 +149,8 @@ export function setupUI() {
     document.getElementById('canvasArea').oncontextmenu = showContextMenu
 
     $('.logixButton').on('click', function () {
-        logixFunction[this.id]()
+        var funcId = $(this).attr('data-logix-id') || this.id;
+        logixFunction[funcId]()
     })
     setupPanels()
 }

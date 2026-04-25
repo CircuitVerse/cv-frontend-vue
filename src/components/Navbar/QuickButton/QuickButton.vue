@@ -8,7 +8,7 @@
             <button
                 type="button"
                 class="quick-btn-save-online"
-                title="Save Online"
+                :title="$t('simulator.save_online')"
                 @click="saveOnline"
             ></button>
         </div>
@@ -16,7 +16,7 @@
             <button
                 type="button"
                 class="quick-btn-save"
-                title="Save Offline"
+                :title="$t('simulator.save_offline')"
                 @click="saveOffline"
             ></button>
         </div>
@@ -24,7 +24,7 @@
             <button
                 type="button"
                 class="quick-btn-delete"
-                title="Delete Selected"
+                :title="$t('simulator.tooltip.delete_selected')"
                 @click="deleteSelectedItem"
             ></button>
         </div>
@@ -32,7 +32,7 @@
             <button
                 type="button"
                 class="quick-btn-download"
-                title="Download as Image"
+                :title="$t('simulator.tooltip.download_as_image')"
                 @click="createSaveAsImgPrompt"
             ></button>
         </div>
@@ -40,7 +40,7 @@
             <button
                 type="button"
                 class="quick-btn-zoom-fit"
-                title="Fit to Screen"
+                :title="$t('simulator.tooltip.fit_to_screen')"
                 @click="zoomToFit"
             ></button>
         </div>
@@ -48,7 +48,7 @@
             <button
                 type="button"
                 class="quick-btn-undo"
-                title="Undo"
+                :title="$t('simulator.undo')"
                 @click="undoit"
             ></button>
         </div>
@@ -56,7 +56,7 @@
             <button
                 type="button"
                 class="quick-btn-redo"
-                title="Redo"
+                :title="$t('simulator.tooltip.redo')"
                 @click="redoit"
             ></button>
         </div>
@@ -64,7 +64,7 @@
             <button
                 type="button"
                 class="quick-btn-view"
-                title="Preview Circuit"
+                :title="$t('simulator.preview_circuit')"
                 @click="view"
             >
                 <i style="color: #ddd" class="fas fa-expand-arrows-alt"></i>

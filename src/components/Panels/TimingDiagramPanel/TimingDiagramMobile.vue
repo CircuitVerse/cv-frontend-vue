@@ -5,7 +5,7 @@
                 <TimingDiagramButtons
                   v-for="button in timingDiagramPanelStore.buttons"
                   :key="button.title"
-                  :title="button.title"
+                  :title="$t('simulator.tooltip.' + button.title.toLowerCase().replace(/ /g, '_').replace(/-/g, '_'))"
                   :icon="button.icon"
                   :btn-class="button.class"
                   class="timing-diagram-panel-button"
@@ -17,7 +17,7 @@
             </div>
             {{ $t('simulator.panel_body.timing_diagram.one_cycle') }}
             <div>
-                <input id="timing-diagram-units" type="number" min="1" autocomplete="off" :value="timingDiagramPanelStore.cycleUnits"
+                <input id="mobile-timing-diagram-units" class="timing-diagram-units" type="number" min="1" autocomplete="off" :value="timingDiagramPanelStore.cycleUnits"
                     @change="handleUnitsChange" @paste="handleUnitsChange" @keyup="handleUnitsChange" />
                 {{ $t('simulator.panel_body.timing_diagram.units') }}
             </div>

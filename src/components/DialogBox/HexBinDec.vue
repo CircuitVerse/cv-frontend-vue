@@ -5,7 +5,7 @@
     >
         <v-card class="messageBoxContent">
             <v-card-text>
-                <p class="dialogHeader">Hex-Bin-Dec Converter</p>
+                <p class="dialogHeader">{{ $t('simulator.nav.tools.hex_bin_dec_converter_html').replace('\n', ' ') }}</p>
                 <v-btn
                     size="x-small"
                     icon
@@ -20,15 +20,15 @@
                     v-for="(value, index) in Object.entries(inputArr)"
                     id="bitconverterprompt"
                     :key="value[0]"
-                    title="Dec-Bin-Hex-Converter"
+                    :title="$t('simulator.panel_header.bit_converter')"
                 >
-                    <label>{{ value[1].label }}</label>
+                    <label>{{ $t(value[1].labelKey) }}</label>
                     <br />
                     <input
                         :id="value[0]"
                         type="text"
                         :value="value[1].val"
-                        :label="value[1].label"
+                        :label="$t(value[1].labelKey)"
                         name="text1"
                         @keyup="(payload) => converter(payload)"
                     />
@@ -37,54 +37,11 @@
             </v-card-text>
             <v-card-actions>
                 <v-btn class="messageBtn" block @click="setBaseValues(0)">
-                    Reset
+                    {{ $t('simulator.bit_converter.reset') }}
                 </v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
-  <v-dialog
-      v-model="SimulatorState.dialogBox.hex_bin_dec_converter_dialog"
-      :persistent="false"
-  >
-      <v-card class="messageBoxContent">
-          <v-card-text>
-              <p class="dialogHeader">Hex-Bin-Dec Converter</p>
-              <v-btn
-                  size="x-small"
-                  icon
-                  class="dialogClose"
-                  @click="
-                      SimulatorState.dialogBox.hex_bin_dec_converter_dialog = false
-                  "
-              >
-                  <v-icon>mdi-close</v-icon>
-              </v-btn>
-              <div
-              v-for="(value, index) in Object.entries(inputArr)"
-                  id="bitconverterprompt"
-                  :key="value[0]"
-                  title="Dec-Bin-Hex-Converter"
-              >
-                  <label>{{ value[1].label }}</label>
-                  <br />
-                  <input
-                      :id="value[0]"
-                      type="text"
-                      :value="value[1].val"
-                      :label="value[1].label"
-                      name="text1"
-                      @keyup="(payload) => converter(payload)"
-                  />
-                  <br /><br />
-              </div>
-          </v-card-text>
-          <v-card-actions>
-              <v-btn class="messageBtn" block @click="setBaseValues(0)">
-                  Reset
-              </v-btn>
-          </v-card-actions>
-      </v-card>
-  </v-dialog>
 </template>
 
 <script lang="ts" setup>
@@ -95,23 +52,23 @@ import { onMounted, ref } from '@vue/runtime-core'
 const inputArr = ref({
     decimalInput: {
         val: '16',
-        label: 'Decimal value',
+        labelKey: 'simulator.bit_converter.decimal_value',
     },
     binaryInput: {
         val: '0b10000',
-        label: 'Binary value',
+        labelKey: 'simulator.bit_converter.binary_value',
     },
     bcdInput: {
         val: '00010110',
-        label: 'Binary-coded decimal value',
+        labelKey: 'simulator.bit_converter.bcd_value',
     },
     octalInput: {
         val: '020',
-        label: 'Octal value',
+        labelKey: 'simulator.bit_converter.octal_value',
     },
     hexInput: {
         val: '0x10',
-        label: 'Hexadecimal value',
+        labelKey: 'simulator.bit_converter.hexadecimal_value',
     },
 })
 

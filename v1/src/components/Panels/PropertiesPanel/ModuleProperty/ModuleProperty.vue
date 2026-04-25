@@ -6,7 +6,7 @@
         <PanelHeader :header-title="$t('simulator.panel_header.properties')" />
         <div class="panel-body">
             <div id="moduleProperty-inner">
-                <div id="moduleProperty-header">{{ panelBodyHeader }}</div>
+                <div id="moduleProperty-header">{{ $t(panelBodyHeader) }}</div>
                 <ProjectProperty v-if="panelType == 1" />
                 <ElementProperty
                     v-else-if="panelType == 2"

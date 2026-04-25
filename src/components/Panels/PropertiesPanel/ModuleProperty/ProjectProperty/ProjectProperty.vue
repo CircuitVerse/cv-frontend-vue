@@ -1,6 +1,6 @@
 <template>
     <p>
-        <span>Project:</span>
+        <span>{{ $t('simulator.panel_body.project_properties.project') }}:</span>
         <!-- class="objectPropertyAttribute" -->
         <input
             id="projname"
@@ -13,7 +13,7 @@
     </p>
 
     <p>
-        <span>Circuit:</span>
+        <span>{{ $t('simulator.panel_body.project_properties.circuit') }}:</span>
         <input
             :ref="circnameInput"
             id="circname"
@@ -27,7 +27,7 @@
     </p>
 
     <InputGroups
-        property-name="Clock Time (ms):"
+        :property-name="$t('simulator.panel_body.project_properties.clock_time') + ':'"
         :property-value="(simulationArea as any).timePeriod"
         property-value-type="number"
         value-min="50"
@@ -37,7 +37,7 @@
     />
 
     <p>
-        <span>Clock Enabled:</span>
+        <span>{{ $t('simulator.panel_body.project_properties.clock_enabled') }}:</span>
         <label class="switch">
             <input
                 type="checkbox"
@@ -50,7 +50,7 @@
     </p>
 
     <p>
-        <span>Lite Mode:</span>
+        <span>{{ $t('simulator.panel_body.project_properties.lite_mode') }}:</span>
         <label class="switch">
             <input
                 type="checkbox"
@@ -71,14 +71,14 @@
                 simulatorMobileStore.showCircuits = 'layout-elements'
             }"
         >
-            Edit Layout
+            {{ $t('simulator.panel_body.project_properties.edit_layout') }}
         </button>
         <button
             type="button"
             class="panelButton btn btn-xs custom-btn--tertiary"
             @click.stop="closeCircuit(SimulatorState.activeCircuit)"
         >
-            Delete Circuit
+            {{ $t('simulator.panel_body.project_properties.delete_circuit') }}
         </button>
     </p>
     <!-- <MessageBox

@@ -34,7 +34,7 @@
                     </span>
                     <span
                         v-if="!isEmbed()"
-                        :id="element.id"
+                        :id="'close-' + element.id"
                         class="tabsCloseButton"
                         @click.stop="closeCircuit(element)"
                     >

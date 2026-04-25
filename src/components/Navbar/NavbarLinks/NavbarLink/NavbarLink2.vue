@@ -77,17 +77,22 @@ onUnmounted(() => {
   font-size: 1rem !important;
   font-weight: 400 !important;
   text-transform: capitalize !important;
-  padding: 0 0 0 0.3rem !important;
+  padding: 0 0.5rem 0 0.3rem !important;
   letter-spacing: 0 !important;
 }
 .menuList {
   /* height: auto; */
+  min-width: 200px !important;
   backdrop-filter: blur(5px) !important;
   border-radius: 5px !important;
-  border: 0.5px solid var(--br-primary) !important;
-  background: var(--bg-primary-moz) !important;
-  background-color: var(--bg-primary-chr) !important;
+  border: 0.5px solid var(--bg-tabs) !important;
+  background-color: var(--bg-primary-moz) !important;
   color: white !important;
+}
+@supports (backdrop-filter: blur()) {
+  .menuList {
+    background-color: var(--bg-primary-chr) !important;
+  }
 }
 /* .v-btn {
   color: white !important;
