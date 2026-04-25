@@ -128,7 +128,7 @@ watch(() => SimulatorState.circuit_name_clickable, () => {
     }, 100)
 })
 // const circuitId: Ref<string | number> = ref(0)
-// const circuitName: Ref<string> = ref('Untitled-Cirucit')
+// const circuitName: Ref<string> = ref('Untitled-Circuit')
 // const ifPersistentShow: Ref<boolean> = ref(false)
 // const messageValue: Ref<string> = ref('')
 // const buttonArray: Ref<Array<buttonArrType>> = ref([

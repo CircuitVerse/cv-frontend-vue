@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
-export type ElementsType = 'elements' | 'layout-elements'
+export type ElementsType = "elements" | "layout-elements";
 
 export const useSimulatorMobileStore = defineStore("simulatorMobileStore", () => {
   const minWidthToShowMobile = ref(991);
@@ -15,9 +15,9 @@ export const useSimulatorMobileStore = defineStore("simulatorMobileStore", () =>
   const showVerilogPanel = ref(false);
   const isCopy = ref(false);
   const isVerilog = ref(false);
-  const showCircuits = ref<ElementsType>('elements')
+  const showCircuits = ref<ElementsType>("elements");
 
-  showMobileView.value = window.innerWidth <= minWidthToShowMobile.value
+  showMobileView.value = window.innerWidth <= minWidthToShowMobile.value;
 
   return {
     minWidthToShowMobile,
