@@ -127,12 +127,18 @@
             },
             {
                 "id": "5",
+                "item": "theme_editor",
+                "itemid": "openThemeEditor",
+                "attributes": []
+            },
+            {
+                "id": "6",
                 "item": "custom_shortcut",
                 "itemid": "customShortcut",
                 "attributes": []
             },
             {
-                "id": "6",
+                "id": "7",
                 "item": "export_verilog",
                 "itemid": "generateVerilog",
                 "attributes": []

@@ -60,6 +60,10 @@
     --output-rect: blue;
 }
 
+:root.theme-transition {
+    transition: background-color 260ms ease, color 260ms ease, border-color 260ms ease, box-shadow 260ms ease;
+}
+
 ::-moz-selection {
     color: var(--text-lite);
     background: var(--bg-icons);
@@ -246,8 +250,6 @@
     border: 1px solid var(--br-circuit-cur);
 }
 
-#tabsBar .current > span {
-}
 
 #tabsBar button {
     color: var(--text-panel);

@@ -36,33 +36,7 @@
                             ></div>
                             <span>
                                 <img
-                                    v-if="theme == 'Default Theme'"
-                                    src="../../../assets/themes/DefaultTheme.svg"
-                                    style="display: block"
-                                />
-                                <img
-                                    v-if="theme == 'Night Sky'"
-                                    src="../../../assets/themes/NightSky.svg"
-                                    style="display: block"
-                                />
-                                <img
-                                    v-if="theme == 'Lite-born Spring'"
-                                    src="../../../assets/themes/LitebornSpring.svg"
-                                    style="display: block"
-                                />
-                                <img
-                                    v-if="theme == 'G&W'"
-                                    src="../../../assets/themes/GnW.svg"
-                                    style="display: block"
-                                />
-                                <img
-                                    v-if="theme == 'High Contrast'"
-                                    src="../../../assets/themes/HighContrast.svg"
-                                    style="display: block"
-                                />
-                                <img
-                                    v-if="theme == 'Color Blind'"
-                                    src="../../../assets/themes/ColorBlind.svg"
+                                    :src="getThemeCardSvg(theme)"
                                     style="display: block"
                                 />
                             </span>
