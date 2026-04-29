@@ -26,5 +26,3 @@ tauri-plugin-http = "2"
 tauri-plugin-log = "2.0.0-rc"
 tauri-plugin-fs = "2.3.0"
 
-[patch.crates-io]
-muda = "=0.16.0"
