@@ -14,6 +14,7 @@
           class="search-input"
           :placeholder="$t('simulator.panel_body.circuit_elements.search')"
           id="element-search-input"
+          @keydown="handleKeyDown"
         />
         <span
           ><i
@@ -33,6 +34,9 @@
           :key="element.name"
           :title="element.label"
           class="icon logixModules"
+          :class="{
+            'focused-element': getGlobalIndex(element.name) === focusInd,
+          }"
           @click="createElement(element.name)"
           @mousedown="createElement(element.name)"
           @mouseover="getTooltipText(element.name)"
@@ -132,7 +136,7 @@ import PanelHeader from "../Shared/PanelHeader.vue";
 import { elementHierarchy } from "#/simulator/src/metadata";
 import { createElement, getImgUrl } from "./ElementsPanel";
 import modules from "#/simulator/src/modules";
-import { onBeforeMount, onMounted, ref } from "vue";
+import { onBeforeMount, onMounted, ref, computed, watch } from "vue";
 import { useLayoutStore } from "#/store/layoutStore";
 import { setupPanelListeners } from "#/simulator/src/ux";
 var panelData = [];
@@ -202,10 +206,75 @@ const tooltipText = ref("null");
 function getTooltipText(elementName: string) {
   tooltipText.value = modules[elementName].prototype.tooltipText;
 }
+
+const focusInd = ref(0);
+
+const searchResults = computed(() => {
+  if (!elementInput.value) return [];
+  const elements = searchElements();
+  const categories = searchCategories();
+  // Combine top-level element matches and all elements within category matches
+  const categoryElements = categories.flatMap((c) => c[1]);
+
+  // Remove duplicates (e.g. if an element is both a direct match and in a matched category)
+  const combined = [...elements, ...categoryElements];
+  const seen = new Set();
+  return combined.filter((el) => {
+    if (seen.has(el.name)) return false;
+    seen.add(el.name);
+    return true;
+  });
+});
+
+watch(elementInput, () => {
+  focusInd.value = 0;
+});
+
+function handleKeyDown(e: KeyboardEvent) {
+  if (!searchResults.value.length) return;
+
+  if (e.key === "Tab") {
+    e.preventDefault();
+    if (e.shiftKey) {
+      focusInd.value =
+        (focusInd.value - 1 + searchResults.value.length) %
+        searchResults.value.length;
+    } else {
+      focusInd.value = (focusInd.value + 1) % searchResults.value.length;
+    }
+  } else if (e.key === "Enter") {
+    const selectedEle = searchResults.value[focusInd.value];
+    if (selectedEle) {
+      createElement(selectedEle.name);
+      elementInput.value = ""; // Clear search after spawning
+    }
+  } else if (e.key === "ArrowDown") {
+    e.preventDefault();
+    focusInd.value = (focusInd.value + 1) % searchResults.value.length;
+  } else if (e.key === "ArrowUp") {
+    e.preventDefault();
+    focusInd.value =
+      (focusInd.value - 1 + searchResults.value.length) %
+      searchResults.value.length;
+  }
+}
+
+// Helper to get index across multiple v-for loops
+function getGlobalIndex(elementName: string) {
+  return searchResults.value.findIndex((el) => el.name === elementName);
+}
 </script>
 
 <style>
 .v-expansion-panel-title {
   min-height: 36px;
+}
+
+.focused-element {
+  background: var(--bg-icons) !important;
+  border-radius: 4px;
+  box-shadow: 0 0 10px var(--primary);
+  transform: scale(1.1);
+  transition: all 0.2s ease;
 }
 </style>
