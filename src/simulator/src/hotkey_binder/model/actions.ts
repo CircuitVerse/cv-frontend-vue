@@ -372,7 +372,11 @@ export const activateSearchBar = (): void => {
 let preview = false;
 
 export const previewCircuit = (): void => {
-  if (preview == false) {
+  if (!preview) {
+     fullView();
+     preview = true;
+     console.log(preview + ", Full View");
+   } else {
     fullView();
     preview = true;
     console.log(preview + ", Full View");
