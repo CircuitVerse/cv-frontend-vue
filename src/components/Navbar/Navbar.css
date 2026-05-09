@@ -249,7 +249,8 @@
 
 .draggable-panel-css {
     border-radius: 5px;
-    z-index: 70;
+    /* AdityaOP007 solved issue #260 */
+    z-index: 101;
     transition: background 0.5s ease-out;
     position: fixed;
 }

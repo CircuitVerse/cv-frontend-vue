@@ -70,8 +70,9 @@ export function dragging(targetEl: HTMLElement, DragEl: HTMLElement): void {
   $(DragEl)
     .off("mousedown.dragging")
     .on("mousedown.dragging", () => {
-      $(`.draggable-panel:not(${DragEl})`).css("z-index", "99");
-      $(DragEl).css("z-index", "99");
+      // AdityaOP007 solved issue #260
+      $(`.draggable-panel:not(${DragEl})`).css("z-index", "101");
+      $(DragEl).css("z-index", "102");
     });
 
   let panelElements = document.querySelectorAll(
