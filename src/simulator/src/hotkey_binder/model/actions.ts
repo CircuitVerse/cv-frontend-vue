@@ -375,13 +375,7 @@ export const previewCircuit = (): void => {
   if (!preview) {
      fullView();
      preview = true;
-     console.log(preview + ", Full View");
-   } else {
-    fullView();
-    preview = true;
-    console.log(preview + ", Full View");
   } else {
-    console.log("Exited full view");
     exitFullView();
     preview = false;
   }
