@@ -5,6 +5,10 @@ import { updateHTML } from "../view/panel.ui";
 import { simulationArea } from "../../simulationArea";
 import { scheduleUpdate, wireToBeCheckedSet, updateCanvasSet } from "../../engine";
 
+// Reusing logic from ux.js
+
+import { fullView, exitFullView } from "#/simulator/src/ux";
+
 import { getOS } from "./utils";
 import { shortcut } from "./shortcuts.plugin";
 
@@ -344,3 +348,45 @@ function updateSystem(): void {
   wireToBeCheckedSet(1);
   scheduleUpdate(1);
 }
+
+/**
+ * Open the Element Search bar
+ */
+
+export const activateSearchBar = (): void => {
+  const maximizeBtn = document.querySelector<HTMLElement>(".elementPanel .maximize");
+  if (maximizeBtn) {
+    maximizeBtn.click();
+  }
+
+  const searchBarInput = document.querySelector<HTMLInputElement>("#element-search-input");
+  if (searchBarInput) {
+    searchBarInput.focus();
+  }
+};
+
+/**
+ * Preview Circuit
+ */
+
+let preview = false;
+
+export const previewCircuit = (): void => {
+  if (preview == false) {
+    fullView();
+    preview = true;
+    console.log(preview + ", Full View");
+  } else {
+    console.log("Exited full view");
+    exitFullView();
+    preview = false;
+  }
+};
+
+/**
+ * Fit to screen
+ */
+
+export const fitToScreen = (): void => {
+  globalScope.centerFocus(false);
+};
