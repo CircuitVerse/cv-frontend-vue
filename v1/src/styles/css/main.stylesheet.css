@@ -392,21 +392,6 @@ input[type='text']:focus {
 
 .draggable-panel-css .panel-body {
     padding-top: 10px;
-    max-height: calc(100vh - 150px);
-    overflow-y: auto;
-}
-
-/* Unified clean scrollbar for the entire panel body */
-.draggable-panel-css .panel-body::-webkit-scrollbar {
-    margin-right: 3px;
-    width: 6px;
-}
-.draggable-panel-css .panel-body::-webkit-scrollbar-thumb {
-    background: var(--text-panel);
-    border-radius: 10px;
-}
-.draggable-panel-css .panel-body::-webkit-scrollbar-thumb:hover {
-    background: var(--primary);
 }
 
 .draggable-panel-css .panel {
@@ -416,7 +401,9 @@ input[type='text']:focus {
     margin-bottom: 0em;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
+    max-height: 185px;
     border-radius: 2px;
+    overflow: auto;
 }
 
 .ui-accordion-header {
