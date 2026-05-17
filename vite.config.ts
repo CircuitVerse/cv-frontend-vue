@@ -25,23 +25,30 @@ export default defineConfig(() => {
         // compositionOnly: false,
 
         // you need to set i18n resource including paths !
-        include: fileURLToPath(new URL(`./${version}/src/locales/**`, import.meta.url)),
+        include: fileURLToPath(
+          new URL(`./${version}/src/locales/**`, import.meta.url),
+        ),
       }),
     ],
     resolve: {
       alias: {
         "#": fileURLToPath(new URL(`./${version}/src`, import.meta.url)),
-        "@": fileURLToPath(new URL(`./${version}/src/components`, import.meta.url)),
+        "@": fileURLToPath(
+          new URL(`./${version}/src/components`, import.meta.url),
+        ),
       },
     },
-    base: process.env.VITE_BASE || (isDesktop ? "/" : `/simulatorvue/${version}/`),
+    base:
+      process.env.VITE_BASE || (isDesktop ? "/" : `/simulatorvue/${version}/`),
     build: {
       outDir: `./dist/simulatorvue/${version}/`,
       assetsDir: "assets",
       chunkSizeWarningLimit: 1600,
       rollupOptions: {
         input: {
-          main: fileURLToPath(new URL(`./${version}/index.html`, import.meta.url)),
+          main: fileURLToPath(
+            new URL(`./${version}/index.html`, import.meta.url),
+          ),
         },
         output: {
           entryFileNames: `simulator-${version}.js`,
@@ -55,6 +62,23 @@ export default defineConfig(() => {
     },
     preview: {
       port: 4173,
+    },
+    css: {
+      preprocessorOptions: {
+        scss: {
+          /**
+          This is the code which silences the deprecation warnings coming from the external 
+          sass libraries currently targetted for bootstrap.
+           */
+          quietDeps: true,
+          logger: {
+            warn(message, options) {
+              if (options.deprecation) return;
+              console.warn(message);
+            },
+          },
+        },
+      },
     },
   };
 });

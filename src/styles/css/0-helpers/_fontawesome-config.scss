@@ -1,0 +1,9 @@
+@use "../../../../node_modules/@fortawesome/fontawesome-free/scss/variables"
+  with (
+  $fa-font-path:
+    "../../../../node_modules/@fortawesome/fontawesome-free/webfonts"
+);
+
+// 2. Now load the parts of FA you need
+@forward "../../../../node_modules/@fortawesome/fontawesome-free/scss/fontawesome";
+@forward "../../../../node_modules/@fortawesome/fontawesome-free/scss/solid";
