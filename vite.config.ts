@@ -71,12 +71,14 @@ export default defineConfig(() => {
           sass libraries currently targetted for bootstrap.
            */
           quietDeps: true,
-          logger: {
-            warn(message, options) {
-              if (options.deprecation) return;
-              console.warn(message);
-            },
-          },
+          silenceDeprecations: [
+            "legacy-js-api",
+            "import",
+            "global-builtin",
+            "color-functions",
+            "abs-percent",
+            "if-function",
+          ],
         },
       },
     },
