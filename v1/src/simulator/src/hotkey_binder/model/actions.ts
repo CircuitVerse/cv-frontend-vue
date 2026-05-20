@@ -3,7 +3,15 @@ import { defaultKeys } from "../defaultKeys";
 import { addShortcut } from "./addShortcut";
 import { updateHTML } from "../view/panel.ui";
 import { simulationArea } from "../../simulationArea";
-import { scheduleUpdate, wireToBeCheckedSet, updateCanvasSet } from "../../engine";
+import {
+  scheduleUpdate,
+  wireToBeCheckedSet,
+  updateCanvasSet,
+} from "../../engine";
+
+// Reusing logic from ux.js
+
+import { fullView, exitFullView, isFullViewActive } from "#/simulator/src/ux";
 
 import { getOS } from "./utils";
 import { shortcut } from "./shortcuts.plugin";
@@ -159,7 +167,8 @@ export const setDefault = (): void => {
 const getMacDefaultKeys = (): KeyMap => {
   const macDefaultKeys: KeyMap = {};
   Object.entries(defaultKeys).forEach(([key, value]) => {
-    macDefaultKeys[key] = value.split(" + ")[0] === "Ctrl" ? value.replace("Ctrl", "Meta") : value;
+    macDefaultKeys[key] =
+      value.split(" + ")[0] === "Ctrl" ? value.replace("Ctrl", "Meta") : value;
   });
   return macDefaultKeys;
 };
@@ -176,7 +185,11 @@ export const warnOverride = (
   const preferenceChildren = document.getElementById("preference")?.children;
   if (!preferenceChildren) return;
 
-  const isComboAssigned = checkIfComboIsAssigned(combo, target, preferenceChildren);
+  const isComboAssigned = checkIfComboIsAssigned(
+    combo,
+    target,
+    preferenceChildren,
+  );
   if (isComboAssigned) {
     warning.value = `This key(s) is already assigned to: ${isComboAssigned}, press Enter to override.`;
     setEditElementBorder("#dc5656");
@@ -193,10 +206,13 @@ const checkIfComboIsAssigned = (
   target: HTMLElement,
   preferenceChildren: HTMLCollection,
 ): string | undefined => {
-  return Array.from(preferenceChildren).reduce<string | undefined>((acc, child) => {
-    if (acc) return acc;
-    return getAssigneeFromPreference(child, combo, target);
-  }, undefined);
+  return Array.from(preferenceChildren).reduce<string | undefined>(
+    (acc, child) => {
+      if (acc) return acc;
+      return getAssigneeFromPreference(child, combo, target);
+    },
+    undefined,
+  );
 };
 
 /**
@@ -228,7 +244,8 @@ const getAssigneeFromPreference = (
 const setEditElementBorder = (color: string): void => {
   const editElement = document.getElementById("edit");
   if (editElement) {
-    editElement.style.border = color === "none" ? "none" : `1.5px solid ${color}`;
+    editElement.style.border =
+      color === "none" ? "none" : `1.5px solid ${color}`;
   }
 };
 
@@ -247,9 +264,15 @@ export const elementDirection = (direct: string) => (): void => {
  * Update label direction
  */
 export const labelDirection = (direct: string) => (): void => {
-  if (simulationArea.lastSelected && !simulationArea.lastSelected.labelDirectionFixed) {
+  if (
+    simulationArea.lastSelected &&
+    !simulationArea.lastSelected.labelDirectionFixed
+  ) {
     simulationArea.lastSelected.labelDirection = direct.toUpperCase();
-    updateSelectElement("select[name^='newLabelDirection']", direct.toUpperCase());
+    updateSelectElement(
+      "select[name^='newLabelDirection']",
+      direct.toUpperCase(),
+    );
     updateSystem();
   }
 };
@@ -270,7 +293,9 @@ const updateSelectElement = (selector: string, value: string): void => {
 export const insertLabel = (): void => {
   if (!simulationArea.lastSelected) return;
 
-  const labelInput = document.querySelector<HTMLInputElement>("input[name^='setLabel']");
+  const labelInput = document.querySelector<HTMLInputElement>(
+    "input[name^='setLabel']",
+  );
   if (!labelInput) return;
 
   focusAndSetLabel(labelInput);
@@ -332,7 +357,8 @@ export const openHotkey = (): void => {
  * Open documentation
  */
 export const openDocumentation = (): void => {
-  const url = simulationArea.lastSelected?.helplink || "https://docs.circuitverse.org/";
+  const url =
+    simulationArea.lastSelected?.helplink || "https://docs.circuitverse.org/";
   window.open(url, "_blank");
 };
 
@@ -344,3 +370,43 @@ function updateSystem(): void {
   wireToBeCheckedSet(1);
   scheduleUpdate(1);
 }
+
+/**
+ * Open the Element Search bar
+ */
+
+export const activateSearchBar = (): void => {
+  const maximizeBtn = document.querySelector<HTMLElement>(
+    ".elementPanel .maximize",
+  );
+  if (maximizeBtn) {
+    maximizeBtn.click();
+  }
+
+  const searchBarInput = document.querySelector<HTMLInputElement>(
+    "#element-search-input",
+  );
+  if (searchBarInput) {
+    searchBarInput.focus();
+  }
+};
+
+/**
+ * Preview Circuit
+ */
+
+export const previewCircuit = (): void => {
+  if (isFullViewActive == false) {
+    fullView();
+  } else {
+    exitFullView();
+  }
+};
+
+/**
+ * Fit to screen
+ */
+
+export const fitToScreen = (): void => {
+  globalScope.centerFocus(false);
+};

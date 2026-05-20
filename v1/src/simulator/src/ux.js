@@ -23,6 +23,7 @@ export const uxvar = {
     smartDropXX: 50,
     smartDropYY: 80,
 }
+
 /**
  * @type {number} - Is used to calculate the position where an element from sidebar is dropped
  * @category ux
@@ -44,8 +45,8 @@ var ctxPos = {
     y: 0,
     visible: false,
 }
-let isFullViewActive = false
-let prevMobileState = null 
+export let isFullViewActive = false
+let prevMobileState = null
 // FUNCTION TO SHOW AND HIDE CONTEXT MENU
 function hideContextMenu() {
     var el = document.getElementById('contextMenu')
@@ -252,7 +253,7 @@ export function hideProperties() {
     $('.objectPropertyAttribute').unbind('change keyup paste click')
 }
 /**
- * checkss the input is safe or not
+ * checks the input is safe or not
  * @param {HTML} unsafe - the html which we wants to escape
  * @category ux
  */
@@ -280,7 +281,7 @@ export function deleteSelected() {
         if (
             !(
                 simulationArea.multipleObjectSelections[i].objectType ===
-                    'Node' &&
+                'Node' &&
                 simulationArea.multipleObjectSelections[i].type !== 2
             )
         )
@@ -432,7 +433,7 @@ export function exitFullView() {
 
     // Mobile Components - Restore previous state
     const simulatorMobileStore = toRefs(useSimulatorMobileStore())
-    
+
     // ✅ RESTORE PREVIOUS STATE
     if (prevMobileState) {
         simulatorMobileStore.showElementsPanel.value = prevMobileState.showElementsPanel
@@ -450,7 +451,7 @@ export function exitFullView() {
 export function fullView() {
     // Prevent multiple calls
     if (isFullViewActive) return
-    
+
     const app = document.querySelector('#app')
     if (!app) return
 
@@ -475,7 +476,7 @@ export function fullView() {
 
     // Mobile Components - Save previous state before hiding
     const simulatorMobileStore = toRefs(useSimulatorMobileStore())
-    
+
     // ✅ SAVE PREVIOUS STATE
     prevMobileState = {
         showElementsPanel: simulatorMobileStore.showElementsPanel.value,

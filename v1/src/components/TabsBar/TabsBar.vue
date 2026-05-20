@@ -1,56 +1,54 @@
 <template>
-    <div
-        id="tabsBar"
-        class="noSelect pointerCursor"
-        :class="[embedClass(), { maxHeightStyle: showMaxHeight }]"
+  <div
+    id="tabsBar"
+    class="noSelect pointerCursor"
+    :class="[embedClass(), { maxHeightStyle: showMaxHeight }]"
+  >
+    <draggable
+      :key="updateCount"
+      :item-key="updateCount.toString()"
+      v-model="SimulatorState.circuit_list"
+      class="list-group"
+      tag="transition-group"
+      :component-data="{
+        tag: 'div',
+        type: 'transition-group',
+        name: !drag ? 'flip-list' : null,
+      }"
+      v-bind="dragOptions"
+      @start="drag = true"
+      @end="drag = false"
     >
-        <draggable
-            :key="updateCount"
-            :item-key="updateCount.toString()"
-            v-model="SimulatorState.circuit_list"
-            class="list-group"
-            tag="transition-group"
-            :component-data="{
-                tag: 'div',
-                type: 'transition-group',
-                name: !drag ? 'flip-list' : null,
-            }"
-            v-bind="dragOptions"
-            @start="drag = true"
-            @end="drag = false"
+      <template #item="{ element }">
+        <div
+          :id="element.id"
+          :key="element.id"
+          style=""
+          class="circuits toolbarButton"
+          :class="tabsbarClasses(element)"
+          draggable="true"
+          @click="switchCircuit(element.id)"
         >
-            <template #item="{ element }">
-                <div
-                    :id="element.id"
-                    :key="element.id"
-                    style=""
-                    class="circuits toolbarButton"
-                    :class="tabsbarClasses(element)"
-                    draggable="true"
-                    @click="switchCircuit(element.id)"
-                >
-                    <span class="circuitName noSelect" @mousedown="circuitNameClicked">
-                        {{ truncateString(element.name, 18) }}
-                    </span>
-                    <span
-                        v-if="!isEmbed()"
-                        :id="element.id"
-                        class="tabsCloseButton"
-                        @click.stop="closeCircuit(element)"
-                    >
-                        <v-icon class="tabsbar-close">mdi-close</v-icon>
-                    </span>
-                </div>
-            </template>
-        </draggable>
-        <button v-if="!isEmbed()" @click="createNewCircuitScope()">
-            &#43;
-        </button>
-        <button class="tabsbar-toggle" @click="toggleHeight">
-            <i :class="showMaxHeight ? 'fa fa-chevron-down' : 'fa fa-chevron-up'"></i>
-        </button>
-    </div>
-    <!-- <MessageBox
+          <span class="circuitName noSelect" @mousedown="circuitNameClicked">
+            {{ truncateString(element.name, 18) }}
+          </span>
+          <span
+            v-if="!isEmbed()"
+            :id="element.id"
+            class="tabsCloseButton"
+            @click.stop="closeCircuit(element)"
+          >
+            <v-icon class="tabsbar-close">mdi-close</v-icon>
+          </span>
+        </div>
+      </template>
+    </draggable>
+    <button v-if="!isEmbed()" @click="createNewCircuitScope()">&#43;</button>
+    <button class="tabsbar-toggle" @click="toggleHeight">
+      <i :class="showMaxHeight ? 'fa fa-chevron-down' : 'fa fa-chevron-up'"></i>
+    </button>
+  </div>
+  <!-- <MessageBox
         v-model="SimulatorState.dialogBox.create_circuit"
         :circuit-item="circuitToBeDeleted"
         :button-list="buttonArr"
@@ -66,29 +64,29 @@
 </template>
 
 <script lang="ts" setup>
-import draggable from 'vuedraggable'
-import { showMessage, truncateString } from '#/simulator/src/utils'
-import { ref, Ref } from 'vue'
+import draggable from "vuedraggable";
+import { showMessage, truncateString } from "#/simulator/src/utils";
+import { ref, Ref } from "vue";
 import {
-    createNewCircuitScope,
-    // deleteCurrentCircuit,
-    // getDependenciesList,
-    // scopeList,
-    switchCircuit,
-} from '#/simulator/src/circuit'
+  createNewCircuitScope,
+  // deleteCurrentCircuit,
+  // getDependenciesList,
+  // scopeList,
+  switchCircuit,
+} from "#/simulator/src/circuit";
 // import MessageBox from '#/components/MessageBox/messageBox.vue'
-import { useState } from '#/store/SimulatorStore/state'
-import { closeCircuit } from '../helpers/deleteCircuit/DeleteCircuit.vue'
-import { circuitNameClicked } from '#/simulator/src/circuit'
+import { useState } from "#/store/SimulatorStore/state";
+import { closeCircuit } from "../helpers/deleteCircuit/DeleteCircuit.vue";
+import { circuitNameClicked } from "#/simulator/src/circuit";
 
-const SimulatorState = useState()
-const drag: Ref<boolean> = ref(false)
-const updateCount: Ref<number> = ref(0)
+const SimulatorState = useState();
+const drag: Ref<boolean> = ref(false);
+const updateCount: Ref<number> = ref(0);
 
-const showMaxHeight = ref(true)
+const showMaxHeight = ref(true);
 
 function toggleHeight() {
-    showMaxHeight.value = !showMaxHeight.value
+  showMaxHeight.value = !showMaxHeight.value;
 }
 
 // const persistentShow: Ref<boolean> = ref(false)
@@ -247,114 +245,112 @@ function toggleHeight() {
 // }
 
 function dragOptions(): Object {
-    return {
-        animation: 200,
-        group: 'description',
-        disabled: false,
-        ghostClass: 'ghost',
-    }
+  return {
+    animation: 200,
+    group: "description",
+    disabled: false,
+    ghostClass: "ghost",
+  };
 }
 
 function tabsbarClasses(e: any): string {
-    let class_list = ''
-    if ((window as any).embed) {
-        class_list = 'embed-tabs'
-    }
-    if (e.focussed) {
-        class_list += ' current'
-    }
-    return class_list
+  let class_list = "";
+  if ((window as any).embed) {
+    class_list = "embed-tabs";
+  }
+  if (e.focussed) {
+    class_list += " current";
+  }
+  return class_list;
 }
 
 function embedClass(): string {
-    if ((window as any).embed) {
-        return 'embed-tabbar'
-    }
-    return ''
+  if ((window as any).embed) {
+    return "embed-tabbar";
+  }
+  return "";
 }
 
 function isEmbed(): boolean {
-    return (window as any).embed
+  return (window as any).embed;
 }
 </script>
 
 <style scoped>
 #tabsBar {
-    padding-right: 50px;
-    position: relative;
-    overflow: hidden;
-    padding-bottom: 2.5px;
-    z-index: 1;
+  padding-right: 50px;
+  position: relative;
+  overflow: hidden;
+  padding-bottom: 2.5px;
+  z-index: 1;
 }
 
 #tabsBar.embed-tabbar {
-    background-color: transparent;
+  background-color: transparent;
 }
 
 #tabsBar.embed-tabbar .circuits {
-    border: 1px solid var(--br-circuit);
-    color: var(--text-circuit);
-    background-color: var(--bg-tabs) !important;
+  border: 1px solid var(--br-circuit);
+  color: var(--text-circuit);
+  background-color: var(--bg-tabs) !important;
 }
 
 #tabsBar.embed-tabbar .circuits:hover {
-    background-color: var(--bg-circuit) !important;
+  background-color: var(--bg-circuit) !important;
 }
 
 #tabsBar.embed-tabbar .current {
-    color: var(--text-circuit);
-    background-color: var(--bg-circuit) !important;
-    /* border: 1px solid var(--br-circuit-cur); */
+  color: var(--text-circuit);
+  background-color: var(--bg-circuit) !important;
+  /* border: 1px solid var(--br-circuit-cur); */
 }
 
 #tabsBar button {
-    font-size: 1rem;
-    height: 20px;
-    width: 20px;
+  font-size: 1rem;
+  height: 20px;
+  width: 20px;
 }
 
 #tabsBar.embed-tabbar button {
-    color: var(--text-panel);
-    background-color: var(--primary);
-    border: 1px solid var(--br-circuit-cur);
+  color: var(--text-panel);
+  background-color: var(--primary);
+  border: 1px solid var(--br-circuit-cur);
 }
 
 #tabsBar.embed-tabbar button:hover {
-    color: var(--text-panel);
-    border: 1px solid var(--br-circuit-cur);
+  color: var(--text-panel);
+  border: 1px solid var(--br-circuit-cur);
 }
 
 .list-group {
-    display: inline;
+  display: inline;
 }
 
 .maxHeightStyle {
-    height: 30px;
-    max-height: 30px;
+  height: 30px;
+  max-height: 30px;
 }
 
 .toolbarButton {
-    height: 22px;
+  height: 22px;
 }
 
 .tabsbar-toggle {
-    position: absolute;
-    right: 2.5px;
-    top: 2.5px;
+  position: absolute;
+  right: 2.5px;
+  top: 2.5px;
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .tabsbar-toggle i {
-    margin-bottom: -5px;
+  margin-bottom: -5px;
 }
 
-
 .tabsbar-close {
-    font-size: 1rem;
+  font-size: 1rem;
 }
 </style>
 
