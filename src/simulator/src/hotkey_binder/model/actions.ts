@@ -5,9 +5,13 @@ import { updateHTML } from "../view/panel.ui";
 import { simulationArea } from "../../simulationArea";
 import { scheduleUpdate, wireToBeCheckedSet, updateCanvasSet } from "../../engine";
 
+// Next tick Import
+
+import { nextTick } from "vue";
+
 // Reusing logic from ux.js
 
-import { fullView, exitFullView } from "#/simulator/src/ux";
+import { fullView, exitFullView, isFullViewActive } from "#/simulator/src/ux";
 
 import { getOS } from "./utils";
 import { shortcut } from "./shortcuts.plugin";
@@ -353,10 +357,11 @@ function updateSystem(): void {
  * Open the Element Search bar
  */
 
-export const activateSearchBar = (): void => {
+export const activateSearchBar = async (): Promise<void> => {
   const maximizeBtn = document.querySelector<HTMLElement>(".elementPanel .maximize");
   if (maximizeBtn) {
     maximizeBtn.click();
+    await nextTick();
   }
 
   const searchBarInput = document.querySelector<HTMLInputElement>("#element-search-input");
@@ -369,17 +374,11 @@ export const activateSearchBar = (): void => {
  * Preview Circuit
  */
 
-let preview = false;
-
 export const previewCircuit = (): void => {
-  if (preview == false) {
+  if (!isFullViewActive) {
     fullView();
-    preview = true;
-    console.log(preview + ", Full View");
   } else {
-    console.log("Exited full view");
     exitFullView();
-    preview = false;
   }
 };
 
