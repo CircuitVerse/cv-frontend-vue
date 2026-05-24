@@ -63,24 +63,5 @@ export default defineConfig(() => {
     preview: {
       port: 4173,
     },
-    css: {
-      preprocessorOptions: {
-        scss: {
-          /**
-          This is the code which silences the deprecation warnings coming from the external 
-          sass libraries currently targetted for bootstrap.
-           */
-          quietDeps: true,
-          silenceDeprecations: [
-            "legacy-js-api",
-            "import",
-            "global-builtin",
-            "color-functions",
-            "abs-percent",
-            "if-function",
-          ],
-        },
-      },
-    },
   };
 });
