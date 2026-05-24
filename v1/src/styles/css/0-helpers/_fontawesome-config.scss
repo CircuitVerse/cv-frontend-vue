@@ -1,7 +1,7 @@
 @use "../../../../../node_modules/@fortawesome/fontawesome-free/scss/variables"
   with (
   $fa-font-path:
-    "../../../../node_modules/@fortawesome/fontawesome-free/webfonts",
+    "../../../../../node_modules/@fortawesome/fontawesome-free/webfonts",
   $fa-li-margin: 2.5em,
   $fa-fw-width: 1.25em
 );
