@@ -141,7 +141,7 @@ export default class Decoder extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         ) {
             ctx.fillStyle = colors['hover_select']
         }
@@ -251,5 +251,5 @@ export default class Decoder extends CircuitElement {
 Decoder.prototype.tooltipText =
     'Decoder ToolTip : Converts coded inputs into coded outputs.'
 Decoder.prototype.helplink =
-    'https://docs.circuitverse.org/#/chapter4/5muxandplex?id=decoder'
+    'https://docs.circuitverse.org/chapter4/chapter4-muxandplex#decoder'
 Decoder.prototype.objectType = 'Decoder'

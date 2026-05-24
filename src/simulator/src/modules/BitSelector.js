@@ -118,7 +118,7 @@ export default class BitSelector extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         )
             ctx.fillStyle = colors['hover_select']
         ctx.fill()
@@ -153,7 +153,7 @@ export default class BitSelector extends CircuitElement {
 BitSelector.prototype.tooltipText =
     'BitSelector ToolTip : Divides input bits into several equal-sized groups.'
 BitSelector.prototype.helplink =
-    'https://docs.circuitverse.org/#/chapter4/5muxandplex?id=bitselector'
+    'https://docs.circuitverse.org/chapter4/chapter4-muxandplex#bitselector'
 
 /**
  * @memberof BitSelector

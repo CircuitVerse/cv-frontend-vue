@@ -93,7 +93,7 @@ export default class MSB extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         )
         ctx.fillStyle = colors['hover_select']
         ctx.fill()
@@ -132,5 +132,5 @@ export default class MSB extends CircuitElement {
 MSB.prototype.tooltipText =
     'MSB ToolTip : The most significant bit or the high-order bit.'
 MSB.prototype.helplink =
-    'https://docs.circuitverse.org/#/chapter4/5muxandplex?id=most-significant-bit-msb-detector'
+    'https://docs.circuitverse.org/chapter4/chapter4-muxandplex#most-significant-bit-msb-detector'
 MSB.prototype.objectType = 'MSB'

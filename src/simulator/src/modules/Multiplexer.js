@@ -211,7 +211,7 @@ export default class Multiplexer extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         ) {
             ctx.fillStyle = colors['hover_select']
         }
@@ -320,7 +320,7 @@ export default class Multiplexer extends CircuitElement {
 Multiplexer.prototype.tooltipText =
     'Multiplexer ToolTip : Multiple inputs and a single line output.'
 Multiplexer.prototype.helplink =
-    'https://docs.circuitverse.org/#/chapter4/5muxandplex?id=multiplexer'
+    'https://docs.circuitverse.org/chapter4/chapter4-muxandplex#multiplexer'
 
 /**
  * @memberof Multiplexer

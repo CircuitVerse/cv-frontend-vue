@@ -142,7 +142,7 @@ export default class Counter extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected == this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         ) {
             ctx.fillStyle = 'rgba(255, 255, 32,0.6)'
             ctx.fill()
@@ -182,8 +182,7 @@ export default class Counter extends CircuitElement {
 Counter.prototype.tooltipText =
     'Counter: a binary counter from zero to a given maximum value'
 Counter.prototype.helplink =
-    'https://docs.circuitverse.org/#/chapter4/2input?id=counter'
-Counter.prototype.objectType = 'Counter'
+    'https://docs.circuitverse.org/chapter4/chapter4-input#counter'
 Counter.prototype.objectType = 'Counter'
 Counter.prototype.canShowInSubcircuit = true
 Counter.prototype.layoutProperties = {
