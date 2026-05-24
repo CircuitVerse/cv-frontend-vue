@@ -168,6 +168,6 @@ RGBLed.prototype.tooltipText =
  * @type {string}
  * @category modules
  */
-RGBLed.prototype.helplink = 'https://docs.circuitverse.org/#/chapter4/3output?id=rgbled'
+RGBLed.prototype.helplink = 'https://docs.circuitverse.org/chapter4/chapter4-output#rgbled'
 RGBLed.prototype.objectType = 'RGBLed'
 RGBLed.prototype.canShowInSubcircuit = true
