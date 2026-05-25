@@ -1,13 +1,32 @@
 import { vi, afterEach } from "vitest";
 
+import jQuery from "jquery";
+
 global.window = window;
-global.jQuery = require("jquery");
+global.jQuery = jQuery;
 global.DPR = true;
 global.width = true;
 global.height = true;
 
-window.Jquery = require("jquery");
-window.$ = require("jquery");
+// Vuetify 3.7+ accesses visualViewport in VOverlay which jsdom doesn't provide
+if (!global.visualViewport) {
+  global.visualViewport = {
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    width: 1024,
+    height: 768,
+    offsetLeft: 0,
+    offsetTop: 0,
+    pageLeft: 0,
+    pageTop: 0,
+    scale: 1,
+    onresize: null,
+    onscroll: null,
+  } as any;
+}
+
+window.Jquery = jQuery;
+window.$ = jQuery;
 window.restrictedElements = [];
 window.userSignedIn = true;
 window.embed = false;
