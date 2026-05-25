@@ -27,7 +27,7 @@ if (!global.visualViewport) {
   window.visualViewport = visualViewportMock;
 }
 
-window.Jquery = jQuery;
+window.jQuery = jQuery;
 window.$ = jQuery;
 window.restrictedElements = [];
 window.userSignedIn = true;
