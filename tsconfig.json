@@ -3,7 +3,7 @@
         "target": "esnext",
         "useDefineForClassFields": true,
         "module": "esnext",
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
         "strict": true,
         "jsx": "preserve",
         "sourceMap": true,
@@ -22,7 +22,7 @@
         "emitDeclarationOnly": true,
         "outDir": "dist",
         "declarationMap": true,
-        "types": ["vite/client", "@tauri-apps/api/tauri"]
+        "types": ["vite/client"]
     },
     "include": [
         "v0/src/**/*.ts",
