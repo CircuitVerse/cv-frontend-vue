@@ -42,7 +42,6 @@ interface LayoutElementGroup {
 }
 
 export const useState = defineStore("simulatorStore.state", {
-
   state: (): State => {
     return {
       title: "Welcome to CircuitVerse Simulator",

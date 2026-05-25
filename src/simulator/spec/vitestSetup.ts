@@ -10,7 +10,7 @@ global.height = true;
 
 // Vuetify 3.7+ accesses visualViewport in VOverlay which jsdom doesn't provide
 if (!global.visualViewport) {
-  global.visualViewport = {
+  const visualViewportMock = {
     addEventListener: vi.fn(),
     removeEventListener: vi.fn(),
     width: 1024,
@@ -23,6 +23,8 @@ if (!global.visualViewport) {
     onresize: null,
     onscroll: null,
   } as any;
+  global.visualViewport = visualViewportMock;
+  window.visualViewport = visualViewportMock;
 }
 
 window.Jquery = jQuery;
