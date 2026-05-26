@@ -99,7 +99,7 @@ export default class LSB extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         )
         ctx.fillStyle = colors['hover_select']
         ctx.fill()
@@ -135,5 +135,5 @@ export default class LSB extends CircuitElement {
 LSB.prototype.tooltipText =
     'LSB ToolTip : The least significant bit or the low-order bit.'
 LSB.prototype.helplink =
-    'https://docs.circuitverse.org/#/chapter4/5muxandplex?id=least-significant-bit-lsb-detector'
+    'https://docs.circuitverse.org/chapter4/chapter4-muxandplex#least-significant-bit-lsb-detector'
 LSB.prototype.objectType = 'LSB'

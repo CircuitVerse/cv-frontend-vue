@@ -26,7 +26,8 @@ export default class PriorityEncoder extends CircuitElement {
             this.yOff = 2
         }
 
-        this.setDimensions(20, this.yOff * 5 * this.inputSize)
+        this.setDimensions(20, this.yOff * 5 * this.inputSize + 10);
+        this.rightDimensionX += 10;
         this.directionFixed = true
         this.rectangleObject = false
 
@@ -179,7 +180,7 @@ export default class PriorityEncoder extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         )
             ctx.fillStyle = colors['hover_select']
         ctx.fill()
@@ -269,5 +270,5 @@ export default class PriorityEncoder extends CircuitElement {
 PriorityEncoder.prototype.tooltipText =
     'Priority Encoder ToolTip : Compresses binary inputs into a smaller number of outputs.'
 PriorityEncoder.prototype.helplink =
-    'https://docs.circuitverse.org/#/chapter4/5muxandplex?id=priority-encoder'
+    'https://docs.circuitverse.org/chapter4/chapter4-muxandplex#priority-encoder'
 PriorityEncoder.prototype.objectType = 'PriorityEncoder'

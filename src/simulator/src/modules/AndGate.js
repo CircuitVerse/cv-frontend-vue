@@ -123,7 +123,7 @@ export default class AndGate extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         )
             ctx.fillStyle = colors['hover_select']
         ctx.fill()
@@ -142,7 +142,7 @@ export default class AndGate extends CircuitElement {
  * @category modules
  */
 AndGate.prototype.tooltipText =
-    'And Gate Tooltip : Implements logical conjunction'
+    'And Gate ToolTip : Implements logical conjunction'
 
 /**
  * @memberof AndGate
@@ -164,5 +164,5 @@ AndGate.prototype.verilogType = 'and'
  * @category modules
  */
 AndGate.prototype.changeInputSize = changeInputSize
-AndGate.prototype.helplink = 'https://docs.circuitverse.org/#/chapter4/4gates?id=and-gate'
+AndGate.prototype.helplink = 'https://docs.circuitverse.org/chapter4/chapter4-gates#and-gate'
 AndGate.prototype.objectType = 'AndGate'

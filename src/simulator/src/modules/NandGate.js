@@ -117,7 +117,7 @@ export default class NandGate extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         )
             ctx.fillStyle = colors['hover_select']
         ctx.fill()
@@ -162,5 +162,5 @@ NandGate.prototype.changeInputSize = changeInputSize
  */
 NandGate.prototype.verilogType = 'nand'
 NandGate.prototype.helplink =
-    'https://docs.circuitverse.org/#/chapter4/4gates?id=nand-gate'
+    'https://docs.circuitverse.org/chapter4/chapter4-gates#nand-gate'
 NandGate.prototype.objectType = 'NandGate'

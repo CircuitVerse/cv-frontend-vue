@@ -130,7 +130,7 @@ export default class NorGate extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         )
         ctx.fillStyle = colors['hover_select']
         ctx.fill()
@@ -175,5 +175,5 @@ NorGate.prototype.changeInputSize = changeInputSize
  * @category modules
  */
 NorGate.prototype.verilogType = 'nor'
-NorGate.prototype.helplink = 'https://docs.circuitverse.org/#/chapter4/4gates?id=nor-gate'
+NorGate.prototype.helplink = 'https://docs.circuitverse.org/chapter4/chapter4-gates#nor-gate'
 NorGate.prototype.objectType = 'NorGate'

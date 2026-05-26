@@ -123,7 +123,7 @@ export default class Flag extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         )
             ctx.fillStyle = colors['hover_select']
         ctx.fill()
@@ -196,9 +196,9 @@ export default class Flag extends CircuitElement {
  * @category modules
  */
 Flag.prototype.tooltipText =
-    'FLag ToolTip: Use this for debugging and plotting.'
+    'Flag ToolTip: Use this for debugging and plotting.'
 Flag.prototype.helplink =
-    'https://docs.circuitverse.org/#/timing_diagrams?id=using-flags'
+    'https://docs.circuitverse.org/chapter4/chapter4-misc#flag'
 
 /**
  * @memberof Flag
@@ -207,7 +207,7 @@ Flag.prototype.helplink =
  * @category modules
  */
 Flag.prototype.helplink =
-    'https://docs.circuitverse.org/#/chapter4/8misc?id=tunnel'
+    'https://docs.circuitverse.org/chapter4/chapter4-misc#tunnel'
 
 /**
  * @memberof Flag

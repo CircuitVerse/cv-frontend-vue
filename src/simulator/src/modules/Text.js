@@ -125,7 +125,7 @@ export default class Text extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         ) {
             ctx.beginPath()
             ctx.fillStyle = colors['fill']
@@ -176,7 +176,7 @@ Text.prototype.tooltipText = 'Text ToolTip: Use this to document your circuit.'
  * @category modules
  */
 Text.prototype.helplink =
-    'https://docs.circuitverse.org/#/chapter4/7annotation?id=text'
+    'https://docs.circuitverse.org/chapter4/chapter4-annotation#text'
 
 /**
  * @memberof Text

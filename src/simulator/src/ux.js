@@ -13,9 +13,11 @@ import { simulationArea } from './simulationArea'
 import logixFunction from './data'
 import { circuitProperty } from './circuit'
 import { updateRestrictedElementsInScope } from './restrictedElementDiv'
-import { updateTestbenchUI, setupTestbenchUI } from './testbench'
 import { dragging } from './drag'
+import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
+import { toRefs } from 'vue'
 import { circuitElementList } from './metadata'
+import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 
 export const uxvar = {
     smartDropXX: 50,
@@ -42,7 +44,9 @@ var ctxPos = {
     y: 0,
     visible: false,
 }
-// FUNCITON TO SHOW AND HIDE CONTEXT MENU
+let isFullViewActive = false
+let prevMobileState = null
+// FUNCTION TO SHOW AND HIDE CONTEXT MENU
 function hideContextMenu() {
     var el = document.getElementById('contextMenu')
     el.style = 'opacity:0;'
@@ -248,7 +252,7 @@ export function hideProperties() {
     $('.objectPropertyAttribute').unbind('change keyup paste click')
 }
 /**
- * checkss the input is safe or not
+ * checks the input is safe or not
  * @param {HTML} unsafe - the html which we wants to escape
  * @category ux
  */
@@ -348,6 +352,11 @@ $('#octalInput').on('keyup', () => {
     setBaseValues(x)
 })
 
+
+export function minimizePanel(panelSelector) {
+    $(panelSelector + ' .minimize').trigger('click')
+}
+
 export function setupPanels() {
     dragging('#dragQPanel', '.quick-btn')
 
@@ -360,24 +369,17 @@ export function setupPanels() {
     setupPanelListeners('.testbench-manual-panel')
 
     // Minimize Timing Diagram (takes too much space)
-    $('.timing-diagram-panel .minimize').trigger('click')
+    minimizePanel('.timing-diagram-panel')
 
-    // Update the Testbench Panel UI
-    updateTestbenchUI()
     // Minimize Testbench UI
-    $('.testbench-manual-panel .minimize').trigger('click')
-
-    // Hack because minimizing panel then maximizing sets visibility recursively
-    // updateTestbenchUI calls some hide()s which are undone by maximization
-    // TODO: Remove hack
-    $('.testbench-manual-panel .maximize').on('click', setupTestbenchUI)
+    minimizePanel('.testbench-manual-panel')
 
     $('#projectName').on('click', () => {
         $("input[name='setProjectName']").focus().select()
     })
 }
 
-function setupPanelListeners(panelSelector) {
+export function setupPanelListeners(panelSelector) {
     var headerSelector = `${panelSelector} .panel-header`
     var minimizeSelector = `${panelSelector} .minimize`
     var maximizeSelector = `${panelSelector} .maximize`
@@ -386,43 +388,76 @@ function setupPanelListeners(panelSelector) {
     dragging(headerSelector, panelSelector)
     // Current Panel on Top
     var minimized = false
-    $(headerSelector).on('dblclick', () =>
-        minimized
-            ? $(maximizeSelector).trigger('click')
-            : $(minimizeSelector).trigger('click')
-    )
+    $(headerSelector)
+        .off('dblclick.panelListeners')
+        .on('dblclick.panelListeners', () =>
+            minimized
+                ? $(maximizeSelector).trigger('click')
+                : $(minimizeSelector).trigger('click')
+        )
     // Minimize
-    $(minimizeSelector).on('click', () => {
-        $(bodySelector).hide()
-        $(minimizeSelector).hide()
-        $(maximizeSelector).show()
-        minimized = true
-    })
+    $(minimizeSelector)
+        .off('click.panelListeners')
+        .on('click.panelListeners', () => {
+            $(bodySelector).hide()
+            $(minimizeSelector).hide()
+            $(maximizeSelector).show()
+            minimized = true
+        })
     // Maximize
-    $(maximizeSelector).on('click', () => {
-        $(bodySelector).show()
-        $(minimizeSelector).show()
-        $(maximizeSelector).hide()
-        minimized = false
-    })
+    $(maximizeSelector)
+        .off('click.panelListeners')
+        .on('click.panelListeners', () => {
+            $(bodySelector).show()
+            $(minimizeSelector).show()
+            $(maximizeSelector).hide()
+            minimized = false
+        })
 }
 
 export function exitFullView() {
-    const exitViewBtn = document.querySelector('#exitViewBtn')
-    if (exitViewBtn) exitViewBtn.remove()
+    // Remove ALL exit buttons (handles edge cases)
+    const exitViewBtns = document.querySelectorAll('#exitViewBtn')
+    exitViewBtns.forEach(btn => btn.remove())
 
     const elements = document.querySelectorAll(
         '.navbar, .modules, .report-sidebar, #tabsBar, #moduleProperty, .timing-diagram-panel, .testbench-manual-panel, .quick-btn'
     )
+
     elements.forEach((element) => {
         if (element instanceof HTMLElement) {
             element.style.display = ''
         }
     })
+
+    // Mobile Components - Restore previous state
+    const simulatorMobileStore = toRefs(useSimulatorMobileStore())
+    
+    // ✅ RESTORE PREVIOUS STATE
+    if (prevMobileState) {
+        simulatorMobileStore.showElementsPanel.value = prevMobileState.showElementsPanel
+        simulatorMobileStore.showPropertiesPanel.value = prevMobileState.showPropertiesPanel
+        simulatorMobileStore.showTimingDiagram.value = prevMobileState.showTimingDiagram
+        simulatorMobileStore.showQuickButtons.value = prevMobileState.showQuickButtons
+        simulatorMobileStore.showMobileButtons.value = prevMobileState.showMobileButtons
+        prevMobileState = null // Clear saved state
+    }
+
+    // Reset state flag
+    isFullViewActive = false
 }
 
 export function fullView() {
+    // Prevent multiple calls
+    if (isFullViewActive) return
+    
     const app = document.querySelector('#app')
+    if (!app) return
+
+    // Close all menus using custom event (Vue-safe approach)
+    document.dispatchEvent(new Event('ui:close-menus'))
+
+    isFullViewActive = true
 
     const exitViewEl = document.createElement('button')
     exitViewEl.id = 'exitViewBtn'
@@ -431,65 +466,73 @@ export function fullView() {
     const elements = document.querySelectorAll(
         '.navbar, .modules, .report-sidebar, #tabsBar, #moduleProperty, .timing-diagram-panel, .testbench-manual-panel, .quick-btn'
     )
+
     elements.forEach((element) => {
         if (element instanceof HTMLElement) {
             element.style.display = 'none'
         }
     })
 
+    // Mobile Components - Save previous state before hiding
+    const simulatorMobileStore = toRefs(useSimulatorMobileStore())
+    
+    // ✅ SAVE PREVIOUS STATE
+    prevMobileState = {
+        showElementsPanel: simulatorMobileStore.showElementsPanel.value,
+        showPropertiesPanel: simulatorMobileStore.showPropertiesPanel.value,
+        showTimingDiagram: simulatorMobileStore.showTimingDiagram.value,
+        showQuickButtons: simulatorMobileStore.showQuickButtons.value,
+        showMobileButtons: simulatorMobileStore.showMobileButtons.value
+    }
+
+    simulatorMobileStore.showElementsPanel.value = false
+    simulatorMobileStore.showPropertiesPanel.value = false
+    simulatorMobileStore.showTimingDiagram.value = false
+    simulatorMobileStore.showQuickButtons.value = false
+    simulatorMobileStore.showMobileButtons.value = false
+
     app.appendChild(exitViewEl)
     exitViewEl.addEventListener('click', exitFullView)
 }
 
-/** 
+/**
     Fills the elements that can be displayed in the subcircuit, in the subcircuit menu
 **/
 export function fillSubcircuitElements() {
-    $('#subcircuitMenu').empty()
-    var subCircuitElementExists = false
+    const simulatorStore = SimulatorStore()
+    const { subCircuitElementList, isEmptySubCircuitElementList } = toRefs(simulatorStore)
+    subCircuitElementList.value = []
+    isEmptySubCircuitElementList.value = true
+
+    const subcircuitElements = []
+
+    let subCircuitElementExists = false
+
     for (let el of circuitElementList) {
         if (globalScope[el].length === 0) continue
         if (!globalScope[el][0].canShowInSubcircuit) continue
-        let tempHTML = ''
-
-        // add a panel for each existing group
-        tempHTML += `<div class="panelHeader">${el}s</div>`
-        tempHTML += `<div class="panel">`
 
         let available = false
+
+        const elementGroup = {
+            type: el,
+            elements: [],
+        }
 
         // add an SVG for each element
         for (let i = 0; i < globalScope[el].length; i++) {
             if (!globalScope[el][i].subcircuitMetadata.showInSubcircuit) {
-                tempHTML += `<div class="icon subcircuitModule" id="${el}-${i}" data-element-id="${i}" data-element-name="${el}">`
-                tempHTML += `<img src= "/img/${el}.svg">`
-                tempHTML += `<p class="img__description">${
-                    globalScope[el][i].label !== ''
-                        ? globalScope[el][i].label
-                        : 'unlabeled'
-                }</p>`
-                tempHTML += '</div>'
                 available = true
+                const element = globalScope[el][i];
+                elementGroup.elements.push(element);
             }
         }
-        tempHTML += '</div>'
         subCircuitElementExists = subCircuitElementExists || available
-        if (available) $('#subcircuitMenu').append(tempHTML)
+        if (available) {
+            subcircuitElements.push(elementGroup);
+        }
+
+        subCircuitElementList.value = subcircuitElements
+        isEmptySubCircuitElementList.value = !subCircuitElementExists
     }
-
-    if (!subCircuitElementExists) {
-        $('#subcircuitMenu').append('<p>No layout elements available</p>')
-    }
-
-    $('.subcircuitModule').mousedown(function () {
-        let elementName = this.dataset.elementName
-        let elementIndex = this.dataset.elementId
-
-        let element = globalScope[elementName][elementIndex]
-
-        element.subcircuitMetadata.showInSubcircuit = true
-        element.newElement = true
-        simulationArea.lastSelected = element
-        this.parentElement.removeChild(this)
-    })
 }

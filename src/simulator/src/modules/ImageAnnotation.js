@@ -112,7 +112,7 @@ export default class ImageAnnotation extends CircuitElement {
 
             if (
                 simulationArea.lastSelected === this ||
-                simulationArea.multipleObjectSelections.contains(this)
+                simulationArea.multipleObjectSelections.includes(this)
             ) {
                 ctx.fillStyle = 'rgba(255, 255, 32,0.1)'
                 ctx.fill()
@@ -240,3 +240,11 @@ ImageAnnotation.prototype.mutableProperties = {
         func: 'changeRowSize',
     },
 }
+/**
+ * @memberof ImageAnnotation
+ * Help URL
+ * @type {string}
+ * @category modules
+ */
+ImageAnnotation.prototype.helplink =
+    'https://docs.circuitverse.org/chapter4/chapter4-annotation#imageannotation'
