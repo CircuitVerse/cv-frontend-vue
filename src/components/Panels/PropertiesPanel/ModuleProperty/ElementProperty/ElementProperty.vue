@@ -122,8 +122,18 @@
 import { escapeHtml } from '#/simulator/src/utils'
 import InputGroups from '#/components/Panels/Shared/InputGroups.vue'
 import DropdownSelect from '#/components/Panels/Shared/DropdownSelect.vue'
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
 const props = defineProps({
     obj: { type: Object, default: undefined },
 })
-const labelDirections = ['RIGHT', 'DOWN', 'LEFT', 'UP']
+
+const { t } = useI18n()
+const labelDirections = computed(() => [
+    { label: t('simulator.panel_body.element_property.label_directions.right'), value: 'RIGHT' },
+    { label: t('simulator.panel_body.element_property.label_directions.down'),  value: 'DOWN'  },
+    { label: t('simulator.panel_body.element_property.label_directions.left'),  value: 'LEFT'  },
+    { label: t('simulator.panel_body.element_property.label_directions.up'),    value: 'UP'    },
+])
 </script>
