@@ -10,9 +10,9 @@
             <option
                 v-for="(arrayItem, index) in dropdownArray"
                 :key="index"
-                :value="arrayItem"
+                :value="typeof arrayItem === 'string' ? arrayItem : (arrayItem as any).value"
             >
-                {{ arrayItem }}
+                {{ typeof arrayItem === 'string' ? arrayItem : (arrayItem as any).label }}
             </option>
         </select>
     </p>
