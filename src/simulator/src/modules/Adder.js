@@ -1,7 +1,7 @@
 /* eslint-disable no-bitwise */
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 
 /**
  * @class
@@ -88,10 +88,13 @@ export default class Adder extends CircuitElement {
     }
 
     generateVerilog() {
+        let verilogCode = ''
         if (this.carryIn.verilogLabel) {
-            return `assign ${this.sum.verilogLabel} = ${this.inpA.verilogLabel} + ${this.inpB.verilogLabel} + ${this.carryIn.verilogLabel};`
+            verilogCode += `assign {${this.carryOut.verilogLabel}, ${this.sum.verilogLabel}} = ${this.inpA.verilogLabel} + ${this.inpB.verilogLabel} + ${this.carryIn.verilogLabel};\n`
+        } else {
+            verilogCode += `assign {${this.carryOut.verilogLabel}, ${this.sum.verilogLabel}} = ${this.inpA.verilogLabel} + ${this.inpB.verilogLabel};\n`
         }
-        return `assign ${this.sum.verilogLabel} = ${this.inpA.verilogLabel} + ${this.inpB.verilogLabel};`
+        return verilogCode
     }
 }
 
@@ -103,5 +106,5 @@ export default class Adder extends CircuitElement {
  */
 Adder.prototype.tooltipText = 'Adder ToolTip : Performs addition of numbers.'
 Adder.prototype.helplink =
-    'https://docs.circuitverse.org/#/miscellaneous?id=adder'
+    'https://docs.circuitverse.org/chapter4/chapter4-misc#adder'
 Adder.prototype.objectType = 'Adder'

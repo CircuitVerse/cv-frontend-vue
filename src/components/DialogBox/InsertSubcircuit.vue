@@ -26,10 +26,7 @@
                         :key="scopeId"
                     >
                         <label
-                            v-if="
-                                !value.checkDependency(scopeId) &&
-                                value.isVisible()
-                            "
+                            v-if="availableSubCircuits(value)"
                             class="option custom-radio inline"
                         >
                             <input
@@ -37,19 +34,27 @@
                                 name="subCircuitId"
                                 :value="scopeId"
                             />
-                            {{ getName(value) }}
+                            {{ value.name }}
                             <span></span>
                         </label>
                     </template>
-                    <p v-if="flag == true">
+                    <p v-if="flag">
                         Looks like there are no other circuits which doesn't
                         have this circuit as a dependency. Create a new one!
                     </p>
                 </div>
             </v-card-text>
             <v-card-actions>
-                <v-btn class="messageBtn" block @click="insertSubcircuit()">
+                <v-btn
+                    v-if="!flag"
+                    class="messageBtn"
+                    block
+                    @click="insertSubcircuit()"
+                >
                     Insert SubCircuit
+                </v-btn>
+                <v-btn v-else class="messageBtn" block @click="newCircuit">
+                    New Circuit +
                 </v-btn>
             </v-card-actions>
         </v-card>
@@ -57,36 +62,56 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, onUpdated, ref } from '@vue/runtime-core'
+import { onMounted, ref, watch } from '@vue/runtime-core'
 import { useState } from '#/store/SimulatorStore/state'
-import { scopeList } from '#/simulator/src/circuit'
+import { createNewCircuitScope, scopeList } from '#/simulator/src/circuit'
 import SubCircuit from '#/simulator/src/subcircuit'
-import simulationArea from '#/simulator/src/simulationArea'
+import { simulationArea } from '#/simulator/src/simulationArea'
 const SimulatorState = useState()
 const flag = ref(true)
 onMounted(() => {
     SimulatorState.dialogBox.insertsubcircuit_dialog = false
 })
 
+watch(
+    () => SimulatorState.dialogBox.insertsubcircuit_dialog,
+    (isOpen) => {
+        if (isOpen) updateFlag()
+    }
+)
+
+function updateFlag() {
+    flag.value = !Object.values(scopeList).some(value => availableSubCircuits(value))
+}
+
 function insertSubcircuit() {
-    if (!$('input[name=subCircuitId]:checked').val()) return
+    const checkedSubCircuit = document.querySelector(
+        'input[name=subCircuitId]:checked'
+    ) as HTMLInputElement
+    if (!checkedSubCircuit?.value) return
     simulationArea.lastSelected = new SubCircuit(
         undefined,
         undefined,
         globalScope,
-        $('input[name=subCircuitId]:checked').val()
+        checkedSubCircuit?.value
     )
-    flag.value = true
     SimulatorState.dialogBox.insertsubcircuit_dialog = false
 }
 
-function getName(x) {
-    flag.value = false
-    return x.name
+function availableSubCircuits(value) {
+    return (
+        !value.checkDependency(globalScope.id) &&
+        value.isVisible()
+    )
+}
+
+function newCircuit() {
+    createNewCircuitScope()
+    SimulatorState.dialogBox.insertsubcircuit_dialog = false
 }
 </script>
 
-<!-- 
+<!--
 	Some error on inserting empty circuit as subcircuit
-	Some error on checking for rendering 
+	Some error on checking for rendering
 -->

@@ -1,13 +1,12 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { gateGenerateVerilog } from '../utils'
 
 import {
     correctWidth,
     bezierCurveTo,
     moveTo,
-    arc2,
     drawCircle2,
 } from '../canvasApi'
 import { changeInputSize } from '../modules'
@@ -35,9 +34,6 @@ export default class NorGate extends CircuitElement {
         bitWidth = 1
     ) {
         super(x, y, scope, dir, bitWidth)
-        /* this is done in this.baseSetup() now
-        this.scope['NorGate'].push(this);
-        */
         this.rectangleObject = false
         this.setDimensions(15, 20)
 
@@ -134,9 +130,9 @@ export default class NorGate extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         )
-            ctx.fillStyle = colors['hover_select']
+        ctx.fillStyle = colors['hover_select']
         ctx.fill()
         ctx.stroke()
         ctx.beginPath()
@@ -179,5 +175,5 @@ NorGate.prototype.changeInputSize = changeInputSize
  * @category modules
  */
 NorGate.prototype.verilogType = 'nor'
-NorGate.prototype.helplink = 'https://docs.circuitverse.org/#/gates?id=nor-gate'
+NorGate.prototype.helplink = 'https://docs.circuitverse.org/chapter4/chapter4-gates#nor-gate'
 NorGate.prototype.objectType = 'NorGate'

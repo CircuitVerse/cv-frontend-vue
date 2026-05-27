@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { correctWidth, lineTo, moveTo, fillText } from '../canvasApi'
 import { colors } from '../themer/themer'
 /**
@@ -18,9 +18,6 @@ import { colors } from '../themer/themer'
 export default class DflipFlop extends CircuitElement {
     constructor(x, y, scope = globalScope, dir = 'RIGHT', bitWidth = 1) {
         super(x, y, scope, dir, bitWidth)
-        /*
-        this.scope['DflipFlop'].push(this);
-        */
         this.directionFixed = true
         this.setDimensions(20, 20)
         this.rectangleObject = true
@@ -43,9 +40,6 @@ export default class DflipFlop extends CircuitElement {
      */
     isResolvable() {
         return true
-        // if (this.reset.value == 1) return true;
-        // if (this.clockInp.value != undefined && this.dInp.value != undefined) return true;
-        // return false;
     }
 
     newBitWidth(bitWidth) {
@@ -116,7 +110,6 @@ export default class DflipFlop extends CircuitElement {
 
     customDraw() {
         var ctx = simulationArea.context
-        //
         ctx.strokeStyle = colors['stroke']
         ctx.fillStyle = colors['fill']
         ctx.beginPath()
@@ -127,7 +120,6 @@ export default class DflipFlop extends CircuitElement {
         moveTo(ctx, -20, 5, xx, yy, this.direction)
         lineTo(ctx, -15, 10, xx, yy, this.direction)
         lineTo(ctx, -20, 15, xx, yy, this.direction)
-        // if ((this.b.hover&&!simulationArea.shiftDown)|| simulationArea.lastSelected == this || simulationArea.multipleObjectSelections.contains(this)) ctx.fillStyle = "rgba(255, 255, 32,0.8)";ctx.fill();
         ctx.stroke()
 
         ctx.beginPath()
@@ -143,17 +135,18 @@ export default class DflipFlop extends CircuitElement {
 module DflipFlop(q, q_inv, clk, d, a_rst, pre, en);
     parameter WIDTH = 1;
     output reg [WIDTH-1:0] q, q_inv;
-    input clk, a_rst, pre, en;
-    input [WIDTH-1:0] d;
+    input clk, a_rst, en;
+    input [WIDTH-1:0] d, pre;
 
-    always @ (posedge clk or posedge a_rst)
-    if (a_rst) begin
-        q <= 'b0;
-        q_inv <= 'b1;
-    end else if (en == 0) ;
-    else begin
-        q <= d;
-        q_inv <= ~d;
+    always @ (posedge clk or posedge a_rst) begin
+        if (a_rst) begin
+            q <= pre;
+            q_inv <= ~pre;
+        end else if (en) begin
+            q <= d;
+            q_inv <= ~d;
+        end
+        // When en == 0, hold current state
     end
 endmodule
     `
@@ -163,6 +156,6 @@ endmodule
 DflipFlop.prototype.tooltipText =
     'D FlipFlop ToolTip : Introduces delay in timing circuit.'
 DflipFlop.prototype.helplink =
-    'https://docs.circuitverse.org/#/Sequential?id=d-flip-flop'
+    'https://docs.circuitverse.org/chapter4/chapter4-sequentialelements/#d-flip-flop'
 
 DflipFlop.prototype.objectType = 'DflipFlop'

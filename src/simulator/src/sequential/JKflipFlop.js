@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { correctWidth, lineTo, moveTo, fillText } from '../canvasApi'
 /**
  * @class
@@ -18,9 +18,6 @@ import { colors } from '../themer/themer'
 export default class JKflipFlop extends CircuitElement {
     constructor(x, y, scope = globalScope, dir = 'RIGHT') {
         super(x, y, scope, dir, 1)
-        /*
-        this.scope['JKflipFlop'].push(this);
-        */
         this.directionFixed = true
         this.fixedBitWidth = true
         this.setDimensions(20, 20)
@@ -37,8 +34,6 @@ export default class JKflipFlop extends CircuitElement {
         this.slaveState = 0
         this.masterState = 0
         this.prevClockState = 0
-
-        // this.wasClicked = false;
     }
 
     /**
@@ -139,13 +134,9 @@ export default class JKflipFlop extends CircuitElement {
         ctx.lineWidth = correctWidth(3)
         var xx = this.x
         var yy = this.y
-
-        // rect(ctx, xx - 20, yy - 20, 40, 40);
         moveTo(ctx, -20, 5, xx, yy, this.direction)
         lineTo(ctx, -15, 10, xx, yy, this.direction)
         lineTo(ctx, -20, 15, xx, yy, this.direction)
-
-        // if ((this.b.hover&&!simulationArea.shiftDown)|| simulationArea.lastSelected == this || simulationArea.multipleObjectSelections.contains(this)) ctx.fillStyle = "rgba(255, 255, 32,0.8)";ctx.fill();
         ctx.stroke()
 
         ctx.beginPath()
@@ -155,12 +146,42 @@ export default class JKflipFlop extends CircuitElement {
         fillText(ctx, this.slaveState.toString(16), xx, yy + 5)
         ctx.fill()
     }
+    static moduleVerilog() {
+        return `
+module JKflipFlop(q,q_inv,j,k,clk,rst,pre,en);
+    output reg q,q_inv;
+    input wire j,k,clk,rst,pre,en;
+    
+    always @(posedge clk) begin
+        if (rst) begin
+            if (pre) begin
+                q     <= 1'b1;
+            end else begin
+                q     <= 1'b0;
+            end
+        end else if (en) begin
+            if (j && !k) begin
+                q    <= 1'b1;
+            end else if (!j && k) begin
+                q     <= 1'b0;
+            end else if (!j && !k) begin
+                q     <= q;     // hold state
+            end else if (j && k) begin
+                    // toggling state
+                    q     <= ~q;
+            end
+        end
+    end
+    assign q_inv = ~q;
+endmodule
+    `
+    }
 }
 
 JKflipFlop.prototype.tooltipText =
     'JK FlipFlop ToolTip : gated SR flip-flop with the addition of a clock input.'
 
 JKflipFlop.prototype.helplink =
-    'https://docs.circuitverse.org/#/Sequential?id=jk-flip-flop'
+    'https://docs.circuitverse.org/chapter4/chapter4-sequentialelements/#jk-flip-flop'
 
 JKflipFlop.prototype.objectType = 'JKflipFlop'

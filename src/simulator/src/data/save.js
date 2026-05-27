@@ -1,19 +1,25 @@
 import { scopeList } from '../circuit'
 import { resetup } from '../setup'
-import { update } from '../engine'
+import { update, updateSubcircuitSet } from '../engine'
 import { stripTags, showMessage } from '../utils'
 import { backUp } from './backupCircuit'
-import simulationArea from '../simulationArea'
-import backgroundArea from '../backgroundArea'
+import { simulationArea } from '../simulationArea'
+import { backgroundArea } from '../backgroundArea'
 import { findDimensions } from '../canvasApi'
 import { projectSavedSet } from './project'
 import { colors } from '../themer/themer'
 import { layoutModeGet, toggleLayoutMode } from '../layoutMode'
 import { verilogModeGet } from '../Verilog2CV'
 import domtoimage from 'dom-to-image'
-import '../../vendor/canvas2svg'
+import canvasToSvg from "canvas-to-svg"
+import { useProjectStore } from '#/store/projectStore'
+import { provideProjectName } from '#/components/helpers/promptComponent/PromptComponent.vue'
+import { UpdateProjectDetail } from '#/components/helpers/createNewProject/UpdateProjectDetail.vue'
+import { confirmOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
+import { getToken } from '#/pages/simulatorHandler.vue'
+import { renderOrder } from '../metadata'
 
-var projectName = undefined
+// var projectName = undefined
 
 /**
  * Function to set the name of project.
@@ -21,13 +27,15 @@ var projectName = undefined
  * @category data
  */
 export function setProjectName(name) {
+    const projectStore = useProjectStore()
     if (name == undefined) {
-        $('#projectName').html('Untitled')
+        // $('#projectName').html('Untitled')
         return
     }
     name = stripTags(name)
-    projectName = name
-    $('#projectName').html(name)
+    // projectName = name
+    // $('#projectName').html(name)
+    projectStore.setProjectName(name)
 }
 
 /**
@@ -36,9 +44,11 @@ export function setProjectName(name) {
  * @category data
  */
 export function getProjectName() {
-    return projectName
+    const projectStore = useProjectStore()
+    if (projectStore.getProjectNameDefined)
+        return projectStore.getProjectName.trim()
+    else return undefined
 }
-
 /**
  * Helper function to save canvas as image based on image type
  * @param {string} name -name of the circuit
@@ -57,9 +67,9 @@ function downloadAsImg(name, imgType) {
  * Returns the order of tabs in the project
  */
 export function getTabsOrder() {
-    var tabs = $('#tabsBar').children().not('button')
+    var tabs = document.getElementById('tabsBar').firstChild.children
     var order = []
-    for (let i = 0; i < tabs.length; i++) {
+    for (let i = 0; i < tabs?.length; i++) {
         order.push(tabs[i].id)
     }
     return order
@@ -71,14 +81,19 @@ export function getTabsOrder() {
  * @return {JSON}
  * @category data
  */
-export function generateSaveData(name) {
-    data = {}
+export async function generateSaveData(name, setName = true) {
+    let data = {}
 
     // Prompts for name, defaults to Untitled
-    name =
-        getProjectName() || name || prompt('Enter Project Name:') || 'Untitled'
+    name = getProjectName() || name || (await provideProjectName())
+    if (name instanceof Error) {
+        return new Error('cancel')
+        // throw 'save has been canceled'
+    } else if (name == '') {
+        name = 'Untitled'
+    }
     data.name = stripTags(name)
-    setProjectName(data.name)
+    if (setName) setProjectName(data.name)
 
     // Save project details
     data.timePeriod = simulationArea.timePeriod
@@ -107,6 +122,13 @@ export function generateSaveData(name) {
         }
 
         completed[id] = true
+
+        // This update is very important.
+        // if a scope's input/output changes and the user saves without going
+        // to circuits where this circuit is used as a subcircuit. It will
+        // break the code since the Subcircuit will have different number of
+        // in/out nodes compared to the localscope input/output objects.
+        updateSubcircuitSet(true);
         update(scopeList[id], true) // For any pending integrity checks on subcircuits
         data.scopes.push(backUp(scopeList[id]))
     }
@@ -116,8 +138,6 @@ export function generateSaveData(name) {
         saveScope(id)
     }
 
-    // convert to text
-    data = JSON.stringify(data)
     return data
 }
 
@@ -143,7 +163,7 @@ function download(filename, text) {
  * Function to generate image for the circuit
  * @param {string} imgType - ex: png,jpg etc.
  * @param {string} view - view type ex: full
- * @param {boolean} transparent - tranparent bg or not
+ * @param {boolean} transparent - transparent bg or not
  * @param {number} resolution - resolution of the image
  * @param {boolean=} down - will download if true
  * @category data
@@ -171,7 +191,7 @@ export function generateImage(
 
     // If SVG, create SVG context - using canvas2svg here
     if (imgType === 'svg') {
-        simulationArea.context = new C2S(width, height)
+        simulationArea.context = new canvasToSvg(width, height)
         resolution = 1
     } else if (imgType !== 'png') {
         transparent = false
@@ -222,7 +242,7 @@ export function generateImage(
         simulationArea.context.fill()
     }
 
-    // Draw circuits, why is it updateOrder and not renderOrder?
+    // Draw circuits
     for (let i = 0; i < renderOrder.length; i++) {
         for (let j = 0; j < scope[renderOrder[i]].length; j++) {
             scope[renderOrder[i]][j].draw()
@@ -294,16 +314,16 @@ async function generateImageForOnline() {
     if (verilogModeGet()) {
         var node = document.getElementsByClassName('CodeMirror')[0]
         // var node = document.getElementsByClassName('CodeMirror')[0];
-        var prevHeight = $(node).css('height')
-        var prevWidth = $(node).css('width')
+        var prevHeight = window.getComputedStyle(node).height
+        var prevWidth = window.getComputedStyle(node).width
         var baseWidth = 500
         var baseHeight = Math.round(baseWidth / ratio)
-        $(node).css('height', baseHeight)
-        $(node).css('width', baseWidth)
+        node.style.height = baseHeight + 'px'
+        node.style.width = baseWidth + 'px'
 
         var data = await domtoimage.toJpeg(node)
-        $(node).css('width', prevWidth)
-        $(node).css('height', prevHeight)
+        node.style.width = prevWidth
+        node.style.height = prevHeight
         data = await crop(data, baseWidth, baseHeight)
         return data
     }
@@ -342,94 +362,169 @@ export default async function save() {
 
     projectSavedSet(true)
 
-    $('.loadingIcon').fadeIn()
-    const data = generateSaveData()
+    const data = await generateSaveData()
+    if (data instanceof Error) return
+    let loadingIcon = document.querySelector('.loadingIcon');
+    loadingIcon.style.transition = 'opacity 0.5s linear';
+    loadingIcon.style.opacity = '1';
 
     const projectName = getProjectName()
     var imageData = await generateImageForOnline()
 
-    if (!userSignedIn) {
+    const headers = {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+        Authorization: `Token ${getToken('cvt')}`,
+    }
+
+    if (!window.isUserLoggedIn) {
         // user not signed in, save locally temporarily and force user to sign in
         localStorage.setItem('recover_login', data)
         // Asking user whether they want to login.
         if (
-            confirm(
+            await confirmOption(
                 'You have to login to save the project, you will be redirected to the login page.'
             )
         )
             window.location.href = '/users/sign_in'
-        else $('.loadingIcon').fadeOut()
+        else {
+            let loadingIcon = document.querySelector('.loadingIcon')
+            loadingIcon.style.transition = 'opacity 0.2s';
+            loadingIcon.style.opacity = '0';
+        }
         // eslint-disable-next-line camelcase
-    } else if (__logix_project_id == '0') {
+    } else if ([0, undefined, null, '', '0'].includes(window.logixProjectId)) {
         // Create new project - this part needs to be improved and optimised
-        const form = $('<form/>', {
-            action: '/simulator/create_data',
-            method: 'post',
-        })
-        form.append(
-            $('<input>', {
-                type: 'hidden',
-                name: 'authenticity_token',
-                value: $('meta[name="csrf-token"]').attr('content'),
-            })
-        )
-        form.append(
-            $('<input>', {
-                type: 'text',
-                name: 'data',
-                value: data,
-            })
-        )
-        form.append(
-            $('<input>', {
-                type: 'text',
-                name: 'image',
-                value: imageData,
-            })
-        )
+        // const form = $('<form/>', {
+        //     action: '/api/v1/simulator/create',
+        //     method: 'post',
+        // })
+        // form.append(
+        //     $('<input>', {
+        //         type: 'hidden',
+        //         name: 'authenticity_token',
+        //         value: $('meta[name="csrf-token"]').attr('content'),
+        //     })
+        // )
+        // form.append(
+        //     $('<input>', {
+        //         type: 'text',
+        //         name: 'data',
+        //         value: data,
+        //     })
+        // )
+        // form.append(
+        //     $('<input>', {
+        //         type: 'text',
+        //         name: 'image',
+        //         value: imageData,
+        //     })
+        // )
+        // form.append(
+        //     $('<input>', {
+        //         type: 'text',
+        //         name: 'name',
+        //         value: projectName,
+        //     })
+        // )
+        // $('body').append(form)
+        // form.submit()
 
-        form.append(
-            $('<input>', {
-                type: 'text',
-                name: 'name',
-                value: projectName,
-            })
-        )
-
-        $('body').append(form)
-        form.submit()
-    } else {
-        // updates project - this part needs to be improved and optimised
-        $.ajax({
-            url: '/simulator/update_data',
-            type: 'POST',
-            contentType: 'application/json',
-            beforeSend(xhr) {
-                xhr.setRequestHeader(
-                    'X-CSRF-Token',
-                    $('meta[name="csrf-token"]').attr('content')
-                )
-            },
-            data: JSON.stringify({
+        fetch('/api/v1/projects', {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({
                 data,
-                id: __logix_project_id,
                 image: imageData,
                 name: projectName,
             }),
-            success(response) {
-                showMessage(
-                    `We have saved your project: ${projectName} in our servers.`
-                )
-                $('.loadingIcon').fadeOut()
-                localStorage.removeItem('recover')
-            },
-            failure(err) {
-                showMessage(
-                    "There was an error, we couldn't save to our servers"
-                )
-                $('.loadingIcon').fadeOut()
-            },
         })
+            .then((response) => {
+                if (response.ok) {
+                    showMessage(
+                        `We have Created a new project: ${projectName} in our servers.`
+                    )
+
+                    let loadingIcon = document.querySelector('.loadingIcon')
+                    loadingIcon.style.transition = 'opacity 0.2s';
+                    loadingIcon.style.opacity = '0';
+
+                    localStorage.removeItem('recover')
+                    const responseJson = response.json()
+                    responseJson.then((data) => {
+                        UpdateProjectDetail(data)
+                    })
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error)
+            })
+    } else {
+        // updates project - this part needs to be improved and optimised
+        // $.ajax({
+        // url: '/api/v1/simulator/update',
+        // type: 'PATCH',
+        // contentType: 'application/json',
+        // beforeSend(xhr) {
+        // xhr.setRequestHeader(
+        // 'X-CSRF-Token',
+        // $('meta[name="csrf-token"]').attr('content')
+        // )
+        // },
+        // data: JSON.stringify({
+        // data,
+        // id: logixProjectId,
+        // image: imageData,
+        // name: projectName,
+        // }),
+        // success(response) {
+        // showMessage(
+        // `We have saved your project: ${projectName} in our servers.`
+        // )
+        // $('.loadingIcon').fadeOut()
+        // localStorage.removeItem('recover')
+        // },
+        // failure(err) {
+        // showMessage(
+        // "There was an error, we couldn't save to our servers"
+        // )
+        // $('.loadingIcon').fadeOut()
+        // },
+        // })
+        // function getCookie(name) {
+        // const value = `; ${document.cookie}`;
+        // const parts = value.split(`; ${name}=`);
+        // if (parts.length === 2) return parts.pop().split(';').shift();
+        // }
+
+        fetch('/api/v1/projects/update_circuit', {
+            method: 'PATCH',
+            headers,
+            body: JSON.stringify({
+                data,
+                id: window.logixProjectId,
+                image: imageData,
+                name: projectName,
+            }),
+        })
+            .then((response) => {
+                if (response.ok) {
+                    showMessage(
+                        `We have saved your project: ${projectName} in our servers.`
+                    )
+                    localStorage.removeItem('recover')
+                } else {
+                    showMessage(
+                        "There was an error, we couldn't save to our servers"
+                    )
+                }
+                let loadingIcon = document.querySelector('.loadingIcon')
+                loadingIcon.style.transition = 'opacity 0.2s';
+                loadingIcon.style.opacity = '0';
+            })
+            .catch((error) => {
+                console.error('Error:', error)
+            })
     }
 
     // Restore everything
