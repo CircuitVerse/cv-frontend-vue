@@ -102,6 +102,5 @@ export default class Dlatch extends CircuitElement {
 
 Dlatch.prototype.tooltipText = 'D Latch : Single input Flip flop or D FlipFlop'
 Dlatch.prototype.helplink =
-    'https://docs.circuitverse.org/#/chapter4/6sequentialelements?id=d-latch'
-
+    'https://docs.circuitverse.org/chapter4/chapter4-sequentialelements/#d-latch'
 Dlatch.prototype.objectType = 'Dlatch'
