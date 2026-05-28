@@ -21,8 +21,8 @@ export default miniMapArea = {
     setup() {
         if (lightMode) return
         this.canvas = document.getElementById('miniMapArea')
-        this.pageHeight = height // Math.round(((parseInt($("#simulationArea").height())))/ratio)*ratio-50; // -50 for tool bar? Check again
-        this.pageWidth = width // Math.round(((parseInt($("#simulationArea").width())))/ratio)*ratio;
+        this.pageHeight = height
+        this.pageWidth = width
         this.pageY = this.pageHeight - globalScope.oy
         this.pageX = this.pageWidth - globalScope.ox
 
@@ -107,7 +107,6 @@ export default miniMapArea = {
         )
         this.ctx.fill()
 
-        //  to show the area of current canvas
         var lst = updateOrder
         const miniFill = colors['mini_fill']
         const miniStroke = colors['mini_stroke']
@@ -137,7 +136,6 @@ export default miniMapArea = {
                     this.ctx.stroke()
                 }
             } else if (lst[i] != 'nodes') {
-                // Don't include SquareRGBLed here; it has correct size.
                 var ledY = 0
                 if (
                     lst[i] == 'DigitalLed' ||
@@ -167,8 +165,12 @@ export default miniMapArea = {
     },
     clear() {
         if (lightMode) return
-        $('#miniMapArea').css('z-index', '-1')
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+        const miniMapAreaEl = document.getElementById('miniMapArea')
+        if (miniMapAreaEl) {
+            miniMapAreaEl.style.zIndex = '-1'
+        }
+        // setup() sets this.ctx; use it here with optional chaining for safety
+        this.ctx?.clearRect(0, 0, this.canvas.width, this.canvas.height)
     },
 }
 var lastMiniMapShown
@@ -190,5 +192,14 @@ export function removeMiniMap() {
         )
         return
     }
-    $('#miniMap').fadeOut('fast')
+    // Fade out miniMap using native CSS transition
+    const miniMap = document.getElementById('miniMap')
+    if (miniMap) {
+        miniMap.style.transition = 'opacity 0.2s'
+        miniMap.style.opacity = '0'
+        setTimeout(() => {
+            miniMap.style.display = 'none'
+            miniMap.style.opacity = '1'
+        }, 200)
+    }
 }
