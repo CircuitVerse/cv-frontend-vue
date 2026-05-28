@@ -40,6 +40,8 @@ npm run dev
 
 # Start v1 (Windows/Unix)
 # Set VITE_SIM_VERSION=v1 in your environment and run npm run dev
+
+# Note: After running v1, you must unset `VITE_SIM_VERSION` or set it back to `v0` to return to the default version.
 ```
 
 ## Build System
