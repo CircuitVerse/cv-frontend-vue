@@ -7,7 +7,12 @@
                 :data-index="index"
                 @click="menuItemClicked($event)"
             >
-                {{ menuOption }}
+                {{
+                    $t(
+                        'simulator.panel_body.context_menu.' +
+                            menuOption.toLocaleLowerCase().replace(' ', '_')
+                    )
+                }}
             </li>
         </ul>
     </div>
@@ -53,12 +58,11 @@ export default {
             setTimeout(() => {
                 el.style = 'visibility:hidden;'
                 this.ctxPos.visible = false
-            }, 200) // Hide after 2 sec
+            }, 200) // Hide after 0.2 sec
         },
         menuItemClicked(event) {
             this.hideContextMenu()
             const id = event.target.dataset.index
-            console.log('Hello From Context Menu' + id)
             if (id == 0) {
                 document.execCommand('copy')
             } else if (id == 1) {
