@@ -191,5 +191,5 @@ XnorGate.prototype.changeInputSize = changeInputSize
  */
 XnorGate.prototype.verilogType = 'xnor'
 XnorGate.prototype.helplink =
-    'https://docs.circuitverse.org/#/chapter4/4gates?id=xnor-gate'
+    'https://docs.circuitverse.org/chapter4/chapter4-gates#xnor-gate'
 XnorGate.prototype.objectType = 'XnorGate'

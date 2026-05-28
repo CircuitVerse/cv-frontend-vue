@@ -191,6 +191,6 @@ VariableLed.prototype.mutableProperties = {
  * @category modules
  */
 VariableLed.prototype.helplink =
-    'https://docs.circuitverse.org/#/chapter4/3output?id=variableled'
+    'https://docs.circuitverse.org/chapter4/chapter4-output#variableled'
 VariableLed.prototype.objectType = 'VariableLed'
 VariableLed.prototype.canShowInSubcircuit = true
