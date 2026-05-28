@@ -3,7 +3,7 @@ import { fileURLToPath, URL } from "url";
 
 import vue from "@vitejs/plugin-vue";
 import vuetify from "vite-plugin-vuetify";
-import { vueI18n } from "@intlify/vite-plugin-vue-i18n";
+import VueI18nPlugin from "@intlify/unplugin-vue-i18n/vite";
 import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 
 const createWorkspaceConfig = (version) =>
@@ -12,10 +12,11 @@ const createWorkspaceConfig = (version) =>
       vue(),
       vuetify({ autoImport: true }),
       cssInjectedByJsPlugin(),
-      vueI18n({
+      VueI18nPlugin({
+        strictMessage: false,
         include: fileURLToPath(
           new URL(
-            version === "src" ? "./src/locales/**" : `./${version}/src/locales/**`,
+            version === "src" ? "./src/locales/**/*.json" : `./${version}/src/locales/**/*.json`,
             import.meta.url,
           ),
         ),
