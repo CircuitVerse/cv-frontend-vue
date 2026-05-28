@@ -1,7 +1,6 @@
 <template>
     <p>
-        <span>Project:</span>
-        <!-- class="objectPropertyAttribute" -->
+        <span>{{ $t('simulator.panel_body.project_property.project') }}</span>
         <input
             id="projname"
             type="text"
@@ -13,20 +12,21 @@
     </p>
 
     <p>
-        <span>Circuit:</span>
+        <span>{{ $t('simulator.panel_body.project_property.circuit') }}</span>
         <input
+            :ref="circnameInput"
             id="circname"
-            :key="SimulatorState.activeCircuit.id"
+            :key="SimulatorState.activeCircuit?.id"
             class="objectPropertyAttribute"
             type="text"
             autocomplete="off"
             name="changeCircuitName"
-            :value="SimulatorState.activeCircuit.name"
+            :value="SimulatorState.activeCircuit?.name"
         />
     </p>
 
     <InputGroups
-        property-name="Clock Time (ms):"
+        :property-name="$t('simulator.panel_body.project_property.clock_time')"
         :property-value="(simulationArea as any).timePeriod"
         property-value-type="number"
         value-min="50"
@@ -36,18 +36,22 @@
     />
 
     <p>
-        <span>Clock Enabled:</span>
+        <span>{{
+            $t('simulator.panel_body.project_property.clock_enabled')
+        }}</span>
         <label class="switch">
             <input
                 type="checkbox"
                 class="objectPropertyAttributeChecked"
-                name="changeClockEnable" />
+                name="changeClockEnable"
+                checked
+            />
             <span class="slider"></span
         ></label>
     </p>
 
     <p>
-        <span>Lite Mode:</span>
+        <span>{{ $t('simulator.panel_body.project_property.lite_mode') }}</span>
         <label class="switch">
             <input
                 type="checkbox"
@@ -62,16 +66,20 @@
         <button
             type="button"
             class="panelButton btn btn-xs custom-btn--primary"
-            @click="toggleLayoutMode"
+            @click="() => {
+                toggleLayoutMode()
+                simulatorMobileStore.showPropertiesPanel = false
+                simulatorMobileStore.showCircuits = 'layout-elements'
+            }"
         >
-            Edit Layout
+            {{ $t('simulator.panel_body.project_property.edit_layout') }}
         </button>
         <button
             type="button"
             class="panelButton btn btn-xs custom-btn--tertiary"
             @click.stop="closeCircuit(SimulatorState.activeCircuit)"
         >
-            Delete Circuit
+            {{ $t('simulator.panel_body.project_property.delete_circuit') }}
         </button>
     </p>
     <!-- <MessageBox
@@ -96,7 +104,7 @@ import { toggleLayoutMode } from '#/simulator/src/layoutMode'
 //     scopeList,
 // } from '#/simulator/src/circuit'
 // import { showMessage } from '#/simulator/src/utils'
-import simulationArea from '#/simulator/src/simulationArea'
+import { simulationArea } from '#/simulator/src/simulationArea'
 import InputGroups from '#/components/Panels/Shared/InputGroups.vue'
 // import MessageBox from '#/components/MessageBox/messageBox.vue'
 // import { ref, Ref, onMounted, watch } from 'vue'
@@ -104,11 +112,24 @@ import { useState } from '#/store/SimulatorStore/state'
 import { useProjectStore } from '#/store/projectStore'
 // import DeleteCircuit from '#/components/helpers/deleteCircuit/DeleteCircuit.vue'
 import { closeCircuit } from '#/components/helpers/deleteCircuit/DeleteCircuit.vue'
+import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
+import { watch } from 'vue'
+import { ref } from 'vue'
 
 const projectStore = useProjectStore()
 const SimulatorState = <SimulatorStateType>useState()
+const circnameInput = ref<HTMLInputElement | null>(null)
+const simulatorMobileStore = useSimulatorMobileStore()
+
+watch(() => SimulatorState.circuit_name_clickable, () => {
+    setTimeout(() => {
+        if (circnameInput.value && SimulatorState.circuit_name_clickable) {
+            circnameInput.value.select()
+        }
+    }, 100)
+})
 // const circuitId: Ref<string | number> = ref(0)
-// const circuitName: Ref<string> = ref('Untitled-Cirucit')
+// const circuitName: Ref<string> = ref('Untitled-Circuit')
 // const ifPersistentShow: Ref<boolean> = ref(false)
 // const messageValue: Ref<string> = ref('')
 // const buttonArray: Ref<Array<buttonArrType>> = ref([
@@ -125,6 +146,7 @@ type SimulatorStateType = {
     dialogBox: {
         delete_circuit: boolean
     }
+    circuit_name_clickable: boolean
 }
 
 // type CircuitItem = {
@@ -150,7 +172,6 @@ type SimulatorStateType = {
 //         () => {
 //             circuitName.value = SimulatorState.activeCircuit.name
 //             circuitId.value = SimulatorState.activeCircuit.id
-//             console.log(circuitName.value, circuitId.value)
 //         },
 //         { deep: true }
 //     )
