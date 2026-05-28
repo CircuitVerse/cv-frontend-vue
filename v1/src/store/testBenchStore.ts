@@ -34,16 +34,16 @@ export interface TestBenchData {
   caseNext?(): boolean;
   casePrev?(): boolean;
   goToFirstValidGroup?(): boolean;
-};
+}
 
 export interface ValidationErrors {
-  ok: boolean
+  ok: boolean;
   invalids?: {
-    type: number
-    identifier: string
-    message: string
-    extraInfo?: any
-  }[]
+    type: number;
+    identifier: string;
+    message: string;
+    extraInfo?: any;
+  }[];
 }
 
 export interface Result {
@@ -76,7 +76,7 @@ export const useTestBenchStore = defineStore("testBenchStore", () => {
 
   const validationErrors: ValidationErrors = reactive({
     ok: true,
-    invalids: []
+    invalids: [],
   });
 
   const sendData = (dataValues: TestData) => {
@@ -86,7 +86,7 @@ export const useTestBenchStore = defineStore("testBenchStore", () => {
     testData.groups = dataValues.groups;
     runTestBench(dataValues, globalScope, 0);
     showTestBenchCreator.value = false;
-  }
+  };
 
   return {
     showTestBenchCreator,
@@ -101,5 +101,5 @@ export const useTestBenchStore = defineStore("testBenchStore", () => {
     showResults,
     readOnly,
     showPassed,
-  }
-})
+  };
+});
