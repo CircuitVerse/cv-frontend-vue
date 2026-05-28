@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { correctWidth, lineTo, moveTo, drawCircle2 } from '../canvasApi'
 
 /**
@@ -86,7 +86,7 @@ export default class Button extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         ) {
             ctx.fillStyle = 'rgba(232, 13, 13,0.6)'
         }
@@ -111,7 +111,7 @@ export default class Button extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected == this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         )
             ctx.fillStyle = 'rgba(232, 13, 13,0.6)'
         if (this.wasClicked) ctx.fillStyle = 'rgba(232, 13, 13,0.8)'
@@ -172,7 +172,7 @@ Button.prototype.tooltipText =
  * @category modules
  */
 Button.prototype.helplink =
-    'https://docs.circuitverse.org/#/chapter4/2input?id=button'
+    'https://docs.circuitverse.org/chapter4/chapter4-input#button'
 
 /**
  * @memberof Button
