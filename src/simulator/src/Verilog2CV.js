@@ -1,6 +1,10 @@
-import { newCircuit, switchCircuit, changeCircuitName } from './circuit'
+import {
+    createNewCircuitScope,
+    switchCircuit,
+    changeCircuitName,
+} from './circuit'
 import SubCircuit from './subcircuit'
-import simulationArea from './simulationArea'
+import { simulationArea } from './simulationArea'
 import CodeMirror from 'codemirror/lib/codemirror.js'
 import 'codemirror/lib/codemirror.css'
 
@@ -22,18 +26,36 @@ import 'codemirror/theme/midnight.css'
 import 'codemirror/addon/hint/show-hint.css'
 import 'codemirror/mode/verilog/verilog.js'
 import 'codemirror/addon/edit/closebrackets.js'
+import 'codemirror/addon/edit/matchbrackets.js'
 import 'codemirror/addon/hint/anyword-hint.js'
 import 'codemirror/addon/hint/show-hint.js'
 import 'codemirror/addon/display/autorefresh.js'
 import { showError, showMessage } from './utils'
 import { showProperties } from './ux'
+import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
+import { toRefs } from 'vue'
 
 var editor
 var verilogMode = false
 
-export function createVerilogCircuit() {
-    newCircuit(undefined, undefined, true, true)
-    verilogModeSet(true)
+export async function createVerilogCircuit() {
+    const returned = await createNewCircuitScope(
+        undefined,
+        undefined,
+        true,
+        true
+    )
+
+    if (returned) {
+        verilogModeSet(true)
+
+        try {
+            const simulatorMobileStore = toRefs(useSimulatorMobileStore())
+            simulatorMobileStore.isVerilog.value = true
+        } catch (error) {
+            console.error('Failed to update simulatorMobileStore:', error)
+        }
+    }
 }
 
 export function saveVerilogCode() {
@@ -42,11 +64,41 @@ export function saveVerilogCode() {
     generateVerilogCircuit(code)
 }
 
-export function applyVerilogTheme() {
-    var dropdown = document.getElementById('selectVerilogTheme')
-    var theme = dropdown.options[dropdown.selectedIndex].innerHTML
+export function applyVerilogTheme(theme) {
     localStorage.setItem('verilog-theme', theme)
     editor.setOption('theme', theme)
+}
+
+function setVerilogOutput(text, type = 'info') {
+    if (typeof window !== 'undefined' && window.verilogTerminal) {
+        window.verilogTerminal.addMessage(text, type)
+    } else {
+        const verilogOutputDiv = document.getElementById('verilogOutput')
+        if (verilogOutputDiv) {
+            if (type === 'error') {
+                verilogOutputDiv.innerHTML = text
+                verilogOutputDiv.style.color = '#ff6b6b'
+            } else if (type === 'success') {
+                verilogOutputDiv.innerHTML = text
+                verilogOutputDiv.style.color = '#51cf66'
+            } else {
+                verilogOutputDiv.innerHTML = text
+                verilogOutputDiv.style.color = ''
+            }
+        }
+    }
+}
+
+function clearVerilogOutput() {
+    // TODO: It needs to be handled using pinia after moving it to vue components(Verilog2CV.js)
+    if (typeof window !== 'undefined' && window.verilogTerminal) {
+        window.verilogTerminal.clearOutput()
+    } else {
+        const verilogOutputDiv = document.getElementById('verilogOutput')
+        if (verilogOutputDiv) {
+            verilogOutputDiv.innerHTML = ''
+        }
+    }
 }
 
 export function resetVerilogCode() {
@@ -65,11 +117,26 @@ export function verilogModeSet(mode) {
     if (mode == verilogMode) return
     verilogMode = mode
     if (mode) {
-        document.getElementById('code-window').style.display = 'block';
-        document.querySelector('.elementPanel').style.display = 'none';
-        document.querySelector('.timing-diagram-panel').style.display = 'none';
-        document.querySelector('.quick-btn').style.display = 'none';
-        document.getElementById('verilogEditorPanel').style.display = 'block';
+        const code_window = document.getElementById('code-window')
+        if(code_window)
+        document.getElementById('code-window').style.display = 'block'
+
+        const elementPanel = document.querySelector('.elementPanel')
+        if(elementPanel)
+        document.querySelector('.elementPanel').style.display = 'none'
+
+        const timingDiagramPanel = document.querySelector('.timing-diagram-panel')
+        if(timingDiagramPanel)
+        document.querySelector('.timing-diagram-panel').style.display = 'none'
+
+        const quickBtn = document.querySelector('.quick-btn')
+        if(quickBtn)
+        document.querySelector('.quick-btn').style.display = 'none'
+
+        const verilogEditorPanel = document.getElementById('verilogEditorPanel')
+        if(verilogEditorPanel)
+        document.getElementById('verilogEditorPanel').style.display = 'block'
+
         if (!embed) {
             simulationArea.lastSelected = globalScope.root
             showProperties(undefined)
@@ -77,11 +144,25 @@ export function verilogModeSet(mode) {
         }
         resetVerilogCode()
     } else {
-        document.getElementById('code-window').style.display = 'none';
-        document.querySelector('.elementPanel').style.display = 'block';
-        document.querySelector('.timing-diagram-panel').style.display = 'block';
-        document.querySelector('.quick-btn').style.display = 'block';
-        document.getElementById('verilogEditorPanel').style.display = 'none';
+        const code_window = document.getElementById('code-window')
+        if(code_window)
+        document.getElementById('code-window').style.display = 'none'
+
+        const elementPanel = document.querySelector('.elementPanel')
+        if(elementPanel)
+        document.querySelector('.elementPanel').style.display = ''
+
+        const timingDiagramPanel = document.querySelector('.timing-diagram-panel')
+        if(timingDiagramPanel)
+        document.querySelector('.timing-diagram-panel').style.display = ''
+
+        const quickBtn = document.querySelector('.quick-btn')
+        if(quickBtn)
+        document.querySelector('.quick-btn').style.display = ''
+
+        const verilogEditorPanel = document.getElementById('verilogEditorPanel')
+        if(verilogEditorPanel)
+        document.getElementById('verilogEditorPanel').style.display = 'none'
     }
 }
 
@@ -180,20 +261,24 @@ export default function generateVerilogCircuit(
     verilogCode,
     scope = globalScope
 ) {
-    const url = '/simulator/verilogcv'
+    clearVerilogOutput()
+    setVerilogOutput('Compiling Verilog code...', 'info')
+    
     var params = { code: verilogCode }
-    fetch(url, {
+    fetch('/api/v1/simulator/verilogcv', {
         method: 'POST',
         headers: {
-            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Content-Type': 'application/json',
         },
-        body: params
-    }).then((response) => {
-        var errorCode = response.status
-        if (errorCode == 500) {
-            showError('Could not connect to Yosys');
-        } else {
-            var circuitData = response
+        body: JSON.stringify(params),
+    })
+        .then((response) => {
+            if (!response.ok) {
+                throw response
+            }
+            return response.json()
+        })
+        .then((circuitData) => {
             scope.initialize()
             for (var id in scope.verilogMetadata.subCircuitScopeIds)
                 delete scopeList[id]
@@ -209,13 +294,19 @@ export default function generateVerilogCircuit(
             )
             changeCircuitName(circuitData.name)
             showMessage('Verilog Circuit Successfully Created')
-            document.getElementById('verilogOutput').innerHTML = "";
-        }
-    }).catch((error) => {
-        showError('There is some issue with the code');
-        var errorMessage = error
-        document.getElementById('verilogOutput').innerHTML = errorMessage
-    })
+            setVerilogOutput('Verilog Circuit Successfully Created', 'success')
+        })
+        .catch((error) => {
+            if (error.status == 500) {
+                showError('Could not connect to Yosys')
+                setVerilogOutput('Could not connect to Yosys server', 'error')
+            } else {
+                showError('There is some issue with the code')
+                error.json().then((errorMessage) => {
+                    setVerilogOutput(errorMessage.message, 'error')
+                })
+            }
+        })
 }
 
 export function setupCodeMirrorEnvironment() {
@@ -231,6 +322,7 @@ export function setupCodeMirrorEnvironment() {
         styleActiveLine: true,
         lineNumbers: true,
         autoCloseBrackets: true,
+        matchBrackets: true,
         smartIndent: true,
         indentWithTabs: true,
         extraKeys: { 'Ctrl-Space': 'autocomplete' },

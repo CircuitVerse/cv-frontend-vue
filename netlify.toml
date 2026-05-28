@@ -1,0 +1,24 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[[redirects]]
+  from = "/"
+  to = "/simulatorvue/v0/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/simulatorvue/v0/*"
+  to = "/simulatorvue/v0/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/simulatorvue/v1/*"
+  to = "/simulatorvue/v1/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/simulatorvue/*"
+  to = "/simulatorvue/v0/index.html"
+  status = 200
