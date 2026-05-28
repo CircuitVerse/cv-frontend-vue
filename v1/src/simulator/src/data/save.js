@@ -139,8 +139,6 @@ export async function generateSaveData(name, setName = true) {
         saveScope(id)
     }
 
-    // convert to text
-    data = JSON.stringify(data)
     return data
 }
 
@@ -166,7 +164,7 @@ function download(filename, text) {
  * Function to generate image for the circuit
  * @param {string} imgType - ex: png,jpg etc.
  * @param {string} view - view type ex: full
- * @param {boolean} transparent - tranparent bg or not
+ * @param {boolean} transparent - transparent bg or not
  * @param {number} resolution - resolution of the image
  * @param {boolean=} down - will download if true
  * @category data
