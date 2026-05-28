@@ -97,7 +97,7 @@ Power.prototype.tooltipText = 'Power: All bits are High(1).'
  * @category modules
  */
 Power.prototype.helplink =
-    'https://docs.circuitverse.org/#/chapter4/2input?id=power'
+    'https://docs.circuitverse.org/chapter4/chapter4-input#power'
 
 /**
  * @memberof Power
