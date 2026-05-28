@@ -7,7 +7,12 @@
                 :data-index="index"
                 @click="menuItemClicked($event)"
             >
-                {{ menuOption }}
+                {{
+                    $t(
+                        'simulator.panel_body.context_menu.' +
+                            menuOption.toLocaleLowerCase().replace(' ', '_')
+                    )
+                }}
             </li>
         </ul>
     </div>
