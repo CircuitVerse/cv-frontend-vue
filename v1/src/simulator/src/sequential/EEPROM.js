@@ -31,9 +31,6 @@ export default class EEPROM extends RAM {
         data = null
     ) {
         super(x, y, scope, dir, bitWidth, addressWidth)
-        /*
-        this.scope['EEPROM'].push(this);
-        */
         this.data = data || this.data
     }
 
@@ -88,6 +85,7 @@ export default class EEPROM extends RAM {
 EEPROM.prototype.tooltipText =
     'Electrically Erasable Programmable Read-Only Memory'
 EEPROM.prototype.shortName = 'EEPROM'
+EEPROM.prototype.helplink = 'https://docs.circuitverse.org/chapter4/chapter4-sequentialelements/#eeprom'
 EEPROM.prototype.maxAddressWidth = 10
 EEPROM.prototype.mutableProperties = {
     addressWidth: {

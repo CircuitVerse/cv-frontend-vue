@@ -5,13 +5,15 @@
 /* eslint-disable no-bitwise */
 import { layoutModeGet, layoutUpdate } from './layoutMode'
 import plotArea from './plotArea'
-import simulationArea from './simulationArea'
+import { simulationArea } from './simulationArea'
 import { dots, canvasMessage, findDimensions, rect2 } from './canvasApi'
 import { showProperties, prevPropertyObjGet } from './ux'
 import { showError } from './utils'
 import miniMapArea from './minimap'
 import { resetup } from './setup'
 import { verilogModeGet } from './Verilog2CV'
+import { renderOrder, updateOrder } from './metadata'
+import ContentionPendingData from './contention'
 
 /**
  * Core of the simulation and rendering algorithm.
@@ -226,7 +228,16 @@ export function changeLightMode(val) {
         lightMode = true
         globalScope.scale /= DPR
         DPR = 1
-        $('#miniMap').fadeOut('fast')
+        // Fade out miniMap using native CSS transition
+        const miniMap = document.getElementById('miniMap')
+        if (miniMap) {
+            miniMap.style.transition = 'opacity 0.2s'
+            miniMap.style.opacity = '0'
+            setTimeout(() => {
+                miniMap.style.display = 'none'
+                miniMap.style.opacity = '1'
+            }, 200)
+        }
     }
     resetup()
 }
@@ -314,7 +325,8 @@ export function updateSelectionsAndPane(scope = globalScope) {
         } else if (!embed) {
             findDimensions(scope)
             miniMapArea.setup()
-            $('#miniMap').show()
+            const miniMap = document.getElementById('miniMap')
+            if (miniMap) miniMap.style.display = 'block'
         }
     } else if (
         simulationArea.lastSelected === scope.root &&
@@ -368,7 +380,7 @@ export function updateSelectionsAndPane(scope = globalScope) {
             for (let i = 0; i < updateOrder.length; i++) {
                 for (var j = 0; j < scope[updateOrder[i]].length; j++) {
                     var obj = scope[updateOrder[i]][j]
-                    if (simulationArea.multipleObjectSelections.contains(obj))
+                    if (simulationArea.multipleObjectSelections.includes(obj))
                         continue
                     var x
                     var y
@@ -404,6 +416,7 @@ export function play(scope = globalScope, resetNodes = false) {
 
     simulationArea.simulationQueue.reset()
     plotArea.setExecutionTime() // Waveform thing
+    resetNodeHighlights(scope)
     // Reset Nodes if required
     if (resetNodes || forceResetNodes) {
         scope.reset()
@@ -411,9 +424,8 @@ export function play(scope = globalScope, resetNodes = false) {
         forceResetNodesSet(false)
     }
 
-    // To store list of circuitselements that have shown contention but kept temporarily
-    // Mainly to resolve tristate bus issues
-    simulationArea.contentionPending = []
+    // To store set of Nodes that have shown contention but kept temporarily
+    simulationArea.contentionPending = new ContentionPendingData()
     // add inputs to the simulation queue
     scope.addInputs()
     // to check if we have infinite loop in circuit
@@ -425,23 +437,37 @@ export function play(scope = globalScope, resetNodes = false) {
             return
         }
         elem = simulationArea.simulationQueue.pop()
+
         elem.resolve()
+
         stepCount++
         if (stepCount > 1000000) {
             // Cyclic or infinite Circuit Detection
             showError(
                 'Simulation Stack limit exceeded: maybe due to cyclic paths or contention'
             )
-            errorDetectedSet(true)
             forceResetNodesSet(true)
         }
     }
-    // Check for TriState Contentions
-    if (simulationArea.contentionPending.length) {
-        showError('Contention at TriState')
+    // Check for Contentions
+    if (simulationArea.contentionPending.size() > 0) {
+        for (const [
+            ourNode,
+            theirNode,
+        ] of simulationArea.contentionPending.nodes()) {
+            ourNode.highlighted = true
+            theirNode.highlighted = true
+        }
+
         forceResetNodesSet(true)
-        errorDetectedSet(true)
+        showError(
+            'Contention Error: One or more bus contentions in the circuit (check highlighted nodes)'
+        )
     }
+}
+
+export function resetNodeHighlights(scope) {
+    for (const node of scope.allNodes) node.highlighted = false
 }
 
 /**
@@ -451,7 +477,7 @@ export function play(scope = globalScope, resetNodes = false) {
  * @param {function} fn - function to run before updating UI
  * @category engine
  */
-export function scheduleUpdate(count = 0, time = 100, fn) {
+export function scheduleUpdate(count = 0, time = 100, fn = undefined) {
     if (lightMode) time *= 5
     var updateFn = layoutModeGet() ? layoutUpdate : update
     if (count) {
@@ -530,7 +556,16 @@ export function update(scope = globalScope, updateEverything = false) {
         simulationArea.lastSelected !== globalScope.root
     ) {
         if (!lightMode) {
-            $('#miniMap').fadeOut('fast')
+            // Fade out miniMap using native CSS transition
+            const miniMapEl = document.getElementById('miniMap')
+            if (miniMapEl) {
+                miniMapEl.style.transition = 'opacity 0.2s'
+                miniMapEl.style.opacity = '0'
+                setTimeout(() => {
+                    miniMapEl.style.display = 'none'
+                    miniMapEl.style.opacity = '1'
+                }, 200)
+            }
         }
     }
     // Run simulation
