@@ -50,9 +50,8 @@
 </template>
 
 <script lang="ts" setup>
-// import DropDown from '@/Dropdown/DropDown.vue'
 import logixFunction from '#/simulator/src/data'
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 interface AttrType {
   name: string
   value: string
@@ -61,6 +60,15 @@ defineProps({
   navbarItem: { type: Object, default: () => {} },
 })
 const menuButtonIsActive = ref(false)
+const closeMenu = () => {
+  menuButtonIsActive.value = false
+}
+onMounted(() => {
+  document.addEventListener('ui:close-menus', closeMenu)
+})
+onUnmounted(() => {
+  document.removeEventListener('ui:close-menus', closeMenu)
+})
 </script>
 
 <style scoped>
