@@ -70,10 +70,19 @@ const logixFunction: LogixFunction = {
 export default logixFunction;
 
 // Hack to restart tour guide
+
+/**
++ * Starts the tour guide when the application is ready.
++ * @throws Error if the tour guide fails to start
++ */
 function showTourGuideHelper(): void {
-    setTimeout(() => {
+    try {
+        // Replace with proper event-based initialization
         showTourGuide();
-    }, 100);
+    } catch (error) {
+        console.error('Failed to start tour guide:', error);
+        throw error;
+    }
 }
 
 // Hack to call createNewCircuitScope with keyboard shortcut
