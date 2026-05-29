@@ -1,6 +1,5 @@
 import CircuitElement from '../circuitElement'
-import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { correctWidth, rect } from '../canvasApi'
 /**
  * @class
@@ -16,9 +15,6 @@ import { correctWidth, rect } from '../canvasApi'
 export default class Rectangle extends CircuitElement {
     constructor(x, y, scope = globalScope, rows = 15, cols = 20) {
         super(x, y, scope, 'RIGHT', 1)
-        /* this is done in this.baseSetup() now
-        this.scope['Rectangle'].push(this);
-        */
         this.directionFixed = true
         this.fixedBitWidth = true
         this.rectangleObject = false
@@ -100,7 +96,7 @@ export default class Rectangle extends CircuitElement {
 
         if (
             simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         ) {
             ctx.fillStyle = 'rgba(255, 255, 32,0.1)'
             ctx.fill()

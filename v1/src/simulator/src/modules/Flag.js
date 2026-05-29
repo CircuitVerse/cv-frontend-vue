@@ -1,9 +1,8 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { correctWidth, rect2, fillText } from '../canvasApi'
 import plotArea from '../plotArea'
-import EventQueue from '../eventQueue'
 /**
  * @class
  * Flag
@@ -28,9 +27,6 @@ export default class Flag extends CircuitElement {
         identifier
     ) {
         super(x, y, scope, dir, bitWidth)
-        /* this is done in this.baseSetup() now
-        this.scope['Flag'].push(this);
-        */
         this.setWidth(60)
         this.setHeight(20)
         this.rectangleObject = false
@@ -127,7 +123,7 @@ export default class Flag extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         )
             ctx.fillStyle = colors['hover_select']
         ctx.fill()
@@ -189,9 +185,6 @@ export default class Flag extends CircuitElement {
         } else {
             this.inp1.leftx = 20
         }
-        // if(this.direction=="LEFT" || this.direction=="RIGHT") this.inp1.leftx=50-this.xSize;
-        //     this.inp1.refresh();
-
         this.inp1.refresh()
     }
 }
@@ -203,9 +196,9 @@ export default class Flag extends CircuitElement {
  * @category modules
  */
 Flag.prototype.tooltipText =
-    'FLag ToolTip: Use this for debugging and plotting.'
+    'Flag ToolTip: Use this for debugging and plotting.'
 Flag.prototype.helplink =
-    'https://docs.circuitverse.org/#/timing_diagrams?id=using-flags'
+    'https://docs.circuitverse.org/chapter4/chapter4-misc#flag'
 
 /**
  * @memberof Flag
@@ -214,7 +207,7 @@ Flag.prototype.helplink =
  * @category modules
  */
 Flag.prototype.helplink =
-    'https://docs.circuitverse.org/#/chapter4/8misc?id=tunnel'
+    'https://docs.circuitverse.org/chapter4/chapter4-misc#flag'
 
 /**
  * @memberof Flag
