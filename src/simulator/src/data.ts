@@ -70,14 +70,8 @@ const logixFunction: LogixFunction = {
 export default logixFunction;
 
 // Hack to restart tour guide
-
-/**
-+ * Starts the tour guide when the application is ready.
-+ * @throws Error if the tour guide fails to start
-+ */
 function showTourGuideHelper(): void {
     try {
-        // Replace with proper event-based initialization
         showTourGuide();
     } catch (error) {
         console.error('Failed to start tour guide:', error);
