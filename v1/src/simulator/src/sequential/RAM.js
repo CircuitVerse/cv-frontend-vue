@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { correctWidth, fillText2, fillText4, drawCircle2 } from '../canvasApi'
 import { parseNumber, showMessage } from '../utils'
 /**
@@ -43,7 +43,6 @@ import { parseNumber, showMessage } from '../utils'
  * by keeping the max addressWidth small. If needed, we can increase the max.
  * @category sequential
  */
-import { colors } from '../themer/themer'
 import { showError } from '../utils'
 export default class RAM extends CircuitElement {
     constructor(
@@ -55,9 +54,6 @@ export default class RAM extends CircuitElement {
         addressWidth = 10
     ) {
         super(x, y, scope, dir, Math.min(Math.max(1, bitWidth), 32))
-        /*
-        this.scope['RAM'].push(this);
-        */
         this.setDimensions(60, 40)
 
         this.directionFixed = true
@@ -270,9 +266,6 @@ export default class RAM extends CircuitElement {
         }
 
         showMessage('Data dumped to developer Console')
-
-        console.log(JSON.stringify(this.data))
-
         if (logLabel) {
             console.groupEnd()
         }
@@ -336,7 +329,7 @@ export default class RAM extends CircuitElement {
         assign dout = mem[addr];
     
         always @ (*) begin
-        if (!we)
+        if (we)
             mem[addr] = din;
         end
     endmodule
@@ -346,6 +339,7 @@ export default class RAM extends CircuitElement {
 
 RAM.prototype.tooltipText = 'Random Access Memory'
 RAM.prototype.shortName = 'RAM'
+RAM.prototype.helplink='https://docs.circuitverse.org/chapter4/chapter4-sequentialelements/#ram'
 RAM.prototype.maxAddressWidth = 20
 RAM.prototype.mutableProperties = {
     addressWidth: {

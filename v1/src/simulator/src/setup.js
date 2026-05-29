@@ -1,20 +1,15 @@
 /* eslint-disable import/no-cycle */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable guard-for-in */
-
-import { Tooltip } from 'bootstrap'
-import metadata from './metadata.json'
 import { generateId, showMessage } from './utils'
-import backgroundArea from './backgroundArea'
+import { backgroundArea } from './backgroundArea'
 import plotArea from './plotArea'
-import simulationArea from './simulationArea'
+import { simulationArea } from './simulationArea'
 import { dots } from './canvasApi'
 import { update, updateSimulationSet, updateCanvasSet } from './engine'
 import { setupUI } from './ux'
 import startMainListeners from './listeners'
-// import startEmbedListeners from './embedListeners'
-import './embed'
-import { newCircuit, scopeList } from './circuit'
+import { newCircuit } from './circuit'
 import load from './data/load'
 import save from './data/save'
 import { showTourGuide } from './tutorials'
@@ -26,11 +21,62 @@ import 'codemirror/addon/edit/closebrackets'
 import 'codemirror/addon/hint/anyword-hint'
 import 'codemirror/addon/hint/show-hint'
 import { setupCodeMirrorEnvironment } from './Verilog2CV'
-// import { keyBinder } from '#/components/DialogBox/CustomShortcut.vue'
 import '../vendor/jquery-ui.min.css'
 import '../vendor/jquery-ui.min'
 import { confirmSingleOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
 import { getToken } from '#/pages/simulatorHandler.vue'
+
+// Loading icon fade animation constants and helpers
+const LOADING_ICON_SELECTOR = '.loadingIcon'
+const LOADING_FADE_MS = 400
+const loadingIconTimeouts = new WeakMap()
+
+/**
+ * Fade out all loading icons with timeout cancellation to avoid race conditions
+ */
+function fadeOutLoadingIcons() {
+    document.querySelectorAll(LOADING_ICON_SELECTOR).forEach((el) => {
+        // Cancel any pending timeout for this element
+        const prev = loadingIconTimeouts.get(el)
+        if (prev) clearTimeout(prev)
+
+        el.style.transition = `opacity ${LOADING_FADE_MS}ms`
+        el.style.opacity = '0'
+
+        const id = setTimeout(() => {
+            el.style.display = 'none'
+        }, LOADING_FADE_MS)
+        loadingIconTimeouts.set(el, id)
+    })
+}
+
+/**
+ * Fade in all loading icons with proper display restoration
+ */
+function fadeInLoadingIcons() {
+    document.querySelectorAll(LOADING_ICON_SELECTOR).forEach((el) => {
+        // Cancel any pending fade-out timeout
+        const prev = loadingIconTimeouts.get(el)
+        if (prev) clearTimeout(prev)
+
+        // Store original display if not already stored
+        if (!el.dataset.prevDisplay) {
+            const computed = window.getComputedStyle(el).display
+            el.dataset.prevDisplay = computed !== 'none' ? computed : 'block'
+        }
+
+        el.style.display = el.dataset.prevDisplay
+        el.style.opacity = '0'
+        el.style.transition = `opacity ${LOADING_FADE_MS}ms`
+
+        // Use requestAnimationFrame to ensure display change takes effect before opacity
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                el.style.opacity = '1'
+            })
+        })
+    })
+}
 
 /**
  * to resize window and setup things it
@@ -47,7 +93,7 @@ export function resetup() {
     if (!embed) {
         height =
             (document.body.clientHeight -
-                document.getElementById('toolbar').clientHeight) *
+                document.getElementById('toolbar')?.clientHeight) *
             DPR
     } else {
         height = document.getElementById('simulation').clientHeight * DPR
@@ -98,29 +144,6 @@ function setupEnvironment() {
 }
 
 /**
- * It initializes some useful array which are helpful
- * while simulating, saving and loading project.
- * It also draws icons in the sidebar
- * @category setup
- */
-function setupElementLists() {
-    // $('#menu').empty()
-
-    window.circuitElementList = metadata.circuitElementList
-    window.annotationList = metadata.annotationList
-    window.inputList = metadata.inputList
-    window.subCircuitInputList = metadata.subCircuitInputList
-    window.moduleList = [...circuitElementList, ...annotationList]
-    window.updateOrder = [
-        'wires',
-        ...circuitElementList,
-        'nodes',
-        ...annotationList,
-    ] // Order of update
-    window.renderOrder = [...moduleList.slice().reverse(), 'wires', 'allNodes'] // Order of render
-}
-
-/**
  * Fetches project data from API and loads it into the simulator.
  * @param {number} projectId The ID of the project to fetch data for
  * @category setup
@@ -142,21 +165,21 @@ async function fetchProjectData(projectId) {
             const simulatorVersion = data.simulatorVersion  
             const projectName = data.name
             if(!simulatorVersion){                 
-                window.location.href = `/simulator/edit/${projectId}`             
-            }            
-            if(simulatorVersion && simulatorVersion != "v1"){                 
+                window.location.href = `/simulator/edit/${projectName}`             
+            }           
+            if(simulatorVersion && simulatorVersion != "v0"){                 
                 window.location.href = `/simulatorvue/edit/${projectName}?simver=${simulatorVersion}`             
             }
             await load(data)
             await simulationArea.changeClockTime(data.timePeriod || 500)
-            $('.loadingIcon').fadeOut()
+            fadeOutLoadingIcons()
         } else {
             throw new Error('API call failed')
         }
     } catch (error) {
         console.error(error)
         confirmSingleOption('Error: Could not load.')
-        $('.loadingIcon').fadeOut()
+        fadeOutLoadingIcons()
     }
 }
 
@@ -168,7 +191,7 @@ async function fetchProjectData(projectId) {
 async function loadProjectData() {
     window.logixProjectId = window.logixProjectId ?? 0
     if (window.logixProjectId !== 0) {
-        $('.loadingIcon').fadeIn()
+        fadeInLoadingIcons()
         await fetchProjectData(window.logixProjectId)
     } else if (localStorage.getItem('recover_login') && window.isUserLoggedIn) {
         // Restore unsaved data and save
@@ -205,9 +228,6 @@ function showTour() {
  * @category setup
  */
 export function setup() {
-    // let embed = false
-    // const startListeners = embed ? startEmbedListeners : startMainListeners
-    setupElementLists()
     setupEnvironment()
     if (!embed) {
         setupUI()

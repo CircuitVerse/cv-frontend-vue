@@ -1,8 +1,8 @@
 import { setUserKeys } from '../model/actions'
 
 /**
- * fn to update the htokey panel UI with the currently set configuration
- * @param {string} mode user prefered if present, or default keys configuration
+ * fn to update the hotkey panel UI with the currently set configuration
+ * @param {string} mode user preferred if present, or default keys configuration
  */
 export const updateHTML = (mode) => {
     let x = 0

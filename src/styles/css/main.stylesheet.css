@@ -975,7 +975,7 @@ div.icon img {
     border-radius: 3px !important;
 }
 
-/* toogle */
+/* toggle */
 
 .switch {
     position: relative;
@@ -1729,6 +1729,16 @@ canvas {
 .code-window-embed .CodeMirror {
     height: 100%;
     overflow: scroll;
+}
+
+.CodeMirror-sizer {
+    padding-left: calc(var(--cm-gutter-width, 0px) + 15px);
+    line-height: 1.35;
+}
+
+.CodeMirror pre {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 18px !important;
 }
 
 .code-window-embed {

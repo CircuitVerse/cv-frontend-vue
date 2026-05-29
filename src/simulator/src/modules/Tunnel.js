@@ -330,7 +330,7 @@ export default class Tunnel extends CircuitElement {
  */
 Tunnel.prototype.tooltipText = 'Tunnel ToolTip : Tunnel Selected.'
 Tunnel.prototype.helplink =
-    'https://docs.circuitverse.org/#/chapter4/8misc?id=tunnel'
+    'https://docs.circuitverse.org/chapter4/chapter4-misc#tunnel'
 
 Tunnel.prototype.overrideDirectionRotation = true
 

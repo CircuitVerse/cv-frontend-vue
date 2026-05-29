@@ -1,5 +1,8 @@
 import { simulationArea } from './simulationArea'
 import { convertors } from './utils'
+import { join, downloadDir } from '@tauri-apps/api/path';
+import { writeFile } from '@tauri-apps/plugin-fs';
+import { isTauri } from '@tauri-apps/api/core'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { toRefs } from 'vue'
 
@@ -108,11 +111,42 @@ const plotArea = {
     },
     // download as image
     download() {
+        if (isTauri()) {
+            this.downloadImageDesktop()
+            return
+        }
+
         var img = this.canvas.toDataURL(`image/png`)
         const anchor = document.createElement('a')
         anchor.href = img
         anchor.download = `waveform.png`
         anchor.click()
+    },
+    // download as image for desktop
+    async downloadImageDesktop() {
+        try {
+            const img = this.canvas.toDataURL('image/png');
+
+            const response = await fetch(img);
+            const blob = await response.blob();
+
+            const arrayBuffer = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsArrayBuffer(blob);
+            });
+
+            const downloadsDirectory = await downloadDir();
+
+            const random = Math.random().toString(36).substring(7);
+
+            const path = await join(downloadsDirectory, `waveform-${random}.png`);
+
+            await writeFile({ path, contents: new Uint8Array(arrayBuffer) });
+        } catch (error) {
+            console.error('Error during download:', error);
+        }
     },
     // update canvas size to use full screen
     resize() {
@@ -128,9 +162,17 @@ const plotArea = {
     // Setup function, called on page load
     setup() {
         this.canvas = document.getElementById('plotArea')
+        // Guard against null canvas (may be unmounted in Verilog mode)
+        if (!this.canvas) return
         if (!embed) {
             this.ctx = this.canvas.getContext('2d')
         }
+
+        // Clear any existing interval to prevent duplicates on remount
+        if (this.timeOutPlot) {
+            clearInterval(this.timeOutPlot)
+        }
+
         this.timeOutPlot = setInterval(() => {
             plotArea.plot()
         }, frameInterval)
@@ -405,6 +447,17 @@ const plotArea = {
     },
     // Driver function to render and update
     plot() {
+        // Check if canvas is available (may be unmounted in Verilog mode)
+        if (!this.canvas) {
+            this.canvas = document.getElementById('plotArea')
+            if (this.canvas && !embed) {
+                this.ctx = this.canvas.getContext('2d')
+            }
+        }
+        if (!this.canvas) return
+
+        if (typeof globalScope === 'undefined' || !globalScope) return
+
         const simulatorMobileStore = useSimulatorMobileStore()
         const { showCanvas } = toRefs(simulatorMobileStore)
         if (embed) return
@@ -414,7 +467,7 @@ const plotArea = {
             showCanvas.value = false
             return
         }
-       showCanvas.value = true
+        showCanvas.value = true
 
         this.update()
         this.render()
