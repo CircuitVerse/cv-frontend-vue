@@ -28,6 +28,11 @@ export function checkIfBackup(scope: Scope): boolean {
 
 
 export function backUp(scope: Scope = globalScope): BackupData {
+    // Disconnection of subcircuits are needed because these are the connections between nodes
+    // in current scope and those in the subcircuit's scope
+    for (let i = 0; i < scope.SubCircuit.length; i++) {
+        scope.SubCircuit[i].removeConnections()
+    }
     const data: BackupData = {
         layout: scope.layout,
         verilogMetadata: scope.verilogMetadata,
@@ -47,11 +52,7 @@ export function backUp(scope: Scope = globalScope): BackupData {
         }
     }
     
-    // Disconnection of subcircuits are needed because these are the connections between nodes
-    // in current scope and those in the subcircuit's scope
-    for (let i = 0; i < scope.SubCircuit.length; i++) {
-        scope.SubCircuit[i].removeConnections()
-    }
+    
     // Restoring the connections
     for (let i = 0; i < scope.SubCircuit.length; i++) {
         scope.SubCircuit[i].makeConnections()
