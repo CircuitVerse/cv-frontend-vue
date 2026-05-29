@@ -1,22 +1,23 @@
 <template>
-    <nav v-if="!simulatorMobileStore.showMobileView" class="navbar navbar-expand-lg navbar-dark header">
+    <nav 
+        v-if="!simulatorMobileStore.showMobileView" 
+        class="navbar navbar-expand-lg navbar-dark header"
+    >
         <Logo :cvlogo="navbarLogo" />
-
         <div
-    v-if="!simulatorMobileStore.showMobileView"
-    id="bs-example-navbar-collapse-1"
-    class="collapse navbar-collapse"
->
-  <div class="d-flex align-items-center w-100">
-            <NavbarLinks :navbar-data="navbarData" />
-
-            <span
-                id="projectName"
-                class="projectName noSelect defaultCursor font-weight-bold"
-            >
-                {{ projectStore.getProjectName }}
-            </span>
-            <UserMenu class="useMenuBtn" />
+            id="bs-example-navbar-collapse-1"
+            class="collapse navbar-collapse"
+        >
+            <div class="d-flex align-items-center w-100">
+                <NavbarLinks :navbar-data="navbarData" />
+                <span
+                    id="projectName"
+                    class="projectName noSelect defaultCursor font-weight-bold"
+                >
+                    {{ projectStore.getProjectName }}
+                </span>
+                <UserMenu class="useMenuBtn" />
+            </div>
         </div>
     </nav>
     <QuickButton v-if="!simulatorMobileStore.showMobileView" />
