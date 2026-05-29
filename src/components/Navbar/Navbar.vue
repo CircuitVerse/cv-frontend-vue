@@ -3,9 +3,11 @@
         <Logo :cvlogo="navbarLogo" />
 
         <div
-            id="bs-example-navbar-collapse-1"
-            class="collapse navbar-collapse d-flex align-items-center"
-        >
+    v-if="!simulatorMobileStore.showMobileView"
+    id="bs-example-navbar-collapse-1"
+    class="collapse navbar-collapse"
+>
+  <div class="d-flex align-items-center w-100">
             <NavbarLinks :navbar-data="navbarData" />
 
             <span
