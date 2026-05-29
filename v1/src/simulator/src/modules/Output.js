@@ -1,21 +1,11 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { correctWidth, fillText, rect2, oppositeDirection } from '../canvasApi'
 import { getNextPosition } from '../modules'
 import { generateId } from '../utils'
 import { colors } from '../themer/themer'
-
-function bin2dec(binString) {
-    return parseInt(binString, 2)
-}
-
-function dec2bin(dec, bitWidth = undefined) {
-    // only for positive nos
-    var bin = dec.toString(2)
-    if (bitWidth == undefined) return bin
-    return '0'.repeat(bitWidth - bin.length) + bin
-}
+import { dec2bin } from '../node'
 
 /**
  * @class
@@ -40,9 +30,6 @@ export default class Output extends CircuitElement {
     ) {
         // Calling base class constructor
         super(x, y, scope, dir, bitWidth)
-        /* this is done in this.baseSetup() now
-        this.scope['Output'].push(this);
-        */
         if (layoutProperties) {
             this.layoutProperties = layoutProperties
         } else {
@@ -57,15 +44,6 @@ export default class Output extends CircuitElement {
         this.orientationFixed = false
         this.setDimensions(this.bitWidth * 10, 10)
         this.inp1 = new Node(this.bitWidth * 10, 0, 0, this)
-    }
-
-    /**
-     * @memberof Output
-     * function to generate verilog for output
-     * @return {string}
-     */
-    generateVerilog() {
-        return `assign ${this.label} = ${this.inp1.verilogLabel};`
     }
 
     /**
@@ -140,7 +118,7 @@ export default class Output extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         ) {
             ctx.fillStyle = colors['hover_select']
         }
@@ -186,6 +164,11 @@ export default class Output extends CircuitElement {
         this.labelDirection = oppositeDirection[this.direction]
     }
 
+    /**
+     * @memberof Output
+     * function to generate verilog for output
+     * @return {string}
+     */
     generateVerilog() {
         return (
             'assign ' + this.verilogLabel + ' = ' + this.inp1.verilogLabel + ';'
@@ -208,7 +191,7 @@ Output.prototype.tooltipText =
  * @type {string}
  * @category modules
  */
-Output.prototype.helplink = 'https://docs.circuitverse.org/#/chapter4/3output?id=output'
+Output.prototype.helplink = 'https://docs.circuitverse.org/chapter4/chapter4-output#output-1'
 
 /**
  * @memberof Output

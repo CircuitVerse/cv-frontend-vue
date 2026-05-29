@@ -3,7 +3,7 @@
         "target": "esnext",
         "useDefineForClassFields": true,
         "module": "esnext",
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
         "strict": true,
         "jsx": "preserve",
         "sourceMap": true,
@@ -21,7 +21,8 @@
         "declaration": true,
         "emitDeclarationOnly": true,
         "outDir": "dist",
-        "declarationMap": true
+        "declarationMap": true,
+        "types": ["vite/client"]
     },
     "include": [
         "v0/src/**/*.ts",

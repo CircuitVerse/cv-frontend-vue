@@ -1,6 +1,6 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { fillText, lineTo, moveTo, correctWidth, rect2 } from '../canvasApi'
 /**
  * @class
@@ -131,7 +131,7 @@ export default class Random extends CircuitElement {
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected == this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         ) {
             ctx.fillStyle = 'rgba(255, 255, 32,0.6)'
             ctx.fill()
@@ -159,7 +159,7 @@ export default class Random extends CircuitElement {
 Random.prototype.tooltipText = 'Random ToolTip : Random Selected.'
 
 Random.prototype.helplink =
-    'https://docs.circuitverse.org/#/chapter4/2input?id=random'
+    'https://docs.circuitverse.org/chapter4/chapter4-input#random'
 
 Random.prototype.objectType = 'Random'
 

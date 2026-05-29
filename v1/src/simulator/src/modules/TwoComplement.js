@@ -1,8 +1,7 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
-import simulationArea from '../simulationArea'
+import { simulationArea } from '../simulationArea'
 import { correctWidth, fillText, drawCircle2 } from '../canvasApi'
-import { changeInputSize } from '../modules'
 /**
  * @class
  * TwoComplement
@@ -19,9 +18,6 @@ import { colors } from '../themer/themer'
 export default class TwoComplement extends CircuitElement {
     constructor(x, y, scope = globalScope, dir = 'RIGHT', bitWidth = 1) {
         super(x, y, scope, dir, bitWidth)
-        /* this is done in this.baseSetup() now
-        this.scope['TwoComplement'].push(this);
-        */
         this.rectangleObject = false
         this.setDimensions(15, 15)
         this.inp1 = new Node(-10, 0, 0, this, this.bitWidth, 'input stream')
@@ -73,11 +69,11 @@ export default class TwoComplement extends CircuitElement {
         const yy = this.y
         ctx.beginPath()
         ctx.fillStyle = 'black'
-        fillText(ctx, "2'", xx, yy, 10)
+        fillText(ctx, "2's", xx, yy, 10)
         if (
             (this.hover && !simulationArea.shiftDown) ||
             simulationArea.lastSelected === this ||
-            simulationArea.multipleObjectSelections.contains(this)
+            simulationArea.multipleObjectSelections.includes(this)
         )
             ctx.fillStyle = colors['hover_select']
         ctx.fill()
@@ -97,6 +93,10 @@ export default class TwoComplement extends CircuitElement {
  * @type {string}
  * @category modules
  */
+
+TwoComplement.prototype.helplink = 'https://docs.circuitverse.org/chapter4/chapter4-misc#twos-complement'
 TwoComplement.prototype.tooltipText =
-    "Two's Complement Tooltip : Calculates the two's complement"
+    "Two's Complement ToolTip : Calculates the two's complement"
+TwoComplement.prototype.helplink =
+    'https://docs.circuitverse.org/chapter4/chapter4-misc/#twos-complement'
 TwoComplement.prototype.objectType = 'TwoComplement'
