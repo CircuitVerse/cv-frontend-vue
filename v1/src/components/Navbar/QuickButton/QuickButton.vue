@@ -1,5 +1,5 @@
 <template>
-    <div class="quick-btn" @ondragover="dragover">
+    <div class="quick-btn" id='quick-btn-id' @ondragover="dragover">
         <div id="dragQPanel" class="panel-drag">
             <!-- <DragSvgDots /> -->
             <div class="drag-dot-svg"></div>
@@ -88,13 +88,7 @@
 </template>
 
 <script lang="ts" setup>
-import DragSvgDots from './DragSvgDots/DragSvgDots.vue'
-import { deleteSelected } from '#/simulator/src/ux'
-import undo from '#/simulator/src/data/undo'
-import redo from '#/simulator/src/data/redo'
-import { fullView } from '#/simulator/src/ux'
-import { ZoomIn, ZoomOut } from '#/simulator/src/listeners'
-import logixFunction from '#/simulator/src/data'
+import { saveOnline, saveOffline, deleteSelectedItem, createSaveAsImgPrompt, zoomToFit, undoit, redoit, view, decrement, increment } from './QuickButton';
 
 function dragover(): void {
     const quickBtn: HTMLElement | null = document.querySelector('.quick-btn')
@@ -103,40 +97,9 @@ function dragover(): void {
         quickBtn.style.background = 'var(--bg-navbar)'
     }
 }
-
-function saveOnline(): void {
-    logixFunction.save()
-}
-function saveOffline(): void {
-    logixFunction.saveOffline()
-}
-function deleteSelectedItem(): void {
-    deleteSelected()
-}
-function createSaveAsImgPrompt(): void {
-    logixFunction.createSaveAsImgPrompt()
-}
-function zoomToFit(): void {
-    globalScope.centerFocus(false)
-}
-function undoit(): void {
-    undo()
-}
-function redoit(): void {
-    redo()
-}
-function view(): void {
-    fullView()
-}
-function decrement(): void {
-    ZoomOut()
-}
-function increment(): void {
-    ZoomIn()
-}
 </script>
 
-<style scoped>
+<style>
 /* @import url('./QuickButton.css'); */
 
 .panel-drag {
@@ -179,14 +142,14 @@ function increment(): void {
 .drag-dot-svg {
     width: 12px;
     height: 20px;
-    background: url(../../../styles/css/assets/shorcuts/dragDots.svg)
+    background: url(../../../styles/css/assets/shortcuts/dragDots.svg)
         center/contain;
     display: block;
     margin-left: 4px;
 }
 
 .quick-btn-save-online {
-    background: url(../../../styles/css/assets/shorcuts/save-online.svg)
+    background: url(../../../styles/css/assets/shortcuts/save-online.svg)
         center/cover;
     width: 21.43px;
     height: 15.2px;
@@ -194,21 +157,21 @@ function increment(): void {
 }
 
 .quick-btn-save {
-    background: url(../../../styles/css/assets/shorcuts/save.svg) center/cover;
+    background: url(../../../styles/css/assets/shortcuts/save.svg) center/cover;
     width: 15.2px;
     height: 15.2px;
     display: block;
 }
 
 .quick-btn-delete {
-    background: url(../../../styles/css/assets/shorcuts/delete.svg) center/cover;
+    background: url(../../../styles/css/assets/shortcuts/delete.svg) center/cover;
     width: 20px;
     height: 15.2px;
     display: block;
 }
 
 .quick-btn-download {
-    background: url(../../../styles/css/assets/shorcuts/download.svg)
+    background: url(../../../styles/css/assets/shortcuts/download.svg)
         center/cover;
     width: 15.2px;
     height: 15.2px;
@@ -216,28 +179,28 @@ function increment(): void {
 }
 
 .quick-btn-zoom-fit {
-    background: url(../../../styles/css/assets/shorcuts/fit.svg) center/cover;
+    background: url(../../../styles/css/assets/shortcuts/fit.svg) center/cover;
     width: 15.2px;
     height: 15.2px;
     display: block;
 }
 
 .quick-btn-undo {
-    background: url(../../../styles/css/assets/shorcuts/undo.svg) center/cover;
+    background: url(../../../styles/css/assets/shortcuts/undo.svg) center/cover;
     width: 15.2px;
     height: 16.2px;
     display: block;
 }
 
 .quick-btn-redo {
-    background: url(../../../styles/css/assets/shorcuts/redo.svg) center/cover;
+    background: url(../../../styles/css/assets/shortcuts/redo.svg) center/cover;
     width: 15.2px;
     height: 16.2px;
     display: block;
 }
 
 .quick-btn-view {
-    color: white;
+    color: white
 }
 
 .zoom-slider {
@@ -292,5 +255,64 @@ input[type='range']::-webkit-slider-thumb {
     border: 0;
     border-radius: 50%;
     cursor: pointer;
+}
+
+@media (max-width: 991px) {
+    .quick-btn-save-online {
+        background: url(../../../styles/css/assets/shortcuts/save-online.svg) center/cover;
+        width: 25.45px;
+        height: 17.85px;
+        display: block;
+    }
+
+    .quick-btn-save {
+        background: url(../../../styles/css/assets/shortcuts/save.svg) center/cover;
+        width: 19px;
+        height: 19px;
+        display: block;
+    }
+
+    .quick-btn-delete {
+        background: url(../../../styles/css/assets/shortcuts/delete.svg) center/cover;
+        width: 25px;
+        height: 19px;
+        display: block;
+    }
+
+    .quick-btn-download {
+        background: url(../../../styles/css/assets/shortcuts/download.svg) center/cover;
+        width: 19px;
+        height: 19px;
+        display: block;
+    }
+
+    .quick-btn-zoom-fit {
+        background: url(../../../styles/css/assets/shortcuts/fit.svg) center/cover;
+        width: 19px;
+        height: 19px;
+        display: block;
+    }
+
+    .quick-btn-undo {
+        background: url(../../../styles/css/assets/shortcuts/undo.svg) center/cover;
+        width: 19px;
+        height: 20.25px;
+        display: block;
+    }
+
+    .quick-btn-redo {
+        background: url(../../../styles/css/assets/shortcuts/redo.svg) center/cover;
+        width: 19px;
+        height: 20.25px;
+        display: block;
+    }
+
+    .quick-btn-timing {
+        font-size: 1.2rem;
+    }
+
+    .quick-btn-view {
+        font-size: 1.25rem;
+    }
 }
 </style>

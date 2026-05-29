@@ -1,5 +1,4 @@
 <template>
-    <!-- Existing Open Project Dialog -->
     <v-dialog
         v-model="SimulatorState.dialogBox.open_project_dialog"
         :persistent="false"
@@ -27,11 +26,12 @@
                             type="radio"
                             name="projectId"
                             :value="projectId"
+                            v-model="selectedProjectId"
                         />
                         {{ projectName }}<span></span>
                         <i
                             class="fa fa-trash deleteOfflineProject"
-                            @click="deleteOfflineProject(projectId)"
+                            @click="deleteOfflineProject(projectId.toString())"
                         ></i>
                     </label>
                     <p v-if="JSON.stringify(projectList) == '{}'">
@@ -88,23 +88,26 @@
 <script lang="ts" setup>
 import load from '#/simulator/src/data/load'
 import { useState } from '#/store/SimulatorStore/state'
-import { onMounted, onUpdated, ref, toRaw } from '@vue/runtime-core'
+import { onMounted, onUpdated, ref } from '@vue/runtime-core'
 const SimulatorState = useState()
-const projectList = ref({})
-const targetVersion = ref('') 
-let projectName = '' 
+const projectList = ref<{ [key: string]: string }>({})
+const selectedProjectId = ref<string | null>(null)
+const targetVersion = ref<string>('')
+let projectName = ''
+
 onMounted(() => {
     SimulatorState.dialogBox.open_project_dialog = false
 })
 
 onUpdated(() => {
-    var data = localStorage.getItem('projectList')
-    projectList.value = JSON.parse(localStorage.getItem('projectList')) || {}
+    const data = localStorage.getItem('projectList')
+    projectList.value = data ? JSON.parse(data) : {}
 })
 
-function deleteOfflineProject(id) {
+function deleteOfflineProject(id: string) {
     localStorage.removeItem(id)
-    const temp = JSON.parse(localStorage.getItem('projectList')) || {}
+    const data = localStorage.getItem('projectList')
+    const temp = data ? JSON.parse(data) : {}
     delete temp[id]
     projectList.value = temp
     localStorage.setItem('projectList', JSON.stringify(temp))
@@ -112,33 +115,37 @@ function deleteOfflineProject(id) {
 
 function openProjectOffline() {
     SimulatorState.dialogBox.open_project_dialog = false
-    let ele = $('input[name=projectId]:checked')
-    if (!ele.val()) return
-    const projectData = JSON.parse(localStorage.getItem(ele.val()))
-    const simulatorVersion = projectData.simulatorVersion
-    projectName = projectData.name
+    if (!selectedProjectId.value) return
+    const projectData = localStorage.getItem(selectedProjectId.value)
     
-    // Handle version mismatch logic
-    if (!simulatorVersion) {
-        // If no version, proceed directly
-        targetVersion.value = "Legacy"
-        SimulatorState.dialogBox.version_mismatch_dialog = true
-    } else if (simulatorVersion && simulatorVersion != "v1") {
-        // Set the targetVersion and show the version mismatch dialog
-        targetVersion.value = simulatorVersion
-        SimulatorState.dialogBox.version_mismatch_dialog = true
-    } else {
-        // For other cases, proceed normally
-        load(projectData)
-        window.projectId = ele.val()
+    if (projectData) {
+        const parsedData = JSON.parse(projectData)
+        const simulatorVersion = parsedData.simulatorVersion
+        projectName = parsedData.name
+        
+        // Handle version mismatch logic
+        if (!simulatorVersion) {
+            // If no version, proceed directly
+            targetVersion.value = "Legacy"
+            SimulatorState.dialogBox.version_mismatch_dialog = true           
+        } else if (simulatorVersion && simulatorVersion != "v1") {
+            // Set the targetVersion and show the version mismatch dialog
+            targetVersion.value = simulatorVersion
+            SimulatorState.dialogBox.version_mismatch_dialog = true
+        } else {
+            // For other cases, proceed normally
+            load(parsedData)
+            window.projectId = selectedProjectId.value
+        }
     }
 }
 
 function confirmOpenProject() {
     SimulatorState.dialogBox.version_mismatch_dialog = false
-    if(targetVersion.value == "Legacy"){
+    // Redirect to the appropriate version after confirmation
+    if(targetVersion.value == "Legacy") {
         window.location.href = `/simulator/edit/${projectName}`  
-    }else{
+    } else {
         window.location.href = `/simulatorvue/edit/${projectName}?simver=${targetVersion.value}`
     }
 }
