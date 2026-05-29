@@ -93,14 +93,25 @@
                       </div>
                     </div>
 
-                    <div v-for="(group, groupIndex) in groups" class="group-container" :key="groupIndex">
-                        <div class="group-header">
-                            <input v-model="group.title" class="group-title-input" type="text" />
-                             <v-btn size="small" class="add-test-btn" variant="tonal" @click="addTestToGroup(groupIndex)">
+                  <div v-for="(group, groupIndex) in groups" class="group-container" :key="groupIndex">
+                    <div class="group-header">
+                        <input v-model="group.title" class="group-title-input" type="text" />
+                        <div class="group-actions">
+
+                            <v-btn size="small" class="add-test-btn" variant="tonal"
+                                @click="addTestToGroup(groupIndex)">
                                 <v-icon left>mdi-plus</v-icon>
                                 Add Test
                             </v-btn>
+
+                            <v-btn icon size="small" variant="text" color="black" @click="deleteGroup(groupIndex)"
+                                title="Delete Group">
+                                <v-icon>mdi-delete</v-icon>
+                            </v-btn>
                         </div>
+                    </div>
+
+                        
 
                         <div v-for="(_, testIndex) in (group.inputs[0] || [])" class="data-grid data-row" :key="testIndex" :class="{ 'with-results': testBenchStore.showResults }">
                              <div class="grid-cell label-col action-col">
@@ -308,6 +319,12 @@ const addNewGroup = () => {
     outputs: Array.from({ length: outputsName.value.length }, () => []),
   });
 };
+
+const deleteGroup = (groupIndex: number) => {
+    if (groups.length === 1) return; 
+    groups.splice(groupIndex, 1);
+};
+
 
 const increInputs = () => {
     groups.forEach((group) => {
@@ -670,14 +687,17 @@ const importFromCSV = () => {
     display: flex;
     align-items: center;
     margin-bottom: 8px;
+    justify-content: space-between;
     gap: 16px;
 }
+
 .group-title-input {
     font-size: 1.1rem;
     font-weight: 500;
     border: none;
     border-bottom: 1px solid transparent;
     padding: 4px 0;
+    flex: 0 0 auto;
 }
 .group-title-input:focus {
     outline: none;
@@ -747,5 +767,17 @@ const importFromCSV = () => {
 .attach-btn:hover {
     background-color: #424242;
 }
+
+.group-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;  
+}
+
+.add-test-btn {
+    color: var(--cv-green);
+}
+
 </style>
 
