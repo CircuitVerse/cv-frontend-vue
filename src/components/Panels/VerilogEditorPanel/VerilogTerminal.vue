@@ -13,11 +13,11 @@
 
         <div class="terminal-content" ref="terminalContent">
             <div class="terminal-output">
-                <div v-if="!messages.length" class="default-message">
+                <div v-if="!synthesisStore.messages.length" class="default-message">
                     {{ $t('simulator.panel_body.verilog_module.module_in_experiment_notice') }}
                 </div>
                 <div
-                    v-for="(message, index) in messages"
+                    v-for="(message, index) in synthesisStore.messages"
                     :key="index"
                     :class="['message', message.type]"
                 >
@@ -30,22 +30,29 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted, nextTick, readonly, watch } from 'vue'
+import { ref, onUnmounted, nextTick, watch } from 'vue'
 import { useVerilogStore } from '../../../store/verilogStore'
-
-interface Message {
-    text: string
-    type: 'info' | 'error' | 'success'
-    timestamp: Date
-}
+import { useSynthesisStore } from '../../../store/synthesisStore'
 
 const verilogStore = useVerilogStore()
+const synthesisStore = useSynthesisStore()
 const terminalHeight = ref(200)
-const messages = ref<Message[]>([])
 const terminalContent = ref<HTMLElement>()
 
 let isDragging = false
 let startY = 0
+
+// Auto-scroll when new messages arrive from the store
+watch(
+    () => synthesisStore.messages.length,
+    () => {
+        nextTick(() => {
+            if (terminalContent.value && verilogStore.isTerminalVisible) {
+                terminalContent.value.scrollTop = terminalContent.value.scrollHeight
+            }
+        })
+    }
+)
 
 // Watch store visibility to trigger side effects
 watch(
@@ -87,24 +94,6 @@ const adjustCodeWindowHeight = () => {
     }
 }
 
-const addMessage = (text: string, type: 'info' | 'error' | 'success' = 'info') => {
-    messages.value.push({
-        text,
-        type,
-        timestamp: new Date()
-    })
-    
-    nextTick(() => {
-        if (terminalContent.value && verilogStore.isTerminalVisible) {
-            terminalContent.value.scrollTop = terminalContent.value.scrollHeight
-        }
-    })
-}
-
-const clearOutput = () => {
-    messages.value = []
-}
-
 const startDragging = (e: MouseEvent) => {
     if (isDragging) return
     isDragging = true
@@ -138,15 +127,6 @@ const formatTime = (date: Date) => {
         second: '2-digit'
     })
 }
-
-defineExpose({
-    addMessage,
-    clearOutput,
-    showTerminal: verilogStore.showTerminal,
-    closeTerminal: verilogStore.hideTerminal,
-    toggleTerminal: verilogStore.toggleTerminal,
-    isVisible: readonly(() => verilogStore.isTerminalVisible)
-})
 
 onUnmounted(() => {
     document.removeEventListener('mousemove', handleDragging)
