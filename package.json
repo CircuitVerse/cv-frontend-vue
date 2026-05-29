@@ -13,8 +13,10 @@
     "format": "oxfmt --write \"**/*.ts\"",
     "format:check": "oxfmt --check \"**/*.ts\"",
     "fmt:check": "npm run format:check",
-    "postinstall": "husky install",
-    "test": "vitest --silent"
+    "postinstall": "husky install && npm run build:worker",
+    "test": "vitest --silent",
+    "build:worker": "rollup -c rollup.worker.config.mjs",
+    "test:synthesis": "vitest run --project synthesis"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.5.1",
@@ -30,6 +32,7 @@
     "@tiptap/extension-underline": "^2.0.3",
     "@tiptap/starter-kit": "^2.0.3",
     "@tiptap/vue-3": "^2.0.3",
+    "@yowasp/yosys": "^0.59.84-dev.1027",
     "bootstrap": "^4.6.1",
     "canvas-to-svg": "^1.0.3",
     "codemirror": "^5.65.1",
@@ -44,12 +47,16 @@
     "vue-router": "^4.6.4",
     "vuedraggable": "^4.1.0",
     "vuetify": "^3.7.9",
-    "webfontloader": "^1.0.0"
+    "webfontloader": "^1.0.0",
+    "yosys2digitaljs": "^0.10.3"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.0.0",
     "@commitlint/config-conventional": "^19.0.0",
     "@intlify/unplugin-vue-i18n": "^6.0.0",
+    "@rollup/plugin-commonjs": "^29.0.2",
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "rollup": "^4.40.0",
     "@tauri-apps/cli": "^2.11.2",
     "@types/jquery": "^3.5.14",
     "@types/webfontloader": "^1.0.0",
