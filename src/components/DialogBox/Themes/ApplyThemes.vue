@@ -167,6 +167,7 @@ const selectedThemeRef = ref<string | null>(null)
 onMounted(() => {
     SimulatorState.dialogBox.theme_dialog = false
     selectedTheme.value = localStorage.getItem('theme') ?? 'default-theme'
+    selectedThemeRef.value = localStorage.getItem('theme')
     themes.value = Object.keys(themeOptions)
     themes.value.splice(-1, 1)
     const customTheme = CreateAbstraction(themeOptions['Custom Theme'])
