@@ -10,9 +10,7 @@
                     size="x-small"
                     icon
                     class="dialogClose"
-                    @click="
-                        SimulatorState.dialogBox.open_project_dialog = false
-                    "
+                    @click="closeDialog"
                 >
                     <v-icon>mdi-close</v-icon>
                 </v-btn>
@@ -31,10 +29,10 @@
                         {{ projectName }}<span></span>
                         <i
                             class="fa fa-trash deleteOfflineProject"
-                            @click="deleteOfflineProject(projectId.toString())"
+                            @click="deleteOfflineProject(projectId)"
                         ></i>
                     </label>
-                    <p v-if="JSON.stringify(projectList) == '{}'">
+                    <p v-if="Object.keys(projectList).length === 0">
                         Looks like no circuit has been saved yet. Create a new
                         one and save it!
                     </p>
@@ -42,7 +40,7 @@
             </v-card-text>
             <v-card-actions>
                 <v-btn
-                    v-if="JSON.stringify(projectList) != '{}'"
+                    v-if="Object.keys(projectList).length > 0"
                     class="messageBtn"
                     block
                     @click="openProjectOffline()"
@@ -63,21 +61,22 @@
 </template>
 
 <script lang="ts" setup>
+import { ref, watchEffect } from 'vue';
 import load from '#/simulator/src/data/load'
 import { useState } from '#/store/SimulatorStore/state'
-import { onMounted, onUpdated, ref } from '@vue/runtime-core'
 const SimulatorState = useState()
 const projectList = ref<{ [key: string]: string }>({})
 const selectedProjectId = ref<string | null>(null)
 
-onMounted(() => {
-    SimulatorState.dialogBox.open_project_dialog = false
-})
-
-onUpdated(() => {
-    const data = localStorage.getItem('projectList')
-    projectList.value = data ? JSON.parse(data) : {}
-})
+watchEffect(() => {
+    if (SimulatorState.dialogBox.open_project_dialog) {
+        const data = localStorage.getItem('projectList');
+        projectList.value = data ? JSON.parse(data) : {};
+    }
+});
+function closeDialog() {
+    SimulatorState.dialogBox.open_project_dialog = false;
+}
 
 function deleteOfflineProject(id: string) {
     localStorage.removeItem(id)
@@ -89,7 +88,7 @@ function deleteOfflineProject(id: string) {
 }
 
 function openProjectOffline() {
-    SimulatorState.dialogBox.open_project_dialog = false
+    closeDialog();  
     if (!selectedProjectId.value) return
     const projectData = localStorage.getItem(selectedProjectId.value)
     if (projectData) {
@@ -99,7 +98,7 @@ function openProjectOffline() {
 }
 
 function OpenImportProjectDialog() {
-    SimulatorState.dialogBox.open_project_dialog = false
+    closeDialog();
     SimulatorState.dialogBox.import_project_dialog = true
 }
 </script>
