@@ -95,7 +95,8 @@ export function switchCircuit(id: string) {
   }
   if (globalScope.isVisible()) {
     // $(`#${id}`).addClass('current')
-    const index = circuit_list.value.findIndex((circuit) => circuit.id == id); // TODO: add strict equality after typescript
+    const index = circuit_list.value.findIndex((circuit) => circuit.id === id)
+    if (index === -1) return
     circuit_list.value[index].focussed = true;
     if (activeCircuit.value) {
       activeCircuit.value.id = globalScope.id;
