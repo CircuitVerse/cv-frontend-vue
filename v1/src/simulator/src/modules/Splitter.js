@@ -314,5 +314,5 @@ Splitter.prototype.tooltipText =
  * @type {string}
  * @category modules
  */
-Splitter.prototype.helplink = 'https://docs.circuitverse.org/#/chapter4/8misc?id=splitter'
+Splitter.prototype.helplink = 'https://docs.circuitverse.org/chapter4/chapter4-misc#splitter'
 Splitter.prototype.objectType = 'Splitter'
