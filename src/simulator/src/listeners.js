@@ -38,6 +38,9 @@ import logixFunction from './data'
 import { listen } from '@tauri-apps/api/event'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { toRefs } from 'vue'
+import { fitToSelection } from './canvasApi'
+// Fit viewport to currently selected elements (viewport-only, no simulation logic)
+
 
 const unit = 10
 let listenToSimulator = true
@@ -54,6 +57,27 @@ let centreX;
 let centreY;
 let timeout;
 let lastTap = 0;
+
+/**
+ * Returns the current selection context:
+ * - multiple selection if present
+ * - otherwise last selected element
+ * - empty array if nothing is selected
+ */
+export function getSelectedElements() {
+    if (
+        simulationArea.multipleObjectSelections &&
+        simulationArea.multipleObjectSelections.length > 0
+    ) {
+        return simulationArea.multipleObjectSelections
+    }
+
+    if (simulationArea.lastSelected) {
+        return [simulationArea.lastSelected]
+    }
+
+    return []
+}
 
 /**
  *
@@ -437,6 +461,18 @@ export default function startListeners() {
                     e.preventDefault()
                     ZoomOut()
                 }
+                
+                // Fit view to selection (F)
+                // Recomputes viewport bounds using selected elements only.
+                // Falls back to Reset View if no selection exists.
+                if (e.key === 'f' || e.key === 'F') {
+                    e.preventDefault()
+                    fitToSelection(getSelectedElements())
+                    updateCanvasSet(true)
+                    gridUpdateSet(true)
+                    scheduleUpdate(1)
+                    return
+               }
 
                 if (
                     simulationArea.mouseRawX < 0 ||
