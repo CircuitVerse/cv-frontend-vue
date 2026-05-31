@@ -8,8 +8,7 @@ interface projectStoreType {
   };
 }
 
-export const useProjectStore = defineStore({
-  id: "projectStore",
+export const useProjectStore = defineStore("projectStore", {
   state: (): projectStoreType => ({
     project: {
       // id: 0, //use later if needed
