@@ -7,6 +7,7 @@
 /* eslint-disable prefer-template */
 /* eslint-disable no-param-reassign */
 // Most Listeners are stored here
+const DPR = window.devicePixelRatio || 1
 import {
     layoutModeGet,
     tempBuffer,
@@ -28,7 +29,7 @@ import { changeScale, findDimensions } from './canvasApi'
 import { scheduleBackup } from './data/backupCircuit'
 import { hideProperties, deleteSelected, uxvar, exitFullView } from './ux';
 import { updateRestrictedElementsList, updateRestrictedElementsInScope, hideRestricted, showRestricted } from './restrictedElementDiv';
-import { removeMiniMap, updatelastMinimapShown } from './minimap'
+import miniMapArea, { removeMiniMap, updatelastMinimapShown } from './minimap'
 import undo from './data/undo'
 import redo from './data/redo'
 import { copy, paste, selectAll } from './events'
@@ -419,19 +420,22 @@ export default function startListeners() {
                     simulationArea.controlDown = true
                 }
 
-                // zoom in (+)
+                // Keyboard zoom shortcuts
+                // Zoom in: Cmd/Ctrl + '+' or numpad '+'
+                // (On US keyboards, '+' is Shift+'='; we only check for '+' to avoid
+                //  triggering on plain '=' which would require Cmd/Ctrl+Shift+= instead)
                 if (
                     (simulationArea.controlDown &&
-                        (e.keyCode == 187 || e.keyCode == 171)) ||
+                        (e.keyCode == 187 || e.keyCode == 171 || e.key == '+')) ||
                     e.keyCode == 107
                 ) {
                     e.preventDefault()
                     ZoomIn()
                 }
-                // zoom out (-)
+                // Zoom out: Cmd/Ctrl + '-' or numpad '-'
                 if (
                     (simulationArea.controlDown &&
-                        (e.keyCode == 189 || e.keyCode == 173)) ||
+                        (e.keyCode == 189 || e.keyCode == 173 || e.key == '-')) ||
                     e.keyCode == 109
                 ) {
                     e.preventDefault()
@@ -570,27 +574,114 @@ export default function startListeners() {
         onDoubleClickorTap(e);
     });
 
-    function MouseScroll(event) {
-        updateCanvasSet(true)
+    /**
+     * Handle mouse wheel / trackpad scroll events
+     * CHANGED: Now pans the canvas instead of zooming
+     * Zoom is controlled ONLY by:
+     *   - UI buttons/sliders (QuickButton components)
+     *   - Keyboard shortcuts (Cmd/Ctrl +/-)
+     * 
+     * This prevents accidental zoom when scrolling/swiping on trackpad
+     */
+    function handleCanvasPan(event) {
         event.preventDefault()
-        var deltaY = event.wheelDelta ? event.wheelDelta : -event.detail
-        event.preventDefault()
-        var deltaY = event.wheelDelta ? event.wheelDelta : -event.detail
-        const direction = deltaY > 0 ? 1 : -1
-        handleZoom(direction)
-        updateCanvasSet(true)
-        gridUpdateSet(true)
+        
+        // Extract scroll delta from various browser event formats
+        const scrollDelta = extractScrollDelta(event)
+        
+        // Apply panning by adjusting viewport origin
+        applyCanvasPan(scrollDelta.x, scrollDelta.y)
+        
+        // Update display and minimap
+        updateAfterPan()
+    }
+    
+    /**
+     * Extract scroll delta from browser wheel event
+     * Handles multiple browser API formats
+     */
+    function extractScrollDelta(event) {
+        let deltaX = 0
+        let deltaY = 0
+        
+        if (event.deltaX !== undefined && event.deltaY !== undefined) {
+            // Modern browsers: event.deltaX, event.deltaY
+            // Normalize by deltaMode: 0 = pixel, 1 = line, 2 = page
+            let modeScale = 1
 
-        if (layoutModeGet()) layoutUpdate()
-        else update() // Schedule update not working, this is INEFFICIENT
+            if (event.deltaMode === 1) {
+                // Lines → approximate pixels
+                modeScale = 16
+            } else if (event.deltaMode === 2) {
+                // Pages → approximate one viewport height
+                modeScale = window.innerHeight
+            }
+        
+            deltaX = event.deltaX * modeScale
+            deltaY = event.deltaY * modeScale
+        } else if (event.wheelDeltaX !== undefined && event.wheelDeltaY !== undefined) {
+            // Webkit browsers: wheelDeltaX, wheelDeltaY (inverted sign)
+            deltaX = -event.wheelDeltaX
+            deltaY = -event.wheelDeltaY
+        } else if (event.wheelDelta !== undefined) {
+            // Legacy browsers: wheelDelta (vertical only, inverted sign)
+            deltaY = -event.wheelDelta
+        } else if (event.detail !== undefined) {
+            // Firefox legacy API: detail (vertical only)
+            deltaY = event.detail * 40 // Scale to approximate pixels
+        }
+        
+        return { x: deltaX, y: deltaY }
+    }
+    
+    /**
+     * Apply panning to the canvas viewport
+     * @param {number} deltaX - Horizontal pan delta (from scroll event)
+     * @param {number} deltaY - Vertical pan delta (from scroll event)
+     *
+     * The canvas origin (ox, oy) is the pixel offset of the canvas content.
+     * To make content follow the finger/wheel naturally (natural scroll):
+     *   - Swipe right  → deltaX > 0 → content moves right → ox decreases
+     *   - Swipe left   → deltaX < 0 → content moves left  → ox increases
+     *   - Swipe down   → deltaY > 0 → content moves down  → oy decreases
+     *   - Swipe up     → deltaY < 0 → content moves up    → oy increases
+     * So we subtract the delta from the origin.
+     */
+    function applyCanvasPan(deltaX, deltaY) {
+        globalScope.ox -= deltaX
+        globalScope.oy -= deltaY
+
+        // Round to avoid subpixel rendering issues
+        globalScope.ox = Math.round(globalScope.ox)
+        globalScope.oy = Math.round(globalScope.oy)
+    }
+    
+    /**
+     * Update canvas and minimap after panning
+     */
+    function updateAfterPan() {
+        gridUpdateSet(true)
+        updateCanvasSet(true)
+        scheduleUpdate()
+        
+        // Show minimap temporarily (if enabled)
+        if (!embed && !lightMode) {
+            findDimensions(globalScope)   
+            miniMapArea.setup()
+            const miniMapElement = document.querySelector('#miniMap')
+            if (miniMapElement) {
+                miniMapElement.style.display = 'block'
+                updatelastMinimapShown()
+                setTimeout(removeMiniMap, 2000)
+            }
+        }
     }
 
-    document
-        .getElementById('simulationArea')
-        .addEventListener('mousewheel', MouseScroll)
-    document
-        .getElementById('simulationArea')
-        .addEventListener('DOMMouseScroll', MouseScroll)
+    // Register wheel/trackpad event listeners for canvas panning
+    const simulationAreaElement = document.getElementById('simulationArea')
+    simulationAreaElement.addEventListener('wheel', handleCanvasPan, { passive: false })
+    simulationAreaElement.addEventListener('mousewheel', handleCanvasPan, { passive: false })
+    simulationAreaElement.addEventListener('DOMMouseScroll', handleCanvasPan, { passive: false })
 
     document.addEventListener('cut', (e) => {
         if (verilogModeGet()) return
@@ -706,7 +797,8 @@ export default function startListeners() {
         })
     })
 
-    zoomSliderListeners()
+    // zoomSliderListeners() (jQuery-based) disabled here - zoom slider handling has moved to Vue
+    // Vue components (QuickButton.vue / QuickButtonMobile.vue) now manage the zoom slider and +/- buttons
     if (!embed) {
         setupTimingListeners()
     }
@@ -724,156 +816,145 @@ function resizeTabs() {
 window.addEventListener('resize', resizeTabs)
 resizeTabs()
 
-// direction is only 1 or -1
-function handleZoom(direction) {
-    if (globalScope.scale > 0.5 * DPR) {
-        changeScale(direction * 0.1 * DPR);
-    } else if (globalScope.scale < 4 * DPR) {
-        changeScale(direction * 0.1 * DPR);
+/**
+ * Apply zoom change in the specified direction
+ * @param {number} direction - Direction and magnitude of zoom change (1 = zoom in, -1 = zoom out)
+ */
+const MIN_ZOOM_SCALE = 0.5
+const MAX_ZOOM_SCALE = 4 * DPR
+
+function applyZoomChange(direction) {
+    const zoomDelta = direction * 0.1 * DPR
+    const targetScale = Math.max(
+        MIN_ZOOM_SCALE,
+        Math.min(MAX_ZOOM_SCALE, globalScope.scale + zoomDelta)
+    )
+
+    if (targetScale !== globalScope.scale) {
+        changeScale(targetScale - globalScope.scale)
+        gridUpdateSet(true)
+        scheduleUpdate()
     }
-    gridUpdateSet(true);
-    scheduleUpdate();
 }
+
+
+/**
+ * Zoom in - increases the canvas scale
+ * Can be called from keyboard shortcuts or UI buttons
+ */
 export function ZoomIn() {
-    handleZoom(1);
+    applyZoomChange(1)
 }
+
+/**
+ * Zoom out - decreases the canvas scale
+ * Can be called from keyboard shortcuts or UI buttons
+ */
 export function ZoomOut() {
-    handleZoom(-1);
-}
-function zoomSliderListeners() {
-    document.getElementById("customRange1").value = 5;
-    document.getElementById('simulationArea').addEventListener('DOMMouseScroll', zoomSliderScroll);
-    document.getElementById('simulationArea').addEventListener('mousewheel', zoomSliderScroll);
-    let curLevel = document.getElementById("customRange1").value;
-    $(document).on('input change', '#customRange1', function (e) {
-        const newValue = $(this).val();
-        const changeInScale = newValue - curLevel;
-        updateCanvasSet(true);
-        changeScale(changeInScale * 0.1, 'zoomButton', 'zoomButton', 3)
-        gridUpdateSet(true);
-        curLevel = newValue;
-    });
-    function zoomSliderScroll(e) {
-        let zoomLevel = document.getElementById("customRange1").value;
-        const deltaY = e.wheelDelta ? e.wheelDelta : -e.detail;
-        const directionY = deltaY > 0 ? 1 : -1;
-        if (directionY > 0) zoomLevel++
-        else zoomLevel--
-        if (zoomLevel >= 45) {
-            zoomLevel = 45;
-            document.getElementById("customRange1").value = 45;
-        } else if (zoomLevel <= 0) {
-            zoomLevel = 0;
-            document.getElementById("customRange1").value = 0;
-        } else {
-            document.getElementById("customRange1").value = zoomLevel;
-            curLevel = zoomLevel;
-        }
-    }
-    function sliderZoomButton(direction) {
-        const zoomSlider = $('#customRange1');
-        let currentSliderValue = parseInt(zoomSlider.val(), 10);
-        if (direction === -1) {
-            currentSliderValue--;
-        } else {
-            currentSliderValue++;
-        }
-        zoomSlider.val(currentSliderValue).change();
-    }
-    $('#decrement').click(() => {
-        sliderZoomButton(-1);
-    });
-    $('#increment').click(() => {
-        sliderZoomButton(1);
-    });
+    applyZoomChange(-1)
 }
 
-// Desktop App Listeners
+/**
+ * Set zoom level from a slider value
+ * Converts a slider value (typically 0-200) to the internal zoom scale (0.5-4.0 * DPR)
+ * and applies it centered on the viewport.
+ * 
+ * @param {number} sliderValue - The value from a zoom slider
+ * @param {number} minSliderValue - Minimum slider value (default: 0)
+ * @param {number} maxSliderValue - Maximum slider value (default: 10)
+ * @param {number} minZoom - Minimum zoom scale (default: 0.5 * DPR)
+ * @param {number} maxZoom - Maximum zoom scale (default: 4 * DPR)
+ * 
+ * Example: setZoomFromSlider(100, 0, 200) // Sets zoom to middle of range
+ */
+export function setZoomFromSlider(
+    sliderValue,
+    minSliderValue = 0,
+    maxSliderValue = 10,
+    minZoom = 0.5 * DPR,
+    maxZoom = 4 * DPR
+) {
+    // Guard against invalid inputs and degenerate ranges
+    const inputs = [sliderValue, minSliderValue, maxSliderValue, minZoom, maxZoom]
+    if (
+        !inputs.every(Number.isFinite) ||
+        maxSliderValue === minSliderValue ||
+        maxZoom === minZoom
+    ) {
+        return
+    }
 
-listen('new-project', () => {
-    logixFunction.newProject();
-});
+    // Normalize slider value to 0-1 range
+    const normalizedValue =
+        (sliderValue - minSliderValue) / (maxSliderValue - minSliderValue)
 
-listen('save-online', () => {
-    logixFunction.save();
-});
+    // Map to zoom scale range
+    const targetScale = minZoom + normalizedValue * (maxZoom - minZoom)
 
-listen('save-offline', () => {
-    logixFunction.saveOffline();
-});
+    // Clamp to valid zoom range
+    const clampedScale = Math.max(minZoom, Math.min(maxZoom, targetScale))
 
-listen('open-offline', () => {
-    logixFunction.createOpenLocalPrompt();
-});
+    // Calculate delta from current scale
+    const scaleDelta = clampedScale - globalScope.scale
 
-listen('export', () => {
-    logixFunction.ExportProject();
-});
+    // Avoid applying invalid or zero delta
+    if (!Number.isFinite(scaleDelta) || scaleDelta === 0) return
 
-listen('import', () => {
-    logixFunction.ImportProject();
-});
+    // Apply zoom centered on viewport (method = 3)
+    changeScale(scaleDelta, 'zoomButton', 'zoomButton', 3)
 
-listen('recover', () => {
-    logixFunction.recoverProject();
-});
+    // Update display
+    gridUpdateSet(true)
+    updateCanvasSet(true)
+    scheduleUpdate()
+}
 
-listen('clear', () => {
-    logixFunction.clearProject();
-});
 
-listen('preview-circuit', () => {
-    logixFunction.fullViewOption();
-});
+/**
+ * Get the current zoom level as a slider value
+ * Inverse of setZoomFromSlider - converts internal scale to slider value
+ * Useful for initializing or syncing a zoom slider UI
+ * 
+ * @param {number} minSliderValue - Minimum slider value (default: 0)
+ * @param {number} maxSliderValue - Maximum slider value (default: 10)
+ * @param {number} minZoom - Minimum zoom scale (default: 0.5 * DPR)
+ * @param {number} maxZoom - Maximum zoom scale (default: 4 * DPR)
+ * @returns {number} The slider value corresponding to current zoom level
+ * 
+ * Example: const sliderValue = getZoomSliderValue(0, 200) // Returns 0-200
+ */
+export function getZoomSliderValue(
+    minSliderValue = 0,
+    maxSliderValue = 10,
+    minZoom = 0.5 * DPR,
+    maxZoom = 4 * DPR
+) {
+    const inputs = [minSliderValue, maxSliderValue, minZoom, maxZoom, globalScope.scale]  
+    if (                                                                                  
+        !inputs.every(Number.isFinite) ||                                                 
+        maxSliderValue === minSliderValue ||                                              
+        maxZoom === minZoom                                                               
+    ) {                                                                                   
+        return minSliderValue                                                             
+    }                                                                                     
 
-listen('new-circuit', () => {
-    logixFunction.createNewCircuitScope();
-});
+    const currentScale = globalScope.scale
 
-listen('new-verilog-module', () => {
-    logixFunction.newVerilogModule();
-});
+    // Clamp current scale to valid range
+    const clampedScale = Math.max(minZoom, Math.min(maxZoom, currentScale))
 
-listen('insert-sub-circuit', () => {
-    logixFunction.createSubCircuitPrompt();
-});
+    // Normalize scale to 0-1 range
+    const normalizedScale = (clampedScale - minZoom) / (maxZoom - minZoom)
 
-listen('combinational-analysis', () => {
-    logixFunction.createCombinationalAnalysisPrompt();
-});
+    // Map to slider value range
+    const sliderValue =
+        minSliderValue + normalizedScale * (maxSliderValue - minSliderValue)
 
-listen('hex-bin-dec', () => {
-    logixFunction.bitconverter();
-});
+    if (!Number.isFinite(sliderValue)) {        
+        return minSliderValue                   
+    }                                           
 
-listen('download-image', () => {
-    logixFunction.createSaveAsImgPrompt();
-});
+    return sliderValue
+}
 
-listen('themes', () => {
-    logixFunction.colorThemes();
-});
 
-listen('custom-shortcut', () => {
-    logixFunction.customShortcut();
-});
-
-listen('export-verilog', () => {
-    logixFunction.generateVerilog();
-});
-
-listen('tutorial', () => {
-    logixFunction.showTourGuide();
-});
-
-listen('user-manual', () => {
-    logixFunction.showUserManual();
-});
-
-listen('learn-digital-circuit', () => {
-    logixFunction.showDigitalCircuit();
-});
-
-listen('discussion-forum', () => {
-    logixFunction.showDiscussionForum();
-});
