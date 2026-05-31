@@ -24,18 +24,20 @@ import { circuitElementList, subCircuitInputList } from './metadata'
 
 /**
  * Function to load a subcicuit
+ * @param savedData - The saved subcircuit data
+ * @param scope - The scope to load into
  * @category subcircuit
  */
-export function loadSubCircuit(savedData, scope) {
+export function loadSubCircuit(savedData: any, scope: any): void {
     new SubCircuit(savedData.x, savedData.y, scope, savedData.id, savedData)
 }
 
 /**
  * Prompt to create subcircuit, shows list of circuits which dont depend on the current circuit
- * @param {Scope=} scope
+ * @param scope - The current scope
  * @category subcircuit
  */
-export function createSubCircuitPrompt(scope = globalScope) {
+export function createSubCircuitPrompt(scope = globalScope): void {
     if (verilogModeGet() || layoutModeGet()) {
         showError('Subcircuit cannot be inserted in this mode')
         return
@@ -45,27 +47,41 @@ export function createSubCircuitPrompt(scope = globalScope) {
 }
 
 /**
- * @class
+ * SubCircuit class representing a nested circuit component
  * @extends CircuitElement
- * @param {number} x - x coord of subcircuit
- * @param {number} y - y coord of subcircuit
- * @param {Scope=} scope - the circuit in which subcircuit has been added
- * @param {string} id - the id of the subcircuit scope
- * @param {JSON} savedData - the saved data
  * @category subcircuit
  */
 export default class SubCircuit extends CircuitElement {
+    id: string
+    directionFixed: boolean
+    fixedBitWidth: boolean
+    savedData: any
+    inputNodes: any[]
+    outputNodes: any[]
+    localScope: any
+    preventCircuitSwitch: boolean
+    rectangleObject: boolean
+    version: string
+    data: any
+    lastUpdated: any
+    leftDimensionX: number
+    upDimensionY: number
+    rightDimensionX: number
+    downDimensionY: number
+    lastClickedElement: any
+    elementHover: any
+
     constructor(
-        x,
-        y,
+        x: number,
+        y: number,
         scope = globalScope,
-        id = undefined,
-        savedData = undefined
+        id: string | undefined = undefined,
+        savedData: any = undefined
     ) {
         super(x, y, scope, 'RIGHT', 1) // super call
         this.objectType = 'SubCircuit'
         this.scope.SubCircuit.push(this)
-        this.id = id || prompt('Enter Id: ')
+        this.id = id || prompt('Enter Id: ') || ''
         this.directionFixed = true
         this.fixedBitWidth = true
         this.savedData = savedData
@@ -75,7 +91,7 @@ export default class SubCircuit extends CircuitElement {
         this.preventCircuitSwitch = false // prevents from switching circuit if double clicking element
         this.rectangleObject = false
 
-        var subcircuitScope = scopeList[this.id] // Scope of the subcircuit
+        const subcircuitScope = scopeList[this.id] // Scope of the subcircuit
         // Error handing
         if (subcircuitScope == undefined) {
             // if no such scope for subcircuit exists
@@ -101,10 +117,10 @@ export default class SubCircuit extends CircuitElement {
             subcircuitScope.checkDependency(scope.id)
         ) {
             if (savedData) {
-                for (var i = 0; i < savedData.inputNodes.length; i++) {
+                for (let i = 0; i < savedData.inputNodes.length; i++) {
                     scope.allNodes[savedData.inputNodes[i]].deleted = true
                 }
-                for (var i = 0; i < savedData.outputNodes.length; i++) {
+                for (let i = 0; i < savedData.outputNodes.length; i++) {
                     scope.allNodes[savedData.outputNodes[i]].deleted = true
                 }
             }
@@ -119,7 +135,7 @@ export default class SubCircuit extends CircuitElement {
             this.id = this.savedData.id
             this.label = this.savedData.label || ''
             this.labelDirection = this.savedData.labelDirection || 'RIGHT'
-            for (var i = 0; i < this.savedData.inputNodes.length; i++) {
+            for (let i = 0; i < this.savedData.inputNodes.length; i++) {
                 this.inputNodes.push(
                     this.scope.allNodes[this.savedData.inputNodes[i]]
                 )
@@ -127,7 +143,7 @@ export default class SubCircuit extends CircuitElement {
                 this.inputNodes[i].layout_id =
                     subcircuitScope.Input[i]?.layoutProperties.id
             }
-            for (var i = 0; i < this.savedData.outputNodes.length; i++) {
+            for (let i = 0; i < this.savedData.outputNodes.length; i++) {
                 this.outputNodes.push(
                     this.scope.allNodes[this.savedData.outputNodes[i]]
                 )
@@ -140,7 +156,7 @@ export default class SubCircuit extends CircuitElement {
                 this.version = '2.0'
                 this.x -= subcircuitScope.layout.width / 2
                 this.y -= subcircuitScope.layout.height / 2
-                for (var i = 0; i < this.inputNodes.length; i++) {
+                for (let i = 0; i < this.inputNodes.length; i++) {
                     this.inputNodes[i].x =
                         subcircuitScope.Input[i].layoutProperties.x
                     this.inputNodes[i].y =
@@ -148,7 +164,7 @@ export default class SubCircuit extends CircuitElement {
                     this.inputNodes[i].leftx = this.inputNodes[i].x
                     this.inputNodes[i].lefty = this.inputNodes[i].y
                 }
-                for (var i = 0; i < this.outputNodes.length; i++) {
+                for (let i = 0; i < this.outputNodes.length; i++) {
                     this.outputNodes[i].x =
                         subcircuitScope.Output[i].layoutProperties.x
                     this.outputNodes[i].y =
@@ -181,7 +197,7 @@ export default class SubCircuit extends CircuitElement {
      * it seems like the simulation is happening in other
      * Scope but it actually is not.
      */
-    makeConnections() {
+    makeConnections(): void {
         for (let i = 0; i < this.inputNodes.length; i++) {
             this.localScope.Input[i]?.output1.connectWireLess(
                 this.inputNodes[i]
@@ -198,7 +214,7 @@ export default class SubCircuit extends CircuitElement {
     /**
      * Function to remove wireless connections
      */
-    removeConnections() {
+    removeConnections(): void {
         for (let i = 0; i < this.inputNodes.length; i++) {
             this.localScope.Input[i]?.output1.disconnectWireLess(
                 this.inputNodes[i]
@@ -215,8 +231,8 @@ export default class SubCircuit extends CircuitElement {
     /**
      * loads the subcircuit and draws all the nodes
      */
-    buildCircuit() {
-        var subcircuitScope = scopeList[this.id]
+    buildCircuit(): void {
+        const subcircuitScope = scopeList[this.id]
         loadScope(this.localScope, this.data)
         this.localScope.name = this.data.name
         this.lastUpdated = this.localScope.timeStamp
@@ -228,8 +244,8 @@ export default class SubCircuit extends CircuitElement {
             this.upDimensionY = 0
             this.rightDimensionX = subcircuitScope.layout.width
             this.downDimensionY = subcircuitScope.layout.height
-            for (var i = 0; i < subcircuitScope.Output.length; i++) {
-                var a = new Node(
+            for (let i = 0; i < subcircuitScope.Output.length; i++) {
+                const a = new Node(
                     subcircuitScope.Output[i].layoutProperties.x,
                     subcircuitScope.Output[i].layoutProperties.y,
                     1,
@@ -239,8 +255,8 @@ export default class SubCircuit extends CircuitElement {
                 a.layout_id = subcircuitScope.Output[i].layoutProperties.id
                 this.outputNodes.push(a)
             }
-            for (var i = 0; i < subcircuitScope.Input.length; i++) {
-                var a = new Node(
+            for (let i = 0; i < subcircuitScope.Input.length; i++) {
+                const a = new Node(
                     subcircuitScope.Input[i].layoutProperties.x,
                     subcircuitScope.Input[i].layoutProperties.y,
                     0,
@@ -253,28 +269,33 @@ export default class SubCircuit extends CircuitElement {
         }
     }
 
-    // Needs to be deprecated, removed
-    reBuild() {
+    /**
+     * Needs to be deprecated, removed
+     */
+    reBuild(): void {
     }
 
     /**
      * If the circuit referenced by localscope is changed, then the localscope
      * needs to be updated. This function does that.
      */
-    reBuildCircuit() {
+    reBuildCircuit(): void {
         this.data = JSON.parse(scheduleBackup(scopeList[this.id]))
-        this.localScope = new Scope(data.name)
+        this.localScope = new Scope(this.data.name)
         loadScope(this.localScope, this.data)
         this.lastUpdated = this.localScope.timeStamp
         this.scope.timeStamp = this.localScope.timeStamp
     }
 
-    reset() {
+    /**
+     * Resets the subcircuit state
+     */
+    reset(): void {
         this.removeConnections()
 
-        var subcircuitScope = scopeList[this.id]
+        const subcircuitScope = scopeList[this.id]
 
-        for (var i = 0; i < subcircuitScope.SubCircuit.length; i++) {
+        for (let i = 0; i < subcircuitScope.SubCircuit.length; i++) {
             subcircuitScope.SubCircuit[i].reset()
         }
 
@@ -283,7 +304,7 @@ export default class SubCircuit extends CircuitElement {
             subcircuitScope.Input.length == 0 &&
             subcircuitScope.Output.length == 0
         // No LayoutElements
-        for (let element of circuitElementList) {
+        for (const element of circuitElementList) {
             if (
                 subcircuitScope[element].length > 0 &&
                 subcircuitScope[element][0].canShowInSubcircuit
@@ -306,14 +327,14 @@ export default class SubCircuit extends CircuitElement {
         this.rightDimensionX = subcircuitScope.layout.width
         this.downDimensionY = subcircuitScope.layout.height
 
-        var temp_map_inp = {}
-        for (var i = 0; i < subcircuitScope.Input.length; i++) {
+        const temp_map_inp: Record<string, any[]> = {}
+        for (let i = 0; i < subcircuitScope.Input.length; i++) {
             temp_map_inp[subcircuitScope.Input[i].layoutProperties.id] = [
                 subcircuitScope.Input[i],
                 undefined,
             ]
         }
-        for (var i = 0; i < this.inputNodes.length; i++) {
+        for (let i = 0; i < this.inputNodes.length; i++) {
             if (temp_map_inp.hasOwnProperty(this.inputNodes[i].layout_id)) {
                 temp_map_inp[this.inputNodes[i].layout_id][1] =
                     this.inputNodes[i]
@@ -324,7 +345,7 @@ export default class SubCircuit extends CircuitElement {
             }
         }
 
-        for (id in temp_map_inp) {
+        for (const id in temp_map_inp) {
             if (temp_map_inp[id][1]) {
                 if (
                     temp_map_inp[id][0].layoutProperties.x ==
@@ -350,13 +371,13 @@ export default class SubCircuit extends CircuitElement {
         }
 
         this.inputNodes = []
-        for (var i = 0; i < subcircuitScope.Input.length; i++) {
-            var input =
+        for (let i = 0; i < subcircuitScope.Input.length; i++) {
+            const input =
                 temp_map_inp[subcircuitScope.Input[i].layoutProperties.id][0]
             if (temp_map_inp[input.layoutProperties.id][1]) {
                 this.inputNodes.push(temp_map_inp[input.layoutProperties.id][1])
             } else {
-                var a = new Node(
+                const a = new Node(
                     input.layoutProperties.x,
                     input.layoutProperties.y,
                     0,
@@ -368,14 +389,14 @@ export default class SubCircuit extends CircuitElement {
             }
         }
 
-        var temp_map_out = {}
-        for (var i = 0; i < subcircuitScope.Output.length; i++) {
+        const temp_map_out: Record<string, any[]> = {}
+        for (let i = 0; i < subcircuitScope.Output.length; i++) {
             temp_map_out[subcircuitScope.Output[i].layoutProperties.id] = [
                 subcircuitScope.Output[i],
                 undefined,
             ]
         }
-        for (var i = 0; i < this.outputNodes.length; i++) {
+        for (let i = 0; i < this.outputNodes.length; i++) {
             if (temp_map_out.hasOwnProperty(this.outputNodes[i].layout_id)) {
                 temp_map_out[this.outputNodes[i].layout_id][1] =
                     this.outputNodes[i]
@@ -385,7 +406,7 @@ export default class SubCircuit extends CircuitElement {
             }
         }
 
-        for (id in temp_map_out) {
+        for (const id in temp_map_out) {
             if (temp_map_out[id][1]) {
                 if (
                     temp_map_out[id][0].layoutProperties.x ==
@@ -410,15 +431,15 @@ export default class SubCircuit extends CircuitElement {
         }
 
         this.outputNodes = []
-        for (var i = 0; i < subcircuitScope.Output.length; i++) {
-            var output =
+        for (let i = 0; i < subcircuitScope.Output.length; i++) {
+            const output =
                 temp_map_out[subcircuitScope.Output[i].layoutProperties.id][0]
             if (temp_map_out[output.layoutProperties.id][1]) {
                 this.outputNodes.push(
                     temp_map_out[output.layoutProperties.id][1]
                 )
             } else {
-                var a = new Node(
+                const a = new Node(
                     output.layoutProperties.x,
                     output.layoutProperties.y,
                     1,
@@ -443,26 +464,29 @@ export default class SubCircuit extends CircuitElement {
 
     /**
      * Procedure after a element is clicked inside a subcircuit
-     **/
-    click() {
-        var elementClicked = this.getElementHover()
+     */
+    click(): void {
+        const elementClicked = this.getElementHover()
         if (elementClicked) {
             this.lastClickedElement = elementClicked
             elementClicked.wasClicked = true
         }
     }
 
-    getElementHover() {
-        var rX = this.layoutProperties.rightDimensionX
-        var lX = this.layoutProperties.leftDimensionX
-        var uY = this.layoutProperties.upDimensionY
-        var dY = this.layoutProperties.downDimensionY
+    /**
+     * Gets element being hovered in the subcircuit
+     */
+    getElementHover(): any {
+        const rX = this.layoutProperties.rightDimensionX
+        const lX = this.layoutProperties.leftDimensionX
+        const uY = this.layoutProperties.upDimensionY
+        const dY = this.layoutProperties.downDimensionY
 
-        for (let el of circuitElementList) {
+        for (const el of circuitElementList) {
             if (this.localScope[el].length === 0) continue
             if (!this.localScope[el][0].canShowInSubcircuit) continue
             for (let i = 0; i < this.localScope[el].length; i++) {
-                var obj = this.localScope[el][i]
+                const obj = this.localScope[el][i]
                 if (
                     obj.subcircuitMetadata.showInSubcircuit &&
                     obj.isSubcircuitHover(this.x, this.y)
@@ -475,8 +499,8 @@ export default class SubCircuit extends CircuitElement {
 
     /**
      * Sets the elements' wasClicked property in the subcircuit to false
-     **/
-    releaseClick() {
+     */
+    releaseClick(): void {
         if (this.lastClickedElement !== undefined) {
             this.lastClickedElement.wasClicked = false
             this.lastClickedElement = undefined
@@ -486,7 +510,7 @@ export default class SubCircuit extends CircuitElement {
     /**
      * adds all local scope inputs to the global scope simulation queue
      */
-    addInputs() {
+    addInputs(): void {
         for (let i = 0; i < subCircuitInputList.length; i++) {
             for (
                 let j = 0;
@@ -506,18 +530,18 @@ export default class SubCircuit extends CircuitElement {
 
     /**
      * Procedure if any element is double clicked inside a subcircuit
-     **/
-    dblclick() {
+     */
+    dblclick(): void {
         if (this.elementHover) return
         switchCircuit(this.id)
     }
 
     /**
      * Returns a javascript object of subcircuit data.
-     * Does not include data of subcircuit elements apart from Input and Output (that is a part of element.subcircuitMetadata)
-     **/
-    saveObject() {
-        var data = {
+     * Does not include data of subcircuit elements apart from Input and Output
+     */
+    saveObject(): any {
+        const data = {
             x: this.x,
             y: this.y,
             id: this.id,
@@ -532,11 +556,9 @@ export default class SubCircuit extends CircuitElement {
 
     /**
      * By design, subcircuit element's input and output nodes are wirelessly
-     * connected to the localscope (clone of the scope of the subcircuit's
-     * circuit). So it is almost like the actual circuit is copied in the
-     * location of the subcircuit element. Therefore no resolve needed.
+     * connected to the localscope. Therefore no resolve needed.
      */
-    isResolvable() {
+    isResolvable(): boolean {
         return false
     }
 
@@ -544,31 +566,38 @@ export default class SubCircuit extends CircuitElement {
      * If element not resolvable (always in subcircuits), removePropagation
      * is called on it.
      */
-    removePropagation() {
+    removePropagation(): void {
         // Leave this to the scope of the subcircuit. Do nothing.
     }
 
-    verilogName() {
+    /**
+     * Returns the verilog name for this subcircuit
+     */
+    verilogName(): string {
         return sanitizeLabel(scopeList[this.id].name)
     }
+
     /**
      * determines where to show label
      */
-    determine_label(x, y) {
+    determine_label(x: number, y: number): [string, number, number] {
         if (x == 0) return ['left', 5, 5]
         if (x == scopeList[this.id].layout.width) return ['right', -5, 5]
         if (y == 0) return ['center', 0, 13]
         return ['center', 0, -6]
     }
 
-    checkHover() {
+    /**
+     * Checks if element is being hovered
+     */
+    checkHover(): void {
         super.checkHover()
         if (this.elementHover) {
             this.elementHover.hover = false
             this.elementHover = undefined
             simulationArea.hover = undefined
         }
-        var elementHover = this.getElementHover()
+        const elementHover = this.getElementHover()
         if (elementHover) {
             elementHover.hover = true
             this.elementHover = elementHover
@@ -579,18 +608,18 @@ export default class SubCircuit extends CircuitElement {
 
     /**
      * Draws the subcircuit (and contained elements) on the screen when the subcircuit is included
-       in another circuit
-    **/
-    customDraw() {
-        var subcircuitScope = scopeList[this.id]
+     * in another circuit
+     */
+    customDraw(): void {
+        const subcircuitScope = scopeList[this.id]
 
-        var ctx = simulationArea.context
+        const ctx = simulationArea.context
 
         ctx.lineWidth = globalScope.scale * 3
         ctx.strokeStyle = colors['stroke'] // ("rgba(0,0,0,1)");
         ctx.fillStyle = colors['fill']
-        var xx = this.x
-        var yy = this.y
+        const xx = this.x
+        const yy = this.y
 
         ctx.strokeStyle = colors['stroke']
         ctx.fillStyle = colors['fill']
@@ -643,9 +672,9 @@ export default class SubCircuit extends CircuitElement {
             console.error('Unknown Version: ', this.version)
         }
 
-        for (var i = 0; i < subcircuitScope.Input.length; i++) {
+        for (let i = 0; i < subcircuitScope.Input.length; i++) {
             if (!subcircuitScope.Input[i].label) continue
-            var info = this.determine_label(
+            const info = this.determine_label(
                 this.inputNodes[i].x,
                 this.inputNodes[i].y
             )
@@ -659,9 +688,9 @@ export default class SubCircuit extends CircuitElement {
             )
         }
 
-        for (var i = 0; i < subcircuitScope.Output.length; i++) {
+        for (let i = 0; i < subcircuitScope.Output.length; i++) {
             if (!subcircuitScope.Output[i].label) continue
-            var info = this.determine_label(
+            const info = this.determine_label(
                 this.outputNodes[i].x,
                 this.outputNodes[i].y
             )
@@ -683,7 +712,7 @@ export default class SubCircuit extends CircuitElement {
         }
 
         // draw subcircuitElements
-        for (let el of circuitElementList) {
+        for (const el of circuitElementList) {
             if (this.localScope[el].length === 0) continue
             if (!this.localScope[el][0].canShowInSubcircuit) continue
             for (let i = 0; i < this.localScope[el].length; i++) {

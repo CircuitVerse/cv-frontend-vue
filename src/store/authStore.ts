@@ -19,8 +19,7 @@ interface UserInfo {
     admin: boolean;
   };
 }
-export const useAuthStore = defineStore({
-  id: "authStore",
+export const useAuthStore = defineStore("authStore", {
   state: (): AuthStoreType => ({
     isLoggedIn: false,
     userId: "",
@@ -101,4 +100,4 @@ export const useAuthStore = defineStore({
   },
 });
 
-//  TODO: extract store verify and check better ways to impliment
+//  TODO: extract store verify and check better ways to implement

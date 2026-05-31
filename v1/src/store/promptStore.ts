@@ -51,8 +51,7 @@ interface promptStoreType {
   };
 }
 
-export const usePromptStore = defineStore({
-  id: "promptStore",
+export const usePromptStore = defineStore("promptStore", {
   state: (): promptStoreType => ({
     resolvePromise: (): any => {},
     prompt: {

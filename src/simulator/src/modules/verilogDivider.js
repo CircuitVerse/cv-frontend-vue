@@ -9,7 +9,7 @@ import { simulationArea } from '../simulationArea'
  * @extends CircuitElement
  * @param {number} x - x coordinate of element.
  * @param {number} y - y coordinate of element.
- * @param {Scope=} scope - Cirucit on which element is drawn
+ * @param {Scope=} scope - Circuit on which element is drawn
  * @param {string=} dir - direction of element
  * @param {number=} bitWidth - bit width per node. modules
  * @category modules
@@ -26,11 +26,13 @@ export default class verilogDivider extends CircuitElement {
         super(x, y, scope, dir, bitWidth)
         this.setDimensions(20, 20)
         this.outputBitWidth = outputBitWidth
+
         this.inpA = new Node(-20, -10, 0, this, this.bitWidth, 'A')
         this.inpB = new Node(-20, 0, 0, this, this.bitWidth, 'B')
+
         this.quotient = new Node(
             20,
-            0,
+            -5,
             1,
             this,
             this.outputBitWidth,
@@ -38,7 +40,7 @@ export default class verilogDivider extends CircuitElement {
         )
         this.remainder = new Node(
             20,
-            0,
+            5,
             1,
             this,
             this.outputBitWidth,
@@ -52,7 +54,7 @@ export default class verilogDivider extends CircuitElement {
      * @return {JSON}
      */
     customSave() {
-        const data = {
+        return {
             constructorParamaters: [
                 this.direction,
                 this.bitWidth,
@@ -65,7 +67,6 @@ export default class verilogDivider extends CircuitElement {
                 remainder: findNode(this.remainder),
             },
         }
-        return data
     }
 
     /**
@@ -86,8 +87,8 @@ export default class verilogDivider extends CircuitElement {
         this.bitWidth = bitWidth
         this.inpA.bitWidth = bitWidth
         this.inpB.bitWidth = bitWidth
-        this.quotient.bitWidth = bitWidth
-        this.remainder.bitWidth = bitWidth
+        this.quotient.bitWidth = this.outputBitWidth
+        this.remainder.bitWidth = this.outputBitWidth
     }
 
     /**
@@ -95,17 +96,29 @@ export default class verilogDivider extends CircuitElement {
      * resolve output values based on inputData
      */
     resolve() {
-        if (this.isResolvable() === false) {
+        if (!this.isResolvable()) return
+
+       
+        if (this.inpB.value === 0) {
+            this.quotient.value = 0
+            this.remainder.value = 0
+            simulationArea.simulationQueue.add(this.quotient)
+            simulationArea.simulationQueue.add(this.remainder)
             return
         }
+
         const quotient = this.inpA.value / this.inpB.value
         const remainder = this.inpA.value % this.inpB.value
-        this.remainder.value =
-            (remainder << (32 - this.outputBitWidth)) >>>
-            (32 - this.outputBitWidth)
+
+       
+        const bw = Math.min(this.outputBitWidth, 32)
+
         this.quotient.value =
-            (quotient << (32 - this.outputBitWidth)) >>>
-            (32 - this.outputBitWidth)
+            (quotient << (32 - bw)) >>> (32 - bw)
+
+        this.remainder.value =
+            (remainder << (32 - bw)) >>> (32 - bw)
+
         simulationArea.simulationQueue.add(this.quotient)
         simulationArea.simulationQueue.add(this.remainder)
     }
@@ -118,7 +131,7 @@ export default class verilogDivider extends CircuitElement {
  * @category modules
  */
 verilogDivider.prototype.tooltipText =
-    'verilogDivider ToolTip : Performs addition of numbers.'
+    'verilogDivider ToolTip : Performs division and outputs quotient and remainder.'
 verilogDivider.prototype.helplink =
     'https://docs.circuitverse.org/#/miscellaneous?id=verilogDivider'
 verilogDivider.prototype.objectType = 'verilogDivider'
