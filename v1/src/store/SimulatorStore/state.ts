@@ -41,9 +41,7 @@ interface LayoutElementGroup {
   elements: any[];
 }
 
-export const useState = defineStore({
-  id: "simulatorStore.state",
-
+export const useState = defineStore("simulatorStore.state", {
   state: (): State => {
     return {
       title: "Welcome to CircuitVerse Simulator",
