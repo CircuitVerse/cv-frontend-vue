@@ -6,6 +6,11 @@ import vuetify from "vite-plugin-vuetify";
 import VueI18nPlugin from "@intlify/unplugin-vue-i18n/vite";
 import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 
+const synthesisSpecs = [
+  "src/simulator/spec/synthesis.spec.js",
+  "v1/src/simulator/spec/synthesis.spec.js",
+];
+
 const createWorkspaceConfig = (version) =>
   defineConfig({
     plugins: [
@@ -50,8 +55,8 @@ const createWorkspaceConfig = (version) =>
 
       exclude:
         version === "src"
-          ? ["v0/**/*", "v1/**/*"]
-          : ["src/**/*", version === "v0" ? "v1/**/*" : "v0/**/*"],
+          ? ["v0/**/*", "v1/**/*", ...synthesisSpecs]
+          : ["src/**/*", version === "v0" ? "v1/**/*" : "v0/**/*", ...synthesisSpecs],
 
       setupFiles: [
         version === "src"
@@ -67,4 +72,16 @@ const createWorkspaceConfig = (version) =>
     },
   });
 
-export default defineWorkspace([createWorkspaceConfig("src"), createWorkspaceConfig("v1")]);
+const synthesisWorkspace = defineConfig({
+  test: {
+    name: "synthesis",
+    environment: "node",
+    include: synthesisSpecs,
+  },
+});
+
+export default defineWorkspace([
+  createWorkspaceConfig("src"),
+  createWorkspaceConfig("v1"),
+  synthesisWorkspace,
+]);
