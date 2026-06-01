@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { readonly, ref } from "vue";
 
 export type SynthesisMessageType = "info" | "error" | "success";
 
@@ -21,7 +21,7 @@ export const useSynthesisStore = defineStore("synthesisStore", () => {
   };
 
   return {
-    messages,
+    messages: readonly(messages),
     addMessage,
     clearMessages,
   };

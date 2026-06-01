@@ -71,13 +71,13 @@ export function applyVerilogTheme(theme) {
 }
 
 function setVerilogOutput(text, type = 'info') {
-    const synthesisStore = useSynthesisStore()
-    synthesisStore.addMessage(text, type)
+    const synthesisStore = useSynthesisStore();
+    synthesisStore.addMessage(text, type);
 }
 
 function clearVerilogOutput() {
-    const synthesisStore = useSynthesisStore()
-    synthesisStore.clearMessages()
+    const synthesisStore = useSynthesisStore();
+    synthesisStore.clearMessages();
 }
 
 export function resetVerilogCode() {
