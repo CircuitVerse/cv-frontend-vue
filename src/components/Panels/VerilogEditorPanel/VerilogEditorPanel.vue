@@ -77,8 +77,8 @@
                 </div>
             </div>
         </div>
-        <VerilogTerminal ref="verilogTerminal" />
     </div>
+    <VerilogTerminal />
 </template>
 
 <script lang="ts" setup>
@@ -90,38 +90,17 @@ import {
 } from '../../../simulator/src/Verilog2CV'
 import PanelHeader from '../Shared/PanelHeader.vue'
 import VerilogTerminal from './VerilogTerminal.vue'
-import { ref, watch, onMounted, nextTick } from 'vue'
+import { watch } from 'vue'
 import { useVerilogStore } from '../../../store/verilogStore'
 
 const verilogStore = useVerilogStore()
-const verilogTerminal = ref<InstanceType<typeof VerilogTerminal>>()
 
 const toggleTerminal = () => {
     verilogStore.toggleTerminal()
 }
 
-onMounted(() => {
-    nextTick(() => {
-        if (typeof window !== 'undefined' && verilogTerminal.value) {
-            (window as any).verilogTerminal = verilogTerminal.value
-        }
-    })
-})
-
 watch(() => verilogStore.selectedTheme, (newTheme: string) => {
     applyVerilogTheme(newTheme)
-})
-
-defineExpose({
-    addTerminalMessage: (text: string, type: 'info' | 'error' | 'success' = 'info') => {
-        verilogTerminal.value?.addMessage(text, type)
-    },
-    clearTerminal: () => {
-        verilogTerminal.value?.clearOutput()
-    },
-    showTerminal: () => {
-        verilogStore.showTerminal()
-    }
 })
 </script>
 

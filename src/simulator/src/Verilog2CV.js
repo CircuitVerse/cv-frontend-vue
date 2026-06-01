@@ -33,6 +33,7 @@ import 'codemirror/addon/display/autorefresh.js'
 import { showError, showMessage } from './utils'
 import { showProperties } from './ux'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
+import { useSynthesisStore } from '#/store/synthesisStore'
 import { toRefs } from 'vue'
 
 var editor
@@ -70,35 +71,13 @@ export function applyVerilogTheme(theme) {
 }
 
 function setVerilogOutput(text, type = 'info') {
-    if (typeof window !== 'undefined' && window.verilogTerminal) {
-        window.verilogTerminal.addMessage(text, type)
-    } else {
-        const verilogOutputDiv = document.getElementById('verilogOutput')
-        if (verilogOutputDiv) {
-            if (type === 'error') {
-                verilogOutputDiv.innerHTML = text
-                verilogOutputDiv.style.color = '#ff6b6b'
-            } else if (type === 'success') {
-                verilogOutputDiv.innerHTML = text
-                verilogOutputDiv.style.color = '#51cf66'
-            } else {
-                verilogOutputDiv.innerHTML = text
-                verilogOutputDiv.style.color = ''
-            }
-        }
-    }
+    const synthesisStore = useSynthesisStore();
+    synthesisStore.addMessage(text, type);
 }
 
 function clearVerilogOutput() {
-    // TODO: It needs to be handled using pinia after moving it to vue components(Verilog2CV.js)
-    if (typeof window !== 'undefined' && window.verilogTerminal) {
-        window.verilogTerminal.clearOutput()
-    } else {
-        const verilogOutputDiv = document.getElementById('verilogOutput')
-        if (verilogOutputDiv) {
-            verilogOutputDiv.innerHTML = ''
-        }
-    }
+    const synthesisStore = useSynthesisStore();
+    synthesisStore.clearMessages();
 }
 
 export function resetVerilogCode() {
