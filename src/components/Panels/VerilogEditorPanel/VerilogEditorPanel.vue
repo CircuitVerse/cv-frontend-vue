@@ -82,16 +82,16 @@
 </template>
 
 <script lang="ts" setup>
-import Themes from '../../../assets/constants/Panels/VerilogEditorPanel/THEMES.json'
+import Themes from '../../../assets/constants/Panels/VerilogEditorPanel/THEMES.json';
 import {
     saveVerilogCode,
     resetVerilogCode,
     applyVerilogTheme,
-} from '../../../simulator/src/Verilog2CV'
-import PanelHeader from '../Shared/PanelHeader.vue'
-import VerilogTerminal from './VerilogTerminal.vue'
-import { watch } from 'vue'
-import { useVerilogStore } from '../../../store/verilogStore'
+} from '../../../simulator/src/Verilog2CV';
+import PanelHeader from '../Shared/PanelHeader.vue';
+import VerilogTerminal from './VerilogTerminal.vue';
+import { watch } from 'vue';
+import { useVerilogStore } from '../../../store/verilogStore';
 
 const verilogStore = useVerilogStore()
 

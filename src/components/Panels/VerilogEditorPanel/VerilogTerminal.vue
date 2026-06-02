@@ -30,9 +30,9 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onUnmounted, nextTick, watch } from 'vue'
-import { useVerilogStore } from '../../../store/verilogStore'
-import { useSynthesisStore } from '../../../store/synthesisStore'
+import { ref, onUnmounted, nextTick, watch } from 'vue';
+import { useVerilogStore } from '../../../store/verilogStore';
+import { useSynthesisStore } from '../../../store/synthesisStore';
 
 const verilogStore = useVerilogStore()
 const synthesisStore = useSynthesisStore()

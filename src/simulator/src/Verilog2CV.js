@@ -2,39 +2,39 @@ import {
     createNewCircuitScope,
     switchCircuit,
     changeCircuitName,
-} from './circuit'
-import SubCircuit from './subcircuit'
-import { simulationArea } from './simulationArea'
-import CodeMirror from 'codemirror/lib/codemirror.js'
-import 'codemirror/lib/codemirror.css'
+} from './circuit';
+import SubCircuit from './subcircuit';
+import { simulationArea } from './simulationArea';
+import CodeMirror from 'codemirror/lib/codemirror.js';
+import 'codemirror/lib/codemirror.css';
 
 // Importing CodeMirror themes
-import 'codemirror/theme/3024-day.css'
-import 'codemirror/theme/solarized.css'
-import 'codemirror/theme/elegant.css'
-import 'codemirror/theme/neat.css'
-import 'codemirror/theme/idea.css'
-import 'codemirror/theme/neo.css'
-import 'codemirror/theme/3024-night.css'
-import 'codemirror/theme/blackboard.css'
-import 'codemirror/theme/cobalt.css'
-import 'codemirror/theme/the-matrix.css'
-import 'codemirror/theme/night.css'
-import 'codemirror/theme/monokai.css'
-import 'codemirror/theme/midnight.css'
+import 'codemirror/theme/3024-day.css';
+import 'codemirror/theme/solarized.css';
+import 'codemirror/theme/elegant.css';
+import 'codemirror/theme/neat.css';
+import 'codemirror/theme/idea.css';
+import 'codemirror/theme/neo.css';
+import 'codemirror/theme/3024-night.css';
+import 'codemirror/theme/blackboard.css';
+import 'codemirror/theme/cobalt.css';
+import 'codemirror/theme/the-matrix.css';
+import 'codemirror/theme/night.css';
+import 'codemirror/theme/monokai.css';
+import 'codemirror/theme/midnight.css';
 
-import 'codemirror/addon/hint/show-hint.css'
-import 'codemirror/mode/verilog/verilog.js'
-import 'codemirror/addon/edit/closebrackets.js'
-import 'codemirror/addon/edit/matchbrackets.js'
-import 'codemirror/addon/hint/anyword-hint.js'
-import 'codemirror/addon/hint/show-hint.js'
-import 'codemirror/addon/display/autorefresh.js'
-import { showError, showMessage } from './utils'
-import { showProperties } from './ux'
-import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
-import { useSynthesisStore } from '#/store/synthesisStore'
-import { toRefs } from 'vue'
+import 'codemirror/addon/hint/show-hint.css';
+import 'codemirror/mode/verilog/verilog.js';
+import 'codemirror/addon/edit/closebrackets.js';
+import 'codemirror/addon/edit/matchbrackets.js';
+import 'codemirror/addon/hint/anyword-hint.js';
+import 'codemirror/addon/hint/show-hint.js';
+import 'codemirror/addon/display/autorefresh.js';
+import { showError, showMessage } from './utils';
+import { showProperties } from './ux';
+import { useSimulatorMobileStore } from '#/store/simulatorMobileStore';
+import { useSynthesisStore } from '#/store/synthesisStore';
+import { toRefs } from 'vue';
 
 var editor
 var verilogMode = false
@@ -145,7 +145,7 @@ export function verilogModeSet(mode) {
     }
 }
 
-import yosysTypeMap from './VerilogClasses'
+import yosysTypeMap from './VerilogClasses';
 
 class verilogSubCircuit {
     constructor(circuit) {
