@@ -30,6 +30,52 @@ var LAYER_GAP = 160
 var NODE_GAP = 80    
 var MARGIN_X = 80     
 var MARGIN_Y = 80     
+var PORT_LAYOUT_WIDTH = 120;
+var PORT_LAYOUT_START_Y = 30;
+var PORT_LAYOUT_GAP = 20;
+var PORT_LAYOUT_BOTTOM_PADDING = 20;
+var PORT_LAYOUT_TITLE_Y = 13;
+
+/**
+ * Compute subcircuit shell layout for generated Verilog module ports.
+ *
+ * Input and output ports are placed on their respective edges and centered
+ * against the side with more ports so labels do not overlap the title.
+ *
+ * @param {number} inputCount
+ * @param {number} outputCount
+ * @returns {object} layout metadata and input/output port positions
+ */
+export function computePortLayout(inputCount, outputCount) {
+    var inputs = Math.max(0, inputCount || 0);
+    var outputs = Math.max(0, outputCount || 0);
+    var maxPorts = Math.max(inputs, outputs, 1);
+    var height = PORT_LAYOUT_START_Y + (maxPorts - 1) * PORT_LAYOUT_GAP + PORT_LAYOUT_BOTTOM_PADDING;
+
+    function positions(count, x) {
+        var result = [];
+        var startY = PORT_LAYOUT_START_Y + ((maxPorts - count) * PORT_LAYOUT_GAP) / 2;
+        for (var i = 0; i < count; i++) {
+            result.push({
+                x: x,
+                y: startY + i * PORT_LAYOUT_GAP,
+            });
+        }
+        return result;
+    }
+
+    return {
+        layout: {
+            width: PORT_LAYOUT_WIDTH,
+            height: height,
+            title_x: PORT_LAYOUT_WIDTH / 2,
+            title_y: PORT_LAYOUT_TITLE_Y,
+            titleEnabled: true,
+        },
+        inputs: positions(inputs, 0),
+        outputs: positions(outputs, PORT_LAYOUT_WIDTH),
+    };
+}
 
 /**
  * Compute auto-layout positions for a DigitalJS circuit.

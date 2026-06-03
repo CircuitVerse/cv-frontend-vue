@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest'
-import { computeLayout } from '../src/synthesis/circuitLayout.js'
+import { computeLayout, computePortLayout } from '../src/synthesis/circuitLayout.js';
 
 /**
  * Tests for the client-side Verilog synthesis module.
@@ -139,3 +139,46 @@ describe('Circuit Auto-Layout (computeLayout)', () => {
         expect(Object.keys(positions)).toHaveLength(2)
     })
 })
+
+describe('Verilog Port Layout (computePortLayout)', () => {
+    test('places two inputs on the left and centers one output on the right', () => {
+        const portLayout = computePortLayout(2, 1);
+
+        expect(portLayout.layout).toMatchObject({
+            width: 120,
+            height: 70,
+            title_x: 60,
+            title_y: 13,
+            titleEnabled: true,
+        });
+        expect(portLayout.inputs).toEqual([
+            { x: 0, y: 30 },
+            { x: 0, y: 50 },
+        ]);
+        expect(portLayout.outputs).toEqual([
+            { x: 120, y: 40 },
+        ]);
+    });
+
+    test('keeps layout valid for modules without ports', () => {
+        const portLayout = computePortLayout(0, 0);
+
+        expect(portLayout.layout.height).toBe(50);
+        expect(portLayout.inputs).toEqual([]);
+        expect(portLayout.outputs).toEqual([]);
+    });
+
+    test('centers the smaller port side for uneven module interfaces', () => {
+        const portLayout = computePortLayout(1, 3);
+
+        expect(portLayout.layout.height).toBe(90);
+        expect(portLayout.inputs).toEqual([
+            { x: 0, y: 50 },
+        ]);
+        expect(portLayout.outputs).toEqual([
+            { x: 120, y: 30 },
+            { x: 120, y: 50 },
+            { x: 120, y: 70 },
+        ]);
+    });
+});

@@ -4,7 +4,7 @@ import {
     changeCircuitName,
 } from './circuit'
 import { synthesizeVerilog } from './synthesis/clientSynthesis.js'
-import { computeLayout } from './synthesis/circuitLayout.js'
+import { computeLayout, computePortLayout } from './synthesis/circuitLayout.js';
 import { isTauri } from '@tauri-apps/api/core'
 import SubCircuit from './subcircuit'
 import { simulationArea } from './simulationArea'
@@ -192,6 +192,22 @@ class verilogSubCircuit {
     }
 }
 
+function applyVerilogPortLayout(scope) {
+    var portLayout = computePortLayout(scope.Input.length, scope.Output.length);
+
+    Object.assign(scope.layout, portLayout.layout);
+
+    for (var i = 0; i < scope.Input.length; i++) {
+        scope.Input[i].layoutProperties.x = portLayout.inputs[i].x;
+        scope.Input[i].layoutProperties.y = portLayout.inputs[i].y;
+    }
+
+    for (var j = 0; j < scope.Output.length; j++) {
+        scope.Output[j].layoutProperties.x = portLayout.outputs[j].x;
+        scope.Output[j].layoutProperties.y = portLayout.outputs[j].y;
+    }
+}
+
 export function YosysJSON2CV(
     JSON,
     parentScope = globalScope,
@@ -236,6 +252,8 @@ export function YosysJSON2CV(
             )
         }
     }
+
+    applyVerilogPortLayout(subScope);
 
     // Auto-layout: compute non-overlapping positions using dagre
     var layoutPositions = computeLayout(JSON)
