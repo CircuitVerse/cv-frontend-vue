@@ -93,15 +93,15 @@ import VerilogTerminal from './VerilogTerminal.vue';
 import { watch } from 'vue';
 import { useVerilogStore } from '../../../store/verilogStore';
 
-const verilogStore = useVerilogStore()
+const verilogStore = useVerilogStore();
 
 const toggleTerminal = () => {
-    verilogStore.toggleTerminal()
-}
+    verilogStore.toggleTerminal();
+};
 
 watch(() => verilogStore.selectedTheme, (newTheme: string) => {
-    applyVerilogTheme(newTheme)
-})
+    applyVerilogTheme(newTheme);
+});
 </script>
 
 <style>

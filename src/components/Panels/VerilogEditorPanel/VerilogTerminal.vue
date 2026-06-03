@@ -34,13 +34,13 @@ import { ref, onUnmounted, nextTick, watch } from 'vue';
 import { useVerilogStore } from '../../../store/verilogStore';
 import { useSynthesisStore } from '../../../store/synthesisStore';
 
-const verilogStore = useVerilogStore()
-const synthesisStore = useSynthesisStore()
-const terminalHeight = ref(200)
-const terminalContent = ref<HTMLElement>()
+const verilogStore = useVerilogStore();
+const synthesisStore = useSynthesisStore();
+const terminalHeight = ref(200);
+const terminalContent = ref<HTMLElement>();
 
-let isDragging = false
-let startY = 0
+let isDragging = false;
+let startY = 0;
 
 // Auto-scroll when new messages arrive from the store
 watch(
@@ -48,90 +48,90 @@ watch(
     () => {
         nextTick(() => {
             if (terminalContent.value && verilogStore.isTerminalVisible) {
-                terminalContent.value.scrollTop = terminalContent.value.scrollHeight
+                terminalContent.value.scrollTop = terminalContent.value.scrollHeight;
             }
-        })
+        });
     }
-)
+);
 
 // Watch store visibility to trigger side effects
 watch(
     () => verilogStore.isTerminalVisible,
     () => {
-        adjustCodeWindowHeight()
+        adjustCodeWindowHeight();
     }
-)
+);
 
 const adjustCodeWindowHeight = () => {
-    const codeWindow = document.getElementById('code-window')
-    const codeMirror = codeWindow?.querySelector('.CodeMirror')
+    const codeWindow = document.getElementById('code-window');
+    const codeMirror = codeWindow?.querySelector('.CodeMirror');
     
     if (codeWindow && codeMirror) {
         if (verilogStore.isTerminalVisible) {
-            const currentTerminalHeight = terminalHeight.value
-            ;(codeMirror as HTMLElement).style.height = `calc(100vh - 78px - ${currentTerminalHeight}px)`
-            ;(codeMirror as HTMLElement).style.width = '100%'
-            ;(codeMirror as HTMLElement).style.maxWidth = '100%'
-            codeWindow.style.paddingBottom = '0'
-            codeWindow.style.marginBottom = '0'
-            codeWindow.style.width = '100%'
-            codeWindow.style.maxWidth = '100%'
-            codeWindow.style.overflow = 'hidden'
+            const currentTerminalHeight = terminalHeight.value;
+            ;(codeMirror as HTMLElement).style.height = `calc(100vh - 78px - ${currentTerminalHeight}px)`;
+            ;(codeMirror as HTMLElement).style.width = '100%';
+            ;(codeMirror as HTMLElement).style.maxWidth = '100%';
+            codeWindow.style.paddingBottom = '0';
+            codeWindow.style.marginBottom = '0';
+            codeWindow.style.width = '100%';
+            codeWindow.style.maxWidth = '100%';
+            codeWindow.style.overflow = 'hidden';
         } else {
-            ;(codeMirror as HTMLElement).style.height = 'calc(100vh - 78px)'
-            ;(codeMirror as HTMLElement).style.width = '100%'
-            ;(codeMirror as HTMLElement).style.maxWidth = '100%'
-            codeWindow.style.paddingBottom = '0'
-            codeWindow.style.marginBottom = '0'
-            codeWindow.style.width = '100%'
-            codeWindow.style.maxWidth = '100%'
-            codeWindow.style.overflow = 'hidden'
+            ;(codeMirror as HTMLElement).style.height = 'calc(100vh - 78px)';
+            ;(codeMirror as HTMLElement).style.width = '100%';
+            ;(codeMirror as HTMLElement).style.maxWidth = '100%';
+            codeWindow.style.paddingBottom = '0';
+            codeWindow.style.marginBottom = '0';
+            codeWindow.style.width = '100%';
+            codeWindow.style.maxWidth = '100%';
+            codeWindow.style.overflow = 'hidden';
         }
         
         if ((window as any).editor && (window as any).editor.refresh) {
-            (window as any).editor.refresh()
+            (window as any).editor.refresh();
         }
     }
-}
+};
 
 const startDragging = (e: MouseEvent) => {
-    if (isDragging) return
-    isDragging = true
-    startY = e.clientY
-    document.addEventListener('mousemove', handleDragging)
-    document.addEventListener('mouseup', stopDragging)
-    e.preventDefault()
-}
+    if (isDragging) return;
+    isDragging = true;
+    startY = e.clientY;
+    document.addEventListener('mousemove', handleDragging);
+    document.addEventListener('mouseup', stopDragging);
+    e.preventDefault();
+};
 
 const handleDragging = (e: MouseEvent) => {
-    if (!isDragging) return
+    if (!isDragging) return;
     
-    const deltaY = startY - e.clientY
-    const newHeight = Math.max(100, Math.min(600, terminalHeight.value + deltaY))
-    terminalHeight.value = newHeight
-    startY = e.clientY
-    adjustCodeWindowHeight()
-}
+    const deltaY = startY - e.clientY;
+    const newHeight = Math.max(100, Math.min(600, terminalHeight.value + deltaY));
+    terminalHeight.value = newHeight;
+    startY = e.clientY;
+    adjustCodeWindowHeight();
+};
 
 const stopDragging = () => {
-    isDragging = false
-    document.removeEventListener('mousemove', handleDragging)
-    document.removeEventListener('mouseup', stopDragging)
-}
+    isDragging = false;
+    document.removeEventListener('mousemove', handleDragging);
+    document.removeEventListener('mouseup', stopDragging);
+};
 
 const formatTime = (date: Date) => {
     return date.toLocaleTimeString('en-US', { 
         hour12: false, 
         hour: '2-digit', 
         minute: '2-digit',
-        second: '2-digit'
-    })
-}
+        second: '2-digit',
+    });
+};
 
 onUnmounted(() => {
-    document.removeEventListener('mousemove', handleDragging)
-    document.removeEventListener('mouseup', stopDragging)
-})
+    document.removeEventListener('mousemove', handleDragging);
+    document.removeEventListener('mouseup', stopDragging);
+});
 </script>
 
 <style scoped>

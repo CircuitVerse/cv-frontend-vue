@@ -36,8 +36,8 @@ import { useSimulatorMobileStore } from '#/store/simulatorMobileStore';
 import { useSynthesisStore } from '#/store/synthesisStore';
 import { toRefs } from 'vue';
 
-var editor
-var verilogMode = false
+var editor;
+var verilogMode = false;
 
 export async function createVerilogCircuit() {
     const returned = await createNewCircuitScope(
@@ -45,29 +45,29 @@ export async function createVerilogCircuit() {
         undefined,
         true,
         true
-    )
+    );
 
     if (returned) {
-        verilogModeSet(true)
+        verilogModeSet(true);
 
         try {
-            const simulatorMobileStore = toRefs(useSimulatorMobileStore())
-            simulatorMobileStore.isVerilog.value = true
+            const simulatorMobileStore = toRefs(useSimulatorMobileStore());
+            simulatorMobileStore.isVerilog.value = true;
         } catch (error) {
-            console.error('Failed to update simulatorMobileStore:', error)
+            console.error('Failed to update simulatorMobileStore:', error);
         }
     }
 }
 
 export function saveVerilogCode() {
-    var code = editor.getValue()
-    globalScope.verilogMetadata.code = code
-    generateVerilogCircuit(code)
+    var code = editor.getValue();
+    globalScope.verilogMetadata.code = code;
+    generateVerilogCircuit(code);
 }
 
 export function applyVerilogTheme(theme) {
-    localStorage.setItem('verilog-theme', theme)
-    editor.setOption('theme', theme)
+    localStorage.setItem('verilog-theme', theme);
+    editor.setOption('theme', theme);
 }
 
 function setVerilogOutput(text, type = 'info') {
@@ -81,67 +81,67 @@ function clearVerilogOutput() {
 }
 
 export function resetVerilogCode() {
-    editor.setValue(globalScope.verilogMetadata.code)
+    editor.setValue(globalScope.verilogMetadata.code);
 }
 
 export function hasVerilogCodeChanges() {
-    return editor.getValue() != globalScope.verilogMetadata.code
+    return editor.getValue() != globalScope.verilogMetadata.code;
 }
 
 export function verilogModeGet() {
-    return verilogMode
+    return verilogMode;
 }
 
 export function verilogModeSet(mode) {
-    if (mode == verilogMode) return
-    verilogMode = mode
+    if (mode == verilogMode) return;
+    verilogMode = mode;
     if (mode) {
-        const code_window = document.getElementById('code-window')
+        const code_window = document.getElementById('code-window');
         if(code_window)
-        document.getElementById('code-window').style.display = 'block'
+        document.getElementById('code-window').style.display = 'block';
 
-        const elementPanel = document.querySelector('.elementPanel')
+        const elementPanel = document.querySelector('.elementPanel');
         if(elementPanel)
-        document.querySelector('.elementPanel').style.display = 'none'
+        document.querySelector('.elementPanel').style.display = 'none';
 
-        const timingDiagramPanel = document.querySelector('.timing-diagram-panel')
+        const timingDiagramPanel = document.querySelector('.timing-diagram-panel');
         if(timingDiagramPanel)
-        document.querySelector('.timing-diagram-panel').style.display = 'none'
+        document.querySelector('.timing-diagram-panel').style.display = 'none';
 
-        const quickBtn = document.querySelector('.quick-btn')
+        const quickBtn = document.querySelector('.quick-btn');
         if(quickBtn)
-        document.querySelector('.quick-btn').style.display = 'none'
+        document.querySelector('.quick-btn').style.display = 'none';
 
-        const verilogEditorPanel = document.getElementById('verilogEditorPanel')
+        const verilogEditorPanel = document.getElementById('verilogEditorPanel');
         if(verilogEditorPanel)
-        document.getElementById('verilogEditorPanel').style.display = 'block'
+        document.getElementById('verilogEditorPanel').style.display = 'block';
 
         if (!embed) {
-            simulationArea.lastSelected = globalScope.root
-            showProperties(undefined)
-            showProperties(simulationArea.lastSelected)
+            simulationArea.lastSelected = globalScope.root;
+            showProperties(undefined);
+            showProperties(simulationArea.lastSelected);
         }
-        resetVerilogCode()
+        resetVerilogCode();
     } else {
-        const code_window = document.getElementById('code-window')
+        const code_window = document.getElementById('code-window');
         if(code_window)
-        document.getElementById('code-window').style.display = 'none'
+        document.getElementById('code-window').style.display = 'none';
 
-        const elementPanel = document.querySelector('.elementPanel')
+        const elementPanel = document.querySelector('.elementPanel');
         if(elementPanel)
-        document.querySelector('.elementPanel').style.display = ''
+        document.querySelector('.elementPanel').style.display = '';
 
-        const timingDiagramPanel = document.querySelector('.timing-diagram-panel')
+        const timingDiagramPanel = document.querySelector('.timing-diagram-panel');
         if(timingDiagramPanel)
-        document.querySelector('.timing-diagram-panel').style.display = ''
+        document.querySelector('.timing-diagram-panel').style.display = '';
 
-        const quickBtn = document.querySelector('.quick-btn')
+        const quickBtn = document.querySelector('.quick-btn');
         if(quickBtn)
-        document.querySelector('.quick-btn').style.display = ''
+        document.querySelector('.quick-btn').style.display = '';
 
-        const verilogEditorPanel = document.getElementById('verilogEditorPanel')
+        const verilogEditorPanel = document.getElementById('verilogEditorPanel');
         if(verilogEditorPanel)
-        document.getElementById('verilogEditorPanel').style.display = 'none'
+        document.getElementById('verilogEditorPanel').style.display = 'none';
     }
 }
 
@@ -149,22 +149,22 @@ import yosysTypeMap from './VerilogClasses';
 
 class verilogSubCircuit {
     constructor(circuit) {
-        this.circuit = circuit
+        this.circuit = circuit;
     }
 
     getPort(portName) {
-        var numInputs = this.circuit.inputNodes.length
-        var numOutputs = this.circuit.outputNodes.length
+        var numInputs = this.circuit.inputNodes.length;
+        var numOutputs = this.circuit.outputNodes.length;
 
         for (var i = 0; i < numInputs; i++) {
             if (this.circuit.data.Input[i].label == portName) {
-                return this.circuit.inputNodes[i]
+                return this.circuit.inputNodes[i];
             }
         }
 
         for (var i = 0; i < numOutputs; i++) {
             if (this.circuit.data.Output[i].label == portName) {
-                return this.circuit.outputNodes[i]
+                return this.circuit.outputNodes[i];
             }
         }
     }
@@ -177,14 +177,14 @@ export function YosysJSON2CV(
     subCircuitScope = {},
     root = false
 ) {
-    var parentID = parentScope.id
-    var subScope
+    var parentID = parentScope.id;
+    var subScope;
     if (root) {
-        subScope = parentScope
+        subScope = parentScope;
     } else {
-        subScope = newCircuit(name, undefined, true, false)
+        subScope = newCircuit(name, undefined, true, false);
     }
-    var circuitDevices = {}
+    var circuitDevices = {};
 
     for (var subCircuitName in JSON.subcircuits) {
         var scope = YosysJSON2CV(
@@ -192,14 +192,14 @@ export function YosysJSON2CV(
             subScope,
             subCircuitName,
             subCircuitScope
-        )
-        subCircuitScope[subCircuitName] = scope.id
+        );
+        subCircuitScope[subCircuitName] = scope.id;
     }
 
     for (var device in JSON.devices) {
-        var deviceType = JSON.devices[device].type
+        var deviceType = JSON.devices[device].type;
         if (deviceType == 'Subcircuit') {
-            var subCircuitName = JSON.devices[device].celltype
+            var subCircuitName = JSON.devices[device].celltype;
             circuitDevices[device] = new verilogSubCircuit(
                 new SubCircuit(
                     500,
@@ -207,32 +207,32 @@ export function YosysJSON2CV(
                     undefined,
                     subCircuitScope[subCircuitName]
                 )
-            )
+            );
         } else {
             circuitDevices[device] = new yosysTypeMap[deviceType](
                 JSON.devices[device]
-            )
+            );
         }
     }
 
     for (var connection in JSON.connectors) {
-        var fromId = JSON.connectors[connection]['from']['id']
-        var fromPort = JSON.connectors[connection]['from']['port']
-        var toId = JSON.connectors[connection]['to']['id']
-        var toPort = JSON.connectors[connection]['to']['port']
+        var fromId = JSON.connectors[connection]['from']['id'];
+        var fromPort = JSON.connectors[connection]['from']['port'];
+        var toId = JSON.connectors[connection]['to']['id'];
+        var toPort = JSON.connectors[connection]['to']['port'];
 
-        var fromObj = circuitDevices[fromId]
-        var toObj = circuitDevices[toId]
+        var fromObj = circuitDevices[fromId];
+        var toObj = circuitDevices[toId];
 
-        var fromPortNode = fromObj.getPort(fromPort)
-        var toPortNode = toObj.getPort(toPort)
+        var fromPortNode = fromObj.getPort(fromPort);
+        var toPortNode = toObj.getPort(toPort);
 
-        fromPortNode.connect(toPortNode)
+        fromPortNode.connect(toPortNode);
     }
 
     if (!root) {
-        switchCircuit(parentID)
-        return subScope
+        switchCircuit(parentID);
+        return subScope;
     }
 }
 
@@ -240,10 +240,10 @@ export default function generateVerilogCircuit(
     verilogCode,
     scope = globalScope
 ) {
-    clearVerilogOutput()
-    setVerilogOutput('Compiling Verilog code...', 'info')
+    clearVerilogOutput();
+    setVerilogOutput('Compiling Verilog code...', 'info');
     
-    var params = { code: verilogCode }
+    var params = { code: verilogCode };
     fetch('/api/v1/simulator/verilogcv', {
         method: 'POST',
         headers: {
@@ -253,47 +253,47 @@ export default function generateVerilogCircuit(
     })
         .then((response) => {
             if (!response.ok) {
-                throw response
+                throw response;
             }
-            return response.json()
+            return response.json();
         })
         .then((circuitData) => {
-            scope.initialize()
+            scope.initialize();
             for (var id in scope.verilogMetadata.subCircuitScopeIds)
-                delete scopeList[id]
-            scope.verilogMetadata.subCircuitScopeIds = []
-            scope.verilogMetadata.code = verilogCode
-            var subCircuitScope = {}
+                delete scopeList[id];
+            scope.verilogMetadata.subCircuitScopeIds = [];
+            scope.verilogMetadata.code = verilogCode;
+            var subCircuitScope = {};
             YosysJSON2CV(
                 circuitData,
                 globalScope,
                 'verilogCircuit',
                 subCircuitScope,
                 true
-            )
-            changeCircuitName(circuitData.name)
-            showMessage('Verilog Circuit Successfully Created')
-            setVerilogOutput('Verilog Circuit Successfully Created', 'success')
+            );
+            changeCircuitName(circuitData.name);
+            showMessage('Verilog Circuit Successfully Created');
+            setVerilogOutput('Verilog Circuit Successfully Created', 'success');
         })
         .catch((error) => {
             if (error.status == 500) {
-                showError('Could not connect to Yosys')
-                setVerilogOutput('Could not connect to Yosys server', 'error')
+                showError('Could not connect to Yosys');
+                setVerilogOutput('Could not connect to Yosys server', 'error');
             } else {
-                showError('There is some issue with the code')
+                showError('There is some issue with the code');
                 error.json().then((errorMessage) => {
-                    setVerilogOutput(errorMessage.message, 'error')
-                })
+                    setVerilogOutput(errorMessage.message, 'error');
+                });
             }
-        })
+        });
 }
 
 export function setupCodeMirrorEnvironment() {
-    var myTextarea = document.getElementById('codeTextArea')
+    var myTextarea = document.getElementById('codeTextArea');
 
     CodeMirror.commands.autocomplete = function (cm) {
-        cm.showHint({ hint: CodeMirror.hint.anyword })
-    }
+        cm.showHint({ hint: CodeMirror.hint.anyword });
+    };
 
     editor = CodeMirror.fromTextArea(myTextarea, {
         mode: 'verilog',
@@ -305,17 +305,17 @@ export function setupCodeMirrorEnvironment() {
         smartIndent: true,
         indentWithTabs: true,
         extraKeys: { 'Ctrl-Space': 'autocomplete' },
-    })
+    });
 
     if (!localStorage.getItem('verilog-theme')) {
-        localStorage.setItem('verilog-theme', 'default')
+        localStorage.setItem('verilog-theme', 'default');
     } else {
-        const prevtheme = localStorage.getItem('verilog-theme')
-        editor.setOption('theme', prevtheme)
+        const prevtheme = localStorage.getItem('verilog-theme');
+        editor.setOption('theme', prevtheme);
     }
 
-    editor.setValue('// Write Some Verilog Code Here!')
+    editor.setValue('// Write Some Verilog Code Here!');
     setTimeout(function () {
-        editor.refresh()
-    }, 1)
+        editor.refresh();
+    }, 1);
 }
