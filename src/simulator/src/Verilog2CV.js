@@ -70,14 +70,20 @@ export function applyVerilogTheme(theme) {
     editor.setOption('theme', theme);
 }
 
+// Lazy-init: cannot call useSynthesisStore() at module scope because
+// this file is imported before app.use(pinia) runs. Cache on first use.
+let _synthesisStore = null;
+function getSynthesisStore() {
+    if (!_synthesisStore) _synthesisStore = useSynthesisStore();
+    return _synthesisStore;
+}
+
 function setVerilogOutput(text, type = 'info') {
-    const synthesisStore = useSynthesisStore();
-    synthesisStore.addMessage(text, type);
+    getSynthesisStore().addMessage(text, type);
 }
 
 function clearVerilogOutput() {
-    const synthesisStore = useSynthesisStore();
-    synthesisStore.clearMessages();
+    getSynthesisStore().clearMessages();
 }
 
 export function resetVerilogCode() {
@@ -97,24 +103,19 @@ export function verilogModeSet(mode) {
     verilogMode = mode;
     if (mode) {
         const code_window = document.getElementById('code-window');
-        if(code_window)
-        document.getElementById('code-window').style.display = 'block';
+        if (code_window) code_window.style.display = 'block';
 
         const elementPanel = document.querySelector('.elementPanel');
-        if(elementPanel)
-        document.querySelector('.elementPanel').style.display = 'none';
+        if (elementPanel) elementPanel.style.display = 'none';
 
         const timingDiagramPanel = document.querySelector('.timing-diagram-panel');
-        if(timingDiagramPanel)
-        document.querySelector('.timing-diagram-panel').style.display = 'none';
+        if (timingDiagramPanel) timingDiagramPanel.style.display = 'none';
 
         const quickBtn = document.querySelector('.quick-btn');
-        if(quickBtn)
-        document.querySelector('.quick-btn').style.display = 'none';
+        if (quickBtn) quickBtn.style.display = 'none';
 
         const verilogEditorPanel = document.getElementById('verilogEditorPanel');
-        if(verilogEditorPanel)
-        document.getElementById('verilogEditorPanel').style.display = 'block';
+        if (verilogEditorPanel) verilogEditorPanel.style.display = 'block';
 
         if (!embed) {
             simulationArea.lastSelected = globalScope.root;
@@ -124,24 +125,19 @@ export function verilogModeSet(mode) {
         resetVerilogCode();
     } else {
         const code_window = document.getElementById('code-window');
-        if(code_window)
-        document.getElementById('code-window').style.display = 'none';
+        if (code_window) code_window.style.display = 'none';
 
         const elementPanel = document.querySelector('.elementPanel');
-        if(elementPanel)
-        document.querySelector('.elementPanel').style.display = '';
+        if (elementPanel) elementPanel.style.display = '';
 
         const timingDiagramPanel = document.querySelector('.timing-diagram-panel');
-        if(timingDiagramPanel)
-        document.querySelector('.timing-diagram-panel').style.display = '';
+        if (timingDiagramPanel) timingDiagramPanel.style.display = '';
 
         const quickBtn = document.querySelector('.quick-btn');
-        if(quickBtn)
-        document.querySelector('.quick-btn').style.display = '';
+        if (quickBtn) quickBtn.style.display = '';
 
         const verilogEditorPanel = document.getElementById('verilogEditorPanel');
-        if(verilogEditorPanel)
-        document.getElementById('verilogEditorPanel').style.display = 'none';
+        if (verilogEditorPanel) verilogEditorPanel.style.display = 'none';
     }
 }
 

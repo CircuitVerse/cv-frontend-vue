@@ -32,13 +32,7 @@
                         <i class="fas fa-terminal"></i>
                         {{ verilogStore.isTerminalVisible ? 'Hide' : 'Show' }} Terminal
                     </button>
-                    <div id="verilogOutput">
-                        {{
-                            $t(
-                                'simulator.panel_body.verilog_module.module_in_experiment_notice'
-                            )
-                        }}
-                    </div>
+
                 </div>
             </div>
 
