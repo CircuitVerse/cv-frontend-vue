@@ -314,8 +314,9 @@ export default function generateVerilogCircuit(
     scope = globalScope
 ) {
     clearVerilogOutput()
+    const isDesktop = isTauri()
 
-    if (isTauri()) {
+    if (isDesktop) {
         setVerilogOutput('Compiling Verilog (offline, WASM)...', 'info')
     } else {
         setVerilogOutput('Compiling Verilog code...', 'info')
@@ -324,7 +325,7 @@ export default function generateVerilogCircuit(
     // Route synthesis based on platform:
     //   Desktop (Tauri): client-side WASM via Web Worker (offline)
     //   Web browser:     server-side Ruby gem via HTTP POST
-    var synthesisPromise = isTauri()
+    var synthesisPromise = isDesktop
         ? synthesizeVerilog(verilogCode, (progress) => {
             setVerilogOutput(progress, 'info')
         })
@@ -350,7 +351,7 @@ export default function generateVerilogCircuit(
             setVerilogOutput('Verilog Circuit Successfully Created', 'success')
         })
         .catch((error) => {
-            if (isTauri()) {
+            if (isDesktop) {
                 // Client-side WASM error — show the error message directly
                 showError(error.message || 'Synthesis failed')
                 setVerilogOutput(error.message || 'Synthesis failed', 'error')
@@ -363,6 +364,8 @@ export default function generateVerilogCircuit(
                     showError('There is some issue with the code')
                     error.json().then((errorMessage) => {
                         setVerilogOutput(errorMessage.message, 'error')
+                    }).catch(() => {
+                        setVerilogOutput('Server returned a non-JSON error response', 'error')
                     })
                 }
             }

@@ -13,7 +13,7 @@
     "format": "oxfmt --write \"**/*.ts\"",
     "format:check": "oxfmt --check \"**/*.ts\"",
     "fmt:check": "npm run format:check",
-    "postinstall": "husky install && npm run build:worker",
+    "postinstall": "husky install && (npm run build:worker || echo '[WARN] Worker build failed — run npm run build:worker manually')",
     "test": "vitest --silent",
     "build:worker": "rollup -c rollup.worker.config.mjs",
     "test:synthesis": "vitest run --project synthesis"

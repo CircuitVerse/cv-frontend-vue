@@ -308,14 +308,15 @@ export default function generateVerilogCircuit(
     scope = globalScope
 ) {
     clearVerilogOutput()
+    const isDesktop = isTauri()
 
-    if (isTauri()) {
+    if (isDesktop) {
         setVerilogOutput('Compiling Verilog (offline, WASM)...', 'info')
     } else {
         setVerilogOutput('Compiling Verilog code...', 'info')
     }
 
-    var synthesisPromise = isTauri()
+    var synthesisPromise = isDesktop
         ? synthesizeVerilog(verilogCode, (progress) => {
             setVerilogOutput(progress, 'info')
         })
@@ -341,7 +342,7 @@ export default function generateVerilogCircuit(
             clearVerilogOutput()
         })
         .catch((error) => {
-            if (isTauri()) {
+            if (isDesktop) {
                 showError(error.message || 'Synthesis failed')
             } else {
                 if (error.status == 500) {
@@ -353,7 +354,7 @@ export default function generateVerilogCircuit(
                             setVerilogOutput(errorMessage.message, 'error')
                         })
                         .catch(() => {
-                            // Response body wasn't valid JSON
+                            setVerilogOutput('Server returned a non-JSON error response', 'error')
                         })
                 }
             }
