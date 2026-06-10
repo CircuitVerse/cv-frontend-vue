@@ -113,13 +113,11 @@ export function renderLayout(scope = globalScope) {
     if (!tempBuffer.Input[i].label) continue;
     info = determineLabel(tempBuffer.Input[i].x, tempBuffer.Input[i].y, scope);
     [ctx.textAlign] = info;
-    const xOffset = typeof info[1] === "number" ? info[1] : parseInt(info[1] as string);
-    const yOffset = typeof info[2] === "number" ? info[2] : parseInt(info[2] as string);
     fillText(
       ctx,
       tempBuffer.Input[i].label,
-      tempBuffer.Input[i].x + xOffset,
-      tempBuffer.Input[i].y + yOffset,
+      tempBuffer.Input[i].x + typeof info[1] === "number" ? info[1] : parseInt(info[1] as string),
+      tempBuffer.Input[i].y + typeof info[2] === "number" ? info[2] : parseInt(info[2] as string),
       12,
     );
   }
@@ -127,13 +125,11 @@ export function renderLayout(scope = globalScope) {
     if (!tempBuffer.Output[i].label) continue;
     info = determineLabel(tempBuffer.Output[i].x, tempBuffer.Output[i].y, scope);
     [ctx.textAlign] = info;
-    const xOffset = typeof info[1] === "number" ? info[1] : parseInt(info[1] as string);
-    const yOffset = typeof info[2] === "number" ? info[2] : parseInt(info[2] as string);
     fillText(
       ctx,
       tempBuffer.Output[i].label,
-      tempBuffer.Output[i].x + xOffset,
-      tempBuffer.Output[i].y + yOffset,
+      tempBuffer.Output[i].x + typeof info[1] === "number" ? info[1] : parseInt(info[1] as string),
+      tempBuffer.Output[i].y + typeof info[2] === "number" ? info[2] : parseInt(info[2] as string),
       12,
     );
   }
