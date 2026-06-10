@@ -329,7 +329,7 @@ export default class RAM extends CircuitElement {
         assign dout = mem[addr];
     
         always @ (*) begin
-        if (!we)
+        if (we)
             mem[addr] = din;
         end
     endmodule
