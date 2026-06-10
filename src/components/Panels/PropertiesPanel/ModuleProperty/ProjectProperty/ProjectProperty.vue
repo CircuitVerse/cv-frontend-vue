@@ -8,6 +8,7 @@
             name="setProjectName"
             v-model="projectStore.project.name"
             :oninput="projectStore.setProjectNameDefined"
+            maxlength="60"
         />
     </p>
 
