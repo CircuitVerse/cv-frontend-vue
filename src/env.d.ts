@@ -29,3 +29,7 @@ declare module "*.vue" {
   const component: DefineComponent<{}, {}, any>;
   export default component;
 }
+
+declare var NODE_INPUT: number;
+declare var NODE_OUTPUT: number;
+declare var NODE_INTERMEDIATE: number;
