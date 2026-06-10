@@ -329,13 +329,17 @@ function tickClock(scope: any) {
   play(scope);
 }
 
-// Do we have any other function to do this?
-// Utility function. Converts decimal number to binary string
+/**
+ * Utility function to convert decimal to binary string with optional padding/truncation to bitWidth.
+ * @param {number|undefined} dec - decimal number to convert
+ * @param {number=} bitWidth - optional target bit width
+ */
 function dec2bin(dec: number | undefined, bitWidth = undefined) {
   if (dec === undefined) return "X";
   const bin = (dec >>> 0).toString(2);
   if (!bitWidth) return bin;
 
+  if (bin.length > bitWidth) return bin.slice(-bitWidth);
   return "0".repeat(bitWidth - bin.length) + bin;
 }
 

@@ -72,10 +72,17 @@ export function bin2dec(binString) {
     return parseInt(binString, 2)
 }
 
+/**
+ * Utility function to convert decimal to binary string with optional padding/truncation to bitWidth.
+ * @param {number} dec - decimal number to be converted
+ * @param {number=} bitWidth - optional target bit width
+ * @category node
+ */
 export function dec2bin(dec, bitWidth = undefined) {
     // only for positive nos
     var bin = dec.toString(2)
     if (bitWidth == undefined) return bin
+    if (bin.length > bitWidth) return bin.slice(-bitWidth)
     return '0'.repeat(bitWidth - bin.length) + bin
 }
 
