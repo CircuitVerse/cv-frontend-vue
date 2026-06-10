@@ -31,7 +31,7 @@ export interface State {
     export_project_dialog: boolean;
     import_project_dialog: boolean;
   };
-  combinationalAnalysis: Object;
+  combinationalAnalysis: object;
   subCircuitElementList: Array<LayoutElementGroup>;
   isEmptySubCircuitElementList: boolean;
 }
