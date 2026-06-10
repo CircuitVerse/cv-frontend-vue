@@ -6,8 +6,8 @@ declare const window: any;
 import jQuery from "jquery";
 window.$ = window.jQuery = jQuery;
 
-window.isUserLoggedIn = false;
-window.logixProjectId = undefined;
+window.isUserLoggedIn = window.isUserLoggedIn ?? false;
+window.logixProjectId = window.logixProjectId ?? undefined;
 
 window.restrictedElements = [];
 window.globalScope = undefined;
@@ -16,7 +16,7 @@ window.projectId = undefined;
 window.id = undefined;
 window.loading = false; // Flag - all assets are loaded
 
-window.embed = false;
+window.embed = window.embed ?? false;
 
 window.width = undefined;
 window.height = undefined;
