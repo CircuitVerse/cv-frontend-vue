@@ -527,11 +527,21 @@ export default class SubCircuit extends CircuitElement {
   }
 
   /**
-   * determines where to show label
+   * determines where to show label with dynamic spacing for multiple nodes
+   * @param {number} x - x position of node
+   * @param {number} y - y position of node
    */
   determine_label(x: number, y: number): [string, number, number] {
-    if (x == 0) return ["left", 5, 5];
-    if (x == scopeList[this.id].layout.width) return ["right", -5, 5];
+    // Labels align exactly with their node's Y coordinate
+    // No artificial spacing needed - circuit layout already spaces nodes properly
+    if (x == 0) {
+      // Left side - align with node position
+      return ["left", 5, 0];
+    }
+    if (x == scopeList[this.id].layout.width) {
+      // Right side - align with node position
+      return ["right", -5, 0];
+    }
     if (y == 0) return ["center", 0, 13];
     return ["center", 0, -6];
   }
@@ -615,31 +625,61 @@ export default class SubCircuit extends CircuitElement {
       console.error("Unknown Version: ", this.version);
     }
 
+    // Collect all labeled nodes with their positions and labels
+    const labeledNodes: { x: number; y: number; label: string; type: string }[] = [];
+
     for (let i = 0; i < subcircuitScope.Input.length; i++) {
       if (!subcircuitScope.Input[i].label) continue;
-      const info = this.determine_label(this.inputNodes[i].x, this.inputNodes[i].y);
-      ctx.textAlign = info[0];
-      fillText(
-        ctx,
-        subcircuitScope.Input[i].label,
-        this.inputNodes[i].x + info[1] + xx,
-        yy + this.inputNodes[i].y + info[2],
-        12,
-      );
+      labeledNodes.push({
+        x: this.inputNodes[i].x,
+        y: this.inputNodes[i].y,
+        label: subcircuitScope.Input[i].label,
+        type: "input",
+      });
     }
 
     for (let i = 0; i < subcircuitScope.Output.length; i++) {
       if (!subcircuitScope.Output[i].label) continue;
-      const info = this.determine_label(this.outputNodes[i].x, this.outputNodes[i].y);
-      ctx.textAlign = info[0];
-      fillText(
-        ctx,
-        subcircuitScope.Output[i].label,
-        this.outputNodes[i].x + info[1] + xx,
-        yy + this.outputNodes[i].y + info[2],
-        12,
-      );
+      labeledNodes.push({
+        x: this.outputNodes[i].x,
+        y: this.outputNodes[i].y,
+        label: subcircuitScope.Output[i].label,
+        type: "output",
+      });
     }
+
+    // Group nodes by side (x position) and sort by Y within each group
+    const leftNodes = labeledNodes.filter((n) => n.x === 0).sort((a, b) => a.y - b.y);
+    const rightNodes = labeledNodes
+      .filter((n) => n.x === scopeList[this.id].layout.width)
+      .sort((a, b) => a.y - b.y);
+    const topNodes = labeledNodes.filter(
+      (n) => n.y === 0 && n.x !== 0 && n.x !== scopeList[this.id].layout.width,
+    );
+    const bottomNodes = labeledNodes.filter(
+      (n) => n.y !== 0 && n.x !== 0 && n.x !== scopeList[this.id].layout.width,
+    );
+
+    // Draw left side labels with collective spacing
+    leftNodes.forEach((node) => {
+      const info = this.determine_label(node.x, node.y);
+      ctx.textAlign = info[0];
+      fillText(ctx, node.label, node.x + info[1] + xx, yy + node.y + info[2], 12);
+    });
+
+    // Draw right side labels with collective spacing
+    rightNodes.forEach((node) => {
+      const info = this.determine_label(node.x, node.y);
+      ctx.textAlign = info[0];
+      fillText(ctx, node.label, node.x + info[1] + xx, yy + node.y + info[2], 12);
+    });
+
+    // Draw top and bottom labels (less common, use original positioning)
+    topNodes.concat(bottomNodes).forEach((node) => {
+      const info = this.determine_label(node.x, node.y);
+      ctx.textAlign = info[0];
+      fillText(ctx, node.label, node.x + info[1] + xx, yy + node.y + info[2], 12);
+    });
     ctx.fill();
     for (let i = 0; i < this.outputNodes.length; i++) {
       this.outputNodes[i].draw();

@@ -69,6 +69,20 @@ function copyYowaspAssets() {
   };
 }
 
+function wasmMimePlugin() {
+  return {
+    name: "wasm-mime-type",
+    configureServer(server: any) {
+      server.middlewares.use((req: any, res: any, next: any) => {
+        if (req.url && req.url.endsWith(".wasm")) {
+          res.setHeader("Content-Type", "application/wasm");
+        }
+        next();
+      });
+    },
+  };
+}
+
 // https://vitejs.dev/config/
 export default defineConfig(() => {
   const version = process.env.VITE_SIM_VERSION || "v0";
@@ -78,6 +92,7 @@ export default defineConfig(() => {
     plugins: [
       stripShebangPlugin(),
       copyYowaspAssets(),
+      wasmMimePlugin(),
       vue(),
       vuetify({ autoImport: true }),
       cssInjectedByJsPlugin(),

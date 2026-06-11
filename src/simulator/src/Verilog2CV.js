@@ -2,38 +2,42 @@ import {
     createNewCircuitScope,
     switchCircuit,
     changeCircuitName,
-} from './circuit'
-import SubCircuit from './subcircuit'
-import { simulationArea } from './simulationArea'
-import CodeMirror from 'codemirror/lib/codemirror.js'
-import 'codemirror/lib/codemirror.css'
+} from './circuit';
+import { synthesizeVerilog } from './synthesis/clientSynthesis.js'
+import { computeLayout, computePortLayout } from './synthesis/circuitLayout.js';
+import { isTauri } from '@tauri-apps/api/core'
+import SubCircuit from './subcircuit';
+import { simulationArea } from './simulationArea';
+import CodeMirror from 'codemirror/lib/codemirror.js';
+import 'codemirror/lib/codemirror.css';
 
 // Importing CodeMirror themes
-import 'codemirror/theme/3024-day.css'
-import 'codemirror/theme/solarized.css'
-import 'codemirror/theme/elegant.css'
-import 'codemirror/theme/neat.css'
-import 'codemirror/theme/idea.css'
-import 'codemirror/theme/neo.css'
-import 'codemirror/theme/3024-night.css'
-import 'codemirror/theme/blackboard.css'
-import 'codemirror/theme/cobalt.css'
-import 'codemirror/theme/the-matrix.css'
-import 'codemirror/theme/night.css'
-import 'codemirror/theme/monokai.css'
-import 'codemirror/theme/midnight.css'
+import 'codemirror/theme/3024-day.css';
+import 'codemirror/theme/solarized.css';
+import 'codemirror/theme/elegant.css';
+import 'codemirror/theme/neat.css';
+import 'codemirror/theme/idea.css';
+import 'codemirror/theme/neo.css';
+import 'codemirror/theme/3024-night.css';
+import 'codemirror/theme/blackboard.css';
+import 'codemirror/theme/cobalt.css';
+import 'codemirror/theme/the-matrix.css';
+import 'codemirror/theme/night.css';
+import 'codemirror/theme/monokai.css';
+import 'codemirror/theme/midnight.css';
 
-import 'codemirror/addon/hint/show-hint.css'
-import 'codemirror/mode/verilog/verilog.js'
-import 'codemirror/addon/edit/closebrackets.js'
-import 'codemirror/addon/edit/matchbrackets.js'
-import 'codemirror/addon/hint/anyword-hint.js'
-import 'codemirror/addon/hint/show-hint.js'
-import 'codemirror/addon/display/autorefresh.js'
-import { showError, showMessage } from './utils'
-import { showProperties } from './ux'
-import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
-import { toRefs } from 'vue'
+import 'codemirror/addon/hint/show-hint.css';
+import 'codemirror/mode/verilog/verilog.js';
+import 'codemirror/addon/edit/closebrackets.js';
+import 'codemirror/addon/edit/matchbrackets.js';
+import 'codemirror/addon/hint/anyword-hint.js';
+import 'codemirror/addon/hint/show-hint.js';
+import 'codemirror/addon/display/autorefresh.js';
+import { showError, showMessage } from './utils';
+import { showProperties } from './ux';
+import { useSimulatorMobileStore } from '#/store/simulatorMobileStore';
+import { useSynthesisStore } from '#/store/synthesisStore';
+import { toRefs } from 'vue';
 
 var editor
 var verilogMode = false
@@ -70,9 +74,10 @@ export function applyVerilogTheme(theme) {
 }
 
 function setVerilogOutput(text, type = 'info') {
-    if (typeof window !== 'undefined' && window.verilogTerminal) {
-        window.verilogTerminal.addMessage(text, type)
-    } else {
+    try {
+        const synthesisStore = useSynthesisStore()
+        synthesisStore.addMessage(text, type)
+    } catch {
         const verilogOutputDiv = document.getElementById('verilogOutput')
         if (verilogOutputDiv) {
             if (type === 'error') {
@@ -90,10 +95,10 @@ function setVerilogOutput(text, type = 'info') {
 }
 
 function clearVerilogOutput() {
-    // TODO: It needs to be handled using pinia after moving it to vue components(Verilog2CV.js)
-    if (typeof window !== 'undefined' && window.verilogTerminal) {
-        window.verilogTerminal.clearOutput()
-    } else {
+    try {
+        const synthesisStore = useSynthesisStore()
+        synthesisStore.clearOutput()
+    } catch {
         const verilogOutputDiv = document.getElementById('verilogOutput')
         if (verilogOutputDiv) {
             verilogOutputDiv.innerHTML = ''
@@ -191,6 +196,22 @@ class verilogSubCircuit {
     }
 }
 
+function applyVerilogPortLayout(scope) {
+    var portLayout = computePortLayout(scope.Input.length, scope.Output.length);
+
+    Object.assign(scope.layout, portLayout.layout);
+
+    for (var i = 0; i < scope.Input.length; i++) {
+        scope.Input[i].layoutProperties.x = portLayout.inputs[i].x;
+        scope.Input[i].layoutProperties.y = portLayout.inputs[i].y;
+    }
+
+    for (var j = 0; j < scope.Output.length; j++) {
+        scope.Output[j].layoutProperties.x = portLayout.outputs[j].x;
+        scope.Output[j].layoutProperties.y = portLayout.outputs[j].y;
+    }
+}
+
 export function YosysJSON2CV(
     JSON,
     parentScope = globalScope,
@@ -236,6 +257,18 @@ export function YosysJSON2CV(
         }
     }
 
+    applyVerilogPortLayout(subScope);
+
+    // Auto-layout: compute non-overlapping positions using dagre
+    var layoutPositions = computeLayout(JSON)
+    for (var deviceId in circuitDevices) {
+        var pos = layoutPositions[deviceId]
+        if (pos && circuitDevices[deviceId].element) {
+            circuitDevices[deviceId].element.x = pos.x
+            circuitDevices[deviceId].element.y = pos.y
+        }
+    }
+
     for (var connection in JSON.connectors) {
         var fromId = JSON.connectors[connection]['from']['id']
         var fromPort = JSON.connectors[connection]['from']['port']
@@ -257,27 +290,43 @@ export function YosysJSON2CV(
     }
 }
 
+// Platform detection: Tauri desktop app vs. web browser
+
+function serverSynthesis(verilogCode) {
+    return fetch('/api/v1/simulator/verilogcv', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ code: verilogCode }),
+    }).then((response) => {
+        if (!response.ok) {
+            throw response
+        }
+        return response.json()
+    })
+}
+
 export default function generateVerilogCircuit(
     verilogCode,
     scope = globalScope
 ) {
     clearVerilogOutput()
-    setVerilogOutput('Compiling Verilog code...', 'info')
-    
-    var params = { code: verilogCode }
-    fetch('/api/v1/simulator/verilogcv', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(params),
-    })
-        .then((response) => {
-            if (!response.ok) {
-                throw response
-            }
-            return response.json()
+    const isDesktop = isTauri()
+
+    if (isDesktop) {
+        setVerilogOutput('Compiling Verilog (offline, WASM)...', 'info')
+    } else {
+        setVerilogOutput('Compiling Verilog code...', 'info')
+    }
+
+    var synthesisPromise = isDesktop
+        ? synthesizeVerilog(verilogCode, (progress) => {
+            setVerilogOutput(progress, 'info')
         })
+        : serverSynthesis(verilogCode)
+
+    synthesisPromise
         .then((circuitData) => {
             scope.initialize()
             for (var id in scope.verilogMetadata.subCircuitScopeIds)
@@ -294,17 +343,24 @@ export default function generateVerilogCircuit(
             )
             changeCircuitName(circuitData.name)
             showMessage('Verilog Circuit Successfully Created')
-            setVerilogOutput('Verilog Circuit Successfully Created', 'success')
+            clearVerilogOutput()
         })
         .catch((error) => {
-            if (error.status == 500) {
-                showError('Could not connect to Yosys')
-                setVerilogOutput('Could not connect to Yosys server', 'error')
+            if (isDesktop) {
+                showError(error.message || 'Synthesis failed')
             } else {
-                showError('There is some issue with the code')
-                error.json().then((errorMessage) => {
-                    setVerilogOutput(errorMessage.message, 'error')
-                })
+                if (error.status == 500) {
+                    showError('Could not connect to Yosys')
+                } else {
+                    showError('There is some issue with the code')
+                    error.json()
+                        .then((errorMessage) => {
+                            setVerilogOutput(errorMessage.message, 'error')
+                        })
+                        .catch(() => {
+                            setVerilogOutput('Server returned a non-JSON error response', 'error')
+                        })
+                }
             }
         })
 }
@@ -322,7 +378,6 @@ export function setupCodeMirrorEnvironment() {
         styleActiveLine: true,
         lineNumbers: true,
         autoCloseBrackets: true,
-        matchBrackets: true,
         smartIndent: true,
         indentWithTabs: true,
         extraKeys: { 'Ctrl-Space': 'autocomplete' },

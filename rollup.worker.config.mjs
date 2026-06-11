@@ -21,7 +21,7 @@ function stripShebang() {
 }
 
 export default {
-    input: 'v1/src/simulator/src/synthesis/synthesisWorker.js',
+    input: 'src/simulator/src/synthesis/synthesisWorker.js',
     output: {
         file: 'public/assets/synthesisWorker.js',
         format: 'es',

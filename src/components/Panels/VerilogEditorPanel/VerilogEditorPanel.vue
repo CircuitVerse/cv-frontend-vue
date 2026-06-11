@@ -32,13 +32,7 @@
                         <i class="fas fa-terminal"></i>
                         {{ verilogStore.isTerminalVisible ? 'Hide' : 'Show' }} Terminal
                     </button>
-                    <div id="verilogOutput">
-                        {{
-                            $t(
-                                'simulator.panel_body.verilog_module.module_in_experiment_notice'
-                            )
-                        }}
-                    </div>
+
                 </div>
             </div>
 
@@ -77,52 +71,31 @@
                 </div>
             </div>
         </div>
-        <VerilogTerminal ref="verilogTerminal" />
     </div>
+    <VerilogTerminal />
 </template>
 
 <script lang="ts" setup>
-import Themes from '../../../assets/constants/Panels/VerilogEditorPanel/THEMES.json'
+import Themes from '../../../assets/constants/Panels/VerilogEditorPanel/THEMES.json';
 import {
     saveVerilogCode,
     resetVerilogCode,
     applyVerilogTheme,
-} from '../../../simulator/src/Verilog2CV'
-import PanelHeader from '../Shared/PanelHeader.vue'
-import VerilogTerminal from './VerilogTerminal.vue'
-import { ref, watch, onMounted, nextTick } from 'vue'
-import { useVerilogStore } from '../../../store/verilogStore'
+} from '../../../simulator/src/Verilog2CV';
+import PanelHeader from '../Shared/PanelHeader.vue';
+import VerilogTerminal from './VerilogTerminal.vue';
+import { watch } from 'vue';
+import { useVerilogStore } from '../../../store/verilogStore';
 
-const verilogStore = useVerilogStore()
-const verilogTerminal = ref<InstanceType<typeof VerilogTerminal>>()
+const verilogStore = useVerilogStore();
 
 const toggleTerminal = () => {
-    verilogStore.toggleTerminal()
-}
-
-onMounted(() => {
-    nextTick(() => {
-        if (typeof window !== 'undefined' && verilogTerminal.value) {
-            (window as any).verilogTerminal = verilogTerminal.value
-        }
-    })
-})
+    verilogStore.toggleTerminal();
+};
 
 watch(() => verilogStore.selectedTheme, (newTheme: string) => {
-    applyVerilogTheme(newTheme)
-})
-
-defineExpose({
-    addTerminalMessage: (text: string, type: 'info' | 'error' | 'success' = 'info') => {
-        verilogTerminal.value?.addMessage(text, type)
-    },
-    clearTerminal: () => {
-        verilogTerminal.value?.clearOutput()
-    },
-    showTerminal: () => {
-        verilogStore.showTerminal()
-    }
-})
+    applyVerilogTheme(newTheme);
+});
 </script>
 
 <style>
