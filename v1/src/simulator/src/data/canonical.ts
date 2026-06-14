@@ -922,7 +922,7 @@ export async function canonicaliseScope(scope: CVScope): Promise<CanonicalScope>
   const projectMetadata = {
     id: scope.id,
     name: scope.name || "Untitled",
-    timeStamp: scope.timeStamp || null,
+    timeStamp: scope.timeStamp ?? null,
     restrictedElementsUsed: scope.restrictedCircuitElementsUsed || [],
   };
 
