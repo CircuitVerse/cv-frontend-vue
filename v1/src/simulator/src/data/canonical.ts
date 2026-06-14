@@ -194,11 +194,53 @@ export class UnionFind {
 const STRUCTURAL_STATE: Set<string> = new Set(["ConstantVal"]);
 
 const DIRECTION_BEARING: Set<string> = new Set([
-  "Input", "Output", "NotGate", "OrGate", "AndGate", "NorGate", "NandGate", "XorGate", "XnorGate", "Multiplexer",
-  "Demultiplexer", "BitSelector", "Splitter", "ConstantVal", "ControlledInverter", "TriState", "Adder", "ALU",
-  "Buffer", "TwoComplement", "ForceGate", "DflipFlop", "TflipFlop", "SRflipFlop", "JKflipFlop", "Dlatch", "Clock",
-  "Stepper", "Button", "Random", "RAM", "EEPROM", "verilogRAM", "verilogMultiplier", "verilogDivider", "verilogPower", "verilogShiftLeft", "verilogShiftRight", "MSB", "LSB", "PriorityEncoder", "Decoder", "Tunnel", "Flag",
-  "SquareRGBLed", "TB_Input", "TB_Output",
+  "Input",
+  "Output",
+  "NotGate",
+  "OrGate",
+  "AndGate",
+  "NorGate",
+  "NandGate",
+  "XorGate",
+  "XnorGate",
+  "Multiplexer",
+  "Demultiplexer",
+  "BitSelector",
+  "Splitter",
+  "ConstantVal",
+  "ControlledInverter",
+  "TriState",
+  "Adder",
+  "ALU",
+  "Buffer",
+  "TwoComplement",
+  "ForceGate",
+  "DflipFlop",
+  "TflipFlop",
+  "SRflipFlop",
+  "JKflipFlop",
+  "Dlatch",
+  "Clock",
+  "Stepper",
+  "Button",
+  "Random",
+  "RAM",
+  "EEPROM",
+  "verilogRAM",
+  "verilogMultiplier",
+  "verilogDivider",
+  "verilogPower",
+  "verilogShiftLeft",
+  "verilogShiftRight",
+  "MSB",
+  "LSB",
+  "PriorityEncoder",
+  "Decoder",
+  "Tunnel",
+  "Flag",
+  "SquareRGBLed",
+  "TB_Input",
+  "TB_Output",
 ]);
 
 const STATEFUL_DEFAULT_STATE: Record<string, string> = {
@@ -331,12 +373,14 @@ function buildComponentDrafts(scope: CVScope, uf: UnionFind, nodeIndexMap: NodeI
  * "Input_10" > "Input_2" [if we apply sort using the below function, Correct Sort]
  */
 function naturalCompare(a: string, b: string): number {
-  let ai = 0, bi = 0;
+  let ai = 0,
+    bi = 0;
   while (ai < a.length && bi < b.length) {
     const aDigit = a[ai] >= "0" && a[ai] <= "9";
     const bDigit = b[bi] >= "0" && b[bi] <= "9";
     if (aDigit && bDigit) {
-      let an = 0, bn = 0;
+      let an = 0,
+        bn = 0;
 
       while (ai < a.length && a[ai] >= "0" && a[ai] <= "9") {
         an = an * 10 + +a[ai++];
@@ -528,7 +572,11 @@ function assignNetIds(components: ComponentDraft[]) {
 /**
  * Reconstructs nets into canonical objects and filters out single-connection nets.
  */
-function buildCanonicalNets(netIdMap: Map<number, string>, netConnections: Map<string, string[]>, allNodes: WireNode[],) {
+function buildCanonicalNets(
+  netIdMap: Map<number, string>,
+  netConnections: Map<string, string[]>,
+  allNodes: WireNode[],
+) {
   const nets: CanonicalNet[] = [];
   for (const [groupRoot, netId] of netIdMap) {
     const members = netConnections.get(netId) || [];
@@ -754,7 +802,10 @@ function buildSubcircuitPorts(components: ComponentDraft[]) {
 /**
  * Normalizes components into a standard format and maps their connections to final resolved nets.
  */
-function buildCanonicalComponents(components: ComponentDraft[], composedNetMap: Map<number, string>,) {
+function buildCanonicalComponents(
+  components: ComponentDraft[],
+  composedNetMap: Map<number, string>,
+) {
   return components.map((component) => {
     const connections: Record<string, string> = {};
     for (const [port, root] of Object.entries(component._connections)) {
