@@ -9,10 +9,6 @@ import vuetify from "vite-plugin-vuetify";
 
 import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 
-// Extract the build directory
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 // https://vitejs.dev/config/
 export default defineConfig(() => {
   const version = process.env.VITE_SIM_VERSION || "v0";
@@ -41,7 +37,7 @@ export default defineConfig(() => {
     root: fileURLToPath(new URL(`./${version}`, import.meta.url)),
     base: process.env.VITE_BASE || (isDesktop ? "/" : `/simulatorvue/${version}/`),
     build: {
-      outDir: path.resolve(__dirname, `./dist/simulatorvue/${version}/`),
+      outDir: fileURLToPath(new URL(`./dist/simulatorvue/${version}/`, import.meta.url)),
       assetsDir: "assets",
       chunkSizeWarningLimit: 1600,
       rollupOptions: {
