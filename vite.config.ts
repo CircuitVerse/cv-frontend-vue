@@ -1,7 +1,6 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import { fileURLToPath, URL } from "url";
-import path from "path";
 import VueI18nPlugin from "@intlify/unplugin-vue-i18n/vite";
 
 // https://github.com/vuetifyjs/vuetify-loader/tree/next/packages/vite-plugin
