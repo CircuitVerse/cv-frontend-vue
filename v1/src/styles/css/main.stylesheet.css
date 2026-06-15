@@ -99,7 +99,7 @@ button {
     box-shadow: none;
 }
 
-button:not('.quick-btn button'):active {
+button:not(.quick-btn button):active {
     background: transparent !important;
 }
 
