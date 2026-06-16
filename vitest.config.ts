@@ -6,9 +6,7 @@ import vuetify from "vite-plugin-vuetify";
 import VueI18nPlugin from "@intlify/unplugin-vue-i18n/vite";
 import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 
-const synthesisSpecs = [
-  "v1/src/simulator/spec/synthesis.spec.js",
-];
+const synthesisSpecs = ["v1/src/simulator/spec/synthesis.spec.js"];
 
 const createProjectConfig = (version: string) => ({
   plugins: [
