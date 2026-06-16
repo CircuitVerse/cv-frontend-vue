@@ -14,8 +14,8 @@
         "skipLibCheck": true,
         "baseUrl": "./",
         "paths": {
-            "#/*": ["./v0/src/*"],
-            "@/*": ["./v0/src/components/*"]
+            "#/*": ["./v0/src/*", "./v1/src/*", "./src/*"],
+            "@/*": ["./v0/src/components/*", "./v1/src/components/*", "./src/components/*"]
         },
         "allowJs": true,
         "declaration": true,
@@ -30,6 +30,16 @@
         "v0/src/**/*.tsx",
         "v0/src/**/*.vue",
         "v0/src/**/*",
+        "v1/src/**/*.ts",
+        "v1/src/**/*.d.ts",
+        "v1/src/**/*.tsx",
+        "v1/src/**/*.vue",
+        "v1/src/**/*",
+        "src/**/*.ts",
+        "src/**/*.d.ts",
+        "src/**/*.tsx",
+        "src/**/*.vue",
+        "src/**/*",
         "commitlint.config.js"
     ],
     "references": [{ "path": "./tsconfig.node.json" }]

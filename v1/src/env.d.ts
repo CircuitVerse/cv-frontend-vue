@@ -6,9 +6,30 @@ interface Array<T> {
   contains(value: T): boolean;
 }
 
+interface Window {
+  globalScope: any;
+  lightMode: boolean;
+  projectId: any;
+  id: any;
+  loading: boolean;
+  isUserLoggedIn?: boolean;
+  logixProjectId?: any;
+  restrictedElements?: any[];
+  embed?: boolean;
+  width?: any;
+  height?: any;
+  DPR?: number;
+  $?: any;
+  jQuery?: any;
+}
+
 declare module "*.vue" {
   import type { DefineComponent } from "vue";
   // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/ban-types
   const component: DefineComponent<{}, {}, any>;
   export default component;
 }
+
+declare var NODE_INPUT: number;
+declare var NODE_OUTPUT: number;
+declare var NODE_INTERMEDIATE: number;
