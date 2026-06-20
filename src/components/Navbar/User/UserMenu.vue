@@ -52,7 +52,7 @@
         <template v-if="!authStore.getIsLoggedIn">
           <v-list density="compact" nav>
             <v-list-item
-              @click.stop="showAuthModal(true)"
+              @click.stop="signIn"
               prepend-icon="mdi-login"
               title="Sign In"
               value="sign_in"
@@ -60,7 +60,7 @@
               color="white"
             ></v-list-item>
             <v-list-item
-              @click.stop="showAuthModal(false)"
+              @click.stop="register"
               prepend-icon="mdi-account-plus"
               title="Register"
               value="register"
@@ -140,98 +140,6 @@
         </v-btn>
       </v-main>
     </v-layout>
-
-    <!-- Authentication Dialog -->
-    <v-dialog v-model="authModal" max-width="500" persistent>
-      <v-card class="auth-modal" style="background-color: white">
-        <v-toolbar color="#43b984">
-          <v-toolbar-title class="text-white">
-            {{ isLoginMode ? 'Sign In' : 'Register' }}
-          </v-toolbar-title>
-          <v-spacer></v-spacer>
-          <v-btn icon @click="authModal = false" color="white">
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-        </v-toolbar>
-
-        <v-card-text class="pa-6">
-          <v-form @submit.prevent="handleAuthSubmit" ref="authForm">
-            <v-text-field 
-              v-if="!isLoginMode" 
-              v-model="name" 
-              label="Name" 
-              type="text"
-              :rules="[requiredRule]"
-              variant="outlined"
-              class="mb-0"
-              bg-color="#f0eee6"
-            ></v-text-field>
-
-            <v-text-field
-              v-model="email"
-              label="Email"
-              type="email"
-              :rules="[requiredRule, emailRule]"
-              variant="outlined"
-              class="mb-0"
-              bg-color="#f0eee6"
-            ></v-text-field>
-
-            <v-text-field
-              v-model="password"
-              label="Password"
-              type="password"
-              :rules="[requiredRule, passwordRule]"
-              variant="outlined"
-              class="mb-0"
-              bg-color="#f0eee6"
-            ></v-text-field>
-
-            <div class="d-flex flex-column">
-              <v-btn
-                color="#43b984"
-                type="submit"
-                :loading="isLoading"
-                :disabled="isLoading"
-                size="large"
-                block
-                class="mb-2"
-              >
-                {{ isLoginMode ? 'Sign In' : 'Register' }}
-              </v-btn>
-
-              <v-btn
-                variant="text"
-                @click="toggleAuthMode"
-                size="small"
-                color="#43b984"
-              >
-                {{ isLoginMode ? 'Need an account? Register' : 'Already have an account? Sign In' }}
-              </v-btn>
-            </div>
-          </v-form>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
-
-    <!-- Snackbar Notification -->
-    <v-snackbar
-      v-model="snackbar.visible"
-      :color="snackbar.color"
-      :timeout="3000"
-      location="bottom right"
-    >
-      {{ snackbar.message }}
-
-      <template v-slot:actions>
-        <v-btn
-          variant="text"
-          @click="snackbar.visible = false"
-          :icon="mdiClose"
-          color="white"
-        ></v-btn>
-      </template>
-    </v-snackbar>
   </v-card>
 </template>
 
@@ -240,126 +148,21 @@ import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { availableLocale } from '#/locales/i18n'
 import { useAuthStore } from '#/store/authStore'
-import { mdiClose } from '@mdi/js'
-// import { fetch } from '@tauri-apps/plugin-http' // Uncomment if using Tauri's HTTP plugin
+import { signOutRails } from '#/utils/auth'
 import './User.scss'
 
 const authStore = useAuthStore()
 const drawer = ref(false)
-const authModal = ref(false)
-const isLoginMode = ref(true)
-const email = ref('')
-const password = ref('')
-const name = ref('')
 const { locale } = useI18n()
-const isLoading = ref(false)
-const authForm = ref()
 const unreadCount = ref(0)
 
-// Form validation rules
-const requiredRule = (v: string) => !!v || 'This field is required'
-const emailRule = (v: string) => /.+@.+\..+/.test(v) || 'E-mail must be valid'
-const passwordRule = (v: string) => v.length >= 6 || 'Password must be at least 6 characters'
-
-// Snackbar state
-const snackbar = ref({
-  visible: false,
-  message: '',
-  color: '#43b984'
-})
-
-function showAuthModal(login: boolean) {
-  isLoginMode.value = login
-  authModal.value = true
-  drawer.value = false
-  email.value = ''
-  password.value = ''
-  name.value = ''
+function signIn() {
+  const returnTo = encodeURIComponent(window.location.pathname + window.location.search)
+  window.location.href = `/users/sign_in?return_to=${returnTo}`
 }
 
-function toggleAuthMode() {
-  isLoginMode.value = !isLoginMode.value
-}
-
-async function handleAuthSubmit() {
-  const { valid } = await authForm.value.validate()
-  if (!valid) return
-
-  isLoading.value = true
-
-  try {
-    const url = isLoginMode.value
-      ? 'http://localhost:4000/api/v1/auth/login'
-      : 'http://localhost:4000/api/v1/auth/signup'
-
-    const body = isLoginMode.value
-      ? { email: email.value, password: password.value }
-      : { email: email.value, password: password.value, name: name.value }
-
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body)
-    })
-
-    if (!response.ok) {
-      let errorData
-      try {
-        errorData = await response.json()
-      } catch (e) {
-        errorData = { message: 'An error occurred' }
-      }
-      handleLoginError(response.status, errorData)
-      return
-    }
-
-    const data = await response.json()
-    
-    if (!data.token) {
-      throw new Error('No token received from server')
-    }
-    
-    authStore.setToken(data.token)
-    showSnackbar(
-      isLoginMode.value ? 'Login successful!' : 'Registration successful!',
-      'success'
-    )
-    authModal.value = false
-  } catch (error) {
-    showSnackbar(`Authentication failed: ${error.message}`, 'error')
-  } finally {
-    isLoading.value = false
-  }
-}
-
-function handleLoginError(status: number, errorData: any) {
-  switch (status) {
-    case 401:
-      showSnackbar('Invalid credentials', 'error')
-      break
-    case 404:
-      showSnackbar('User not found', 'error')
-      break
-    case 409:
-      showSnackbar('User already exists', 'error')
-      break
-    case 422:
-      showSnackbar('Invalid input data', 'error')
-      break
-    default:
-      showSnackbar(errorData.message || 'Authentication failed', 'error')
-  }
-}
-
-function showSnackbar(message: string, type: 'success' | 'error' | 'warning' | 'info') {
-  snackbar.value = {
-    visible: true,
-    message,
-    color: type
-  }
+function register() {
+  window.location.href = '/users/sign_up'
 }
 
 function dashboard() {
@@ -375,7 +178,6 @@ function notifications() {
 }
 
 function signout() {
-  authStore.signOut()
-  showSnackbar('You have been logged out', 'info')
+  signOutRails((window as any).csrfToken)
 }
 </script>

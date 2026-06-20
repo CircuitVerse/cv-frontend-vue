@@ -10,19 +10,13 @@
     </template>
 </template>
 
-<script lang="ts">
-export function getToken(name: string) {
-    var match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'))
-    if (match) return match[2]
-}
-</script>
-
 <script setup lang="ts">
 import simulator from './simulator.vue'
 import { onBeforeMount, ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '#/store/authStore'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
+import { getToken } from '#/utils/auth'
 
 const route = useRoute()
 const hasAccess = ref(true)
@@ -55,7 +49,8 @@ async function checkEditAccess() {
             isLoading.value = false
         } else if (res.status === 401) {
             // if user is not logged in redirect to login page
-            window.location.href = '/users/sign_in'
+            const returnTo = encodeURIComponent(window.location.pathname + window.location.search)
+            window.location.href = `/users/sign_in?return_to=${returnTo}`
         }
     })
 }
