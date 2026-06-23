@@ -8,6 +8,32 @@ import vuetify from "vite-plugin-vuetify";
 
 import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 
+function stripShebangPlugin() {
+  return {
+    name: "strip-shebang",
+    transform(code: string, id: string) {
+      if (id.includes("yosys2digitaljs") && code.startsWith("#!")) {
+        return { code: code.replace(/^#!.*/, ""), map: null };
+      }
+      return null;
+    },
+  };
+}
+
+function wasmMimePlugin() {
+  return {
+    name: "wasm-mime-type",
+    configureServer(server: any) {
+      server.middlewares.use((req: any, res: any, next: any) => {
+        if (req.url && req.url.endsWith(".wasm")) {
+          res.setHeader("Content-Type", "application/wasm");
+        }
+        next();
+      });
+    },
+  };
+}
+
 // https://vitejs.dev/config/
 export default defineConfig(() => {
   const version = process.env.VITE_SIM_VERSION || "v0";
@@ -15,6 +41,8 @@ export default defineConfig(() => {
 
   return {
     plugins: [
+      stripShebangPlugin(),
+      wasmMimePlugin(),
       vue(),
       vuetify({ autoImport: true }),
       cssInjectedByJsPlugin(),
@@ -22,6 +50,9 @@ export default defineConfig(() => {
         strictMessage: false,
       }),
     ],
+    optimizeDeps: {
+      exclude: ["@yowasp/yosys", "vue"],
+    },
     resolve: {
       alias: {
         "#": fileURLToPath(new URL(`./${version}/src`, import.meta.url)),
@@ -46,6 +77,9 @@ export default defineConfig(() => {
     },
     server: {
       port: 4000,
+      watch: {
+        ignored: ["**/src-tauri/target/**"],
+      },
     },
     preview: {
       port: 4173,
