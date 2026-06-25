@@ -341,6 +341,7 @@ export default function generateVerilogCircuit(
         })
         .catch((error) => {
             if (isDesktop) {
+                setVerilogOutput(error.message || 'Synthesis failed', 'error')
                 showError(error.message || 'Synthesis failed')
             } else if (error instanceof Response) {
                 if (error.status == 500) {

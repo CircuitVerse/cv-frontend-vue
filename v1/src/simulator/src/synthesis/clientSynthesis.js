@@ -49,6 +49,11 @@ export function synthesizeVerilog(verilogCode, onProgress) {
         worker.addEventListener('message', handleMessage)
         worker.addEventListener('error', handleError)
 
-        worker.postMessage({ type: 'synthesize', code: verilogCode, id: id })
+        try {
+            worker.postMessage({ type: 'synthesize', code: verilogCode, id: id })
+        } catch (err) {
+            cleanup()
+            reject(new Error('Failed to send code to synthesis worker: ' + err.message))
+        }
     })
 }
