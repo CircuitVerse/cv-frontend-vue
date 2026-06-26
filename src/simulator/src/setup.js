@@ -181,7 +181,7 @@ async function fetchProjectData(projectId) {
  * @category setup
  */
 async function loadProjectData() {
-    window.logixProjectId = window.logixProjectId ?? 0
+    window.logixProjectId = parseInt(window.logixProjectId) || 0
     if (window.logixProjectId !== 0) {
         fadeInLoadingIcons()
         await fetchProjectData(window.logixProjectId)
