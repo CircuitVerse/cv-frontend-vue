@@ -346,6 +346,7 @@ export default function generateVerilogCircuit(
             } else if (error instanceof Response) {
                 if (error.status == 500) {
                     showError('Could not connect to Yosys')
+                    setVerilogOutput('Could not connect to Yosys', 'error')
                 } else {
                     showError('There is some issue with the code')
                     error.json()

@@ -25,7 +25,8 @@ function wasmMimePlugin() {
     name: "wasm-mime-type",
     configureServer(server: any) {
       server.middlewares.use((req: any, res: any, next: any) => {
-        if (req.url && req.url.endsWith(".wasm")) {
+        const pathname = (req.url || "").split("?")[0];
+        if (pathname.endsWith(".wasm")) {
           res.setHeader("Content-Type", "application/wasm");
         }
         next();

@@ -31,7 +31,7 @@
     "@tiptap/extension-underline": "^2.0.3",
     "@tiptap/starter-kit": "^2.0.3",
     "@tiptap/vue-3": "^2.0.3",
-    "@yowasp/yosys": "^0.59.84-dev.1027",
+    "@yowasp/yosys": "0.59.84-dev.1027",
     "bootstrap": "^4.6.1",
     "canvas-to-svg": "^1.0.3",
     "codemirror": "^5.65.1",
