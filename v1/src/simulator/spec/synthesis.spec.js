@@ -1,5 +1,6 @@
 import { describe, test, expect } from 'vitest'
 import { computeLayout, computePortLayout } from '../src/synthesis/circuitLayout.js';
+import { parseYosysOutput } from '../src/synthesis/vfsGuard.js';
 
 // Tests for the client-side Verilog synthesis module.
 
@@ -178,3 +179,42 @@ describe('Verilog Port Layout (computePortLayout)', () => {
         ]);
     });
 });
+
+// VFS guard tests for output.json
+
+describe('VFS Guard (parseYosysOutput)', () => {
+    test('parses output.json when it is a string', () => {
+        var result = parseYosysOutput({ 'output.json': '{"modules":{}}' })
+        expect(result).toEqual({ modules: {} })
+    })
+
+    test('parses output.json when it is a Uint8Array', () => {
+        var json = '{"modules":{}}'
+        var bytes = new TextEncoder().encode(json)
+        var result = parseYosysOutput({ 'output.json': bytes })
+        expect(result).toEqual({ modules: {} })
+    })
+
+    test('throws when VFS result is null or undefined', () => {
+        expect(() => parseYosysOutput(null)).toThrow('valid virtual filesystem')
+        expect(() => parseYosysOutput(undefined)).toThrow('valid virtual filesystem')
+    })
+
+    test('throws when output.json is missing', () => {
+        expect(() => parseYosysOutput({})).toThrow('did not produce output.json')
+    })
+
+    test('throws when output.json is empty', () => {
+        expect(() => parseYosysOutput({ 'output.json': '' })).toThrow('empty output.json')
+        expect(() => parseYosysOutput({ 'output.json': '   ' })).toThrow('empty output.json')
+    })
+
+    test('throws when output.json has unsupported type', () => {
+        expect(() => parseYosysOutput({ 'output.json': 42 })).toThrow('unsupported type')
+        expect(() => parseYosysOutput({ 'output.json': true })).toThrow('unsupported type')
+    })
+
+    test('throws when output.json contains invalid JSON', () => {
+        expect(() => parseYosysOutput({ 'output.json': '{broken' })).toThrow('invalid JSON')
+    })
+})
