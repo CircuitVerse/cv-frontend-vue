@@ -6,6 +6,11 @@ import vuetify from "vite-plugin-vuetify";
 import VueI18nPlugin from "@intlify/unplugin-vue-i18n/vite";
 import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 
+const synthesisSpecs = [
+  "v1/src/simulator/spec/synthesis.spec.js",
+  "v1/src/simulator/spec/clientSynthesis.spec.js",
+];
+
 const createProjectConfig = (version: string) => ({
   plugins: [
     vue(),
@@ -48,8 +53,8 @@ const createProjectConfig = (version: string) => ({
 
     exclude:
       version === "src"
-        ? ["v0/**/*", "v1/**/*"]
-        : ["src/**/*", version === "v0" ? "v1/**/*" : "v0/**/*"],
+        ? ["v0/**/*", "v1/**/*", ...synthesisSpecs]
+        : ["src/**/*", version === "v0" ? "v1/**/*" : "v0/**/*", ...synthesisSpecs],
 
     setupFiles: [
       version === "src"
@@ -65,8 +70,16 @@ const createProjectConfig = (version: string) => ({
   },
 });
 
+const synthesisProject = {
+  test: {
+    name: "synthesis",
+    environment: "node" as const,
+    include: synthesisSpecs,
+  },
+};
+
 export default defineConfig({
   test: {
-    projects: [createProjectConfig("src"), createProjectConfig("v1")],
+    projects: [createProjectConfig("src"), createProjectConfig("v1"), synthesisProject],
   },
 });

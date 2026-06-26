@@ -14,7 +14,8 @@
     "format:check": "oxfmt --check \"**/*.ts\"",
     "fmt:check": "npm run format:check",
     "postinstall": "husky install",
-    "test": "vitest --silent"
+    "test": "vitest --silent",
+    "test:synthesis": "vitest run --project synthesis"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.5.1",
@@ -30,6 +31,7 @@
     "@tiptap/extension-underline": "^2.0.3",
     "@tiptap/starter-kit": "^2.0.3",
     "@tiptap/vue-3": "^2.0.3",
+    "@yowasp/yosys": "0.59.84-dev.1027",
     "bootstrap": "^4.6.1",
     "canvas-to-svg": "^1.0.3",
     "codemirror": "^5.65.1",
@@ -44,7 +46,8 @@
     "vue-router": "^4.6.4",
     "vuedraggable": "^4.1.0",
     "vuetify": "^3.7.9",
-    "webfontloader": "^1.0.0"
+    "webfontloader": "^1.0.0",
+    "yosys2digitaljs": "^0.10.3"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.0.0",
