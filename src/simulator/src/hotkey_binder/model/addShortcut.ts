@@ -5,6 +5,9 @@ import {
   openHotkey,
   moveElement,
   openDocumentation,
+  activateSearchBar,
+  previewCircuit,
+  fitToScreen,
 } from "./actions";
 import save from "../../data/save";
 import { saveOffline, openOffline } from "../../data/project";
@@ -37,7 +40,10 @@ export type ActionType =
   | "Move Element Left"
   | "Move Element Right"
   | "Hotkey Preference"
-  | "Open Documentation";
+  | "Open Documentation"
+  | "Search Elements/Panel"
+  | "Preview Circuit"
+  | "Fit to Screen";
 
 export const addShortcut = (
   keys: string,
@@ -113,6 +119,16 @@ export const addShortcut = (
     case "Open Documentation":
       callback = openDocumentation;
       break;
+    case "Search Elements/Panel":
+      callback = activateSearchBar;
+      break;
+    case "Preview Circuit":
+      callback = previewCircuit;
+      break;
+    case "Fit to Screen":
+      callback = fitToScreen;
+      break;
+
     default:
       callback = () => console.error("No shortcut found..");
   }
