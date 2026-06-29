@@ -2,6 +2,7 @@
 
 var worker = null
 var requestId = 0
+var busy = false
 
 var DEFAULT_SYNTHESIS_TIMEOUT_MS = 30000
 
@@ -10,6 +11,11 @@ export function synthesizeVerilog(verilogCode, onProgress, options = {}) {
     var timeoutMs = options.timeoutMs || DEFAULT_SYNTHESIS_TIMEOUT_MS
 
     return new Promise((resolve, reject) => {
+        if (busy) {
+            reject(new Error('A Verilog synthesis is already in progress'))
+            return
+        }
+
         if (!worker) {
             try {
                 worker = new Worker(new URL('./synthesisWorker.js', import.meta.url), { type: 'module' })
@@ -22,6 +28,7 @@ export function synthesizeVerilog(verilogCode, onProgress, options = {}) {
         var id = ++requestId
         var timer = null
         var currentWorker = worker
+        busy = true
 
         function handleMessage(e) {
             if (e.data.id !== id) return
@@ -51,6 +58,7 @@ export function synthesizeVerilog(verilogCode, onProgress, options = {}) {
         }
 
         function cleanup() {
+            busy = false
             clearTimeout(timer)
             currentWorker.removeEventListener('message', handleMessage)
             currentWorker.removeEventListener('error', handleError)
