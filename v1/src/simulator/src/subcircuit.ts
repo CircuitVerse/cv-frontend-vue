@@ -530,8 +530,8 @@ export default class SubCircuit extends CircuitElement {
    * determines where to show label
    */
   determine_label(x: number, y: number): [string, number, number] {
-    if (x == 0) return ["left", 5, 5];
-    if (x == scopeList[this.id].layout.width) return ["right", -5, 5];
+    if (x == 0) return ["left", 5, 0];
+    if (x == scopeList[this.id].layout.width) return ["right", -5, 0];
     if (y == 0) return ["center", 0, 13];
     return ["center", 0, -6];
   }
