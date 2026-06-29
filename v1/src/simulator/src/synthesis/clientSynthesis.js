@@ -8,7 +8,7 @@ var DEFAULT_SYNTHESIS_TIMEOUT_MS = 30000
 
 // abort + reset the worker if synthesis runs longer (default 30s).
 export function synthesizeVerilog(verilogCode, onProgress, options = {}) {
-    var timeoutMs = options.timeoutMs || DEFAULT_SYNTHESIS_TIMEOUT_MS
+    var timeoutMs = options.timeoutMs ?? DEFAULT_SYNTHESIS_TIMEOUT_MS
 
     return new Promise((resolve, reject) => {
         if (busy) {

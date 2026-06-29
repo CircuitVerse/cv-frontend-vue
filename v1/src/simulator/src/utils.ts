@@ -61,11 +61,6 @@ export function showError(error: string) {
   useActions().showMessage(error, "error");
 }
 
-// Reset the error dedup guard so the same error can be shown again.
-export function resetPrevErrorMessage() {
-  prevErrorMessage = undefined;
-}
-
 // Helper function to show message
 export function showMessage(mes: string) {
   if (mes === prevShowMessage) return;
