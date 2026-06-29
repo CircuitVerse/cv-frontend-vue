@@ -38,6 +38,8 @@ export function synthesizeVerilog(verilogCode, onProgress) {
 
         function handleError(err) {
             cleanup()
+            worker.terminate()
+            worker = null
             reject(new Error('Synthesis worker error: ' + (err.message || 'Unknown error')))
         }
 
