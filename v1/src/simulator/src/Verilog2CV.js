@@ -32,7 +32,7 @@ import 'codemirror/addon/edit/closebrackets.js'
 import 'codemirror/addon/hint/anyword-hint.js'
 import 'codemirror/addon/hint/show-hint.js'
 import 'codemirror/addon/display/autorefresh.js'
-import { showError, showMessage, resetPrevErrorMessage } from './utils'
+import { showError, showMessage } from './utils'
 import { showProperties } from './ux'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { toRefs } from 'vue'
@@ -306,7 +306,6 @@ export default function generateVerilogCircuit(
     scope = globalScope
 ) {
     clearVerilogOutput()
-    resetPrevErrorMessage()
     const isDesktop = isTauri()
 
     if (isDesktop) {

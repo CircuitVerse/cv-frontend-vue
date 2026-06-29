@@ -143,6 +143,26 @@ describe('synthesizeVerilog timeout guard', () => {
         expect(result).toEqual({ name: 'ok' })
     })
 
+    //  Single in-flight guard
+
+    test('rejects a second synthesis while one is already in flight', async () => {
+        const first = synthesizeVerilog('module a; endmodule', null, { timeoutMs: 5000 })
+
+        const second = synthesizeVerilog('module b; endmodule', null, { timeoutMs: 5000 })
+        await expect(second).rejects.toThrow('already in progress')
+
+        expect(mockWorkerInstance.postMessage).toHaveBeenCalledTimes(1)
+
+        const sentId = mockWorkerInstance.postMessage.mock.calls[0][0].id
+        mockWorkerInstance._postBack({ type: 'result', data: { name: 'a' }, id: sentId })
+        await expect(first).resolves.toEqual({ name: 'a' })
+
+        const third = synthesizeVerilog('module c; endmodule', null, { timeoutMs: 5000 })
+        const thirdId = mockWorkerInstance.postMessage.mock.calls[1][0].id
+        mockWorkerInstance._postBack({ type: 'result', data: { name: 'c' }, id: thirdId })
+        await expect(third).resolves.toEqual({ name: 'c' })
+    })
+
     //  Progress callback
 
     test('forwards progress messages to the onProgress callback', async () => {
