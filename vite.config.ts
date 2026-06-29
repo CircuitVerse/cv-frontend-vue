@@ -52,6 +52,9 @@ export default defineConfig(() => {
       }),
     ],
     optimizeDeps: {
+      // Vue is excluded from pre-bundling: bundling its esm-bundler runtime
+      // alongside vuetify + vue-i18n triggers a runtime
+      // "init_runtime_dom_esm_bundler is not defined" ReferenceError in dev.
       exclude: ["@yowasp/yosys", "vue"],
     },
     resolve: {

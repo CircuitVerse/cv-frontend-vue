@@ -26,6 +26,9 @@ var LAYER_GAP = 160
 var NODE_GAP = 80    
 var MARGIN_X = 80     
 var MARGIN_Y = 80     
+// Nominal canvas height (px) used as a reference to vertically center each layer's nodes
+var LAYER_VIEWPORT_HEIGHT = 400
+
 var PORT_LAYOUT_WIDTH = 120;
 var PORT_LAYOUT_START_Y = 30;
 var PORT_LAYOUT_GAP = 20;
@@ -154,7 +157,7 @@ export function computeLayout(circuitJSON) {
             }
             totalHeight += (nodesInLayer.length - 1) * NODE_GAP
 
-            var startY = MARGIN_Y + Math.max(0, (400 - totalHeight) / 2)
+            var startY = MARGIN_Y + Math.max(0, (LAYER_VIEWPORT_HEIGHT - totalHeight) / 2)
             var currentY = startY
 
             for (var p = 0; p < nodesInLayer.length; p++) {
