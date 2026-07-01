@@ -34,8 +34,7 @@
                 "import_project": "फ़ाइल से आयात करें",
                 "preview_circuit": "पूर्वावलोकन सर्किट",
                 "clear_project": "परियोजना क्लियर करें",
-                "recover_project": "परियोजना पुनर्प्राप्त करें",
-                "view_previous_ui": "पिछला UI देखें"
+                "recover_project": "परियोजना पुनर्प्राप्त करें"
             },
             "circuit": {
                 "heading": "सर्किट",

@@ -34,8 +34,7 @@
                 "save_offline": "Save Offline",
                 "preview_circuit": "Preview Circuit",
                 "clear_project": "Clear Project",
-                "recover_project": "Recover Project",
-                "view_previous_ui": "View Previous UI"
+                "recover_project": "Recover Project"
             },
             "circuit": {
                 "heading": "Circuit",
