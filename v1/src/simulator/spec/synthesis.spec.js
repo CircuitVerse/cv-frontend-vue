@@ -1,5 +1,7 @@
 import { describe, test, expect } from 'vitest'
 import { computeLayout, computePortLayout } from '../src/synthesis/circuitLayout.js';
+import { parseYosysOutput } from '../src/synthesis/vfsGuard.js';
+import { extractYosysError } from '../src/synthesis/errorParser.js';
 
 // Tests for the client-side Verilog synthesis module.
 
@@ -178,3 +180,127 @@ describe('Verilog Port Layout (computePortLayout)', () => {
         ]);
     });
 });
+
+// VFS guard tests for output.json
+
+describe('VFS Guard (parseYosysOutput)', () => {
+    test('parses output.json when it is a string', () => {
+        var result = parseYosysOutput({ 'output.json': '{"modules":{}}' })
+        expect(result).toEqual({ modules: {} })
+    })
+
+    test('parses output.json when it is a Uint8Array', () => {
+        var json = '{"modules":{}}'
+        var bytes = new TextEncoder().encode(json)
+        var result = parseYosysOutput({ 'output.json': bytes })
+        expect(result).toEqual({ modules: {} })
+    })
+
+    test('throws when VFS result is null or undefined', () => {
+        expect(() => parseYosysOutput(null)).toThrow('valid virtual filesystem')
+        expect(() => parseYosysOutput(undefined)).toThrow('valid virtual filesystem')
+    })
+
+    test('throws when output.json is missing', () => {
+        expect(() => parseYosysOutput({})).toThrow('did not produce output.json')
+    })
+
+    test('throws when output.json is empty', () => {
+        expect(() => parseYosysOutput({ 'output.json': '' })).toThrow('empty output.json')
+        expect(() => parseYosysOutput({ 'output.json': '   ' })).toThrow('empty output.json')
+    })
+
+    test('throws when output.json has unsupported type', () => {
+        expect(() => parseYosysOutput({ 'output.json': 42 })).toThrow('unsupported type')
+        expect(() => parseYosysOutput({ 'output.json': true })).toThrow('unsupported type')
+    })
+
+    test('throws when output.json contains invalid JSON', () => {
+        expect(() => parseYosysOutput({ 'output.json': '{broken' })).toThrow('invalid JSON')
+    })
+})
+
+describe('Yosys Error Parser (extractYosysError)', () => {
+    test('missing endmodule shows helpful message', () => {
+        var lines = [
+            'input.v:3: ERROR: syntax error, unexpected end of file',
+        ]
+        expect(extractYosysError(lines)).toBe(
+            'Syntax error on line 3: unexpected end of file (missing "endmodule" or closing statement?)'
+        )
+    })
+
+    test('translates $end token to EOF hint', () => {
+        var lines = [
+            'input.v:2: ERROR: syntax error, unexpected $end',
+        ]
+        expect(extractYosysError(lines)).toBe(
+            'Syntax error on line 2: unexpected end of file (missing "endmodule" or closing statement?)'
+        )
+    })
+
+    test('missing module keyword translates TOK_ID', () => {
+        var lines = [
+            '-- Running command ...',
+            'input.v:1: ERROR: syntax error, unexpected TOK_ID',
+        ]
+        expect(extractYosysError(lines)).toBe(
+            'Syntax error on line 1: unexpected identifier'
+        )
+    })
+
+    test('unexpected closing paren', () => {
+        var lines = [
+            "input.v:5: ERROR: syntax error, unexpected ')'",
+        ]
+        expect(extractYosysError(lines)).toBe(
+            "Syntax error on line 5: unexpected ')'"
+        )
+    })
+
+    test('translates TOK_ASSIGN with expecting clause', () => {
+        var lines = [
+            "input.v:7: ERROR: syntax error, unexpected TOK_ASSIGN, expecting ')' or ',' or '='",
+        ]
+        expect(extractYosysError(lines)).toBe(
+            "Syntax error on line 7: unexpected 'assign', expected ')' or ',' or '='"
+        )
+    })
+
+    test('falls back to generic ERROR line when no line number', () => {
+        var lines = [
+            'ERROR: Module `\\missing` referenced but not defined.',
+        ]
+        expect(extractYosysError(lines)).toBe(
+            'Module `\\missing` referenced but not defined.'
+        )
+    })
+
+    test('returns null for empty array', () => {
+        expect(extractYosysError([])).toBeNull()
+    })
+
+    test('returns null for null or undefined input', () => {
+        expect(extractYosysError(null)).toBeNull()
+        expect(extractYosysError(undefined)).toBeNull()
+    })
+
+    test('returns null when no ERROR lines present', () => {
+        var lines = [
+            'Yosys 0.50+8 (git sha1 ...',
+            '-- Running command ...',
+            'Successfully finished synthesis.',
+        ]
+        expect(extractYosysError(lines)).toBeNull()
+    })
+
+    test('picks the last ERROR line when multiple exist', () => {
+        var lines = [
+            'input.v:1: ERROR: syntax error, unexpected TOK_MODULE',
+            'input.v:5: ERROR: syntax error, unexpected TOK_ENDMODULE',
+        ]
+        expect(extractYosysError(lines)).toBe(
+            "Syntax error on line 5: unexpected 'endmodule'"
+        )
+    })
+})
