@@ -101,7 +101,7 @@ const JSONSchema = [
     'scopes',
 ]
 
-const file = ref(Array<File>())
+const file = ref<File | null>(null)
 const errorMessage = ref('')
 
 function addDropFile(e: DragEvent) {
@@ -110,7 +110,7 @@ function addDropFile(e: DragEvent) {
         const fileExtension = droppedFile.name.split('.').pop()
 
         if (fileExtension === 'cv') {
-            file.value[0] = droppedFile
+            file.value = droppedFile
             document
                 .querySelector('.fileInput')
                 ?.classList.remove('error--text')
@@ -148,12 +148,11 @@ function ValidateData(fileData: string) {
 
 async function receivedText(fileContent: string) {
     // receive file content
-    const backUp = JSON.parse(
-        (await generateSaveData(
-            escapeHtml(projectStore.getProjectName || 'untitled').trim(),
-            false
-        )) as any
+    const backUp = await generateSaveData(
+        escapeHtml(projectStore.getProjectName || 'untitled').trim(),
+        false
     )
+    if (backUp instanceof Error) return
     const valid = ValidateData(fileContent) // pass fileContent
     if (valid) {
         SimulatorState.dialogBox.import_project_dialog = false
@@ -163,7 +162,8 @@ async function receivedText(fileContent: string) {
 }
 
 function readFile() {
-    const importFile = file.value[0]
+    const importFile = file.value
+    if (!importFile) return
     const reader = new FileReader()
     reader.onload = function () {
         receivedText(reader.result as string) // Pass the file content to receivedText
@@ -172,13 +172,13 @@ function readFile() {
 }
 
 function importDataFromFile() {
-    if (file.value.length === 0) {
+    if (!file.value) {
         document.getElementById('fileInput')?.click()
 
         watch(
-            () => file.value[0],
+            () => file.value,
             () => {
-                if (file.value.length !== 0) {
+                if (file.value) {
                     readFile()
                 }
             }

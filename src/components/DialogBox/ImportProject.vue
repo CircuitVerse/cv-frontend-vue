@@ -152,6 +152,7 @@ async function receivedText(fileContent: string) {
         escapeHtml(projectStore.getProjectName || 'untitled').trim(),
         false
     )
+    if (backUp instanceof Error) return
     const valid = ValidateData(fileContent) // pass fileContent
     if (valid) {
         SimulatorState.dialogBox.import_project_dialog = false

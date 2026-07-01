@@ -380,7 +380,7 @@ export default async function save() {
 
     if (!window.isUserLoggedIn) {
         // user not signed in, save locally temporarily and force user to sign in
-        localStorage.setItem('recover_login', data)
+        localStorage.setItem('recover_login', JSON.stringify(data))
         // Asking user whether they want to login.
         if (
             await confirmOption(
