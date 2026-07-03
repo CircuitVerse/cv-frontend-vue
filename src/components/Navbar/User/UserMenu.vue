@@ -41,7 +41,6 @@
             variant="outlined"
             hide-details
             single-line
-            color="white"
             bg-color="rgba(255, 255, 255, 0.1)"
           ></v-select>
         </v-list-item>
