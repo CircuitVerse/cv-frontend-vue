@@ -946,12 +946,21 @@ export async function canonicaliseProject(
   const circuits: Record<number, CanonicalScope> = {};
   const circuitHashes: string[] = [];
 
-  for (const scope of scopes) {
-    if (!scope || !scope.allNodes) continue;
-    const circuitId = Number(scope.id);
-    const circuit = await canonicaliseScope(scope);
-    circuits[circuitId] = circuit;
-    circuitHashes.push(circuit.canonicalHash);
+  const results = await Promise.all(
+    scopes.map(async (scope) => {
+      if (!scope?.allNodes) return null;
+      if (scope.id === undefined) {
+        throw new Error(`[canonical] Cannot canonicalise scope "${scope.name ?? 'unnamed'}": scope.id is undefined.`,);
+      }
+      const circuit = await canonicaliseScope(scope);
+      return { circuitId: scope.id, circuit };
+    }),
+  );
+
+  for (const result of results) {
+    if (!result) continue;
+    circuits[result.circuitId] = result.circuit;
+    circuitHashes.push(result.circuit.canonicalHash);
   }
 
   const projectHash = await sha256(JSON.stringify([...circuitHashes].sort()));
