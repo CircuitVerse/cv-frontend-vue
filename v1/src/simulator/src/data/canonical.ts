@@ -950,7 +950,9 @@ export async function canonicaliseProject(
     scopes.map(async (scope) => {
       if (!scope?.allNodes) return null;
       if (scope.id === undefined) {
-        throw new Error(`[canonical] Cannot canonicalise scope "${scope.name ?? 'unnamed'}": scope.id is undefined.`,);
+        throw new Error(
+          `[canonical] Cannot canonicalise scope "${scope.name ?? "unnamed"}": scope.id is undefined.`,
+        );
       }
       const circuit = await canonicaliseScope(scope);
       return { circuitId: scope.id, circuit };
