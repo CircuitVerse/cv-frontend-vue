@@ -477,7 +477,10 @@ function buildWLAdjacency(components: ComponentDraft[]) {
 /**
  * Computes a structural fingerprint for all components using the Weisfeiler-Lehman algorithm to handle symmetries.
  */
-function wlFingerprint(components: ComponentDraft[]): Map<number, string> {
+function wlFingerprint(
+  components: ComponentDraft[],
+  childHashes?: Map<number, string>,
+): Map<number, string> {
   if (components.length === 0) return new Map<number, string>();
 
   const initialSignatures = new Map<number, string>();
@@ -485,8 +488,9 @@ function wlFingerprint(components: ComponentDraft[]): Map<number, string> {
     const comp = components[i];
     let signature = `${comp.type}|${comp.bitWidth ?? 1}|${portKey(comp)}`;
     if (comp.type === "SubCircuit") {
-      const subId = (comp.properties?.constructorParamaters as unknown[])?.[0] ?? "";
-      signature += `|${subId}`;
+      const id = (comp.properties?.constructorParamaters as unknown[])?.[0];
+      const childId = id !== undefined ? Number(id) : NaN;
+      signature += `|${(!isNaN(childId) && childHashes?.get(childId)) ?? String(id ?? "")}`;
     }
     initialSignatures.set(i, signature);
   }
@@ -520,19 +524,20 @@ function wlFingerprint(components: ComponentDraft[]): Map<number, string> {
 /**
  * Sorts components into a canonical order based on their properties, connections, and structural fingerprints.
  */
-function canonicalSort(components: ComponentDraft[]) {
+function canonicalSort(components: ComponentDraft[], childHashes?: Map<number, string>) {
   const fpMap = new Map<ComponentDraft, string>();
 
   for (const comp of components) {
     let signature = `${comp.type}|${comp.bitWidth}|${portKey(comp)}`;
     if (comp.type === "SubCircuit") {
-      const subId = (comp.properties?.constructorParamaters as unknown[])?.[0] ?? "";
-      signature += `|${subId}`;
+      const id = (comp.properties?.constructorParamaters as unknown[])?.[0];
+      const childId = id !== undefined ? Number(id) : NaN;
+      signature += `|${(!isNaN(childId) && childHashes?.get(childId)) ?? String(id ?? "")}`;
     }
     fpMap.set(comp, signature);
   }
 
-  const wlColours = wlFingerprint(components);
+  const wlColours = wlFingerprint(components, childHashes);
   for (let i = 0; i < components.length; i++) {
     const comp = components[i];
     fpMap.set(comp, `${fpMap.get(comp)}|${wlColours.get(i) ?? ""}`);
@@ -872,12 +877,15 @@ async function sha256(text: string): Promise<string> {
 
 // Put the below line in the console to get the json
 // await (await import('/simulatorvue/v1/v1/src/simulator/src/data/canonical.ts')).canonicaliseScope(globalScope)
-export async function canonicaliseScope(scope: CVScope): Promise<CanonicalScope> {
+export async function canonicaliseScope(
+  scope: CVScope,
+  childHashes?: Map<number, string>,
+): Promise<CanonicalScope> {
   const nodeIndexMap = indexNodes(scope.allNodes);
   const uf = discoverNets(scope, nodeIndexMap);
 
   const components = buildComponentDrafts(scope, uf, nodeIndexMap);
-  canonicalSort(components);
+  canonicalSort(components, childHashes);
   assignComponentIds(components);
 
   const { netIdMap, netConnections } = assignNetIds(components);
@@ -914,6 +922,13 @@ export async function canonicaliseScope(scope: CVScope): Promise<CanonicalScope>
         if ((c.type === "Input" || c.type === "Output") && params.length > 2) {
           params[2] = null;
         }
+        comp = { ...comp, properties: { ...comp.properties, constructorParamaters: params } };
+      }
+      // Replace the numeric child scope ID in SubCircuit constructorParamaters with the child's canonical hash so the overall scope hash is stable across sessions
+      if (c.type === "SubCircuit" && Array.isArray(comp.properties?.constructorParamaters)) {
+        const params = (comp.properties.constructorParamaters as unknown[]).slice();
+        const childId = Number(params[0]);
+        params[0] = (!isNaN(childId) && childHashes?.get(childId)) ?? params[0];
         comp = { ...comp, properties: { ...comp.properties, constructorParamaters: params } };
       }
       return comp;
@@ -979,7 +994,9 @@ function khansAlgorithm(
       indegreeMap.set(dep, newIndegree);
       if (newIndegree === 0) {
         queue.push(dep);
-        queue.sort((a, b) => a - b);
+        const tail = queue.splice(head);
+        tail.sort((a, b) => a - b);
+        queue.push(...tail);
       }
     }
   }
@@ -997,47 +1014,45 @@ export async function canonicaliseProject(
   const circuitHashes: string[] = [];
   const inDegreeMap = new Map<number, number>();
   const dependents = new Map<number, number[]>();
+  const scopeById = new Map<number, CVScope>();
 
   for (const scope of scopes) {
-    if (!scope || scope.id === undefined) continue;
+    if (!scope || scope.id === undefined || !scope.allNodes) continue;
     const id = Number(scope.id);
     inDegreeMap.set(id, 0);
     dependents.set(id, []);
+    scopeById.set(id, scope);
   }
 
-  for (let i = 0; i < scopes.length; i++) {
-    const scope = scopes[i];
-    if (!scope || !scope.allNodes) continue;
-
-    const circuitId = Number(scope.id);
-    const circuit = await canonicaliseScope(scope);
-
-    const subcircuitRefs = [
-      ...new Set(
-        circuit.netlist.components
-          .filter((c) => c.type === "SubCircuit")
-          .map((c) => Number((c.properties.constructorParamaters as unknown[])?.[0]))
-          .filter((id) => !isNaN(id)),
-      ),
-    ];
+  for (const [id, scope] of scopeById) {
+    const subCircuits = scope["SubCircuit"] as Array<Record<string, unknown>> | undefined;
+    if (!subCircuits) continue;
 
     let indegree = 0;
-    for (const targetId of subcircuitRefs) {
-      if (inDegreeMap.has(targetId)) {
+    for (const sub of subCircuits) {
+      const targetId = Number(sub.id);
+      if (!isNaN(targetId) && inDegreeMap.has(targetId)) {
         indegree++;
-        dependents.get(targetId)!.push(circuitId);
+        dependents.get(targetId)!.push(id);
       }
     }
-
-    inDegreeMap.set(circuitId, indegree);
-    pairs.set(circuitId, circuit);
-    circuitHashes.push(circuit.canonicalHash);
+    inDegreeMap.set(id, indegree);
   }
 
   const topologicalOrder = khansAlgorithm(inDegreeMap, dependents);
-
   if (!topologicalOrder) {
     throw new Error("A cyclic dependency was detected among the subcircuits!");
+  }
+
+  const childHashes = new Map<number, string>();
+  for (const id of topologicalOrder) {
+    const scope = scopeById.get(id);
+    if (!scope) continue;
+
+    const circuit = await canonicaliseScope(scope, childHashes);
+    pairs.set(id, circuit);
+    childHashes.set(id, circuit.canonicalHash);
+    circuitHashes.push(circuit.canonicalHash);
   }
 
   const circuits: Record<number, CanonicalScope> = {};

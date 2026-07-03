@@ -504,6 +504,22 @@ export default class SubCircuit extends CircuitElement {
   }
 
   /**
+   * @memberof SubCircuit
+   * fn to create save Json Data of object
+   * @return {JSON}
+   */
+  customSave() {
+    return {
+      nodes: {
+        inputNodes: this.inputNodes,
+        outputNodes: this.outputNodes,
+      },
+      values: {},
+      constructorParamaters: [this.id],
+    };
+  }
+
+  /**
    * By design, subcircuit element's input and output nodes are wirelessly
    * connected to the localscope. Therefore no resolve needed.
    */
