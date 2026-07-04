@@ -178,6 +178,14 @@ function notifications() {
 }
 
 function signout() {
-  signOutRails((window as any).csrfToken)
+  const csrfToken =
+    (window as any).csrfToken ||
+    document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+
+  if (!csrfToken) {
+    console.error('CSRF token not found, cannot sign out safely.')
+    return
+  }
+  signOutRails(csrfToken)
 }
 </script>
