@@ -155,7 +155,7 @@ async function receivedText(fileContent: string) {
     if (backUp instanceof Error) {
         document.querySelector('.fileInput')?.classList.add('error--text')
         errorMessage.value =
-            'Failed to prepare backup before import. Please try again.'
+            'Failed to prepare backup before import.'
         return
     }
     const valid = ValidateData(fileContent) // pass fileContent
@@ -172,6 +172,10 @@ function readFile() {
     const reader = new FileReader()
     reader.onload = function () {
         receivedText(reader.result as string) // Pass the file content to receivedText
+    }
+    reader.onerror = function () {
+        document.querySelector('.fileInput')?.classList.add('error--text')
+        errorMessage.value = 'Failed to read the selected file.'
     }
     reader.readAsText(importFile)
 }
