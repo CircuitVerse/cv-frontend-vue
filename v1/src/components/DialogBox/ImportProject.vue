@@ -152,7 +152,12 @@ async function receivedText(fileContent: string) {
         escapeHtml(projectStore.getProjectName || 'untitled').trim(),
         false
     )
-    if (backUp instanceof Error) return
+    if (backUp instanceof Error) {
+        document.querySelector('.fileInput')?.classList.add('error--text')
+        errorMessage.value =
+            'Failed to prepare backup before import.'
+        return
+    }
     const valid = ValidateData(fileContent) // pass fileContent
     if (valid) {
         SimulatorState.dialogBox.import_project_dialog = false
@@ -167,6 +172,10 @@ function readFile() {
     const reader = new FileReader()
     reader.onload = function () {
         receivedText(reader.result as string) // Pass the file content to receivedText
+    }
+    reader.onerror = function () {
+        document.querySelector('.fileInput')?.classList.add('error--text')
+        errorMessage.value = 'Failed to read the selected file.'
     }
     reader.readAsText(importFile)
 }

@@ -135,7 +135,10 @@ export function projectSavedSet(param: boolean) {
  */
 export async function saveOffline() {
   const data = await generateSaveData("");
-  if (data instanceof Error) return;
+  if (data instanceof Error) {
+    showMessage("Failed to save your project. Please try again.");
+    return;
+  }
   localStorage.setItem(projectId, JSON.stringify(data));
   const projectList = localStorage.getItem("projectList");
   const temp = projectList ? JSON.parse(projectList) : {};
@@ -206,7 +209,7 @@ export async function newProject(verify: boolean) {
     localStorage.removeItem("recover");
     const baseUrl =
       window.location.origin !== "null" ? window.location.origin : "http://localhost:4000";
-    window.location.assign(`${baseUrl}/simulatorvue/`);
+    window.location.assign(`${baseUrl}/simulator/`);
 
     setProjectName(undefined);
     projectId = generateId();
