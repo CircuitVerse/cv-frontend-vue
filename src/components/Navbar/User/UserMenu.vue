@@ -23,7 +23,7 @@
 
         <v-list-item
           class="list-item-avatar"
-          :prepend-avatar="authStore.getUserAvatar"
+          :prepend-avatar="authStore.getUserAvatar === 'default' ? undefined : authStore.getUserAvatar"
           :prepend-icon="
             authStore.getUserAvatar === 'default' ? 'mdi-account-circle-outline' : undefined
           "
