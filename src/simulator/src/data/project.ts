@@ -135,7 +135,10 @@ export function projectSavedSet(param: boolean) {
  */
 export async function saveOffline() {
   const data = await generateSaveData("");
-  if (data instanceof Error) return;
+  if (data instanceof Error) {
+    showMessage("Failed to save your project. Please try again.");
+    return;
+  }
   localStorage.setItem(projectId, JSON.stringify(data));
   const projectList = localStorage.getItem("projectList");
   const temp = projectList ? JSON.parse(projectList) : {};
