@@ -26,8 +26,8 @@ self.onmessage = async function (e) {
         // Intercept console output; WASI shim routes stderr through console.log
         var origLog = console.log
         var origError = console.error
-        console.log = function (msg) { stderrLines.push(String(msg)) }
-        console.error = function (msg) { stderrLines.push(String(msg)) }
+        console.log = function (...args) { stderrLines.push(args.map(String).join(' ')) }
+        console.error = function (...args) { stderrLines.push(args.map(String).join(' ')) }
 
         try {
             var result = await runYosys(
@@ -36,7 +36,7 @@ self.onmessage = async function (e) {
                     'read_verilog input.v; setattr -mod -unset top; hierarchy -auto-top; proc; opt; memory -nomap; wreduce -memx; opt -full; write_json output.json',
                 ],
                 { 'input.v': code },
-                { print: silentPrint, printErr: function (msg) { stderrLines.push(msg) } }
+                { print: silentPrint, printErr: function (msg) { stderrLines.push(String(msg)) } }
             )
         } finally {
             console.log = origLog

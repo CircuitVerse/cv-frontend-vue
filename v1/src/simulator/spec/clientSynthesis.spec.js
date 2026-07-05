@@ -204,3 +204,96 @@ describe('synthesizeVerilog timeout guard', () => {
         await expect(promise).rejects.toThrow('Verilog synthesis timed out after 30 seconds')
     })
 })
+
+describe('Worker lifecycle: recycle after N runs', () => {
+    let synthesizeVerilog
+    let mockWorkerInstance
+    let allWorkers
+
+    beforeEach(async () => {
+        vi.useFakeTimers()
+        vi.resetModules()
+
+        mockWorkerInstance = null
+        allWorkers = []
+        vi.stubGlobal('Worker', class extends MockWorker {
+            constructor(...args) {
+                super(...args)
+                mockWorkerInstance = this
+                allWorkers.push(this)
+            }
+        })
+
+        const mod = await import('../src/synthesis/clientSynthesis.js')
+        synthesizeVerilog = mod.synthesizeVerilog
+    })
+
+    afterEach(() => {
+        vi.useRealTimers()
+        vi.unstubAllGlobals()
+    })
+
+    async function runOneSynthesis(result) {
+        var promise = synthesizeVerilog('module m; endmodule', null, { timeoutMs: 5000 })
+        var sentId = mockWorkerInstance.postMessage.mock.calls.at(-1)[0].id
+        mockWorkerInstance._postBack({ type: 'result', data: result || {}, id: sentId })
+        return promise
+    }
+
+    async function runOneError() {
+        var promise = synthesizeVerilog('bad', null, { timeoutMs: 5000 })
+        var sentId = mockWorkerInstance.postMessage.mock.calls.at(-1)[0].id
+        mockWorkerInstance._postBack({ type: 'error', message: 'fail', id: sentId })
+        return promise.catch(() => {})
+    }
+
+    test('terminates and respawns the worker after 50 runs', async () => {
+        for (var i = 0; i < 49; i++) {
+            await runOneSynthesis()
+        }
+        var workerBefore = mockWorkerInstance
+        expect(workerBefore.terminate).not.toHaveBeenCalled()
+
+        await runOneSynthesis()
+        expect(workerBefore.terminate).toHaveBeenCalledTimes(1)
+
+        await runOneSynthesis()
+        expect(mockWorkerInstance).not.toBe(workerBefore)
+    })
+
+    test('counts error runs toward the recycle threshold', async () => {
+        for (var i = 0; i < 49; i++) {
+            await runOneSynthesis()
+        }
+        var workerBefore = mockWorkerInstance
+        await runOneError()
+        expect(workerBefore.terminate).toHaveBeenCalledTimes(1)
+    })
+
+    test('resets counter after timeout so the fresh worker starts at 0', async () => {
+        for (var i = 0; i < 10; i++) {
+            await runOneSynthesis()
+        }
+
+        var promise = synthesizeVerilog('module hang; endmodule', null, { timeoutMs: 100 })
+        vi.advanceTimersByTime(150)
+        await promise.catch(() => {})
+
+        for (var j = 0; j < 49; j++) {
+            await runOneSynthesis()
+        }
+        expect(mockWorkerInstance.terminate).not.toHaveBeenCalled()
+
+        await runOneSynthesis()
+        expect(mockWorkerInstance.terminate).toHaveBeenCalledTimes(1)
+    })
+
+    test('reuses the same worker before the threshold is reached', async () => {
+        await runOneSynthesis()
+        var firstWorker = mockWorkerInstance
+
+        await runOneSynthesis()
+        expect(mockWorkerInstance).toBe(firstWorker)
+        expect(firstWorker.terminate).not.toHaveBeenCalled()
+    })
+})

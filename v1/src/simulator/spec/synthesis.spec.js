@@ -218,6 +218,12 @@ describe('VFS Guard (parseYosysOutput)', () => {
     test('throws when output.json contains invalid JSON', () => {
         expect(() => parseYosysOutput({ 'output.json': '{broken' })).toThrow('invalid JSON')
     })
+
+    test('throws when output.json is valid JSON but not an object', () => {
+        expect(() => parseYosysOutput({ 'output.json': 'null' })).toThrow('not a netlist object')
+        expect(() => parseYosysOutput({ 'output.json': '42' })).toThrow('not a netlist object')
+        expect(() => parseYosysOutput({ 'output.json': '"oops"' })).toThrow('not a netlist object')
+    })
 })
 
 describe('Yosys Error Parser (extractYosysError)', () => {

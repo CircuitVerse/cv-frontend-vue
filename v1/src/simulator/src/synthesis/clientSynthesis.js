@@ -3,8 +3,19 @@
 var worker = null
 var requestId = 0
 var busy = false
+var runCount = 0
 
 var DEFAULT_SYNTHESIS_TIMEOUT_MS = 30000
+var MAX_RUNS_BEFORE_RECYCLE = 50
+
+function maybeRecycleWorker(currentWorker) {
+    runCount++
+    if (runCount >= MAX_RUNS_BEFORE_RECYCLE) {
+        currentWorker.terminate()
+        if (worker === currentWorker) worker = null
+        runCount = 0
+    }
+}
 
 // abort + reset the worker if synthesis runs longer (default 30s).
 export function synthesizeVerilog(verilogCode, onProgress, options = {}) {
@@ -40,11 +51,13 @@ export function synthesizeVerilog(verilogCode, onProgress, options = {}) {
 
                 case 'result':
                     cleanup()
+                    maybeRecycleWorker(currentWorker)
                     resolve(e.data.data)
                     break
 
                 case 'error':
                     cleanup()
+                    maybeRecycleWorker(currentWorker)
                     reject(new Error(e.data.message))
                     break
             }
@@ -54,6 +67,7 @@ export function synthesizeVerilog(verilogCode, onProgress, options = {}) {
             cleanup()
             currentWorker.terminate()
             if (worker === currentWorker) worker = null
+            runCount = 0
             reject(new Error('Synthesis worker error: ' + (err.message || 'Unknown error')))
         }
 
@@ -71,6 +85,7 @@ export function synthesizeVerilog(verilogCode, onProgress, options = {}) {
             cleanup()
             currentWorker.terminate()
             if (worker === currentWorker) worker = null
+            runCount = 0
             var error = new Error(
                 'Verilog synthesis timed out after ' + (timeoutMs / 1000) + ' seconds'
             )
