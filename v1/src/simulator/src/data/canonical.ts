@@ -113,7 +113,12 @@ type SubcircuitSymbolLayout = {
 
 type CanonicalLayout = {
   [componentId: string]:
-    | { x?: number; y?: number; labelDirection?: "LEFT" | "RIGHT" | "UP" | "DOWN"; [key: string]: unknown }
+    | {
+        x?: number;
+        y?: number;
+        labelDirection?: "LEFT" | "RIGHT" | "UP" | "DOWN";
+        [key: string]: unknown;
+      }
     | Record<string, IntermediateNet>
     | SubcircuitSymbolLayout
     | undefined;
