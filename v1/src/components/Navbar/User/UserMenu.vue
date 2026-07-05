@@ -17,7 +17,7 @@
             variant="text"
             color="white"
           >
-            <v-icon icon="mdi-arrow-right" size="large"></v-icon>
+            <v-icon icon="mdi-close" size="large"></v-icon>
           </v-btn>
         </div>
 
