@@ -13,9 +13,9 @@ type WireNode = {
 type NodeIndexMap = Map<WireNode, number>;
 
 type ComponentSaveData = {
-  nodes: Record<string, unknown>;
-  values?: Record<string, unknown>;
-  constructorParamaters?: unknown[];
+  nodes: Record<string, WireNode | WireNode[]>;
+  values?: Record<string, string | number | boolean>;
+  constructorParamaters?: Array<string | number | boolean | Record<string, unknown>>;
 };
 
 type CVComponent = {
@@ -23,10 +23,10 @@ type CVComponent = {
   label?: string;
   bitWidth: number;
   customSave: () => ComponentSaveData;
-  direction?: unknown;
+  direction?: "LEFT" | "RIGHT" | "UP" | "DOWN";
   propagationDelay?: number;
   state?: unknown;
-  labelDirection?: unknown;
+  labelDirection?: "LEFT" | "RIGHT" | "UP" | "DOWN";
   x?: number;
   y?: number;
   [key: string]: unknown;
@@ -65,11 +65,11 @@ type ComponentDraft = {
   properties: Record<string, unknown>;
   _connections: Record<string, number>;
   _state?: unknown;
-  _labelDirection?: unknown;
+  _labelDirection?: "LEFT" | "RIGHT" | "UP" | "DOWN";
   _x?: number;
   _y?: number;
   _instance?: CVComponent;
-  _portDefs?: Record<string, unknown>;
+  _portDefs?: Record<string, WireNode | WireNode[]>;
   [key: string]: unknown;
 };
 
@@ -113,7 +113,7 @@ type SubcircuitSymbolLayout = {
 
 type CanonicalLayout = {
   [componentId: string]:
-    | { x?: number; y?: number; labelDirection?: unknown; [key: string]: unknown }
+    | { x?: number; y?: number; labelDirection?: "LEFT" | "RIGHT" | "UP" | "DOWN"; [key: string]: unknown }
     | Record<string, IntermediateNet>
     | SubcircuitSymbolLayout
     | undefined;
@@ -348,7 +348,7 @@ function buildComponentDrafts(scope: CVScope, uf: UnionFind, nodeIndexMap: NodeI
         }
       }
 
-      const defaultState =
+      const defaultState: unknown | undefined =
         statePropKey !== undefined && (comp as Record<string, unknown>)[statePropKey] !== undefined
           ? (comp as Record<string, unknown>)[statePropKey]
           : undefined;
@@ -913,7 +913,7 @@ export async function canonicaliseScope(
         comp = { ...comp, defaultState: undefined };
       }
       if (DIRECTION_BEARING.has(c.type) && Array.isArray(comp.properties?.constructorParamaters)) {
-        const params = (comp.properties.constructorParamaters as unknown[]).slice();
+        const params = comp.properties.constructorParamaters.slice();
         // Null direction (index 0) for direction-bearing components.
         if (params.length > 0) {
           params[0] = null;
@@ -926,7 +926,7 @@ export async function canonicaliseScope(
       }
       // Replace the numeric child scope ID in SubCircuit constructorParamaters with the child's canonical hash so the overall scope hash is stable across sessions
       if (c.type === "SubCircuit" && Array.isArray(comp.properties?.constructorParamaters)) {
-        const params = (comp.properties.constructorParamaters as unknown[]).slice();
+        const params = comp.properties.constructorParamaters.slice();
         const childId = Number(params[0]);
         params[0] = (!isNaN(childId) && childHashes?.get(childId)) ?? params[0];
         comp = { ...comp, properties: { ...comp.properties, constructorParamaters: params } };
