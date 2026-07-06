@@ -275,10 +275,10 @@ describe('Yosys Error Parser (extractYosysError)', () => {
 
     test('falls back to generic ERROR line when no line number', () => {
         var lines = [
-            'ERROR: Module `\\missing` referenced but not defined.',
+            'ERROR: Module `\\\\missing` referenced but not defined.',
         ]
         expect(extractYosysError(lines)).toBe(
-            'Module `\\missing` referenced but not defined.'
+            'Module `\\\\missing` referenced but not defined.'
         )
     })
 
