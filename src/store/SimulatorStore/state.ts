@@ -31,7 +31,7 @@ export interface State {
     export_project_dialog: boolean;
     import_project_dialog: boolean;
   };
-  combinationalAnalysis: Object;
+  combinationalAnalysis: object;
   subCircuitElementList: Array<LayoutElementGroup>;
   isEmptySubCircuitElementList: boolean;
 }
@@ -41,9 +41,7 @@ interface LayoutElementGroup {
   elements: any[];
 }
 
-export const useState = defineStore({
-  id: "simulatorStore.state",
-
+export const useState = defineStore("simulatorStore.state", {
   state: (): State => {
     return {
       title: "Welcome to CircuitVerse Simulator",
