@@ -2,6 +2,7 @@
 
 import { runYosys } from '@yowasp/yosys'
 import { yosys2digitaljs } from 'yosys2digitaljs/core'
+import { parseYosysOutput } from './vfsGuard.js'
 
 var silentPrint = () => {}
 var wasmReady = false
@@ -27,11 +28,7 @@ self.onmessage = async function (e) {
             { print: silentPrint, printErr: silentPrint }
         )
 
-        var jsonContent = result['output.json']
-        if (jsonContent instanceof Uint8Array) {
-            jsonContent = new TextDecoder().decode(jsonContent)
-        }
-        var yosysNetlist = JSON.parse(jsonContent)
+        var yosysNetlist = parseYosysOutput(result)
 
         self.postMessage({ type: 'progress', message: 'Converting netlist to circuit...', id })
         var digitalJsCircuit = yosys2digitaljs(yosysNetlist)
