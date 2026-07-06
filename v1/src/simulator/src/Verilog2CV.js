@@ -35,6 +35,7 @@ import 'codemirror/addon/display/autorefresh.js'
 import { showError, showMessage } from './utils'
 import { showProperties } from './ux'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
+import { useSynthesisStore } from '#/store/synthesisStore'
 import { toRefs } from 'vue'
 
 var editor
@@ -71,33 +72,20 @@ export function applyVerilogTheme(theme) {
     editor.setOption('theme', theme)
 }
 
+// Lazy-init: cannot call useSynthesisStore() at module scope because
+// this file is imported before app.use(pinia) runs. Cache on first use.
+let _synthesisStore = null;
+function getSynthesisStore() {
+    if (!_synthesisStore) _synthesisStore = useSynthesisStore();
+    return _synthesisStore;
+}
+
 function setVerilogOutput(text, type = 'info') {
-    if (typeof window !== 'undefined' && window.verilogTerminal) {
-        window.verilogTerminal.addMessage(text, type)
-    } else {
-        const verilogOutputDiv = document.getElementById('verilogOutput')
-        if (verilogOutputDiv) {
-            verilogOutputDiv.textContent = text
-            if (type === 'error') {
-                verilogOutputDiv.style.color = '#ff6b6b'
-            } else if (type === 'success') {
-                verilogOutputDiv.style.color = '#51cf66'
-            } else {
-                verilogOutputDiv.style.color = ''
-            }
-        }
-    }
+    getSynthesisStore().addMessage(text, type);
 }
 
 function clearVerilogOutput() {
-    if (typeof window !== 'undefined' && window.verilogTerminal) {
-        window.verilogTerminal.clearOutput()
-    } else {
-        const verilogOutputDiv = document.getElementById('verilogOutput')
-        if (verilogOutputDiv) {
-            verilogOutputDiv.innerHTML = ''
-        }
-    }
+    getSynthesisStore().clearMessages();
 }
 
 export function resetVerilogCode() {
@@ -337,7 +325,7 @@ export default function generateVerilogCircuit(
             )
             changeCircuitName(circuitData.name)
             showMessage('Verilog Circuit Successfully Created')
-            clearVerilogOutput()
+            setVerilogOutput('Verilog Circuit Successfully Created', 'success')
         })
         .catch((error) => {
             if (isDesktop) {

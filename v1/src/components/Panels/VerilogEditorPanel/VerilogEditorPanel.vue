@@ -25,13 +25,14 @@
                     >
                         {{ $t('simulator.panel_body.verilog_module.save_code') }}
                     </button>
-                    <div id="verilogOutput">
-                        {{
-                            $t(
-                                'simulator.panel_body.verilog_module.module_in_experiment_notice'
-                            )
-                        }}
-                    </div>
+                    <button
+                        class="largeButton btn btn-xs custom-btn--secondary"
+                        @click="toggleTerminal"
+                    >
+                        <i class="fas fa-terminal"></i>
+                        {{ verilogStore.isTerminalVisible ? 'Hide' : 'Show' }} Terminal
+                    </button>
+
                 </div>
             </div>
 
@@ -48,7 +49,11 @@
                                 )
                             }}
                         </p>
-                        <select v-model="selectedTheme" class="applyTheme">
+                        <select 
+                            v-model="verilogStore.selectedTheme" 
+                            class="applyTheme"
+                            @change="(e) => verilogStore.setTheme((e.target as HTMLSelectElement).value)"
+                        >
                             <optgroup
                                 v-for="optgroup in Themes"
                                 :key="optgroup.label"
@@ -67,33 +72,30 @@
             </div>
         </div>
     </div>
+    <VerilogTerminal />
 </template>
 
 <script lang="ts" setup>
-import Themes from '../../../assets/constants/Panels/VerilogEditorPanel/THEMES.json'
+import Themes from '#/assets/constants/Panels/VerilogEditorPanel/THEMES.json';
 import {
     saveVerilogCode,
     resetVerilogCode,
     applyVerilogTheme,
-} from '#/simulator/src/Verilog2CV'
-import PanelHeader from '../Shared/PanelHeader.vue'
-import { ref, Ref, watch, onMounted } from 'vue'
-// import logixFunction from '#/simulator/src/data'
+} from '#/simulator/src/Verilog2CV';
+import PanelHeader from '../Shared/PanelHeader.vue';
+import VerilogTerminal from './VerilogTerminal.vue';
+import { watch } from 'vue';
+import { useVerilogStore } from '#/store/verilogStore';
 
-const selectedTheme: Ref<string> = ref(
-    localStorage.getItem('verilog-theme') || 'default'
-)
+const verilogStore = useVerilogStore();
 
-onMounted(() => {
-    const savedTheme = localStorage.getItem('verilog-theme')
-    if (savedTheme) {
-        selectedTheme.value = savedTheme
-    }
-})
+const toggleTerminal = () => {
+    verilogStore.toggleTerminal();
+};
 
-watch(selectedTheme, (newTheme: string) => {
-    applyVerilogTheme(newTheme)
-})
+watch(() => verilogStore.selectedTheme, (newTheme: string) => {
+    applyVerilogTheme(newTheme);
+});
 </script>
 
 <style>
@@ -101,5 +103,49 @@ watch(selectedTheme, (newTheme: string) => {
     width: 90%;
     border: 1px solid #fff;
     padding: 8px;
+}
+
+.custom-btn--secondary {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.custom-btn--secondary i {
+    font-size: 12px;
+}
+
+.code-window .CodeMirror {
+    overflow: visible !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.code-window .CodeMirror-scroll {
+    overflow: auto !important;
+    max-width: 100% !important;
+}
+
+.code-window .CodeMirror pre {
+    white-space: pre-wrap !important;
+    word-wrap: break-word !important;
+    word-break: break-all !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+}
+
+.code-window .CodeMirror-line {
+    white-space: pre-wrap !important;
+    word-wrap: break-word !important;
+    word-break: break-all !important;
+}
+
+.code-window {
+    overflow: visible !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
 }
 </style>
