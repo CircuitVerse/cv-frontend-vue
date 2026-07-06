@@ -11,7 +11,7 @@ export function parseYosysOutput(vfsResult) {
         throw new Error('Yosys did not produce output.json; synthesis may have failed silently.')
     }
 
-    if (raw instanceof Uint8Array) {
+    if (ArrayBuffer.isView(raw)) {
         raw = new TextDecoder().decode(raw)
     }
 
@@ -23,9 +23,14 @@ export function parseYosysOutput(vfsResult) {
         throw new Error('Yosys produced an empty output.json.')
     }
 
+    var parsed
     try {
-        return JSON.parse(raw)
+        parsed = JSON.parse(raw)
     } catch (err) {
         throw new Error('Yosys produced invalid JSON in output.json: ' + err.message)
     }
+    if (parsed === null || typeof parsed !== 'object') {
+        throw new Error('Yosys output.json was valid JSON but not a netlist object.')
+    }
+    return parsed
 }

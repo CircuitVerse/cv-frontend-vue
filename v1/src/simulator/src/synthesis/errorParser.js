@@ -75,7 +75,8 @@ export function extractYosysError(stderrLines) {
 
     for (var i = stderrLines.length - 1; i >= 0; i--) {
         var line = stderrLines[i]
-        var match = line.match(/^input\.v:(\d+):\s*ERROR:\s*(.+)/)
+        if (typeof line !== 'string') continue
+        var match = line.match(/input\.v:(\d+):\s*ERROR:\s*(.+)/)
         if (match) {
             return humanize(match[1], match[2])
         }
