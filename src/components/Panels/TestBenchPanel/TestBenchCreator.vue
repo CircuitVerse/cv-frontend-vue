@@ -174,7 +174,7 @@ const outputsBandWidth = ref([1]);
 const inputsName = ref<string[]>(["inp1"]);
 const outputsName = ref<string[]>(["out1"]);
 
-const CELL_WIDTH = 72;
+const CELL_WIDTH = 100;
 const CELL_GAP = 8;
 const MIN_CELLS = 5;
 const RESULT_CELL_WIDTH = 44;
@@ -660,7 +660,7 @@ const importFromCSV = () => {
 }
 
 .io-cell {
-    flex: 0 0 72px;
+    flex: 0 0 100px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -670,10 +670,6 @@ const importFromCSV = () => {
 
 .result-cell {
     flex: 0 0 44px;
-}
-
-.bitwidth-row {
-    flex: 0 0 100px;
 }
 
 .io-input {
