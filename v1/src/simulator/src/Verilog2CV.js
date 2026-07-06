@@ -32,8 +32,7 @@ import 'codemirror/addon/edit/closebrackets.js'
 import 'codemirror/addon/hint/anyword-hint.js'
 import 'codemirror/addon/hint/show-hint.js'
 import 'codemirror/addon/display/autorefresh.js'
-import { showError } from './utils'
-import { useActions } from '#/store/SimulatorStore/actions'
+import { showError, showMessage } from './utils'
 import { showProperties } from './ux'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { toRefs } from 'vue'
@@ -337,7 +336,7 @@ export default function generateVerilogCircuit(
                 true
             )
             changeCircuitName(circuitData.name)
-            useActions().showMessage('Verilog Circuit Successfully Created', 'success')
+            showMessage('Verilog Circuit Successfully Created')
             clearVerilogOutput()
         })
         .catch((error) => {
