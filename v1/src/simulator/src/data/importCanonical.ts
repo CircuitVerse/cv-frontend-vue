@@ -1,7 +1,12 @@
 import modules from "../modules";
 import { newCircuit, switchCircuit, scopeList } from "../circuit";
 import { SimulatorStore } from "#/store/SimulatorStore/SimulatorStore";
-import { canonicaliseScope, canonicaliseProject, khansAlgorithm, STATEFUL_DEFAULT_STATE } from "./canonical";
+import {
+  canonicaliseScope,
+  canonicaliseProject,
+  khansAlgorithm,
+  STATEFUL_DEFAULT_STATE,
+} from "./canonical";
 import type {
   CanonicalComponent,
   CanonicalNet,
@@ -159,7 +164,6 @@ function buildComponents(
         errors.push(`SubCircuit "${id}": ${err instanceof Error ? err.message : String(err)}`);
         continue;
       }
-
     } else {
       const Constructor = (modules as Record<string, ComponentConstructor | undefined>)[type];
       if (typeof Constructor !== "function") {
@@ -487,9 +491,10 @@ async function importSingleScope(
   const { instanceMap, errors: buildErrors } = buildComponents(scope, components, layout, scopeMap);
 
   if (components.length > 0 && instanceMap.size === 0) {
-    const msg = buildErrors.length > 0
-      ? `all components failed: ${buildErrors.join("; ")}`
-      : "no components could be constructed";
+    const msg =
+      buildErrors.length > 0
+        ? `all components failed: ${buildErrors.join("; ")}`
+        : "no components could be constructed";
     return { success: false, error: msg, buildErrors };
   }
 
@@ -512,7 +517,11 @@ async function importSingleScope(
 function computeImportOrder(circuits: Record<number, CanonicalScope>): number[] {
   const inDegreeMap = new Map<number, number>();
   const dependents = new Map<number, number[]>();
-  const scopeIds = new Set(Object.keys(circuits).map(Number).filter((id) => !isNaN(id)));
+  const scopeIds = new Set(
+    Object.keys(circuits)
+      .map(Number)
+      .filter((id) => !isNaN(id)),
+  );
 
   for (const [idStr, circuit] of Object.entries(circuits)) {
     const circuitId = Number(idStr);
@@ -541,7 +550,6 @@ function computeImportOrder(circuits: Record<number, CanonicalScope>): number[] 
   }
   return topologicalOrder;
 }
-
 
 export async function importCanonical(
   json: CanonicalProject,
@@ -650,7 +658,12 @@ export async function importCanonical(
 
     scopeMap.set(canonicalId, currentScope);
 
-    const outcome = await importSingleScope(circuitData, currentScope, scopeMap, originalChildHashes);
+    const outcome = await importSingleScope(
+      circuitData,
+      currentScope,
+      scopeMap,
+      originalChildHashes,
+    );
     if (!outcome.success) {
       results.errors.push(`[${canonicalId}] ${outcome.error ?? "unknown error"}`);
     } else {
@@ -666,7 +679,7 @@ export async function importCanonical(
   {
     const store = SimulatorStore();
     const hostIdx = store.circuit_list.findIndex(
-      (c: { id: string | number; name?: string }) => String(c.id) === String(targetScope.id)
+      (c: { id: string | number; name?: string }) => String(c.id) === String(targetScope.id),
     );
     if (hostIdx !== -1) {
       store.circuit_list[hostIdx].name = targetScope.name;
@@ -681,9 +694,9 @@ export async function importCanonical(
       const match = projectResult.canonicalHash === json.canonicalHash;
       console.log(
         `[importCanonical] Project Round-trip check\n` +
-        `  Expected project hash: ${json.canonicalHash}\n` +
-        `  Actual project hash:   ${projectResult.canonicalHash}\n` +
-        `  Result:                ${match ? "PASS" : "FAIL"}`,
+          `  Expected project hash: ${json.canonicalHash}\n` +
+          `  Actual project hash:   ${projectResult.canonicalHash}\n` +
+          `  Result:                ${match ? "PASS" : "FAIL"}`,
       );
     } catch (err) {
       console.warn("[importCanonical] Project Round-trip canonicalise failed:", err);
