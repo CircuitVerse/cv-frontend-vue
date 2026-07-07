@@ -89,12 +89,14 @@ onMounted(async () => {
 })
 
 function downloadJson() {
+    if (jsonError.value) return
     const name = getProjectName() || 'Untitled'
     downloadFile(name + '.json', previewCode.value)
     SimulatorState.dialogBox.export_canonical_dialog = false
 }
 
 function copyToClipboardAction() {
+    if (jsonError.value) return
     copyToClipboard(previewCode.value)
     showMessage('JSON copied to clipboard')
     SimulatorState.dialogBox.export_canonical_dialog = false

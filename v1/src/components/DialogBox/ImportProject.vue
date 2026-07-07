@@ -214,10 +214,12 @@ function importDataFromFile() {
     if (!file.value || file.value.length === 0) {
         document.getElementById('fileInput')?.click()
 
-        watch(
+        const stop = watch(
             () => file.value,
             () => {
-                if (file.value) {
+                const importFile = file.value[0] || file.value
+                if (importFile) {
+                    stop()
                     readFile()
                 }
             }
