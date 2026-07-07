@@ -13,6 +13,24 @@
             "layout_elements": "Layout Elements",
             "no_elements_available": "No layout elements available"
         },
+        "export": {
+            "download_btn": "Download Circuit",
+            "copy_btn": "Copy to Clipboard",
+            "copy_success": "Project data copied to clipboard",
+            "generate_error": "Failed to generate export. Please check your circuit and try again.",
+            "generate_error_prefix": "Failed to generate export"
+        },
+        "import": {
+            "file_label": "Click to Select or Drag and drop file here",
+            "format_error": "Invalid file format. Only [ .cv ] files are accepted. Try again.",
+            "active_scope_error": "No active circuit to import into.",
+            "parse_error": "Invalid file — could not parse.",
+            "invalid_file_error": "Invalid file. Could not import.",
+            "import_failed": "Import failed: ",
+            "import_error": "Import error: ",
+            "cancel_btn": "Cancel",
+            "import_btn": "Import"
+        },
         "unlabeled": "Unlabeled",
         "nav": {
             "untitled_project": "Untitled",
@@ -29,7 +47,6 @@
                 "new_project": "New Project",
                 "open_offline": "Open Offline",
                 "export_as_file": "Export as File",
-                "export_cv": "Export Canonical",
                 "import_project": "Import Project",
                 "save_online": "Save Online",
                 "save_offline": "Save Offline",

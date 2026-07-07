@@ -35,12 +35,6 @@
                 "attributes": []
             },
             {
-                "id": "5b",
-                "item": "export_cv",
-                "itemid": "ExportCanonical",
-                "attributes": []
-            },
-            {
                 "id": "6",
                 "item": "import_project",
                 "itemid": "ImportProject",

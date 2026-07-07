@@ -30,7 +30,6 @@ export interface State {
     open_project_dialog: boolean;
     export_project_dialog: boolean;
     import_project_dialog: boolean;
-    export_canonical_dialog: boolean;
   };
   combinationalAnalysis: object;
   subCircuitElementList: Array<LayoutElementGroup>;
@@ -63,7 +62,6 @@ export const useState = defineStore("simulatorStore.state", {
         open_project_dialog: false,
         export_project_dialog: false,
         import_project_dialog: false,
-        export_canonical_dialog: false,
       },
       combinationalAnalysis: {
         inputNameList: "eg. In A, In B",

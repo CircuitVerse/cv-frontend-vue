@@ -5,7 +5,7 @@
     >
         <v-card class="importProjectDialog">
             <v-text-field>
-                <p>Import file</p>
+                <p>{{ $t('simulator.nav.project.import_project') }}</p>
                 <v-btn
                     size="x-small"
                     icon
@@ -23,7 +23,7 @@
                     @dragover.prevent
                 >
                     <v-file-input
-                        label="Click to Select or Drag and drop file here"
+                        :label="$t('simulator.import.file_label')"
                         class="fileInput"
                         id="fileInput"
                         center-affix
@@ -53,10 +53,10 @@
                         SimulatorState.dialogBox.import_project_dialog = false
                     "
                 >
-                    Cancel
+                    {{ $t('simulator.import.cancel_btn') }}
                 </v-btn>
                 <v-btn class="messageBtn" @click="importDataFromFile">
-                    Import
+                    {{ $t('simulator.import.import_btn') }}
                 </v-btn>
             </v-card-actions>
         </v-card>
@@ -73,37 +73,15 @@ export function ImportProject() {
 </script>
 
 <script lang="ts" setup>
-import { generateSaveData } from '#/simulator/src/data/save'
-import { escapeHtml } from '#/simulator/src/utils'
-import load from '#/simulator/src/data/load'
+import { useI18n } from 'vue-i18n'
 import { importCanonical } from '#/simulator/src/data/importCanonical'
 import { canonicaliseProject } from '#/simulator/src/data/canonical'
 import { scopeList } from '#/simulator/src/circuit'
 import { useState } from '#/store/SimulatorStore/state'
-import { useProjectStore } from '#/store/projectStore'
 import { ref, watch } from 'vue'
 
 const SimulatorState = useState()
-const projectStore = useProjectStore()
-
-const scopeSchema = [
-    'layout',
-    'verilogMetadata',
-    'allNodes',
-    'id',
-    'name',
-    'restrictedCircuitElementsUsed',
-    'nodes',
-]
-const JSONSchema = [
-    'name',
-    'timePeriod',
-    'clockEnabled',
-    'projectId',
-    'focussedCircuit',
-    'orderedTabs',
-    'scopes',
-]
+const { t } = useI18n()
 
 const file = ref(Array<File>())
 const errorMessage = ref('')
@@ -121,48 +99,30 @@ function addDropFile(e: DragEvent) {
             errorMessage.value = ''
         } else {
             document.querySelector('.fileInput')?.classList.add('error--text')
-            errorMessage.value =
-                'Invalid file format. Only [ .cv ] files are accepted. Try again.'
+            errorMessage.value = t('simulator.import.format_error')
         }
     }
 }
 
-function ValidateData(fileData: string) {
-    try {
-        const parsedFileDate = JSON.parse(fileData)
-        if (
-            JSON.stringify(Object.keys(parsedFileDate)) !==
-            JSON.stringify(JSONSchema)
-        )
-            throw new Error('Invalid JSON data')
-        parsedFileDate.scopes.forEach((scope: object) => {
-            const keys = Object.keys(scope) // get scope keys
-            scopeSchema.forEach((key) => {
-                if (!keys.includes(key)) throw new Error('Invalid Scope data')
-            })
-        })
-        load(parsedFileDate)
-        return true
-    } catch (error) {
-        document.querySelector('.fileInput')?.classList.add('error--text')
-        errorMessage.value = 'Invalid / Corrupt [ .cv ] file !'
-        return false
-    }
+// TODO: Add JSON Schema validation for JSON files
+function validateData() {
+    // Validation will be implemented using JSON Schema
 }
 
-// TODO: Add JSON Schema validation for canonical files
-async function importCanonicalFile(fileContent: string) {
+async function receivedText(fileContent: string) {
+    // receive file content
+
+    // Snapshot current circuit via canonical pipeline for rollback
+    let backup: any = await canonicaliseProject(Object.values(scopeList ?? {})).catch(() => {})
+
     try {
         const parsedFileData = JSON.parse(fileContent)
         const activeScope = (window as any).globalScope
         if (!activeScope) {
             document.querySelector('.fileInput')?.classList.add('error--text')
-            errorMessage.value = 'No active circuit to import into.'
+            errorMessage.value = t('simulator.import.active_scope_error')
             return
         }
-
-        let backup: any = await canonicaliseProject(Object.values(scopeList ?? {})).catch(() => {})
-
         const result = await importCanonical(parsedFileData, activeScope)
         if (result.success) {
             SimulatorState.dialogBox.import_project_dialog = false
@@ -172,47 +132,14 @@ async function importCanonicalFile(fileContent: string) {
             }
             document.querySelector('.fileInput')?.classList.add('error--text')
             errorMessage.value = result.errors.length > 0
-                ? `Import failed: ${result.errors[0]}`
-                : 'Invalid canonical JSON. Could not import.'
+                ? `${t('simulator.import.import_failed')}${result.errors[0]}`
+                : t('simulator.import.invalid_file_error')
         }
     } catch (err) {
         document.querySelector('.fileInput')?.classList.add('error--text')
         errorMessage.value = err instanceof SyntaxError
-            ? 'Invalid file — could not parse.'
-            : `Import error: ${err instanceof Error ? err.message : String(err)}`
-    }
-}
-
-async function receivedText(fileContent: string) {
-    // receive file content
-
-    // Detect format from content — canonical has "formatVersion" and "circuits"
-    let parsed: any
-    try {
-        parsed = JSON.parse(fileContent)
-    } catch {
-        document.querySelector('.fileInput')?.classList.add('error--text')
-        errorMessage.value = 'Invalid / Corrupt file !'
-        return
-    }
-
-    if (parsed?.formatVersion && parsed?.circuits) {
-        await importCanonicalFile(fileContent)
-        return
-    }
-
-    // Legacy .cv circuit file import
-    const backUp = JSON.parse(
-        (await generateSaveData(
-            escapeHtml(projectStore.getProjectName || 'untitled').trim(),
-            false
-        )) as any
-    )
-    const valid = ValidateData(fileContent) // pass fileContent
-    if (valid) {
-        SimulatorState.dialogBox.import_project_dialog = false
-    } else {
-        load(backUp)
+            ? t('simulator.import.parse_error')
+            : `${t('simulator.import.import_error')}${err instanceof Error ? err.message : String(err)}`
     }
 }
 

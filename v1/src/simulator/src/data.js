@@ -20,7 +20,6 @@ import { bitConverterDialog } from './utils'
 import { keyBinder } from '#/components/DialogBox/CustomShortcut.vue'
 import { ExportProject } from '#/components/DialogBox/ExportProject.vue'
 import { ImportProject } from '#/components/DialogBox/ImportProject.vue'
-import { ExportCanonical } from '#/components/DialogBox/ExportCanonical.vue'
 
 const logixFunction = {}
 logixFunction.save = save
@@ -44,7 +43,6 @@ logixFunction.createNewCircuitScope = createNewCircuit
 logixFunction.customShortcut = keyBinder
 logixFunction.ExportProject = ExportProject
 logixFunction.ImportProject = ImportProject
-logixFunction.ExportCanonical = ExportCanonical
 export default logixFunction
 
 // Hack to restart tour guide
