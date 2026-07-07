@@ -308,8 +308,7 @@ function wireComponents(
         portNodes[j - 1].connect(portNodes[j]);
       } catch {
         errors.push(
-          `Wire failed on net "${net.id}": ` +
-            `${net.connections[j - 1]} ↔ ${net.connections[j]}`,
+          `Wire failed on net "${net.id}": ` + `${net.connections[j - 1]} ↔ ${net.connections[j]}`,
         );
       }
     }
