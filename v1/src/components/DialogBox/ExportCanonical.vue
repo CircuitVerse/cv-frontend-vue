@@ -5,7 +5,7 @@
     >
         <v-card class="messageBoxContent">
             <v-card-text>
-                <p class="dialogHeader">Export JSON</p>
+                <p class="dialogHeader">Export Canonical</p>
                 <v-btn
                     size="x-small"
                     icon
@@ -14,10 +14,10 @@
                 >
                     <v-icon>mdi-close</v-icon>
                 </v-btn>
-                <p v-if="jsonError" class="json-error">{{ jsonError }}</p>
-                <div id="export-json-code-window-div" title="Export JSON">
+                <p v-if="canonicalError" class="canonical-error">{{ canonicalError }}</p>
+                <div id="export-canonical-code-window-div" title="Export Canonical">
                     <Codemirror
-                        id="export-json-code-window"
+                        id="export-canonical-code-window"
                         :value="previewCode"
                         :options="cmOptions"
                         border
@@ -27,10 +27,10 @@
                 </div>
             </v-card-text>
             <v-card-actions>
-                <v-btn class="messageBtn jsonBtn" block @click="downloadJson()">
-                    Download .json
+                <v-btn class="messageBtn cvBtn" block @click="downloadCanonical()">
+                    Download .cv
                 </v-btn>
-                <v-btn class="messageBtn jsonBtn" block @click="copyToClipboardAction()">
+                <v-btn class="messageBtn cvBtn" block @click="copyToClipboardAction()">
                     Copy to Clipboard
                 </v-btn>
             </v-card-actions>
@@ -61,10 +61,10 @@ import 'codemirror/theme/dracula.css'
 const SimulatorState = useState()
 
 const previewCode = ref('')
-const jsonError = ref('')
+const canonicalError = ref('')
 const cmOptions = ref({})
 
-async function generateJson(): Promise<string> {
+async function generateCanonical(): Promise<string> {
     const data = await canonicaliseProject(Object.values(scopeList ?? {}))
     return JSON.stringify(data, null, 2)
 }
@@ -78,27 +78,27 @@ onMounted(async () => {
         autoRefresh: true,
     }
     try {
-        previewCode.value = await generateJson()
-        jsonError.value = ''
+        previewCode.value = await generateCanonical()
+        canonicalError.value = ''
     } catch (err) {
         previewCode.value = ''
-        jsonError.value = err instanceof Error
+        canonicalError.value = err instanceof Error
             ? `Failed to generate JSON: ${err.message}`
             : 'Failed to generate JSON. Please check your circuit and try again.'
     }
 })
 
-function downloadJson() {
-    if (jsonError.value) return
+function downloadCanonical() {
+    if (canonicalError.value) return
     const name = getProjectName() || 'Untitled'
-    downloadFile(name + '.json', previewCode.value)
+    downloadFile(name + '.cv', previewCode.value)
     SimulatorState.dialogBox.export_canonical_dialog = false
 }
 
 function copyToClipboardAction() {
-    if (jsonError.value) return
+    if (canonicalError.value) return
     copyToClipboard(previewCode.value)
-    showMessage('JSON copied to clipboard')
+    showMessage('Canonical data copied to clipboard')
     SimulatorState.dialogBox.export_canonical_dialog = false
 }
 </script>
@@ -109,20 +109,20 @@ function copyToClipboardAction() {
     margin-bottom: 1rem;
     text-align: center;
 }
-:deep(#export-json-code-window .CodeMirror) {
+:deep(#export-canonical-code-window .CodeMirror) {
     width: 100% !important;
 }
-.jsonBtn {
+.cvBtn {
     border: 1px solid #ffffff !important;
 }
-.jsonBtn:focus,
-.jsonBtn:focus-visible,
-.jsonBtn:active {
+.cvBtn:focus,
+.cvBtn:focus-visible,
+.cvBtn:active {
     border: 1px solid #ffffff !important;
     outline: none !important;
     box-shadow: none !important;
 }
-.json-error {
+.canonical-error {
     color: #f87171;
     font-size: 0.9rem;
     margin-bottom: 0.5rem;

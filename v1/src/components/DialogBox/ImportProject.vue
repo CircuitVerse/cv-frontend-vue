@@ -29,7 +29,7 @@
                         center-affix
                         :error-messages="errorMessage"
                         max-errors="1"
-                        accept=".cv,.json"
+                        accept=".cv"
                         v-model="file"
                         prepend-icon="mdi-paperclip"
                     >
@@ -113,7 +113,7 @@ function addDropFile(e: DragEvent) {
         const droppedFile = e.dataTransfer?.files[0]
         const fileExtension = droppedFile.name.split('.').pop()
 
-        if (fileExtension === 'cv' || fileExtension === 'json') {
+        if (fileExtension === 'cv') {
             file.value[0] = droppedFile
             document
                 .querySelector('.fileInput')
@@ -122,7 +122,7 @@ function addDropFile(e: DragEvent) {
         } else {
             document.querySelector('.fileInput')?.classList.add('error--text')
             errorMessage.value =
-                'Invalid file format. Only [ .cv ] or [ .json ] files are accepted. Try again.'
+                'Invalid file format. Only [ .cv ] files are accepted. Try again.'
         }
     }
 }
@@ -150,8 +150,8 @@ function ValidateData(fileData: string) {
     }
 }
 
-// TODO: Add JSON Schema validation for canonical JSON files
-async function importJsonFile(fileContent: string) {
+// TODO: Add JSON Schema validation for canonical files
+async function importCanonicalFile(fileContent: string) {
     try {
         const parsedFileData = JSON.parse(fileContent)
         const activeScope = (window as any).globalScope
@@ -178,7 +178,7 @@ async function importJsonFile(fileContent: string) {
     } catch (err) {
         document.querySelector('.fileInput')?.classList.add('error--text')
         errorMessage.value = err instanceof SyntaxError
-            ? 'Invalid .json file — could not parse.'
+            ? 'Invalid file — could not parse.'
             : `Import error: ${err instanceof Error ? err.message : String(err)}`
     }
 }
@@ -186,10 +186,18 @@ async function importJsonFile(fileContent: string) {
 async function receivedText(fileContent: string) {
     // receive file content
 
-    // Canonical JSON import
-    const fileName = file.value[0]?.name || (file.value as any)?.name
-    if (fileName?.split('.').pop() === 'json') {
-        await importJsonFile(fileContent)
+    // Detect format from content — canonical has "formatVersion" and "circuits"
+    let parsed: any
+    try {
+        parsed = JSON.parse(fileContent)
+    } catch {
+        document.querySelector('.fileInput')?.classList.add('error--text')
+        errorMessage.value = 'Invalid / Corrupt file !'
+        return
+    }
+
+    if (parsed?.formatVersion && parsed?.circuits) {
+        await importCanonicalFile(fileContent)
         return
     }
 
