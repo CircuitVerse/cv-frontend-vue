@@ -77,6 +77,8 @@ import { generateSaveData } from '#/simulator/src/data/save'
 import { escapeHtml } from '#/simulator/src/utils'
 import load from '#/simulator/src/data/load'
 import { importCanonical } from '#/simulator/src/data/importCanonical'
+import { canonicaliseProject } from '#/simulator/src/data/canonical'
+import { scopeList } from '#/simulator/src/circuit'
 import { useState } from '#/store/SimulatorStore/state'
 import { useProjectStore } from '#/store/projectStore'
 import { ref, watch } from 'vue'
@@ -158,10 +160,16 @@ async function importJsonFile(fileContent: string) {
             errorMessage.value = 'No active circuit to import into.'
             return
         }
+
+        let backup: any = await canonicaliseProject(Object.values(scopeList ?? {})).catch(() => {})
+
         const result = await importCanonical(parsedFileData, activeScope)
         if (result.success) {
             SimulatorState.dialogBox.import_project_dialog = false
         } else {
+            if (backup) {
+                await importCanonical(backup, activeScope).catch(() => {})
+            }
             document.querySelector('.fileInput')?.classList.add('error--text')
             errorMessage.value = result.errors.length > 0
                 ? `Import failed: ${result.errors[0]}`
