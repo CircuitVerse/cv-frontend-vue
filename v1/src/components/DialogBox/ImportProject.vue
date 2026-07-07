@@ -29,7 +29,7 @@
                         center-affix
                         :error-messages="errorMessage"
                         max-errors="1"
-                        accept=".cv"
+                        accept=".cv,.json"
                         v-model="file"
                         prepend-icon="mdi-paperclip"
                     >
@@ -64,13 +64,7 @@
 </template>
 
 <script lang="ts">
-import { generateSaveData } from '#/simulator/src/data/save'
-import { escapeHtml } from '#/simulator/src/utils'
-import load from '#/simulator/src/data/load'
 import { useState } from '#/store/SimulatorStore/state'
-import { useProjectStore } from '#/store/projectStore'
-import { ref } from 'vue'
-import { watch } from 'vue'
 
 export function ImportProject() {
     const SimulatorState = useState()
@@ -79,6 +73,14 @@ export function ImportProject() {
 </script>
 
 <script lang="ts" setup>
+import { generateSaveData } from '#/simulator/src/data/save'
+import { escapeHtml } from '#/simulator/src/utils'
+import load from '#/simulator/src/data/load'
+import { importCanonical } from '#/simulator/src/data/importCanonical'
+import { useState } from '#/store/SimulatorStore/state'
+import { useProjectStore } from '#/store/projectStore'
+import { ref, watch } from 'vue'
+
 const SimulatorState = useState()
 const projectStore = useProjectStore()
 
@@ -109,7 +111,7 @@ function addDropFile(e: DragEvent) {
         const droppedFile = e.dataTransfer?.files[0]
         const fileExtension = droppedFile.name.split('.').pop()
 
-        if (fileExtension === 'cv') {
+        if (fileExtension === 'cv' || fileExtension === 'json') {
             file.value[0] = droppedFile
             document
                 .querySelector('.fileInput')
@@ -118,7 +120,7 @@ function addDropFile(e: DragEvent) {
         } else {
             document.querySelector('.fileInput')?.classList.add('error--text')
             errorMessage.value =
-                'Invalid file format. Only [ .cv ] files are accepted. Try again.'
+                'Invalid file format. Only [ .cv ] or [ .json ] files are accepted. Try again.'
         }
     }
 }
@@ -146,8 +148,44 @@ function ValidateData(fileData: string) {
     }
 }
 
+// TODO: Add JSON Schema validation for canonical JSON files
+async function importJsonFile(fileContent: string) {
+    try {
+        const parsedFileData = JSON.parse(fileContent)
+        const activeScope = (window as any).globalScope
+        if (!activeScope) {
+            document.querySelector('.fileInput')?.classList.add('error--text')
+            errorMessage.value = 'No active circuit to import into.'
+            return
+        }
+        const result = await importCanonical(parsedFileData, activeScope)
+        if (result.success) {
+            SimulatorState.dialogBox.import_project_dialog = false
+        } else {
+            document.querySelector('.fileInput')?.classList.add('error--text')
+            errorMessage.value = result.errors.length > 0
+                ? `Import failed: ${result.errors[0]}`
+                : 'Invalid canonical JSON. Could not import.'
+        }
+    } catch (err) {
+        document.querySelector('.fileInput')?.classList.add('error--text')
+        errorMessage.value = err instanceof SyntaxError
+            ? 'Invalid .json file — could not parse.'
+            : `Import error: ${err instanceof Error ? err.message : String(err)}`
+    }
+}
+
 async function receivedText(fileContent: string) {
     // receive file content
+
+    // Canonical JSON import
+    const fileName = file.value[0]?.name || (file.value as any)?.name
+    if (fileName?.split('.').pop() === 'json') {
+        await importJsonFile(fileContent)
+        return
+    }
+
+    // Legacy .cv circuit file import
     const backUp = JSON.parse(
         (await generateSaveData(
             escapeHtml(projectStore.getProjectName || 'untitled').trim(),
@@ -163,7 +201,8 @@ async function receivedText(fileContent: string) {
 }
 
 function readFile() {
-    const importFile = file.value[0]
+    const importFile = file.value[0] || file.value
+    if (!importFile) return
     const reader = new FileReader()
     reader.onload = function () {
         receivedText(reader.result as string) // Pass the file content to receivedText
@@ -172,13 +211,13 @@ function readFile() {
 }
 
 function importDataFromFile() {
-    if (file.value.length === 0) {
+    if (!file.value || file.value.length === 0) {
         document.getElementById('fileInput')?.click()
 
         watch(
-            () => file.value[0],
+            () => file.value,
             () => {
-                if (file.value.length !== 0) {
+                if (file.value) {
                     readFile()
                 }
             }

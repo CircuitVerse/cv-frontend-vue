@@ -31,6 +31,7 @@
                 "save_online": "ऑनलाइन सहेजें",
                 "save_offline": "ऑफ़लाइन सहेजें",
                 "export_as_file": "फ़ाइल में निर्यात करें",
+                "export_json": "JSON निर्यात करें",
                 "import_project": "फ़ाइल से आयात करें",
                 "preview_circuit": "पूर्वावलोकन सर्किट",
                 "clear_project": "परियोजना क्लियर करें",

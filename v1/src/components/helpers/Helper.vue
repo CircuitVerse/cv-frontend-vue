@@ -11,6 +11,9 @@
     <template v-if="SimulatorState.dialogBox.import_project_dialog">
         <ImportProject />
     </template>
+    <template v-if="SimulatorState.dialogBox.export_canonical_dialog">
+        <ExportCanonical />
+    </template>
 </template>
 
 <script lang="ts" setup>
@@ -20,6 +23,7 @@ import ConfirmComponent from './confirmComponent/ConfirmComponent.vue'
 import UpdateProjectDetail from './createNewProject/UpdateProjectDetail.vue'
 import ExportProject from '../DialogBox/ExportProject.vue'
 import ImportProject from '../DialogBox/ImportProject.vue'
+import ExportCanonical from '../DialogBox/ExportCanonical.vue'
 
 import { useState } from '#/store/SimulatorStore/state'
 import { usePromptStore } from '#/store/promptStore'
