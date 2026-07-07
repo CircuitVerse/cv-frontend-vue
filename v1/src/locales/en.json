@@ -28,6 +28,8 @@
             "invalid_file_error": "Invalid file. Could not import.",
             "import_failed": "Import failed: ",
             "import_error": "Import error: ",
+            "backup_failed_error": "Could not create a backup of the current circuit for rollback. Try again.",
+            "restore_failed_error": "Import failed and the original circuit could not be restored.",
             "cancel_btn": "Cancel",
             "import_btn": "Import"
         },

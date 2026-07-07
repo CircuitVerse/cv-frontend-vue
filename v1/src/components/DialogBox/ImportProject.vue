@@ -113,7 +113,14 @@ async function receivedText(fileContent: string) {
     // receive file content
 
     // Snapshot current circuit via canonical pipeline for rollback
-    let backup: any = await canonicaliseProject(Object.values(scopeList ?? {})).catch(() => {})
+    let backup: any
+    try {
+        backup = await canonicaliseProject(Object.values(scopeList ?? {}))
+    } catch {
+        document.querySelector('.fileInput')?.classList.add('error--text')
+        errorMessage.value = t('simulator.import.backup_failed_error')
+        return
+    }
 
     try {
         const parsedFileData = JSON.parse(fileContent)
@@ -128,7 +135,13 @@ async function receivedText(fileContent: string) {
             SimulatorState.dialogBox.import_project_dialog = false
         } else {
             if (backup) {
-                await importCanonical(backup, activeScope).catch(() => {})
+                try {
+                    await importCanonical(backup, activeScope)
+                } catch {
+                    document.querySelector('.fileInput')?.classList.add('error--text')
+                    errorMessage.value = t('simulator.import.restore_failed_error')
+                    return
+                }
             }
             document.querySelector('.fileInput')?.classList.add('error--text')
             errorMessage.value = result.errors.length > 0
@@ -143,8 +156,13 @@ async function receivedText(fileContent: string) {
     }
 }
 
+function getFileInstance(): File | null {
+    const f = file.value[0] || file.value
+    return f instanceof File ? f : null
+}
+
 function readFile() {
-    const importFile = file.value[0] || file.value
+    const importFile = getFileInstance()
     if (!importFile) return
     const reader = new FileReader()
     reader.onload = function () {
@@ -154,14 +172,13 @@ function readFile() {
 }
 
 function importDataFromFile() {
-    if (!file.value || file.value.length === 0) {
+    if (!getFileInstance()) {
         document.getElementById('fileInput')?.click()
 
         const stop = watch(
             () => file.value,
             () => {
-                const importFile = file.value[0] || file.value
-                if (importFile) {
+                if (getFileInstance()) {
                     stop()
                     readFile()
                 }
