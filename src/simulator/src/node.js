@@ -937,7 +937,9 @@ export default class Node {
         this.parent.scope.allNodes = this.parent.scope.allNodes.filter(x => x !== this)
         this.parent.scope.nodes = this.parent.scope.nodes.filter(x => x !== this)
 
-        this.parent.scope.root.nodeList = this.parent.scope.root.nodeList.filter(x => x !== this) // Hope this works! - Can cause bugs
+        if (this.parent.nodeList !== undefined) {
+            this.parent.nodeList = this.parent.nodeList.filter(x => x !== this)
+        }
 
         if (simulationArea.lastSelected == this)
             simulationArea.lastSelected = undefined
