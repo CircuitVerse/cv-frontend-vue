@@ -33,7 +33,7 @@
                 </div>
 
                 <div v-else class="data-table-container">
-                    <div class="data-grid header-grid" :class="{ 'with-results': testBenchStore.showResults }">
+                    <div class="data-grid header-grid" :style="{ gridTemplateColumns: topGridColumnsStyle }">
                         <div class="grid-cell header-cell label-col"></div>
                         <div class="grid-cell header-cell inputs-col">
                             <span>Inputs</span>
@@ -43,13 +43,9 @@
                             <span>Outputs</span>
                              <v-btn icon size="x-small" variant="flat" class="ml-2 action-icon" @click="increOutputs"><v-icon>mdi-plus</v-icon></v-btn>
                         </div>
-                        <div v-if="testBenchStore.showResults" class="grid-cell header-cell results-col">
-                            Results
-                        </div>
                     </div>
-                </div>
 
-                    <div class="data-grid labels-grid" :class="{ 'with-results': testBenchStore.showResults }">
+                    <div class="data-grid labels-grid" :style="{ gridTemplateColumns: topGridColumnsStyle }">
                         <div class="grid-cell label-col">
                             Label
                         </div>
@@ -67,7 +63,7 @@
                         </div>
                     </div>
 
-                    <div class="data-grid bitwidth-grid" :class="{ 'with-results': testBenchStore.showResults }">
+                    <div class="data-grid bitwidth-grid" :style="{ gridTemplateColumns: topGridColumnsStyle }">
                       <div class="grid-cell label-col">Bitwidth</div>
                       <div class="grid-cell inputs-col">
                         <div v-for="(bw, i) in inputsBandWidth" :key="`in-bw-${i}`" class="io-cell bitwidth-row">
@@ -111,7 +107,14 @@
                         </div>
                     </div>
 
-                        <div v-for="(_, testIndex) in (group.inputs[0] || [])" class="data-grid data-row" :key="testIndex" :class="{ 'with-results': testBenchStore.showResults }">
+                        <div class="data-grid group-column-header" :class="{ 'with-results': testBenchStore.showResults }" :style="{ gridTemplateColumns: gridColumnsStyle }">
+                             <div class="grid-cell label-col"></div>
+                             <div class="grid-cell header-cell">Input</div>
+                             <div class="grid-cell header-cell">Output</div>
+                             <div v-if="testBenchStore.showResults" class="grid-cell header-cell">Results</div>
+                        </div>
+
+                        <div v-for="(_, testIndex) in (group.inputs[0] || [])" class="data-grid data-row" :key="testIndex" :class="{ 'with-results': testBenchStore.showResults }" :style="{ gridTemplateColumns: gridColumnsStyle }">
                              <div class="grid-cell label-col action-col">
                                  <v-btn icon size="x-small" variant="text" class="delete-io-btn" @click="deleteTestFromGroup(groupIndex, testIndex)"><v-icon size="small">mdi-close</v-icon></v-btn>
                              </div>
@@ -126,7 +129,6 @@
                                  </div>
                              </div>
                              <div v-if="testBenchStore.showResults" class="grid-cell results-col">
-                                <div v-for="(_, i) in results[groupIndex]" class="io-cell result-cell" :key="`g${groupIndex}-res-${i}-${testIndex}`" :class="results[groupIndex][i][testIndex] ? 'success' : 'fail'">
                                 <div
                                   v-for="(_, i) in (results[groupIndex] || [])"
                                   class="io-cell result-cell"
@@ -135,9 +137,9 @@
                                 >
                                     {{ (results[groupIndex]?.[i]?.[testIndex]) ? '✔' : '✘' }}
                                  </div>
-                             </div>
                         </div>
                     </div>
+                </div>
                 </div>
             </v-card-text>
 
@@ -171,6 +173,32 @@ const inputsBandWidth = ref([1]);
 const outputsBandWidth = ref([1]);
 const inputsName = ref<string[]>(["inp1"]);
 const outputsName = ref<string[]>(["out1"]);
+
+const CELL_WIDTH = 100;
+const CELL_GAP = 8;
+const MIN_CELLS = 5;
+const RESULT_CELL_WIDTH = 44;
+
+const colWidth = (count: number) => {
+    const n = Math.max(count, MIN_CELLS);
+    return n * CELL_WIDTH + (n - 1) * CELL_GAP;
+};
+const resultsColWidth = (count: number) => (count === 0 ? 0 : count * RESULT_CELL_WIDTH + (count - 1) * CELL_GAP);
+
+const inputsColWidthPx = computed(() => colWidth(inputsName.value.length));
+const outputsColWidthPx = computed(() => colWidth(outputsName.value.length));
+const resultsColWidthPx = computed(() => resultsColWidth(outputsName.value.length));
+
+const topGridColumnsStyle = computed(
+    () => `120px minmax(0, ${inputsColWidthPx.value}px) minmax(0, ${outputsColWidthPx.value}px)`,
+);
+
+const gridColumnsStyle = computed(() => {
+    const cols = [`120px`, `minmax(0, ${inputsColWidthPx.value}px)`, `minmax(0, ${outputsColWidthPx.value}px)`];
+    if (testBenchStore.showResults) cols.push(`minmax(0, ${resultsColWidthPx.value}px)`);
+    return cols.join(' ');
+});
+
 const clamp = (val) => {
   if (!val) return 1
   const n = Number(val)
@@ -586,13 +614,14 @@ const importFromCSV = () => {
     align-items: center;
     padding: 8px 0;
 }
-.data-grid:not(.data-row) { grid-template-columns: 120px 1fr 1fr; }
-.data-grid.data-row { grid-template-columns: 40px 1fr 1fr; }
-.data-grid.with-results:not(.data-row) { grid-template-columns: 120px 1fr 1fr 120px; }
-.data-grid.data-row.with-results { grid-template-columns: 40px 1fr 1fr 120px; }
 
 .data-row {
      border-top: 1px solid var(--cv-border);
+}
+
+.group-column-header .header-cell {
+    justify-content: flex-start;
+    padding-left: 4px;
 }
 
 .grid-cell {
@@ -626,15 +655,20 @@ const importFromCSV = () => {
     border: 1px solid var(--cv-border);
     border-radius: 8px;
     padding: 4px;
+    overflow-x: auto;
 }
 
 .io-cell {
-    flex: 1;
+    flex: 0 0 100px;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
     padding: 4px;
+}
+
+.result-cell {
+    flex: 0 0 44px;
 }
 
 .io-input {
@@ -649,8 +683,12 @@ const importFromCSV = () => {
 }
 .bitwidth-input {
     max-width: 40px;
+    min-width: 24px;
     background-color: #f5f5f5;
     border-radius: 4px;
+}
+.bitwidth-row .v-btn {
+    flex-shrink: 0;
 }
 .no-spinner::-webkit-inner-spin-button,
 .no-spinner::-webkit-outer-spin-button {
