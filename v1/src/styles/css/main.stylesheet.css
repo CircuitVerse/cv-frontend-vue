@@ -1941,9 +1941,8 @@ canvas {
 }
 .dialogClose:hover {
     font-weight: bold;
-    background: white;
-    opacity: 0.5;
-    color: black;
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--primary-btn-hov);
 }
 
 .dialogHeader {

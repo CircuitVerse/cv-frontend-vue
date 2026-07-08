@@ -341,8 +341,15 @@ export default function generateVerilogCircuit(
         })
         .catch((error) => {
             if (isDesktop) {
-                setVerilogOutput(error.message || 'Synthesis failed', 'error')
-                showError(error.message || 'Synthesis failed')
+                if (error.name === 'SynthesisTimeoutError') {
+                    var timeoutMessage =
+                        'Synthesis timed out. The worker has been reset; try again or simplify your design.'
+                    setVerilogOutput(timeoutMessage, 'error')
+                    showError(timeoutMessage)
+                } else {
+                    setVerilogOutput(error.message || 'Synthesis failed', 'error')
+                    showError(error.message || 'Synthesis failed')
+                }
             } else if (error instanceof Response) {
                 if (error.status == 500) {
                     showError('Could not connect to Yosys')

@@ -63,15 +63,13 @@ export default defineConfig(() => {
         "@": fileURLToPath(new URL(`./${version}/src/components`, import.meta.url)),
       },
     },
+    root: fileURLToPath(new URL(`./${version}`, import.meta.url)),
     base: process.env.VITE_BASE || (isDesktop ? "/" : `/simulatorvue/${version}/`),
     build: {
-      outDir: `./dist/simulatorvue/${version}/`,
+      outDir: fileURLToPath(new URL(`./dist/simulatorvue/${version}/`, import.meta.url)),
       assetsDir: "assets",
       chunkSizeWarningLimit: 1600,
       rollupOptions: {
-        input: {
-          main: fileURLToPath(new URL(`./${version}/index.html`, import.meta.url)),
-        },
         output: {
           entryFileNames: `simulator-${version}.js`,
           chunkFileNames: `assets/[name]-[hash].js`,
