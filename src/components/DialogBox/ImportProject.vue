@@ -71,6 +71,7 @@ import { useState } from '#/store/SimulatorStore/state'
 import { useProjectStore } from '#/store/projectStore'
 import { ref } from 'vue'
 import { watch } from 'vue'
+
 export function ImportProject() {
     const SimulatorState = useState()
     SimulatorState.dialogBox.import_project_dialog = true
