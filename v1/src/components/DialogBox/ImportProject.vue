@@ -169,6 +169,7 @@ function readFile(importFile: File) {
     }
     reader.readAsText(importFile)
 }
+
 function importDataFromFile() {
     if (!file.value) {
         document.getElementById('fileInput')?.click()
