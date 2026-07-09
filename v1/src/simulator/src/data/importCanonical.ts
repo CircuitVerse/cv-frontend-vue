@@ -272,7 +272,8 @@ function wireComponents(
   instanceMap: Map<string, ComponentInstance>,
   nets: CanonicalNet[],
   intermediateNodesByNet?: Record<string, IntermediateNet>,
-): void {
+): string[] {
+  const errors: string[] = [];
   // Nets with intermediate nodes are wired separately
   const graphRoutedNetIds = new Set<string>();
   if (intermediateNodesByNet) {
@@ -296,7 +297,7 @@ function wireComponents(
 
     if (portNodes.length < 2) {
       if (portNodes.length === 1) {
-        console.warn(`[importCanonical] net "${net.id}": only 1 node resolved, skipping`);
+        errors.push(`net "${net.id}": only 1 node resolved, skipping`);
       }
       continue;
     }
@@ -305,15 +306,14 @@ function wireComponents(
     for (let j = 1; j < portNodes.length; j++) {
       try {
         portNodes[j - 1].connect(portNodes[j]);
-      } catch (err) {
-        console.error(
-          `[importCanonical] Wire failed on net "${net.id}": ` +
-            `${net.connections[j - 1]} ↔ ${net.connections[j]}`,
-          err,
+      } catch {
+        errors.push(
+          `Wire failed on net "${net.id}": ` + `${net.connections[j - 1]} ↔ ${net.connections[j]}`,
         );
       }
     }
   }
+  return errors;
 }
 
 /** Restores saved default state values (e.g. FlipFlop initial value) from the canonical JSON onto constructed instances. */
@@ -341,8 +341,9 @@ function restoreIntermediateNodes(
   intermediateNodes: Record<string, IntermediateNet>,
   instanceMap: Map<string, ComponentInstance>,
   nets: CanonicalNet[],
-): void {
-  if (!intermediateNodes || Object.keys(intermediateNodes).length === 0) return;
+): string[] {
+  const errors: string[] = [];
+  if (!intermediateNodes || Object.keys(intermediateNodes).length === 0) return errors;
 
   const netBitWidthMap = new Map<string, number>();
   for (let i = 0; i < nets.length; i++) {
@@ -366,11 +367,8 @@ function restoreIntermediateNodes(
             ? new NodeCon(point.x, point.y, 2, scope.root, netBitWidth)
             : new NodeCon(point.x, point.y, 2, scope.root);
         junctionNodes.push(node);
-      } catch (err) {
-        console.error(
-          `[importCanonical] Failed to create junction at (${point.x},${point.y}) for ${netId}:`,
-          err,
-        );
+      } catch {
+        errors.push(`Failed to create junction at (${point.x},${point.y}) for ${netId}`);
         junctionNodes.push(null);
       }
     }
@@ -383,11 +381,8 @@ function restoreIntermediateNodes(
       if (fromNode && toNode) {
         try {
           fromNode.connect(toNode);
-        } catch (err) {
-          console.error(
-            `[importCanonical] Junction-to-junction failed for net "${netId}" (${fromId} → ${toId}):`,
-            err,
-          );
+        } catch {
+          errors.push(`Junction-to-junction failed for net "${netId}" (${fromId} → ${toId})`);
         }
       }
     }
@@ -400,20 +395,18 @@ function restoreIntermediateNodes(
 
       const portNode = resolvePortNode(portRef, instanceMap);
       if (!portNode) {
-        console.warn(`[importCanonical] portConnection: cannot resolve "${portRef}"`);
+        errors.push(`portConnection: cannot resolve "${portRef}"`);
         continue;
       }
 
       try {
         portNode.connect(junctionNode);
-      } catch (err) {
-        console.error(
-          `[importCanonical] Port-to-junction failed for net "${netId}" ("${portRef}" → node ${nodeId}):`,
-          err,
-        );
+      } catch {
+        errors.push(`Port-to-junction failed for net "${netId}" ("${portRef}" → node ${nodeId})`);
       }
     }
   }
+  return errors;
 }
 
 /** Copies visual metadata from the canonical JSON back onto the scope object. */
@@ -456,26 +449,22 @@ async function verifyRoundTrip(
   scope: ScopeLike,
   expectedScope: CanonicalScope,
   originalChildHashes?: Map<number, string>,
-): Promise<void> {
+): Promise<boolean> {
   const reExported = await canonicaliseScope(
     scope as Parameters<typeof canonicaliseScope>[0],
     originalChildHashes,
   );
-  const expectedHash = expectedScope.canonicalHash;
-  const actualHash = reExported.canonicalHash;
-  const match = actualHash === expectedHash;
+  const match = reExported.canonicalHash === expectedScope.canonicalHash;
 
   const header =
     "[importCanonical] Round-trip check\n" +
     `  scopeId:       ${String(scope?.id)}\n` +
-    `  expected hash: ${expectedHash}\n` +
-    `  actual hash:   ${actualHash}\n`;
+    `  expected hash: ${expectedScope.canonicalHash}\n` +
+    `  actual hash:   ${reExported.canonicalHash}\n` +
+    `  result:        ${match ? "PASS" : "FAIL"}`;
 
-  if (match) {
-    console.log(header + "  result: PASS");
-  } else {
-    console.warn(header + "  result: FAIL");
-  }
+  console.log(header);
+  return match;
 }
 
 /** Imports a single circuit's components, wiring, default state, and metadata into the given scope. */
@@ -498,20 +487,25 @@ async function importSingleScope(
     return { success: false, error: msg, buildErrors };
   }
 
-  wireComponents(instanceMap, nets, layout.intermediateNodes);
+  const wireErrors = wireComponents(instanceMap, nets, layout.intermediateNodes);
   restoreDefaultState(instanceMap, components);
 
-  if (layout.intermediateNodes) {
-    restoreIntermediateNodes(scope, layout.intermediateNodes, instanceMap, nets);
-  }
+  const routingErrors = layout.intermediateNodes
+    ? restoreIntermediateNodes(scope, layout.intermediateNodes, instanceMap, nets)
+    : [];
 
   restoreScopeMetadata(scope, circuitData);
 
+  const allErrors = [...buildErrors, ...wireErrors, ...routingErrors];
+
   if (circuitData.canonicalHash) {
-    await verifyRoundTrip(scope, circuitData, originalChildHashes);
+    const hashMatch = await verifyRoundTrip(scope, circuitData, originalChildHashes);
+    if (!hashMatch) {
+      allErrors.push(`Round-trip hash mismatch for scope ${scope.id ?? "unknown"}`);
+    }
   }
 
-  return { success: true, buildErrors };
+  return { success: true, buildErrors: allErrors };
 }
 
 function computeImportOrder(circuits: Record<number, CanonicalScope>): number[] {
@@ -698,8 +692,13 @@ export async function importCanonical(
           `  Actual project hash:   ${projectResult.canonicalHash}\n` +
           `  Result:                ${match ? "PASS" : "FAIL"}`,
       );
-    } catch (err) {
-      console.warn("[importCanonical] Project Round-trip canonicalise failed:", err);
+      if (!match) {
+        results.errors.push(
+          `Project round-trip hash mismatch. Expected: ${json.canonicalHash}, got: ${projectResult.canonicalHash}`,
+        );
+      }
+    } catch {
+      results.errors.push("Project round-trip check failed: could not re-export");
     }
   }
 
