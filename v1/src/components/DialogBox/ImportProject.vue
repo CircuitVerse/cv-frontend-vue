@@ -173,13 +173,15 @@ function readFile(importFile: File) {
 function importDataFromFile() {
     if (!file.value) {
         document.getElementById('fileInput')?.click()
+
         watch(
             () => file.value,
             () => {
                 if (file.value) {
                     readFile(file.value)
                 }
-            }
+            },
+        { once: true }
         )
     } else {
         readFile(file.value)
