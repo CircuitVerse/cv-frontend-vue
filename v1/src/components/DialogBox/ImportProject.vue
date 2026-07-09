@@ -70,7 +70,6 @@ import load from '#/simulator/src/data/load'
 import { useState } from '#/store/SimulatorStore/state'
 import { useProjectStore } from '#/store/projectStore'
 import { ref } from 'vue'
-import { watch } from 'vue'
 
 export function ImportProject() {
     const SimulatorState = useState()
@@ -101,7 +100,7 @@ const JSONSchema = [
     'scopes',
 ]
 
-const file = ref(Array<File>())
+const file = ref<File | null>(null)
 const errorMessage = ref('')
 
 function addDropFile(e: DragEvent) {
@@ -110,7 +109,7 @@ function addDropFile(e: DragEvent) {
         const fileExtension = droppedFile.name.split('.').pop()
 
         if (fileExtension === 'cv') {
-            file.value[0] = droppedFile
+            file.value = droppedFile
             document
                 .querySelector('.fileInput')
                 ?.classList.remove('error--text')
@@ -162,8 +161,7 @@ async function receivedText(fileContent: string) {
     }
 }
 
-function readFile() {
-    const importFile = file.value[0]
+function readFile(importFile: File) {
     const reader = new FileReader()
     reader.onload = function () {
         receivedText(reader.result as string) // Pass the file content to receivedText
@@ -172,20 +170,11 @@ function readFile() {
 }
 
 function importDataFromFile() {
-    if (file.value.length === 0) {
+    if (!file.value) {
         document.getElementById('fileInput')?.click()
-
-        watch(
-            () => file.value[0],
-            () => {
-                if (file.value.length !== 0) {
-                    readFile()
-                }
-            }
-        )
-    } else {
-        readFile()
+        return
     }
+    readFile(file.value)
 }
 </script>
 
