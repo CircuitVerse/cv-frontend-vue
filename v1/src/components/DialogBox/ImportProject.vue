@@ -70,7 +70,7 @@ import load from '#/simulator/src/data/load'
 import { useState } from '#/store/SimulatorStore/state'
 import { useProjectStore } from '#/store/projectStore'
 import { ref } from 'vue'
-
+import { watch } from 'vue'
 export function ImportProject() {
     const SimulatorState = useState()
     SimulatorState.dialogBox.import_project_dialog = true
@@ -168,13 +168,20 @@ function readFile(importFile: File) {
     }
     reader.readAsText(importFile)
 }
-
 function importDataFromFile() {
     if (!file.value) {
         document.getElementById('fileInput')?.click()
-        return
+        watch(
+            () => file.value,
+            () => {
+                if (file.value) {
+                    readFile(file.value)
+                }
+            }
+        )
+    } else {
+        readFile(file.value)
     }
-    readFile(file.value)
 }
 </script>
 
