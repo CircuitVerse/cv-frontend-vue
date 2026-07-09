@@ -63,6 +63,12 @@ const SimulatorState = useState()
 const projectStore = useProjectStore()
 const { t } = useI18n()
 
+const fileNameInput = ref(
+    projectStore.getProjectName +
+        '__' +
+        new Date().toLocaleString().replace(/[: \/,-]/g, '_')
+)
+
 const previewCode = ref('')
 const exportError = ref('')
 const cmOptions = ref({})
@@ -93,8 +99,9 @@ onMounted(async () => {
 
 function onDownload() {
     if (exportError.value) return
-    const name = projectStore.getProjectName || 'Untitled'
-    downloadFile(name + '.cv', previewCode.value)
+    let fileName = fileNameInput.value || 'untitled'
+    fileName = `${fileName.replace(/[^a-z0-9]/gi, '_')}.cv`
+    downloadFile(fileName, previewCode.value)
     SimulatorState.dialogBox.export_project_dialog = false
 }
 
