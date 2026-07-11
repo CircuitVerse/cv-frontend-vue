@@ -202,15 +202,6 @@ Flag.prototype.helplink =
 
 /**
  * @memberof Flag
- * Help URL
- * @type {string}
- * @category modules
- */
-Flag.prototype.helplink =
-    'https://docs.circuitverse.org/chapter4/chapter4-misc#tunnel'
-
-/**
- * @memberof Flag
  * Mutable properties of the element
  * @type {JSON}
  * @category modules
