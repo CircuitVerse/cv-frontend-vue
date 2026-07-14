@@ -3,62 +3,65 @@
         v-model="SimulatorState.dialogBox.export_project_dialog"
         :persistent="true"
     >
-        <v-card class="exportProjectCard">
+        <v-card class="messageBoxContent">
             <v-card-text>
-                <p>Export as file</p>
+                <p class="dialogHeader">{{ $t('simulator.nav.project.export_as_file') }}</p>
                 <v-btn
                     size="x-small"
                     icon
                     class="dialogClose"
-                    @click="
-                        SimulatorState.dialogBox.export_project_dialog = false
-                    "
+                    @click="SimulatorState.dialogBox.export_project_dialog = false"
                 >
                     <v-icon>mdi-close</v-icon>
                 </v-btn>
-                <div class="fileNameInput">
-                    <p>File name:</p>
-                    <input
-                        v-model="fileNameInput"
-                        id="fileNameInputField"
-                        class="inputField"
-                        type="text"
-                        placeholder="untitled"
-                        required
+                <p v-if="exportError" class="export-error">{{ exportError }}</p>
+                <div id="export-code-window-div" title="Export Project">
+                    <Codemirror
+                        id="export-code-window"
+                        :value="previewCode"
+                        :options="cmOptions"
+                        border
+                        :height="300"
+                        :width="700"
                     />
-                    <p>.cv</p>
                 </div>
             </v-card-text>
             <v-card-actions>
-                <v-btn class="messageBtn" @click="exportAsFile"> Save </v-btn>
+                <v-btn class="messageBtn exportBtn" block @click="onDownload()">
+                    {{ $t('simulator.export.download_btn') }}
+                </v-btn>
+                <v-btn class="messageBtn exportBtn" block @click="onCopy()">
+                    {{ $t('simulator.export.copy_btn') }}
+                </v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
 </template>
 
 <script lang="ts">
-import { ref } from 'vue'
 import { useState } from '#/store/SimulatorStore/state'
-import { useProjectStore } from '#/store/projectStore'
-import { generateSaveData } from '#/simulator/src/data/save'
-import { downloadFile } from '#/simulator/src/utils'
-import { escapeHtml } from '#/simulator/src/utils'
 
 export function ExportProject() {
     const SimulatorState = useState()
     SimulatorState.dialogBox.export_project_dialog = true
-    setTimeout(() => {
-        const fileNameInputField = document.getElementById(
-            'fileNameInputField'
-        ) as HTMLInputElement
-        fileNameInputField?.select()
-    }, 100)
 }
 </script>
 
 <script lang="ts" setup>
+import { onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useState } from '#/store/SimulatorStore/state'
+import { useProjectStore } from '#/store/projectStore'
+import { canonicaliseProject } from '#/simulator/src/data/canonical'
+import { copyToClipboard, downloadFile, showMessage } from '#/simulator/src/utils'
+import { scopeList } from '#/simulator/src/circuit'
+import Codemirror from 'codemirror-editor-vue3'
+import 'codemirror/mode/javascript/javascript.js'
+import 'codemirror/theme/dracula.css'
+
 const SimulatorState = useState()
 const projectStore = useProjectStore()
+const { t } = useI18n()
 
 const fileNameInput = ref(
     projectStore.getProjectName +
@@ -66,52 +69,78 @@ const fileNameInput = ref(
         new Date().toLocaleString().replace(/[: \/,-]/g, '_')
 )
 
-const exportAsFile = async () => {
-    let fileName = escapeHtml(fileNameInput.value) || 'untitled'
-    const circuitData = await generateSaveData(
-        projectStore.getProjectName,
-        false
-    )
+const previewCode = ref('')
+const exportError = ref('')
+const cmOptions = ref({})
+
+async function generateExport(): Promise<string> {
+    const data = await canonicaliseProject(Object.values(scopeList ?? {}))
+    return JSON.stringify(data, null, 2)
+}
+
+onMounted(async () => {
+    cmOptions.value = {
+        mode: 'application/json',
+        theme: 'dracula',
+        lineNumbers: true,
+        readOnly: true,
+        autoRefresh: true,
+    }
+    try {
+        previewCode.value = await generateExport()
+        exportError.value = ''
+    } catch (err) {
+        previewCode.value = ''
+        exportError.value = err instanceof Error
+            ? `${t('simulator.export.generate_error_prefix')}: ${err.message}`
+            : t('simulator.export.generate_error')
+    }
+})
+
+function onDownload() {
+    if (exportError.value) return
+    let fileName = fileNameInput.value || 'untitled'
     fileName = `${fileName.replace(/[^a-z0-9]/gi, '_')}.cv`
-    downloadFile(fileName, circuitData)
+    downloadFile(fileName, previewCode.value)
+    SimulatorState.dialogBox.export_project_dialog = false
+}
+
+function onCopy() {
+    if (exportError.value) return
+    copyToClipboard(previewCode.value)
+    showMessage(t('simulator.export.copy_success'))
     SimulatorState.dialogBox.export_project_dialog = false
 }
 </script>
 
 <style scoped>
-.exportProjectCard {
-    height: auto;
-    width: 30rem;
-    justify-content: center;
-    margin: auto;
-    backdrop-filter: blur(5px);
-    border-radius: 5px;
-    border: 0.5px solid var(--br-primary) !important;
-    background: var(--bg-primary-moz) !important;
-    background-color: var(--bg-primary-chr) !important;
-    color: white;
-}
-
-/* media query for .messageBoxContent */
-@media screen and (max-width: 991px) {
-    .exportProjectCard {
-        width: 100%;
-    }
-}
-.fileNameInput {
-    display: flex;
-    align-items: baseline;
-    justify-content: center;
-    gap: 1rem;
-}
-
-.fileNameInput p {
-    white-space: nowrap;
-}
-
-.fileNameInput input {
+.dialogHeader {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
     text-align: center;
 }
+:deep(#export-code-window .CodeMirror) {
+    width: 100% !important;
+}
+.exportBtn {
+    border: 1px solid #ffffff !important;
+}
+.exportBtn:focus,
+.exportBtn:focus-visible,
+.exportBtn:active {
+    border: 1px solid #ffffff !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+.export-error {
+    color: #f87171;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+.dialogClose {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
 </style>
-
-<!-- For any bugs refer to SaveAs.js file in main repo -->
