@@ -17,6 +17,10 @@
     "fmt:check": "npm run format:check",
     "postinstall": "husky install",
     "test": "vitest --silent",
+    "test:src": "vitest run --project src",
+    "test:v1": "vitest run --project v1",
+    "test:src:ci": "vitest run --project src --reporter=github-actions",
+    "test:v1:ci": "vitest run --project v1 --reporter=github-actions",
     "test:synthesis": "vitest run --project synthesis"
   },
   "dependencies": {
