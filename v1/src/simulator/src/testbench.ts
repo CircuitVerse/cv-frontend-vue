@@ -3,7 +3,7 @@ import { showMessage } from "#/simulator/src/utils";
 import { useTestBenchStore, TestBenchData } from "#/store/testBenchStore";
 import { changeClockEnable } from "#/simulator/src/sequential";
 import { play } from "#/simulator/src/engine";
-import { confirmOption } from "#/components/helpers/confirmComponent/ConfirmComponent.vue";
+import { confirmOption } from "#/utils/confirm";
 import { escapeHtml } from "#/simulator/src/utils";
 
 const CONTEXT = {
