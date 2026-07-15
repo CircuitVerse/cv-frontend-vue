@@ -134,19 +134,15 @@ async function receivedText(fileContent: string) {
         if (result.success) {
             SimulatorState.dialogBox.import_project_dialog = false
         } else {
-            if (backup) {
-                try {
-                    await importCanonical(backup, activeScope)
-                } catch {
-                    document.querySelector('.fileInput')?.classList.add('error--text')
-                    errorMessage.value = t('simulator.import.restore_failed_error')
-                    return
-                }
+            try {
+                await importCanonical(backup, activeScope)
+            } catch {
+                document.querySelector('.fileInput')?.classList.add('error--text')
+                errorMessage.value = t('simulator.import.restore_failed_error')
+                return
             }
             document.querySelector('.fileInput')?.classList.add('error--text')
-            errorMessage.value = result.errors.length > 0
-                ? `${t('simulator.import.import_failed')}${result.errors[0]}`
-                : t('simulator.import.invalid_file_error')
+            errorMessage.value = `${t('simulator.import.import_failed')}\n${result.errors.join('\n')}`
         }
     } catch (err) {
         document.querySelector('.fileInput')?.classList.add('error--text')

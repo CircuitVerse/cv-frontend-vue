@@ -473,18 +473,14 @@ async function importSingleScope(
   scope: ScopeLike,
   scopeMap: Map<number, ScopeLike>,
   originalChildHashes?: Map<number, string>,
-): Promise<{ success: boolean; error?: string; buildErrors: string[] }> {
+): Promise<{ success: boolean; buildErrors: string[] }> {
   const { components, nets } = circuitData.netlist;
   const { layout } = circuitData;
 
   const { instanceMap, errors: buildErrors } = buildComponents(scope, components, layout, scopeMap);
 
-  if (components.length > 0 && instanceMap.size === 0) {
-    const msg =
-      buildErrors.length > 0
-        ? `all components failed: ${buildErrors.join("; ")}`
-        : "no components could be constructed";
-    return { success: false, error: msg, buildErrors };
+  if (buildErrors.length > 0) {
+    return { success: false, buildErrors };
   }
 
   const wireErrors = wireComponents(instanceMap, nets, layout.intermediateNodes);
@@ -496,16 +492,16 @@ async function importSingleScope(
 
   restoreScopeMetadata(scope, circuitData);
 
-  const allErrors = [...buildErrors, ...wireErrors, ...routingErrors];
+  const allErrors = [...wireErrors, ...routingErrors];
 
-  if (circuitData.canonicalHash) {
+  if (circuitData.canonicalHash && allErrors.length === 0) {
     const hashMatch = await verifyRoundTrip(scope, circuitData, originalChildHashes);
     if (!hashMatch) {
       allErrors.push(`Round-trip hash mismatch for scope ${scope.id ?? "unknown"}`);
     }
   }
 
-  return { success: true, buildErrors: allErrors };
+  return { success: allErrors.length === 0, buildErrors: allErrors };
 }
 
 function computeImportOrder(circuits: Record<number, CanonicalScope>): number[] {
@@ -658,9 +654,7 @@ export async function importCanonical(
       scopeMap,
       originalChildHashes,
     );
-    if (!outcome.success) {
-      results.errors.push(`[${canonicalId}] ${outcome.error ?? "unknown error"}`);
-    } else {
+    if (outcome.success) {
       results.imported++;
     }
     for (const buildErr of outcome.buildErrors) {
@@ -668,7 +662,7 @@ export async function importCanonical(
     }
   }
 
-  results.success = results.imported > 0;
+  results.success = results.imported > 0 && results.errors.length === 0;
 
   {
     const store = SimulatorStore();
@@ -680,7 +674,7 @@ export async function importCanonical(
     }
   }
 
-  if (results.imported === topologicalOrder.length && json.canonicalHash) {
+  if (results.success && json.canonicalHash) {
     try {
       const projectResult = await canonicaliseProject(
         Array.from(scopeMap.values()) as Parameters<typeof canonicaliseProject>[0],
@@ -696,9 +690,11 @@ export async function importCanonical(
         results.errors.push(
           `Project round-trip hash mismatch. Expected: ${json.canonicalHash}, got: ${projectResult.canonicalHash}`,
         );
+        results.success = false;
       }
     } catch {
       results.errors.push("Project round-trip check failed: could not re-export");
+      results.success = false;
     }
   }
 
