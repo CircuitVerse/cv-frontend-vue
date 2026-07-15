@@ -73,7 +73,7 @@ type ComponentDraft = {
   [key: string]: unknown;
 };
 
-type CanonicalComponent = {
+export type CanonicalComponent = {
   id: string;
   type: string;
   label: string;
@@ -83,7 +83,7 @@ type CanonicalComponent = {
   defaultState?: unknown;
 };
 
-type CanonicalNet = {
+export type CanonicalNet = {
   id: string;
   bitWidth: number;
   connections: string[];
@@ -97,7 +97,7 @@ type SubcircuitPort = {
   order: number;
 };
 
-type IntermediateNet = {
+export type IntermediateNet = {
   nodes: Array<{ id: number; x: number; y: number }>;
   edges: Array<[number, number]>;
   portConnections: Array<{ portRef: string; nodeId: number }>;
@@ -111,7 +111,7 @@ type SubcircuitSymbolLayout = {
   titleEnabled: boolean;
 };
 
-type CanonicalLayout = {
+export type CanonicalLayout = {
   [componentId: string]:
     | {
         x?: number;
@@ -126,7 +126,7 @@ type CanonicalLayout = {
   subcircuitSymbol?: SubcircuitSymbolLayout;
 };
 
-type CanonicalScope = {
+export type CanonicalScope = {
   canonicalHash: string;
   projectMetadata: {
     id?: number;
@@ -158,7 +158,7 @@ type CanonicalScope = {
   };
 };
 
-type CanonicalProject = {
+export type CanonicalProject = {
   formatVersion: "v1";
   canonicalHash: string;
   circuits: Record<number, CanonicalScope>;
@@ -254,7 +254,7 @@ const DIRECTION_BEARING: Set<string> = new Set([
   "TB_Output",
 ]);
 
-const STATEFUL_DEFAULT_STATE: Record<string, string> = {
+export const STATEFUL_DEFAULT_STATE: Record<string, string> = {
   Input: "state",
   ConstantVal: "state",
   DflipFlop: "slaveState",
@@ -881,7 +881,7 @@ async function sha256(text: string): Promise<string> {
 }
 
 // Put the below line in the console to get the json
-// await (await import('/simulatorvue/v1/v1/src/simulator/src/data/canonical.ts')).canonicaliseScope(globalScope)
+// await (await import('/simulatorvue/v1/src/simulator/src/data/canonical.ts')).canonicaliseScope(globalScope)
 export async function canonicaliseScope(
   scope: CVScope,
   childHashes?: Map<number, string>,
@@ -975,7 +975,7 @@ export async function canonicaliseScope(
   };
 }
 
-function khansAlgorithm(
+export function khansAlgorithm(
   indegreeMap: Map<number, number>,
   dependents: Map<number, number[]>,
 ): number[] | null {
@@ -1010,7 +1010,7 @@ function khansAlgorithm(
 }
 
 // Put the below line in the console to get the json
-// await (await import('/simulatorvue/v1/v1/src/simulator/src/data/canonical.ts')).canonicaliseProject(Object.values((await import('/simulatorvue/v1/v1/src/simulator/src/circuit.ts')).scopeList))
+// await (await import('/simulatorvue/v1/src/simulator/src/data/canonical.ts')).canonicaliseProject(Object.values((await import('/simulatorvue/v1/src/simulator/src/circuit.ts')).scopeList))
 export async function canonicaliseProject(
   scopeOrScopes: CVScope | CVScope[],
 ): Promise<CanonicalProject> {

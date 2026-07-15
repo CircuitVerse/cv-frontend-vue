@@ -5,7 +5,7 @@
     >
         <v-card class="importProjectDialog">
             <v-text-field>
-                <p>Import file</p>
+                <p>{{ $t('simulator.nav.project.import_project') }}</p>
                 <v-btn
                     size="x-small"
                     icon
@@ -23,7 +23,7 @@
                     @dragover.prevent
                 >
                     <v-file-input
-                        label="Click to Select or Drag and drop file here"
+                        :label="$t('simulator.import.file_label')"
                         class="fileInput"
                         id="fileInput"
                         center-affix
@@ -53,10 +53,10 @@
                         SimulatorState.dialogBox.import_project_dialog = false
                     "
                 >
-                    Cancel
+                    {{ $t('simulator.import.cancel_btn') }}
                 </v-btn>
                 <v-btn class="messageBtn" @click="importDataFromFile">
-                    Import
+                    {{ $t('simulator.import.import_btn') }}
                 </v-btn>
             </v-card-actions>
         </v-card>
@@ -64,13 +64,7 @@
 </template>
 
 <script lang="ts">
-import { generateSaveData } from '#/simulator/src/data/save'
-import { escapeHtml } from '#/simulator/src/utils'
-import load from '#/simulator/src/data/load'
 import { useState } from '#/store/SimulatorStore/state'
-import { useProjectStore } from '#/store/projectStore'
-import { ref } from 'vue'
-import { watch } from 'vue'
 
 export function ImportProject() {
     const SimulatorState = useState()
@@ -79,27 +73,15 @@ export function ImportProject() {
 </script>
 
 <script lang="ts" setup>
-const SimulatorState = useState()
-const projectStore = useProjectStore()
+import { useI18n } from 'vue-i18n'
+import { importCanonical } from '#/simulator/src/data/importCanonical'
+import { canonicaliseProject } from '#/simulator/src/data/canonical'
+import { scopeList } from '#/simulator/src/circuit'
+import { useState } from '#/store/SimulatorStore/state'
+import { ref, watch } from 'vue'
 
-const scopeSchema = [
-    'layout',
-    'verilogMetadata',
-    'allNodes',
-    'id',
-    'name',
-    'restrictedCircuitElementsUsed',
-    'nodes',
-]
-const JSONSchema = [
-    'name',
-    'timePeriod',
-    'clockEnabled',
-    'projectId',
-    'focussedCircuit',
-    'orderedTabs',
-    'scopes',
-]
+const SimulatorState = useState()
+const { t } = useI18n()
 
 const file = ref(Array<File>())
 const errorMessage = ref('')
@@ -117,53 +99,71 @@ function addDropFile(e: DragEvent) {
             errorMessage.value = ''
         } else {
             document.querySelector('.fileInput')?.classList.add('error--text')
-            errorMessage.value =
-                'Invalid file format. Only [ .cv ] files are accepted. Try again.'
+            errorMessage.value = t('simulator.import.format_error')
         }
     }
 }
 
-function ValidateData(fileData: string) {
-    try {
-        const parsedFileDate = JSON.parse(fileData)
-        if (
-            JSON.stringify(Object.keys(parsedFileDate)) !==
-            JSON.stringify(JSONSchema)
-        )
-            throw new Error('Invalid JSON data')
-        parsedFileDate.scopes.forEach((scope: object) => {
-            const keys = Object.keys(scope) // get scope keys
-            scopeSchema.forEach((key) => {
-                if (!keys.includes(key)) throw new Error('Invalid Scope data')
-            })
-        })
-        load(parsedFileDate)
-        return true
-    } catch (error) {
-        document.querySelector('.fileInput')?.classList.add('error--text')
-        errorMessage.value = 'Invalid / Corrupt [ .cv ] file !'
-        return false
-    }
+// TODO: Add JSON Schema validation for JSON files
+function validateData() {
+    // Validation will be implemented using JSON Schema
 }
 
 async function receivedText(fileContent: string) {
     // receive file content
-    const backUp = JSON.parse(
-        (await generateSaveData(
-            escapeHtml(projectStore.getProjectName || 'untitled').trim(),
-            false
-        )) as any
-    )
-    const valid = ValidateData(fileContent) // pass fileContent
-    if (valid) {
-        SimulatorState.dialogBox.import_project_dialog = false
-    } else {
-        load(backUp)
+
+    // Snapshot current circuit via canonical pipeline for rollback
+    let backup: any
+    try {
+        backup = await canonicaliseProject(Object.values(scopeList ?? {}))
+    } catch {
+        document.querySelector('.fileInput')?.classList.add('error--text')
+        errorMessage.value = t('simulator.import.backup_failed_error')
+        return
+    }
+
+    try {
+        const parsedFileData = JSON.parse(fileContent)
+        const activeScope = (window as any).globalScope
+        if (!activeScope) {
+            document.querySelector('.fileInput')?.classList.add('error--text')
+            errorMessage.value = t('simulator.import.active_scope_error')
+            return
+        }
+        const result = await importCanonical(parsedFileData, activeScope)
+        if (result.success) {
+            SimulatorState.dialogBox.import_project_dialog = false
+        } else {
+            if (backup) {
+                try {
+                    await importCanonical(backup, activeScope)
+                } catch {
+                    document.querySelector('.fileInput')?.classList.add('error--text')
+                    errorMessage.value = t('simulator.import.restore_failed_error')
+                    return
+                }
+            }
+            document.querySelector('.fileInput')?.classList.add('error--text')
+            errorMessage.value = result.errors.length > 0
+                ? `${t('simulator.import.import_failed')}${result.errors[0]}`
+                : t('simulator.import.invalid_file_error')
+        }
+    } catch (err) {
+        document.querySelector('.fileInput')?.classList.add('error--text')
+        errorMessage.value = err instanceof SyntaxError
+            ? t('simulator.import.parse_error')
+            : `${t('simulator.import.import_error')}${err instanceof Error ? err.message : String(err)}`
     }
 }
 
+function getFileInstance(): File | null {
+    const f = file.value[0] || file.value
+    return f instanceof File ? f : null
+}
+
 function readFile() {
-    const importFile = file.value[0]
+    const importFile = getFileInstance()
+    if (!importFile) return
     const reader = new FileReader()
     reader.onload = function () {
         receivedText(reader.result as string) // Pass the file content to receivedText
@@ -172,13 +172,14 @@ function readFile() {
 }
 
 function importDataFromFile() {
-    if (file.value.length === 0) {
+    if (!getFileInstance()) {
         document.getElementById('fileInput')?.click()
 
-        watch(
-            () => file.value[0],
+        const stop = watch(
+            () => file.value,
             () => {
-                if (file.value.length !== 0) {
+                if (getFileInstance()) {
+                    stop()
                     readFile()
                 }
             }

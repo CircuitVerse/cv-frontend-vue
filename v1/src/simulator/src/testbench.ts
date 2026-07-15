@@ -3,7 +3,7 @@ import { showMessage } from "#/simulator/src/utils";
 import { useTestBenchStore, TestBenchData } from "#/store/testBenchStore";
 import { changeClockEnable } from "#/simulator/src/sequential";
 import { play } from "#/simulator/src/engine";
-import { confirmOption } from "#/components/helpers/confirmComponent/ConfirmComponent.vue";
+import { confirmOption } from "#/utils/confirm";
 import { escapeHtml } from "#/simulator/src/utils";
 
 const CONTEXT = {
@@ -50,7 +50,7 @@ export class TestbenchData {
 
   groupNext() {
     const newCase = new TestbenchData(this.testData, this.currentGroup, 0);
-    const groupCount = newCase.testData.groups.length;
+    const _groupCount = newCase.testData.groups.length;
     let caseCount = 0;
     if (newCase.testData.groups[this.currentGroup].inputs[0]) {
       caseCount = newCase.testData.groups[this.currentGroup].inputs[0].values.length;
@@ -69,7 +69,7 @@ export class TestbenchData {
 
   groupPrev() {
     const newCase = new TestbenchData(this.testData, this.currentGroup, 0);
-    const groupCount = newCase.testData.groups.length;
+    const _groupCount = newCase.testData.groups.length;
     let caseCount = newCase.testData.groups[newCase.currentGroup].inputs[0].values.length;
 
     while (caseCount === 0 || this.currentGroup === newCase.currentGroup) {
@@ -650,7 +650,7 @@ export const buttonListenerFunctions = {
   },
 
   editTestButton: () => {
-    const editDataString = JSON.stringify(useTestBenchStore().testbenchData.testData);
+    const _editDataString = JSON.stringify(useTestBenchStore().testbenchData.testData);
     openCreator("edit");
   },
 

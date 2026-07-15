@@ -23,8 +23,8 @@ import 'codemirror/addon/hint/show-hint'
 import { setupCodeMirrorEnvironment } from './Verilog2CV'
 import '../vendor/jquery-ui.min.css'
 import '../vendor/jquery-ui.min'
-import { confirmSingleOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
-import { getToken } from '#/pages/simulatorHandler.vue'
+import { confirmSingleOption } from '#/utils/confirm'
+import { getToken } from '#/utils/auth'
 
 // Loading icon fade animation constants and helpers
 const LOADING_ICON_SELECTOR = '.loadingIcon'
