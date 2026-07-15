@@ -81,36 +81,14 @@
     </v-dialog>
 </template>
 
-<script lang="ts">
-import { usePromptStore } from '#/store/promptStore'
-import { useProjectStore } from '#/store/projectStore'
+<script lang="ts" setup>
 import { ref } from 'vue'
 import TextEditor from './TextEditor.vue'
+import { usePromptStore } from '#/store/promptStore'
 import { useAuthStore } from '#/store/authStore'
-import {
-    confirmMultiOption,
-    confirmSingleOption,
-} from '../confirmComponent/ConfirmComponent.vue'
-import { getToken } from '#/pages/simulatorHandler.vue'
+import { confirmMultiOption, confirmSingleOption } from '#/utils/confirm'
+import { getToken } from '#/utils/auth'
 
-interface dataType {
-    project: {
-        id: number
-        name: string
-    }
-}
-
-export const UpdateProjectDetail = (data: dataType) => {
-    const promptStore = usePromptStore()
-    const projectStore = useProjectStore()
-    promptStore.UpdateProjectDetail.activate = true
-    projectStore.setProjectName(data.project.name)
-    promptStore.setProjectName(data.project.name)
-    promptStore.setProjectId(data.project.id)
-}
-</script>
-
-<script lang="ts" setup>
 const promptStore = usePromptStore()
 const isFullscreen = ref(false)
 const projectTypes = ref(['Public', 'Private', 'Limited access'])

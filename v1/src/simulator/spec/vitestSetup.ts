@@ -65,3 +65,17 @@ HTMLCanvasElement.prototype.getContext = vi.fn(() => ({
   fill: vi.fn(),
   rect: vi.fn(),
 }));
+
+// jsdom does not implement toDataURL; return a minimal valid data URL
+HTMLCanvasElement.prototype.toDataURL = vi.fn(() => "data:image/png;base64,");
+
+// jsdom does not implement navigation; silence location.assign calls
+Object.defineProperty(window, "location", {
+  value: {
+    ...window.location,
+    assign: vi.fn(),
+    replace: vi.fn(),
+    reload: vi.fn(),
+  },
+  writable: true,
+});
