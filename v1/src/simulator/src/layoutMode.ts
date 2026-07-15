@@ -64,10 +64,8 @@ export function paneLayout(scope = globalScope) {
     simulationArea.hover = scope.root;
   } else if (simulationArea.lastSelected === scope.root && simulationArea.mouseDown) {
     // pane canvas
-    globalScope.ox =
-      simulationArea.mouseRawX - simulationArea.mouseDownRawX + simulationArea.oldx;
-    globalScope.oy =
-      simulationArea.mouseRawY - simulationArea.mouseDownRawY + simulationArea.oldy;
+    globalScope.ox = simulationArea.mouseRawX - simulationArea.mouseDownRawX + simulationArea.oldx;
+    globalScope.oy = simulationArea.mouseRawY - simulationArea.mouseDownRawY + simulationArea.oldy;
     globalScope.ox = Math.round(globalScope.ox);
     globalScope.oy = Math.round(globalScope.oy);
     gridUpdateSet(true);

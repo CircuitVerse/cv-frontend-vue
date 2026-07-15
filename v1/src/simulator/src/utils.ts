@@ -175,7 +175,7 @@ export function copyToClipboard(text: string) {
 
   // Check if there is any content selected previously.
   const selected =
-    (( document.getSelection()?.rangeCount ?? 0) > 0) ? document.getSelection()?.getRangeAt(0) : false;
+    (document.getSelection()?.rangeCount ?? 0) > 0 ? document.getSelection()?.getRangeAt(0) : false;
 
   // iOS Safari blocks programmatic execCommand copying normally, without this hack.
   // https://stackoverflow.com/questions/34045777/copy-to-clipboard-using-javascript-in-ios
