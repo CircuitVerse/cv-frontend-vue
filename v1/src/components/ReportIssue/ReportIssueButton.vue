@@ -5,7 +5,7 @@
             class="btn btn-primary text-light"
             data-toggle="modal"
             data-target=".issue"
-            :style="{ bottom: simulatorMobileStore.showElementsPanel ? '250px' : '120px' }"
+            :style="simulatorMobileStore.showMobileView ? { bottom: simulatorMobileStore.showElementsPanel ? '250px' : '120px' } : { top: '660px', bottom: 'auto' }"
             @click="openReportingModal"
         >
             <span class="fa fa-bug"></span>&nbsp;&nbsp;{{
