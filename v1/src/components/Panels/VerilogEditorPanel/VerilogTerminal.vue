@@ -85,10 +85,6 @@ const adjustCodeWindowHeight = () => {
             codeWindow.style.maxWidth = '100%';
             codeWindow.style.overflow = 'hidden';
         }
-        
-        if ((window as any).editor && (window as any).editor.refresh) {
-            (window as any).editor.refresh();
-        }
     }
 };
 

@@ -52,7 +52,6 @@
                         <select 
                             v-model="verilogStore.selectedTheme" 
                             class="applyTheme"
-                            @change="(e) => verilogStore.setTheme((e.target as HTMLSelectElement).value)"
                         >
                             <optgroup
                                 v-for="optgroup in Themes"
