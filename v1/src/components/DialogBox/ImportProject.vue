@@ -28,7 +28,6 @@
                         id="fileInput"
                         center-affix
                         :error-messages="errorMessage"
-                        max-errors="1"
                         accept=".cv"
                         v-model="file"
                         prepend-icon="mdi-paperclip"
@@ -85,6 +84,7 @@ const { t } = useI18n()
 
 const file = ref(Array<File>())
 const errorMessage = ref('')
+let fileWatchStop: (() => void) | null = null
 
 function addDropFile(e: DragEvent) {
     if (e.dataTransfer?.files[0]) {
@@ -142,7 +142,7 @@ async function receivedText(fileContent: string) {
                 return
             }
             document.querySelector('.fileInput')?.classList.add('error--text')
-            errorMessage.value = `${t('simulator.import.import_failed')}\n${result.errors.join('\n')}`
+            errorMessage.value = `${t('simulator.import.import_failed')} ${result.errors.join(' • ')}`
         }
     } catch (err) {
         document.querySelector('.fileInput')?.classList.add('error--text')
@@ -171,11 +171,15 @@ function importDataFromFile() {
     if (!getFileInstance()) {
         document.getElementById('fileInput')?.click()
 
-        const stop = watch(
+        if (fileWatchStop) fileWatchStop()
+        fileWatchStop = watch(
             () => file.value,
             () => {
                 if (getFileInstance()) {
-                    stop()
+                    if (fileWatchStop) {
+                        fileWatchStop()
+                        fileWatchStop = null
+                    }
                     readFile()
                 }
             }
@@ -231,10 +235,6 @@ function importDataFromFile() {
 .fileInput .v-field__clearable {
     align-items: center;
     font-size: 1.5rem;
-}
-
-.error--text .v-messages__message {
-    font-size: 1rem;
 }
 
 .error--text .v-input__details {
