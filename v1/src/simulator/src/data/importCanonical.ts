@@ -29,7 +29,7 @@ import {
 import Node from "../node";
 import SubCircuit from "../subcircuit";
 
-type ScopeLike = {
+export type ScopeLike = {
   id?: string | number;
   name?: string;
   timeStamp?: string | number | null;
