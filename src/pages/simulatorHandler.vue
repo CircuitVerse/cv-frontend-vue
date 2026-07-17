@@ -49,7 +49,7 @@ async function checkEditAccess() {
             isLoading.value = false
         } else if (res.status === 401) {
             // if user is not logged in redirect to login page
-            window.location.href = `/users/sign_in`
+            window.location.href = '/users/sign_in'
         }
     })
 }

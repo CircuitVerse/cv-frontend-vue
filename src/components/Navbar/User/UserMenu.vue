@@ -156,7 +156,7 @@ const { locale } = useI18n()
 const unreadCount = ref(0)
 
 function signIn() {
-  window.location.href = `/users/sign_in`
+  window.location.href = '/users/sign_in'
 }
 
 function register() {
