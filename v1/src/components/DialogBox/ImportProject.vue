@@ -188,11 +188,10 @@ function importDataFromFile() {
                     }
                     readFile()
                 }
-            },
-        { once: true }
+            }
         )
     } else {
-        readFile(file.value)
+        readFile()
     }
 }
 </script>

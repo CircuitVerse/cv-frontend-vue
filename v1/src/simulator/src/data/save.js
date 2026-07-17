@@ -139,7 +139,6 @@ export async function generateSaveData(name, setName = true) {
         saveScope(id)
     }
 
-    data = JSON.stringify(data);
     return data
 }
 
