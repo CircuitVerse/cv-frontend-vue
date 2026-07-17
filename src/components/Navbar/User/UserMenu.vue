@@ -156,8 +156,7 @@ const { locale } = useI18n()
 const unreadCount = ref(0)
 
 function signIn() {
-  const returnTo = encodeURIComponent(window.location.pathname + window.location.search)
-  window.location.href = `/users/sign_in?return_to=${returnTo}`
+  window.location.href = `/users/sign_in`
 }
 
 function register() {
@@ -177,14 +176,6 @@ function notifications() {
 }
 
 function signout() {
-  const csrfToken =
-    (window as any).csrfToken ||
-    document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
-
-  if (!csrfToken) {
-    console.error('CSRF token not found, cannot sign out safely.')
-    return
-  }
-  signOutRails(csrfToken)
+  signOutRails()
 }
 </script>

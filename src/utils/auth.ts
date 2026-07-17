@@ -1,18 +1,14 @@
+/**
+ * Reads a cookie value by name.
+ */
 export function getToken(name: string): string | undefined {
-  const cookieValue = document.cookie
-    .split(";")
-    .map((cookie) => cookie.trim())
-    .find((cookie) => cookie.startsWith(`${name}=`))
-    ?.slice(name.length + 1);
-  if (cookieValue !== undefined) return cookieValue;
-  // Fallback to localStorage for Tauri and contexts where the cvt cookie isn't available
-  if (name === "cvt") {
-    return localStorage.getItem("cv_token") ?? undefined;
-  }
+  const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+  if (match) return match[2];
   return undefined;
 }
 
-export function signOutRails(csrfToken: string): void {
+export function signOutRails(): void {
+  const csrfToken = (window as any).csrfToken
   const form = document.createElement("form");
   form.method = "post";
   form.action = "/users/sign_out";
