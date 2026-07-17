@@ -17,7 +17,7 @@
             variant="text"
             color="white"
           >
-            <v-icon icon="mdi-arrow-right" size="large"></v-icon>
+            <v-icon icon="mdi-close" size="large"></v-icon>
           </v-btn>
         </div>
 
@@ -288,9 +288,10 @@ async function handleAuthSubmit() {
   isLoading.value = true
 
   try {
+    const apiBase = import.meta.env.VITE_API_BASE_URL ?? ''
     const url = isLoginMode.value
-      ? 'http://localhost:4000/api/v1/auth/login'
-      : 'http://localhost:4000/api/v1/auth/signup'
+      ? `${apiBase}/api/v1/auth/login`
+      : `${apiBase}/api/v1/auth/signup`
 
     const body = isLoginMode.value
       ? { email: email.value, password: password.value }

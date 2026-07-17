@@ -690,8 +690,8 @@ div.icon img {
     transition: background 0.5s ease-out;
     position: fixed;
     cursor: pointer;
-    left: 10px;
-    top: 470px;
+    right: 10px;
+    top: 550px;
 }
 
 .testbench-manual-panel .panel-header {
@@ -1941,9 +1941,8 @@ canvas {
 }
 .dialogClose:hover {
     font-weight: bold;
-    background: white;
-    opacity: 0.5;
-    color: black;
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--primary-btn-hov);
 }
 
 .dialogHeader {

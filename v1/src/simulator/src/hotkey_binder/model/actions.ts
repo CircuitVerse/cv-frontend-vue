@@ -101,7 +101,7 @@ const removeObsoleteKeys = (userK: KeyMap, defaultK: KeyMap): boolean => {
 /**
  * Add missing keys to user keys
  */
-const addMissingKeys = (userK: KeyMap): void => {
+const _addMissingKeys = (userK: KeyMap): void => {
   Object.entries(defaultKeys).forEach(([key, value]) => {
     if (!userK[key]) {
       userK[key] = value;

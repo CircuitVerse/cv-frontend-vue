@@ -37,7 +37,7 @@ export function loadSubCircuit(savedData: any, scope: any): void {
  * @param scope - The current scope
  * @category subcircuit
  */
-export function createSubCircuitPrompt(scope = globalScope): void {
+export function createSubCircuitPrompt(_scope = globalScope): void {
   if (verilogModeGet() || layoutModeGet()) {
     showError("Subcircuit cannot be inserted in this mode");
     return;
@@ -289,8 +289,6 @@ export default class SubCircuit extends CircuitElement {
       showError(`SubCircuit : ${subcircuitScope.name} is an empty circuit`);
     }
 
-    subcircuitScope.layout.height = subcircuitScope.layout.height;
-    subcircuitScope.layout.width = subcircuitScope.layout.width;
     this.leftDimensionX = 0;
     this.upDimensionY = 0;
     this.rightDimensionX = subcircuitScope.layout.width;
@@ -436,10 +434,10 @@ export default class SubCircuit extends CircuitElement {
    * Gets element being hovered in the subcircuit
    */
   getElementHover(): any {
-    const rX = this.layoutProperties.rightDimensionX;
-    const lX = this.layoutProperties.leftDimensionX;
-    const uY = this.layoutProperties.upDimensionY;
-    const dY = this.layoutProperties.downDimensionY;
+    const _rX = this.layoutProperties.rightDimensionX;
+    const _lX = this.layoutProperties.leftDimensionX;
+    const _uY = this.layoutProperties.upDimensionY;
+    const _dY = this.layoutProperties.downDimensionY;
 
     for (const el of circuitElementList) {
       if (this.localScope[el].length === 0) continue;
@@ -501,6 +499,22 @@ export default class SubCircuit extends CircuitElement {
       version: this.version,
     };
     return data;
+  }
+
+  /**
+   * @memberof SubCircuit
+   * fn to create save Json Data of object
+   * @return {JSON}
+   */
+  customSave() {
+    return {
+      nodes: {
+        inputNodes: this.inputNodes,
+        outputNodes: this.outputNodes,
+      },
+      values: {},
+      constructorParamaters: [this.id],
+    };
   }
 
   /**
