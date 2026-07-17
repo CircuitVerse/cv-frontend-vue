@@ -8,7 +8,7 @@ export function getToken(name: string): string | undefined {
 }
 
 export function signOutRails(): void {
-  const csrfToken = (window as any).csrfToken
+  const csrfToken = (window as any).csrfToken;
   const form = document.createElement("form");
   form.method = "post";
   form.action = "/users/sign_out";
