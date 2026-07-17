@@ -85,7 +85,7 @@ import { importCanonical } from '#/simulator/src/data/importCanonical'
 import { canonicaliseProject } from '#/simulator/src/data/canonical'
 import { scopeList } from '#/simulator/src/circuit'
 import { useState } from '#/store/SimulatorStore/state'
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onUnmounted } from 'vue'
 import type { CanonicalProject } from '#/simulator/src/data/canonical'
 
 const SimulatorState = useState()
@@ -95,6 +95,10 @@ const file = ref<File[]>([])
 const errorMessage = ref('')
 const hasError = computed(() => !!errorMessage.value)
 let fileWatchStop: (() => void) | null = null
+
+onUnmounted(() => {
+    fileWatchStop?.()
+})
 
 function addDropFile(e: DragEvent) {
     if (e.dataTransfer?.files[0]) {
