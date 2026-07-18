@@ -16,7 +16,7 @@ import { useProjectStore } from '#/store/projectStore'
 import { provideProjectName } from '#/components/helpers/promptComponent/PromptComponent.vue'
 import { UpdateProjectDetail } from '#/components/helpers/createNewProject/UpdateProjectDetail.vue'
 import { confirmOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
-import { getToken } from '#/pages/simulatorHandler.vue'
+import { getToken } from '#/utils/auth'
 import { renderOrder } from '../metadata'
 
 // var projectName = undefined
