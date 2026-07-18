@@ -4,7 +4,7 @@
         :persistent="true"
     >
         <v-card class="importProjectDialog">
-            <v-text-field>
+            <v-card-text>
                 <p>{{ $t('simulator.nav.project.import_project') }}</p>
                 <v-btn
                     size="x-small"
@@ -45,7 +45,7 @@
                         </template>
                     </v-file-input>
                 </div>
-            </v-text-field>
+            </v-card-text>
             <v-card-actions>
                 <v-btn
                     class="messageBtn"
