@@ -13,6 +13,25 @@
             "layout_elements": "Layout Elements",
             "no_elements_available": "No layout elements available"
         },
+        "export": {
+            "download_btn": "Download Circuit",
+            "copy_btn": "Copy to Clipboard",
+            "copy_success": "Project data copied to clipboard",
+            "generate_error": "Failed to generate export. Please check your circuit and try again.",
+            "generate_error_prefix": "Failed to generate export"
+        },
+        "import": {
+            "file_label": "Click to Select or Drag and drop file here",
+            "format_error": "Invalid file format. Only [ .cv ] files are accepted. Try again.",
+            "active_scope_error": "No active circuit to import into.",
+            "parse_error": "Invalid file — could not parse.",
+            "import_failed": "Import failed: ",
+            "import_error": "Import error: ",
+            "backup_failed_error": "Could not create a backup of the current circuit for rollback. Try again.",
+            "restore_failed_error": "Import failed and the original circuit could not be restored.",
+            "cancel_btn": "Cancel",
+            "import_btn": "Import"
+        },
         "unlabeled": "Unlabeled",
         "nav": {
             "untitled_project": "Untitled",

@@ -19,7 +19,7 @@ export class EventQueue {
   time: number;
   constructor(size: number) {
     this.size = size;
-    this.queue = new Array(size);
+    this.queue = Array.from({ length: size });
     this.frontIndex = 0;
     this.time = 0;
   }

@@ -103,7 +103,7 @@ import {
 } from '#/simulator/src/hotkey_binder/view/panel.ui'
 import { useState } from '#/store/SimulatorStore/state'
 import { onMounted, onUpdated, ref, Ref } from '@vue/runtime-core'
-import { confirmOption } from '../helpers/confirmComponent/ConfirmComponent.vue'
+import { confirmOption } from '#/utils/confirm'
 
 export function keyBinder() {
     const SimulatorState = useState()

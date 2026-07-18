@@ -20,5 +20,7 @@ jobs:
         run: npm ci
       - name: Run Lint
         run: npm run lint:ci
+      - name: Run Lint (v1 - enforced, no warnings allowed)
+        run: npm run lint:v1:ci
       - name: Run Format Check
         run: npm run fmt:check

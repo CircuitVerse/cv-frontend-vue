@@ -10,7 +10,7 @@ declare var globalScope: Scope;
  * @param {Scope=} scope - circuit whose image we want
  * @exports createSaveAsImgPrompt
  */
-export default function createSaveAsImgPrompt(scope: Scope = globalScope): void {
+export default function createSaveAsImgPrompt(_scope: Scope = globalScope): void {
   const simulatorStore = SimulatorStore();
   simulatorStore.dialogBox.saveimage_dialog = true;
 }

@@ -10,11 +10,17 @@
     "preview": "vite preview",
     "lint": "find . -name \"*.ts\" -not -path \"*/node_modules/*\" | xargs oxlint --ignore-path .gitignore",
     "lint:ci": "find . -name \"*.ts\" -not -path \"*/node_modules/*\" | xargs oxlint --ignore-path .gitignore --format=github",
+    "lint:v1": "find v1 -name \"*.ts\" | xargs oxlint --deny-warnings",
+    "lint:v1:ci": "find v1 -name \"*.ts\" | xargs oxlint --deny-warnings --format=github",
     "format": "oxfmt --write \"**/*.ts\"",
     "format:check": "oxfmt --check \"**/*.ts\"",
     "fmt:check": "npm run format:check",
     "postinstall": "husky install",
     "test": "vitest --silent",
+    "test:src": "vitest run --project src",
+    "test:v1": "vitest run --project v1",
+    "test:src:ci": "vitest run --project src --reporter=github-actions",
+    "test:v1:ci": "vitest run --project v1 --reporter=github-actions",
     "test:synthesis": "vitest run --project synthesis"
   },
   "dependencies": {
@@ -65,11 +71,11 @@
     "oxfmt": "^0.32.0",
     "oxlint": "^1.47.0",
     "sass": "^1.100.0",
-    "typescript": "^5.7.0",
+    "typescript": "^5.9.3",
     "vite": "^8.0.16",
     "vite-plugin-css-injected-by-js": "^3.5.2",
     "vite-plugin-vuetify": "^2.1.3",
-    "vitest": "^4.1.8",
+    "vitest": "^4.1.10",
     "vue-tsc": "^2.2.0"
   }
 }
