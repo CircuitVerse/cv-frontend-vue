@@ -690,8 +690,8 @@ div.icon img {
     transition: background 0.5s ease-out;
     position: fixed;
     cursor: pointer;
-    left: 10px;
-    top: 470px;
+    right: 10px;
+top: 550px;
 }
 
 .testbench-manual-panel .panel-header {
