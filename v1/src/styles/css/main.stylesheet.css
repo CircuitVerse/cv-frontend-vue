@@ -254,7 +254,7 @@ input[type='text']:focus {
     border-radius: 5px;
     z-index: 70;
     transition: background 0.5s ease-out;
-    position: fixed;
+    position: absolute;
 }
 
 @supports (backdrop-filter: blur()) {
@@ -358,7 +358,7 @@ input[type='text']:focus {
 .ce-panel {
     font: inherit;
     width: 240px;
-    top: 90px;
+    top: 10px;
     left: 10px;
 }
 
@@ -657,7 +657,7 @@ div.icon img {
 .moduleProperty {
     font: inherit;
     width: 250px;
-    top: 90px;
+    top: 10px;
     right: 10px;
 }
 
@@ -665,10 +665,10 @@ div.icon img {
     border-radius: 5px;
     z-index: 70;
     transition: background 0.5s ease-out;
-    position: fixed;
+    position: absolute;
     cursor: pointer;
     left: 300px;
-    top: 90px;
+    top: 10px;
 }
 
 .timing-diagram-panel .panel-header {
@@ -883,7 +883,7 @@ div.icon img {
     width: 220px;
     font: inherit;
     display: none;
-    top: 90px;
+    top: 10px;
     right: 300px;
 }
 
@@ -1101,7 +1101,7 @@ input:checked + .slider:before {
 #layoutDialog {
     /* display: none; */
     right: 10px;
-    top: 90px;
+    top: 10px;
     width: 220px;
 }
 
