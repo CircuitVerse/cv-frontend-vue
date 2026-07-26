@@ -3,6 +3,26 @@ import { vi, afterEach } from "vitest";
 import jQuery from "jquery";
 
 global.window = window;
+
+const localStorageMock = (() => {
+  let store: { [key: string]: string } = {};
+  return {
+    getItem: vi.fn((key: string) => store[key] || null),
+    setItem: vi.fn((key: string, value: string) => {
+      store[key] = value.toString();
+    }),
+    clear: vi.fn(() => {
+      store = {};
+    }),
+    removeItem: vi.fn((key: string) => {
+      delete store[key];
+    }),
+    key: vi.fn((index: number) => Object.keys(store)[index] || null),
+    length: 0,
+  };
+})();
+global.localStorage = localStorageMock;
+window.localStorage = localStorageMock;
 global.jQuery = jQuery;
 vi.stubGlobal("$", jQuery);
 global.DPR = true;
