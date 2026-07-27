@@ -111,9 +111,7 @@
                 autocomplete="off"
                 rows="9"
                 :name="value.func"
-            >
-                {{ obj[name] }}
-            </textarea>
+            >{{ obj[name] }}</textarea>
         </p>
     </div>
 </template>
