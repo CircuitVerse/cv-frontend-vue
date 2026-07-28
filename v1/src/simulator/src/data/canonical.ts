@@ -200,14 +200,14 @@ function buildComponentDrafts(scope: Scope, uf: UnionFind, nodeIndexMap: NodeInd
         properties.constructorParamaters = saveData.constructorParamaters;
       }
 
-      const statePropKey = STATEFUL_DEFAULT_STATE[typeName];
       if (typeName === "Flag" && saveData.values?.identifier !== undefined) {
         properties.constructorParamaters = [
-          ...properties.constructorParamaters!,
+          ...properties.constructorParamaters ?? [],
           saveData.values.identifier,
         ];
       }
 
+      const statePropKey = STATEFUL_DEFAULT_STATE[typeName];
       const defaultState =
         statePropKey !== undefined ? (comp[statePropKey] as number | undefined) : undefined;
 
@@ -407,13 +407,14 @@ function canonicalSort(
   }
 
   components.sort((a, b) => {
-    if (a.type === b.type && a._interfaceOrder !== undefined && b._interfaceOrder !== undefined) {
-      return a._interfaceOrder - b._interfaceOrder;
-    }
-
     const aFp = fpMap.get(a)!;
     const bFp = fpMap.get(b)!;
-    return aFp < bFp ? -1 : aFp > bFp ? 1 : 0;
+    if (aFp !== bFp) return aFp < bFp ? -1 : 1;
+
+    if (a._interfaceOrder !== undefined && b._interfaceOrder !== undefined) {
+      return a._interfaceOrder - b._interfaceOrder;
+    }
+    return 0;
   });
 }
 
@@ -584,7 +585,8 @@ function buildWireJunctions(
         const neighbourIdx = nodeIndexMap.get(neighbour)!;
         if (neighbour.type === 2) continue;
 
-        const portRef = nodePortRefs.get(neighbourIdx)!;
+        const portRef = nodePortRefs.get(neighbourIdx);
+        if (portRef === undefined) continue;
 
         const dedupeKey = `${portRef}|${localId}`;
         if (!seenPortConns.has(dedupeKey)) {

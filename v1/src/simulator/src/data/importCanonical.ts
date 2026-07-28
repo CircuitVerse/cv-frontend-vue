@@ -229,12 +229,16 @@ function restoreIntermediateNodes(
   for (const [netId, routing] of Object.entries(intermediateNodes)) {
     const { nodes: junctionPoints, edges, portConnections } = routing;
 
-    const netBitWidth = netBitWidthMap.get(netId)!;
+    const netBitWidth = netBitWidthMap.get(netId);
+    if (netBitWidth === undefined) {
+      errors.push(`intermediateNodes references unknown net "${netId}"`);
+      continue;
+    }
     const junctionNodes: Node[] = [];
 
     for (let i = 0; i < junctionPoints.length; i++) {
       const point = junctionPoints[i];
-      // node.js does not expose the real bitWidth constructor type to TypeScript.
+      // node.js makes TypeScript infer bitWidth as undefined even though its JSDoc and runtime accept a number.
       const node = Reflect.construct(Node, [point.x, point.y, 2, scope.root, netBitWidth]) as Node;
       junctionNodes.push(node);
     }
