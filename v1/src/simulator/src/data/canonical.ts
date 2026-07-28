@@ -202,7 +202,7 @@ function buildComponentDrafts(scope: Scope, uf: UnionFind, nodeIndexMap: NodeInd
 
       if (typeName === "Flag" && saveData.values?.identifier !== undefined) {
         properties.constructorParamaters = [
-          ...properties.constructorParamaters ?? [],
+          ...(properties.constructorParamaters ?? []),
           saveData.values.identifier,
         ];
       }
