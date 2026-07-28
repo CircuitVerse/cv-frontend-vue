@@ -1,170 +1,80 @@
 import { circuitElementList } from "../metadata";
+import type Scope from "../circuit";
+import type Node from "../node";
+import type {
+  CanonicalScope,
+  CanonicalLayout,
+  CanonicalComponent,
+  CanonicalComponentProperties,
+  IntermediateNet,
+  CanonicalJsonValue,
+  CanonicalNet,
+  CanonicalProject,
+  Direction,
+  ComponentInstance,
+} from "../types/canonical.types";
 
-type WireNode = {
+/** Maps live node objects to their position in Scope.allNodes */
+type NodeIndexMap = Map<Node, number>;
+
+/** Live component data read by the canonical exporter. */
+type CVComponent = ComponentInstance & {
+  objectType: string;
   bitWidth: number;
-  connections: WireNode[];
-  deleted?: boolean;
-  type: number;
+  customSave: () => {
+    nodes: Record<string, number | number[]>;
+    // Only components with saved state or identifiers emit values.
+    values?: {
+      state?: number;
+      identifier?: string;
+    };
+    // RGBLed is the only built-in component which does not emit constructor parameters.
+    constructorParamaters?: CanonicalJsonValue[];
+  };
+  direction: Direction;
   x: number;
   y: number;
+  // Port keys cannot be static: AndGate.inp is a node array while Flag.identifier is a string.
   [key: string]: unknown;
 };
 
-type NodeIndexMap = Map<WireNode, number>;
-
-type ComponentSaveData = {
-  nodes: Record<string, WireNode | WireNode[]>;
-  values?: Record<string, string | number | boolean>;
-  constructorParamaters?: Array<string | number | boolean | Record<string, unknown>>;
-};
-
-type CVComponent = {
-  objectType: string;
-  label?: string;
-  bitWidth: number;
-  customSave: () => ComponentSaveData;
-  direction?: "LEFT" | "RIGHT" | "UP" | "DOWN";
-  propagationDelay?: number;
-  state?: unknown;
-  labelDirection?: "LEFT" | "RIGHT" | "UP" | "DOWN";
-  x?: number;
-  y?: number;
-  [key: string]: unknown;
-};
-
-type CVScope = {
-  id?: number;
-  name?: string;
-  timeStamp?: string | number | null;
-  allNodes: WireNode[];
-  layout?: {
-    width?: number;
-    height?: number;
-    titleX?: number;
-    titleY?: number;
-    titleEnabled?: boolean;
-  };
-  scale?: number;
-  ox?: number;
-  oy?: number;
-  verilogMetadata?: {
-    isVerilogCircuit?: boolean;
-    isMainCircuit?: boolean;
-    code?: string;
-    subCircuitScopeIds?: string[];
-  };
-  restrictedCircuitElementsUsed?: string[];
-  [key: string]: unknown;
-};
-
+/** Component data collected before canonical IDs are assigned. */
 type ComponentDraft = {
-  id?: string;
+  id?: string; // Assigned after structural sorting.
   type: string;
   label: string;
   bitWidth: number;
-  properties: Record<string, unknown>;
+  properties: CanonicalComponentProperties;
   _connections: Record<string, number>;
-  _state?: unknown;
-  _labelDirection?: "LEFT" | "RIGHT" | "UP" | "DOWN";
-  _x?: number;
-  _y?: number;
-  _instance?: CVComponent;
-  _portDefs?: Record<string, WireNode | WireNode[]>;
-  [key: string]: unknown;
+  _canonicalPortNames: string[]; // Used for Sorted canonical hashing, net IDs and WL signatures
+  _state?: number; // Stateless components do not have an initial state.
+  _labelDirection: Direction;
+  _x: number;
+  _y: number;
+  _instance: CVComponent;
+  _portNames: string[]; // Used for retrieving live nodes via comp._instance["inp"]
+  _interfaceOrder?: number; // Input and Output array order defines the SubCircuit interface.
 };
 
-export type CanonicalComponent = {
-  id: string;
-  type: string;
-  label: string;
-  bitWidth: number;
-  connections: Record<string, string>;
-  properties: Record<string, unknown>;
-  defaultState?: unknown;
+/** Component draft after its canonical ID has been assigned.
+ * It contains live simulator references and temporary graph information.
+ */
+type FinalComponentDraft = ComponentDraft & { id: string };
+
+/** Hash-relevant properties and signature cached for one component. */
+type StructuralComponentData = {
+  properties: CanonicalComponentProperties;
+  signature: string;
 };
 
-export type CanonicalNet = {
-  id: string;
-  bitWidth: number;
-  connections: string[];
+/** One component port connected to a Union-Find net root. */
+type ConnectedPort = {
+  componentIndex: number;
+  portName: string;
+  netRoot: number;
 };
 
-type SubcircuitPort = {
-  componentId: string;
-  label: string;
-  bitWidth: number;
-  subcircuitExposed: true;
-  order: number;
-};
-
-export type IntermediateNet = {
-  nodes: Array<{ id: number; x: number; y: number }>;
-  edges: Array<[number, number]>;
-  portConnections: Array<{ portRef: string; nodeId: number }>;
-};
-
-type SubcircuitSymbolLayout = {
-  width: number;
-  height: number;
-  titleX: number;
-  titleY: number;
-  titleEnabled: boolean;
-};
-
-export type CanonicalLayout = {
-  [componentId: string]:
-    | {
-        x?: number;
-        y?: number;
-        labelDirection?: "LEFT" | "RIGHT" | "UP" | "DOWN";
-        [key: string]: unknown;
-      }
-    | Record<string, IntermediateNet>
-    | SubcircuitSymbolLayout
-    | undefined;
-  intermediateNodes?: Record<string, IntermediateNet>;
-  subcircuitSymbol?: SubcircuitSymbolLayout;
-};
-
-export type CanonicalScope = {
-  canonicalHash: string;
-  projectMetadata: {
-    id?: number;
-    name: string;
-    timeStamp: string | number | null;
-    restrictedElementsUsed: string[];
-  };
-  netlist: {
-    components: CanonicalComponent[];
-    nets: CanonicalNet[];
-  };
-  interfacePorts: {
-    inputs: SubcircuitPort[];
-    outputs: SubcircuitPort[];
-  };
-  layout: CanonicalLayout;
-  visual: {
-    canvas: {
-      scale: number;
-      ox: number;
-      oy: number;
-    };
-  };
-  verilogMetadata: {
-    isVerilogCircuit: boolean;
-    isMainCircuit: boolean;
-    code: string;
-    subCircuitScopeIds: string[];
-  };
-};
-
-export type CanonicalProject = {
-  formatVersion: "v1";
-  canonicalHash: string;
-  circuits: Record<number, CanonicalScope>;
-};
-
-export class UnionFind {
+class UnionFind {
   private parent: number[];
   private rank: number[];
 
@@ -202,75 +112,23 @@ export class UnionFind {
   }
 }
 
-const STRUCTURAL_STATE: Set<string> = new Set(["ConstantVal"]);
-
-const DIRECTION_BEARING: Set<string> = new Set([
-  "Input",
-  "Output",
-  "NotGate",
-  "OrGate",
-  "AndGate",
-  "NorGate",
-  "NandGate",
-  "XorGate",
-  "XnorGate",
-  "Multiplexer",
-  "Demultiplexer",
-  "BitSelector",
-  "Splitter",
-  "ConstantVal",
-  "ControlledInverter",
-  "TriState",
-  "Adder",
-  "ALU",
-  "Buffer",
-  "TwoComplement",
-  "ForceGate",
-  "DflipFlop",
-  "TflipFlop",
-  "SRflipFlop",
-  "JKflipFlop",
-  "Dlatch",
-  "Clock",
-  "Stepper",
-  "Button",
-  "Random",
-  "RAM",
-  "EEPROM",
-  "verilogRAM",
-  "verilogMultiplier",
-  "verilogDivider",
-  "verilogPower",
-  "verilogShiftLeft",
-  "verilogShiftRight",
-  "MSB",
-  "LSB",
-  "PriorityEncoder",
-  "Decoder",
-  "Tunnel",
-  "Flag",
-  "SquareRGBLed",
-  "TB_Input",
-  "TB_Output",
-]);
-
-export const STATEFUL_DEFAULT_STATE: Record<string, string> = {
+export const STATEFUL_DEFAULT_STATE: Record<string, "state" | "slaveState" | "value"> = {
   Input: "state",
-  ConstantVal: "state",
+  Button: "state",
   DflipFlop: "slaveState",
   TflipFlop: "slaveState",
   SRflipFlop: "state",
-  JKflipFlop: "state",
+  JKflipFlop: "slaveState",
   Dlatch: "state",
   Counter: "value",
   Stepper: "state",
 };
 
 /**
- * Creates a mapping from WireNode references to their numerical indices.
+ * Creates a mapping from Node references to their numerical indices.
  */
-function indexNodes(allNodes: WireNode[]) {
-  const map = new Map<WireNode, number>();
+function indexNodes(allNodes: Node[]) {
+  const map = new Map<Node, number>();
   for (let i = 0; i < allNodes.length; i++) {
     map.set(allNodes[i], i);
   }
@@ -280,14 +138,15 @@ function indexNodes(allNodes: WireNode[]) {
 /**
  * Uses a Union-Find structure to group interconnected nodes into discrete nets.
  */
-function discoverNets(scope: CVScope, nodeIndexMap: NodeIndexMap) {
-  const { allNodes } = scope;
+function discoverNets(allNodes: Node[], nodeIndexMap: NodeIndexMap) {
   const uf = new UnionFind(allNodes.length);
 
   for (let i = 0; i < allNodes.length; i++) {
     const node = allNodes[i];
-    for (let j = 0; j < node.connections.length; j++) {
-      const neighbourIdx = nodeIndexMap.get(node.connections[j]);
+    // Nodes enter Scope.allNodes only after the constructor creates connections.
+    const connections = node.connections!;
+    for (let j = 0; j < connections.length; j++) {
+      const neighbourIdx = nodeIndexMap.get(connections[j]);
       if (neighbourIdx !== undefined) {
         uf.union(i, neighbourIdx);
       }
@@ -300,63 +159,57 @@ function discoverNets(scope: CVScope, nodeIndexMap: NodeIndexMap) {
 /**
  * Constructs initial drafts of components by extracting structural properties and default states.
  */
-function buildComponentDrafts(scope: CVScope, uf: UnionFind, nodeIndexMap: NodeIndexMap) {
+function buildComponentDrafts(scope: Scope, uf: UnionFind, nodeIndexMap: NodeIndexMap) {
   const components: ComponentDraft[] = [];
 
   for (let i = 0; i < circuitElementList.length; i++) {
     const typeName = circuitElementList[i];
-    const instances = scope[typeName] as CVComponent[] | undefined;
-    if (!instances || instances.length === 0) continue;
+    // Scope.initialize() writes component arrays onto the scope using dynamic string keys from moduleList
+    // (e.g. this["AndGate"] = [], this["Input"] = []), so no static Scope property covers these 60+ arrays.
+    // scope[typeName] would return "unknown" due to the index signature; Reflect.get returns "any",
+    // which allows the CVComponent[] annotation without a cast. Both are equally unchecked at runtime —
+    // Reflect.get is used here as an explicit marker of this dynamic boundary rather than a hidden "as" cast.
+    const instances: CVComponent[] = Reflect.get(scope, typeName);
+    if (instances.length === 0) continue;
 
     for (let j = 0; j < instances.length; j++) {
       const comp = instances[j];
       const saveData = comp.customSave();
-      const portDefs = saveData.nodes;
-
-      if (!portDefs || Object.keys(portDefs).length === 0) continue;
+      const portNames = Object.keys(saveData.nodes);
 
       const portRootIndices: Record<string, number> = {};
 
-      for (const portName of Object.keys(portDefs)) {
-        const savedVal = portDefs[portName];
+      for (const portName of portNames) {
+        const port = comp[portName] as Node | Node[];
 
-        if (Array.isArray(savedVal)) {
-          const nodeArray = comp[portName] as WireNode[];
-          for (let offset = 0; offset < nodeArray.length; offset++) {
-            const idx = nodeIndexMap.get(nodeArray[offset]);
-            if (idx === undefined) continue;
+        if (Array.isArray(port)) {
+          for (let offset = 0; offset < port.length; offset++) {
+            const idx = nodeIndexMap.get(port[offset])!;
             portRootIndices[`${portName}_${offset}`] = uf.find(idx);
           }
         } else {
-          const node = comp[portName] as WireNode | undefined;
-          const idx = node ? nodeIndexMap.get(node) : undefined;
-          if (idx === undefined) continue;
-          portRootIndices[portName] = uf.find(idx);
+          portRootIndices[portName] = uf.find(nodeIndexMap.get(port)!);
         }
       }
 
-      const properties: Record<string, unknown> = {};
-
-      if (comp.propagationDelay !== undefined && comp.propagationDelay !== 0) {
-        properties.propagationDelay = comp.propagationDelay;
-      }
+      const properties: CanonicalComponentProperties = {
+        propagationDelay: comp.propagationDelay,
+      };
 
       if (saveData.constructorParamaters !== undefined) {
         properties.constructorParamaters = saveData.constructorParamaters;
       }
 
       const statePropKey = STATEFUL_DEFAULT_STATE[typeName];
-      if (saveData.values) {
-        for (const [key, value] of Object.entries(saveData.values)) {
-          if (key === statePropKey) continue;
-          properties[key] = value;
-        }
+      if (typeName === "Flag" && saveData.values?.identifier !== undefined) {
+        properties.constructorParamaters = [
+          ...properties.constructorParamaters!,
+          saveData.values.identifier,
+        ];
       }
 
-      const defaultState: unknown | undefined =
-        statePropKey !== undefined && (comp as Record<string, unknown>)[statePropKey] !== undefined
-          ? (comp as Record<string, unknown>)[statePropKey]
-          : undefined;
+      const defaultState =
+        statePropKey !== undefined ? (comp[statePropKey] as number | undefined) : undefined;
 
       components.push({
         type: comp.objectType,
@@ -364,12 +217,14 @@ function buildComponentDrafts(scope: CVScope, uf: UnionFind, nodeIndexMap: NodeI
         bitWidth: comp.bitWidth,
         properties,
         _connections: portRootIndices,
+        _canonicalPortNames: Object.keys(portRootIndices).sort(naturalCompare),
         _state: defaultState,
         _labelDirection: comp.labelDirection,
         _x: comp.x,
         _y: comp.y,
         _instance: comp,
-        _portDefs: saveData.nodes,
+        _portNames: portNames,
+        _interfaceOrder: typeName === "Input" || typeName === "Output" ? j : undefined,
       });
     }
   }
@@ -384,99 +239,118 @@ function buildComponentDrafts(scope: CVScope, uf: UnionFind, nodeIndexMap: NodeI
  * "Input_10" > "Input_2" [if we apply sort using the below function, Correct Sort]
  */
 function naturalCompare(a: string, b: string): number {
-  let ai = 0,
-    bi = 0;
-  while (ai < a.length && bi < b.length) {
-    const aDigit = a[ai] >= "0" && a[ai] <= "9";
-    const bDigit = b[bi] >= "0" && b[bi] <= "9";
-    if (aDigit && bDigit) {
-      let an = 0,
-        bn = 0;
+  const prefix_a = /^(.*?)(\d+)$/.exec(a);
+  const prefix_b = /^(.*?)(\d+)$/.exec(b);
 
-      while (ai < a.length && a[ai] >= "0" && a[ai] <= "9") {
-        an = an * 10 + +a[ai++];
-      }
-      while (bi < b.length && b[bi] >= "0" && b[bi] <= "9") {
-        bn = bn * 10 + +b[bi++];
-      }
-
-      if (an !== bn) return an - bn;
-    } else {
-      if (a[ai] !== b[bi]) return a.charCodeAt(ai) - b.charCodeAt(bi);
-      ai++;
-      bi++;
+  if (prefix_a && prefix_b && prefix_a[1] === prefix_b[1]) {
+    const diff = Number(prefix_a[2]) - Number(prefix_b[2]);
+    if (diff !== 0) {
+      return diff;
     }
   }
-  return a.length - b.length;
+
+  return a < b ? -1 : a > b ? 1 : 0;
 }
 
 /**
- * Generates a unique string key representing a component's port connections.
+ * Produces the hash-relevant property bag used for component ordering and hashing.
+ * Visual direction/layout data is neutralised and SubCircuit IDs become child content hashes.
  */
-function portKey(comp: ComponentDraft): string {
-  return Object.keys(comp._connections).sort(naturalCompare).join(",");
+function buildStructuralProperties(
+  comp: ComponentDraft,
+  childHashes?: Map<number, string>,
+): CanonicalComponentProperties {
+  const properties = { ...comp.properties };
+  const constructorParams = properties.constructorParamaters;
+
+  if (constructorParams !== undefined) {
+    const params = [...constructorParams];
+    if (params[0] === comp._instance.direction) {
+      params[0] = null; // params[0] is the component's orientation on the canvas
+    }
+    if (comp.type === "Input" || comp.type === "Output") {
+      params[2] = null; // params[2] holds layoutProperties
+    }
+    if (comp.type === "SubCircuit") {
+      const childId = Number(params[0]);
+      const childHash = childHashes?.get(childId);
+      if (!childHash) {
+        throw new Error(
+          `[canonical] SubCircuit references scope ${String(params[0])}, but no child hash is available`,
+        );
+      }
+      params[0] = childHash;
+    }
+    properties.constructorParamaters = params;
+  }
+
+  return properties;
+}
+
+/** Builds hash-relevant component data once for sorting, WL refinement, and hashing. */
+function buildStructuralComponentData(
+  components: ComponentDraft[],
+  childHashes?: Map<number, string>,
+): Map<ComponentDraft, StructuralComponentData> {
+  const data = new Map<ComponentDraft, StructuralComponentData>();
+
+  for (const comp of components) {
+    const properties = buildStructuralProperties(comp, childHashes);
+    const signature = JSON.stringify({
+      type: comp.type,
+      bitWidth: comp.bitWidth,
+      ports: comp._canonicalPortNames.join(","),
+      properties,
+    });
+    data.set(comp, { properties, signature });
+  }
+
+  return data;
 }
 
 /**
  * Compresses unique structural signatures into shorter colour representations.
  */
-function compressColourSignatures(signatures: Map<number, string>): Map<number, string> {
-  const unique = [...new Set(signatures.values())].sort();
+function compressColourSignatures(signatures: string[]): string[] {
+  const unique = [...new Set(signatures)].sort();
   const signatureToColour = new Map(
     unique.map((signature, index) => [signature, index.toString(36)]),
   );
-  const colours = new Map<number, string>();
 
-  for (const [id, signature] of signatures) {
-    colours.set(id, signatureToColour.get(signature)!);
-  }
-
-  return colours;
+  return signatures.map((signature) => signatureToColour.get(signature)!);
 }
 
-function sameColours(a: Map<number, string>, b: Map<number, string>): boolean {
-  if (a.size !== b.size) return false;
-
-  for (const [id, colour] of a) {
-    if (b.get(id) !== colour) return false;
+function sameColours(a: string[], b: string[]): boolean {
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== b[i]) return false;
   }
 
   return true;
 }
 
-/**
- * Builds an adjacency list for components based on their shared net connections.
- */
-function buildWLAdjacency(components: ComponentDraft[]) {
-  const netToComps = new Map<number, number[]>();
+/** Builds the port-labelled component/net incidence graph used by WL refinement. */
+function buildWLTopology(components: ComponentDraft[]) {
+  // Maps each net root to all component ports connected to that electrical net.
+  const portsByNet = new Map<number, ConnectedPort[]>();
 
-  for (let i = 0; i < components.length; i++) {
-    const comp = components[i];
-    for (const val of Object.values(comp._connections)) {
-      if (!netToComps.has(val)) netToComps.set(val, []);
-      netToComps.get(val)!.push(i);
+  // Maps each component index to that component's connected ports.
+  const portsByComponent: ConnectedPort[][] = components.map(() => []);
+
+  for (let componentIndex = 0; componentIndex < components.length; componentIndex++) {
+    for (const portName of components[componentIndex]._canonicalPortNames) {
+      const endpoint = {
+        componentIndex,
+        portName,
+        netRoot: components[componentIndex]._connections[portName],
+      };
+      portsByComponent[componentIndex].push(endpoint);
+      const connectedPorts = portsByNet.get(endpoint.netRoot) ?? [];
+      connectedPorts.push(endpoint);
+      portsByNet.set(endpoint.netRoot, connectedPorts);
     }
   }
 
-  const adjacency = new Map<number, Set<number>>();
-  for (let i = 0; i < components.length; i++) adjacency.set(i, new Set());
-
-  for (const compIds of netToComps.values()) {
-    for (const compId of compIds) {
-      for (const otherId of compIds) {
-        if (otherId !== compId) adjacency.get(compId)!.add(otherId);
-      }
-    }
-  }
-
-  const result = new Map<number, number[]>();
-  for (const [id, neighbours] of adjacency) {
-    result.set(
-      id,
-      [...neighbours].sort((a, b) => a - b),
-    );
-  }
-  return result;
+  return { portsByNet, portsByComponent };
 }
 
 /**
@@ -484,38 +358,28 @@ function buildWLAdjacency(components: ComponentDraft[]) {
  */
 function wlFingerprint(
   components: ComponentDraft[],
-  childHashes?: Map<number, string>,
-): Map<number, string> {
-  if (components.length === 0) return new Map<number, string>();
-
-  const initialSignatures = new Map<number, string>();
-  for (let i = 0; i < components.length; i++) {
-    const comp = components[i];
-    let signature = `${comp.type}|${comp.bitWidth ?? 1}|${portKey(comp)}`;
-    if (comp.type === "SubCircuit") {
-      const id = (comp.properties?.constructorParamaters as unknown[])?.[0];
-      const childId = id !== undefined ? Number(id) : NaN;
-      signature += `|${(!isNaN(childId) && childHashes?.get(childId)) ?? String(id ?? "")}`;
-    }
-    initialSignatures.set(i, signature);
-  }
+  structuralData: Map<ComponentDraft, StructuralComponentData>,
+): string[] {
+  const initialSignatures = components.map((comp) => structuralData.get(comp)!.signature);
 
   let colours = compressColourSignatures(initialSignatures);
-  if (components.length === 1) return colours;
-
-  const adjacency = buildWLAdjacency(components);
+  const { portsByNet, portsByComponent } = buildWLTopology(components);
 
   for (let round = 0; round < components.length; round++) {
-    const signatures = new Map<number, string>();
+    const signatures: string[] = [];
 
     for (let i = 0; i < components.length; i++) {
-      const neighbours = adjacency.get(i) ?? [];
-      const neighbourColours = neighbours
-        .map((neighId) => colours.get(neighId) ?? "")
-        .sort()
-        .join(",");
-
-      signatures.set(i, `${colours.get(i)}|${neighbourColours}`);
+      const incidentSignatures = portsByComponent[i].map((port) => {
+        const connectedPorts: string[] = [];
+        for (const otherPort of portsByNet.get(port.netRoot)!) {
+          if (otherPort !== port) {
+            connectedPorts.push(`${colours[otherPort.componentIndex]}@${otherPort.portName}`);
+          }
+        }
+        connectedPorts.sort();
+        return `${port.portName}=[${connectedPorts.join(",")}]`;
+      });
+      signatures[i] = `${colours[i]}|${incidentSignatures.join(";")}`;
     }
 
     const nextColours = compressColourSignatures(signatures);
@@ -529,63 +393,68 @@ function wlFingerprint(
 /**
  * Sorts components into a canonical order based on their properties, connections, and structural fingerprints.
  */
-function canonicalSort(components: ComponentDraft[], childHashes?: Map<number, string>) {
+function canonicalSort(
+  components: ComponentDraft[],
+  structuralData: Map<ComponentDraft, StructuralComponentData>,
+) {
+  if (components.length < 2) return;
+
   const fpMap = new Map<ComponentDraft, string>();
-
-  for (const comp of components) {
-    let signature = `${comp.type}|${comp.bitWidth}|${portKey(comp)}`;
-    if (comp.type === "SubCircuit") {
-      const id = (comp.properties?.constructorParamaters as unknown[])?.[0];
-      const childId = id !== undefined ? Number(id) : NaN;
-      signature += `|${(!isNaN(childId) && childHashes?.get(childId)) ?? String(id ?? "")}`;
-    }
-    fpMap.set(comp, signature);
-  }
-
-  const wlColours = wlFingerprint(components, childHashes);
+  const wlColours = wlFingerprint(components, structuralData);
   for (let i = 0; i < components.length; i++) {
     const comp = components[i];
-    fpMap.set(comp, `${fpMap.get(comp)}|${wlColours.get(i) ?? ""}`);
+    fpMap.set(comp, `${structuralData.get(comp)!.signature}|${wlColours[i]}`);
   }
 
-  components.sort((a, b) => naturalCompare(fpMap.get(a)!, fpMap.get(b)!));
+  components.sort((a, b) => {
+    if (a.type === b.type && a._interfaceOrder !== undefined && b._interfaceOrder !== undefined) {
+      return a._interfaceOrder - b._interfaceOrder;
+    }
+
+    const aFp = fpMap.get(a)!;
+    const bFp = fpMap.get(b)!;
+    return aFp < bFp ? -1 : aFp > bFp ? 1 : 0;
+  });
 }
 
 /**
  * Assigns unique deterministic structural IDs to components after they have been canonically sorted.
  */
-function assignComponentIds(components: ComponentDraft[]) {
+function assignComponentIds(
+  components: ComponentDraft[],
+): asserts components is FinalComponentDraft[] {
   const countByType: Record<string, number> = {};
   for (let i = 0; i < components.length; i++) {
     const comp = components[i];
-    if (!countByType[comp.type]) countByType[comp.type] = 0;
-    comp.id = `${comp.type}_${countByType[comp.type]++}`;
+    const count = countByType[comp.type] ?? 0;
+    comp.id = `${comp.type}_${count}`;
+    countByType[comp.type] = count + 1;
   }
 }
 
 /**
  * Groups component connections by their underlying root net and assigns string IDs to each net.
  */
-function assignNetIds(components: ComponentDraft[]) {
+function assignNetIds(components: FinalComponentDraft[]) {
   const netIdMap = new Map<number, string>();
   const netConnections = new Map<string, string[]>();
   let netCounter = 0;
 
   for (let componentIndex = 0; componentIndex < components.length; componentIndex++) {
     const comp = components[componentIndex];
-    const portNames = Object.keys(comp._connections).sort(naturalCompare);
+    const portNames = comp._canonicalPortNames;
 
     for (let portIndex = 0; portIndex < portNames.length; portIndex++) {
       const portName = portNames[portIndex];
       const groupRoot = comp._connections[portName];
+      let netId = netIdMap.get(groupRoot);
 
-      if (!netIdMap.has(groupRoot)) {
-        const netId = `net_${netCounter++}`;
+      if (netId === undefined) {
+        netId = `net_${netCounter++}`;
         netIdMap.set(groupRoot, netId);
         netConnections.set(netId, []);
       }
 
-      const netId = netIdMap.get(groupRoot)!;
       netConnections.get(netId)!.push(`${comp.id}.${portName}`);
     }
   }
@@ -599,80 +468,74 @@ function assignNetIds(components: ComponentDraft[]) {
 function buildCanonicalNets(
   netIdMap: Map<number, string>,
   netConnections: Map<string, string[]>,
-  allNodes: WireNode[],
+  allNodes: Node[],
+  uf: UnionFind,
 ) {
   const nets: CanonicalNet[] = [];
+  const finalNetIds = new Map<number, string>();
+  const bitWidthByRoot = new Map<number, number>();
+
+  for (let i = 0; i < allNodes.length; i++) {
+    const root = uf.find(i);
+    if (!netIdMap.has(root)) continue;
+    const bitWidth = allNodes[i].bitWidth;
+    const currentBitWidth = bitWidthByRoot.get(root);
+    if (currentBitWidth === undefined || bitWidth > currentBitWidth) {
+      bitWidthByRoot.set(root, bitWidth);
+    }
+  }
+
   for (const [groupRoot, netId] of netIdMap) {
-    const members = netConnections.get(netId) || [];
+    const members = netConnections.get(netId)!;
+    if (members.length < 2) continue;
 
     const netEntry: CanonicalNet = {
-      id: netId,
-      bitWidth: allNodes[groupRoot]?.bitWidth ?? 0,
+      id: `net_${nets.length}`,
+      bitWidth: bitWidthByRoot.get(groupRoot)!,
       connections: members,
     };
 
+    finalNetIds.set(groupRoot, netEntry.id);
     nets.push(netEntry);
   }
 
-  const usedNets = nets.filter((net) => net.connections.length >= 2);
-  for (let i = 0; i < usedNets.length; i++) {
-    usedNets[i].connections.sort(naturalCompare);
-  }
-
-  const renameMap = new Map<string, string>();
-  let counter = 0;
-  for (const net of usedNets) {
-    const newId = `net_${counter++}`;
-    renameMap.set(net.id, newId);
-    net.id = newId;
-  }
-
-  return { nets: usedNets, renameMap };
+  return { nets, finalNetIds };
 }
 
 /**
  * Reconstructs wire junctions, intermediate routing nodes, and edges for the graphical layout.
  */
 function buildWireJunctions(
-  scope: CVScope,
+  allNodes: Node[],
   nodeIndexMap: NodeIndexMap,
   uf: UnionFind,
   composedNetMap: Map<number, string>,
-  components: ComponentDraft[],
+  components: FinalComponentDraft[],
 ) {
-  const allNodes = scope.allNodes;
   const nodePortRefs = new Map<number, string>();
 
   for (const comp of components) {
     const instance = comp._instance;
-    if (!instance || !comp._portDefs || !comp.id) continue;
+    for (const portName of comp._portNames) {
+      const port = instance[portName] as Node | Node[];
 
-    for (const portName of Object.keys(comp._portDefs)) {
-      const savedVal = comp._portDefs[portName];
-
-      if (Array.isArray(savedVal)) {
-        const nodeArray = instance[portName] as WireNode[];
-        for (let portIndex = 0; portIndex < nodeArray.length; portIndex++) {
-          const idx = nodeIndexMap.get(nodeArray[portIndex]);
-          if (idx !== undefined) {
-            nodePortRefs.set(idx, `${comp.id}.${portName}_${portIndex}`);
-          }
+      if (Array.isArray(port)) {
+        for (let portIndex = 0; portIndex < port.length; portIndex++) {
+          nodePortRefs.set(
+            nodeIndexMap.get(port[portIndex])!,
+            `${comp.id}.${portName}_${portIndex}`,
+          );
         }
       } else {
-        const node = instance[portName] as WireNode | undefined;
-        const idx = node ? nodeIndexMap.get(node) : undefined;
-        if (idx !== undefined) {
-          nodePortRefs.set(idx, `${comp.id}.${portName}`);
-        }
+        nodePortRefs.set(nodeIndexMap.get(port)!, `${comp.id}.${portName}`);
       }
     }
   }
 
-  const intermediatesByNet = new Map<string, Array<{ node: WireNode; idx: number }>>();
+  const intermediatesByNet = new Map<string, Array<{ node: Node; idx: number }>>();
   for (let i = 0; i < allNodes.length; i++) {
     const node = allNodes[i];
-    if (node.deleted || node.type !== 2) continue;
-    if (node.connections.length === 0) continue;
+    if (node.type !== 2) continue;
 
     const root = uf.find(i);
     const finalNetId = composedNetMap.get(root);
@@ -685,53 +548,43 @@ function buildWireJunctions(
   const result: Record<string, IntermediateNet> = {};
 
   for (const [finalNetId, intermediates] of intermediatesByNet) {
-    intermediates.sort((a, b) =>
-      a.node.x !== b.node.x ? a.node.x - b.node.x : a.node.y - b.node.y,
-    );
-
     const nodeToLocalId = new Map<number, number>();
-    const nodes: Array<{ id: number; x: number; y: number }> = [];
+    const nodes: Array<{ x: number; y: number }> = [];
     for (let i = 0; i < intermediates.length; i++) {
       nodeToLocalId.set(intermediates[i].idx, i);
-      nodes.push({ id: i, x: intermediates[i].node.x, y: intermediates[i].node.y });
+      nodes.push({ x: intermediates[i].node.x, y: intermediates[i].node.y });
     }
 
     const edgeSet = new Set<string>();
     const edges: Array<[number, number]> = [];
     for (const { node, idx } of intermediates) {
-      const fromLocalId = nodeToLocalId.get(idx);
-      if (fromLocalId === undefined) continue;
+      const fromLocalId = nodeToLocalId.get(idx)!;
 
-      for (const neighbour of node.connections) {
-        const neighbourIdx = nodeIndexMap.get(neighbour);
-        if (neighbourIdx === undefined || neighbour.deleted) continue;
+      for (const neighbour of node.connections!) {
+        const neighbourIdx = nodeIndexMap.get(neighbour)!;
         if (!nodeToLocalId.has(neighbourIdx)) continue;
 
-        const toLocalId = nodeToLocalId.get(neighbourIdx);
-        if (toLocalId === undefined) continue;
+        const toLocalId = nodeToLocalId.get(neighbourIdx)!;
 
-        const edgeKey = `${Math.min(fromLocalId, toLocalId)}-${Math.max(fromLocalId, toLocalId)}`;
+        const firstNodeId = Math.min(fromLocalId, toLocalId);
+        const secondNodeId = Math.max(fromLocalId, toLocalId);
+        const edgeKey = `${firstNodeId}-${secondNodeId}`;
         if (!edgeSet.has(edgeKey)) {
           edgeSet.add(edgeKey);
-          edges.push([Math.min(fromLocalId, toLocalId), Math.max(fromLocalId, toLocalId)]);
+          edges.push([firstNodeId, secondNodeId]);
         }
       }
     }
-    edges.sort((a, b) => (a[0] !== b[0] ? a[0] - b[0] : a[1] - b[1]));
-
     const seenPortConns = new Set<string>();
     const portConnections: Array<{ portRef: string; nodeId: number }> = [];
     for (const { node: junctionNode, idx: junctionIdx } of intermediates) {
-      const localId = nodeToLocalId.get(junctionIdx);
-      if (localId === undefined) continue;
+      const localId = nodeToLocalId.get(junctionIdx)!;
 
-      for (const neighbour of junctionNode.connections) {
-        const neighbourIdx = nodeIndexMap.get(neighbour);
-        if (neighbourIdx === undefined || neighbour.deleted) continue;
+      for (const neighbour of junctionNode.connections!) {
+        const neighbourIdx = nodeIndexMap.get(neighbour)!;
         if (neighbour.type === 2) continue;
 
-        const portRef = nodePortRefs.get(neighbourIdx);
-        if (!portRef) continue;
+        const portRef = nodePortRefs.get(neighbourIdx)!;
 
         const dedupeKey = `${portRef}|${localId}`;
         if (!seenPortConns.has(dedupeKey)) {
@@ -740,34 +593,40 @@ function buildWireJunctions(
         }
       }
     }
-    portConnections.sort((a, b) => naturalCompare(a.portRef, b.portRef));
-
     result[finalNetId] = { nodes, edges, portConnections };
   }
 
-  const sorted: Record<string, IntermediateNet> = {};
-  Object.keys(result)
-    .sort((a, b) => parseInt(a.slice(4), 10) - parseInt(b.slice(4), 10))
-    .forEach((key) => {
-      sorted[key] = result[key];
-    });
-
-  return sorted;
+  return result;
 }
 
 /**
  * Extracts and maps component coordinates and visual intermediate routing into a complete canonical layout.
  */
 function buildLayout(
-  scope: CVScope,
-  components: ComponentDraft[],
+  scope: Scope,
+  allNodes: Node[],
+  components: FinalComponentDraft[],
   nodeIndexMap: NodeIndexMap,
   uf: UnionFind,
   composedNetMap: Map<number, string>,
 ) {
-  const layout: CanonicalLayout = {};
+  const layout: CanonicalLayout = {
+    subcircuitSymbol: {
+      width: scope.layout.width,
+      height: scope.layout.height,
+      titleX: scope.layout.title_x,
+      titleY: scope.layout.title_y,
+      titleEnabled: scope.layout.titleEnabled,
+    },
+  };
 
-  const intermediateNodes = buildWireJunctions(scope, nodeIndexMap, uf, composedNetMap, components);
+  const intermediateNodes = buildWireJunctions(
+    allNodes,
+    nodeIndexMap,
+    uf,
+    composedNetMap,
+    components,
+  );
 
   if (Object.keys(intermediateNodes).length > 0) {
     layout.intermediateNodes = intermediateNodes;
@@ -775,7 +634,6 @@ function buildLayout(
 
   for (let i = 0; i < components.length; i++) {
     const comp = components[i];
-    if (!comp.id) continue;
     layout[comp.id] = {
       x: comp._x,
       y: comp._y,
@@ -783,80 +641,34 @@ function buildLayout(
     };
   }
 
-  if (scope.layout && typeof scope.layout === "object") {
-    layout.subcircuitSymbol = {
-      width: scope.layout.width ?? 100,
-      height: scope.layout.height ?? 100,
-      titleX: scope.layout.titleX ?? 50,
-      titleY: scope.layout.titleY ?? 13,
-      titleEnabled: scope.layout.titleEnabled ?? true,
-    };
-  }
-
   return layout;
 }
 
-function buildVisual(scope: CVScope) {
+function buildVisual(scope: Scope) {
   return {
     canvas: {
-      scale: scope.scale ?? 1,
-      ox: scope.ox ?? 0,
-      oy: scope.oy ?? 0,
+      scale: scope.scale,
+      ox: scope.ox,
+      oy: scope.oy,
     },
   };
 }
 
 /**
- * Extracts and orders the input and output ports exposed by the scope.
+ * Normalizes components into a standard format for the canonical JSON.
  */
-function buildSubcircuitPorts(components: ComponentDraft[]) {
-  const inputs: SubcircuitPort[] = [];
-  const outputs: SubcircuitPort[] = [];
-
-  for (let i = 0; i < components.length; i++) {
-    const comp = components[i];
-    if (!comp.id) continue;
-    const entry = {
-      componentId: comp.id,
-      label: comp.label,
-      bitWidth: comp.bitWidth,
-      subcircuitExposed: true as const,
-    };
-
-    if (comp.type === "Input") {
-      inputs.push({ ...entry, order: inputs.length });
-    } else if (comp.type === "Output") {
-      outputs.push({ ...entry, order: outputs.length });
-    }
-  }
-
-  return { inputs, outputs };
-}
-
-/**
- * Normalizes components into a standard format and maps their connections to final resolved nets.
- */
-function buildCanonicalComponents(
-  components: ComponentDraft[],
-  composedNetMap: Map<number, string>,
-) {
+function buildCanonicalComponents(components: FinalComponentDraft[]) {
   return components.map((component) => {
-    const connections: Record<string, string> = {};
-    for (const [port, root] of Object.entries(component._connections)) {
-      const netId = composedNetMap.get(root);
-      if (netId !== undefined) {
-        connections[port] = netId;
-      }
-    }
-
     const entry: CanonicalComponent = {
-      id: component.id ?? "",
+      id: component.id,
       type: component.type,
-      label: component.label,
       bitWidth: component.bitWidth,
-      connections,
       properties: component.properties,
     };
+
+    if (component.label) {
+      entry.label = component.label;
+    }
 
     if (component._state !== undefined) {
       entry.defaultState = component._state;
@@ -883,92 +695,59 @@ async function sha256(text: string): Promise<string> {
 // Put the below line in the console to get the json
 // await (await import('/simulatorvue/v1/src/simulator/src/data/canonical.ts')).canonicaliseScope(globalScope)
 export async function canonicaliseScope(
-  scope: CVScope,
+  scope: Scope,
   childHashes?: Map<number, string>,
 ): Promise<CanonicalScope> {
-  const nodeIndexMap = indexNodes(scope.allNodes);
-  const uf = discoverNets(scope, nodeIndexMap);
+  const allNodes: Node[] = scope.allNodes!;
+  const nodeIndexMap = indexNodes(allNodes);
+  const uf = discoverNets(allNodes, nodeIndexMap);
 
   const components = buildComponentDrafts(scope, uf, nodeIndexMap);
-  canonicalSort(components, childHashes);
+  const structuralData = buildStructuralComponentData(components, childHashes);
+  canonicalSort(components, structuralData);
   assignComponentIds(components);
 
   const { netIdMap, netConnections } = assignNetIds(components);
-  const { nets, renameMap } = buildCanonicalNets(netIdMap, netConnections, scope.allNodes);
+  const { nets, finalNetIds } = buildCanonicalNets(netIdMap, netConnections, allNodes, uf);
 
-  const composedNetMap = new Map<number, string>();
-  for (const [root, intermediateId] of netIdMap) {
-    const finalId = renameMap.get(intermediateId);
-    if (finalId !== undefined) {
-      composedNetMap.set(root, finalId);
-    }
-  }
-
-  const interfacePorts = buildSubcircuitPorts(components);
-  const layout = buildLayout(scope, components, nodeIndexMap, uf, composedNetMap);
+  const layout = buildLayout(scope, allNodes, components, nodeIndexMap, uf, finalNetIds);
   const visual = buildVisual(scope);
-  const canonicalComponents = buildCanonicalComponents(components, composedNetMap);
+  const canonicalComponents = buildCanonicalComponents(components);
 
   const netlist = { components: canonicalComponents, nets };
 
-  const netlistForHash = {
-    components: canonicalComponents.map((c) => {
-      let comp = { ...c, label: "" };
-      if (!STRUCTURAL_STATE.has(c.type)) {
-        comp = { ...comp, defaultState: undefined };
-      }
-      if (DIRECTION_BEARING.has(c.type) && Array.isArray(comp.properties?.constructorParamaters)) {
-        const params = comp.properties.constructorParamaters.slice();
-        // Null direction (index 0) for direction-bearing components.
-        if (params.length > 0) {
-          params[0] = null;
-        }
-        // Null layoutProperties (index 2) for Input and Output components to avoid layout positioning/ID differences breaking determinism.
-        if ((c.type === "Input" || c.type === "Output") && params.length > 2) {
-          params[2] = null;
-        }
-        comp = { ...comp, properties: { ...comp.properties, constructorParamaters: params } };
-      }
-      // Replace the numeric child scope ID in SubCircuit constructorParamaters with the child's canonical hash so the overall scope hash is stable across sessions
-      if (c.type === "SubCircuit" && Array.isArray(comp.properties?.constructorParamaters)) {
-        const params = comp.properties.constructorParamaters.slice();
-        const childId = Number(params[0]);
-        params[0] = (!isNaN(childId) && childHashes?.get(childId)) ?? params[0];
-        comp = { ...comp, properties: { ...comp.properties, constructorParamaters: params } };
-      }
-      return comp;
-    }),
-    nets,
-  };
-  const interfacePortsForHash = {
-    inputs: interfacePorts.inputs.map((p) => ({ ...p, label: "" })),
-    outputs: interfacePorts.outputs.map((p) => ({ ...p, label: "" })),
-  };
   const canonicalHash = await sha256(
-    JSON.stringify({ netlist: netlistForHash, interfacePorts: interfacePortsForHash }),
+    JSON.stringify({
+      netlist: {
+        components: canonicalComponents.map((component, index) => ({
+          id: component.id,
+          type: component.type,
+          bitWidth: component.bitWidth,
+          properties: structuralData.get(components[index])!.properties,
+        })),
+        nets,
+      },
+    }),
   );
 
   console.log(`[canonical] Canonical hash for scope "${scope.name}": ${canonicalHash}`);
 
   const verilogMetadata = {
-    isVerilogCircuit: scope.verilogMetadata?.isVerilogCircuit ?? false,
-    isMainCircuit: scope.verilogMetadata?.isMainCircuit ?? false,
-    code: scope.verilogMetadata?.code ?? "// Write Some Verilog Code Here!",
-    subCircuitScopeIds: scope.verilogMetadata?.subCircuitScopeIds ?? [],
+    isVerilogCircuit: scope.verilogMetadata.isVerilogCircuit,
+    isMainCircuit: scope.verilogMetadata.isMainCircuit,
+    code: scope.verilogMetadata.code,
+    subCircuitScopeIds: [...scope.verilogMetadata.subCircuitScopeIds],
   };
 
   const projectMetadata = {
-    id: scope.id,
     name: scope.name || "Untitled",
-    timeStamp: scope.timeStamp ?? null,
-    restrictedElementsUsed: scope.restrictedCircuitElementsUsed || [],
+    restrictedElementsUsed: [...scope.restrictedCircuitElementsUsed],
   };
 
   return {
     canonicalHash,
     projectMetadata,
     netlist,
-    interfacePorts,
     layout,
     visual,
     verilogMetadata,
@@ -1012,34 +791,36 @@ export function khansAlgorithm(
 // Put the below line in the console to get the json
 // await (await import('/simulatorvue/v1/src/simulator/src/data/canonical.ts')).canonicaliseProject(Object.values((await import('/simulatorvue/v1/src/simulator/src/circuit.ts')).scopeList))
 export async function canonicaliseProject(
-  scopeOrScopes: CVScope | CVScope[],
+  scopeOrScopes: Scope | Scope[],
 ): Promise<CanonicalProject> {
   const scopes = Array.isArray(scopeOrScopes) ? scopeOrScopes : [scopeOrScopes];
   const pairs = new Map<number, CanonicalScope>();
   const circuitHashes: string[] = [];
   const inDegreeMap = new Map<number, number>();
   const dependents = new Map<number, number[]>();
-  const scopeById = new Map<number, CVScope>();
+  const scopeById = new Map<number, Scope>();
 
   for (const scope of scopes) {
-    if (!scope || scope.id === undefined || !scope.allNodes) continue;
     const id = Number(scope.id);
+    if (scopeById.has(id)) {
+      throw new Error(`[canonical] Duplicate scope ID ${id}`);
+    }
     inDegreeMap.set(id, 0);
     dependents.set(id, []);
     scopeById.set(id, scope);
   }
 
   for (const [id, scope] of scopeById) {
-    const subCircuits = scope["SubCircuit"] as Array<Record<string, unknown>> | undefined;
-    if (!subCircuits) continue;
-
     let indegree = 0;
-    for (const sub of subCircuits) {
+    for (const sub of scope.SubCircuit ?? []) {
       const targetId = Number(sub.id);
-      if (!isNaN(targetId) && inDegreeMap.has(targetId)) {
-        indegree++;
-        dependents.get(targetId)!.push(id);
+      if (!inDegreeMap.has(targetId)) {
+        throw new Error(
+          `[canonical] Scope ${id} references missing SubCircuit scope ${String(sub.id)}`,
+        );
       }
+      indegree++;
+      dependents.get(targetId)!.push(id);
     }
     inDegreeMap.set(id, indegree);
   }
@@ -1051,19 +832,16 @@ export async function canonicaliseProject(
 
   const childHashes = new Map<number, string>();
   for (const id of topologicalOrder) {
-    const scope = scopeById.get(id);
-    if (!scope) continue;
-
+    const scope = scopeById.get(id)!;
     const circuit = await canonicaliseScope(scope, childHashes);
     pairs.set(id, circuit);
     childHashes.set(id, circuit.canonicalHash);
     circuitHashes.push(circuit.canonicalHash);
   }
 
-  const circuits: Record<number, CanonicalScope> = {};
+  const circuits: Record<string, CanonicalScope> = {};
   for (const id of topologicalOrder) {
-    const circuit = pairs.get(id);
-    if (circuit) circuits[id] = circuit;
+    circuits[String(id)] = pairs.get(id)!;
   }
 
   const projectHash = await sha256(JSON.stringify([...circuitHashes].sort()));
