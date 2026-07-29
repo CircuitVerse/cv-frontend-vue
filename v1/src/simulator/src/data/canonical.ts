@@ -53,7 +53,6 @@ type ComponentDraft = {
   _y: number;
   _instance: CVComponent;
   _portNames: string[]; // Used for retrieving live nodes via comp._instance["inp"]
-  _interfaceOrder?: number; // Input and Output array order defines the SubCircuit interface.
 };
 
 /** Component draft after its canonical ID has been assigned.
@@ -224,7 +223,6 @@ function buildComponentDrafts(scope: Scope, uf: UnionFind, nodeIndexMap: NodeInd
         _y: comp.y,
         _instance: comp,
         _portNames: portNames,
-        _interfaceOrder: typeName === "Input" || typeName === "Output" ? j : undefined,
       });
     }
   }
@@ -399,23 +397,34 @@ function canonicalSort(
 ) {
   if (components.length < 2) return;
 
+  const interfaceComponents: ComponentDraft[] = [];
+  const nonInterfaceComponents: ComponentDraft[] = [];
+  for (const comp of components) {
+    if (comp.type === "Input" || comp.type === "Output") {
+      interfaceComponents.push(comp);
+    } else {
+      nonInterfaceComponents.push(comp);
+    }
+  }
+
   const fpMap = new Map<ComponentDraft, string>();
   const wlColours = wlFingerprint(components, structuralData);
   for (let i = 0; i < components.length; i++) {
     const comp = components[i];
-    fpMap.set(comp, `${structuralData.get(comp)!.signature}|${wlColours[i]}`);
+    if (comp.type !== "Input" && comp.type !== "Output") {
+      fpMap.set(comp, `${structuralData.get(comp)!.signature}|${wlColours[i]}`);
+    }
   }
 
-  components.sort((a, b) => {
-    const aFp = fpMap.get(a)!;
-    const bFp = fpMap.get(b)!;
-    if (aFp !== bFp) return aFp < bFp ? -1 : 1;
+  if (nonInterfaceComponents.length >= 2) {
+    nonInterfaceComponents.sort((a, b) => {
+      const aFp = fpMap.get(a)!;
+      const bFp = fpMap.get(b)!;
+      return aFp < bFp ? -1 : aFp > bFp ? 1 : 0;
+    });
+  }
 
-    if (a._interfaceOrder !== undefined && b._interfaceOrder !== undefined) {
-      return a._interfaceOrder - b._interfaceOrder;
-    }
-    return 0;
-  });
+  components.splice(0, components.length, ...interfaceComponents, ...nonInterfaceComponents);
 }
 
 /**

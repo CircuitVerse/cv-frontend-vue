@@ -205,11 +205,28 @@ function wireComponents(
 function restoreDefaultState(
   instanceMap: Map<string, ComponentInstance>,
   components: CanonicalComponent[],
-): void {
+): string[] {
+  const errors: string[] = [];
+
   for (const comp of components) {
     if (comp.defaultState === undefined) continue;
-    Reflect.set(instanceMap.get(comp.id)!, STATEFUL_DEFAULT_STATE[comp.type]!, comp.defaultState);
+
+    const instance = instanceMap.get(comp.id);
+    if (instance === undefined) {
+      errors.push(`"${comp.id}" component was not built`);
+      continue;
+    }
+
+    const stateProp = STATEFUL_DEFAULT_STATE[comp.type];
+    if (stateProp === undefined) {
+      errors.push(`"${comp.id}" (${comp.type}): defaultState is not supported`);
+      continue;
+    }
+
+    Reflect.set(instance, stateProp, comp.defaultState);
   }
+
+  return errors;
 }
 
 /** Creates junction nodes and restores intermediate routing nodes from the canonical layout data. */
@@ -338,7 +355,7 @@ async function importSingleScope(
   }
 
   const wireErrors = wireComponents(instanceMap, nets, layout.intermediateNodes);
-  restoreDefaultState(instanceMap, components);
+  const stateErrors = restoreDefaultState(instanceMap, components);
 
   const routingErrors = layout.intermediateNodes
     ? restoreIntermediateNodes(scope, layout.intermediateNodes, instanceMap, nets)
@@ -346,7 +363,7 @@ async function importSingleScope(
 
   restoreScopeMetadata(scope, circuitData);
 
-  const allErrors = [...wireErrors, ...routingErrors];
+  const allErrors = [...wireErrors, ...stateErrors, ...routingErrors];
 
   if (allErrors.length === 0) {
     const hashMatch = await verifyRoundTrip(scope, circuitData, originalChildHashes);
