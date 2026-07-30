@@ -192,15 +192,17 @@ import { THEME, ThemeType } from '#/assets/constants/theme'
 const route = useRoute()
 const timePeriod = ref(simulationArea.timePeriod)
 const clockEnabled = ref(simulationArea.clockEnabled)
+const urlParams = new URLSearchParams(window.location.search)
+function queryParam(key: string): string | null {
+    return (route.query[key] as string) || urlParams.get(key) || null
+}
 
 // Embed user preferences
-const theme = computed(() => route.query.theme);
-const hasDisplayTitle = computed(() => route.query.display_title ? route.query.display_title === 'true' : false);
-const hasClockTime = computed(() => route.query.clock_time ? route.query.clock_time === 'true' : true);
-const hasFullscreen = computed(() => route.query.fullscreen ? route.query.fullscreen === 'true' : true);
-const hasZoomInOut = computed(() => route.query.zoom_in_out ? route.query.zoom_in_out === 'true' : true);
-
-const selectedTheme = computed(() => localStorage.getItem('theme'));
+const theme = computed(() => queryParam('theme'))
+const hasDisplayTitle = computed(() => queryParam('display_title') === 'true')
+const hasClockTime = computed(() => queryParam('clock_time') !== 'false')
+const hasFullscreen = computed(() => queryParam('fullscreen') !== 'false')
+const hasZoomInOut = computed(() => queryParam('zoom_in_out') !== 'false')
 
 // watch(timePeriod, function (val) {
 //     simulationArea.timePeriod = val
@@ -236,18 +238,18 @@ watch(clockEnabled, (val) => {
 })
 
 onBeforeMount(() => {
-    window.embed = true
-    // Prioritize window.logixProjectId if set, otherwise use route params
-    if ((window as any).logixProjectId && (window as any).logixProjectId !== '0') {
-        // Already set
-    } else {
-        (window as any).logixProjectId = route.params.projectId
+    // logixProjectId is set by embed_vue.html.erb; fall back to route param if missing
+    if (!parseInt((window as any).logixProjectId)) {
+        (window as any).logixProjectId = route.params.projectId || urlParams.get('id')
     }
 })
 
 onMounted(() => {
-    const themeValue = theme?.value as string;
-    updateThemeForStyle(THEME[themeValue as keyof ThemeType]);
+    const themeKey = theme.value 
+    if (themeKey) {
+        const themeName = THEME[themeKey as keyof ThemeType]
+        if (themeName) updateThemeForStyle(themeName)
+    }
 })
 
 onMounted(() => {
