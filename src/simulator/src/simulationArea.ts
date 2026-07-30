@@ -1,5 +1,6 @@
 import { EventQueue } from "./eventQueue";
 import { SimulationArea } from "./interface/simulationArea";
+import ContentionPendingData from "./contention";
 import { clockTick } from "./utils";
 
 const simulationArea: SimulationArea = {
@@ -29,6 +30,8 @@ const simulationArea: SimulationArea = {
   mouseDownX: 0,
   mouseDownY: 0,
   simulationQueue: new EventQueue(10000),
+  // engine.js replaces this at the start of every simulation pass.
+  contentionPending: new ContentionPendingData(),
   clickCount: 0,
   lock: "unlocked",
   mouseDown: false,
