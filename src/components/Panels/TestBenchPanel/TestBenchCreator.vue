@@ -167,7 +167,7 @@ const { t } = useI18n();
 
 
 const results: boolean[][][] = reactive([]);
-const testTitle = ref('Untitled');
+const testTitle = ref(t('simulator.panel_body.testbench_creator.untitled'));
 const dialogTitle = computed(() => t('simulator.panel_body.testbench_creator.create_test'));
 const testType = ref<string>('comb');
 
@@ -409,7 +409,7 @@ const deleteOutput = (index:number) => {
 };
 
 const resetData = () => {
-    testTitle.value = 'Untitled';
+    testTitle.value = t('simulator.panel_body.testbench_creator.untitled');
     testType.value = 'comb';
     inputsBandWidth.value = [1];
     outputsBandWidth.value = [1];
