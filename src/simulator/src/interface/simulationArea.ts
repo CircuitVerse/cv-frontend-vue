@@ -1,12 +1,16 @@
 import { EventQueue } from "../eventQueue";
 import ContentionPendingData from "../contention";
+import type CircuitElement from "../circuitElement";
+import type Node from "../node";
+import type Wire from "../wire";
+import type LayoutNode from "../layout/layoutNode";
 export interface SimulationArea {
   canvas: HTMLCanvasElement;
   context: CanvasRenderingContext2D | null;
   selected: boolean;
-  // Holds the element or node currently under the pointer, or undefined.
-  // TODO: make this CircuitElement|Node|undefined once converted to typescript
-  hover: any;
+  // Whatever the pointer is currently over. engine.js also parks wires here,
+  // and layout mode uses LayoutNode.
+  hover: CircuitElement | Node | Wire | LayoutNode | undefined;
   clockState: number;
   clockEnabled: boolean;
   // TODO: make this CircuitElement|null once converted to typescript

@@ -84,9 +84,11 @@ var modules: Record<string, ElementConstructor> = {};
 export default modules;
 
 export function changeInputSize(this: ResizableElement, size: number | string): unknown {
-  if (size == undefined || Number(size) < 2 || Number(size) > 10) return;
-  if (this.inputSize == Number(size)) return;
-  const newSize = parseInt(String(size), 10);
+  // Reject NaN and fractional sizes rather than letting parseInt truncate them
+  // into an element with an unintended number of inputs.
+  const newSize = Number(size);
+  if (!Number.isInteger(newSize) || newSize < 2 || newSize > 10) return;
+  if (this.inputSize === newSize) return;
   var obj = new modules[this.objectType](
     this.x,
     this.y,

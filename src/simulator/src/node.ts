@@ -696,7 +696,9 @@ export default class Node {
         }
       } else {
         setTimeout(() => {
-          if (simulationArea.hover) simulationArea.hover.showHover = true;
+          // Only a Node reads showHover, so narrowing here is equivalent to the
+          // original unconditional write.
+          if (simulationArea.hover instanceof Node) simulationArea.hover.showHover = true;
           updateCanvasSet(true);
           renderCanvas(globalScope);
         }, 400);

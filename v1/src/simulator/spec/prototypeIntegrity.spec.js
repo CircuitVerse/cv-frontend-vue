@@ -18,6 +18,8 @@ import '../src/setup';
 import CircuitElement from '../src/circuitElement';
 import Node from '../src/node';
 import Scope from '../src/circuit';
+import { changeInputSize } from '../src/modules';
+import setupModules from '../src/moduleSetup';
 import { simulationArea } from '../src/simulationArea';
 import OrGate from '../src/modules/OrGate';
 import XorGate from '../src/modules/XorGate';
@@ -33,6 +35,8 @@ describe('prototype integrity', () => {
         // Creating an element schedules an engine update, which the shared setup
         // flushes after each test, so give it a canvas and a scope to run against.
         simulationArea.canvas = document.createElement('canvas');
+        // changeInputSize rebuilds the element through the module registry.
+        setupModules();
         globalThis.globalScope = new Scope('prototype-integrity');
     });
 
@@ -97,6 +101,28 @@ describe('prototype integrity', () => {
         ]) {
             expect(Object.hasOwn(gate, name)).toBe(false);
         }
+    });
+
+    it('rejects input sizes that are not whole numbers in range', () => {
+        const scope = new Scope('input-size');
+        // Anything rejected returns undefined and leaves the element in place.
+        for (const bad of [undefined, null, 'abc', 2.5, 1, 11, 0, -3, NaN]) {
+            const gate = new OrGate(50, 60, scope, 'RIGHT', 2, 1);
+            expect(changeInputSize.call(gate, bad)).toBeUndefined();
+            expect(gate.inputSize).toBe(2);
+        }
+        // Same size is a no-op too.
+        const unchanged = new OrGate(50, 60, scope, 'RIGHT', 2, 1);
+        expect(changeInputSize.call(unchanged, 2)).toBeUndefined();
+    });
+
+    it('rebuilds the element for a valid input size, including numeric strings', () => {
+        const scope = new Scope('input-size-ok');
+        const fromNumber = changeInputSize.call(new OrGate(50, 60, scope, 'RIGHT', 2, 1), 3);
+        expect(fromNumber.inputSize).toBe(3);
+
+        const fromString = changeInputSize.call(new OrGate(50, 60, scope, 'RIGHT', 2, 1), '4');
+        expect(fromString.inputSize).toBe(4);
     });
 
     it('leaves an unconnected output as an empty parameter in generated verilog', () => {

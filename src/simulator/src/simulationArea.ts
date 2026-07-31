@@ -7,7 +7,7 @@ const simulationArea: SimulationArea = {
   canvas: document.getElementById("simulationArea") as HTMLCanvasElement,
   context: null,
   selected: false,
-  hover: false,
+  hover: undefined,
   clockState: 0,
   clockEnabled: true,
   lastSelected: null,
