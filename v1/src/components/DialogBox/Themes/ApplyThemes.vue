@@ -155,7 +155,7 @@ import {
 } from '#/simulator/src/themer/themer'
 const SimulatorState = useState()
 import { CreateAbstraction, Themes } from '#/simulator/src/themer/customThemeAbstraction'
-import { confirmSingleOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
+import { confirmSingleOption } from '#/utils/confirm'
 const themes = ref([''])
 const customThemes = ref<((keyof typeof customThemesList)[]) | undefined>(undefined);
 const customThemesList: Themes = reactive({})

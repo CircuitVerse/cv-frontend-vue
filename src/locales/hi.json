@@ -34,8 +34,7 @@
                 "import_project": "फ़ाइल से आयात करें",
                 "preview_circuit": "पूर्वावलोकन सर्किट",
                 "clear_project": "परियोजना क्लियर करें",
-                "recover_project": "परियोजना पुनर्प्राप्त करें",
-                "view_previous_ui": "पिछला UI देखें"
+                "recover_project": "परियोजना पुनर्प्राप्त करें"
             },
             "circuit": {
                 "heading": "सर्किट",
@@ -95,6 +94,8 @@
             "verilog_module": {
                 "reset_code": "कोड रिसेट करें",
                 "save_code": "कोड सेव करें",
+                "hide_terminal": "टर्मिनल छिपाएं",
+                "show_terminal": "टर्मिनल दिखाएं",
                 "module_in_experiment_notice": "यह एक प्रायोगिक मॉड्यूल है। कोड तब तक सेव नहीं होगा जब तक \"कोड सेव करें\" बटन क्लिक नहीं किया जाता।",
                 "apply_themes": "थीम लागू करें",
                 "select_theme": "थीम चुनें:"

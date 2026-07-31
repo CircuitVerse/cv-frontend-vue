@@ -19,7 +19,7 @@ interface ExtendedScope extends Scope {
 
 // Type declarations for global variables
 declare var globalScope: ExtendedScope;
-declare var loading: boolean;
+// loading is a global set on window
 
 /**
  * Function to restore copy from backup
@@ -41,7 +41,7 @@ export default function redo(scope: ExtendedScope = globalScope): void {
 
   // Create a temporary scope
   const tempScope: ExtendedScope = new Scope(scope.name) as ExtendedScope;
-  loading = true;
+  (window as any).loading = true;
 
   // Get the redo data and update history
   const redoData: string = scope.history.pop()!;
@@ -68,7 +68,7 @@ export default function redo(scope: ExtendedScope = globalScope): void {
   globalScope.oy = backupOy;
   globalScope.scale = backupScale;
 
-  loading = false;
+  (window as any).loading = false;
   forceResetNodesSet(true);
 
   // Update restricted elements

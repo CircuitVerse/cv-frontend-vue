@@ -11,16 +11,30 @@
 <script lang="ts" setup>
 import ModuleProperty from '#/components/Panels/PropertiesPanel/ModuleProperty/ModuleProperty.vue'
 import LayoutProperty from '#/components/Panels/PropertiesPanel/LayoutProperty/LayoutProperty.vue'
-import { toRaw, onMounted } from 'vue'
+import { toRaw, onMounted, onUnmounted, watch } from 'vue'
 import { showPropertiesPanel } from './PropertiesPanel';
 import { usePropertiesPanelStore } from '#/store/propertiesPanelStore';
 import { setupPanelListeners } from '#/simulator/src/ux'
+import { simulationArea } from '#/simulator/src/simulationArea'
 
 const propertiesPanelStore = usePropertiesPanelStore();
 
+// The simulator mutates simulationArea.lastSelected imperatively (non-reactive),
+// so we still need periodic sync. We use a minimal requestAnimationFrame loop
+// instead of setInterval so it runs at display rate and stops when unmounted.
+let rafId: number | null = null
+
+function rafLoop() {
+    showPropertiesPanel()
+    rafId = requestAnimationFrame(rafLoop)
+}
+
 onMounted(() => {
-    // checks for which type of properties panel to show
-    setInterval(showPropertiesPanel, 100)
     setupPanelListeners('#moduleProperty')
+    rafId = requestAnimationFrame(rafLoop)
+})
+
+onUnmounted(() => {
+    if (rafId !== null) cancelAnimationFrame(rafId)
 })
 </script>

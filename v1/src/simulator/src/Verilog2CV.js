@@ -3,6 +3,9 @@ import {
     switchCircuit,
     changeCircuitName,
 } from './circuit'
+import { synthesizeVerilog } from './synthesis/clientSynthesis.js'
+import { computeLayout, computePortLayout } from './synthesis/circuitLayout.js';
+import { isTauri } from '@tauri-apps/api/core'
 import SubCircuit from './subcircuit'
 import { simulationArea } from './simulationArea'
 import CodeMirror from 'codemirror/lib/codemirror.js'
@@ -32,6 +35,8 @@ import 'codemirror/addon/display/autorefresh.js'
 import { showError, showMessage } from './utils'
 import { showProperties } from './ux'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
+import { useSynthesisStore } from '#/store/synthesisStore'
+import { useVerilogStore } from '#/store/verilogStore'
 import { toRefs } from 'vue'
 
 var editor
@@ -66,6 +71,28 @@ export function saveVerilogCode() {
 export function applyVerilogTheme(theme) {
     localStorage.setItem('verilog-theme', theme)
     editor.setOption('theme', theme)
+}
+
+// Lazy-init: cannot call stores at module scope because
+// this file is imported before app.use(pinia) runs. Cache on first use.
+let _synthesisStore = null;
+function getSynthesisStore() {
+    if (!_synthesisStore) _synthesisStore = useSynthesisStore();
+    return _synthesisStore;
+}
+
+let _verilogStore = null;
+function getVerilogStore() {
+    if (!_verilogStore) _verilogStore = useVerilogStore();
+    return _verilogStore;
+}
+
+function setVerilogOutput(text, type = 'info') {
+    getSynthesisStore().addMessage(text, type);
+}
+
+function clearVerilogOutput() {
+    getSynthesisStore().clearMessages();
 }
 
 export function resetVerilogCode() {
@@ -111,6 +138,8 @@ export function verilogModeSet(mode) {
         }
         resetVerilogCode()
     } else {
+        getVerilogStore().hideTerminal();
+
         const code_window = document.getElementById('code-window')
         if(code_window)
         document.getElementById('code-window').style.display = 'none'
@@ -155,6 +184,22 @@ class verilogSubCircuit {
                 return this.circuit.outputNodes[i]
             }
         }
+    }
+}
+
+function applyVerilogPortLayout(scope) {
+    var portLayout = computePortLayout(scope.Input.length, scope.Output.length);
+
+    Object.assign(scope.layout, portLayout.layout);
+
+    for (var i = 0; i < scope.Input.length; i++) {
+        scope.Input[i].layoutProperties.x = portLayout.inputs[i].x;
+        scope.Input[i].layoutProperties.y = portLayout.inputs[i].y;
+    }
+
+    for (var j = 0; j < scope.Output.length; j++) {
+        scope.Output[j].layoutProperties.x = portLayout.outputs[j].x;
+        scope.Output[j].layoutProperties.y = portLayout.outputs[j].y;
     }
 }
 
@@ -203,6 +248,18 @@ export function YosysJSON2CV(
         }
     }
 
+    applyVerilogPortLayout(subScope);
+
+    // Auto-layout: compute non-overlapping positions
+    var layoutPositions = computeLayout(JSON)
+    for (var deviceId in circuitDevices) {
+        var pos = layoutPositions[deviceId]
+        if (pos && circuitDevices[deviceId].element) {
+            circuitDevices[deviceId].element.x = pos.x
+            circuitDevices[deviceId].element.y = pos.y
+        }
+    }
+
     for (var connection in JSON.connectors) {
         var fromId = JSON.connectors[connection]['from']['id']
         var fromPort = JSON.connectors[connection]['from']['port']
@@ -224,24 +281,43 @@ export function YosysJSON2CV(
     }
 }
 
-export default function generateVerilogCircuit(
-    verilogCode,
-    scope = globalScope
-) {
-    var params = { code: verilogCode }
-    fetch('/api/v1/simulator/verilogcv', {
+// Platform detection: Tauri desktop app vs. web browser
+
+function serverSynthesis(verilogCode) {
+    return fetch('/api/v1/simulator/verilogcv', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(params),
+        body: JSON.stringify({ code: verilogCode }),
+    }).then((response) => {
+        if (!response.ok) {
+            throw response
+        }
+        return response.json()
     })
-        .then((response) => {
-            if (!response.ok) {
-                throw response
-            }
-            return response.json()
+}
+
+export default function generateVerilogCircuit(
+    verilogCode,
+    scope = globalScope
+) {
+    clearVerilogOutput()
+    const isDesktop = isTauri()
+
+    if (isDesktop) {
+        setVerilogOutput('Compiling Verilog (offline, WASM)...', 'info')
+    } else {
+        setVerilogOutput('Compiling Verilog code...', 'info')
+    }
+
+    var synthesisPromise = isDesktop
+        ? synthesizeVerilog(verilogCode, (progress) => {
+            setVerilogOutput(progress, 'info')
         })
+        : serverSynthesis(verilogCode)
+
+    synthesisPromise
         .then((circuitData) => {
             scope.initialize()
             for (var id in scope.verilogMetadata.subCircuitScopeIds)
@@ -258,17 +334,35 @@ export default function generateVerilogCircuit(
             )
             changeCircuitName(circuitData.name)
             showMessage('Verilog Circuit Successfully Created')
-            document.getElementById('verilogOutput').innerHTML = ''
+            setVerilogOutput('Verilog Circuit Successfully Created', 'success')
         })
         .catch((error) => {
-            if (error.status == 500) {
-                showError('Could not connect to Yosys')
+            if (isDesktop) {
+                if (error.name === 'SynthesisTimeoutError') {
+                    var timeoutMessage =
+                        'Synthesis timed out. The worker has been reset; try again or simplify your design.'
+                    setVerilogOutput(timeoutMessage, 'error')
+                    showError(timeoutMessage)
+                } else {
+                    setVerilogOutput(error.message || 'Synthesis failed', 'error')
+                    showError(error.message || 'Synthesis failed')
+                }
+            } else if (error instanceof Response) {
+                if (error.status == 500) {
+                    showError('Could not connect to Yosys')
+                    setVerilogOutput('Could not connect to Yosys', 'error')
+                } else {
+                    showError('There is some issue with the code')
+                    error.json()
+                        .then((errorMessage) => {
+                            setVerilogOutput(errorMessage.message, 'error')
+                        })
+                        .catch(() => {
+                            setVerilogOutput('Server returned a non-JSON error response', 'error')
+                        })
+                }
             } else {
-                showError('There is some issue with the code')
-                error.json().then((errorMessage) => {
-                    document.getElementById('verilogOutput').innerHTML =
-                        errorMessage.message
-                })
+                showError(error.message || 'Could not reach the synthesis server')
             }
         })
 }

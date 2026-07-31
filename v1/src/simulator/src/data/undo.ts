@@ -7,7 +7,7 @@ import { forceResetNodesSet } from "../engine";
 
 // Declare global variables
 declare let globalScope: Scope;
-declare let loading: boolean;
+// loading is a global set on window
 
 /**
  * Function to restore copy from backup
@@ -20,7 +20,7 @@ export default function undo(scope: Scope = globalScope): void {
   const { ox, oy, scale } = saveGlobalScopePosition();
   resetGlobalScopePosition();
 
-  loading = true;
+  (window as any).loading = true;
   const undoData = popLastBackup(scope);
   if (!undoData) return;
 
@@ -59,7 +59,7 @@ function createTempScope(scope: Scope): Scope | undefined {
     loadScope(tempScope, JSON.parse(scope.backups[scope.backups.length - 1]));
   } catch (error) {
     console.error("Failed to parse backup data:", error);
-    loading = false;
+    (window as any).loading = false;
     return undefined;
   }
 
@@ -78,5 +78,5 @@ function updateGlobalScope(tempScope: Scope, ox: number, oy: number, scale: numb
   globalScope.ox = ox;
   globalScope.oy = oy;
   globalScope.scale = scale;
-  loading = false;
+  (window as any).loading = false;
 }

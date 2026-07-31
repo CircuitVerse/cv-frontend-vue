@@ -3,7 +3,7 @@ import { JsConfig } from "./types/app.types";
 
 document.addEventListener("DOMContentLoaded", () => {
   setup();
-  const js: JsConfig = {
+  const _js: JsConfig = {
     devices: {
       dev0: {
         type: "Input",

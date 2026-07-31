@@ -57,17 +57,6 @@
                 "item": "preview_circuit",
                 "itemid": "fullViewOption",
                 "attributes": []
-            },
-            {
-                "id": "10",
-                "item": "view_previous_ui",
-                "itemid": "",
-                "attributes": [
-                    {
-                        "name": "onclick",
-                        "value": "old_ui_redirect()"
-                    }
-                ]
             }
         ]
     },

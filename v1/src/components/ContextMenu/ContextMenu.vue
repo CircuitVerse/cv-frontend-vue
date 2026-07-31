@@ -1,11 +1,11 @@
 <template>
-    <div id="contextMenu" oncontextmenu="return false;">
+    <div id="contextMenu" @contextmenu.prevent>
         <ul>
             <li
                 v-for="(menuOption, index) in contextMenuOptions"
                 :key="index"
                 :data-index="index"
-                @click="menuItemClicked($event)"
+                @click="menuItemClicked(index)"
             >
                 {{ menuOption }}
             </li>
@@ -13,70 +13,54 @@
     </div>
 </template>
 
-<script>
+<script lang="ts" setup>
+import { ref, onMounted } from 'vue'
 import undo from '../../simulator/src/data/undo'
 import { paste } from '../../simulator/src/events'
 import { deleteSelected } from '../../simulator/src/ux'
 import { createNewCircuitScope } from '../../simulator/src/circuit'
 import logixFunction from '../../simulator/src/data'
 
-export default {
-    name: 'ContextMenu',
-    data() {
-        return {
-            contextMenuOptions: [
-                'Copy',
-                'Cut',
-                'Paste',
-                'Delete',
-                'Undo',
-                'New Circuit',
-                'Insert Subcircuit',
-                'Center Focus',
-            ],
-            ctxPos: {
-                x: 0,
-                y: 0,
-                visible: false,
-            },
-        }
-    },
+const contextMenuOptions = [
+    'Copy',
+    'Cut',
+    'Paste',
+    'Delete',
+    'Undo',
+    'New Circuit',
+    'Insert Subcircuit',
+    'Center Focus',
+] as const
 
-    // Lifecycle hook on mounted - dont initially display the context menu
-    mounted() {
-        this.hideContextMenu()
-    },
-    methods: {
-        hideContextMenu() {
-            var el = document.getElementById('contextMenu')
-            el.style = 'opacity:0;'
-            setTimeout(() => {
-                el.style = 'visibility:hidden;'
-                this.ctxPos.visible = false
-            }, 200) // Hide after 2 sec
-        },
-        menuItemClicked(event) {
-            this.hideContextMenu()
-            const id = event.target.dataset.index
-            if (id == 0) {
-                document.execCommand('copy')
-            } else if (id == 1) {
-                document.execCommand('cut')
-            } else if (id == 2) {
-                // document.execCommand('paste'); it is restricted to sove this problem we use dataPasted variable
-                paste(localStorage.getItem('clipboardData'))
-            } else if (id == 3) {
-                deleteSelected()
-            } else if (id == 4) {
-                undo()
-            } else if (id == 5) {
-                createNewCircuitScope()
-            } else if (id == 6) {
-                logixFunction.createSubCircuitPrompt()
-            } else if (id == 7) {
-                globalScope.centerFocus(false)
-            }
-        },
-    },
+const menuEl = ref<HTMLElement | null>(null)
+const visible = ref(false)
+
+function hideContextMenu() {
+    if (!menuEl.value) return
+    menuEl.value.style.opacity = '0'
+    setTimeout(() => {
+        if (!menuEl.value) return
+        menuEl.value.style.visibility = 'hidden'
+        visible.value = false
+    }, 200)
 }
+
+function menuItemClicked(index: number) {
+    hideContextMenu()
+    switch (index) {
+        case 0: document.execCommand('copy'); break
+        case 1: document.execCommand('cut'); break
+        case 2: paste(localStorage.getItem('clipboardData')); break
+        case 3: deleteSelected(); break
+        case 4: undo(); break
+        case 5: createNewCircuitScope(); break
+        case 6: logixFunction.createSubCircuitPrompt(); break
+        case 7: (window as any).globalScope?.centerFocus(false); break
+    }
+}
+
+onMounted(() => {
+    menuEl.value = document.getElementById('contextMenu')
+    hideContextMenu()
+})
 </script>

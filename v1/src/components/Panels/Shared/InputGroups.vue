@@ -14,13 +14,15 @@
       </div>
       <input
         :id="propertyInputId"
+        ref="inputRef"
         style="text-align: center"
         class="objectPropertyAttribute form-control"
         :type="propertyValueType"
         :name="propertyInputName"
         :min="valueMin"
         :max="valueMax"
-        :value="propertyValue"
+        :value="localValue"
+        @change="onNativeChange"
       />
       <div class="input-group-append">
         <button
@@ -37,46 +39,62 @@
 </template>
 
 <script lang="ts" setup>
-const props = defineProps({
-  propertyName: { type: String, default: "Property Name" },
-  propertyValue: { type: Number, default: 0 },
-  propertyValueType: { type: String, default: "number" },
-  valueMin: { type: String, default: "0" },
-  valueMax: { type: String, default: "100000000000000" },
-  stepSize: { type: String, default: "1" },
-  propertyInputName: { type: String, default: "Property_Input_Name" },
-  propertyInputId: { type: String, default: "Property_Input_Id" },
-});
+import { ref, watch } from 'vue'
 
-// can be modified if required
+const props = defineProps({
+  propertyName: { type: String, default: 'Property Name' },
+  propertyValue: { type: Number, default: 0 },
+  propertyValueType: { type: String, default: 'number' },
+  valueMin: { type: String, default: '0' },
+  valueMax: { type: String, default: '100000000000000' },
+  stepSize: { type: String, default: '1' },
+  propertyInputName: { type: String, default: 'Property_Input_Name' },
+  propertyInputId: { type: String, default: 'Property_Input_Id' },
+})
+
+const emit = defineEmits<{
+  (e: 'update:propertyValue', value: number): void
+  (e: 'change', value: number): void
+}>()
+
+const inputRef = ref<HTMLInputElement | null>(null)
+const localValue = ref(props.propertyValue)
+
+// Keep local value in sync when the prop changes externally
+watch(() => props.propertyValue, (val) => {
+  localValue.value = val
+})
+
+function clamp(value: number): number {
+  const min = parseInt(props.valueMin, 10)
+  const max = parseInt(props.valueMax, 10)
+  return Math.min(Math.max(value, isNaN(min) ? -Infinity : min), isNaN(max) ? Infinity : max)
+}
+
+function commitValue(value: number) {
+  localValue.value = value
+  emit('update:propertyValue', value)
+  emit('change', value)
+  // Dispatch a native change event so the legacy simulator listeners still fire
+  if (inputRef.value) {
+    inputRef.value.value = String(value)
+    inputRef.value.dispatchEvent(new Event('change'))
+  }
+}
+
 function increaseValue() {
-  const ele = document.getElementById(props.propertyInputId);
-  var value = parseInt(ele.value, 10);
-  var step = parseInt(props.stepSize, 10);
-  value = isNaN(value) ? 0 : value;
-  step = isNaN(step) ? 1 : step;
-  if (value + step <= props.valueMax) value = value + step;
-  else return;
-  props.propertyValue = value;
-  ele.value = value;
-  // manually triggering on change event
-  const e = new Event("change");
-  ele.dispatchEvent(e);
+  const step = parseInt(props.stepSize, 10) || 1
+  commitValue(clamp(localValue.value + step))
 }
 
 function decreaseValue() {
-  const ele = document.getElementById(props.propertyInputId);
-  var value = parseInt(ele.value, 10);
-  var step = parseInt(props.stepSize, 10);
-  value = isNaN(value) ? 0 : value;
-  step = isNaN(step) ? 1 : step;
-  if (value - step >= props.valueMin) value = value - step;
-  else return;
-  props.propertyValue = value;
-  ele.value = value;
-  // manually triggering on change event
-  const e = new Event("change");
-  ele.dispatchEvent(e);
+  const step = parseInt(props.stepSize, 10) || 1
+  commitValue(clamp(localValue.value - step))
+}
+
+function onNativeChange(event: Event) {
+  const raw = parseInt((event.target as HTMLInputElement).value, 10)
+  if (!isNaN(raw)) commitValue(clamp(raw))
 }
 </script>
 

@@ -141,7 +141,7 @@
 </template>
 
 <script lang="ts" setup>
-import { toRaw, onMounted, computed } from 'vue'
+import { toRaw, onMounted, onUnmounted, computed } from 'vue'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import ProjectProperty from './ModuleProperty/ProjectProperty/ProjectProperty.vue'
 import ElementProperty from './ModuleProperty/ElementProperty/ElementProperty.vue'
@@ -170,8 +170,17 @@ watch(
     }
 )
 
+let propertiesPanelInterval: ReturnType<typeof setInterval> | null = null
+
 onMounted(() => {
   // checks for which type of properties panel to show
-  setInterval(showPropertiesPanel, 100)
+  propertiesPanelInterval = setInterval(showPropertiesPanel, 100)
+})
+
+onUnmounted(() => {
+  if (propertiesPanelInterval) {
+    clearInterval(propertiesPanelInterval)
+    propertiesPanelInterval = null
+  }
 })
 </script>

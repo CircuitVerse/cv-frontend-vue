@@ -64,16 +64,12 @@ export function paneLayout(scope = globalScope) {
     simulationArea.hover = scope.root;
   } else if (simulationArea.lastSelected === scope.root && simulationArea.mouseDown) {
     // pane canvas
-    if (true) {
-      globalScope.ox =
-        simulationArea.mouseRawX - simulationArea.mouseDownRawX + simulationArea.oldx;
-      globalScope.oy =
-        simulationArea.mouseRawY - simulationArea.mouseDownRawY + simulationArea.oldy;
-      globalScope.ox = Math.round(globalScope.ox);
-      globalScope.oy = Math.round(globalScope.oy);
-      gridUpdateSet(true);
-      if (!embed && !lightMode) miniMapArea.setup();
-    }
+    globalScope.ox = simulationArea.mouseRawX - simulationArea.mouseDownRawX + simulationArea.oldx;
+    globalScope.oy = simulationArea.mouseRawY - simulationArea.mouseDownRawY + simulationArea.oldy;
+    globalScope.ox = Math.round(globalScope.ox);
+    globalScope.oy = Math.round(globalScope.oy);
+    gridUpdateSet(true);
+    if (!embed && !lightMode) miniMapArea.setup();
   } else if (simulationArea.lastSelected === scope.root) {
     // Select multiple objects
 
@@ -113,11 +109,13 @@ export function renderLayout(scope = globalScope) {
     if (!tempBuffer.Input[i].label) continue;
     info = determineLabel(tempBuffer.Input[i].x, tempBuffer.Input[i].y, scope);
     [ctx.textAlign] = info;
+    const xOffset = typeof info[1] === "number" ? info[1] : parseInt(info[1] as string);
+    const yOffset = typeof info[2] === "number" ? info[2] : parseInt(info[2] as string);
     fillText(
       ctx,
       tempBuffer.Input[i].label,
-      tempBuffer.Input[i].x + typeof info[1] === "number" ? info[1] : parseInt(info[1] as string),
-      tempBuffer.Input[i].y + typeof info[2] === "number" ? info[2] : parseInt(info[2] as string),
+      tempBuffer.Input[i].x + xOffset,
+      tempBuffer.Input[i].y + yOffset,
       12,
     );
   }
@@ -125,11 +123,13 @@ export function renderLayout(scope = globalScope) {
     if (!tempBuffer.Output[i].label) continue;
     info = determineLabel(tempBuffer.Output[i].x, tempBuffer.Output[i].y, scope);
     [ctx.textAlign] = info;
+    const xOffset = typeof info[1] === "number" ? info[1] : parseInt(info[1] as string);
+    const yOffset = typeof info[2] === "number" ? info[2] : parseInt(info[2] as string);
     fillText(
       ctx,
       tempBuffer.Output[i].label,
-      tempBuffer.Output[i].x + typeof info[1] === "number" ? info[1] : parseInt(info[1] as string),
-      tempBuffer.Output[i].y + typeof info[2] === "number" ? info[2] : parseInt(info[2] as string),
+      tempBuffer.Output[i].x + xOffset,
+      tempBuffer.Output[i].y + yOffset,
       12,
     );
   }

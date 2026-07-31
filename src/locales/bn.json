@@ -32,8 +32,7 @@
                 "save_offline": "অফলাইন সংরক্ষণ",
                 "preview_circuit": "সার্কিট পূর্বরূপ",
                 "clear_project": "প্রকল্প সাফ",
-                "recover_project": "প্রকল্প পুনরুদ্ধার",
-                "view_previous_ui": "পূর্ববর্তী UI দেখুন"
+                "recover_project": "প্রকল্প পুনরুদ্ধার"
             },
             "circuit": {
                 "heading": "সার্কিট",
@@ -91,6 +90,8 @@
             "verilog_module": {
                 "reset_code": "কোড রিসেট করুন",
                 "save_code": "কোড সংরক্ষণ করুন",
+                "hide_terminal": "টার্মিনাল লুকান",
+                "show_terminal": "টার্মিনাল দেখান",
                 "module_in_experiment_notice": "এটি একটি পরীক্ষামূলক মডিউল। \"কোড সংরক্ষণ করুন\" বোতামটি ক্লিক না করা পর্যন্ত কোডটি সংরক্ষিত হয় না।"
             },
             "layout": {
