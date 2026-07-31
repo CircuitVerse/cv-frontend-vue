@@ -30,7 +30,7 @@
                         @click="toggleTerminal"
                     >
                         <i class="fas fa-terminal"></i>
-                        {{ verilogStore.isTerminalVisible ? 'Hide' : 'Show' }} Terminal
+                        {{ verilogStore.isTerminalVisible ? $t('simulator.panel_body.verilog_module.hide_terminal') : $t('simulator.panel_body.verilog_module.show_terminal') }}
                     </button>
 
                 </div>
@@ -50,9 +50,9 @@
                             }}
                         </p>
                         <select 
-                            v-model="verilogStore.selectedTheme" 
+                            :value="verilogStore.selectedTheme" 
                             class="applyTheme"
-                            @change="(e) => verilogStore.setTheme((e.target as HTMLSelectElement).value)"
+                            @change="verilogStore.setTheme(($event.target as HTMLSelectElement).value)"
                         >
                             <optgroup
                                 v-for="optgroup in Themes"
