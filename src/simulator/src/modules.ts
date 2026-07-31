@@ -46,9 +46,17 @@ declare var globalScope: LayoutScope;
 export function getNextPosition(x = 0, scope: LayoutScope = globalScope): number {
   let possibleY = 20;
   const done: Record<number, number> = {};
-  // The element being constructed is already the last entry in scope.Input,
-  // pushed there by baseSetup() during super(), and its layoutProperties is
-  // still the prototype placeholder - so skip it. Not an off-by-one.
+  // Inputs are laid out at x === 0 and Outputs at x === scope.layout.width, and
+  // both loops only consider entries matching the requested x, so each side is
+  // positioned against its own column.
+  //
+  // The Input loop stops one short deliberately. Input's constructor calls this
+  // for itself, and baseSetup() has already pushed it into scope.Input during
+  // super(), so the final entry is the element being positioned and its
+  // layoutProperties is still the prototype placeholder. Output's constructor
+  // also calls this, and there the skipped Input is a real element - but it sits
+  // in the x === 0 column, so the x check above already excludes it either way.
+  // Not an off-by-one.
   for (let i = 0; i < scope.Input.length - 1; i++) {
     if (scope.Input[i].layoutProperties.x === x) {
       done[scope.Input[i].layoutProperties.y] = 1;
