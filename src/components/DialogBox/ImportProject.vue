@@ -4,7 +4,7 @@
         :persistent="true"
     >
         <v-card class="importProjectDialog">
-            <v-text-field>
+            <v-card-text>
                 <p>Import file</p>
                 <v-btn
                     size="x-small"
@@ -45,7 +45,7 @@
                         </template>
                     </v-file-input>
                 </div>
-            </v-text-field>
+            </v-card-text>
             <v-card-actions>
                 <v-btn
                     class="messageBtn"
@@ -101,7 +101,7 @@ const JSONSchema = [
     'scopes',
 ]
 
-const file = ref(Array<File>())
+const file = ref<File | null>(null)
 const errorMessage = ref('')
 
 function addDropFile(e: DragEvent) {
@@ -110,7 +110,7 @@ function addDropFile(e: DragEvent) {
         const fileExtension = droppedFile.name.split('.').pop()
 
         if (fileExtension === 'cv') {
-            file.value[0] = droppedFile
+            file.value = droppedFile
             document
                 .querySelector('.fileInput')
                 ?.classList.remove('error--text')
@@ -162,8 +162,7 @@ async function receivedText(fileContent: string) {
     }
 }
 
-function readFile() {
-    const importFile = file.value[0]
+function readFile(importFile: File) {
     const reader = new FileReader()
     reader.onload = function () {
         receivedText(reader.result as string) // Pass the file content to receivedText
@@ -172,19 +171,20 @@ function readFile() {
 }
 
 function importDataFromFile() {
-    if (file.value.length === 0) {
+    if (!file.value) {
         document.getElementById('fileInput')?.click()
 
         watch(
-            () => file.value[0],
+            () => file.value,
             () => {
-                if (file.value.length !== 0) {
-                    readFile()
+                if (file.value) {
+                    readFile(file.value)
                 }
-            }
+            },
+        { once: true }
         )
     } else {
-        readFile()
+        readFile(file.value)
     }
 }
 </script>

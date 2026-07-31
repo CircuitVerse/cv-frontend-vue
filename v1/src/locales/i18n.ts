@@ -22,6 +22,7 @@ export const availableLocale: Array<{
 }> = [
   { title: "English", value: "en" },
   { title: "Hindi", value: "hi" },
+  { title: "Bengali", value: "bn" },
 ];
 
 export default i18n;
