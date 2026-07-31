@@ -65,11 +65,11 @@
 
 <script lang="ts">
 import { useState } from '#/store/SimulatorStore/state'
-import type { ScopeLike } from '#/simulator/src/data/importCanonical'
+import type Scope from '#/simulator/src/circuit'
 
 declare global {
     interface Window {
-        globalScope?: ScopeLike
+        globalScope?: Scope
     }
 }
 
@@ -86,7 +86,7 @@ import { canonicaliseProject } from '#/simulator/src/data/canonical'
 import { scopeList } from '#/simulator/src/circuit'
 import { useState } from '#/store/SimulatorStore/state'
 import { ref, computed, watch, onUnmounted } from 'vue'
-import type { CanonicalProject } from '#/simulator/src/data/canonical'
+import type { CanonicalProject } from '#/simulator/src/types/canonical.types'
 
 const SimulatorState = useState()
 const { t } = useI18n()

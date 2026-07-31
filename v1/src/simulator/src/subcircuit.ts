@@ -56,8 +56,8 @@ export default class SubCircuit extends CircuitElement {
   directionFixed: boolean;
   fixedBitWidth: boolean;
   savedData: any;
-  inputNodes: any[];
-  outputNodes: any[];
+  inputNodes: Node[];
+  outputNodes: Node[];
   localScope: any;
   preventCircuitSwitch: boolean;
   rectangleObject: boolean;
@@ -506,13 +506,15 @@ export default class SubCircuit extends CircuitElement {
    * fn to create save Json Data of object
    * @return {JSON}
    */
-  customSave() {
+  customSave(): {
+    nodes: { inputNodes: number[]; outputNodes: number[] };
+    constructorParamaters: [string];
+  } {
     return {
       nodes: {
-        inputNodes: this.inputNodes,
-        outputNodes: this.outputNodes,
+        inputNodes: this.inputNodes.map(findNode),
+        outputNodes: this.outputNodes.map(findNode),
       },
-      values: {},
       constructorParamaters: [this.id],
     };
   }
