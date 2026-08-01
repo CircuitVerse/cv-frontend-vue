@@ -124,7 +124,7 @@ function dragover(): void {
     position: absolute;
     width: 400px;
     height: 33px;
-    top: 90px;
+    top: 10px;
     right: 280px;
     border-radius: 7px;
     z-index: 100;
