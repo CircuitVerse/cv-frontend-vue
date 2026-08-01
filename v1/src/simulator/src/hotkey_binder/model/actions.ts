@@ -98,7 +98,6 @@ const removeObsoleteKeys = (userK: KeyMap, defaultK: KeyMap): boolean => {
   return hasChanges;
 };
 
-
 /**
  * Function used to set userKeys, grabs the keycombo from the panel UI
  * sets it to the localStorage & calls addKeys
