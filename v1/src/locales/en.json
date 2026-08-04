@@ -90,7 +90,8 @@
             "select_theme": "Select Theme",
             "boolean_logic_table": "BooleanLogicTable",
             "open_project": "Open Project",
-            "bit_converter": "Dec-Bin-Hex-Converter"
+            "bit_converter": "Dec-Bin-Hex-Converter",
+            "testbench": "Testbench"
         },
         "panel_body": {
             "circuit_elements": {
@@ -119,6 +120,30 @@
                 "apply_themes": "Apply Themes",
                 "select_theme": "Select a theme:"
             },
+            "project_property": {
+                "project": "Project:",
+                "circuit": "Circuit:",
+                "clock_time": "Clock Time (ms):",
+                "clock_enabled": "Clock Enabled:",
+                "lite_mode": "Lite Mode:",
+                "edit_layout": "Edit Layout",
+                "delete_circuit": "Delete Circuit"
+            },
+            "element_property": {
+                "bit_width": "Bit-width:",
+                "input_size": "Input Size:",
+                "delay": "Delay:",
+                "label": "Label:",
+                "label_direction": "Label Direction:",
+                "direction": "Direction:",
+                "orientation": "Orientation:",
+                "label_directions": {
+                    "up": "UP",
+                    "down": "DOWN",
+                    "left": "LEFT",
+                    "right": "RIGHT"
+                }
+            },
             "layout": {
                 "width": "Width",
                 "height": "Height",
@@ -139,12 +164,15 @@
                 "copy": "Copy",
                 "cut": "Cut",
                 "delete": "Delete",
+                "undo": "Undo",
                 "new_circuit": "New Circuit",
+                "insert_subcircuit": "Insert SubCircuit",
                 "center_focus": "Center Focus"
             },
             "bit_converter": {
                 "decimal_value": "Decimal Value",
                 "binary_value": "Binary value",
+                "binary_coded_decimal_value": "Binary Coded Decimal Value",
                 "octal_value": "Octal value",
                 "hexadecimal_value": "Hexadecimal value"
             },
@@ -162,6 +190,61 @@
                 "report_btn": "Report",
                 "cancel_btn": "Cancel",
                 "close_btn": "Close"
+            },
+            "testbench": {
+                "test": "Test:",
+                "untitled": "Untitled",
+                "type": "Type:",
+                "combinational": "Combinational",
+                "sequential": "Sequential",
+                "edit": "Edit",
+                "remove": "Remove",
+                "group": "Group:",
+                "case": "Case:",
+                "labels": "LABELS",
+                "bitwidth": "Bitwidth",
+                "current_case": "Current Case",
+                "result": "Result",
+                "validate": "Validate",
+                "run_all": "Run All",
+                "out_of": "out of",
+                "tests_passed": "Tests Passed",
+                "view_detailed": "View Detailed",
+                "no_test_attached": "No Test is attached to the current circuit",
+                "attach_test": "Attach Test"
+            },
+            "testbench_validator": {
+                "title": "Testbench Validator",
+                "all_good": "All good. No validation errors",
+                "fix_errors": "Please fix these errors to run tests",
+                "identifier": "Identifier",
+                "error": "Error",
+                "ok": "Ok",
+                "auto_fix": "Auto Fix",
+                "auto_fixed_message": "Testbench: Auto fixed {count} errors"
+            },
+            "testbench_creator": {
+                "create_test": "Create Test",
+                "enter_test_title": "Enter Test Title",
+                "sequential_test": "Sequential Test",
+                "combinational_test": "Combinational Test",
+                "no_groups": "No test groups added yet. Click \"+ New Group\" to start creating your test.",
+                "inputs": "Inputs",
+                "outputs": "Outputs",
+                "label": "Label",
+                "bitwidth": "Bitwidth",
+                "decrease_bitwidth": "Decrease bitwidth",
+                "increase_bitwidth": "Increase bitwidth",
+                "add_test": "Add Test",
+                "delete_group": "Delete Group",
+                "input": "Input",
+                "output": "Output",
+                "results": "Results",
+                "new_group": "New Group",
+                "reset": "Reset",
+                "import_csv": "Import CSV",
+                "export_csv": "Export CSV",
+                "attach": "Attach"
             }
         },
         "tooltip": {
