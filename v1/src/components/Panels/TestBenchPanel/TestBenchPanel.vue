@@ -4,7 +4,7 @@
     ref="testbenchPanelRef"
   >
     <div class="panel-header">
-      {{ $t("simulator.panel_header.testbench") }}
+      Testbench
       <span class="fas fa-minus-square minimize panel-button"></span>
       <span
         class="fas fa-external-link-square-alt maximize panel-button-icon"
@@ -17,17 +17,12 @@
       <div class="tb-manual-test-data">
         <div style="margin-bottom: 10px; overflow: auto">
           <span id="data-title" class="tb-data"
-            ><b>{{ $t("simulator.panel_body.testbench.test") }}</b>
-            <span>{{
-              testData.title || $t("simulator.panel_body.testbench.untitled")
-            }}</span></span
+            ><b>Test:</b> <span>{{ testData.title || "Untitled" }}</span></span
           >
           <span id="data-type" class="tb-data"
-            ><b>{{ $t("simulator.panel_body.testbench.type") }}</b>
+            ><b>Type:</b>
             <span>{{
-              testData.type === "comb"
-                ? $t("simulator.panel_body.testbench.combinational")
-                : $t("simulator.panel_body.testbench.sequential")
+              testData.type === "comb" ? "Combinational" : "Sequential"
             }}</span></span
           >
         </div>
@@ -36,20 +31,20 @@
           @mousedown="buttonListenerFunctions.editTestButton()"
           class="custom-btn--basic panel-button tb-dialog-button"
         >
-          {{ $t("simulator.panel_body.testbench.edit") }}
+          Edit
         </button>
         <button
           id="remove-test-btn"
           @mousedown="buttonListenerFunctions.removeTestButton()"
           class="custom-btn--tertiary panel-button tb-dialog-button"
         >
-          {{ $t("simulator.panel_body.testbench.remove") }}
+          Remove
         </button>
       </div>
       <div style="overflow: auto; margin-bottom: 10px">
         <div class="tb-manual-test-buttons tb-group-buttons">
           <span style="line-height: 24px; margin-right: 5px"
-            ><b>{{ $t("simulator.panel_body.testbench.group") }} </b></span
+            ><b>Group: </b></span
           >
           <button
             id="prev-group-btn"
@@ -73,7 +68,7 @@
         </div>
         <div class="tb-manual-test-buttons tb-case-buttons">
           <span style="line-height: 24px; margin-right: 5px"
-            ><b>{{ $t("simulator.panel_body.testbench.case") }} </b></span
+            ><b>Case: </b></span
           >
           <button
             id="prev-case-btn"
@@ -96,20 +91,20 @@
         <table class="tb-manual-table">
           <thead>
             <tr id="tb-manual-table-labels">
-              <th>{{ $t("simulator.panel_body.testbench.labels") }}</th>
+              <th>LABELS</th>
               <th v-for="io in combinedIO" :key="io.label">{{ io.label }}</th>
             </tr>
           </thead>
 
           <tbody>
             <tr id="tb-manual-table-bitwidths">
-              <td>{{ $t("simulator.panel_body.testbench.bitwidth") }}</td>
+              <td>Bitwidth</td>
               <td v-for="io in combinedIO" :key="io.label">
                 {{ io.bitWidth }}
               </td>
             </tr>
             <tr id="tb-manual-table-current-case">
-              <td>{{ $t("simulator.panel_body.testbench.current_case") }}</td>
+              <td>Current Case</td>
               <td v-for="input in inputs" :key="input.label">
                 {{ input.values[currentCase] }}
               </td>
@@ -118,7 +113,7 @@
               </td>
             </tr>
             <tr id="tb-manual-table-test-result">
-              <td>{{ $t("simulator.panel_body.testbench.result") }}</td>
+              <td>Result</td>
               <td
                 v-for="(result, index) in testBenchStore.resultValues"
                 :key="index"
@@ -137,25 +132,23 @@
             @mousedown="buttonListenerFunctions.validateButton()"
             class="custom-btn--basic panel-button tb-dialog-button"
           >
-            {{ $t("simulator.panel_body.testbench.validate") }}
+            Validate
           </button>
           <button
             id="runall-btn"
             @mousedown="buttonListenerFunctions.runAllButton()"
             class="custom-btn--primary panel-button tb-dialog-button"
           >
-            {{ $t("simulator.panel_body.testbench.run_all") }}
+            Run All
           </button>
         </div>
         <span v-if="testBenchStore.showPassed">
           <span
-            >{{ testBenchStore.passed }}
-            {{ $t("simulator.panel_body.testbench.out_of") }}
-            {{ testBenchStore.total }}</span
+            >{{ testBenchStore.passed }} out of {{ testBenchStore.total }}</span
           >
-          {{ $t("simulator.panel_body.testbench.tests_passed") }}
+          Tests Passed
           <span @mousedown="openCreator('result')" :style="{ color: '#18a2cd' }"
-            >{{ $t("simulator.panel_body.testbench.view_detailed") }}</span
+            >View Detailed</span
           >
         </span>
       </div>
@@ -163,14 +156,14 @@
     <div v-else class="panel-body tb-test-null">
       <div class="tb-manual-test-data">
         <div style="margin-bottom: 10px; overflow: auto">
-          <p><i>{{ $t("simulator.panel_body.testbench.no_test_attached") }}</i></p>
+          <p><i>No Test is attached to the current circuit</i></p>
         </div>
         <button
           id="attach-test-btn"
           @mousedown="buttonListenerFunctions.attachTestButton()"
           class="custom-btn--primary panel-button tb-dialog-button"
         >
-          {{ $t("simulator.panel_body.testbench.attach_test") }}
+          Attach Test
         </button>
       </div>
     </div>

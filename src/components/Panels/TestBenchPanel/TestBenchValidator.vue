@@ -2,7 +2,7 @@
   <v-dialog v-model="showValidator" :persistent="false">
     <v-card class="messageBoxContent">
       <v-card-text>
-        <p class="dialogHeader validatorHeader">{{ $t("simulator.panel_body.testbench_validator.title") }}</p>
+        <p class="dialogHeader validatorHeader">Testbench Validator</p>
         <v-btn size="x-small" icon class="dialogClose" @mousedown="closeDialog">
           <v-icon>mdi-close</v-icon>
         </v-btn>
@@ -22,16 +22,16 @@
             />
           </svg>
         </div>
-        {{ $t("simulator.panel_body.testbench_validator.all_good") }}
+        All good. No validation errors
       </v-card-text>
 
       <v-card-text v-else class="inValidBox">
-        <p>{{ $t("simulator.panel_body.testbench_validator.fix_errors") }}</p>
+        <p>Please fix these errors to run tests</p>
         <table class="validation-ui-table">
           <thead>
             <tr>
-              <th><b>{{ $t("simulator.panel_body.testbench_validator.identifier") }}</b></th>
-              <th><b>{{ $t("simulator.panel_body.testbench_validator.error") }}</b></th>
+              <th><b>Identifier</b></th>
+              <th><b>Error</b></th>
             </tr>
           </thead>
 
@@ -47,9 +47,9 @@
         </table>
       </v-card-text>
       <v-card-actions>
-        <v-btn class="messageBtn" block @mousedown="closeDialog">{{ $t("simulator.panel_body.testbench_validator.ok") }}</v-btn>
+        <v-btn class="messageBtn" block @mousedown="closeDialog">Ok</v-btn>
         <v-btn class="messageBtn" block @mousedown="handleAutoFix"
-          >{{ $t("simulator.panel_body.testbench_validator.auto_fix") }}</v-btn
+          >Auto Fix</v-btn
         >
       </v-card-actions>
     </v-card>
@@ -61,20 +61,14 @@ import { useTestBenchStore, ValidationErrors } from "#/store/testBenchStore";
 import { VALIDATION_ERRORS } from "#/simulator/src/testbench";
 import { showMessage } from "#/simulator/src/utils";
 import { computed } from "vue";
-import { useI18n } from "vue-i18n";
 
 const testBenchStore = useTestBenchStore();
-const { t } = useI18n();
 
 const showValidator = computed(() => testBenchStore.showTestBenchValidator);
 
 const handleAutoFix = () => {
   const fixedErrors = validationAutoFix(testBenchStore.validationErrors);
-  showMessage(
-    t("simulator.panel_body.testbench_validator.auto_fixed_message", {
-      count: fixedErrors,
-    }),
-  );
+  showMessage(`Testbench: Auto fixed ${fixedErrors} errors`);
 };
 
 const closeDialog = () => {
