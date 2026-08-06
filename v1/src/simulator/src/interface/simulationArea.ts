@@ -1,9 +1,16 @@
 import { EventQueue } from "../eventQueue";
+import ContentionPendingData from "../contention";
+import type CircuitElement from "../circuitElement";
+import type Node from "../node";
+import type Wire from "../wire";
+import type LayoutNode from "../layout/layoutNode";
 export interface SimulationArea {
   canvas: HTMLCanvasElement;
   context: CanvasRenderingContext2D | null;
   selected: boolean;
-  hover: boolean;
+  // Whatever the pointer is currently over. engine.js also parks wires here,
+  // and layout mode uses LayoutNode.
+  hover: CircuitElement | Node | Wire | LayoutNode | undefined;
   clockState: number;
   clockEnabled: boolean;
   // TODO: make this CircuitElement|null once converted to typescript
@@ -24,9 +31,14 @@ export interface SimulationArea {
   timePeriod: number;
   mouseX: number;
   mouseY: number;
+  // Unrounded pointer position. listeners.js assigns these on the first pointer
+  // event, so they are absent until the pointer moves.
+  mouseXf?: number;
+  mouseYf?: number;
   mouseDownX: number;
   mouseDownY: number;
   simulationQueue: EventQueue;
+  contentionPending: ContentionPendingData;
   clickCount: number;
   lock: string;
   mouseDown: boolean;

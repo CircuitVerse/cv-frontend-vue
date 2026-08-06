@@ -24,7 +24,7 @@ export class EventQueue {
     this.time = 0;
   }
 
-  add(obj: QueueObject, delay: number) {
+  add(obj: QueueObject, delay?: number): void {
     if (obj.queueProperties.inQueue) {
       obj.queueProperties.time = this.time + (delay || obj.propagationDelay);
       let i = obj.queueProperties.index;

@@ -10,6 +10,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-alert */
 import CircuitElement from "./circuitElement";
+import type { Scope as ElementScope } from "./circuitElement";
 import plotArea from "./plotArea";
 import { simulationArea } from "./simulationArea";
 import { stripTags, uniq } from "./utils";
@@ -331,7 +332,9 @@ export default class Scope {
     this.name = name;
 
     // root object for referring to main canvas - intermediate node uses this
-    this.root = new CircuitElement(0, 0, this, "RIGHT", 1);
+    // The root is built before initialize() creates the node and wire arrays,
+    // so this scope does not satisfy ElementScope yet.
+    this.root = new CircuitElement(0, 0, this as unknown as ElementScope, "RIGHT", 1);
     this.backups = [];
     // maintaining a state (history) for redo function
     this.history = [];
