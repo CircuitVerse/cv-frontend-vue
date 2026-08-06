@@ -90,7 +90,8 @@
             "select_theme": "थीम चुनें",
             "boolean_logic_table": "बूलियन लॉजिक टेबल",
             "open_project": "परियोजना खोलें",
-            "bit_converter": "Dec-Bin-Hex-कनवर्टर"
+            "bit_converter": "Dec-Bin-Hex-कनवर्टर",
+            "testbench": "टेस्टबेंच"
         },
         "panel_body": {
             "circuit_elements": {
@@ -119,6 +120,30 @@
                 "apply_themes": "थीम लागू करें",
                 "select_theme": "थीम चुनें:"
             },
+            "project_property": {
+                "project": "परियोजना:",
+                "circuit": "सर्किट:",
+                "clock_time": "घड़ी का समय (मिलीसेकंड):",
+                "clock_enabled": "घड़ी इनेबल किया गया:",
+                "lite_mode": "लाइट मोड:",
+                "edit_layout": "लेआउट संपादित करें",
+                "delete_circuit": "सर्किट हटाएं"
+            },
+            "element_property": {
+                "bit_width": "बिट-चौड़ाई:",
+                "input_size": "इनपुट आकार:",
+                "delay": "विलंब (सेकंड):",
+                "label": "लेबल:",
+                "label_direction": "लेबल दिशा:",
+                "direction": "दिशा:",
+                "orientation": "ओरिएंटेशन:",
+                "label_directions": {
+                    "up": "ऊपर",
+                    "down": "नीचे",
+                    "left": "बाएं",
+                    "right": "दाएं"
+                }
+            },
             "layout": {
                 "width": "चौड़ाई",
                 "height": "ऊंचाई",
@@ -139,12 +164,15 @@
                 "copy": "कॉपी करें",
                 "cut": "कट करें",
                 "delete": "हटाएं",
+                "undo": "पूर्ववत् करें",
                 "new_circuit": "नया सर्किट",
+                "insert_subcircuit": "सबसर्किट डालें",
                 "center_focus": "सेंटर फोकस"
             },
             "bit_converter": {
                 "decimal_value": "डेसीमल वैल्यू",
                 "binary_value": "बाइनरी वैल्यू",
+                "binary_coded_decimal_value": "बाइनरी कोडेड डेसीमल वैल्यू",
                 "octal_value": "ऑक्टल वैल्यू",
                 "hexadecimal_value": "हेक्साडेसिमल वैल्यू"
             },
@@ -162,6 +190,61 @@
                 "report_btn": "रिपोर्ट करें",
                 "cancel_btn": "रद्द करें",
                 "close_btn": "बंद करें"
+            },
+            "testbench": {
+                "test": "टेस्ट:",
+                "untitled": "शीर्षकहीन",
+                "type": "प्रकार:",
+                "combinational": "कॉम्बिनेशनल",
+                "sequential": "सीक्वेंशियल",
+                "edit": "संपादित करें",
+                "remove": "हटाएं",
+                "group": "ग्रुप:",
+                "case": "केस:",
+                "labels": "लेबल्स",
+                "bitwidth": "बिट-चौड़ाई",
+                "current_case": "वर्तमान केस",
+                "result": "परिणाम",
+                "validate": "वैलिडेट करें",
+                "run_all": "सभी चलाएं",
+                "out_of": "में से",
+                "tests_passed": "टेस्ट पास हुए",
+                "view_detailed": "विस्तार से देखें",
+                "no_test_attached": "वर्तमान सर्किट से कोई टेस्ट संलग्न नहीं है",
+                "attach_test": "टेस्ट संलग्न करें"
+            },
+            "testbench_validator": {
+                "title": "टेस्टबेंच वैलिडेटर",
+                "all_good": "सब ठीक है। कोई वैलिडेशन एरर नहीं",
+                "fix_errors": "टेस्ट चलाने के लिए इन एरर्स को ठीक करें",
+                "identifier": "आइडेंटिफायर",
+                "error": "एरर",
+                "ok": "ठीक है",
+                "auto_fix": "ऑटो फिक्स",
+                "auto_fixed_message": "टेस्टबेंच: {count} एरर्स ऑटो फिक्स किए गए"
+            },
+            "testbench_creator": {
+                "create_test": "टेस्ट बनाएं",
+                "enter_test_title": "टेस्ट का शीर्षक दर्ज करें",
+                "sequential_test": "सीक्वेंशियल टेस्ट",
+                "combinational_test": "कॉम्बिनेशनल टेस्ट",
+                "no_groups": "अभी तक कोई टेस्ट ग्रुप नहीं जोड़ा गया है। अपना टेस्ट बनाना शुरू करने के लिए \"+ नया ग्रुप\" पर क्लिक करें।",
+                "inputs": "इनपुट्स",
+                "outputs": "आउटपुट्स",
+                "label": "लेबल",
+                "bitwidth": "बिट-चौड़ाई",
+                "decrease_bitwidth": "बिट-चौड़ाई घटाएं",
+                "increase_bitwidth": "बिट-चौड़ाई बढ़ाएं",
+                "add_test": "टेस्ट जोड़ें",
+                "delete_group": "ग्रुप हटाएं",
+                "input": "इनपुट",
+                "output": "आउटपुट",
+                "results": "परिणाम",
+                "new_group": "नया ग्रुप",
+                "reset": "रीसेट करें",
+                "import_csv": "CSV इम्पोर्ट करें",
+                "export_csv": "CSV एक्सपोर्ट करें",
+                "attach": "संलग्न करें"
             }
         },
         "tooltip": {
