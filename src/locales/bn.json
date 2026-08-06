@@ -30,6 +30,8 @@
                 "open_offline": "অফলাইন খুলুন",
                 "save_online": "অনলাইন সংরক্ষণ",
                 "save_offline": "অফলাইন সংরক্ষণ",
+                "export_as_file": "ফাইল হিসাবে রপ্তানি করুন",
+                "import_project": "প্রকল্প আমদানি করুন",
                 "preview_circuit": "সার্কিট পূর্বরূপ",
                 "clear_project": "প্রকল্প সাফ",
                 "recover_project": "প্রকল্প পুনরুদ্ধার"
@@ -64,11 +66,13 @@
             "verilog_module": "ভেরিলোগ মডিউল",
             "properties": "বৈশিষ্ট্য",
             "layout": "বিন্যাস",
+            "keybinding_preference": "কীবাইন্ডিং পছন্দ",
             "render_image": "ছবি রেন্ডার করুন",
             "select_theme": "থিম নির্বাচন করুন",
             "boolean_logic_table": "বুলিয়ান লজিক টেবিল",
             "open_project": "প্রকল্প খুলুন",
-            "bit_converter": "Dec-Bin-Hex-রূপান্তরকারী"
+            "bit_converter": "Dec-Bin-Hex-রূপান্তরকারী",
+            "testbench": "টেস্টবেঞ্চ"
         },
         "panel_body": {
             "circuit_elements": {
@@ -92,7 +96,33 @@
                 "save_code": "কোড সংরক্ষণ করুন",
                 "hide_terminal": "টার্মিনাল লুকান",
                 "show_terminal": "টার্মিনাল দেখান",
-                "module_in_experiment_notice": "এটি একটি পরীক্ষামূলক মডিউল। \"কোড সংরক্ষণ করুন\" বোতামটি ক্লিক না করা পর্যন্ত কোডটি সংরক্ষিত হয় না।"
+                "module_in_experiment_notice": "এটি একটি পরীক্ষামূলক মডিউল। \"কোড সংরক্ষণ করুন\" বোতামটি ক্লিক না করা পর্যন্ত কোডটি সংরক্ষিত হয় না।",
+                "apply_themes": "থিম প্রয়োগ করুন",
+                "select_theme": "থিম নির্বাচন করুন:"
+            },
+            "element_property": {
+                "bit_width": "বিট প্রস্থ:",
+                "input_size": "ইনপুট আকার:",
+                "delay": "বিলম্ব (সেকেন্ড):",
+                "label": "লেবেল:",
+                "label_direction": "লেবেলের দিক:",
+                "direction": "দিক:",
+                "orientation": "অভিমুখ:",
+                "label_directions": {
+                    "up": "উপরে",
+                    "down": "নিচে",
+                    "left": "বামে",
+                    "right": "ডানে"
+                }
+            },
+            "project_property": {
+                "project": "প্রকল্প:",
+                "circuit": "সার্কিট:",
+                "clock_time": "ঘড়ির সময় (মিলিসেকেন্ড):",
+                "clock_enabled": "ঘড়ি সক্রিয়:",
+                "lite_mode": "লাইট মোড:",
+                "edit_layout": "লেআউট সম্পাদনা করুন",
+                "delete_circuit": "সার্কিট মুছে ফেলুন"
             },
             "layout": {
                 "width": "প্রস্থ",
@@ -114,19 +144,86 @@
                 "copy": "কপি",
                 "cut": "কাটুন",
                 "delete": "মুছে ফেলুন",
+                "undo": "পূর্বাবস্থায় ফেরান",
+                "insert_subcircuit": "সাবসার্কিট ঢোকান",
                 "new_circuit": "নতুন সার্কিট",
                 "center_focus": "কেন্দ্র ফোকাস"
             },
             "bit_converter": {
                 "decimal_value": "দশমিক মান",
                 "binary_value": "বাইনারি মান",
+                "binary_coded_decimal_value": "বাইনারি কোডেড দশমিক মান",
                 "octal_value": "অক্টাল মান",
                 "hexadecimal_value": "হেক্সাডেসিমাল মান"
+            },
+            "custom_shortcut": {
+                "esc_cancel": "কাঙ্ক্ষিত কী-সমন্বয় চাপুন এবং সংরক্ষণের জন্য Enter চাপুন",
+                "command": "কমান্ড",
+                "keymapping": "কী ম্যাপিং",
+                "reset_to_default": "ডিফল্টে রিসেট করুন",
+                "save": "সংরক্ষণ করুন"
             },
             "report_issue": {
                 "describe_issue": "সমস্যার বিবরণ:",
                 "email_html": "<b>Email</b><span> [Optional]</span>:",
-                "report_btn": "সমস্যা রিপোর্ট করুন"
+                "report_btn": "সমস্যা রিপোর্ট করুন",
+                "cancel_btn": "বাতিল করুন",
+                "close_btn": "বন্ধ করুন"
+            },
+            "testbench": {
+                "test": "টেস্ট:",
+                "untitled": "শিরোনামহীন",
+                "type": "ধরন:",
+                "combinational": "কম্বিনেশনাল",
+                "sequential": "সিকোয়েন্সিয়াল",
+                "edit": "সম্পাদনা করুন",
+                "remove": "সরান",
+                "group": "গ্রুপ:",
+                "case": "কেস:",
+                "labels": "লেবেল",
+                "bitwidth": "বিটউইথ",
+                "current_case": "বর্তমান কেস",
+                "result": "ফলাফল",
+                "validate": "যাচাই করুন",
+                "run_all": "সব চালান",
+                "out_of": "এর মধ্যে",
+                "tests_passed": "টেস্ট পাস হয়েছে",
+                "view_detailed": "বিস্তারিত দেখুন",
+                "no_test_attached": "বর্তমান সার্কিটে কোনও টেস্ট সংযুক্ত নেই",
+                "attach_test": "টেস্ট সংযুক্ত করুন"
+            },
+            "testbench_validator": {
+                "title": "টেস্টবেঞ্চ ভ্যালিডেটর",
+                "all_good": "সব ঠিক আছে। কোনও যাচাইকরণ ত্রুটি নেই",
+                "fix_errors": "টেস্ট চালানোর জন্য এই ত্রুটিগুলি ঠিক করুন",
+                "identifier": "শনাক্তকারী",
+                "error": "ত্রুটি",
+                "ok": "ঠিক আছে",
+                "auto_fix": "অটো ফিক্স",
+                "auto_fixed_message": "টেস্টবেঞ্চ: {count} টি ত্রুটি স্বয়ংক্রিয়ভাবে ঠিক করা হয়েছে"
+            },
+            "testbench_creator": {
+                "create_test": "টেস্ট তৈরি করুন",
+                "enter_test_title": "টেস্টের শিরোনাম লিখুন",
+                "sequential_test": "সিকোয়েন্সিয়াল টেস্ট",
+                "combinational_test": "কম্বিনেশনাল টেস্ট",
+                "no_groups": "এখনও কোনও টেস্ট গ্রুপ যোগ করা হয়নি। আপনার টেস্ট তৈরি শুরু করতে \"+ নতুন গ্রুপ\" ক্লিক করুন।",
+                "inputs": "ইনপুট",
+                "outputs": "আউটপুট",
+                "label": "লেবেল",
+                "bitwidth": "বিটউইথ",
+                "decrease_bitwidth": "বিটউইথ কমান",
+                "increase_bitwidth": "বিটউইথ বাড়ান",
+                "add_test": "টেস্ট যোগ করুন",
+                "delete_group": "গ্রুপ মুছুন",
+                "input": "ইনপুট",
+                "output": "আউটপুট",
+                "results": "ফলাফল",
+                "new_group": "নতুন গ্রুপ",
+                "reset": "রিসেট করুন",
+                "import_csv": "CSV ইম্পোর্ট করুন",
+                "export_csv": "CSV এক্সপোর্ট করুন",
+                "attach": "সংযুক্ত করুন"
             }
         },
         "tooltip": {
