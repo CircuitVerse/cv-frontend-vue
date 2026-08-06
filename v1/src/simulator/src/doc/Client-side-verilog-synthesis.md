@@ -25,7 +25,7 @@ Progress messages, errors, and results are pushed to a Pinia store (`synthesisSt
 **`synthesisWorker.js`** -- The Web Worker entry point. It receives a message with the user's Verilog code, runs Yosys on it, validates the output, converts the netlist using `yosys2digitaljs`, and posts the result back. One thing to know: it temporarily overrides `console.log` and `console.error` during synthesis because the WASI shim routes Yosys stderr through `console.log`. The originals are always restored in a `finally` block.
 
 The Yosys command it runs:
-```
+```text
 read_verilog input.v; setattr -mod -unset top; hierarchy -auto-top;
 proc; opt; memory -nomap; wreduce -memx; opt -full; write_json output.json
 ```
