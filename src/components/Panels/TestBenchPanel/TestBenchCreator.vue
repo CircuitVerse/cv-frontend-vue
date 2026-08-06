@@ -9,7 +9,7 @@
             </v-card-title>
             <v-card-text class="pa-6">
                 <div class="mb-6 text-center">
-                    <input v-model="testTitle" class="title-input" type="text" placeholder="Enter Test Title" />
+                    <input v-model="testTitle" class="title-input" type="text" :placeholder="$t('simulator.panel_body.testbench_creator.enter_test_title')" />
                 </div>
                 <div class="test-type-container">
                     <v-btn
@@ -17,37 +17,37 @@
                         @click="testType = 'seq'"
                         elevation="0"
                     >
-                        Sequential Test
+                        {{ $t('simulator.panel_body.testbench_creator.sequential_test') }}
                     </v-btn>
                     <v-btn
                         :class="['test-type-btn', { 'active': testType === 'comb' }]"
                         @click="testType = 'comb'"
                         elevation="0"
                     >
-                        Combinational Test
+                        {{ $t('simulator.panel_body.testbench_creator.combinational_test') }}
                     </v-btn>
                 </div>
 
                 <div v-if="groups.length === 0" class="empty-state">
-                    <p>No test groups added yet. Click "+ New Group" to start creating your test.</p>
+                    <p>{{ $t('simulator.panel_body.testbench_creator.no_groups') }}</p>
                 </div>
 
                 <div v-else class="data-table-container">
                     <div class="data-grid header-grid" :style="{ gridTemplateColumns: topGridColumnsStyle }">
                         <div class="grid-cell header-cell label-col"></div>
                         <div class="grid-cell header-cell inputs-col">
-                            <span>Inputs</span>
+                            <span>{{ $t('simulator.panel_body.testbench_creator.inputs') }}</span>
                             <v-btn icon size="x-small" variant="flat" class="ml-2 action-icon" @click="increInputs"><v-icon>mdi-plus</v-icon></v-btn>
                         </div>
                         <div class="grid-cell header-cell outputs-col">
-                            <span>Outputs</span>
+                            <span>{{ $t('simulator.panel_body.testbench_creator.outputs') }}</span>
                              <v-btn icon size="x-small" variant="flat" class="ml-2 action-icon" @click="increOutputs"><v-icon>mdi-plus</v-icon></v-btn>
                         </div>
                     </div>
 
                     <div class="data-grid labels-grid" :style="{ gridTemplateColumns: topGridColumnsStyle }">
                         <div class="grid-cell label-col">
-                            Label
+                            {{ $t('simulator.panel_body.testbench_creator.label') }}
                         </div>
                         <div class="grid-cell inputs-col">
                             <div v-for="(name, i) in inputsName" :key="`in-name-${i}`" class="io-cell">
@@ -64,25 +64,25 @@
                     </div>
 
                     <div class="data-grid bitwidth-grid" :style="{ gridTemplateColumns: topGridColumnsStyle }">
-                      <div class="grid-cell label-col">Bitwidth</div>
+                      <div class="grid-cell label-col">{{ $t('simulator.panel_body.testbench_creator.bitwidth') }}</div>
                       <div class="grid-cell inputs-col">
                         <div v-for="(bw, i) in inputsBandWidth" :key="`in-bw-${i}`" class="io-cell bitwidth-row">
-                          <v-btn icon size="x-small" variant="text" @click="inputsBandWidth[i] = Math.max(1, inputsBandWidth[i] - 1)" title="Decrease bitwidth">
+                          <v-btn icon size="x-small" variant="text" @click="inputsBandWidth[i] = Math.max(1, inputsBandWidth[i] - 1)" :title="$t('simulator.panel_body.testbench_creator.decrease_bitwidth')">
                             <v-icon>mdi-minus</v-icon>
                           </v-btn>
                           <input class="io-input bitwidth-input no-spinner" v-model="inputsBandWidth[i]" min="1" max="64" @blur="inputsBandWidth[i] = clamp(inputsBandWidth[i])"/>
-                          <v-btn icon size="x-small" variant="text" @click="inputsBandWidth[i] = Math.min(64, inputsBandWidth[i] + 1)" title="Increase bitwidth">
+                          <v-btn icon size="x-small" variant="text" @click="inputsBandWidth[i] = Math.min(64, inputsBandWidth[i] + 1)" :title="$t('simulator.panel_body.testbench_creator.increase_bitwidth')">
                             <v-icon>mdi-plus</v-icon>
                           </v-btn>
                         </div>
                       </div>
                       <div class="grid-cell outputs-col">
                         <div v-for="(bw, i) in outputsBandWidth" :key="`out-bw-${i}`" class="io-cell bitwidth-row">
-                          <v-btn icon size="x-small" variant="text" @click="outputsBandWidth[i] = Math.max(1, outputsBandWidth[i] - 1)" title="Decrease bitwidth">
+                          <v-btn icon size="x-small" variant="text" @click="outputsBandWidth[i] = Math.max(1, outputsBandWidth[i] - 1)" :title="$t('simulator.panel_body.testbench_creator.decrease_bitwidth')">
                             <v-icon>mdi-minus</v-icon>
                           </v-btn>
                           <input class="io-input bitwidth-input no-spinner" v-model="outputsBandWidth[i]" min="1" max="64" @blur="outputsBandWidth[i] = clamp(outputsBandWidth[i])"/>
-                          <v-btn icon size="x-small" variant="text" @click="outputsBandWidth[i] = Math.min(64, outputsBandWidth[i] + 1)" title="Increase bitwidth">
+                          <v-btn icon size="x-small" variant="text" @click="outputsBandWidth[i] = Math.min(64, outputsBandWidth[i] + 1)" :title="$t('simulator.panel_body.testbench_creator.increase_bitwidth')">
                             <v-icon>mdi-plus</v-icon>
                           </v-btn>
                         </div>
@@ -97,11 +97,11 @@
                             <v-btn size="small" class="add-test-btn" variant="tonal"
                                 @click="addTestToGroup(groupIndex)">
                                 <v-icon left>mdi-plus</v-icon>
-                                Add Test
+                                {{ $t('simulator.panel_body.testbench_creator.add_test') }}
                             </v-btn>
 
                             <v-btn icon size="small" variant="text" color="black" @click="deleteGroup(groupIndex)"
-                                title="Delete Group">
+                                :title="$t('simulator.panel_body.testbench_creator.delete_group')">
                                 <v-icon>mdi-delete</v-icon>
                             </v-btn>
                         </div>
@@ -109,9 +109,9 @@
 
                         <div class="data-grid group-column-header" :class="{ 'with-results': testBenchStore.showResults }" :style="{ gridTemplateColumns: gridColumnsStyle }">
                              <div class="grid-cell label-col"></div>
-                             <div class="grid-cell header-cell">Input</div>
-                             <div class="grid-cell header-cell">Output</div>
-                             <div v-if="testBenchStore.showResults" class="grid-cell header-cell">Results</div>
+                             <div class="grid-cell header-cell">{{ $t('simulator.panel_body.testbench_creator.input') }}</div>
+                             <div class="grid-cell header-cell">{{ $t('simulator.panel_body.testbench_creator.output') }}</div>
+                             <div v-if="testBenchStore.showResults" class="grid-cell header-cell">{{ $t('simulator.panel_body.testbench_creator.results') }}</div>
                         </div>
 
                         <div v-for="(_, testIndex) in (group.inputs[0] || [])" class="data-grid data-row" :key="testIndex" :class="{ 'with-results': testBenchStore.showResults }" :style="{ gridTemplateColumns: gridColumnsStyle }">
@@ -146,12 +146,12 @@
             <v-card-actions class="footer-actions">
                 <v-btn class="action-btn new-group-btn" @click="addNewGroup">
                     <v-icon left>mdi-plus</v-icon>
-                    New Group
+                    {{ $t('simulator.panel_body.testbench_creator.new_group') }}
                 </v-btn>
-                <v-btn class="action-btn reset-btn" @click="resetData">Reset</v-btn>
-                <v-btn class="action-btn secondary-btn" @click="importFromCSV">Import CSV</v-btn>
-                <v-btn class="action-btn secondary-btn" @click="exportAsCSV">Export CSV</v-btn>
-                <v-btn class="action-btn attach-btn" @click="sendData">Attach</v-btn>
+                <v-btn class="action-btn reset-btn" @click="resetData">{{ $t('simulator.panel_body.testbench_creator.reset') }}</v-btn>
+                <v-btn class="action-btn secondary-btn" @click="importFromCSV">{{ $t('simulator.panel_body.testbench_creator.import_csv') }}</v-btn>
+                <v-btn class="action-btn secondary-btn" @click="exportAsCSV">{{ $t('simulator.panel_body.testbench_creator.export_csv') }}</v-btn>
+                <v-btn class="action-btn attach-btn" @click="sendData">{{ $t('simulator.panel_body.testbench_creator.attach') }}</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -159,14 +159,16 @@
 
 <script lang="ts" setup>
 import { computed, ref, reactive, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useTestBenchStore } from '#/store/testBenchStore';
 
 const testBenchStore = useTestBenchStore();
+const { t } = useI18n();
 
 
 const results: boolean[][][] = reactive([]);
-const testTitle = ref('Untitled');
-const dialogTitle = ref('Create Test');
+const testTitle = ref(t('simulator.panel_body.testbench_creator.untitled'));
+const dialogTitle = computed(() => t('simulator.panel_body.testbench_creator.create_test'));
 const testType = ref<string>('comb');
 
 const inputsBandWidth = ref([1]);
@@ -407,7 +409,7 @@ const deleteOutput = (index:number) => {
 };
 
 const resetData = () => {
-    testTitle.value = 'Untitled';
+    testTitle.value = t('simulator.panel_body.testbench_creator.untitled');
     testType.value = 'comb';
     inputsBandWidth.value = [1];
     outputsBandWidth.value = [1];
