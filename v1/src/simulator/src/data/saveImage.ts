@@ -5,7 +5,7 @@ import { SimulatorStore } from "#/store/SimulatorStore/SimulatorStore";
  * @category data
  * @exports createSaveAsImgPrompt
  */
-export default function createSaveAsImgPrompt(scope: Scope = globalScope): void {
+export default function createSaveAsImgPrompt(): void {
   const simulatorStore = SimulatorStore();
   simulatorStore.dialogBox.saveimage_dialog = true;
 }

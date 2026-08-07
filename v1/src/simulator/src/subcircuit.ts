@@ -34,10 +34,9 @@ export function loadSubCircuit(savedData: any, scope: any): void {
 
 /**
  * Prompt to create subcircuit, shows list of circuits which dont depend on the current circuit
- * @param scope - The current scope
  * @category subcircuit
  */
-export function createSubCircuitPrompt(_scope = globalScope): void {
+export function createSubCircuitPrompt(): void {
   if (verilogModeGet() || layoutModeGet()) {
     showError("Subcircuit cannot be inserted in this mode");
     return;
@@ -434,11 +433,6 @@ export default class SubCircuit extends CircuitElement {
    * Gets element being hovered in the subcircuit
    */
   getElementHover(): any {
-    const _rX = this.layoutProperties.rightDimensionX;
-    const _lX = this.layoutProperties.leftDimensionX;
-    const _uY = this.layoutProperties.upDimensionY;
-    const _dY = this.layoutProperties.downDimensionY;
-
     for (const el of circuitElementList) {
       if (this.localScope[el].length === 0) continue;
       if (!this.localScope[el][0].canShowInSubcircuit) continue;
