@@ -224,9 +224,8 @@ export function bitConverterDialog() {
   const simulatorStore = SimulatorStore();
   simulatorStore.dialogBox.hex_bin_dec_converter_dialog = true;
 }
-
 export function getImageDimensions(file: string) {
-  return new Promise(function (resolved, _rejected) {
+  return new Promise(function (resolved) {
     const i = new Image();
     i.onload = function () {
       resolved({ w: i.width, h: i.height });

@@ -7,6 +7,9 @@ import { forceResetNodesSet } from "../engine";
 
 // Declare global variables
 declare let globalScope: Scope;
+// Written here, read by the simulation engine to gate updates while a circuit
+// loads (see engine.js). Only ever assigned in this module, hence the disable.
+// eslint-disable-next-line no-unused-vars
 declare let loading: boolean;
 
 /**
