@@ -8,7 +8,7 @@ export function getToken(name: string): string | undefined {
 }
 
 export function signOutRails(): void {
-  const csrfToken = (window as any).csrfToken;
+  const csrfToken = document.querySelector<HTMLMetaElement>('meta[name="csrf-token"]')?.content;
   const form = document.createElement("form");
   form.method = "post";
   form.action = "/users/sign_out";
@@ -22,7 +22,7 @@ export function signOutRails(): void {
   const csrfInput = document.createElement("input");
   csrfInput.type = "hidden";
   csrfInput.name = "authenticity_token";
-  csrfInput.value = csrfToken;
+  csrfInput.value = csrfToken ?? "";
   form.appendChild(csrfInput);
 
   document.body.appendChild(form);
