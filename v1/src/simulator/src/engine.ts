@@ -3,6 +3,7 @@
 /* eslint-disable no-continue */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-bitwise */
+import type Scope from './circuit';
 import { layoutModeGet, layoutUpdate } from './layoutMode'
 import plotArea from './plotArea'
 import { simulationArea } from './simulationArea'
@@ -30,7 +31,7 @@ var wireToBeChecked = 0
  * @param {number} param - value of wirechecked
  * @category engine
  */
-export function wireToBeCheckedSet(param) {
+export function wireToBeCheckedSet(param: number) {
     wireToBeChecked = param
 }
 
@@ -47,7 +48,7 @@ var willBeUpdated = false
  * @category engine
  * @category engine
  */
-export function willBeUpdatedSet(param) {
+export function willBeUpdatedSet(param: boolean) {
     willBeUpdated = param
 }
 
@@ -64,7 +65,7 @@ var objectSelection = false
  * @param {boolean} param
  * @category engine
  */
-export function objectSelectionSet(param) {
+export function objectSelectionSet(param: boolean) {
     objectSelection = param
 }
 
@@ -80,7 +81,7 @@ var updatePosition = true
  * @param {boolean} param
  * @category engine
  */
-export function updatePositionSet(param) {
+export function updatePositionSet(param: boolean) {
     updatePosition = param
 }
 
@@ -96,7 +97,7 @@ var updateSimulation = true
  * @param {boolean} param
  * @category engine
  */
-export function updateSimulationSet(param) {
+export function updateSimulationSet(param: boolean) {
     updateSimulation = param
 }
 /**
@@ -111,7 +112,7 @@ var updateCanvas = true
  * @param {boolean} param
  * @category engine
  */
-export function updateCanvasSet(param) {
+export function updateCanvasSet(param: boolean) {
     updateCanvas = param
 }
 
@@ -127,7 +128,7 @@ var gridUpdate = true
  * @param {boolean} param
  * @category engine
  */
-export function gridUpdateSet(param) {
+export function gridUpdateSet(param: boolean) {
     gridUpdate = param
 }
 
@@ -151,7 +152,7 @@ var forceResetNodes = true
  * @param {boolean} param
  * @category engine
  */
-export function forceResetNodesSet(param) {
+export function forceResetNodesSet(param: boolean) {
     forceResetNodes = param
 }
 /**
@@ -166,7 +167,7 @@ var errorDetected = false
  * @param {boolean} param
  * @category engine
  */
-export function errorDetectedSet(param) {
+export function errorDetectedSet(param: boolean) {
     errorDetected = param
 }
 
@@ -205,7 +206,7 @@ var updateSubcircuit = true
  * @param {boolean} param
  * @category engine
  */
-export function updateSubcircuitSet(param) {
+export function updateSubcircuitSet(param: boolean) {
     if (updateSubcircuit != param) {
         updateSubcircuit = param
         return true
@@ -219,7 +220,7 @@ export function updateSubcircuitSet(param) {
  * @param {boolean} val -- new value for light mode
  * @category engine
  */
-export function changeLightMode(val) {
+export function changeLightMode(val: boolean) {
     if (!val && lightMode) {
         lightMode = false
         DPR = window.devicePixelRatio || 1
@@ -247,12 +248,13 @@ export function changeLightMode(val) {
  * @param {Scope} scope - The circuit whose canvas we want to render
  * @category engine
  */
-export function renderCanvas(scope) {
+export function renderCanvas(scope: Scope) {
     if (layoutModeGet() || verilogModeGet()) {
         // Different Algorithm
         return
     }
     var ctx = simulationArea.context
+    if (!ctx) return
     // Reset canvas
     simulationArea.clear()
     // Update Grid
@@ -267,8 +269,8 @@ export function renderCanvas(scope) {
     } //  Globally set in draw fn ()
     // Render objects
     for (let i = 0; i < renderOrder.length; i++) {
-        for (var j = 0; j < scope[renderOrder[i]].length; j++) {
-            scope[renderOrder[i]][j].draw()
+        for (var j = 0; j < (scope as any)[renderOrder[i]].length; j++) {
+            (scope as any)[renderOrder[i]][j].draw()
         }
     }
     // Show any message
@@ -314,7 +316,7 @@ export function renderCanvas(scope) {
  * @param {Scope=} scope - the circuit in which we are selecting stuff
  * @category engine
  */
-export function updateSelectionsAndPane(scope = globalScope) {
+export function updateSelectionsAndPane(scope: Scope | any = globalScope) {
     if (!simulationArea.selected && simulationArea.mouseDown) {
         simulationArea.selected = true
         simulationArea.lastSelected = scope.root
@@ -410,7 +412,7 @@ export function updateSelectionsAndPane(scope = globalScope) {
  * @param {boolean} resetNodes - boolean to reset all nodes
  * @category engine
  */
-export function play(scope = globalScope, resetNodes = false) {
+export function play(scope: Scope | any = globalScope, resetNodes: boolean = false) {
     if (errorDetected) return // Don't simulate until error is fixed
     if (loading === true) return // Don't simulate until loaded
 
@@ -466,7 +468,7 @@ export function play(scope = globalScope, resetNodes = false) {
     }
 }
 
-export function resetNodeHighlights(scope) {
+export function resetNodeHighlights(scope: Scope | any) {
     for (const node of scope.allNodes) node.highlighted = false
 }
 
@@ -477,7 +479,7 @@ export function resetNodeHighlights(scope) {
  * @param {function} fn - function to run before updating UI
  * @category engine
  */
-export function scheduleUpdate(count = 0, time = 100, fn = undefined) {
+export function scheduleUpdate(count: number = 0, time: number = 100, fn: any = undefined) {
     if (lightMode) time *= 5
     var updateFn = layoutModeGet() ? layoutUpdate : update
     if (count) {
@@ -507,7 +509,7 @@ export function scheduleUpdate(count = 0, time = 100, fn = undefined) {
  * @param {boolean=} updateEverything - if true we update the wires, nodes and modules
  * @category engine
  */
-export function update(scope = globalScope, updateEverything = false) {
+export function update(scope: Scope | any = globalScope, updateEverything: boolean = false) {
     willBeUpdatedSet(false)
     if (loading === true || layoutModeGet()) return
     var updated = false
@@ -539,11 +541,22 @@ export function update(scope = globalScope, updateEverything = false) {
     // Update UI position
     if (updatePosition || updateEverything) {
         for (let i = 0; i < updateOrder.length; i++) {
-            for (let j = 0; j < scope[updateOrder[i]].length; j++) {
-                updated |= scope[updateOrder[i]][j].update()
+            for (let j = 0; j < (scope as any)[updateOrder[i]].length; j++) {
+                updated |= (scope as any)[updateOrder[i]][j].update()
             }
         }
     }
+    
+    // Hover fallback
+    if (!simulationArea.hover) {
+        for (let i = 0; i < scope.wires.length; i++) {
+            if (scope.wires[i].checkHover()) {
+                simulationArea.hover = scope.wires[i];
+                break;
+            }
+        }
+    }
+
     // Updates multiple objectselections and panes window
     if (updatePosition || updateEverything) {
         updateSelectionsAndPane(scope)

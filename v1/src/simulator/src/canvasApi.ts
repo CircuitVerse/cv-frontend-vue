@@ -7,7 +7,7 @@ import { updateOrder } from './metadata'
 
 var unit = 10
 
-export function findDimensions(scope = globalScope) {
+export function findDimensions(scope: any = globalScope) {
     var totalObjects = 0
     simulationArea.minWidth = undefined
     simulationArea.maxWidth = undefined
@@ -57,10 +57,68 @@ export function findDimensions(scope = globalScope) {
     simulationArea.objectList = updateOrder
 }
 
+/**
+ * Creates a derived scope object containing only the selected elements.
+ * This scoped object mirrors the engine's updateOrder structure and is
+ * used to compute bounding dimensions without mutating global state.
+ */
+function buildSelectionScope(selectedElements: any[]): { [key: string]: any[] } {
+    const scope: { [key: string]: any[] } = {}
+
+    updateOrder.forEach(type => {
+        scope[type] = []
+    })
+
+    selectedElements.forEach(el => {
+        updateOrder.forEach(type => {
+            if (
+                Array.isArray((globalScope as any)[type]) &&
+                (globalScope as any)[type].includes(el)
+            ) {
+                scope[type].push(el)
+            }
+        })
+    })
+
+    return scope
+}
+
+/**
+ * Fits the viewport to the bounding box of the given selection.
+ * - Uses a derived scope so global circuit state is not mutated
+ * - Falls back to Reset View behavior when selection is empty
+ * - Viewport-only operation (no simulation logic affected)
+ */
+export function fitToSelection(selected: any[]) {
+    if (!selected || selected.length === 0) {
+        globalScope.centerFocus(false)
+        return
+    }
+
+    const selectionScope = buildSelectionScope(selected)
+
+    // Compute bounds ONLY for selected elements
+    findDimensions(selectionScope)
+
+    // Guard: wire-only or invalid bounds → fallback to Reset View
+    if (
+        simulationArea.minWidth === undefined ||
+        simulationArea.maxWidth === undefined ||
+        simulationArea.minHeight === undefined ||
+        simulationArea.maxHeight === undefined
+    ) {
+        globalScope.centerFocus(false)
+        return
+    }
+
+    // Let engine handle centering + zoom
+    globalScope.centerFocus(true)
+}
+
 // Function used to change the zoom level wrt to a point
 // fn to change scale (zoom) - It also shifts origin so that the position
 // of the object in focus doesn't change
-export function changeScale(delta, xx, yy, method = 1) {
+export function changeScale(delta: number, xx: any, yy: any, method: number = 1) {
     // method = 3/2 - Zoom wrt center of screen
     // method = 1 - Zoom wrt position of mouse
     // Otherwise zoom wrt to selected object
@@ -108,10 +166,10 @@ export function changeScale(delta, xx, yy, method = 1) {
     if (!embed && !lightMode) {
         findDimensions(globalScope)
         miniMapArea.setup()
-        let miniMap = document.querySelector('#miniMap');
-        miniMap.style.display = 'block';
-        updatelastMinimapShown()
-        miniMap.style.display = 'block';
+        const miniMap = document.querySelector('#miniMap') as HTMLElement | null;
+        if (miniMap) miniMap.style.display = 'block';
+        updatelastMinimapShown();
+        if (miniMap) miniMap.style.display = 'block';
         setTimeout(removeMiniMap, 2000)
     }
 }
@@ -207,7 +265,7 @@ export function dots(
 // direction is used to abstract rotation of everything by a certain angle
 // Possible values for direction = "RIGHT" (default), "LEFT", "UP", "DOWN"
 
-export function bezierCurveTo(x1, y1, x2, y2, x3, y3, xx, yy, dir) {
+export function bezierCurveTo(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, xx: number, yy: number, dir: string) {
     ;[x1, y1] = rotate(x1, y1, dir)
     ;[x2, y2] = rotate(x2, y2, dir)
     ;[x3, y3] = rotate(x3, y3, dir)
@@ -222,6 +280,7 @@ export function bezierCurveTo(x1, y1, x2, y2, x3, y3, xx, yy, dir) {
     xx *= globalScope.scale
     yy *= globalScope.scale
     var ctx = simulationArea.context
+    if (!ctx) return;
     ctx.bezierCurveTo(
         Math.round(xx + ox + x1),
         Math.round(yy + oy + y1),
@@ -232,7 +291,7 @@ export function bezierCurveTo(x1, y1, x2, y2, x3, y3, xx, yy, dir) {
     )
 }
 
-export function moveTo(ctx, x1, y1, xx, yy, dir, bypass = false) {
+export function moveTo(ctx: CanvasRenderingContext2D, x1: number, y1: number, xx: number, yy: number, dir: string, bypass: boolean = false) {
     var correction = 0.5 * (ctx.lineWidth % 2)
     let newX
     let newY
@@ -254,7 +313,7 @@ export function moveTo(ctx, x1, y1, xx, yy, dir, bypass = false) {
     }
 }
 
-export function lineTo(ctx, x1, y1, xx, yy, dir) {
+export function lineTo(ctx: CanvasRenderingContext2D, x1: number, y1: number, xx: number, yy: number, dir: string) {
     let newX
     let newY
 
@@ -270,7 +329,7 @@ export function lineTo(ctx, x1, y1, xx, yy, dir) {
     )
 }
 
-export function arc(ctx, sx, sy, radius, start, stop, xx, yy, dir) {
+export function arc(ctx: CanvasRenderingContext2D, sx: number, sy: number, radius: number, start: number, stop: number, xx: number, yy: number, dir: string) {
     // ox-x of origin, xx- x of element , sx - shift in x from element
     let Sx
     let Sy
@@ -295,7 +354,7 @@ export function arc(ctx, sx, sy, radius, start, stop, xx, yy, dir) {
     )
 }
 
-export function arc2(ctx, sx, sy, radius, start, stop, xx, yy, dir) {
+export function arc2(ctx: CanvasRenderingContext2D, sx: number, sy: number, radius: number, start: number, stop: number, xx: number, yy: number, dir: string) {
     // ox-x of origin, xx- x of element , sx - shift in x from element
     let Sx
     let Sy
@@ -323,7 +382,7 @@ export function arc2(ctx, sx, sy, radius, start, stop, xx, yy, dir) {
     )
 }
 
-export function drawCircle2(ctx, sx, sy, radius, xx, yy, dir) {
+export function drawCircle2(ctx: CanvasRenderingContext2D, sx: number, sy: number, radius: number, xx: number, yy: number, dir: string) {
     // ox-x of origin, xx- x of element , sx - shift in x from element
     let Sx
     let Sy
@@ -342,7 +401,7 @@ export function drawCircle2(ctx, sx, sy, radius, xx, yy, dir) {
     )
 }
 
-export function rect(ctx, x1, y1, x2, y2) {
+export function rect(ctx: CanvasRenderingContext2D, x1: number, y1: number, x2: number, y2: number) {
     var correction = 0.5 * (ctx.lineWidth % 2)
     x1 *= globalScope.scale
     y1 *= globalScope.scale
@@ -356,7 +415,7 @@ export function rect(ctx, x1, y1, x2, y2) {
     )
 }
 
-export function drawImage(ctx, img, x1, y1, w_canvas, h_canvas) {
+export function drawImage(ctx: CanvasRenderingContext2D, img: any, x1: number, y1: number, w_canvas: number, h_canvas: number) {
     x1 *= globalScope.scale
     y1 *= globalScope.scale
     x1 += globalScope.ox
@@ -367,7 +426,7 @@ export function drawImage(ctx, img, x1, y1, w_canvas, h_canvas) {
     ctx.drawImage(img, x1, y1, w_canvas, h_canvas)
 }
 
-export function rect2(ctx, x1, y1, x2, y2, xx, yy, dir = 'RIGHT') {
+export function rect2(ctx: CanvasRenderingContext2D, x1: number, y1: number, x2: number, y2: number, xx: number, yy: number, dir: string = 'RIGHT') {
     var correction = 0.5 * (ctx.lineWidth % 2)
     ;[x1, y1] = rotate(x1, y1, dir)
     ;[x2, y2] = rotate(x2, y2, dir)
@@ -385,7 +444,7 @@ export function rect2(ctx, x1, y1, x2, y2, xx, yy, dir = 'RIGHT') {
     )
 }
 
-export function rotate(x1, y1, dir) {
+export function rotate(x1: number, y1: number, dir: string) {
     if (dir === 'LEFT') {
         return [-x1, y1]
     }
@@ -398,11 +457,11 @@ export function rotate(x1, y1, dir) {
     return [x1, y1]
 }
 
-export function correctWidth(w) {
+export function correctWidth(w: any) {
     return Math.max(1, Math.round(w * globalScope.scale))
 }
 
-function rotateAngle(start, stop, dir) {
+function rotateAngle(start: number, stop: number, dir: string) {
     if (dir === 'LEFT') {
         return [start, stop, true]
     }
@@ -415,7 +474,7 @@ function rotateAngle(start, stop, dir) {
     return [start, stop, false]
 }
 
-export function drawLine(ctx, x1, y1, x2, y2, color, width) {
+export function drawLine(ctx: CanvasRenderingContext2D, x1: number, y1: number, x2: number, y2: number, color: string, width: number) {
     x1 *= globalScope.scale
     y1 *= globalScope.scale
     x2 *= globalScope.scale
@@ -441,14 +500,14 @@ export function drawLine(ctx, x1, y1, x2, y2, color, width) {
 }
 
 // Checks if string color is a valid color using a hack
-export function validColor(color) {
+export function validColor(color: string) {
     let newDiv = document.createElement('div')
     newDiv.style.border = `1px solid ${color}`
     return newDiv.style.borderColor !== ''
 }
 
 // Helper function to color "RED" to RGBA
-export function colorToRGBA(color) {
+export function colorToRGBA(color: string) {
     var cvs
     var ctx
     cvs = document.createElement('canvas')
@@ -460,7 +519,7 @@ export function colorToRGBA(color) {
     return ctx.getImageData(0, 0, 1, 1).data
 }
 
-export function drawCircle(ctx, x1, y1, r, color) {
+export function drawCircle(ctx: CanvasRenderingContext2D, x1: number, y1: number, r: number, color: string) {
     x1 *= globalScope.scale
     y1 *= globalScope.scale
     ctx.beginPath()
@@ -478,7 +537,7 @@ export function drawCircle(ctx, x1, y1, r, color) {
 }
 
 // To show message like values, node name etc
-export function canvasMessage(ctx, str, x1, y1, fontSize = 10) {
+export function canvasMessage(ctx: CanvasRenderingContext2D, str: any, x1: number, y1: number, fontSize: number = 10) {
     if (!str || !str.length) return
 
     ctx.font = `${Math.round(fontSize * globalScope.scale)}px Raleway`
@@ -510,7 +569,7 @@ export function canvasMessage(ctx, str, x1, y1, fontSize = 10) {
     ctx.fill()
 }
 
-export function fillText(ctx, str, x1, y1, fontSize = 20) {
+export function fillText(ctx: CanvasRenderingContext2D, str: any, x1: number, y1: number, fontSize: number = 20) {
     x1 *= globalScope.scale
     y1 *= globalScope.scale
     ctx.font = `${Math.round(fontSize * globalScope.scale)}px Raleway`
@@ -521,8 +580,8 @@ export function fillText(ctx, str, x1, y1, fontSize = 20) {
     )
 }
 
-export function fillText2(ctx, str, x1, y1, xx, yy, dir) {
-    var angle = {
+export function fillText2(ctx: CanvasRenderingContext2D, str: any, x1: number, y1: number, xx: number, yy: number, dir: string) {
+    var angle: Record<string, number> = {
         RIGHT: 0,
         LEFT: 0,
         DOWN: Math.PI / 2,
@@ -551,17 +610,17 @@ export function fillText2(ctx, str, x1, y1, xx, yy, dir) {
 }
 
 export function fillText4(
-    ctx,
-    str,
-    x1,
-    y1,
-    xx,
-    yy,
-    dir,
-    fontSize = 14,
-    textAlign = 'center'
+    ctx: CanvasRenderingContext2D,
+    str: string,
+    x1: number,
+    y1: number,
+    xx: number,
+    yy: number,
+    dir: string,
+    fontSize: number = 14,
+    textAlign: CanvasTextAlign = 'center'
 ) {
-    var angle = {
+    var angle: Record<string, number> = {
         RIGHT: 0,
         LEFT: 0,
         DOWN: Math.PI / 2,
@@ -587,15 +646,15 @@ export function fillText4(
 }
 
 export function fillText3(
-    ctx,
-    str,
-    x1,
-    y1,
-    xx = 0,
-    yy = 0,
-    fontSize = 14,
-    font = 'Raleway',
-    textAlign = 'center'
+    ctx: CanvasRenderingContext2D,
+    str: string,
+    x1: number,
+    y1: number,
+    xx: number = 0,
+    yy: number = 0,
+    fontSize: number = 14,
+    font: string = 'Raleway',
+    textAlign: CanvasTextAlign = 'center'
 ) {
     x1 *= globalScope.scale
     y1 *= globalScope.scale
