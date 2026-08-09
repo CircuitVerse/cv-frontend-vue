@@ -240,7 +240,14 @@ jobs:
               run: |
                   sudo snap install snapcraft --classic
                   mkdir -p snap-build
-                  cp src-tauri/target/release/CircuitVerse snap-build/
+                  if [ -f "src-tauri/target/release/CircuitVerse" ]; then
+                    cp src-tauri/target/release/CircuitVerse snap-build/CircuitVerse
+                  elif [ -f "src-tauri/target/release/circuit-verse" ]; then
+                    cp src-tauri/target/release/circuit-verse snap-build/CircuitVerse
+                  else
+                    echo "No supported Tauri release binary found" >&2
+                    exit 1
+                  fi
                   cp snap/gui/circuitverse-simulator.desktop snap-build/
                   snapcraft --destructive-mode
               shell: bash
