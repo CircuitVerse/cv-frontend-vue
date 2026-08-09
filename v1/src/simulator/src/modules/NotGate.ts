@@ -54,7 +54,7 @@ export default class NotGate extends CircuitElement {
      * @memberof NotGate
      * resolve output values based on inputData
      */
-    resolve() {
+    resolve(): void {
         if (this.isResolvable() === false) {
             return
         }
@@ -68,7 +68,7 @@ export default class NotGate extends CircuitElement {
      * @memberof NotGate
      * function to draw element
      */
-    customDraw() {
+    customDraw(): void {
         var ctx = simulationArea.context
         if (ctx) {
             ctx.strokeStyle = colors['stroke']

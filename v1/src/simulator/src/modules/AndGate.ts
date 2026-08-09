@@ -46,7 +46,7 @@ export default class AndGate extends CircuitElement {
 
         // variable inputLength , node creation
         if (inputLength % 2 === 1) {
-            for (let i = 0; i < Math.floor(inputLength / 2) - 1; i++) {
+            for (let i = 0; i < Math.floor(inputLength / 2); i++) {
                 const a = new Node(-10, -10 * (i + 1), 0, this)
                 this.inp.push(a)
             }
@@ -94,7 +94,7 @@ export default class AndGate extends CircuitElement {
      * @memberof AndGate
      * resolve output values based on inputData
      */
-    resolve() {
+    resolve(): void {
         let result = this.inp[0].value || 0
         if (this.isResolvable() === false) {
             return
@@ -109,7 +109,7 @@ export default class AndGate extends CircuitElement {
      * @memberof AndGate
      * function to draw And Gate
      */
-    customDraw() {
+    customDraw(): void {
         var ctx = simulationArea.context
         if (ctx) {
             ctx.beginPath()

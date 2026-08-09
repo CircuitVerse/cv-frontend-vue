@@ -46,7 +46,7 @@ export default class NorGate extends CircuitElement {
         this.inputSize = inputs
 
         if (inputs % 2 === 1) {
-            for (let i = 0; i < Math.floor(inputs / 2) - 1; i++) {
+            for (let i = 0; i < Math.floor(inputs / 2); i++) {
                 const a = new Node(-10, -10 * (i + 1), 0, this)
                 this.inp.push(a)
             }
@@ -93,7 +93,10 @@ export default class NorGate extends CircuitElement {
      * @memberof NorGate
      * resolve output values based on inputData
      */
-    resolve() {
+    resolve(): void {
+        if (this.isResolvable() === false) {
+            return
+        }
         let result = this.inp[0].value || 0
         for (let i = 1; i < this.inputSize; i++)
             result |= this.inp[i].value || 0
@@ -107,7 +110,7 @@ export default class NorGate extends CircuitElement {
      * @memberof NorGate
      * function to draw element
      */
-    customDraw() {
+    customDraw(): void {
         var ctx = simulationArea.context
         if (ctx) {
             ctx.strokeStyle = colors['stroke']
