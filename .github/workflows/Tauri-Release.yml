@@ -228,8 +228,18 @@ jobs:
               with:
                   workspaces: './src-tauri'
 
-            - name: Build Tauri App
+             - name: Build Tauri App
               run: npm run tauri build
+              shell: bash
+
+            - name: Install Snapcraft and Build Snap Package
+              if: matrix.os == 'ubuntu-latest'
+              run: |
+                  sudo snap install snapcraft --classic
+                  mkdir -p snap-build
+                  cp src-tauri/target/release/CircuitVerse snap-build/
+                  cp snap/gui/circuitverse-simulator.desktop snap-build/
+                  snapcraft --destructive-mode
               shell: bash
 
             # TODO: Add code signing steps here once certificates are obtained
@@ -244,6 +254,7 @@ jobs:
                   name: Tauri Build Artifacts (${{ matrix.os }})
                   path: |
                       src-tauri/target/release/bundle
+                      *.snap
 
     create-release:
         runs-on: ubuntu-latest
@@ -305,7 +316,7 @@ jobs:
             - name: Prepare Release Assets
               run: |
                   mkdir -p release-assets
-                  find artifacts -type f \( -name "*.deb" -o -name "*.AppImage" -o -name "*.msi" -o -name "*.dmg" \) -exec cp {} release-assets/ \; || true
+                  find artifacts -type f \( -name "*.deb" -o -name "*.AppImage" -o -name "*.msi" -o -name "*.dmg" -o -name "*.snap" \) -exec cp {} release-assets/ \; || true
 
                   if [ -d "artifacts/Tauri Build Artifacts (macos-latest)/src-tauri/target/release/bundle/macos" ]; then
                     MACOS_BUNDLE_DIR="artifacts/Tauri Build Artifacts (macos-latest)/src-tauri/target/release/bundle/macos"
