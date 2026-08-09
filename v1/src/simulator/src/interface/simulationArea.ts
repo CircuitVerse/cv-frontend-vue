@@ -3,7 +3,7 @@ export interface SimulationArea {
   canvas: HTMLCanvasElement;
   context: CanvasRenderingContext2D | null;
   selected: boolean;
-  hover: any;
+  hover: boolean | undefined | Record<string, any>;
   clockState: number;
   clockEnabled: boolean;
   // TODO: make this CircuitElement|null once converted to typescript
