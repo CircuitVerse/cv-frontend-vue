@@ -326,7 +326,7 @@ jobs:
             - name: Prepare Release Assets
               run: |
                   mkdir -p release-assets
-                  find artifacts -type f \( -name "*.deb" -o -name "*.AppImage" -o -name "*.msi" -o -name "*.dmg" -o -name "*.snap" \) -exec cp {} release-assets/ \; || true
+                  find artifacts -type f \( -name "*.deb" -o -name "*.AppImage" -o -name "*.msi" -o -name "*.dmg" -o -name "*.snap" -o -name "*.exe" \) -exec cp {} release-assets/ \; || true
 
                   if [ -d "artifacts/Tauri Build Artifacts (macos-latest)/src-tauri/target/release/bundle/macos" ]; then
                     MACOS_BUNDLE_DIR="artifacts/Tauri Build Artifacts (macos-latest)/src-tauri/target/release/bundle/macos"
