@@ -69,6 +69,20 @@ jobs:
           projectPath: ./src-tauri
           args: ${{ matrix.args }}
 
+      - name: Install Snapcraft and Build Snap Package
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo snap install snapcraft --classic
+          mkdir -p snap-build
+          if [ -f "src-tauri/target/release/CircuitVerse" ]; then
+            cp src-tauri/target/release/CircuitVerse snap-build/CircuitVerse
+          elif [ -f "src-tauri/target/release/circuit-verse" ]; then
+            cp src-tauri/target/release/circuit-verse snap-build/CircuitVerse
+          fi
+          cp snap/gui/circuitverse-simulator.desktop snap-build/
+          snapcraft --destructive-mode
+        shell: bash
+
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
