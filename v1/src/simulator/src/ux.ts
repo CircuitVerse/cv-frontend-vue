@@ -13,9 +13,7 @@ import { toRefs } from "vue";
 import { circuitElementList } from "./metadata";
 import { useSimulatorMobileStore } from "#/store/simulatorMobileStore";
 
-// Global variables (declared on window by globalVariables.ts)
-declare var globalScope: any;
-
+// Global variables are now declared in globals.d.ts
 export const uxvar = {
   smartDropXX: 50,
   smartDropYY: 80,
@@ -42,8 +40,8 @@ let prevMobileState: {
 
 // FUNCTION TO SHOW AND HIDE CONTEXT MENU
 function hideContextMenu() {
-  var el = document.getElementById("contextMenu");
-  el.style = "opacity:0;";
+  var el = document.getElementById("contextMenu")!;
+  el.style.opacity = "0";
   setTimeout(() => {
     el.style = "visibility:hidden;";
     ctxPos.visible = false;
@@ -119,7 +117,7 @@ function showContextMenu() {
  * @category ux
  */
 export function setupUI() {
-  var ctxEl = document.getElementById("contextMenu");
+  var ctxEl = document.getElementById("contextMenu")!;
   document.addEventListener("mousedown", (e) => {
     // Check if mouse is not inside the context menu and menu is visible
     if (
@@ -139,7 +137,7 @@ export function setupUI() {
     ctxPos.x = e.clientX;
     ctxPos.y = e.clientY;
   });
-  document.getElementById("canvasArea").oncontextmenu = showContextMenu;
+  document.getElementById("canvasArea")!.oncontextmenu = showContextMenu;
 
   $(".logixButton").on("click", function () {
     logixFunction[this.id]();
@@ -176,7 +174,8 @@ function checkValidBitWidth() {
   }
 }
 
-export function objectPropertyAttributeUpdate() {
+export function objectPropertyAttributeUpdate(this: HTMLInputElement) {
+
   checkValidBitWidth();
   scheduleUpdate();
   updateCanvasSet(true);
@@ -188,11 +187,11 @@ export function objectPropertyAttributeUpdate() {
   if (simulationArea.lastSelected && simulationArea.lastSelected[this.name]) {
     simulationArea.lastSelected[this.name](value);
   } else {
-    circuitProperty[this.name](value);
+    (circuitProperty as any)[this.name](value);
   }
 }
 
-export function objectPropertyAttributeCheckedUpdate() {
+export function objectPropertyAttributeCheckedUpdate(this: HTMLInputElement) {
   if (this.name === "toggleLabelInLayoutMode") return; // Hack to prevent toggleLabelInLayoutMode from toggling twice
   scheduleUpdate();
   updateCanvasSet(true);
@@ -200,7 +199,7 @@ export function objectPropertyAttributeCheckedUpdate() {
   if (simulationArea.lastSelected && simulationArea.lastSelected[this.name]) {
     simulationArea.lastSelected[this.name](this.value);
   } else {
-    circuitProperty[this.name](this.checked);
+    (circuitProperty as any)[this.name](this.checked);
   }
 }
 
@@ -225,7 +224,7 @@ export function checkPropertiesUpdate(_value = 0) {
  */
 export function showProperties(obj: any) {
   if (obj === prevPropertyObjGet()) return;
-  checkPropertiesUpdate(this);
+  checkPropertiesUpdate();
 }
 
 /**
@@ -341,7 +340,9 @@ export function minimizePanel(panelSelector: string) {
 }
 
 export function setupPanels() {
-  dragging("#dragQPanel" as any, ".quick-btn" as any);
+  const dragQPanel = document.querySelector("#dragQPanel") as HTMLElement;
+  const quickBtn = document.querySelector(".quick-btn") as HTMLElement;
+  if (dragQPanel && quickBtn) dragging(dragQPanel, quickBtn);
 
   setupPanelListeners(".elementPanel");
   setupPanelListeners(".layoutElementPanel");
@@ -368,7 +369,9 @@ export function setupPanelListeners(panelSelector: string) {
   var maximizeSelector = `${panelSelector} .maximize`;
   var bodySelector = `${panelSelector} > .panel-body`;
 
-  dragging(headerSelector as any, panelSelector as any);
+  const headerEl = document.querySelector(headerSelector) as HTMLElement;
+  const panelEl = document.querySelector(panelSelector) as HTMLElement;
+  if (headerEl && panelEl) dragging(headerEl, panelEl);
   // Current Panel on Top
   var minimized = false;
   $(headerSelector)
@@ -512,8 +515,8 @@ export function fillSubcircuitElements() {
     if (available) {
       subcircuitElements.push(elementGroup);
     }
-
-    subCircuitElementList.value = subcircuitElements;
-    isEmptySubCircuitElementList.value = !subCircuitElementExists;
   }
-}
+
+  subCircuitElementList.value = subcircuitElements as any;
+  isEmptySubCircuitElementList.value = !subCircuitElementExists;
+} 

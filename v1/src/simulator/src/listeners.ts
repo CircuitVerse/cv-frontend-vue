@@ -46,15 +46,7 @@ import { listen } from "@tauri-apps/api/event";
 import { useSimulatorMobileStore } from "#/store/simulatorMobileStore";
 import { toRefs } from "vue";
 
-// Global variables (declared on window by globalVariables.ts)
-declare var globalScope: any;
-declare var DPR: number;
-declare var lightMode: boolean;
-declare var embed: boolean;
-declare var width: number;
-declare var height: number;
-declare var restrictedElements: string[];
-declare var saveOffline: () => void;
+// Global variables are now declared in globals.d.ts
 
 const unit = 10;
 let listenToSimulator = true;
@@ -231,7 +223,7 @@ export function panMove(e: any) {
   // pan left or right
   if (!simulationArea.touch || e.touches.length === 1) {
     coordinate = getCoordinate(e);
-    const rect = simulationArea.canvas.getBoundingClientRect();
+    const rect = simulationArea.canvas!.getBoundingClientRect();
     simulationArea.mouseRawX = (coordinate.x - rect.left) * DPR;
     simulationArea.mouseRawY = (coordinate.y - rect.top) * DPR;
     simulationArea.mouseXf = (simulationArea.mouseRawX - globalScope.ox) / globalScope.scale;
@@ -272,7 +264,6 @@ export function panMove(e: any) {
 }
 
 export function panStop(e: any) {
-  const simulatorMobileStore = useSimulatorMobileStore();
   simulationArea.mouseDown = false;
   if (!lightMode) {
     updatelastMinimapShown();
@@ -319,7 +310,7 @@ export function panStop(e: any) {
   }
 
   if (simulationArea.touch) {
-    const { isCopy } = toRefs(simulatorMobileStore);
+    const { isCopy } = toRefs(useSimulatorMobileStore());
     // small hack so Current circuit element should not spwan above last circuit element
     if (!isCopy.value) {
       findDimensions(globalScope);
@@ -378,7 +369,7 @@ export default function startListeners() {
   window.addEventListener(
     "keydown",
     (e) => {
-      if (document.activeElement.tagName == "INPUT") return;
+      if (document.activeElement?.tagName == "INPUT") return;
       if (document.activeElement != document.body) return;
 
       simulationArea.shiftDown = e.shiftKey;
@@ -401,8 +392,7 @@ export default function startListeners() {
 
       if (listenToSimulator) {
         // If mouse is focusing on input element, then override any action
-        if (
-          document.activeElement.tagName == "INPUT" ||
+        if (document.activeElement?.tagName == "INPUT" ||
           simulationArea.mouseRawX < 0 ||
           simulationArea.mouseRawY < 0 ||
           simulationArea.mouseRawX > width ||
@@ -521,13 +511,17 @@ export default function startListeners() {
 
         if ((e.keyCode == 113 || e.keyCode == 81) && simulationArea.lastSelected != undefined) {
           if (simulationArea.lastSelected.bitWidth !== undefined) {
-            simulationArea.lastSelected.newBitWidth(parseInt(prompt("Enter new bitWidth"), 10));
+            const input = prompt("Enter new bitWidth");
+            const bitWidth = input === null ? NaN : parseInt(input, 10);
+            if (!Number.isNaN(bitWidth)) simulationArea.lastSelected.newBitWidth(bitWidth); 
           }
         }
 
         if (simulationArea.controlDown && (e.key == "T" || e.key == "t")) {
           // e.preventDefault(); //browsers normally open a new tab
-          simulationArea.changeClockTime(prompt("Enter Time:") as unknown as number);
+          const timeInput = prompt("Enter Time:");
+          const time = timeInput === null ? NaN : Number(timeInput);
+          if (!Number.isNaN(time)) simulationArea.changeClockTime(time); 
         }
       }
 
@@ -538,16 +532,14 @@ export default function startListeners() {
     true,
   );
 
-  document.getElementById("simulationArea").addEventListener("dblclick", (e) => {
+  document.getElementById("simulationArea")!.addEventListener("dblclick", (e) => {
     onDoubleClickorTap(e);
   });
 
   function MouseScroll(event: any) {
     updateCanvasSet(true);
     event.preventDefault();
-    var deltaY = event.wheelDelta ? event.wheelDelta : -event.detail;
-    event.preventDefault();
-    var deltaY = event.wheelDelta ? event.wheelDelta : -event.detail;
+    const deltaY = event.wheelDelta ? event.wheelDelta : -event.detail;
     const direction = deltaY > 0 ? 1 : -1;
     handleZoom(direction);
     updateCanvasSet(true);
@@ -557,8 +549,8 @@ export default function startListeners() {
     else update(); // Schedule update not working, this is INEFFICIENT
   }
 
-  document.getElementById("simulationArea").addEventListener("mousewheel", MouseScroll);
-  document.getElementById("simulationArea").addEventListener("DOMMouseScroll", MouseScroll);
+  document.getElementById("simulationArea")!.addEventListener("mousewheel", MouseScroll);
+  document.getElementById("simulationArea")!.addEventListener("DOMMouseScroll", MouseScroll);
 
   document.addEventListener("cut", (e) => {
     if (verilogModeGet()) return;
@@ -712,10 +704,9 @@ export function ZoomOut() {
 }
 function zoomSliderListeners() {
   (document.getElementById("customRange1") as HTMLInputElement).value = "5";
-  document.getElementById("simulationArea").addEventListener("DOMMouseScroll", zoomSliderScroll);
-  document.getElementById("simulationArea").addEventListener("mousewheel", zoomSliderScroll);
-  let curLevel = (document.getElementById("customRange1") as HTMLInputElement)
-    .value as unknown as number;
+  document.getElementById("simulationArea")!.addEventListener("DOMMouseScroll", zoomSliderScroll);
+  document.getElementById("simulationArea")!.addEventListener("mousewheel", zoomSliderScroll);
+  let curLevel = Number((document.getElementById("customRange1") as HTMLInputElement).value);
   $(document).on("input change", "#customRange1", function (_e) {
     const newValue = $(this).val() as unknown as number;
     const changeInScale = newValue - curLevel;
@@ -725,8 +716,7 @@ function zoomSliderListeners() {
     curLevel = newValue;
   });
   function zoomSliderScroll(e: any) {
-    let zoomLevel = (document.getElementById("customRange1") as HTMLInputElement)
-      .value as unknown as number;
+    let zoomLevel = Number((document.getElementById("customRange1") as HTMLInputElement).value);
     const deltaY = e.wheelDelta ? e.wheelDelta : -e.detail;
     const directionY = deltaY > 0 ? 1 : -1;
     if (directionY > 0) zoomLevel++;
