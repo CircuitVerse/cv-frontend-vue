@@ -45,6 +45,10 @@ import yabeiSAPSystem from "./fixtures/editorPicks/yabei-sap-system.json";
 
 type EditorPickProject = {
   name: string;
+  timePeriod: number | string;
+  clockEnabled: boolean;
+  focussedCircuit: string | number;
+  orderedTabs?: Array<string | number>;
   scopes: Array<{ id: string | number }>;
 };
 
@@ -53,7 +57,11 @@ const timeout = 120_000;
 function withSortedRouting(project: CanonicalProject): CanonicalProject {
   for (const circuit of Object.values(project.circuits)) {
     for (const routing of Object.values(circuit.layout.intermediateNodes ?? {})) {
-      routing.connections.sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b)));
+      routing.connections.sort((a, b) => {
+        const A = JSON.stringify(a);
+        const B = JSON.stringify(b);
+        return A < B ? -1 : A > B ? 1 : 0;
+      });
     }
   }
   return project;
@@ -65,6 +73,12 @@ async function verifyCanonicalRoundTrip(fixture: EditorPickProject): Promise<voi
   const canonical = await canonicaliseProject(Object.values(scopeList));
 
   expect(canonical.projectMetadata.name).toBe(fixture.name);
+  expect(canonical.projectMetadata.timePeriod).toBe(fixture.timePeriod);
+  expect(canonical.projectMetadata.clockEnabled).toBe(fixture.clockEnabled);
+  expect(String(canonical.projectMetadata.focussedCircuit)).toBe(String(fixture.focussedCircuit));
+  expect(canonical.projectMetadata.orderedTabs.map(String)).toEqual(
+    (fixture.orderedTabs ?? fixture.scopes.map(({ id }) => id)).map(String),
+  );
 
   const imported = await importCanonical(canonical);
   const reExported = await canonicaliseProject(Object.values(scopeList));

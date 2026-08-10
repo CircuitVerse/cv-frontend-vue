@@ -552,15 +552,6 @@ export async function importCanonical(json: CanonicalProject): Promise<ImportRes
       results.errors.push(`[${canonicalId}] ${err}`);
     }
   }
-  {
-    const order = new Map(json.projectMetadata.orderedTabs.map((id, index) => [id, index]));
-    const circuitList = SimulatorStore().circuit_list as Array<{ id: string | number }>;
-    circuitList.sort((a, b) => order.get(String(a.id))! - order.get(String(b.id))!);
-    useProjectStore().setProjectName(json.projectMetadata.name);
-    simulationArea.changeClockTime(json.projectMetadata.timePeriod);
-    simulationArea.clockEnabled = json.projectMetadata.clockEnabled;
-  }
-
   results.success = results.errors.length === 0;
 
   if (results.success) {
@@ -586,6 +577,14 @@ export async function importCanonical(json: CanonicalProject): Promise<ImportRes
   }
 
   if (results.success) {
+    const order = new Map(json.projectMetadata.orderedTabs.map((id, index) => [id, index]));
+    const rank = (id: string | number) => order.get(String(id)) ?? Number.MAX_SAFE_INTEGER;
+    const circuitList = SimulatorStore().circuit_list as Array<{ id: string | number }>;
+    circuitList.sort((a, b) => rank(a.id) - rank(b.id));
+    useProjectStore().setProjectName(json.projectMetadata.name);
+    simulationArea.changeClockTime(json.projectMetadata.timePeriod);
+    simulationArea.clockEnabled = json.projectMetadata.clockEnabled;
+
     switchCircuit(hostCircuitId);
     updateSimulationSet(true);
     updateCanvasSet(true);
