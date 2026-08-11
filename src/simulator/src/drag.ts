@@ -4,6 +4,7 @@ interface Position {
   x: number;
   y: number;
 }
+const dragHandlers = new WeakMap<HTMLElement, () => void>();
 
 function updatePosition(
   element: HTMLElement,
@@ -60,7 +61,12 @@ export function dragging(targetSelector: string, dragSelector: string): void {
     listeners: {
       // Update the element's position when the move event is triggered
       move(event) {
-        updatePosition(event.target as HTMLElement, event.dx, event.dy, positions);
+        updatePosition(
+          event.target as HTMLElement,
+          event.dx,
+          event.dy,
+          positions,
+        );
       },
     },
     // Set up modifiers to apply constraints to the draggable element
@@ -81,9 +87,12 @@ export function dragging(targetSelector: string, dragSelector: string): void {
     DragEl.style.zIndex = "99";
   };
 
-  DragEl.removeEventListener("mousedown", dragMouseDownHandler);
+  const existingHandler = dragHandlers.get(DragEl);
+  if (existingHandler) {
+    DragEl.removeEventListener("mousedown", existingHandler);
+  }
+  dragHandlers.set(DragEl, dragMouseDownHandler);
   DragEl.addEventListener("mousedown", dragMouseDownHandler);
-
   let panelElements = document.querySelectorAll(
     ".elementPanel, .layoutElementPanel, #moduleProperty, #layoutDialog, #verilogEditorPanel, .timing-diagram-panel, .testbench-manual-panel, .quick-btn",
   );
