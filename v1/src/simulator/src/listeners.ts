@@ -39,11 +39,6 @@ import { listen } from '@tauri-apps/api/event'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { toRefs } from 'vue'
 
-declare var $: any;
-declare var globalScope: any;
-declare var DPR: number;
-declare var restrictedElements: any[];
-declare var embed: boolean;
 const unit = 10
 let listenToSimulator = true
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -287,7 +282,7 @@ export function panStop(e: any) {
     scheduleUpdate(1);
     // Var rect = simulationArea.canvas.getBoundingClientRect();
 
-    if (!((simulationArea as any).mouseRawX < 0 || (simulationArea as any).mouseRawY < 0 || (simulationArea as any).mouseRawX > (window as any).width || (simulationArea as any).mouseRawY > (window as any).height)) {
+    if (!((simulationArea as any).mouseRawX < 0 || (simulationArea as any).mouseRawY < 0 || (simulationArea as any).mouseRawX > simulationArea.canvas.width || (simulationArea as any).mouseRawY > simulationArea.canvas.height)) {
         uxvar.smartDropXX = (simulationArea as any).mouseX + 100; // Math.round((((simulationArea as any).mouseRawX - globalScope.ox+100) / globalScope.scale) / unit) * unit;
         uxvar.smartDropYY = (simulationArea as any).mouseY - 50; // Math.round((((simulationArea as any).mouseRawY - globalScope.oy+100) / globalScope.scale) / unit) * unit;
     }
@@ -408,8 +403,8 @@ export default function startListeners() {
                     document.activeElement?.tagName == 'INPUT' ||
                     (simulationArea as any).mouseRawX < 0 ||
                     (simulationArea as any).mouseRawY < 0 ||
-                    (simulationArea as any).mouseRawX > (window as any).width ||
-                    (simulationArea as any).mouseRawY > (window as any).height
+                    (simulationArea as any).mouseRawX > simulationArea.canvas.width ||
+                    (simulationArea as any).mouseRawY > simulationArea.canvas.height
                 ) {
                     return
                 }
