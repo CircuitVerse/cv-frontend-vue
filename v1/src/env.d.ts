@@ -12,3 +12,9 @@ declare module "*.vue" {
   const component: DefineComponent<{}, {}, any>;
   export default component;
 }
+
+declare var $: any;
+declare var globalScope: any;
+declare var DPR: number;
+declare var restrictedElements: any[];
+declare var embed: boolean;

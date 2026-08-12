@@ -549,9 +549,13 @@ export default function startListeners() {
                     simulationArea.lastSelected != undefined
                 ) {
                     if (simulationArea.lastSelected.bitWidth !== undefined) {
-                        simulationArea.lastSelected.newBitWidth(
-                            parseInt((prompt('Enter new bitWidth')) as string, 10)
-                        )
+                        const bitWidthStr = prompt('Enter new bitWidth');
+                        if (bitWidthStr !== null) {
+                            const newBitWidth = parseInt(bitWidthStr, 10);
+                            if (!isNaN(newBitWidth)) {
+                                simulationArea.lastSelected.newBitWidth(newBitWidth);
+                            }
+                        }
                     }
                 }
 
@@ -560,7 +564,9 @@ export default function startListeners() {
                     (e.key == 'T' || e.key == 't')
                 ) {
                     // e.preventDefault(); //browsers normally open a new tab
-                    simulationArea.changeClockTime(parseInt(prompt('Enter Time:') || '500', 10))
+                    const timeStr = prompt('Enter Time:');
+                    const newTime = parseInt(timeStr || '500', 10);
+                    simulationArea.changeClockTime(isNaN(newTime) ? 500 : newTime);
                 }
             }
 

@@ -19,8 +19,6 @@ import { toRefs } from 'vue'
 import { circuitElementList } from './metadata'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 
-declare var $: any;
-declare var globalScope: any;
 export const uxvar = {
     smartDropXX: 50,
     smartDropYY: 80,
@@ -158,7 +156,10 @@ export function setupUI() {
     }
 
     $('.logixButton').on('click', function (this: HTMLElement) {
-        (logixFunction as any)[this.id]()
+        const handler = (logixFunction as any)[this.id];
+        if (typeof handler === 'function') {
+            handler.call(logixFunction);
+        }
     })
     setupPanels()
 }
@@ -203,10 +204,10 @@ export function objectPropertyAttributeUpdate(this: HTMLInputElement) {
     if (this.type === 'number') {
         value = parseFloat(value as string)
     }
-    if (simulationArea.lastSelected && simulationArea.lastSelected[this.name]) {
-        simulationArea.lastSelected[this.name](value)
-    } else {
-        (circuitProperty as any)[this.name](value)
+    if (simulationArea.lastSelected && typeof simulationArea.lastSelected[this.name] === 'function') {
+        simulationArea.lastSelected[this.name].call(simulationArea.lastSelected, value)
+    } else if (typeof (circuitProperty as any)[this.name] === 'function') {
+        (circuitProperty as any)[this.name].call(circuitProperty, value)
     }
 }
 
@@ -215,10 +216,10 @@ export function objectPropertyAttributeCheckedUpdate(this: HTMLInputElement) {
     scheduleUpdate()
     updateCanvasSet(true)
     wireToBeCheckedSet(1)
-    if (simulationArea.lastSelected && simulationArea.lastSelected[this.name]) {
-        simulationArea.lastSelected[this.name](this.value)
-    } else {
-        (circuitProperty as any)[this.name](this.checked)
+    if (simulationArea.lastSelected && typeof simulationArea.lastSelected[this.name] === 'function') {
+        simulationArea.lastSelected[this.name].call(simulationArea.lastSelected, this.checked)
+    } else if (typeof (circuitProperty as any)[this.name] === 'function') {
+        (circuitProperty as any)[this.name].call(circuitProperty, this.checked)
     }
 }
 
@@ -371,8 +372,7 @@ export function minimizePanel(panelSelector: string) {
 }
 
 export function setupPanels() {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    dragging('#dragQPanel' as any, '.quick-btn' as any)
+    dragging('#dragQPanel', '.quick-btn')
 
     setupPanelListeners('.elementPanel')
     setupPanelListeners('.layoutElementPanel')
@@ -400,7 +400,7 @@ export function setupPanelListeners(panelSelector: string) {
     var bodySelector = `${panelSelector} > .panel-body`
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    dragging(headerSelector as any, panelSelector as any)
+    dragging(headerSelector, panelSelector)
     // Current Panel on Top
     var minimized = false
     $(headerSelector)
