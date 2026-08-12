@@ -19,6 +19,8 @@ import { toRefs } from 'vue'
 import { circuitElementList } from './metadata'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 
+declare var $: any;
+declare var globalScope: any;
 export const uxvar = {
     smartDropXX: 50,
     smartDropYY: 80,
@@ -45,15 +47,18 @@ var ctxPos = {
     visible: false,
 }
 let isFullViewActive = false
-let prevMobileState = null 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let prevMobileState: any = null 
 // FUNCTION TO SHOW AND HIDE CONTEXT MENU
 function hideContextMenu() {
     var el = document.getElementById('contextMenu')
-    el.style = 'opacity:0;'
-    setTimeout(() => {
-        el.style = 'visibility:hidden;'
-        ctxPos.visible = false
-    }, 200) // Hide after 2 sec
+    if (el) {
+        el.style.opacity = '0';
+        setTimeout(() => {
+            el!.style.visibility = 'hidden';
+            ctxPos.visible = false
+        }, 200) // Hide after 2 sec
+    }
 }
 /**
  * Function displays context menu
@@ -127,9 +132,10 @@ function showContextMenu() {
  */
 export function setupUI() {
     var ctxEl = document.getElementById('contextMenu')
-    document.addEventListener('mousedown', (e) => {
+    document.addEventListener('mousedown', (e: MouseEvent) => {
         // Check if mouse is not inside the context menu and menu is visible
         if (
+            ctxEl &&
             !(
                 e.clientX >= ctxPos.x &&
                 e.clientX <= ctxPos.x + ctxEl.offsetWidth &&
@@ -146,10 +152,13 @@ export function setupUI() {
         ctxPos.x = e.clientX
         ctxPos.y = e.clientY
     })
-    document.getElementById('canvasArea').oncontextmenu = showContextMenu
+    const canvasArea = document.getElementById('canvasArea');
+    if (canvasArea) {
+        canvasArea.oncontextmenu = showContextMenu as any;
+    }
 
-    $('.logixButton').on('click', function () {
-        logixFunction[this.id]()
+    $('.logixButton').on('click', function (this: HTMLElement) {
+        (logixFunction as any)[this.id]()
     })
     setupPanels()
 }
@@ -158,9 +167,11 @@ export function setupUI() {
  * Keeps in check which property is being displayed
  * @category ux
  */
-var prevPropertyObj
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+var prevPropertyObj: any
 
-export function prevPropertyObjSet(param) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function prevPropertyObjSet(param: any) {
     prevPropertyObj = param
 }
 
@@ -183,23 +194,23 @@ function checkValidBitWidth() {
     }
 }
 
-export function objectPropertyAttributeUpdate() {
+export function objectPropertyAttributeUpdate(this: HTMLInputElement) {
     checkValidBitWidth()
     scheduleUpdate()
     updateCanvasSet(true)
     wireToBeCheckedSet(1)
-    let { value } = this
+    let value: string | number = this.value;
     if (this.type === 'number') {
-        value = parseFloat(value)
+        value = parseFloat(value as string)
     }
     if (simulationArea.lastSelected && simulationArea.lastSelected[this.name]) {
         simulationArea.lastSelected[this.name](value)
     } else {
-        circuitProperty[this.name](value)
+        (circuitProperty as any)[this.name](value)
     }
 }
 
-export function objectPropertyAttributeCheckedUpdate() {
+export function objectPropertyAttributeCheckedUpdate(this: HTMLInputElement) {
     if (this.name === 'toggleLabelInLayoutMode') return // Hack to prevent toggleLabelInLayoutMode from toggling twice
     scheduleUpdate()
     updateCanvasSet(true)
@@ -207,11 +218,12 @@ export function objectPropertyAttributeCheckedUpdate() {
     if (simulationArea.lastSelected && simulationArea.lastSelected[this.name]) {
         simulationArea.lastSelected[this.name](this.value)
     } else {
-        circuitProperty[this.name](this.checked)
+        (circuitProperty as any)[this.name](this.checked)
     }
 }
 
-export function checkPropertiesUpdate(value = 0) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function checkPropertiesUpdate(value: any = 0) {
     $('.objectPropertyAttribute').off(
         'change keyup paste click',
         objectPropertyAttributeUpdate
@@ -236,9 +248,10 @@ export function checkPropertiesUpdate(value = 0) {
  * @param {CircuiElement} obj - the object whose properties we want to be shown in sidebar
  * @category ux
  */
-export function showProperties(obj) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function showProperties(obj: any) {
     if (obj === prevPropertyObjGet()) return
-    checkPropertiesUpdate(this)
+    checkPropertiesUpdate(obj)
 }
 
 /**
@@ -256,7 +269,7 @@ export function hideProperties() {
  * @param {HTML} unsafe - the html which we wants to escape
  * @category ux
  */
-function escapeHtml(unsafe) {
+function escapeHtml(unsafe: string) {
     return unsafe
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
@@ -319,12 +332,12 @@ $('#bitconverter').on('click', () => {
 
 // convertors
 const convertors = {
-    dec2bin: (x) => `0b${x.toString(2)}`,
-    dec2hex: (x) => `0x${x.toString(16)}`,
-    dec2octal: (x) => `0${x.toString(8)}`,
+    dec2bin: (x: number) => `0b${x.toString(2)}`,
+    dec2hex: (x: number) => `0x${x.toString(16)}`,
+    dec2octal: (x: number) => `0${x.toString(8)}`,
 }
 
-function setBaseValues(x) {
+function setBaseValues(x: number) {
     if (isNaN(x)) return
     $('#binaryInput').val(convertors.dec2bin(x))
     $('#octalInput').val(convertors.dec2octal(x))
@@ -353,12 +366,13 @@ $('#octalInput').on('keyup', () => {
 })
 
 
-export function minimizePanel(panelSelector) {
+export function minimizePanel(panelSelector: string) {
     $(panelSelector + ' .minimize').trigger('click')
 }
 
 export function setupPanels() {
-    dragging('#dragQPanel', '.quick-btn')
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    dragging('#dragQPanel' as any, '.quick-btn' as any)
 
     setupPanelListeners('.elementPanel')
     setupPanelListeners('.layoutElementPanel')
@@ -379,13 +393,14 @@ export function setupPanels() {
     })
 }
 
-export function setupPanelListeners(panelSelector) {
+export function setupPanelListeners(panelSelector: string) {
     var headerSelector = `${panelSelector} .panel-header`
     var minimizeSelector = `${panelSelector} .minimize`
     var maximizeSelector = `${panelSelector} .maximize`
     var bodySelector = `${panelSelector} > .panel-body`
 
-    dragging(headerSelector, panelSelector)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    dragging(headerSelector as any, panelSelector as any)
     // Current Panel on Top
     var minimized = false
     $(headerSelector)
@@ -504,7 +519,7 @@ export function fillSubcircuitElements() {
     subCircuitElementList.value = []
     isEmptySubCircuitElementList.value = true
 
-    const subcircuitElements = []
+    const subcircuitElements: any[] = []
 
     let subCircuitElementExists = false
 
@@ -516,7 +531,7 @@ export function fillSubcircuitElements() {
 
         const elementGroup = {
             type: el,
-            elements: [],
+            elements: [] as any[],
         }
 
         // add an SVG for each element
