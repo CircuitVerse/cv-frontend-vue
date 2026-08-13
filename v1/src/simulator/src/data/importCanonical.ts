@@ -74,8 +74,10 @@ function buildComponents(
 ): { instanceMap: Map<string, ComponentInstance>; errors: string[] } {
   const instanceMap = new Map<string, ComponentInstance>();
   const errors: string[] = [];
-  // modules.js is untyped and stores constructors by component name.
-  const registry = modules as Record<string, ComponentConstructor | undefined>;
+  // modules stores constructors by component name. Its elements are typed as
+  // CircuitElement, which does not overlap the structural ComponentConstructor
+  // used here, so the reinterpretation goes through unknown.
+  const registry = modules as unknown as Record<string, ComponentConstructor | undefined>;
 
   for (let i = 0; i < components.length; i++) {
     const { id, type, label, properties } = components[i];
