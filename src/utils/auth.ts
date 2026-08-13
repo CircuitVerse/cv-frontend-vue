@@ -7,24 +7,14 @@ export function getToken(name: string): string | undefined {
   return undefined;
 }
 
-export function signOutRails(): void {
+export async function signOutRails(): Promise<void> {
   const csrfToken = document.querySelector<HTMLMetaElement>('meta[name="csrf-token"]')?.content;
-  const form = document.createElement("form");
-  form.method = "post";
-  form.action = "/users/sign_out";
 
-  const methodInput = document.createElement("input");
-  methodInput.type = "hidden";
-  methodInput.name = "_method";
-  methodInput.value = "delete";
-  form.appendChild(methodInput);
+  await fetch("/users/sign_out", {
+    method: "DELETE",
+    headers: { "X-CSRF-Token": csrfToken ?? "" },
+    redirect: "manual",
+  });
 
-  const csrfInput = document.createElement("input");
-  csrfInput.type = "hidden";
-  csrfInput.name = "authenticity_token";
-  csrfInput.value = csrfToken ?? "";
-  form.appendChild(csrfInput);
-
-  document.body.appendChild(form);
-  form.submit();
+  window.location.href = "/";
 }
