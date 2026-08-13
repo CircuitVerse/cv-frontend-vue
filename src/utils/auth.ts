@@ -10,11 +10,19 @@ export function getToken(name: string): string | undefined {
 export async function signOutRails(): Promise<void> {
   const csrfToken = document.querySelector<HTMLMetaElement>('meta[name="csrf-token"]')?.content;
 
-  await fetch("/users/sign_out", {
+  if (!csrfToken) {
+    throw new Error("Cannot sign out.");
+  }
+
+  const response = await fetch("/users/sign_out", {
     method: "DELETE",
-    headers: { "X-CSRF-Token": csrfToken ?? "" },
+    headers: { "X-CSRF-Token": csrfToken },
     redirect: "manual",
   });
+
+  if (response.type !== "opaqueredirect" && !response.ok) {
+    throw new Error(`Sign out failed`);
+  }
 
   window.location.href = "/";
 }

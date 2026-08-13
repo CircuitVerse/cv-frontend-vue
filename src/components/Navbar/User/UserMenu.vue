@@ -176,6 +176,8 @@ function notifications() {
 }
 
 function signout() {
-  signOutRails()
+  signOutRails().catch((error) => {
+    console.error(error)
+  })
 }
 </script>
