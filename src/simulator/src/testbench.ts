@@ -69,7 +69,6 @@ export class TestbenchData {
 
   groupPrev() {
     const newCase = new TestbenchData(this.testData, this.currentGroup, 0);
-    const groupCount = newCase.testData.groups.length;
     let caseCount = newCase.testData.groups[newCase.currentGroup].inputs[0].values.length;
 
     while (caseCount === 0 || this.currentGroup === newCase.currentGroup) {
@@ -650,7 +649,6 @@ export const buttonListenerFunctions = {
   },
 
   editTestButton: () => {
-    const editDataString = JSON.stringify(useTestBenchStore().testbenchData.testData);
     openCreator("edit");
   },
 

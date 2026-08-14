@@ -36,7 +36,7 @@ const simulationArea: SimulationArea = {
   touch: false,
 
   timer() {
-    const _clickTimer = setTimeout(() => {
+    setTimeout(() => {
       simulationArea.clickCount = 0;
     }, 600);
   },

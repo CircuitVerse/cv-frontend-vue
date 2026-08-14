@@ -1,12 +1,5 @@
 // Algorithm used for Combinational Analysis
 
-type BooleanMinimizeType = {
-  minTerms: number[];
-  dontCares: number[];
-  numVars: number;
-  result: string[];
-};
-
 export default function BooleanMinimize(
   numVarsArg: number,
   minTermsArg: number[],
@@ -75,7 +68,7 @@ BooleanMinimize.prototype.solve = function () {
     var primeImplicants = new Set();
     var reduced;
 
-    while (1) {
+    while (true) {
       for (let i = 0; i <= this.numVars; ++i) table[i] = new Set();
       for (let i = 0; i < allTerms.length; ++i) table[num_set_bits(allTerms[i])].add(allTerms[i]);
 

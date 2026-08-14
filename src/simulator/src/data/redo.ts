@@ -19,6 +19,9 @@ interface ExtendedScope extends Scope {
 
 // Type declarations for global variables
 declare var globalScope: ExtendedScope;
+// Written here, read by the simulation engine to gate updates while a circuit
+// loads (see engine.js). Only ever assigned in this module, hence the disable.
+// eslint-disable-next-line no-unused-vars
 declare var loading: boolean;
 
 /**
