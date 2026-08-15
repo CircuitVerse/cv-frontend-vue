@@ -7,7 +7,7 @@
     "containerEnv": {
         "DEV_CONTAINER": "true"
     },
-    "postCreateCommand": "npm ci",
+    "postCreateCommand": "sh .devcontainer/setup.sh",
     "forwardPorts": [4000],
     "portsAttributes": {
         "4000": {
