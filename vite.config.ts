@@ -79,6 +79,7 @@ export default defineConfig(() => {
     },
     server: {
       port: 4000,
+      ...(process.env.DEV_CONTAINER ? { host: true } : {}),
       watch: {
         ignored: ["**/src-tauri/target/**"],
       },

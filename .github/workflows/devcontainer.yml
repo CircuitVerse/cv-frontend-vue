@@ -1,0 +1,43 @@
+name: Dev Container
+
+on:
+  pull_request:
+    paths:
+      - ".devcontainer/*"
+
+jobs:
+  test-devcontainer:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Validate devcontainer.json
+        run: jq . < .devcontainer/devcontainer.json
+
+      - name: Build and smoke test dev container
+        uses: devcontainers/ci@v0.3
+        with:
+          push: never
+          runCmd: |
+            npm run lint:ci
+            npm run lint:v1:ci
+            npm run fmt:check
+            npm run test:src:ci
+            npm run test:v1:ci
+
+            npm run dev > /tmp/dev.log 2>&1 &
+            for i in $(seq 1 30); do
+              code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:4000/simulatorvue/v0/ || true)
+              if [ "$code" -ge 200 ] 2>/dev/null && [ "$code" -lt 400 ] 2>/dev/null; then
+                echo "dev server responded with $code"
+                exit 0
+              fi
+              sleep 3
+            done
+            echo "dev server did not respond on port 4000"
+            cat /tmp/dev.log
+            exit 1
