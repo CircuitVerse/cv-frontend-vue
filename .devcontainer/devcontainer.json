@@ -17,7 +17,7 @@
     },
     "customizations": {
         "vscode": {
-            "extensions": ["Vue.volar"]
+            "extensions": ["Vue.volar", "oxc.oxc-vscode"]
         }
     }
 }
