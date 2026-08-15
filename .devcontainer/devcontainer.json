@@ -1,0 +1,23 @@
+{
+    "name": "cv-frontend-vue",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "remoteUser": "node",
+    "containerEnv": {
+        "DEV_CONTAINER": "true"
+    },
+    "postCreateCommand": "npm ci",
+    "forwardPorts": [4000],
+    "portsAttributes": {
+        "4000": {
+            "label": "Vite dev server",
+            "onAutoForward": "notify"
+        }
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": ["Vue.volar"]
+        }
+    }
+}
