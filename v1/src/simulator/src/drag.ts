@@ -4,6 +4,7 @@ interface Position {
   x: number;
   y: number;
 }
+const dragHandlers = new WeakMap<HTMLElement, () => void>();
 
 function updatePosition(
   element: HTMLElement,
@@ -40,10 +41,15 @@ function disableSelection(element: HTMLElement): void {
 
 /**
  * Make an element draggable within a specified container.
- * @param {HTMLElement} targetEl - Element that triggers the drag event.
- * @param {HTMLElement} DragEl - Element to be dragged.
+ * @param {string} targetSelector - CSS selector for the element that triggers the drag event.
+ * @param {string} dragSelector - CSS selector for the element to be dragged.
  */
-export function dragging(targetEl: HTMLElement, DragEl: HTMLElement): void {
+export function dragging(targetSelector: string, dragSelector: string): void {
+  const targetEl = document.querySelector(targetSelector) as HTMLElement | null;
+  const DragEl = document.querySelector(dragSelector) as HTMLElement | null;
+
+  if (!targetEl || !DragEl) return;
+
   // WeakMap to store the position of each dragged element
   const positions = new WeakMap<HTMLElement, Position>();
 
@@ -55,7 +61,12 @@ export function dragging(targetEl: HTMLElement, DragEl: HTMLElement): void {
     listeners: {
       // Update the element's position when the move event is triggered
       move(event) {
-        updatePosition(event.target as HTMLElement, event.dx, event.dy, positions);
+        updatePosition(
+          event.target as HTMLElement,
+          event.dx,
+          event.dy,
+          positions,
+        );
       },
     },
     // Set up modifiers to apply constraints to the draggable element
@@ -67,12 +78,21 @@ export function dragging(targetEl: HTMLElement, DragEl: HTMLElement): void {
     ],
   });
 
-  $(DragEl)
-    .off("mousedown.dragging")
-    .on("mousedown.dragging", () => {
-      $(`.draggable-panel:not(${DragEl})`).css("z-index", "99");
-      $(DragEl).css("z-index", "99");
+  const dragMouseDownHandler = () => {
+    document.querySelectorAll(".draggable-panel").forEach((panel) => {
+      if (panel !== DragEl) {
+        (panel as HTMLElement).style.zIndex = "99";
+      }
     });
+    DragEl.style.zIndex = "99";
+  };
+
+  const existingHandler = dragHandlers.get(DragEl);
+  if (existingHandler) {
+    DragEl.removeEventListener("mousedown", existingHandler);
+  }
+  dragHandlers.set(DragEl, dragMouseDownHandler);
+  DragEl.addEventListener("mousedown", dragMouseDownHandler);
 
   let panelElements = document.querySelectorAll(
     ".elementPanel, .layoutElementPanel, #moduleProperty, #layoutDialog, #verilogEditorPanel, .timing-diagram-panel, .testbench-manual-panel, .quick-btn",
