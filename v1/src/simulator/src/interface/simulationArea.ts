@@ -3,7 +3,7 @@ export interface SimulationArea {
   canvas: HTMLCanvasElement;
   context: CanvasRenderingContext2D | null;
   selected: boolean;
-  hover: boolean;
+  hover: boolean | undefined | Record<string, any>;
   clockState: number;
   clockEnabled: boolean;
   // TODO: make this CircuitElement|null once converted to typescript
@@ -13,10 +13,10 @@ export interface SimulationArea {
   oldx: number;
   oldy: number;
   objectList: any[];
-  maxHeight: number;
-  maxWidth: number;
-  minHeight: number;
-  minWidth: number;
+  maxHeight: number | undefined;
+  maxWidth: number | undefined;
+  minHeight: number | undefined;
+  minWidth: number | undefined;
   multipleObjectSelections: any[];
   copyList: any[];
   shiftDown: boolean;
