@@ -64,7 +64,7 @@ function getConstructorParams(properties: CanonicalComponent["properties"]): Can
 function buildComponents(
   scope: Scope,
   components: CanonicalComponent[],
-  layout: CanonicalLayout,
+  layout: CanonicalLayout | undefined,
   scopeMap: Map<number, Scope>,
 ): { instanceMap: Map<string, ComponentInstance>; errors: string[] } {
   const instanceMap = new Map<string, ComponentInstance>();
@@ -74,7 +74,9 @@ function buildComponents(
 
   for (let i = 0; i < components.length; i++) {
     const { id, type, label, properties } = components[i];
-    const position = layout[id] as CanonicalComponentPosition;
+    const position = layout?.[id] as CanonicalComponentPosition | undefined;
+    const x = position?.x ?? 0;
+    const y = position?.y ?? 0;
 
     let instance: ComponentInstance;
 
@@ -86,12 +88,7 @@ function buildComponents(
       }
 
       try {
-        instance = new SubCircuit(
-          position.x,
-          position.y,
-          scope,
-          String(subcircuitId),
-        ) as ComponentInstance;
+        instance = new SubCircuit(x, y, scope, String(subcircuitId)) as ComponentInstance;
       } catch (err) {
         errors.push(`SubCircuit "${id}": ${errorMessage(err)}`);
         continue;
@@ -106,7 +103,7 @@ function buildComponents(
       const constructorArgs = getConstructorParams(properties);
 
       try {
-        instance = new Constructor(position.x, position.y, scope, ...constructorArgs);
+        instance = new Constructor(x, y, scope, ...constructorArgs);
       } catch (err) {
         errors.push(`"${id}" (${type}): ${errorMessage(err)}`);
         continue;
@@ -117,12 +114,12 @@ function buildComponents(
 
     instance.propagationDelay = properties.propagationDelay;
 
-    instance.labelDirection = position.labelDirection;
+    if (position) instance.labelDirection = position.labelDirection;
 
-    const metadata = position.subcircuitMetadata;
+    const metadata = position?.subcircuitMetadata;
     if (metadata) {
       Reflect.set(instance, "subcircuitMetadata", { ...metadata });
-    } else if (Reflect.get(instance, "canShowInSubcircuit")) {
+    } else if (Reflect.get(instance, "canShowInSubcircuit") && position) {
       Reflect.get(instance, "subcircuitMetadata").labelDirection = position.labelDirection;
     }
 
@@ -130,9 +127,10 @@ function buildComponents(
   }
 
   for (const comp of components) {
-    const positions = (layout[comp.id] as CanonicalComponentPosition).portPositions;
-    if (positions === undefined) continue;
-    for (const [portName, point] of Object.entries(positions)) {
+    const position = layout?.[comp.id] as CanonicalComponentPosition | undefined;
+    if (!position?.portPositions) continue;
+
+    for (const [portName, point] of Object.entries(position.portPositions)) {
       const node = resolvePortNode(`${comp.id}.${portName}`, instanceMap);
       if (!node) {
         errors.push(`"${comp.id}.${portName}": port not found`);
@@ -145,6 +143,23 @@ function buildComponents(
   }
 
   return { instanceMap, errors };
+}
+
+function applyComponentLayout(
+  instanceMap: Map<string, ComponentInstance>,
+  layout: CanonicalLayout,
+): string[] {
+  const errors: string[] = [];
+  for (const [id, instance] of instanceMap) {
+    const pos = layout[id] as CanonicalComponentPosition | undefined;
+    if (!pos || !Number.isFinite(pos.x) || !Number.isFinite(pos.y)) {
+      errors.push(`Layout is missing for component "${id}"`);
+      continue;
+    }
+    Reflect.set(instance, "x", pos.x);
+    Reflect.set(instance, "y", pos.y);
+  }
+  return errors;
 }
 
 function buildAnnotations(scope: Scope, annotations?: CanonicalAnnotation[]): string[] {
@@ -180,7 +195,7 @@ function buildAnnotations(scope: Scope, annotations?: CanonicalAnnotation[]): st
 }
 
 /** Resolves a "ComponentId.portName" reference string to a live Node on the constructed instance. */
-function resolvePortNode(
+export function resolvePortNode(
   portRef: string,
   instanceMap: Map<string, ComponentInstance>,
 ): Node | null {
@@ -354,7 +369,11 @@ function restoreIntermediateNodes(
 }
 
 /** Copies visual metadata from the canonical JSON back onto the scope object. */
-function restoreScopeMetadata(scope: Scope, circuitData: CanonicalScope): void {
+function restoreScopeMetadata(
+  scope: Scope,
+  circuitData: CanonicalScope,
+  layout: CanonicalLayout,
+): void {
   scope.name = circuitData.projectMetadata.name;
   scope.restrictedCircuitElementsUsed = [...circuitData.projectMetadata.restrictedElementsUsed];
 
@@ -368,7 +387,7 @@ function restoreScopeMetadata(scope: Scope, circuitData: CanonicalScope): void {
     scope.centerFocus(false);
   }
 
-  const sym = circuitData.layout.subcircuitSymbol;
+  const sym = layout.subcircuitSymbol;
   scope.layout = {
     width: sym.width,
     height: sym.height,
@@ -411,13 +430,31 @@ async function importSingleScope(
   originalChildHashes?: Map<number, string>,
 ): Promise<string[]> {
   const { components, nets } = circuitData.netlist;
-  const { layout } = circuitData;
+  let layout: CanonicalLayout | undefined = circuitData.layout;
 
   const { instanceMap, errors: buildErrors } = buildComponents(scope, components, layout, scopeMap);
 
   if (buildErrors.length > 0) {
     return buildErrors;
   }
+
+  // const FORCE_AUTO_LAYOUT = true;
+
+  // if (layout === undefined || FORCE_AUTO_LAYOUT) {
+  if (layout === undefined) {
+    try {
+      const { generateElkLayout } = await import("./autoLayout");
+      layout = await generateElkLayout(components, nets, instanceMap);
+    } catch (err) {
+      buildErrors.push(`Auto Layout Failed. Error: ${err}`);
+    }
+  }
+  if (buildErrors.length > 0) {
+    return buildErrors;
+  }
+
+  const layoutErrors = applyComponentLayout(instanceMap, layout);
+  if (layoutErrors.length > 0) return layoutErrors;
 
   const annotationErrors = buildAnnotations(scope, layout.annotations);
 
@@ -428,7 +465,7 @@ async function importSingleScope(
     ? restoreIntermediateNodes(scope, layout.intermediateNodes, instanceMap, nets)
     : [];
 
-  restoreScopeMetadata(scope, circuitData);
+  restoreScopeMetadata(scope, circuitData, layout);
 
   const allErrors = [...annotationErrors, ...wireErrors, ...stateErrors, ...routingErrors];
 
