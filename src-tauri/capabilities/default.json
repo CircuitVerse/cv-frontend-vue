@@ -10,6 +10,7 @@
     "fs:default",
     "http:default",
     "core:webview:allow-create-webview-window",
+    "shell:allow-open",
     {
       "identifier": "http:allow-fetch",
       "allow": [
@@ -18,6 +19,9 @@
         },
         {
           "url": "https://circuitverse.org/api/v1/auth/signup"
+        },
+        {
+          "url": "https://circuitverse.org/oauth/token"
         }
       ]
     },
