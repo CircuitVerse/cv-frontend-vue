@@ -503,6 +503,11 @@ export async function importCanonical(json: CanonicalProject): Promise<ImportRes
     return results;
   }
 
+  if (!json.projectMetadata || typeof json.projectMetadata !== "object") {
+    results.errors.push("Missing projectMetadata object in JSON");
+    return results;
+  }
+
   const hostCircuitId = json.projectMetadata.focussedCircuit;
   if (!json.circuits[hostCircuitId]) {
     results.errors.push(`Focused circuit "${hostCircuitId}" was not found`);
