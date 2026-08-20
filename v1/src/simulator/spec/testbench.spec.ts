@@ -91,6 +91,15 @@ describe("TestbenchData.groupNext", () => {
 });
 
 describe("TestbenchData.groupPrev", () => {
+  test("skips empty groups when moving back", () => {
+    const data = makeTestData([makeGroup("g0", 2), makeGroup("empty", 0), makeGroup("g2", 1)]);
+    const tb = new TestbenchData(data, 2, 0);
+
+    expect(tb.groupPrev()).toBe(true);
+    expect(tb.currentGroup).toBe(0);
+    expect(tb.currentCase).toBe(0);
+  });
+
   test("moves back to the previous group", () => {
     const data = makeTestData([makeGroup("g0", 2), makeGroup("g1", 3)]);
     const tb = new TestbenchData(data, 1, 0);
@@ -109,6 +118,15 @@ describe("TestbenchData.groupPrev", () => {
 });
 
 describe("TestbenchData.caseNext / casePrev group rollover", () => {
+  test("casePrev skips empty groups and selects the previous last case", () => {
+    const data = makeTestData([makeGroup("g0", 2), makeGroup("empty", 0), makeGroup("g2", 1)]);
+    const tb = new TestbenchData(data, 2, 0);
+
+    expect(tb.casePrev()).toBe(true);
+    expect(tb.currentGroup).toBe(0);
+    expect(tb.currentCase).toBe(1);
+  });
+
   test("caseNext rolls over into the next group without throwing", () => {
     const data = makeTestData([makeGroup("g0", 1), makeGroup("g1", 2)]);
     const tb = new TestbenchData(data, 0, 0);
