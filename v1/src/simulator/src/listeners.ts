@@ -26,7 +26,7 @@ import {
 } from './engine'
 import { changeScale, findDimensions } from './canvasApi'
 import { scheduleBackup } from './data/backupCircuit'
-import { hideProperties, deleteSelected, uxvar, exitFullView } from './ux';
+import { hideProperties, deleteSelected, uxvar, exitFullView, showProperties } from './ux';
 import { updateRestrictedElementsList, updateRestrictedElementsInScope, hideRestricted, showRestricted } from './restrictedElementDiv';
 import { removeMiniMap, updatelastMinimapShown } from './minimap'
 import undo from './data/undo'
@@ -41,7 +41,8 @@ import { toRefs } from 'vue'
 
 const unit = 10
 let listenToSimulator = true
-let coordinate;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let coordinate: any;
 const returnCoordinate = {
   x: 0,
   y: 0
@@ -50,9 +51,10 @@ const returnCoordinate = {
 let currDistance = 0;
 let distance = 0;
 let pinchZ = 0;
-let centreX;
-let centreY;
-let timeout;
+let centreX: number;
+let centreY: number;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let timeout: any;
 let lastTap = 0;
 
 /**
@@ -60,11 +62,11 @@ let lastTap = 0;
  * @param {event} e
  * function for double click or double tap
  */
-function onDoubleClickorTap(e) {
+function onDoubleClickorTap(e: any) {
     updateCanvasSet(true);
     if (simulationArea.lastSelected && simulationArea.lastSelected.dblclick !== undefined) {
         simulationArea.lastSelected.dblclick();
-    } else if (!simulationArea.shiftDown) {
+    } else if (!(simulationArea as any).shiftDown) {
         simulationArea.multipleObjectSelections = [];
     }
     scheduleUpdate(2);
@@ -76,7 +78,7 @@ function onDoubleClickorTap(e) {
  * @param {event} e
  * function to detect tap and double tap
  */
-function getTap(e) {
+function getTap(e: any) {
     const currentTime = new Date().getTime();
     const tapLength = currentTime - lastTap;
     clearTimeout(timeout);
@@ -95,7 +97,7 @@ const isIe = (navigator.userAgent.toLowerCase().indexOf('msie') != -1 || navigat
 //  *If touch is enable then it will return touch coordinate
 //  *else it will return mouse coordinate
 //
-export function getCoordinate(e) {
+export function getCoordinate(e: any) {
     if (simulationArea.touch) {
         returnCoordinate.x = e.touches[0].clientX;
         returnCoordinate.y = e.touches[0].clientY;
@@ -115,7 +117,7 @@ export function getCoordinate(e) {
    *For now variable name starts with mouse like mouseDown are used both
     touch and mouse will change in future
 */
-export function pinchZoom(e, globalScope) {
+export function pinchZoom(e: any, globalScope: any) {
     e.preventDefault();
     gridUpdateSet(true);
     scheduleUpdate();
@@ -123,7 +125,7 @@ export function pinchZoom(e, globalScope) {
     updatePositionSet(true);
     updateCanvasSet(true);
     // Calculating distance between touch to see if its pinchIN or pinchOut
-    distance = Math.sqrt((e.touches[1].clientX - e.touches[0].clientX) ** 2, (e.touches[1].clientY - e.touches[0].clientY) ** 2);
+    distance = Math.sqrt((e.touches[1].clientX - e.touches[0].clientX) ** 2 + (e.touches[1].clientY - e.touches[0].clientY) ** 2);
     if (distance >= currDistance) {
         pinchZ += 0.02;
         currDistance = distance;
@@ -162,12 +164,12 @@ export function pinchZoom(e, globalScope) {
  *For now variable name starts from mouse like mouseDown are used both
   touch and mouse will change in future
  */
-export function panStart(e) {
+export function panStart(e: any) {
     coordinate = getCoordinate(e);
     simulationArea.mouseDown = true;
     // Deselect Input
-    if (document.activeElement instanceof HTMLElement) {
-        document.activeElement.blur();
+    if (document.activeElement && document.activeElement instanceof HTMLElement) {
+        document.activeElement?.blur();
     }
 
     errorDetectedSet(false);
@@ -176,19 +178,19 @@ export function panStart(e) {
     updateCanvasSet(true);
     simulationArea.lastSelected = undefined;
     simulationArea.selected = false;
-    simulationArea.hover = undefined;
+    (simulationArea as any).hover = undefined;
     const rect = simulationArea.canvas.getBoundingClientRect();
-    simulationArea.mouseDownRawX = (coordinate.x - rect.left) * DPR;
-    simulationArea.mouseDownRawY = (coordinate.y - rect.top) * DPR;
-    simulationArea.mouseDownX = Math.round(((simulationArea.mouseDownRawX - globalScope.ox) / globalScope.scale) / unit) * unit;
-    simulationArea.mouseDownY = Math.round(((simulationArea.mouseDownRawY - globalScope.oy) / globalScope.scale) / unit) * unit;
+    (simulationArea as any).mouseDownRawX = (coordinate.x - rect.left) * DPR;
+    (simulationArea as any).mouseDownRawY = (coordinate.y - rect.top) * DPR;
+    (simulationArea as any).mouseDownX = Math.round((((simulationArea as any).mouseDownRawX - globalScope.ox) / globalScope.scale) / unit) * unit;
+    (simulationArea as any).mouseDownY = Math.round((((simulationArea as any).mouseDownRawY - globalScope.oy) / globalScope.scale) / unit) * unit;
     if (simulationArea.touch) {
-        simulationArea.mouseX = simulationArea.mouseDownX;
-        simulationArea.mouseY = simulationArea.mouseDownY;
+        (simulationArea as any).mouseX = (simulationArea as any).mouseDownX;
+        (simulationArea as any).mouseY = (simulationArea as any).mouseDownY;
     }
 
-    simulationArea.oldx = globalScope.ox;
-    simulationArea.oldy = globalScope.oy;
+    (simulationArea as any).oldx = globalScope.ox;
+    (simulationArea as any).oldy = globalScope.oy;
     e.preventDefault();
     scheduleBackup();
     scheduleUpdate(1);
@@ -203,18 +205,18 @@ export function panStart(e) {
    touch and mouse will change in future
  */
 
-export function panMove(e) {
+export function panMove(e: any) {
     // If only one  it touched
     // pan left or right
     if (!simulationArea.touch || e.touches.length === 1) {
         coordinate = getCoordinate(e);
         const rect = simulationArea.canvas.getBoundingClientRect();
-        simulationArea.mouseRawX = (coordinate.x - rect.left) * DPR;
-        simulationArea.mouseRawY = (coordinate.y - rect.top) * DPR;
-        simulationArea.mouseXf = (simulationArea.mouseRawX - globalScope.ox) / globalScope.scale;
-        simulationArea.mouseYf = (simulationArea.mouseRawY - globalScope.oy) / globalScope.scale;
-        simulationArea.mouseX = Math.round(simulationArea.mouseXf / unit) * unit;
-        simulationArea.mouseY = Math.round(simulationArea.mouseYf / unit) * unit;
+        (simulationArea as any).mouseRawX = (coordinate.x - rect.left) * DPR;
+        (simulationArea as any).mouseRawY = (coordinate.y - rect.top) * DPR;
+        (simulationArea as any).mouseXf = ((simulationArea as any).mouseRawX - globalScope.ox) / globalScope.scale;
+        (simulationArea as any).mouseYf = ((simulationArea as any).mouseRawY - globalScope.oy) / globalScope.scale;
+        (simulationArea as any).mouseX = Math.round((simulationArea as any).mouseXf / unit) * unit;
+        (simulationArea as any).mouseY = Math.round((simulationArea as any).mouseYf / unit) * unit;
         updateCanvasSet(true);
         if (simulationArea.lastSelected && (simulationArea.mouseDown || simulationArea.lastSelected.newElement)) {
             updateCanvasSet(true);
@@ -245,10 +247,10 @@ export function panMove(e) {
     }
 }
 
-export function panStop(e) {
+export function panStop(e: any) {
     const simulatorMobileStore = useSimulatorMobileStore()
     simulationArea.mouseDown = false;
-    if (!lightMode) {
+    if (!(window as any).lightMode) {
         updatelastMinimapShown();
         setTimeout(removeMiniMap, 2000);
     }
@@ -280,9 +282,9 @@ export function panStop(e) {
     scheduleUpdate(1);
     // Var rect = simulationArea.canvas.getBoundingClientRect();
 
-    if (!(simulationArea.mouseRawX < 0 || simulationArea.mouseRawY < 0 || simulationArea.mouseRawX > width || simulationArea.mouseRawY > height)) {
-        uxvar.smartDropXX = simulationArea.mouseX + 100; // Math.round(((simulationArea.mouseRawX - globalScope.ox+100) / globalScope.scale) / unit) * unit;
-        uxvar.smartDropYY = simulationArea.mouseY - 50; // Math.round(((simulationArea.mouseRawY - globalScope.oy+100) / globalScope.scale) / unit) * unit;
+    if (!((simulationArea as any).mouseRawX < 0 || (simulationArea as any).mouseRawY < 0 || (simulationArea as any).mouseRawX > simulationArea.canvas.width || (simulationArea as any).mouseRawY > simulationArea.canvas.height)) {
+        uxvar.smartDropXX = (simulationArea as any).mouseX + 100; // Math.round((((simulationArea as any).mouseRawX - globalScope.ox+100) / globalScope.scale) / unit) * unit;
+        uxvar.smartDropYY = (simulationArea as any).mouseY - 50; // Math.round((((simulationArea as any).mouseRawY - globalScope.oy+100) / globalScope.scale) / unit) * unit;
     }
 
     if (simulationArea.touch) {
@@ -290,28 +292,29 @@ export function panStop(e) {
         // small hack so Current circuit element should not spwan above last circuit element
         if (!isCopy.value) {
             findDimensions(globalScope);
-            simulationArea.mouseX = 100 + simulationArea.maxWidth || 0;
-            simulationArea.mouseY = simulationArea.minHeight || 0;
+            (simulationArea as any).mouseX = 100 + simulationArea.maxWidth || 0;
+            (simulationArea as any).mouseY = simulationArea.minHeight || 0;
             getTap(e);
         }
     }
 }
 
 export default function startListeners() {
-    $(document).on('keyup', (e) => {
+    $(document).on('keyup', (e: any) => {
         if (e.key === 'Escape') exitFullView()
     })
 
     $('#projectName').on('click', () => {
 		simulationArea.lastSelected = globalScope.root;
 		setTimeout(() => {
-			document.getElementById("projname").select();
+			const projname = document.getElementById("projname") as HTMLInputElement | null;
+			if (projname) projname.select();
 		}, 100);
 	});
 
     document
-        .getElementById('simulationArea')
-        .addEventListener('mouseup', (e) => {
+        .getElementById('simulationArea')!
+        .addEventListener('mouseup', (e: any) => {
             if (simulationArea.lastSelected) {
                 simulationArea.lastSelected.newElement = false
             }
@@ -333,7 +336,7 @@ export default function startListeners() {
 
             // deselect multible elements with click
             if (
-                !simulationArea.shiftDown &&
+                !(simulationArea as any).shiftDown &&
                 simulationArea.multipleObjectSelections.length > 0
             ) {
                 if (
@@ -346,48 +349,49 @@ export default function startListeners() {
             }
         })
 
-    window.addEventListener('keyup', (e) => {
-        scheduleUpdate(1)
-        simulationArea.shiftDown = e.shiftKey
+    window.addEventListener('keyup', (e: any) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ;(scheduleUpdate as any)(1)
+        (simulationArea as any).shiftDown = e.shiftKey
         if (e.keyCode == 16) {
-            simulationArea.shiftDown = false
+            (simulationArea as any).shiftDown = false
         }
         if (e.key == 'Meta' || e.key == 'Control') {
-            simulationArea.controlDown = false
+            (simulationArea as any).controlDown = false
         }
     })
 
     window.addEventListener(
         'keydown',
-        (e) => {
-            if (document.activeElement.tagName == 'INPUT') return
+        (e: any) => {
+            if (document.activeElement && document.activeElement?.tagName == 'INPUT') return
             if (document.activeElement != document.body) return
 
-            simulationArea.shiftDown = e.shiftKey
+            (simulationArea as any).shiftDown = e.shiftKey
             if (e.key == 'Meta' || e.key == 'Control') {
-                simulationArea.controlDown = true
+                (simulationArea as any).controlDown = true
             }
 
             if (
-                simulationArea.controlDown &&
+                (simulationArea as any).controlDown &&
                 e.key.charCodeAt(0) == 122 &&
-                !simulationArea.shiftDown
+                !(simulationArea as any).shiftDown
             ) {
                 // detect the special CTRL-Z code
                 undo()
             }
             if (
-                simulationArea.controlDown &&
+                (simulationArea as any).controlDown &&
                 e.key.charCodeAt(0) == 122 &&
-                simulationArea.shiftDown
+                (simulationArea as any).shiftDown
             ) {
                 // detect the special Cmd + shift + z code (macOs)
                 redo()
             }
             if (
-                simulationArea.controlDown &&
+                (simulationArea as any).controlDown &&
                 e.key.charCodeAt(0) == 121 &&
-                !simulationArea.shiftDown
+                !(simulationArea as any).shiftDown
             ) {
                 // detect the special ctrl + Y code (windows)
                 redo()
@@ -396,53 +400,54 @@ export default function startListeners() {
             if (listenToSimulator) {
                 // If mouse is focusing on input element, then override any action
                 if (
-                    document.activeElement.tagName == 'INPUT' ||
-                    simulationArea.mouseRawX < 0 ||
-                    simulationArea.mouseRawY < 0 ||
-                    simulationArea.mouseRawX > width ||
-                    simulationArea.mouseRawY > height
+                    document.activeElement?.tagName == 'INPUT' ||
+                    (simulationArea as any).mouseRawX < 0 ||
+                    (simulationArea as any).mouseRawY < 0 ||
+                    (simulationArea as any).mouseRawX > simulationArea.canvas.width ||
+                    (simulationArea as any).mouseRawY > simulationArea.canvas.height
                 ) {
                     return
                 }
                 // HACK TO REMOVE FOCUS ON PROPERTIES
-                if (document.activeElement.type == 'number') {
+                if (document.activeElement && (document.activeElement as HTMLInputElement).type == 'number') {
                     hideProperties()
                     showProperties(simulationArea.lastSelected)
                 }
 
                 errorDetectedSet(false)
                 updateSimulationSet(true)
-                updatePositionSet(true)
-                simulationArea.shiftDown = e.shiftKey
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                ;(updatePositionSet as any)(true)
+                (simulationArea as any).shiftDown = e.shiftKey
 
                 if (e.key == 'Meta' || e.key == 'Control') {
-                    simulationArea.controlDown = true
+                    (simulationArea as any).controlDown = true
                 }
 
                 // zoom in (+)
                 if (
-                    (simulationArea.controlDown &&
+                    ((simulationArea as any).controlDown &&
                         (e.keyCode == 187 || e.keyCode == 171)) ||
                     e.keyCode == 107
                 ) {
                     e.preventDefault()
-                    ZoomIn()
+                    (window as any).ZoomIn()
                 }
                 // zoom out (-)
                 if (
-                    (simulationArea.controlDown &&
+                    ((simulationArea as any).controlDown &&
                         (e.keyCode == 189 || e.keyCode == 173)) ||
                     e.keyCode == 109
                 ) {
                     e.preventDefault()
-                    ZoomOut()
+                    (window as any).ZoomOut()
                 }
 
                 if (
-                    simulationArea.mouseRawX < 0 ||
-                    simulationArea.mouseRawY < 0 ||
-                    simulationArea.mouseRawX > width ||
-                    simulationArea.mouseRawY > height
+                    (simulationArea as any).mouseRawX < 0 ||
+                    (simulationArea as any).mouseRawY < 0 ||
+                    (simulationArea as any).mouseRawX > (window as any).width ||
+                    (simulationArea as any).mouseRawY > (window as any).height
                 )
                     return
 
@@ -496,7 +501,7 @@ export default function startListeners() {
                 }
 
                 if (e.keyCode == 16) {
-                    simulationArea.shiftDown = true
+                    (simulationArea as any).shiftDown = true
                     if (
                         simulationArea.lastSelected &&
                         !simulationArea.lastSelected.keyDown &&
@@ -515,17 +520,17 @@ export default function startListeners() {
 
                 // Detect offline save shortcut (CTRL+SHIFT+S)
                 if (
-                    simulationArea.controlDown &&
+                    (simulationArea as any).controlDown &&
                     e.keyCode == 83 &&
-                    simulationArea.shiftDown
+                    (simulationArea as any).shiftDown
                 ) {
-                    saveOffline()
+                    (window as any).saveOffline()
                     e.preventDefault()
                 }
 
                 // Detect Select all Shortcut
                 if (
-                    simulationArea.controlDown &&
+                    (simulationArea as any).controlDown &&
                     (e.keyCode == 65 || e.keyCode == 97)
                 ) {
                     selectAll()
@@ -544,18 +549,24 @@ export default function startListeners() {
                     simulationArea.lastSelected != undefined
                 ) {
                     if (simulationArea.lastSelected.bitWidth !== undefined) {
-                        simulationArea.lastSelected.newBitWidth(
-                            parseInt(prompt('Enter new bitWidth'), 10)
-                        )
+                        const bitWidthStr = prompt('Enter new bitWidth');
+                        if (bitWidthStr !== null) {
+                            const newBitWidth = parseInt(bitWidthStr, 10);
+                            if (!isNaN(newBitWidth)) {
+                                simulationArea.lastSelected.newBitWidth(newBitWidth);
+                            }
+                        }
                     }
                 }
 
                 if (
-                    simulationArea.controlDown &&
+                    (simulationArea as any).controlDown &&
                     (e.key == 'T' || e.key == 't')
                 ) {
                     // e.preventDefault(); //browsers normally open a new tab
-                    simulationArea.changeClockTime(prompt('Enter Time:'))
+                    const timeStr = prompt('Enter Time:');
+                    const newTime = parseInt(timeStr || '500', 10);
+                    simulationArea.changeClockTime(isNaN(newTime) ? 500 : newTime);
                 }
             }
 
@@ -566,11 +577,11 @@ export default function startListeners() {
         true
     )
 
-    document.getElementById('simulationArea').addEventListener('dblclick', e => {
+    document.getElementById('simulationArea')!.addEventListener('dblclick', e => {
 		onDoubleClickorTap(e);
 	});
 
-    function MouseScroll(event) {
+    function MouseScroll(event: any) {
         updateCanvasSet(true)
         event.preventDefault()
         var deltaY = event.wheelDelta ? event.wheelDelta : -event.detail
@@ -586,23 +597,23 @@ export default function startListeners() {
     }
 
     document
-        .getElementById('simulationArea')
+        .getElementById('simulationArea')!
         .addEventListener('mousewheel', MouseScroll)
     document
-        .getElementById('simulationArea')
+        .getElementById('simulationArea')!
         .addEventListener('DOMMouseScroll', MouseScroll)
 
-    document.addEventListener('cut', (e) => {
+    document.addEventListener('cut', (e: any) => {
         if (verilogModeGet()) return
-        if (document.activeElement.tagName == 'INPUT') return
-        if (document.activeElement.tagName != 'BODY') return
+        if (document.activeElement && document.activeElement?.tagName == 'INPUT') return
+        if (document.activeElement?.tagName != 'BODY') return
 
         if (listenToSimulator) {
             simulationArea.copyList =
                 simulationArea.multipleObjectSelections.slice()
             if (
                 simulationArea.lastSelected &&
-                simulationArea.lastSelected !== simulationArea.root &&
+                simulationArea.lastSelected !== (simulationArea as any).root &&
                 !simulationArea.copyList.includes(simulationArea.lastSelected)
             ) {
                 simulationArea.copyList.push(simulationArea.lastSelected)
@@ -612,28 +623,28 @@ export default function startListeners() {
 
             // Updated restricted elements
             updateRestrictedElementsInScope()
+            if (textToPutOnClipboard == undefined) return
             localStorage.setItem('clipboardData', textToPutOnClipboard)
             e.preventDefault()
-            if (textToPutOnClipboard == undefined) return
             if (isIe) {
-                window.clipboardData.setData('Text', textToPutOnClipboard)
+                (window as any).clipboardData.setData('Text', textToPutOnClipboard)
             } else {
                 e.clipboardData.setData('text/plain', textToPutOnClipboard)
             }
         }
     })
 
-    document.addEventListener('copy', (e) => {
+    document.addEventListener('copy', (e: any) => {
         if (verilogModeGet()) return
-        if (document.activeElement.tagName == 'INPUT') return
-        if (document.activeElement.tagName != 'BODY') return
+        if (document.activeElement && document.activeElement?.tagName == 'INPUT') return
+        if (document.activeElement?.tagName != 'BODY') return
 
         if (listenToSimulator) {
             simulationArea.copyList =
                 simulationArea.multipleObjectSelections.slice()
             if (
                 simulationArea.lastSelected &&
-                simulationArea.lastSelected !== simulationArea.root &&
+                simulationArea.lastSelected !== (simulationArea as any).root &&
                 !simulationArea.copyList.includes(simulationArea.lastSelected)
             ) {
                 simulationArea.copyList.push(simulationArea.lastSelected)
@@ -643,25 +654,25 @@ export default function startListeners() {
 
             // Updated restricted elements
             updateRestrictedElementsInScope()
+            if (textToPutOnClipboard == undefined) return
             localStorage.setItem('clipboardData', textToPutOnClipboard)
             e.preventDefault()
-            if (textToPutOnClipboard == undefined) return
             if (isIe) {
-                window.clipboardData.setData('Text', textToPutOnClipboard)
+                (window as any).clipboardData.setData('Text', textToPutOnClipboard)
             } else {
                 e.clipboardData.setData('text/plain', textToPutOnClipboard)
             }
         }
     })
 
-    document.addEventListener('paste', (e) => {
-        if (document.activeElement.tagName == 'INPUT') return
-        if (document.activeElement.tagName != 'BODY') return
+    document.addEventListener('paste', (e: any) => {
+        if (document.activeElement && document.activeElement?.tagName == 'INPUT') return
+        if (document.activeElement?.tagName != 'BODY') return
 
         if (listenToSimulator) {
             var data
             if (isIe) {
-                data = window.clipboardData.getData('Text')
+                data = (window as any).clipboardData.getData('Text')
             } else {
                 data = e.clipboardData.getData('text/plain')
             }
@@ -676,13 +687,13 @@ export default function startListeners() {
     })
 
     // 'drag and drop' event listener for subcircuit elements in layout mode
-    $('#subcircuitMenu').on('dragstop', '.draggableSubcircuitElement', function (event, ui) {
+    $('#subcircuitMenu').on('dragstop', '.draggableSubcircuitElement', function (this: any, event: any, ui: any) {
         const sideBarWidth = $('#guide_1')[0].clientWidth;
         let tempElement;
 
         if (ui.position.top > 10 && ui.position.left > sideBarWidth) {
             // Make a shallow copy of the element with the new coordinates
-            tempElement = globalScope[this.dataset.elementName][this.dataset.elementId];
+            tempElement = (globalScope as any)[this.dataset.elementName][this.dataset.elementId];
             // Changing the coordinate doesn't work yet, nodes get far from element
             tempElement.x = ui.position.left - sideBarWidth;
             tempElement.y = ui.position.top;
@@ -713,10 +724,10 @@ export default function startListeners() {
 }
 
 function resizeTabs() {
-    const $windowsize = $('body').width()
-    const $sideBarsize = $('.side').width()
+    const $windowsize = $('body').width() ?? 0
+    const $sideBarsize = $('.side').width() ?? 0
     const $maxwidth = $windowsize - $sideBarsize
-    $('#tabsBar div').each(function (e) {
+    $('#tabsBar div').each(function (this: any, e: any) {
         $(this).css({ 'max-width': $maxwidth - 30 })
     })
 }
@@ -725,7 +736,7 @@ window.addEventListener('resize', resizeTabs)
 resizeTabs()
 
 // direction is only 1 or -1
-function handleZoom (direction) {
+function handleZoom (direction: number) {
     if (globalScope.scale > 0.5 * DPR) {
       changeScale(direction * 0.1 * DPR);
     } else if (globalScope.scale < 4 * DPR) {
@@ -741,38 +752,38 @@ function handleZoom (direction) {
     handleZoom(-1);
   }
   function zoomSliderListeners () {
-    document.getElementById("customRange1").value = 5;
-    document.getElementById('simulationArea').addEventListener('DOMMouseScroll', zoomSliderScroll);
-    document.getElementById('simulationArea').addEventListener('mousewheel', zoomSliderScroll);
-    let curLevel = document.getElementById("customRange1").value;
-    $(document).on('input change', '#customRange1', function (e) {
-      const newValue = $(this).val();
+    (document.getElementById("customRange1") as HTMLInputElement).value = "5";
+    document.getElementById('simulationArea')!.addEventListener('DOMMouseScroll', zoomSliderScroll);
+    document.getElementById('simulationArea')!.addEventListener('mousewheel', zoomSliderScroll);
+    let curLevel = parseInt((document.getElementById("customRange1") as HTMLInputElement).value, 10);
+    $(document).on('input change', '#customRange1', function (this: any, e: any) {
+      const newValue = parseInt($(this).val() as string, 10);
       const changeInScale = newValue - curLevel;
       updateCanvasSet(true);
       changeScale(changeInScale * 0.1, 'zoomButton', 'zoomButton', 3)
       gridUpdateSet(true);
       curLevel = newValue;
     });
-    function zoomSliderScroll (e) {
-      let zoomLevel = document.getElementById("customRange1").value;
+    function zoomSliderScroll (e: any) {
+      let zoomLevel = parseInt((document.getElementById("customRange1") as HTMLInputElement).value, 10);
       const deltaY = e.wheelDelta ? e.wheelDelta : -e.detail;
       const directionY = deltaY > 0 ? 1 : -1;
       if (directionY > 0) zoomLevel++
       else zoomLevel--
       if (zoomLevel >= 45) {
         zoomLevel = 45;
-        document.getElementById("customRange1").value = 45;
+        (document.getElementById("customRange1") as HTMLInputElement).value = "45";
       } else if (zoomLevel <= 0) {
         zoomLevel = 0;
-        document.getElementById("customRange1").value = 0;
+        (document.getElementById("customRange1") as HTMLInputElement).value = "0";
       } else {
-        document.getElementById("customRange1").value = zoomLevel;
+        (document.getElementById("customRange1") as HTMLInputElement).value = zoomLevel.toString();
         curLevel = zoomLevel;
       }
     }
-    function sliderZoomButton (direction) {
+    function sliderZoomButton (direction: number) {
       const zoomSlider = $('#customRange1');
-      let currentSliderValue = parseInt(zoomSlider.val(), 10);
+      let currentSliderValue = parseInt(zoomSlider.val() as string, 10);
       if (direction === -1) {
         currentSliderValue--;
       } else {
@@ -791,7 +802,7 @@ function handleZoom (direction) {
 // Desktop App Listeners
 
 listen('new-project', () => {
-    logixFunction.newProject();
+    (logixFunction as any).newProject();
 });
 
 listen('save-online', () => {
@@ -799,7 +810,7 @@ listen('save-online', () => {
 });
 
 listen('save-offline', () => {
-    logixFunction.saveOffline();
+    (logixFunction as any).saveOffline();
 });
 
 listen('open-offline', () => {
@@ -867,13 +878,13 @@ listen('tutorial', () => {
 });
 
 listen('user-manual', () => {
-    logixFunction.showUserManual();
+    (logixFunction as any).showUserManual();
 });
 
 listen('learn-digital-circuit', () => {
-    logixFunction.showDigitalCircuit();
+    (logixFunction as any).showDigitalCircuit();
 });
 
 listen('discussion-forum', () => {
-    logixFunction.showDiscussionForum();
+    (logixFunction as any).showDiscussionForum();
 });

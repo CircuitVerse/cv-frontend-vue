@@ -45,15 +45,18 @@ var ctxPos = {
     visible: false,
 }
 let isFullViewActive = false
-let prevMobileState = null 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let prevMobileState: any = null 
 // FUNCTION TO SHOW AND HIDE CONTEXT MENU
 function hideContextMenu() {
     var el = document.getElementById('contextMenu')
-    el.style = 'opacity:0;'
-    setTimeout(() => {
-        el.style = 'visibility:hidden;'
-        ctxPos.visible = false
-    }, 200) // Hide after 2 sec
+    if (el) {
+        el.style.opacity = '0';
+        setTimeout(() => {
+            el!.style.visibility = 'hidden';
+            ctxPos.visible = false
+        }, 200) // Hide after 2 sec
+    }
 }
 /**
  * Function displays context menu
@@ -67,9 +70,9 @@ function showContextMenu() {
     })
 
     var windowHeight =
-        $('#simulationArea').height() - $('#contextMenu').height() - 10
+        ($('#simulationArea').height() ?? 0) - ($('#contextMenu').height() ?? 0) - 10
     var windowWidth =
-        $('#simulationArea').width() - $('#contextMenu').width() - 10
+        ($('#simulationArea').width() ?? 0) - ($('#contextMenu').width() ?? 0) - 10
     // for top, left, right, bottom
     var topPosition
     var leftPosition
@@ -78,7 +81,7 @@ function showContextMenu() {
     if (ctxPos.y > windowHeight && ctxPos.x <= windowWidth) {
         //When user click on bottom-left part of window
         leftPosition = ctxPos.x
-        bottomPosition = $(window).height() - ctxPos.y
+        bottomPosition = ($(window).height() ?? 0) - ctxPos.y
         $('#contextMenu').css({
             left: `${leftPosition}px`,
             bottom: `${bottomPosition}px`,
@@ -87,8 +90,8 @@ function showContextMenu() {
         })
     } else if (ctxPos.y > windowHeight && ctxPos.x > windowWidth) {
         //When user click on bottom-right part of window
-        bottomPosition = $(window).height() - ctxPos.y
-        rightPosition = $(window).width() - ctxPos.x
+        bottomPosition = ($(window).height() ?? 0) - ctxPos.y
+        rightPosition = ($(window).width() ?? 0) - ctxPos.x
         $('#contextMenu').css({
             left: 'auto',
             bottom: `${bottomPosition}px`,
@@ -107,7 +110,7 @@ function showContextMenu() {
         })
     } else {
         //When user click on top-right part of window
-        rightPosition = $(window).width() - ctxPos.x
+        rightPosition = ($(window).width() ?? 0) - ctxPos.x
         topPosition = ctxPos.y
         $('#contextMenu').css({
             left: 'auto',
@@ -127,9 +130,10 @@ function showContextMenu() {
  */
 export function setupUI() {
     var ctxEl = document.getElementById('contextMenu')
-    document.addEventListener('mousedown', (e) => {
+    document.addEventListener('mousedown', (e: MouseEvent) => {
         // Check if mouse is not inside the context menu and menu is visible
         if (
+            ctxEl &&
             !(
                 e.clientX >= ctxPos.x &&
                 e.clientX <= ctxPos.x + ctxEl.offsetWidth &&
@@ -146,10 +150,16 @@ export function setupUI() {
         ctxPos.x = e.clientX
         ctxPos.y = e.clientY
     })
-    document.getElementById('canvasArea').oncontextmenu = showContextMenu
+    const canvasArea = document.getElementById('canvasArea');
+    if (canvasArea) {
+        canvasArea.oncontextmenu = showContextMenu as any;
+    }
 
-    $('.logixButton').on('click', function () {
-        logixFunction[this.id]()
+    $('.logixButton').on('click', function (this: HTMLElement) {
+        const handler = (logixFunction as any)[this.id];
+        if (typeof handler === 'function') {
+            handler.call(logixFunction);
+        }
     })
     setupPanels()
 }
@@ -158,9 +168,11 @@ export function setupUI() {
  * Keeps in check which property is being displayed
  * @category ux
  */
-var prevPropertyObj
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+var prevPropertyObj: any
 
-export function prevPropertyObjSet(param) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function prevPropertyObjSet(param: any) {
     prevPropertyObj = param
 }
 
@@ -170,48 +182,50 @@ export function prevPropertyObjGet() {
 
 function checkValidBitWidth() {
     const selector = $("[name='newBitWidth']")
+    const val = Number(selector.val())
     if (
         selector === undefined ||
-        selector.val() > 32 ||
-        selector.val() < 1 ||
-        !$.isNumeric(selector.val())
+        isNaN(val) ||
+        val > 32 ||
+        val < 1
     ) {
         // fallback to previously saves state
-        selector.val(selector.attr('old-val'))
+        selector.val(selector.attr('old-val') ?? '')
     } else {
-        selector.attr('old-val', selector.val())
+        selector.attr('old-val', String(val))
     }
 }
 
-export function objectPropertyAttributeUpdate() {
+export function objectPropertyAttributeUpdate(this: HTMLInputElement) {
     checkValidBitWidth()
     scheduleUpdate()
     updateCanvasSet(true)
     wireToBeCheckedSet(1)
-    let { value } = this
+    let value: string | number = this.value;
     if (this.type === 'number') {
-        value = parseFloat(value)
+        value = parseFloat(value as string)
     }
-    if (simulationArea.lastSelected && simulationArea.lastSelected[this.name]) {
-        simulationArea.lastSelected[this.name](value)
-    } else {
-        circuitProperty[this.name](value)
+    if (simulationArea.lastSelected && typeof simulationArea.lastSelected[this.name] === 'function') {
+        simulationArea.lastSelected[this.name].call(simulationArea.lastSelected, value)
+    } else if (typeof (circuitProperty as any)[this.name] === 'function') {
+        (circuitProperty as any)[this.name].call(circuitProperty, value)
     }
 }
 
-export function objectPropertyAttributeCheckedUpdate() {
+export function objectPropertyAttributeCheckedUpdate(this: HTMLInputElement) {
     if (this.name === 'toggleLabelInLayoutMode') return // Hack to prevent toggleLabelInLayoutMode from toggling twice
     scheduleUpdate()
     updateCanvasSet(true)
     wireToBeCheckedSet(1)
-    if (simulationArea.lastSelected && simulationArea.lastSelected[this.name]) {
-        simulationArea.lastSelected[this.name](this.value)
-    } else {
-        circuitProperty[this.name](this.checked)
+    if (simulationArea.lastSelected && typeof simulationArea.lastSelected[this.name] === 'function') {
+        simulationArea.lastSelected[this.name].call(simulationArea.lastSelected, this.checked)
+    } else if (typeof (circuitProperty as any)[this.name] === 'function') {
+        (circuitProperty as any)[this.name].call(circuitProperty, this.checked)
     }
 }
 
-export function checkPropertiesUpdate(value = 0) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function checkPropertiesUpdate(value: any = 0) {
     $('.objectPropertyAttribute').off(
         'change keyup paste click',
         objectPropertyAttributeUpdate
@@ -236,9 +250,10 @@ export function checkPropertiesUpdate(value = 0) {
  * @param {CircuiElement} obj - the object whose properties we want to be shown in sidebar
  * @category ux
  */
-export function showProperties(obj) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function showProperties(obj: any) {
     if (obj === prevPropertyObjGet()) return
-    checkPropertiesUpdate(this)
+    checkPropertiesUpdate(obj)
 }
 
 /**
@@ -256,7 +271,7 @@ export function hideProperties() {
  * @param {HTML} unsafe - the html which we wants to escape
  * @category ux
  */
-function escapeHtml(unsafe) {
+function escapeHtml(unsafe: string) {
     return unsafe
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
@@ -301,8 +316,10 @@ export function deleteSelected() {
  * @category ux
  */
 $('#bitconverter').on('click', () => {
-    $('#bitconverterprompt').dialog({
+    const bitconverterprompt = $('#bitconverterprompt') as any
+    bitconverterprompt.dialog({
         resizable: false,
+        width: 'auto',
         buttons: [
             {
                 text: 'Reset',
@@ -319,12 +336,12 @@ $('#bitconverter').on('click', () => {
 
 // convertors
 const convertors = {
-    dec2bin: (x) => `0b${x.toString(2)}`,
-    dec2hex: (x) => `0x${x.toString(16)}`,
-    dec2octal: (x) => `0${x.toString(8)}`,
+    dec2bin: (x: number) => `0b${x.toString(2)}`,
+    dec2hex: (x: number) => `0x${x.toString(16)}`,
+    dec2octal: (x: number) => `0${x.toString(8)}`,
 }
 
-function setBaseValues(x) {
+function setBaseValues(x: number) {
     if (isNaN(x)) return
     $('#binaryInput').val(convertors.dec2bin(x))
     $('#octalInput').val(convertors.dec2octal(x))
@@ -333,27 +350,27 @@ function setBaseValues(x) {
 }
 
 $('#decimalInput').on('keyup', () => {
-    var x = parseInt($('#decimalInput').val(), 10)
+    var x = parseInt(String($('#decimalInput').val()), 10)
     setBaseValues(x)
 })
 
 $('#binaryInput').on('keyup', () => {
-    var x = parseInt($('#binaryInput').val(), 2)
+    var x = parseInt(String($('#binaryInput').val()), 2)
     setBaseValues(x)
 })
 
 $('#hexInput').on('keyup', () => {
-    var x = parseInt($('#hexInput').val(), 16)
+    var x = parseInt(String($('#hexInput').val()), 16)
     setBaseValues(x)
 })
 
 $('#octalInput').on('keyup', () => {
-    var x = parseInt($('#octalInput').val(), 8)
+    var x = parseInt(String($('#octalInput').val()), 8)
     setBaseValues(x)
 })
 
 
-export function minimizePanel(panelSelector) {
+export function minimizePanel(panelSelector: string) {
     $(panelSelector + ' .minimize').trigger('click')
 }
 
@@ -379,12 +396,13 @@ export function setupPanels() {
     })
 }
 
-export function setupPanelListeners(panelSelector) {
+export function setupPanelListeners(panelSelector: string) {
     var headerSelector = `${panelSelector} .panel-header`
     var minimizeSelector = `${panelSelector} .minimize`
     var maximizeSelector = `${panelSelector} .maximize`
     var bodySelector = `${panelSelector} > .panel-body`
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     dragging(headerSelector, panelSelector)
     // Current Panel on Top
     var minimized = false
@@ -504,26 +522,26 @@ export function fillSubcircuitElements() {
     subCircuitElementList.value = []
     isEmptySubCircuitElementList.value = true
 
-    const subcircuitElements = []
+    const subcircuitElements: any[] = []
 
     let subCircuitElementExists = false
 
     for (let el of circuitElementList) {
-        if (globalScope[el].length === 0) continue
-        if (!globalScope[el][0].canShowInSubcircuit) continue
+        if ((globalScope as any)[el].length === 0) continue
+        if (!(globalScope as any)[el][0].canShowInSubcircuit) continue
 
         let available = false
 
         const elementGroup = {
             type: el,
-            elements: [],
+            elements: [] as any[],
         }
 
         // add an SVG for each element
-        for (let i = 0; i < globalScope[el].length; i++) {
-            if (!globalScope[el][i].subcircuitMetadata.showInSubcircuit) {
+        for (let i = 0; i < (globalScope as any)[el].length; i++) {
+            if (!(globalScope as any)[el][i].subcircuitMetadata.showInSubcircuit) {
                 available = true
-                const element = globalScope[el][i];
+                const element = (globalScope as any)[el][i];
                 elementGroup.elements.push(element);
             }
         }
