@@ -1,4 +1,5 @@
 /// <reference types="vite/client" />
+/// <reference types="jquery" />
 
 interface Array<T> {
   clean(deleteValue: T): T[];
@@ -13,8 +14,8 @@ declare module "*.vue" {
   export default component;
 }
 
-declare var $: any;
-declare var globalScope: any;
+declare var $: JQueryStatic;
+declare var globalScope: import('./simulator/src/circuit').default;
 declare var DPR: number;
-declare var restrictedElements: any[];
+declare var restrictedElements: string[];
 declare var embed: boolean;

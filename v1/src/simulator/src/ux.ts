@@ -70,9 +70,9 @@ function showContextMenu() {
     })
 
     var windowHeight =
-        $('#simulationArea').height() - $('#contextMenu').height() - 10
+        ($('#simulationArea').height() ?? 0) - ($('#contextMenu').height() ?? 0) - 10
     var windowWidth =
-        $('#simulationArea').width() - $('#contextMenu').width() - 10
+        ($('#simulationArea').width() ?? 0) - ($('#contextMenu').width() ?? 0) - 10
     // for top, left, right, bottom
     var topPosition
     var leftPosition
@@ -81,7 +81,7 @@ function showContextMenu() {
     if (ctxPos.y > windowHeight && ctxPos.x <= windowWidth) {
         //When user click on bottom-left part of window
         leftPosition = ctxPos.x
-        bottomPosition = $(window).height() - ctxPos.y
+        bottomPosition = ($(window).height() ?? 0) - ctxPos.y
         $('#contextMenu').css({
             left: `${leftPosition}px`,
             bottom: `${bottomPosition}px`,
@@ -90,8 +90,8 @@ function showContextMenu() {
         })
     } else if (ctxPos.y > windowHeight && ctxPos.x > windowWidth) {
         //When user click on bottom-right part of window
-        bottomPosition = $(window).height() - ctxPos.y
-        rightPosition = $(window).width() - ctxPos.x
+        bottomPosition = ($(window).height() ?? 0) - ctxPos.y
+        rightPosition = ($(window).width() ?? 0) - ctxPos.x
         $('#contextMenu').css({
             left: 'auto',
             bottom: `${bottomPosition}px`,
@@ -110,7 +110,7 @@ function showContextMenu() {
         })
     } else {
         //When user click on top-right part of window
-        rightPosition = $(window).width() - ctxPos.x
+        rightPosition = ($(window).width() ?? 0) - ctxPos.x
         topPosition = ctxPos.y
         $('#contextMenu').css({
             left: 'auto',
@@ -182,16 +182,17 @@ export function prevPropertyObjGet() {
 
 function checkValidBitWidth() {
     const selector = $("[name='newBitWidth']")
+    const val = Number(selector.val())
     if (
         selector === undefined ||
-        selector.val() > 32 ||
-        selector.val() < 1 ||
-        !$.isNumeric(selector.val())
+        isNaN(val) ||
+        val > 32 ||
+        val < 1
     ) {
         // fallback to previously saves state
-        selector.val(selector.attr('old-val'))
+        selector.val(selector.attr('old-val') ?? '')
     } else {
-        selector.attr('old-val', selector.val())
+        selector.attr('old-val', String(val))
     }
 }
 
@@ -315,8 +316,10 @@ export function deleteSelected() {
  * @category ux
  */
 $('#bitconverter').on('click', () => {
-    $('#bitconverterprompt').dialog({
+    const bitconverterprompt = $('#bitconverterprompt') as any
+    bitconverterprompt.dialog({
         resizable: false,
+        width: 'auto',
         buttons: [
             {
                 text: 'Reset',
@@ -347,22 +350,22 @@ function setBaseValues(x: number) {
 }
 
 $('#decimalInput').on('keyup', () => {
-    var x = parseInt($('#decimalInput').val(), 10)
+    var x = parseInt(String($('#decimalInput').val()), 10)
     setBaseValues(x)
 })
 
 $('#binaryInput').on('keyup', () => {
-    var x = parseInt($('#binaryInput').val(), 2)
+    var x = parseInt(String($('#binaryInput').val()), 2)
     setBaseValues(x)
 })
 
 $('#hexInput').on('keyup', () => {
-    var x = parseInt($('#hexInput').val(), 16)
+    var x = parseInt(String($('#hexInput').val()), 16)
     setBaseValues(x)
 })
 
 $('#octalInput').on('keyup', () => {
-    var x = parseInt($('#octalInput').val(), 8)
+    var x = parseInt(String($('#octalInput').val()), 8)
     setBaseValues(x)
 })
 
@@ -524,8 +527,8 @@ export function fillSubcircuitElements() {
     let subCircuitElementExists = false
 
     for (let el of circuitElementList) {
-        if (globalScope[el].length === 0) continue
-        if (!globalScope[el][0].canShowInSubcircuit) continue
+        if ((globalScope as any)[el].length === 0) continue
+        if (!(globalScope as any)[el][0].canShowInSubcircuit) continue
 
         let available = false
 
@@ -535,10 +538,10 @@ export function fillSubcircuitElements() {
         }
 
         // add an SVG for each element
-        for (let i = 0; i < globalScope[el].length; i++) {
-            if (!globalScope[el][i].subcircuitMetadata.showInSubcircuit) {
+        for (let i = 0; i < (globalScope as any)[el].length; i++) {
+            if (!(globalScope as any)[el][i].subcircuitMetadata.showInSubcircuit) {
                 available = true
-                const element = globalScope[el][i];
+                const element = (globalScope as any)[el][i];
                 elementGroup.elements.push(element);
             }
         }

@@ -693,7 +693,7 @@ export default function startListeners() {
 
         if (ui.position.top > 10 && ui.position.left > sideBarWidth) {
             // Make a shallow copy of the element with the new coordinates
-            tempElement = globalScope[this.dataset.elementName][this.dataset.elementId];
+            tempElement = (globalScope as any)[this.dataset.elementName][this.dataset.elementId];
             // Changing the coordinate doesn't work yet, nodes get far from element
             tempElement.x = ui.position.left - sideBarWidth;
             tempElement.y = ui.position.top;
@@ -724,8 +724,8 @@ export default function startListeners() {
 }
 
 function resizeTabs() {
-    const $windowsize = $('body').width()
-    const $sideBarsize = $('.side').width()
+    const $windowsize = $('body').width() ?? 0
+    const $sideBarsize = $('.side').width() ?? 0
     const $maxwidth = $windowsize - $sideBarsize
     $('#tabsBar div').each(function (this: any, e: any) {
         $(this).css({ 'max-width': $maxwidth - 30 })
