@@ -1,0 +1,119 @@
+{
+  "subcircuits": {},
+  "devices": {
+    "dev0": {
+      "type": "Input",
+      "net": "clk",
+      "order": 0,
+      "bits": 1
+    },
+    "dev1": {
+      "type": "Input",
+      "net": "d",
+      "order": 1,
+      "bits": 1
+    },
+    "dev2": {
+      "type": "Output",
+      "net": "q",
+      "order": 2,
+      "bits": 1
+    },
+    "dev3": {
+      "label": "$procdff$2",
+      "type": "Dff",
+      "hide_label": true,
+      "source_positions": [
+        {
+          "name": "input.v",
+          "from": {
+            "line": 2,
+            "column": 5
+          },
+          "to": {
+            "line": 2,
+            "column": 34
+          }
+        }
+      ],
+      "bits": 1,
+      "polarity": {
+        "clock": true
+      }
+    }
+  },
+  "connectors": [
+    {
+      "to": {
+        "id": "dev3",
+        "port": "clk"
+      },
+      "from": {
+        "id": "dev0",
+        "port": "out"
+      },
+      "name": "clk",
+      "source_positions": [
+        {
+          "name": "input.v",
+          "from": {
+            "line": 1,
+            "column": 18
+          },
+          "to": {
+            "line": 1,
+            "column": 21
+          }
+        }
+      ]
+    },
+    {
+      "to": {
+        "id": "dev3",
+        "port": "in"
+      },
+      "from": {
+        "id": "dev1",
+        "port": "out"
+      },
+      "name": "d",
+      "source_positions": [
+        {
+          "name": "input.v",
+          "from": {
+            "line": 1,
+            "column": 29
+          },
+          "to": {
+            "line": 1,
+            "column": 30
+          }
+        }
+      ]
+    },
+    {
+      "to": {
+        "id": "dev2",
+        "port": "in"
+      },
+      "from": {
+        "id": "dev3",
+        "port": "out"
+      },
+      "name": "q",
+      "source_positions": [
+        {
+          "name": "input.v",
+          "from": {
+            "line": 1,
+            "column": 43
+          },
+          "to": {
+            "line": 1,
+            "column": 44
+          }
+        }
+      ]
+    }
+  ]
+}
