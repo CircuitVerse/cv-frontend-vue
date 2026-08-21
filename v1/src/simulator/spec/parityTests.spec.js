@@ -82,36 +82,36 @@ function assertDeviceTypesKnown(circuit) {
 describe('Synthesis Parity Tests', () => {
 
     beforeAll(async () => {
-        await runYosys([], {}, { print: noop, printErr: noop });
+        await runYosys(['-V'], {}, { print: noop, printErr: noop });
     }, 60000);
 
     test('AND gate', async () => {
         var circuit = await synthesize(CIRCUITS.andGate);
-        expect(circuit).toMatchObject(andGateRef);
+        expect(circuit).toEqual(andGateRef);
         assertDeviceTypesKnown(circuit);
     }, 30000);
 
     test('D flip-flop', async () => {
         var circuit = await synthesize(CIRCUITS.dFlipFlop);
-        expect(circuit).toMatchObject(dFlipFlopRef);
+        expect(circuit).toEqual(dFlipFlopRef);
         assertDeviceTypesKnown(circuit);
     }, 30000);
 
     test('full adder', async () => {
         var circuit = await synthesize(CIRCUITS.fullAdder);
-        expect(circuit).toMatchObject(fullAdderRef);
+        expect(circuit).toEqual(fullAdderRef);
         assertDeviceTypesKnown(circuit);
     }, 30000);
 
     test('4-bit counter', async () => {
         var circuit = await synthesize(CIRCUITS.counter4bit);
-        expect(circuit).toMatchObject(counter4bitRef);
+        expect(circuit).toEqual(counter4bitRef);
         assertDeviceTypesKnown(circuit);
     }, 30000);
 
     test('2:1 mux', async () => {
         var circuit = await synthesize(CIRCUITS.mux2to1);
-        expect(circuit).toMatchObject(mux2to1Ref);
+        expect(circuit).toEqual(mux2to1Ref);
         assertDeviceTypesKnown(circuit);
     }, 30000);
 });
