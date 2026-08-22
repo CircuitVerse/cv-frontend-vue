@@ -438,19 +438,13 @@ async function importSingleScope(
     return buildErrors;
   }
 
-  // const FORCE_AUTO_LAYOUT = true;
-
-  // if (layout === undefined || FORCE_AUTO_LAYOUT) {
   if (layout === undefined) {
     try {
       const { generateElkLayout } = await import("./autoLayout");
       layout = await generateElkLayout(components, nets, instanceMap);
     } catch (err) {
-      buildErrors.push(`Auto Layout Failed. Error: ${err}`);
+      return [`Auto layout failed: ${errorMessage(err)}`];
     }
-  }
-  if (buildErrors.length > 0) {
-    return buildErrors;
   }
 
   const layoutErrors = applyComponentLayout(instanceMap, layout);

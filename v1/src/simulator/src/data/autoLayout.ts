@@ -69,6 +69,7 @@ function addEdge(
   edgeInfo.set(id, info);
 }
 
+/** Returns component bounds after accounting for its rotation. */
 function getBounds(instance: LayoutInstance): Bounds {
   let left = instance.leftDimensionX;
   let right = instance.rightDimensionX;
@@ -88,6 +89,7 @@ function getBounds(instance: LayoutInstance): Bounds {
   return { left, right, up, down };
 }
 
+/** Chooses the ELK side nearest to a component-relative port. */
 function getPortDir(node: Node, bounds: Bounds): PortSide {
   if (node.x < -bounds.left) return "WEST";
   if (node.x > bounds.right) return "EAST";
@@ -183,6 +185,7 @@ function getElk(): ELK {
   return elk;
 }
 
+/** Converts canonical nets into direct ELK edges or synthetic fan-out junctions. */
 function buildElkEdges(
   nets: CanonicalNet[],
   instanceMap: Map<string, ComponentInstance>,
@@ -258,14 +261,7 @@ function buildElkEdges(
   return { edges, edgeInfo, junctions };
 }
 
-/** Groups each port reference by its component so node creation can look it up directly.
-* Eg:
-* CanoicalNet[]: ["and1.inputA", "and1.inputB", "led1.input"]
-* to:
-  {
-    and1: ["and1.inputA", "and1.inputB"];
-  }
-*/
+/** Groups each canonical port reference by its component ID. */
 function groupPortRefsByComponent(nets: CanonicalNet[]): Map<string, Set<string>> {
   const portRefsByComponent = new Map<string, Set<string>>();
 
@@ -325,13 +321,13 @@ function buildElkGraph(
   return { graph, edgeInfo, junctions };
 }
 
+/** Reuses or creates a canonical routing point without snapping it again. */
 function getOrAddNode(
   routing: IntermediateNet,
   nodeMap: Map<string, number>,
   point: ElkPoint,
 ): number {
-  const x = snap(point.x);
-  const y = snap(point.y);
+  const { x, y } = point;
   const key = `${x},${y}`;
 
   const existing = nodeMap.get(key);
@@ -357,7 +353,30 @@ function resolveEndpoint(
     throw new Error(`ELK did not position junction "${endpoint.id}"`);
   }
 
-  return getOrAddNode(routing, nodeMap, junctionPoint);
+  return getOrAddNode(routing, nodeMap, {
+    x: snap(junctionPoint.x),
+    y: snap(junctionPoint.y),
+  });
+}
+
+/** Returns how far an endpoint moves when its owner is snapped to the grid. */
+function getEndpointSnapDelta(
+  endpoint: EdgeEndpoint,
+  componentSnapDeltas: Map<string, ElkPoint>,
+  junctionPoints: Map<string, ElkPoint>,
+): ElkPoint {
+  if (endpoint.kind === "port") {
+    const componentId = endpoint.id.slice(0, endpoint.id.indexOf("."));
+    return componentSnapDeltas.get(componentId) ?? { x: 0, y: 0 };
+  }
+
+  const point = junctionPoints.get(endpoint.id);
+  if (!point) return { x: 0, y: 0 };
+
+  return {
+    x: snap(point.x) - point.x,
+    y: snap(point.y) - point.y,
+  };
 }
 
 function addConnection(
@@ -378,10 +397,17 @@ function addConnection(
   routing.connections.push([first, second]);
 }
 
+/** Treats nearly equal ELK coordinates as aligned. */
+function sameCoordinate(first: number, second: number): boolean {
+  return Math.abs(first - second) < 0.001;
+}
+
+/** Converts ELK routes into canonical orthogonal routing. */
 export function buildIntermediateNodes(
   edges: ElkExtendedEdge[],
   edgeInfo: Map<string, EdgeInfo>,
   junctionPoints: Map<string, ElkPoint>,
+  componentSnapDeltas: Map<string, ElkPoint> = new Map(),
 ): Record<string, IntermediateNet> {
   const result: Record<string, IntermediateNet> = {};
 
@@ -394,9 +420,65 @@ export function buildIntermediateNodes(
 
     const hasJunction = info.source.kind === "junction" || info.target.kind === "junction";
     const section = edge.sections?.[0];
-    const hasBends = (section?.bendPoints?.length ?? 0) > 0;
+    const sourceDelta = getEndpointSnapDelta(info.source, componentSnapDeltas, junctionPoints);
+    const targetDelta = getEndpointSnapDelta(info.target, componentSnapDeltas, junctionPoints);
+    const rawBendPoints = section?.bendPoints ?? [];
+    let bendPoints = rawBendPoints.map((point) => ({
+      x: snap(point.x),
+      y: snap(point.y),
+    }));
 
-    if (!hasJunction && !hasBends) continue;
+    // ELK may omit route data, so only adjust edges with a section.
+    if (section) {
+      if (bendPoints.length > 0) {
+        const first = rawBendPoints[0];
+        const last = rawBendPoints[rawBendPoints.length - 1];
+
+        if (sameCoordinate(section.startPoint.x, first.x)) {
+          bendPoints[0].x = section.startPoint.x + sourceDelta.x;
+        } else if (sameCoordinate(section.startPoint.y, first.y)) {
+          bendPoints[0].y = section.startPoint.y + sourceDelta.y;
+        }
+
+        if (sameCoordinate(section.endPoint.x, last.x)) {
+          bendPoints[bendPoints.length - 1].x = section.endPoint.x + targetDelta.x;
+        } else if (sameCoordinate(section.endPoint.y, last.y)) {
+          bendPoints[bendPoints.length - 1].y = section.endPoint.y + targetDelta.y;
+        }
+      } else {
+        // A straight ELK edge can become diagonal when its endpoints snap differently.
+        const sourcePoint = {
+          x: section.startPoint.x + sourceDelta.x,
+          y: section.startPoint.y + sourceDelta.y,
+        };
+        const targetPoint = {
+          x: section.endPoint.x + targetDelta.x,
+          y: section.endPoint.y + targetDelta.y,
+        };
+
+        // Add bends only when the snapped endpoints no longer share an axis.
+        if (
+          !sameCoordinate(sourcePoint.x, targetPoint.x) &&
+          !sameCoordinate(sourcePoint.y, targetPoint.y)
+        ) {
+          if (sameCoordinate(section.startPoint.y, section.endPoint.y)) {
+            const x = snap((sourcePoint.x + targetPoint.x) / 2);
+            bendPoints = [
+              { x, y: sourcePoint.y },
+              { x, y: targetPoint.y },
+            ];
+          } else if (sameCoordinate(section.startPoint.x, section.endPoint.x)) {
+            const y = snap((sourcePoint.y + targetPoint.y) / 2);
+            bendPoints = [
+              { x: sourcePoint.x, y },
+              { x: targetPoint.x, y },
+            ];
+          }
+        }
+      }
+    }
+
+    if (!hasJunction && bendPoints.length === 0) continue;
 
     let state = routingStateByNet.get(info.netId);
     if (!state) {
@@ -431,7 +513,7 @@ export function buildIntermediateNodes(
 
     const path: (string | number)[] = [
       source,
-      ...(section.bendPoints ?? []).map((point) => getOrAddNode(routing, nodeMap, point)),
+      ...bendPoints.map((point) => getOrAddNode(routing, nodeMap, point)),
       target,
     ];
 
@@ -478,6 +560,7 @@ function defaultSubcircuitSymbol(instanceMap: Map<string, ComponentInstance>): S
   };
 }
 
+/** Generates component positions and canonical routing for a layoutless scope. */
 export async function generateElkLayout(
   components: CanonicalComponent[],
   nets: CanonicalNet[],
@@ -492,6 +575,7 @@ export async function generateElkLayout(
 
   const junctionIds = new Set(junctions.map((junction) => junction.id));
   const junctionPoints = new Map<string, ElkPoint>();
+  const componentSnapDeltas = new Map<string, ElkPoint>();
 
   for (const child of laidOut.children ?? []) {
     if (junctionIds.has(child.id)) {
@@ -525,15 +609,28 @@ export async function generateElkLayout(
     }
 
     const bounds = getBounds(instance);
+    const x = child.x + bounds.left;
+    const y = child.y + bounds.up;
+    const X = snap(x);
+    const Y = snap(y);
 
     layout[child.id] = {
-      x: snap(child.x + bounds.left),
-      y: snap(child.y + bounds.up),
+      x: X,
+      y: Y,
       labelDirection: instance.labelDirection,
     };
+    componentSnapDeltas.set(child.id, {
+      x: X - x,
+      y: Y - y,
+    });
   }
 
-  const intermediateNodes = buildIntermediateNodes(laidOut.edges ?? [], edgeInfo, junctionPoints);
+  const intermediateNodes = buildIntermediateNodes(
+    laidOut.edges ?? [],
+    edgeInfo,
+    junctionPoints,
+    componentSnapDeltas,
+  );
   if (Object.keys(intermediateNodes).length > 0) {
     layout.intermediateNodes = intermediateNodes;
   }
