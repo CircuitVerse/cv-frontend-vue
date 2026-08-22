@@ -24,6 +24,7 @@ type LayoutInstance = ComponentInstance & {
   rightDimensionX: number;
   upDimensionY: number;
   downDimensionY: number;
+  nodeList: Node[];
 };
 
 type Bounds = {
@@ -84,6 +85,14 @@ function getBounds(instance: LayoutInstance): Bounds {
     } else if (instance.direction === "UP") {
       [left, right, up, down] = [down, up, right, left];
     }
+  }
+
+  // Include ports that extend beyond the component body.
+  for (const node of instance.nodeList) {
+    left = Math.max(left, -node.x);
+    right = Math.max(right, node.x);
+    up = Math.max(up, -node.y);
+    down = Math.max(down, node.y);
   }
 
   return { left, right, up, down };
