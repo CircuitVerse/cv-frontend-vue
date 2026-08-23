@@ -181,10 +181,13 @@ BooleanMinimize.prototype.solve = function () {
           x.add(p);
           let append = true;
 
+          // Keep only the candidate covers that are not supersets of another.
+          // Two unrelated covers are both worth keeping, so `x` is dropped
+          // only when an existing cover is contained in it.
           for (let j = tempSets.length - 1; j >= 0; --j) {
             if (isSubset(x, tempSets[j])) {
               tempSets.splice(j, 1);
-            } else {
+            } else if (isSubset(tempSets[j], x)) {
               append = false;
             }
           }
