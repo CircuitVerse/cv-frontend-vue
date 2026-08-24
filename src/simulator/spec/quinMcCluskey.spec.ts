@@ -5,9 +5,7 @@ const bin = (n: number, width: number) => n.toString(2).padStart(width, "0");
 
 /** Whether a sum of products covers the given input assignment. */
 function evaluate(implicants: string[], input: string): boolean {
-  return implicants.some((term) =>
-    [...term].every((ch, i) => ch === "-" || ch === input[i]),
-  );
+  return implicants.some((term) => [...term].every((ch, i) => ch === "-" || ch === input[i]));
 }
 
 function minimize(numVars: number, minTerms: number[], dontCares: number[] = []): string[] {
