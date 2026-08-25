@@ -89,6 +89,9 @@ describe('data dir working', () => {
         expect($('#hexInput').val()).toBe('0x19');
         expect($('#binaryInput').val()).toBe('0b11001');
         expect($('#octalInput').val()).toBe('031');
+        // setBaseValues writes the field back through dec2bcd, which drops the
+        // leading nibble's zeros, so the typed 00100101 comes back as 100101.
+        expect($('#bcdInput').val()).toBe('100101');
     });
 
     test('bcd input rejects a nibble that is not a decimal digit', () => {
