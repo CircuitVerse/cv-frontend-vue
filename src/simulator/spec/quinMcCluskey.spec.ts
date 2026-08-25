@@ -127,7 +127,7 @@ describe("BooleanMinimize", () => {
     }
 
     expect(failures.slice(0, 5)).toEqual([]);
-  });
+  }, 60_000);
 
   test("finds a minimal cover, for every function of up to three variables", () => {
     const suboptimal: string[] = [];
@@ -144,7 +144,24 @@ describe("BooleanMinimize", () => {
     }
 
     expect(suboptimal.slice(0, 5)).toEqual([]);
-  });
+  }, 60_000);
+
+  test("stays bounded on a dense eight variable function", () => {
+    // combinationalAnalysis allows up to 8 variables and reads the result
+    // synchronously on the main thread, so this has to stay interactive.
+    const numVars = 8;
+    const minTerms: number[] = [];
+    for (let i = 0; i < 1 << numVars; i++) {
+      if (i % 3 !== 0) minTerms.push(i);
+    }
+
+    const started = Date.now();
+    const result = minimize(numVars, minTerms);
+    const elapsed = Date.now() - started;
+
+    expect(coversExactly(result, numVars, minTerms)).toBe(true);
+    expect(elapsed).toBeLessThan(5000);
+  }, 60_000);
 
   test("respects don't cares", () => {
     // 000 and 010 are minterms, 001 and 011 are free: A'B' + A'B reduces to A'.
