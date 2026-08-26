@@ -358,7 +358,7 @@ export function minimizePanel(panelSelector) {
 }
 
 export function setupPanels() {
-    dragging('#dragQPanel', '.quick-btn')
+    dragging('#dragQPanel', '.quick-btn', 'quickButtonsPanel')
 
     setupPanelListeners('.elementPanel')
     setupPanelListeners('.layoutElementPanel')
@@ -385,7 +385,7 @@ export function setupPanelListeners(panelSelector) {
     var maximizeSelector = `${panelSelector} .maximize`
     var bodySelector = `${panelSelector} > .panel-body`
 
-    dragging(headerSelector, panelSelector)
+    dragging(headerSelector, panelSelector, panelSelector.replace(/^[.#]/, ''))
     // Current Panel on Top
     var minimized = false
     $(headerSelector)

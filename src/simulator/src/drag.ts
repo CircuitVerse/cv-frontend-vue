@@ -1,10 +1,20 @@
 import interact from "interactjs";
+import { ref } from "vue";
 
 interface Position {
   x: number;
   y: number;
 }
-const dragHandlers = new WeakMap<HTMLElement, () => void>();
+
+export const activePanelId = ref<string | null>(null);
+
+export function bringToFront(panelId: string): void {
+  activePanelId.value = panelId;
+}
+
+export function zIndexFor(panelId: string): number | undefined {
+  return activePanelId.value === panelId ? 99 : undefined;
+}
 
 function updatePosition(
   element: HTMLElement,
@@ -43,12 +53,22 @@ function disableSelection(element: HTMLElement): void {
  * Make an element draggable within a specified container.
  * @param {string} targetSelector - CSS selector for the element that triggers the drag event.
  * @param {string} dragSelector - CSS selector for the element to be dragged.
+ * @param {string} panelId - Identifier used to track which panel is active/on top.
  */
-export function dragging(targetSelector: string, dragSelector: string): void {
+export function dragging(
+  targetSelector: string,
+  dragSelector: string,
+  panelId: string,
+): void {
   const targetEl = document.querySelector(targetSelector) as HTMLElement | null;
   const DragEl = document.querySelector(dragSelector) as HTMLElement | null;
 
   if (!targetEl || !DragEl) return;
+
+  // Bring this panel to front (via reactive state) when clicked
+  DragEl.addEventListener("mousedown", () => {
+    bringToFront(panelId);
+  });
 
   // WeakMap to store the position of each dragged element
   const positions = new WeakMap<HTMLElement, Position>();
@@ -78,21 +98,6 @@ export function dragging(targetSelector: string, dragSelector: string): void {
     ],
   });
 
-  const dragMouseDownHandler = () => {
-    document.querySelectorAll(".draggable-panel").forEach((panel) => {
-      if (panel !== DragEl) {
-        (panel as HTMLElement).style.zIndex = "99";
-      }
-    });
-    DragEl.style.zIndex = "99";
-  };
-
-  const existingHandler = dragHandlers.get(DragEl);
-  if (existingHandler) {
-    DragEl.removeEventListener("mousedown", existingHandler);
-  }
-  dragHandlers.set(DragEl, dragMouseDownHandler);
-  DragEl.addEventListener("mousedown", dragMouseDownHandler);
   let panelElements = document.querySelectorAll(
     ".elementPanel, .layoutElementPanel, #moduleProperty, #layoutDialog, #verilogEditorPanel, .timing-diagram-panel, .testbench-manual-panel, .quick-btn",
   );
