@@ -55,11 +55,7 @@ function disableSelection(element: HTMLElement): void {
  * @param {string} dragSelector - CSS selector for the element to be dragged.
  * @param {string} panelId - Identifier used to track which panel is active/on top.
  */
-export function dragging(
-  targetSelector: string,
-  dragSelector: string,
-  panelId: string,
-): void {
+export function dragging(targetSelector: string, dragSelector: string, panelId: string): void {
   const targetEl = document.querySelector(targetSelector) as HTMLElement | null;
   const DragEl = document.querySelector(dragSelector) as HTMLElement | null;
 
@@ -81,12 +77,7 @@ export function dragging(
     listeners: {
       // Update the element's position when the move event is triggered
       move(event) {
-        updatePosition(
-          event.target as HTMLElement,
-          event.dx,
-          event.dy,
-          positions,
-        );
+        updatePosition(event.target as HTMLElement, event.dx, event.dy, positions);
       },
     },
     // Set up modifiers to apply constraints to the draggable element
