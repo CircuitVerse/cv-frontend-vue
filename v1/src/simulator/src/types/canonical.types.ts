@@ -33,18 +33,23 @@ export interface CanonicalComponent {
   defaultState?: number; // Restores stateful components; absent for stateless components.
 }
 
-/** Canonical connectivity and width data for one net. */
+/** Canonical connectivity and width data; visual-only nets may have fewer than two ports. */
 export interface CanonicalNet {
   id: string;
   bitWidth: number;
   connections: string[];
 }
 
+/** One endpoint in a visual routing graph. */
+export type RoutingEndpoint = number | string;
+
+/** One undirected edge in a visual routing graph. */
+export type RoutingConnection = [RoutingEndpoint, RoutingEndpoint];
+
 /** Visual routing data for one net with intermediate nodes. */
 export interface IntermediateNet {
   nodes: Array<{ x: number; y: number }>;
-  edges: Array<[number, number]>;
-  portConnections: Array<{ portRef: string; nodeId: number }>;
+  connections: RoutingConnection[];
 }
 
 /** Visual size and title position of a scope used as a subcircuit. */
@@ -61,16 +66,37 @@ export interface CanonicalComponentPosition {
   x: number;
   y: number;
   labelDirection: Direction;
+  portPositions?: Record<string, { x: number; y: number }>;
+  subcircuitMetadata?: {
+    showInSubcircuit: boolean;
+    showLabelInSubcircuit: boolean;
+    labelDirection: Direction;
+    x: number;
+    y: number;
+  };
+}
+
+/** Visual-only simulator annotation excluded from the structural hash. */
+export interface CanonicalAnnotation {
+  type: string;
+  label?: string;
+  x: number;
+  y: number;
+  labelDirection: Direction;
+  propagationDelay: number;
+  constructorParamaters: CanonicalJsonValue[];
 }
 
 /** Visual component and wire layout excluded from the structural hash. */
 export interface CanonicalLayout {
   [componentId: string]:
     | CanonicalComponentPosition
+    | CanonicalAnnotation[]
     | Record<string, IntermediateNet>
     | SubcircuitSymbol
     | undefined;
   intermediateNodes?: Record<string, IntermediateNet>;
+  annotations?: CanonicalAnnotation[];
   subcircuitSymbol: SubcircuitSymbol;
 }
 
@@ -86,8 +112,8 @@ export interface CanonicalScope {
     nets: CanonicalNet[];
   };
   layout: CanonicalLayout;
-  visual: {
-    canvas: {
+  visual?: {
+    canvas?: {
       scale: number;
       ox: number;
       oy: number;
@@ -105,5 +131,12 @@ export interface CanonicalScope {
 export interface CanonicalProject {
   formatVersion: "v1";
   canonicalHash: string;
+  projectMetadata: {
+    name: string;
+    timePeriod: number;
+    clockEnabled: boolean;
+    focussedCircuit: string;
+    orderedTabs: string[];
+  };
   circuits: Record<string, CanonicalScope>;
 }
