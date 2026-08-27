@@ -51,11 +51,11 @@ function disableSelection(element: HTMLElement): void {
 
 /**
  * Make an element draggable within a specified container.
- * @param {string} targetSelector - CSS selector for the element that triggers the drag event.
  * @param {string} dragSelector - CSS selector for the element to be dragged.
+ * @param {string} targetSelector - CSS selector for the element that triggers the drag event.
  * @param {string} panelId - Identifier used to track which panel is active/on top.
  */
-export function dragging(targetSelector: string, dragSelector: string, panelId: string): void {
+export function dragging(dragSelector: string, targetSelector: string, panelId: string): void {
   const targetEl = document.querySelector(targetSelector) as HTMLElement | null;
   const DragEl = document.querySelector(dragSelector) as HTMLElement | null;
 
