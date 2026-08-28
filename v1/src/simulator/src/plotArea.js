@@ -153,6 +153,18 @@ const plotArea = {
             return ''
         }
 
+        var escapeCSV = (field) => {
+            if (field === undefined || field === null) return ''
+            var str = String(field)
+            if (/^[=+\-@]/.test(str)) {
+                str = "'" + str
+            }
+            if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
+                str = '"' + str.replace(/"/g, '""') + '"'
+            }
+            return str
+        }
+
         var flags = globalScope.Flag
         var timeSet = new Set()
 
@@ -166,9 +178,9 @@ const plotArea = {
         var times = Array.from(timeSet).sort((a, b) => a - b)
         var csvRows = []
 
-        var header = ['Time']
+        var header = [escapeCSV('Time')]
         for (var i = 0; i < flags.length; i++) {
-            header.push(flags[i].identifier)
+            header.push(escapeCSV(flags[i].identifier))
         }
         csvRows.push(header.join(','))
 
@@ -177,7 +189,7 @@ const plotArea = {
 
         for (var t = 0; t < times.length; t++) {
             var currentTime = times[t]
-            var row = [currentTime]
+            var row = [escapeCSV(currentTime)]
 
             for (var i = 0; i < flags.length; i++) {
                 var plotValues = flags[i].plotValues
@@ -188,7 +200,8 @@ const plotArea = {
                     flagIndices[i]++
                 }
 
-                row.push(lastValues[i] !== undefined ? lastValues[i] : '')
+                var val = lastValues[i] !== undefined ? lastValues[i] : ''
+                row.push(escapeCSV(val))
             }
 
             csvRows.push(row.join(','))
