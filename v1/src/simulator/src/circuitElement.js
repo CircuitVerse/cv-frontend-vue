@@ -23,21 +23,14 @@ import { generateNodeName } from './verilogHelpers'
  * @param {string} dir - The direction of circuit element
  * @param {number} bitWidth - the number of bits per node.
  * @category circuitElement
+ * @property {string | undefined} tooltipText
+ * @property {string | undefined} helplink
+ * @property {string | undefined} objectType
+ * @property {string | undefined} verilogType
+ * @property {boolean | Function | undefined} changeInputSize
+ * @property {boolean | undefined} alwaysResolve
  */
 export default class CircuitElement {
-    /** @type {string | undefined} */
-    tooltipText;
-    /** @type {string | undefined} */
-    helplink;
-    /** @type {string | undefined} */
-    objectType;
-    /** @type {string | undefined} */
-    verilogType;
-    /** @type {boolean | Function | undefined} */
-    changeInputSize;
-    /** @type {boolean | undefined} */
-    alwaysResolve;
-
     constructor(x, y, scope, dir, bitWidth) {
         // Data member initializations
         this.x = x

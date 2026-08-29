@@ -146,10 +146,9 @@ var uniqueIdCounter = 10
  * @param {?number} bitWidth - the bits of node in input and output nodes
  * @param {string=} label - label for a node
  * @category node
+ * @property {string | undefined} verilogLabel
  */
 export default class Node {
-    /** @type {string | undefined} */
-    verilogLabel;
 
     /**
      * @param {number} x
