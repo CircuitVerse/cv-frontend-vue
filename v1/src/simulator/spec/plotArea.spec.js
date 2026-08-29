@@ -87,9 +87,11 @@ describe('plotArea generateCSV testing', () => {
 
     test('escaping formula injection', () => {
         global.globalScope.Flag = [
-            { identifier: 'SIG', plotValues: [[0, '=CMD']] },
+            { identifier: 'SIG1', plotValues: [[0, '=CMD']] },
+            { identifier: 'SIG2', plotValues: [[0, '  +B1']] },
+            { identifier: 'SIG3', plotValues: [[0, '\t-C1']] },
         ];
         const rows = plotArea.generateCSV().split('\n');
-        expect(rows[1]).toBe("0,'=CMD");
+        expect(rows[1]).toBe("0,'=CMD,'  +B1,'\t-C1");
     });
 });

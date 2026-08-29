@@ -156,7 +156,7 @@ const plotArea = {
         var escapeCSV = (field) => {
             if (field === undefined || field === null) return ''
             var str = String(field)
-            if (/^[=+\-@]/.test(str)) {
+            if (/^\s*[=+\-@]/.test(str)) {
                 str = "'" + str
             }
             if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
