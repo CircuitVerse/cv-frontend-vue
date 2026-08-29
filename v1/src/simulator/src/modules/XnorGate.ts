@@ -6,6 +6,8 @@ import { gateGenerateVerilog } from "../utils";
 import { changeInputSize } from "../modules";
 import { colors } from "../themer/themer";
 
+declare var globalScope: any;
+
 /**
  * @class
  * XnorGate
@@ -91,7 +93,7 @@ export default class XnorGate extends CircuitElement {
     for (let i = 1; i < this.inputSize; i++) result ^= this.inp[i].value || 0;
     result = ((~result >>> 0) << (32 - this.bitWidth)) >>> (32 - this.bitWidth);
     this.output1.value = result;
-    simulationArea.simulationQueue.add(this.output1);
+    simulationArea.simulationQueue.add(this.output1, 0);
   }
 
   /**

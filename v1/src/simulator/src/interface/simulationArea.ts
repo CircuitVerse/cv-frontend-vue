@@ -1,5 +1,8 @@
 import { EventQueue } from "../eventQueue";
+import ContentionPendingData from "../contention";
+
 export interface SimulationArea {
+  contentionPending: ContentionPendingData;
   canvas: HTMLCanvasElement;
   context: CanvasRenderingContext2D | null;
   selected: boolean;

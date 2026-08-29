@@ -148,6 +148,17 @@ var uniqueIdCounter = 10
  * @category node
  */
 export default class Node {
+    /** @type {string | undefined} */
+    verilogLabel;
+
+    /**
+     * @param {number} x
+     * @param {number} y
+     * @param {number} type
+     * @param {any} parent
+     * @param {number|undefined} bitWidth
+     * @param {string} label
+     */
     constructor(x, y, type, parent, bitWidth = undefined, label = '') {
         // Should never raise, but just in case
         if (isNaN(x) || isNaN(y)) {
@@ -209,10 +220,11 @@ export default class Node {
 
         this.parent.scope.allNodes.push(this)
 
+        /** @type {{ inQueue: boolean, time: number, index: number }} */
         this.queueProperties = {
             inQueue: false,
-            time: undefined,
-            index: undefined,
+            time: 0,
+            index: 0,
         }
     }
 

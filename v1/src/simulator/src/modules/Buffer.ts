@@ -4,6 +4,8 @@ import { simulationArea } from "../simulationArea";
 import { correctWidth, lineTo, moveTo } from "../canvasApi";
 import { colors } from "../themer/themer";
 
+declare var globalScope: any;
+
 /**
  * @class
  * Buffer
@@ -93,7 +95,7 @@ export default class Buffer extends CircuitElement {
     }
 
     this.output1.value = this.state;
-    simulationArea.simulationQueue.add(this.output1);
+    simulationArea.simulationQueue.add(this.output1, 0);
   }
 
   /**

@@ -4,6 +4,8 @@ import { simulationArea } from "../simulationArea";
 import { correctWidth, lineTo, moveTo, drawCircle2 } from "../canvasApi";
 import { colors } from "../themer/themer";
 
+declare var globalScope: any;
+
 /**
  * @class
  * ControlledInverter
@@ -76,13 +78,13 @@ export default class ControlledInverter extends CircuitElement {
     if (this.state.value === 1) {
       this.output1.value =
         ((~this.inp1.value >>> 0) << (32 - this.bitWidth)) >>> (32 - this.bitWidth);
-      simulationArea.simulationQueue.add(this.output1);
+      simulationArea.simulationQueue.add(this.output1, 0);
     } else if (
       this.output1.value !== undefined &&
       !simulationArea.contentionPending.has(this.output1)
     ) {
       this.output1.value = undefined;
-      simulationArea.simulationQueue.add(this.output1);
+      simulationArea.simulationQueue.add(this.output1, 0);
     }
     simulationArea.contentionPending.removeAllContentionsForNode(this.output1);
   }

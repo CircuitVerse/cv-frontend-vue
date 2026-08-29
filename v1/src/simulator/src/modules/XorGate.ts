@@ -6,6 +6,8 @@ import { changeInputSize } from "../modules";
 import { gateGenerateVerilog } from "../utils";
 import { colors } from "../themer/themer";
 
+declare var globalScope: any;
+
 /**
  * @class
  * XorGate
@@ -91,7 +93,7 @@ export default class XorGate extends CircuitElement {
     for (let i = 1; i < this.inputSize; i++) result ^= this.inp[i].value || 0;
 
     this.output1.value = result;
-    simulationArea.simulationQueue.add(this.output1);
+    simulationArea.simulationQueue.add(this.output1, 0);
   }
 
   /**

@@ -25,6 +25,19 @@ import { generateNodeName } from './verilogHelpers'
  * @category circuitElement
  */
 export default class CircuitElement {
+    /** @type {string | undefined} */
+    tooltipText;
+    /** @type {string | undefined} */
+    helplink;
+    /** @type {string | undefined} */
+    objectType;
+    /** @type {string | undefined} */
+    verilogType;
+    /** @type {boolean | Function | undefined} */
+    changeInputSize;
+    /** @type {boolean | undefined} */
+    alwaysResolve;
+
     constructor(x, y, scope, dir, bitWidth) {
         // Data member initializations
         this.x = x

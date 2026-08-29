@@ -3,7 +3,7 @@
  * @category eventQueue
  */
 
-interface QueueObject {
+export interface QueueObject {
   queueProperties: {
     inQueue: boolean;
     time: number;
