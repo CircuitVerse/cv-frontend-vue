@@ -17,7 +17,6 @@ import type {
   IntermediateNet,
   CanonicalJsonValue,
   CanonicalNet,
-  CanonicalProject,
   ComponentInstance,
   RoutingEndpoint,
 } from "../types/canonical.types";
@@ -86,7 +85,11 @@ function buildComponents(
         continue;
       }
     } else {
-      const Constructor = registry[type]!;
+      const Constructor = registry[type];
+      if (typeof Constructor !== "function") {
+        errors.push(`"${id}": unknown component type "${type}"`);
+        continue;
+      }
       const constructorArgs = getConstructorParams(properties);
 
       try {
@@ -157,7 +160,11 @@ function buildAnnotations(scope: Scope, annotations?: CanonicalAnnotation[]): st
 
   for (let i = 0; i < annotations.length; i++) {
     const annotation = annotations[i];
-    const Constructor = registry[annotation.type]!;
+    const Constructor = registry[annotation.type];
+    if (typeof Constructor !== "function") {
+      errors.push(`Annotation at index ${i}: unknown annotation type "${annotation.type}"`);
+      continue;
+    }
 
     try {
       const instance = new Constructor(
@@ -487,7 +494,7 @@ export async function importCanonical(project: unknown): Promise<ImportResult> {
     return results;
   }
 
-  const json = project as CanonicalProject;
+  const json = validation.project;
 
   let topologicalOrder: number[];
   try {

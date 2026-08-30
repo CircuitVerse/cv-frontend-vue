@@ -3,10 +3,12 @@ import type { ErrorObject } from "ajv";
 import canonicalSchema from "../schemas/canonical.schema.json";
 import type { CanonicalNet, CanonicalProject } from "../types/canonical.types";
 
-export type ValidationResult = { valid: true; errors: [] } | { valid: false; errors: string[] };
+export type ValidationResult =
+  | { valid: true; project: CanonicalProject; errors: [] }
+  | { valid: false; errors: string[] };
 
 const ajv = new Ajv2020({ allErrors: true });
-const validateSchema = ajv.compile(canonicalSchema);
+const validateSchema = ajv.compile<CanonicalProject>(canonicalSchema);
 
 function formatSchemaError(error: ErrorObject): string {
   const path = error.instancePath;
@@ -162,6 +164,8 @@ export function validateCanonicalJson(json: unknown): ValidationResult {
     };
   }
 
-  const errors = validateProjectReferences(json as CanonicalProject);
-  return errors.length === 0 ? { valid: true, errors: [] } : { valid: false, errors };
+  const errors = validateProjectReferences(json);
+  return errors.length === 0
+    ? { valid: true, project: json, errors: [] }
+    : { valid: false, errors };
 }
