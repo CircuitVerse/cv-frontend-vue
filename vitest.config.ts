@@ -9,6 +9,7 @@ import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 const synthesisSpecs = [
   "v1/src/simulator/spec/synthesis.spec.js",
   "v1/src/simulator/spec/clientSynthesis.spec.js",
+  "v1/src/simulator/spec/parityTests.spec.js",
 ];
 
 const createProjectConfig = (version: string) => ({

@@ -1,0 +1,1395 @@
+{
+  "name": "LIGHTS",
+  "timePeriod": 500,
+  "clockEnabled": true,
+  "projectId": "LVVseAOgyH3TjIeGlFYE",
+  "focussedCircuit": 75705889770,
+  "orderedTabs": ["6684425897", "42876822287", "83954443796", "51329692190", "75705889770"],
+  "scopes": [
+    {
+      "layout": { "width": 100, "height": 280, "title_x": 50, "title_y": 13, "titleEnabled": true },
+      "verilogMetadata": {
+        "isVerilogCircuit": false,
+        "isMainCircuit": false,
+        "code": "// Write Some Verilog Code Here!",
+        "subCircuitScopeIds": []
+      },
+      "allNodes": [
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [7] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [8] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [56] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [53] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [50] },
+        { "x": 10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [6, 56] },
+        { "x": 640, "y": 240, "type": 2, "bitWidth": 1, "label": "", "connections": [5] },
+        { "x": 540, "y": 210, "type": 2, "bitWidth": 1, "label": "", "connections": [0, 53] },
+        { "x": 540, "y": 250, "type": 2, "bitWidth": 1, "label": "", "connections": [1, 50] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [12] },
+        { "x": 10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [14] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [13] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [9] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [11] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [10] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [17] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [18] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [15] },
+        { "x": 10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [16] },
+        { "x": -20, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [22] },
+        { "x": -20, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [23] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [24] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [19] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [20] },
+        { "x": 10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [21] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [34] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [36] },
+        { "x": 30, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [37] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [40] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [45] },
+        { "x": 30, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [39] },
+        { "x": -20, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [46] },
+        { "x": -20, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [42] },
+        { "x": 30, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [44] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [25] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [36] },
+        { "x": 900, "y": 260, "type": 2, "bitWidth": 1, "label": "", "connections": [26, 35] },
+        { "x": 10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [27] },
+        { "x": 10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [39] },
+        { "x": 980, "y": 330, "type": 2, "bitWidth": 1, "label": "", "connections": [30, 38] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [28] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [45] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [32] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [46] },
+        { "x": 10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [33] },
+        { "x": 900, "y": 350, "type": 2, "bitWidth": 1, "label": "", "connections": [29, 41] },
+        { "x": 900, "y": 410, "type": 2, "bitWidth": 1, "label": "", "connections": [31, 43] },
+        { "x": 40, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [51] },
+        { "x": 40, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [57] },
+        { "x": 40, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [54] },
+        { "x": 400, "y": 250, "type": 2, "bitWidth": 1, "label": "", "connections": [4, 8, 57] },
+        { "x": 370, "y": 290, "type": 2, "bitWidth": 1, "label": "", "connections": [47, 52] },
+        { "x": 480, "y": 290, "type": 2, "bitWidth": 1, "label": "", "connections": [51, 53] },
+        { "x": 480, "y": 210, "type": 2, "bitWidth": 1, "label": "", "connections": [3, 7, 52] },
+        { "x": 740, "y": 170, "type": 2, "bitWidth": 1, "label": "", "connections": [49, 55] },
+        { "x": 610, "y": 170, "type": 2, "bitWidth": 1, "label": "", "connections": [54, 56] },
+        { "x": 610, "y": 230, "type": 2, "bitWidth": 1, "label": "", "connections": [2, 5, 55] },
+        { "x": 400, "y": 140, "type": 2, "bitWidth": 1, "label": "", "connections": [48, 50] }
+      ],
+      "id": 6684425897,
+      "name": "Main",
+      "Input": [
+        {
+          "x": 360,
+          "y": 210,
+          "objectType": "Input",
+          "label": "A",
+          "direction": "RIGHT",
+          "labelDirection": "UP",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 3 },
+            "values": { "state": 1 },
+            "constructorParamaters": ["RIGHT", 1, { "x": 0, "y": 20, "id": "10Ak1cvpaql0lOBUGcEA" }]
+          }
+        },
+        {
+          "x": 360,
+          "y": 250,
+          "objectType": "Input",
+          "label": "B",
+          "direction": "RIGHT",
+          "labelDirection": "DOWN",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 4 },
+            "values": { "state": 1 },
+            "constructorParamaters": ["RIGHT", 1, { "x": 0, "y": 40, "id": "n7FP1TUdxQM4k1GEyo2t" }]
+          }
+        },
+        {
+          "x": 390,
+          "y": 320,
+          "objectType": "Input",
+          "label": "A",
+          "direction": "RIGHT",
+          "labelDirection": "UP",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 9 },
+            "values": { "state": 1 },
+            "constructorParamaters": ["RIGHT", 1, { "x": 0, "y": 60, "id": "l52yR1a70kqg2IhTKfEo" }]
+          }
+        },
+        {
+          "x": 390,
+          "y": 340,
+          "objectType": "Input",
+          "label": "B",
+          "direction": "RIGHT",
+          "labelDirection": "DOWN",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 11 },
+            "values": { "state": 0 },
+            "constructorParamaters": ["RIGHT", 1, { "x": 0, "y": 80, "id": "BhTJ0vj0M1d0TYmj5oBI" }]
+          }
+        },
+        {
+          "x": 410,
+          "y": 400,
+          "objectType": "Input",
+          "label": "A",
+          "direction": "RIGHT",
+          "labelDirection": "UP",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 17 },
+            "values": { "state": 1 },
+            "constructorParamaters": [
+              "RIGHT",
+              1,
+              { "x": 0, "y": 100, "id": "Xs1Nsof1vRA9PMOIFB5M" }
+            ]
+          }
+        },
+        {
+          "x": 420,
+          "y": 460,
+          "objectType": "Input",
+          "label": "A",
+          "direction": "RIGHT",
+          "labelDirection": "UP",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 22 },
+            "values": { "state": 0 },
+            "constructorParamaters": [
+              "RIGHT",
+              1,
+              { "x": 0, "y": 120, "id": "7GiTpdWiUPceK2cwoatp" }
+            ]
+          }
+        },
+        {
+          "x": 420,
+          "y": 480,
+          "objectType": "Input",
+          "label": "B",
+          "direction": "RIGHT",
+          "labelDirection": "DOWN",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 23 },
+            "values": { "state": 1 },
+            "constructorParamaters": [
+              "RIGHT",
+              1,
+              { "x": 0, "y": 140, "id": "X8TqUXRfrE4NrdvfE9PU" }
+            ]
+          }
+        },
+        {
+          "x": 830,
+          "y": 220,
+          "objectType": "Input",
+          "label": "A",
+          "direction": "RIGHT",
+          "labelDirection": "UP",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 34 },
+            "values": { "state": 0 },
+            "constructorParamaters": [
+              "RIGHT",
+              1,
+              { "x": 0, "y": 160, "id": "EipgapNdLb6LNfllBHhx" }
+            ]
+          }
+        },
+        {
+          "x": 830,
+          "y": 260,
+          "objectType": "Input",
+          "label": "B",
+          "direction": "RIGHT",
+          "labelDirection": "DOWN",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 35 },
+            "values": { "state": 1 },
+            "constructorParamaters": [
+              "RIGHT",
+              1,
+              { "x": 0, "y": 180, "id": "EHdU4xaExQdVobHHJrxU" }
+            ]
+          }
+        },
+        {
+          "x": 850,
+          "y": 320,
+          "objectType": "Input",
+          "label": "A",
+          "direction": "RIGHT",
+          "labelDirection": "UP",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 40 },
+            "values": { "state": 1 },
+            "constructorParamaters": [
+              "RIGHT",
+              1,
+              { "x": 0, "y": 200, "id": "cm20Cs54xDck5EO4joAh" }
+            ]
+          }
+        },
+        {
+          "x": 850,
+          "y": 350,
+          "objectType": "Input",
+          "label": "B",
+          "direction": "RIGHT",
+          "labelDirection": "DOWN",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 41 },
+            "values": { "state": 1 },
+            "constructorParamaters": [
+              "RIGHT",
+              1,
+              { "x": 0, "y": 220, "id": "dyeahl0iw0x2qfz0Oha3" }
+            ]
+          }
+        },
+        {
+          "x": 850,
+          "y": 440,
+          "objectType": "Input",
+          "label": "B",
+          "direction": "RIGHT",
+          "labelDirection": "DOWN",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 42 },
+            "values": { "state": 1 },
+            "constructorParamaters": [
+              "RIGHT",
+              1,
+              { "x": 0, "y": 240, "id": "edPWyvbjrIOprDpQsSWW" }
+            ]
+          }
+        },
+        {
+          "x": 850,
+          "y": 410,
+          "objectType": "Input",
+          "label": "A",
+          "direction": "RIGHT",
+          "labelDirection": "UP",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 43 },
+            "values": { "state": 1 },
+            "constructorParamaters": [
+              "RIGHT",
+              1,
+              { "x": 0, "y": 260, "id": "GV8T3lq33fkjKM5JWsZC" }
+            ]
+          }
+        }
+      ],
+      "Output": [
+        {
+          "x": 650,
+          "y": 230,
+          "objectType": "Output",
+          "label": "F",
+          "direction": "LEFT",
+          "labelDirection": "UP",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "inp1": 5 },
+            "constructorParamaters": [
+              "LEFT",
+              1,
+              { "x": 100, "y": 20, "id": "5dnTIPSmP9epq9R0v3w9" }
+            ]
+          }
+        },
+        {
+          "x": 680,
+          "y": 330,
+          "objectType": "Output",
+          "label": "F",
+          "direction": "LEFT",
+          "labelDirection": "UP",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "inp1": 10 },
+            "constructorParamaters": [
+              "LEFT",
+              1,
+              { "x": 100, "y": 40, "id": "ADilDS8tkJ2RjyZAeolj" }
+            ]
+          }
+        },
+        {
+          "x": 680,
+          "y": 400,
+          "objectType": "Output",
+          "label": "F",
+          "direction": "LEFT",
+          "labelDirection": "UP",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "inp1": 18 },
+            "constructorParamaters": [
+              "LEFT",
+              1,
+              { "x": 100, "y": 60, "id": "fhMwdil6HdGsV8pVY5eR" }
+            ]
+          }
+        },
+        {
+          "x": 680,
+          "y": 470,
+          "objectType": "Output",
+          "label": "F",
+          "direction": "LEFT",
+          "labelDirection": "UP",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "inp1": 24 },
+            "constructorParamaters": [
+              "LEFT",
+              1,
+              { "x": 100, "y": 80, "id": "M4q3rTuRU34tb4Ui024v" }
+            ]
+          }
+        },
+        {
+          "x": 980,
+          "y": 230,
+          "objectType": "Output",
+          "label": "F",
+          "direction": "LEFT",
+          "labelDirection": "UP",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "inp1": 37 },
+            "constructorParamaters": [
+              "LEFT",
+              1,
+              { "x": 100, "y": 100, "id": "SoAGO7nDc8lbIl2y7AcB" }
+            ]
+          }
+        },
+        {
+          "x": 990,
+          "y": 320,
+          "objectType": "Output",
+          "label": "F",
+          "direction": "LEFT",
+          "labelDirection": "UP",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "inp1": 38 },
+            "constructorParamaters": [
+              "LEFT",
+              1,
+              { "x": 100, "y": 120, "id": "VSORnJeDKe4S9dlbEOmt" }
+            ]
+          }
+        },
+        {
+          "x": 990,
+          "y": 430,
+          "objectType": "Output",
+          "label": "F",
+          "direction": "LEFT",
+          "labelDirection": "UP",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "inp1": 44 },
+            "constructorParamaters": [
+              "LEFT",
+              1,
+              { "x": 100, "y": 140, "id": "pSvZYDVeKvs9OylXIOcb" }
+            ]
+          }
+        }
+      ],
+      "NotGate": [
+        {
+          "x": 550,
+          "y": 400,
+          "objectType": "NotGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 1],
+            "nodes": { "output1": 16, "inp1": 15 }
+          }
+        }
+      ],
+      "OrGate": [
+        {
+          "x": 540,
+          "y": 330,
+          "objectType": "OrGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 2, 1],
+            "nodes": { "inp": [12, 13], "output1": 14 }
+          }
+        }
+      ],
+      "AndGate": [
+        {
+          "x": 550,
+          "y": 230,
+          "objectType": "AndGate",
+          "label": "AND",
+          "direction": "RIGHT",
+          "labelDirection": "UP",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 2, 1],
+            "nodes": { "inp": [0, 1], "output1": 2 }
+          }
+        }
+      ],
+      "NorGate": [
+        {
+          "x": 910,
+          "y": 330,
+          "objectType": "NorGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 2, 1],
+            "nodes": { "inp": [28, 29], "output1": 30 }
+          }
+        }
+      ],
+      "NandGate": [
+        {
+          "x": 910,
+          "y": 230,
+          "objectType": "NandGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 2, 1],
+            "nodes": { "inp": [25, 26], "output1": 27 }
+          }
+        }
+      ],
+      "XorGate": [
+        {
+          "x": 550,
+          "y": 470,
+          "objectType": "XorGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 2, 1],
+            "nodes": { "inp": [19, 20], "output1": 21 }
+          }
+        }
+      ],
+      "XnorGate": [
+        {
+          "x": 920,
+          "y": 430,
+          "objectType": "XnorGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 2, 1],
+            "nodes": { "inp": [31, 32], "output1": 33 }
+          }
+        }
+      ],
+      "Flag": [
+        {
+          "x": 330,
+          "y": 320,
+          "objectType": "Flag",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 1],
+            "nodes": { "inp1": 47 },
+            "values": { "identifier": "A" }
+          }
+        },
+        {
+          "x": 320,
+          "y": 140,
+          "objectType": "Flag",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 1],
+            "nodes": { "inp1": 48 },
+            "values": { "identifier": "B" }
+          }
+        },
+        {
+          "x": 700,
+          "y": 260,
+          "objectType": "Flag",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 1],
+            "nodes": { "inp1": 49 },
+            "values": { "identifier": "F" }
+          }
+        }
+      ],
+      "restrictedCircuitElementsUsed": [],
+      "nodes": [6, 7, 8, 36, 39, 45, 46, 50, 51, 52, 53, 54, 55, 56, 57]
+    },
+    {
+      "layout": { "width": 100, "height": 180, "title_x": 50, "title_y": 13, "titleEnabled": true },
+      "verilogMetadata": {
+        "isVerilogCircuit": false,
+        "isMainCircuit": false,
+        "code": "// Write Some Verilog Code Here!",
+        "subCircuitScopeIds": []
+      },
+      "allNodes": [
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [12] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [13] },
+        { "x": 30, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [20] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [14] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [15] },
+        { "x": 30, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [21] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [16] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [17] },
+        { "x": 30, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [22] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [18] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": 30, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [23] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [0] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [1] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [3] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [4] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [6] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [7] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [9] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": 10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [2] },
+        { "x": 10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [5] },
+        { "x": 10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [8] },
+        { "x": 10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [11] }
+      ],
+      "id": 42876822287,
+      "name": "7400",
+      "Input": [
+        {
+          "x": 490,
+          "y": 140,
+          "objectType": "Input",
+          "label": "1",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 12 },
+            "values": { "state": 1 },
+            "constructorParamaters": ["RIGHT", 1, { "x": 0, "y": 20, "id": "qC175TYxtR3TuC2y8LV3" }]
+          }
+        },
+        {
+          "x": 490,
+          "y": 160,
+          "objectType": "Input",
+          "label": "2",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 13 },
+            "values": { "state": 0 },
+            "constructorParamaters": ["RIGHT", 1, { "x": 0, "y": 40, "id": "wOMQXv8NEBVlfqWonhOk" }]
+          }
+        },
+        {
+          "x": 490,
+          "y": 220,
+          "objectType": "Input",
+          "label": "4",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 14 },
+            "values": { "state": 0 },
+            "constructorParamaters": ["RIGHT", 1, { "x": 0, "y": 60, "id": "q6q4fWKL13e8ghdf32Bu" }]
+          }
+        },
+        {
+          "x": 490,
+          "y": 240,
+          "objectType": "Input",
+          "label": "5",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 15 },
+            "values": { "state": 0 },
+            "constructorParamaters": ["RIGHT", 1, { "x": 0, "y": 80, "id": "5G8vqetYJ7An53B9hqT3" }]
+          }
+        },
+        {
+          "x": 490,
+          "y": 310,
+          "objectType": "Input",
+          "label": "9",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 16 },
+            "values": { "state": 0 },
+            "constructorParamaters": [
+              "RIGHT",
+              1,
+              { "x": 0, "y": 100, "id": "KY1fWEoI50GSYeQNvtWg" }
+            ]
+          }
+        },
+        {
+          "x": 490,
+          "y": 330,
+          "objectType": "Input",
+          "label": "10",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 17 },
+            "values": { "state": 0 },
+            "constructorParamaters": [
+              "RIGHT",
+              1,
+              { "x": 0, "y": 120, "id": "3nrK3Ls5joK5NkmrBOrq" }
+            ]
+          }
+        },
+        {
+          "x": 490,
+          "y": 390,
+          "objectType": "Input",
+          "label": "12",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 18 },
+            "values": { "state": 1 },
+            "constructorParamaters": [
+              "RIGHT",
+              1,
+              { "x": 0, "y": 140, "id": "jjNRiJYpG8OvE39vI9WE" }
+            ]
+          }
+        },
+        {
+          "x": 490,
+          "y": 410,
+          "objectType": "Input",
+          "label": "13",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 19 },
+            "values": { "state": 0 },
+            "constructorParamaters": [
+              "RIGHT",
+              1,
+              { "x": 0, "y": 160, "id": "yVVIzBghsdC81gZ9DAcn" }
+            ]
+          }
+        }
+      ],
+      "Output": [
+        {
+          "x": 680,
+          "y": 150,
+          "objectType": "Output",
+          "label": "3",
+          "direction": "LEFT",
+          "labelDirection": "RIGHT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "inp1": 20 },
+            "constructorParamaters": [
+              "LEFT",
+              1,
+              { "x": 100, "y": 20, "id": "qcpV9zHD2f9N6NdRhNph" }
+            ]
+          }
+        },
+        {
+          "x": 680,
+          "y": 230,
+          "objectType": "Output",
+          "label": "6",
+          "direction": "LEFT",
+          "labelDirection": "RIGHT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "inp1": 21 },
+            "constructorParamaters": [
+              "LEFT",
+              1,
+              { "x": 100, "y": 40, "id": "hDOWtiQ82OEkNkzOyXjh" }
+            ]
+          }
+        },
+        {
+          "x": 680,
+          "y": 320,
+          "objectType": "Output",
+          "label": "8",
+          "direction": "LEFT",
+          "labelDirection": "RIGHT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "inp1": 22 },
+            "constructorParamaters": [
+              "LEFT",
+              1,
+              { "x": 100, "y": 60, "id": "zaEt7EdHElXymcqShNy6" }
+            ]
+          }
+        },
+        {
+          "x": 680,
+          "y": 400,
+          "objectType": "Output",
+          "label": "11",
+          "direction": "LEFT",
+          "labelDirection": "RIGHT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "inp1": 23 },
+            "constructorParamaters": [
+              "LEFT",
+              1,
+              { "x": 100, "y": 80, "id": "FGiF339nQn2OTAJ0VyY8" }
+            ]
+          }
+        }
+      ],
+      "NandGate": [
+        {
+          "x": 590,
+          "y": 150,
+          "objectType": "NandGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 2, 1],
+            "nodes": { "inp": [0, 1], "output1": 2 }
+          }
+        },
+        {
+          "x": 590,
+          "y": 230,
+          "objectType": "NandGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 2, 1],
+            "nodes": { "inp": [3, 4], "output1": 5 }
+          }
+        },
+        {
+          "x": 590,
+          "y": 320,
+          "objectType": "NandGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 2, 1],
+            "nodes": { "inp": [6, 7], "output1": 8 }
+          }
+        },
+        {
+          "x": 590,
+          "y": 400,
+          "objectType": "NandGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 2, 1],
+            "nodes": { "inp": [9, 10], "output1": 11 }
+          }
+        }
+      ],
+      "restrictedCircuitElementsUsed": [],
+      "nodes": []
+    },
+    {
+      "layout": { "width": 100, "height": 40, "title_x": 50, "title_y": 13, "titleEnabled": true },
+      "verilogMetadata": {
+        "isVerilogCircuit": false,
+        "isMainCircuit": false,
+        "code": "// Write Some Verilog Code Here!",
+        "subCircuitScopeIds": []
+      },
+      "allNodes": [
+        { "x": 100, "y": 20, "type": 1, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": 100, "y": 40, "type": 1, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": 100, "y": 60, "type": 1, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": 100, "y": 80, "type": 1, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": 0, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": 0, "y": 40, "type": 0, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": 0, "y": 60, "type": 0, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": 0, "y": 80, "type": 0, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": 0, "y": 100, "type": 0, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": 0, "y": 120, "type": 0, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": 0, "y": 140, "type": 0, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": 0, "y": 160, "type": 0, "bitWidth": 1, "label": "", "connections": [] }
+      ],
+      "id": 83954443796,
+      "name": "TEST CIRCUIT",
+      "SubCircuit": [
+        {
+          "x": 620,
+          "y": 200,
+          "id": "42876822287",
+          "label": "",
+          "labelDirection": "LEFT",
+          "inputNodes": [4, 5, 6, 7, 8, 9, 10, 11],
+          "outputNodes": [0, 1, 2, 3],
+          "version": "2.0"
+        }
+      ],
+      "restrictedCircuitElementsUsed": [],
+      "nodes": []
+    },
+    {
+      "layout": { "width": 100, "height": 40, "title_x": 50, "title_y": 13, "titleEnabled": true },
+      "verilogMetadata": {
+        "isVerilogCircuit": false,
+        "isMainCircuit": false,
+        "code": "// Write Some Verilog Code Here!",
+        "subCircuitScopeIds": []
+      },
+      "allNodes": [],
+      "id": 51329692190,
+      "name": "HELLO",
+      "restrictedCircuitElementsUsed": [],
+      "nodes": []
+    },
+    {
+      "layout": { "width": 100, "height": 220, "title_x": 50, "title_y": 13, "titleEnabled": true },
+      "verilogMetadata": {
+        "isVerilogCircuit": false,
+        "isMainCircuit": false,
+        "code": "// Write Some Verilog Code Here!",
+        "subCircuitScopeIds": []
+      },
+      "allNodes": [
+        { "x": -20, "y": -50, "type": 0, "bitWidth": 1, "label": "", "connections": [20] },
+        { "x": -10, "y": -50, "type": 0, "bitWidth": 1, "label": "", "connections": [29] },
+        { "x": 10, "y": -50, "type": 0, "bitWidth": 1, "label": "", "connections": [24] },
+        { "x": 20, "y": -50, "type": 0, "bitWidth": 1, "label": "", "connections": [18] },
+        { "x": -20, "y": 50, "type": 0, "bitWidth": 1, "label": "", "connections": [25] },
+        { "x": -10, "y": 50, "type": 0, "bitWidth": 1, "label": "", "connections": [26] },
+        { "x": 10, "y": 50, "type": 0, "bitWidth": 1, "label": "", "connections": [27] },
+        { "x": 20, "y": 50, "type": 0, "bitWidth": 1, "label": "", "connections": [17] },
+        { "x": -20, "y": -50, "type": 0, "bitWidth": 1, "label": "", "connections": [32] },
+        { "x": -10, "y": -50, "type": 0, "bitWidth": 1, "label": "", "connections": [31] },
+        { "x": 10, "y": -50, "type": 0, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": 20, "y": -50, "type": 0, "bitWidth": 1, "label": "", "connections": [33] },
+        { "x": -20, "y": 50, "type": 0, "bitWidth": 1, "label": "", "connections": [35] },
+        { "x": -10, "y": 50, "type": 0, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": 10, "y": 50, "type": 0, "bitWidth": 1, "label": "", "connections": [34] },
+        { "x": 20, "y": 50, "type": 0, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [18] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [7] },
+        { "x": 660, "y": 140, "type": 2, "bitWidth": 1, "label": "", "connections": [3, 16] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [24] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [0] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [25] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [27] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [26] },
+        { "x": 650, "y": 210, "type": 2, "bitWidth": 1, "label": "", "connections": [2, 19] },
+        { "x": 620, "y": 420, "type": 2, "bitWidth": 1, "label": "", "connections": [4, 21] },
+        { "x": 630, "y": 370, "type": 2, "bitWidth": 1, "label": "", "connections": [5, 23] },
+        { "x": 650, "y": 380, "type": 2, "bitWidth": 1, "label": "", "connections": [6, 22] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [29] },
+        { "x": 630, "y": 200, "type": 2, "bitWidth": 1, "label": "", "connections": [1, 28] },
+        { "x": 770, "y": 200, "type": 2, "bitWidth": 1, "label": "", "connections": [93, 97] },
+        { "x": 860, "y": 200, "type": 2, "bitWidth": 1, "label": "", "connections": [9, 32, 33] },
+        { "x": 850, "y": 200, "type": 2, "bitWidth": 1, "label": "", "connections": [8, 31, 93] },
+        { "x": 890, "y": 200, "type": 2, "bitWidth": 1, "label": "", "connections": [11, 31, 47] },
+        { "x": 880, "y": 380, "type": 2, "bitWidth": 1, "label": "", "connections": [14, 35, 50] },
+        { "x": 850, "y": 380, "type": 2, "bitWidth": 1, "label": "", "connections": [12, 34, 38] },
+        { "x": 770, "y": 350, "type": 2, "bitWidth": 1, "label": "", "connections": [37, 100, 89] },
+        { "x": 780, "y": 350, "type": 2, "bitWidth": 1, "label": "", "connections": [36, 38] },
+        { "x": 780, "y": 380, "type": 2, "bitWidth": 1, "label": "", "connections": [35, 37] },
+        { "x": -20, "y": -50, "type": 0, "bitWidth": 1, "label": "", "connections": [47] },
+        { "x": -10, "y": -50, "type": 0, "bitWidth": 1, "label": "", "connections": [49] },
+        { "x": 10, "y": -50, "type": 0, "bitWidth": 1, "label": "", "connections": [48] },
+        { "x": 20, "y": -50, "type": 0, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": -20, "y": 50, "type": 0, "bitWidth": 1, "label": "", "connections": [50] },
+        { "x": -10, "y": 50, "type": 0, "bitWidth": 1, "label": "", "connections": [51] },
+        { "x": 10, "y": 50, "type": 0, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": 20, "y": 50, "type": 0, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": 950, "y": 200, "type": 2, "bitWidth": 1, "label": "", "connections": [39, 49, 33] },
+        { "x": 980, "y": 200, "type": 2, "bitWidth": 1, "label": "", "connections": [41, 49, 63] },
+        { "x": 960, "y": 200, "type": 2, "bitWidth": 1, "label": "", "connections": [40, 47, 48] },
+        { "x": 950, "y": 380, "type": 2, "bitWidth": 1, "label": "", "connections": [34, 43, 51] },
+        { "x": 960, "y": 380, "type": 2, "bitWidth": 1, "label": "", "connections": [44, 50, 60] },
+        { "x": -20, "y": -50, "type": 0, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": -10, "y": -50, "type": 0, "bitWidth": 1, "label": "", "connections": [63] },
+        { "x": 10, "y": -50, "type": 0, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": 20, "y": -50, "type": 0, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": -20, "y": 50, "type": 0, "bitWidth": 1, "label": "", "connections": [60] },
+        { "x": -10, "y": 50, "type": 0, "bitWidth": 1, "label": "", "connections": [61, 62] },
+        { "x": 10, "y": 50, "type": 0, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": 20, "y": 50, "type": 0, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": 1040, "y": 380, "type": 2, "bitWidth": 1, "label": "", "connections": [51, 56, 61] },
+        { "x": 1050, "y": 380, "type": 2, "bitWidth": 1, "label": "", "connections": [57, 60, 73] },
+        { "x": 1060, "y": 340, "type": 2, "bitWidth": 1, "label": "", "connections": [57] },
+        { "x": 1050, "y": 200, "type": 2, "bitWidth": 1, "label": "", "connections": [48, 53, 72] },
+        { "x": -20, "y": -50, "type": 0, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": -10, "y": -50, "type": 0, "bitWidth": 1, "label": "", "connections": [72] },
+        { "x": 10, "y": -50, "type": 0, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": 20, "y": -50, "type": 0, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": -20, "y": 50, "type": 0, "bitWidth": 1, "label": "", "connections": [73] },
+        { "x": -10, "y": 50, "type": 0, "bitWidth": 1, "label": "", "connections": [74] },
+        { "x": 10, "y": 50, "type": 0, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": 20, "y": 50, "type": 0, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": 1130, "y": 200, "type": 2, "bitWidth": 1, "label": "", "connections": [63, 65, 83] },
+        { "x": 1120, "y": 380, "type": 2, "bitWidth": 1, "label": "", "connections": [61, 68, 74] },
+        { "x": 1130, "y": 380, "type": 2, "bitWidth": 1, "label": "", "connections": [69, 73, 86] },
+        { "x": -20, "y": -50, "type": 0, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": -10, "y": -50, "type": 0, "bitWidth": 1, "label": "", "connections": [83] },
+        { "x": 10, "y": -50, "type": 0, "bitWidth": 1, "label": "", "connections": [84] },
+        { "x": 20, "y": -50, "type": 0, "bitWidth": 1, "label": "", "connections": [85] },
+        { "x": -20, "y": 50, "type": 0, "bitWidth": 1, "label": "", "connections": [86] },
+        { "x": -10, "y": 50, "type": 0, "bitWidth": 1, "label": "", "connections": [87] },
+        { "x": 10, "y": 50, "type": 0, "bitWidth": 1, "label": "", "connections": [88] },
+        { "x": 20, "y": 50, "type": 0, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": 1210, "y": 200, "type": 2, "bitWidth": 1, "label": "", "connections": [72, 76, 84] },
+        { "x": 1230, "y": 200, "type": 2, "bitWidth": 1, "label": "", "connections": [77, 83, 85] },
+        { "x": 1240, "y": 200, "type": 2, "bitWidth": 1, "label": "", "connections": [78, 84] },
+        { "x": 1200, "y": 380, "type": 2, "bitWidth": 1, "label": "", "connections": [74, 79, 87] },
+        { "x": 1210, "y": 380, "type": 2, "bitWidth": 1, "label": "", "connections": [80, 86, 88] },
+        { "x": 1230, "y": 380, "type": 2, "bitWidth": 1, "label": "", "connections": [81, 87] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [36] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [92] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [101] },
+        { "x": 790, "y": 140, "type": 2, "bitWidth": 1, "label": "", "connections": [90, 93] },
+        { "x": 790, "y": 200, "type": 2, "bitWidth": 1, "label": "", "connections": [30, 32, 92] },
+        { "x": -40, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [103] },
+        { "x": -40, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [101] },
+        { "x": 750, "y": 210, "type": 2, "bitWidth": 1, "label": "", "connections": [97, 102] },
+        { "x": 770, "y": 210, "type": 2, "bitWidth": 1, "label": "", "connections": [30, 96, 100] },
+        { "x": -40, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [99] },
+        { "x": 710, "y": 240, "type": 2, "bitWidth": 1, "label": "", "connections": [98, 100] },
+        { "x": 770, "y": 240, "type": 2, "bitWidth": 1, "label": "", "connections": [36, 97, 99] },
+        { "x": 840, "y": 90, "type": 2, "bitWidth": 1, "label": "", "connections": [91, 95] },
+        { "x": 750, "y": 160, "type": 2, "bitWidth": 1, "label": "", "connections": [96, 103] },
+        { "x": 870, "y": 160, "type": 2, "bitWidth": 1, "label": "", "connections": [102, 94] },
+        { "x": -40, "y": -10, "type": 0, "bitWidth": 8, "label": "", "connections": [] },
+        { "x": -40, "y": 0, "type": 0, "bitWidth": 8, "label": "", "connections": [] },
+        { "x": -40, "y": 10, "type": 0, "bitWidth": 8, "label": "", "connections": [] }
+      ],
+      "id": 75705889770,
+      "name": "Untitled-Circuit",
+      "Input": [
+        {
+          "x": 550,
+          "y": 140,
+          "objectType": "Input",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 16 },
+            "values": { "state": 0 },
+            "constructorParamaters": ["RIGHT", 1, { "x": 0, "y": 20, "id": "DkDgmRSz6VMSS2i4I3eU" }]
+          }
+        },
+        {
+          "x": 650,
+          "y": 420,
+          "objectType": "Input",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 17 },
+            "values": { "state": 0 },
+            "constructorParamaters": ["RIGHT", 1, { "x": 0, "y": 40, "id": "3vIK1kL7Zn5KRcaxGmZz" }]
+          }
+        },
+        {
+          "x": 540,
+          "y": 210,
+          "objectType": "Input",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 19 },
+            "values": { "state": 0 },
+            "constructorParamaters": ["RIGHT", 1, { "x": 0, "y": 60, "id": "oucelLty2fX2Pem5h8dq" }]
+          }
+        },
+        {
+          "x": 610,
+          "y": 170,
+          "objectType": "Input",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 20 },
+            "values": { "state": 0 },
+            "constructorParamaters": ["RIGHT", 1, { "x": 0, "y": 80, "id": "tTNBhrLMYU3oFt7xYTLz" }]
+          }
+        },
+        {
+          "x": 600,
+          "y": 420,
+          "objectType": "Input",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 21 },
+            "values": { "state": 0 },
+            "constructorParamaters": [
+              "RIGHT",
+              1,
+              { "x": 0, "y": 100, "id": "gJmt5Du2nERQTCjbLsUt" }
+            ]
+          }
+        },
+        {
+          "x": 490,
+          "y": 380,
+          "objectType": "Input",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 22 },
+            "values": { "state": 0 },
+            "constructorParamaters": [
+              "RIGHT",
+              1,
+              { "x": 0, "y": 120, "id": "gyBhbLAi7umY4YYFWbxl" }
+            ]
+          }
+        },
+        {
+          "x": 560,
+          "y": 370,
+          "objectType": "Input",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 23 },
+            "values": { "state": 1 },
+            "constructorParamaters": [
+              "RIGHT",
+              1,
+              { "x": 0, "y": 140, "id": "6A6VtiIl2MGBORkjOeQU" }
+            ]
+          }
+        },
+        {
+          "x": 600,
+          "y": 200,
+          "objectType": "Input",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 28 },
+            "values": { "state": 1 },
+            "constructorParamaters": [
+              "RIGHT",
+              1,
+              { "x": 0, "y": 160, "id": "tZBhTJaVtm3Hn2u1YYzs" }
+            ]
+          }
+        }
+      ],
+      "NotGate": [
+        {
+          "x": 820,
+          "y": 140,
+          "objectType": "NotGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 1],
+            "nodes": { "output1": 91, "inp1": 90 }
+          }
+        }
+      ],
+      "SevenSegDisplay": [
+        {
+          "x": 640,
+          "y": 290,
+          "objectType": "SevenSegDisplay",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["Red"],
+            "nodes": { "g": 0, "f": 1, "a": 2, "b": 3, "d": 5, "e": 4, "c": 6, "dot": 7 }
+          },
+          "subcircuitMetadata": {
+            "showInSubcircuit": false,
+            "showLabelInSubcircuit": true,
+            "labelDirection": "LEFT",
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "x": 870,
+          "y": 290,
+          "objectType": "SevenSegDisplay",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["Red"],
+            "nodes": { "g": 8, "f": 9, "a": 10, "b": 11, "d": 13, "e": 12, "c": 14, "dot": 15 }
+          },
+          "subcircuitMetadata": {
+            "showInSubcircuit": false,
+            "showLabelInSubcircuit": true,
+            "labelDirection": "LEFT",
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "x": 970,
+          "y": 290,
+          "objectType": "SevenSegDisplay",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["Red"],
+            "nodes": { "g": 39, "f": 40, "a": 41, "b": 42, "d": 44, "e": 43, "c": 45, "dot": 46 }
+          },
+          "subcircuitMetadata": {
+            "showInSubcircuit": false,
+            "showLabelInSubcircuit": true,
+            "labelDirection": "LEFT",
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "x": 1060,
+          "y": 290,
+          "objectType": "SevenSegDisplay",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["Red"],
+            "nodes": { "g": 52, "f": 53, "a": 54, "b": 55, "d": 57, "e": 56, "c": 58, "dot": 59 }
+          },
+          "subcircuitMetadata": {
+            "showInSubcircuit": false,
+            "showLabelInSubcircuit": true,
+            "labelDirection": "LEFT",
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "x": 1140,
+          "y": 290,
+          "objectType": "SevenSegDisplay",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["Red"],
+            "nodes": { "g": 64, "f": 65, "a": 66, "b": 67, "d": 69, "e": 68, "c": 70, "dot": 71 }
+          },
+          "subcircuitMetadata": {
+            "showInSubcircuit": false,
+            "showLabelInSubcircuit": true,
+            "labelDirection": "LEFT",
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "x": 1220,
+          "y": 290,
+          "objectType": "SevenSegDisplay",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["Red"],
+            "nodes": { "g": 75, "f": 76, "a": 77, "b": 78, "d": 80, "e": 79, "c": 81, "dot": 82 }
+          },
+          "subcircuitMetadata": {
+            "showInSubcircuit": false,
+            "showLabelInSubcircuit": true,
+            "labelDirection": "LEFT",
+            "x": 0,
+            "y": 0
+          }
+        }
+      ],
+      "Clock": [
+        {
+          "x": 720,
+          "y": 350,
+          "objectType": "Clock",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": { "nodes": { "output1": 89 }, "constructorParamaters": ["RIGHT"] }
+        }
+      ],
+      "DigitalLed": [
+        {
+          "x": 870,
+          "y": 100,
+          "objectType": "DigitalLed",
+          "label": "",
+          "direction": "UP",
+          "labelDirection": "DOWN",
+          "propagationDelay": 10,
+          "customData": { "constructorParamaters": ["Red"], "nodes": { "inp1": 94 } },
+          "subcircuitMetadata": {
+            "showInSubcircuit": false,
+            "showLabelInSubcircuit": true,
+            "labelDirection": "DOWN",
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "x": 750,
+          "y": 50,
+          "objectType": "DigitalLed",
+          "label": "",
+          "direction": "UP",
+          "labelDirection": "DOWN",
+          "propagationDelay": 10,
+          "customData": { "constructorParamaters": ["Red"], "nodes": { "inp1": 95 } },
+          "subcircuitMetadata": {
+            "showInSubcircuit": false,
+            "showLabelInSubcircuit": true,
+            "labelDirection": "DOWN",
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "x": 710,
+          "y": 100,
+          "objectType": "DigitalLed",
+          "label": "",
+          "direction": "UP",
+          "labelDirection": "DOWN",
+          "propagationDelay": 10,
+          "customData": { "constructorParamaters": ["Red"], "nodes": { "inp1": 98 } },
+          "subcircuitMetadata": {
+            "showInSubcircuit": false,
+            "showLabelInSubcircuit": true,
+            "labelDirection": "DOWN",
+            "x": 0,
+            "y": 0
+          }
+        }
+      ],
+      "RGBLed": [
+        {
+          "x": 1000,
+          "y": 70,
+          "objectType": "RGBLed",
+          "label": "",
+          "direction": "UP",
+          "labelDirection": "DOWN",
+          "propagationDelay": 10,
+          "customData": { "nodes": { "inp1": 104, "inp2": 105, "inp3": 106 } },
+          "subcircuitMetadata": {
+            "showInSubcircuit": false,
+            "showLabelInSubcircuit": true,
+            "labelDirection": "DOWN",
+            "x": 0,
+            "y": 0
+          }
+        }
+      ],
+      "restrictedCircuitElementsUsed": [],
+      "nodes": [
+        18, 24, 25, 26, 27, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 47, 48, 49, 50, 51, 60, 61, 62,
+        63, 72, 73, 74, 83, 84, 85, 86, 87, 88, 92, 93, 96, 97, 99, 100, 101, 102, 103
+      ]
+    }
+  ]
+}
