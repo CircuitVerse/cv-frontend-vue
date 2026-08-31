@@ -4,6 +4,7 @@ import { simulationArea } from "../simulationArea";
 import { correctWidth, bezierCurveTo, moveTo } from "../canvasApi";
 import { changeInputSize } from "../modules";
 import { gateGenerateVerilog } from "../utils";
+import type { Scope } from "../types/circuitElement.types";
 
 import { colors } from "../themer/themer";
 
@@ -15,7 +16,7 @@ export default class OrGate extends CircuitElement {
   constructor(
     x: number,
     y: number,
-    scope: any = globalScope,
+    scope: Scope = globalScope,
     dir: string = "RIGHT",
     inputs: number = 2,
     bitWidth: number = 1,
