@@ -63,7 +63,6 @@ describe("TestbenchData", () => {
       const testData = makeTestData([makeGroup(["1"]), makeEmptyInputsGroup()]);
       const tb = new TestbenchData(testData, 0, 0);
 
-      expect(() => tb.groupNext()).not.toThrow();
       expect(tb.groupNext()).toBe(false);
     });
   });
@@ -105,7 +104,6 @@ describe("TestbenchData", () => {
       const testData = makeTestData([makeEmptyInputsGroup(), makeGroup(["1"])]);
       const tb = new TestbenchData(testData, 1, 0);
 
-      expect(() => tb.groupPrev()).not.toThrow();
       expect(tb.groupPrev()).toBe(false);
     });
   });
