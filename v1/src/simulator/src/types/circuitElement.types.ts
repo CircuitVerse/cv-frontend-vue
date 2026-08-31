@@ -51,10 +51,13 @@ export interface LayoutProperties {
   y?: number;
 }
 
+/** Input types rendered by the properties panel. */
+export type MutablePropertyType = "text" | "checkbox" | "number" | "button" | "textarea";
+
 /** One entry of `mutableProperties` / `subcircuitMutableProperties`, rendered by the properties panel. */
 export interface MutableProperty {
   name: string;
-  type: "text" | "checkbox" | "number" | "button" | "textarea";
+  type: MutablePropertyType | string;
   func: string;
   min?: string;
   max?: string;
@@ -101,17 +104,17 @@ export interface CircuitElement {
   rightDimensionX: number;
   upDimensionY: number;
   downDimensionY: number;
-  absX: () => number;
-  absY: () => number;
-  draw: () => void;
-  update: () => boolean;
+  absX(): number;
+  absY(): number;
+  draw(): void;
+  update(): boolean | undefined;
 
   // Simulation (eventQueue.ts, node.js, circuit.ts, subcircuit.ts)
   queueProperties: QueueProperties;
   propagationDelay: number;
-  resolve: () => void;
-  isResolvable: () => boolean;
-  removePropagation: () => void;
+  resolve(): void;
+  isResolvable(): boolean;
+  removePropagation(): void;
 
   // Identity & metadata (panels, registry)
   objectType: string;
@@ -139,32 +142,32 @@ export interface CircuitElement {
   layoutProperties?: LayoutProperties;
 
   // Mutators (ux.js, hotkeys, listeners, properties panel)
-  setLabel: (label: string) => void;
-  newBitWidth: (bitWidth: number) => void;
-  newDirection: (dir: Direction) => void;
-  newLabelDirection: (dir: Direction) => void;
-  changePropagationDelay: (delay: number | string) => void;
-  changeInputSize?: (size: number) => void;
-  fixDirection: () => void;
+  setLabel(label: string): void;
+  newBitWidth(bitWidth: number): void;
+  newDirection(dir: Direction): void;
+  newLabelDirection(dir: Direction): void;
+  changePropagationDelay(delay: number): void;
+  changeInputSize?(size: number): void;
+  fixDirection(): void;
 
   // Lifecycle & persistence (backupCircuit, load, events, ux)
-  saveObject: () => SavedCircuitElement;
-  customSave: () => CustomSaveData;
-  updateScope: (scope: Scope) => void;
-  copyFrom: (obj: CircuitElement) => void;
-  delete: () => void;
-  cleanDelete: () => void;
+  saveObject(): SavedCircuitElement;
+  customSave(): CustomSaveData;
+  updateScope(scope: Scope): void;
+  copyFrom(obj: Pick<CircuitElement, "label" | "labelDirection">): void;
+  delete(): void;
+  cleanDelete(): void;
 
   // Optional per-component hooks
-  customDraw?: () => void;
-  subcircuitDraw?: (xOffset?: number, yOffset?: number) => void;
-  click?: () => void;
-  dblclick?: () => void;
-  keyDown?: (key: string) => void;
-  keyDown2?: (key: string) => void;
-  keyDown3?: (key: string) => void;
-  toggleState?: () => void;
-  removeConnections?: () => void;
-  makeConnections?: () => void;
-  generateVerilog?: () => string;
+  customDraw?(): void;
+  subcircuitDraw?(xOffset?: number, yOffset?: number): void;
+  click?(): void;
+  dblclick?(): void;
+  keyDown?(key: string): void;
+  keyDown2?(key: string): void;
+  keyDown3?(key: string): void;
+  toggleState?(): void;
+  removeConnections?(): void;
+  makeConnections?(): void;
+  generateVerilog?(): string;
 }
