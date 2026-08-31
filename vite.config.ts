@@ -79,7 +79,15 @@ export default defineConfig(() => {
     },
     server: {
       port: 4000,
-      ...(process.env.DEV_CONTAINER ? { host: true } : {}),
+      ...(process.env.DEV_CONTAINER === "true"
+        ? {
+            host: true,
+            strictPort: true,
+            ...(process.env.CODESPACES === "true" && process.env.GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN
+              ? { allowedHosts: [`.${process.env.GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}`] }
+              : {}),
+          }
+        : {}),
       watch: {
         ignored: ["**/src-tauri/target/**"],
       },
