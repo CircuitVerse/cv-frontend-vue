@@ -11,9 +11,12 @@
     <ExportVerilog />
     <!-- --------------------------------------------------------------------------------------------- -->
 
-    <!-- --------------------------------------------------------------------------------------------- -->
-    <!-- Circuit Elements Panel -->
-    <ElementsPanel v-if="!simulatorMobileStore.showMobileView && !simulatorMobileStore.isVerilog"/>
+    <div class="simulator-workspace">
+        <QuickButton v-if="!simulatorMobileStore.showMobileView" />
+
+        <!-- --------------------------------------------------------------------------------------------- -->
+        <!-- Circuit Elements Panel -->
+        <ElementsPanel v-if="!simulatorMobileStore.showMobileView && !simulatorMobileStore.isVerilog"/>
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <!-- --------------------------------------------------------------------------------------------- -->
@@ -239,11 +242,13 @@
         <i class="fa-solid fa-sliders"></i>
     </v-btn>
 
-    <ElementsPanelMobile v-if="simulatorMobileStore.showMobileView" />
-    <PropertiesPanelMobile v-if="simulatorMobileStore.showMobileView" />
+        <ElementsPanelMobile v-if="simulatorMobileStore.showMobileView" />
+        <PropertiesPanelMobile v-if="simulatorMobileStore.showMobileView" />
+    </div>
 </template>
 
 <script lang="ts" setup>
+import QuickButton from './Navbar/QuickButton/QuickButton.vue'
 import VerilogEditorPanel from './Panels/VerilogEditorPanel/VerilogEditorPanel.vue'
 import VerilogEditorPanelMobile from './Panels/VerilogEditorPanel/VerilogEditorPanelMobile.vue'
 import ElementsPanel from './Panels/ElementsPanel/ElementsPanel.vue'
@@ -308,6 +313,13 @@ const propertiesBtnClick = () => {
 </script>
 
 <style scoped>
+.simulator-workspace {
+    position: relative;
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+}
+
 .cir-ele-btn, .cir-verilog-btn {
     position: absolute;
     right: 1.5rem;

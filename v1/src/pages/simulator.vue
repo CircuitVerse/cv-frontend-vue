@@ -1,7 +1,11 @@
 <template>
-    <Navbar />
+    <div class="simulator-layout">
+        <Navbar />
+        <div class="simulator-extra">
+            <Extra />
+        </div>
+    </div>
     <ContextMenu />
-    <Extra />
     <Helper />
 </template>
 
@@ -25,3 +29,21 @@ onMounted(() => {
     setupSimulator()
 })
 </script>
+
+<style scoped>
+.simulator-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+}
+
+.simulator-extra {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    position: relative;
+}
+</style>
