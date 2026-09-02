@@ -17,11 +17,17 @@
             </div>
             {{ $t('simulator.panel_body.timing_diagram.one_cycle') }}
             <div>
-                <input id="timing-diagram-units" type="number" min="1" autocomplete="off" :value="timingDiagramPanelStore.cycleUnits"
+                <input id="timing-diagram-units" type="number" min="1" autocomplete="off" v-model.number="timingDiagramPanelStore.cycleUnits"
                     @change="handleUnitsChange" @paste="handleUnitsChange" @keyup="handleUnitsChange" />
                 {{ $t('simulator.panel_body.timing_diagram.units') }}
             </div>
-            <span v-show="simulatorMobileStore.showCanvas" id="timing-diagram-log"></span>
+            <span
+                v-if="simulatorMobileStore.showCanvas && timingDiagramPanelStore.logMessage"
+                class="timing-diagram-log"
+                :style="{ backgroundColor: timingDiagramPanelStore.logColor }"
+            >
+                {{ timingDiagramPanelStore.logMessage }}
+            </span>
         </div>
         <div id="plot" ref="plotRef">
             <canvas v-show="simulatorMobileStore.showCanvas" id="plotArea" :style="{ height: '100%'}"></canvas>
