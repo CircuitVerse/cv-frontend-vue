@@ -4,18 +4,30 @@ import { simulationArea } from "../simulationArea";
 import { correctWidth, bezierCurveTo, moveTo } from "../canvasApi";
 import { changeInputSize } from "../modules";
 import { gateGenerateVerilog } from "../utils";
+import type {
+  Scope,
+  CircuitElement as ICircuitElement,
+  SavedCircuitElement,
+} from "../types/circuitElement.types";
 
 import { colors } from "../themer/themer";
 
-export default class OrGate extends CircuitElement {
+export default class OrGate extends CircuitElement implements ICircuitElement {
   private inp: Node[];
-  private inputSize: number;
+  inputSize: number;
   private output1: Node;
+
+  declare propagationDelay: number;
+  declare tooltipText: string;
+  declare changeInputSize: (size: number) => void;
+  declare verilogType: string;
+  declare helplink: string;
+  declare saveObject: () => SavedCircuitElement;
 
   constructor(
     x: number,
     y: number,
-    scope: any = globalScope,
+    scope: Scope = globalScope,
     dir: string = "RIGHT",
     inputs: number = 2,
     bitWidth: number = 1,
