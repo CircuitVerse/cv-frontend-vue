@@ -60,7 +60,7 @@
           </button>
           <span class="tb-test-label group-label">
             {{
-              testData.groups[testBenchStore.testbenchData.currentGroup].label
+              testData.groups[testBenchStore.testbenchData.currentGroup]?.label ?? ""
             }}</span
           >
           <button
