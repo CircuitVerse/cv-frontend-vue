@@ -64,10 +64,7 @@ export default defineConfig(() => {
       },
     },
     root: fileURLToPath(new URL(`./${version}`, import.meta.url)),
-<<<<<<< HEAD
-=======
     publicDir: fileURLToPath(new URL("./public", import.meta.url)),
->>>>>>> efff24d (fix: formate error in vite.config.ts)
     base: process.env.VITE_BASE || (isDesktop ? "/" : `/simulatorvue/${version}/`),
     build: {
       outDir: fileURLToPath(new URL(`./dist/simulatorvue/${version}/`, import.meta.url)),
