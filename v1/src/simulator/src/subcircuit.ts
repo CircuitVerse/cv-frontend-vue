@@ -1,6 +1,7 @@
 /* eslint-disable import/no-cycle */
 import Scope, { scopeList, switchCircuit } from "./circuit";
 import CircuitElement from "./circuitElement";
+import type { CircuitElement as ICircuitElement } from "./types/circuitElement.types";
 import { simulationArea } from "./simulationArea";
 import { scheduleBackup, checkIfBackup } from "./data/backupCircuit";
 import {
@@ -51,7 +52,11 @@ export function createSubCircuitPrompt(_scope = globalScope): void {
  * @extends CircuitElement
  * @category subcircuit
  */
-export default class SubCircuit extends CircuitElement {
+export default class SubCircuit extends CircuitElement implements ICircuitElement {
+  declare propagationDelay: number;
+  declare tooltipText: string;
+  declare helplink: string;
+
   id: string;
   directionFixed: boolean;
   fixedBitWidth: boolean;

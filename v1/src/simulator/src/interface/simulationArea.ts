@@ -1,4 +1,5 @@
 import { EventQueue } from "../eventQueue";
+import type { CircuitElement } from "../types/circuitElement.types";
 export interface SimulationArea {
   canvas: HTMLCanvasElement;
   context: CanvasRenderingContext2D | null;
@@ -6,19 +7,18 @@ export interface SimulationArea {
   hover: boolean;
   clockState: number;
   clockEnabled: boolean;
-  // TODO: make this CircuitElement|null once converted to typescript
-  lastSelected: any | null;
-  stack: any[];
+  lastSelected: CircuitElement | null | undefined;
+  stack: CircuitElement[];
   prevScale: number;
   oldx: number;
   oldy: number;
-  objectList: any[];
+  objectList: CircuitElement[];
   maxHeight: number;
   maxWidth: number;
   minHeight: number;
   minWidth: number;
-  multipleObjectSelections: any[];
-  copyList: any[];
+  multipleObjectSelections: CircuitElement[];
+  copyList: CircuitElement[];
   shiftDown: boolean;
   controlDown: boolean;
   timePeriod: number;
