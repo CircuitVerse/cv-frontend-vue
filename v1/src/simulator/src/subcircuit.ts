@@ -1,6 +1,7 @@
 /* eslint-disable import/no-cycle */
 import Scope, { scopeList, switchCircuit } from "./circuit";
 import CircuitElement from "./circuitElement";
+import type { CircuitElement as ICircuitElement } from "./types/circuitElement.types";
 import { simulationArea } from "./simulationArea";
 import { scheduleBackup, checkIfBackup } from "./data/backupCircuit";
 import {
@@ -33,7 +34,7 @@ export function loadSubCircuit(savedData: any, scope: any): void {
 }
 
 /**
- * Prompt to create subcircuit, shows list of circuits which dont depend on the current circuit
+ * Prompt to create subcircuit, shows list of circuits which don't depend on the current circuit
  * @param scope - The current scope
  * @category subcircuit
  */
@@ -51,7 +52,11 @@ export function createSubCircuitPrompt(_scope = globalScope): void {
  * @extends CircuitElement
  * @category subcircuit
  */
-export default class SubCircuit extends CircuitElement {
+export default class SubCircuit extends CircuitElement implements ICircuitElement {
+  declare propagationDelay: number;
+  declare tooltipText: string;
+  declare helplink: string;
+
   id: string;
   directionFixed: boolean;
   fixedBitWidth: boolean;

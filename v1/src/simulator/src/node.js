@@ -353,7 +353,7 @@ export default class Node {
     }
 
     /**
-     * connects but doesnt draw the wire between nodes
+     * connects but doesn't draw the wire between nodes
      */
     connectWireLess(n) {
         if (n == this) return
