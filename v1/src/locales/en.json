@@ -23,7 +23,6 @@
         "import": {
             "file_label": "Click to Select or Drag and drop file here",
             "format_error": "Invalid file format. Only [ .cv ] files are accepted. Try again.",
-            "active_scope_error": "No active circuit to import into.",
             "parse_error": "Invalid file — could not parse.",
             "import_failed": "Import failed: ",
             "import_error": "Import error: ",
@@ -226,6 +225,7 @@
             "testbench_creator": {
                 "create_test": "Create Test",
                 "enter_test_title": "Enter Test Title",
+                "untitled": "Untitled",
                 "sequential_test": "Sequential Test",
                 "combinational_test": "Combinational Test",
                 "no_groups": "No test groups added yet. Click \"+ New Group\" to start creating your test.",
