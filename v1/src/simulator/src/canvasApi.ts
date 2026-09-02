@@ -604,7 +604,7 @@ export function fillText2(ctx: CanvasRenderingContext2D, str: any, x1: number, y
     ctx.fillText(
         str,
         0,
-        Math.round(4 * globalScope.scale) * (1 - 0 * +(dir === 'DOWN'))
+        Math.round(4 * globalScope.scale)
     )
     ctx.restore()
 }

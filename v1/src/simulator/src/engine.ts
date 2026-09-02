@@ -547,15 +547,7 @@ export function update(scope: Scope | any = globalScope, updateEverything: boole
         }
     }
     
-    // Hover fallback
-    if (!simulationArea.hover) {
-        for (let i = 0; i < scope.wires.length; i++) {
-            if (scope.wires[i].checkHover()) {
-                simulationArea.hover = scope.wires[i];
-                break;
-            }
-        }
-    }
+
 
     // Updates multiple objectselections and panes window
     if (updatePosition || updateEverything) {
