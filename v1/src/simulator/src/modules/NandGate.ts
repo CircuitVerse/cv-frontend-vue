@@ -5,29 +5,28 @@ import { correctWidth, lineTo, moveTo, drawCircle2, arc } from "../canvasApi";
 import { changeInputSize } from "../modules";
 import { gateGenerateVerilog } from "../utils";
 import { colors } from "../themer/themer";
+import type {
+  Scope,
+  CircuitElement as ICircuitElement,
+  SavedCircuitElement,
+} from "../types/circuitElement.types";
 
-/**
- * @class
- * NandGate
- * @extends CircuitElement
- * @param {number} x - x coordinate of nand Gate.
- * @param {number} y - y coordinate of nand Gate.
- * @param {any=} scope - Cirucit on which nand gate is drawn
- * @param {string=} dir - direction of nand Gate
- * @param {number=} inputLength - number of input nodes
- * @param {number=} bitWidth - bit width per node.
- * @category modules
- */
-export default class NandGate extends CircuitElement {
+export default class NandGate extends CircuitElement implements ICircuitElement {
   private inp: Node[];
-  private inputSize: number;
+  inputSize: number;
   private output1: Node;
+
+  declare propagationDelay: number;
+  declare tooltipText: string;
+  declare changeInputSize: (size: number) => void;
+  declare verilogType: string;
+  declare helplink: string;
+  declare saveObject: () => SavedCircuitElement;
 
   constructor(
     x: number,
     y: number,
-    // scope uses any because globalScope is loosely typed across the codebase
-    scope: any = globalScope,
+    scope: Scope = globalScope,
     dir: string = "RIGHT",
     inputLength: number = 2,
     bitWidth: number = 1,

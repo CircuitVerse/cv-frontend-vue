@@ -6,29 +6,28 @@ import { gateGenerateVerilog } from "../utils";
 import { correctWidth, bezierCurveTo, moveTo, drawCircle2 } from "../canvasApi";
 import { changeInputSize } from "../modules";
 import { colors } from "../themer/themer";
+import type {
+  Scope,
+  CircuitElement as ICircuitElement,
+  SavedCircuitElement,
+} from "../types/circuitElement.types";
 
-/**
- * @class
- * NorGate
- * @extends CircuitElement
- * @param {number} x - x coordinate of element.
- * @param {number} y - y coordinate of element.
- * @param {any=} scope - Cirucit on which element is drawn
- * @param {string=} dir - direction of element
- * @param {number=} inputs - number of input nodes
- * @param {number=} bitWidth - bit width per node.
- * @category modules
- */
-export default class NorGate extends CircuitElement {
+export default class NorGate extends CircuitElement implements ICircuitElement {
   private inp: Node[];
-  private inputSize: number;
+  inputSize: number;
   private output1: Node;
+
+  declare propagationDelay: number;
+  declare tooltipText: string;
+  declare changeInputSize: (size: number) => void;
+  declare verilogType: string;
+  declare helplink: string;
+  declare saveObject: () => SavedCircuitElement;
 
   constructor(
     x: number,
     y: number,
-    // scope uses any because globalScope is loosely typed across the codebase
-    scope: any = globalScope,
+    scope: Scope = globalScope,
     dir: string = "RIGHT",
     inputs: number = 2,
     bitWidth: number = 1,
