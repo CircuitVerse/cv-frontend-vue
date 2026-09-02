@@ -98,12 +98,16 @@ describe('data dir working', () => {
     });
 
     test('dec2bcd output survives the 4 bit group round trip', () => {
-        for (const value of [0, 5, 9, 10, 25, 90, 255, 1000]) {
+        for (const value of [0, 5, 9, 10, 15, 25, 90, 255, 1000]) {
             const bcd = convertors.dec2bcd(value);
             expect(bcd.length % 4).toBe(0);
             let parsed = 0;
             for (let i = 0; i < bcd.length / 4; i++) {
-                parsed = parsed * 10 + parseInt(bcd.slice(4 * i, 4 * (i + 1)), 2);
+                const group = parseInt(bcd.slice(4 * i, 4 * (i + 1)), 2);
+                // Every group must be a valid BCD digit, not just sum back
+                // to the input, so 15 may never encode as a raw 1111 nibble.
+                expect(group).toBeLessThan(10);
+                parsed = parsed * 10 + group;
             }
             expect(parsed).toBe(value);
         }
