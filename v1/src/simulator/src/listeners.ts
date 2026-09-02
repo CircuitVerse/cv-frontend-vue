@@ -54,7 +54,7 @@ let pinchZ = 0;
 let centreX: number;
 let centreY: number;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-let timeout: any;
+let timeout: number | undefined = undefined;
 let lastTap = 0;
 
 /**
@@ -314,7 +314,7 @@ export default function startListeners() {
 
     document
         .getElementById('simulationArea')!
-        .addEventListener('mouseup', (e: any) => {
+        .addEventListener('mouseup', (_e: any) => {
             if (simulationArea.lastSelected) {
                 simulationArea.lastSelected.newElement = false
             }
@@ -727,7 +727,7 @@ function resizeTabs() {
     const $windowsize = $('body').width() ?? 0
     const $sideBarsize = $('.side').width() ?? 0
     const $maxwidth = $windowsize - $sideBarsize
-    $('#tabsBar div').each(function (this: any, e: any) {
+    $('#tabsBar div').each(function (this: any, _e: any) {
         $(this).css({ 'max-width': $maxwidth - 30 })
     })
 }
@@ -756,7 +756,7 @@ function handleZoom (direction: number) {
     document.getElementById('simulationArea')!.addEventListener('DOMMouseScroll', zoomSliderScroll);
     document.getElementById('simulationArea')!.addEventListener('mousewheel', zoomSliderScroll);
     let curLevel = parseInt((document.getElementById("customRange1") as HTMLInputElement).value, 10);
-    $(document).on('input change', '#customRange1', function (this: any, e: any) {
+    $(document).on('input change', '#customRange1', function (this: any, _e: any) {
       const newValue = parseInt($(this).val() as string, 10);
       const changeInScale = newValue - curLevel;
       updateCanvasSet(true);

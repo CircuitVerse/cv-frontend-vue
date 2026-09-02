@@ -225,7 +225,7 @@ export function objectPropertyAttributeCheckedUpdate(this: HTMLInputElement) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function checkPropertiesUpdate(value: any = 0) {
+export function checkPropertiesUpdate() {
     $('.objectPropertyAttribute').off(
         'change keyup paste click',
         objectPropertyAttributeUpdate
@@ -253,7 +253,7 @@ export function checkPropertiesUpdate(value: any = 0) {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function showProperties(obj: any) {
     if (obj === prevPropertyObjGet()) return
-    checkPropertiesUpdate(obj)
+    checkPropertiesUpdate()
 }
 
 /**
@@ -265,19 +265,6 @@ export function hideProperties() {
     $('#moduleProperty').hide()
     prevPropertyObjSet(undefined)
     $('.objectPropertyAttribute').unbind('change keyup paste click')
-}
-/**
- * checkss the input is safe or not
- * @param {HTML} unsafe - the html which we wants to escape
- * @category ux
- */
-function escapeHtml(unsafe: string) {
-    return unsafe
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;')
 }
 
 export function deleteSelected() {
