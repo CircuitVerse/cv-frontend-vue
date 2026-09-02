@@ -65,13 +65,6 @@
 
 <script lang="ts">
 import { useState } from '#/store/SimulatorStore/state'
-import type Scope from '#/simulator/src/circuit'
-
-declare global {
-    interface Window {
-        globalScope?: Scope
-    }
-}
 
 export function ImportProject() {
     const SimulatorState = useState()
@@ -133,18 +126,14 @@ async function receivedText(fileContent: string) {
 
     try {
         const parsedFileData = JSON.parse(fileContent)
-        const activeScope = window.globalScope
-        if (!activeScope) {
-            errorMessage.value = t('simulator.import.active_scope_error')
-            return
-        }
-        const result = await importCanonical(parsedFileData, activeScope)
+        const result = await importCanonical(parsedFileData)
         if (result.success) {
             errorMessage.value = ''
             SimulatorState.dialogBox.import_project_dialog = false
         } else {
             try {
-                await importCanonical(backup, activeScope)
+                const restoreResult = await importCanonical(backup)
+                if (!restoreResult.success) throw new Error(restoreResult.errors.join(' • '))
             } catch {
                 errorMessage.value = t('simulator.import.restore_failed_error')
                 return
