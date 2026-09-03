@@ -1,4 +1,4 @@
-import Scope from './circuit';
+import Scope from "./circuit";
 
 declare global {
   var globalScope: Scope;
