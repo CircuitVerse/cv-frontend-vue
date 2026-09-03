@@ -5,11 +5,7 @@ import type { QueueObject } from "../eventQueue";
 import { correctWidth, bezierCurveTo, moveTo } from "../canvasApi";
 import { changeInputSize } from "../modules";
 import { gateGenerateVerilog } from "../utils";
-import type {
-  Scope,
-  ICircuitElement,
-  SavedCircuitElement,
-} from "../types/circuitElement.types";
+import type { Scope, ICircuitElement, SavedCircuitElement } from "../types/circuitElement.types";
 
 import { colors } from "../themer/themer";
 
