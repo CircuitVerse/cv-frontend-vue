@@ -71,11 +71,10 @@ export default class LayoutNode {
 
     if (
       simulationArea.mouseDown &&
-      ((this.hover && !simulationArea.selected) ||
-        simulationArea.lastSelected === (this as unknown as CircuitElement))
+      ((this.hover && !simulationArea.selected) || simulationArea.lastSelected === this)
     ) {
       simulationArea.selected = true;
-      simulationArea.lastSelected = this as unknown as CircuitElement;
+      simulationArea.lastSelected = this;
       this.clicked = true;
     } else {
       this.clicked = false;
@@ -84,7 +83,7 @@ export default class LayoutNode {
     if (!this.wasClicked && this.clicked) {
       this.wasClicked = true;
       this.prev = "a";
-      simulationArea.lastSelected = this as unknown as CircuitElement;
+      simulationArea.lastSelected = this;
     } else if (this.wasClicked && this.clicked) {
       // Check if valid position and update accordingly
       if (
@@ -108,7 +107,7 @@ export default class LayoutNode {
       this.absX(),
       this.absY(),
       3,
-      ["green", "red"][+(simulationArea.lastSelected === (this as unknown as CircuitElement))],
+      ["green", "red"][+(simulationArea.lastSelected === this)],
     );
   }
 
