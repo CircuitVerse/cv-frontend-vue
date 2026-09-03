@@ -711,10 +711,10 @@ export default function startListeners() {
     restrictedElements.forEach((element) => {
         const el = document.getElementById(element);
         if (el) {
-            el.addEventListener('mouseover', () => {
+            el.addEventListener('mouseenter', () => {
                 showRestricted();
             });
-            el.addEventListener('mouseout', () => {
+            el.addEventListener('mouseleave', () => {
                 hideRestricted();
             });
         }
