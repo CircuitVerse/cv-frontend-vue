@@ -64,6 +64,8 @@ export default defineConfig(() => {
       },
     },
     root: fileURLToPath(new URL(`./${version}`, import.meta.url)),
+    // Set publicDir to the root 'public' folder instead of the version-specific 'root' folder.
+    // This allows sharing common static assets across all simulator versions.
     publicDir: fileURLToPath(new URL("./public", import.meta.url)),
     base: process.env.VITE_BASE || (isDesktop ? "/" : `/simulatorvue/${version}/`),
     build: {
