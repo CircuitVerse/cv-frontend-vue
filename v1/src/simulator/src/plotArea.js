@@ -50,7 +50,6 @@ function getCycleStartX(cycleNumber) {
 }
 
 /**
- * @type {Object} plotArea
  * @category plotArea
  */
 const plotArea = {

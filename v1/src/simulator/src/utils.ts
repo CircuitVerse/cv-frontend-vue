@@ -87,7 +87,7 @@ export function uniq(a: any[]) {
 // Generates final verilog code for each element
 // Gate = &/|/^
 // Invert is true for xNor, Nor, Nand
-export function gateGenerateVerilog(gate, invert = false) {
+export function gateGenerateVerilog(this: any, gate: string, invert = false) {
   let inputs = [];
   let outputs = [];
 
@@ -125,9 +125,9 @@ export function downloadFile(filename: string, text: string | number | boolean |
 }
 
 // For Web Application
-export function downloadFileWeb(filename: string, text: string | number | boolean) {
+export function downloadFileWeb(filename: string, text: string | number | boolean | JSON) {
   const pom = document.createElement("a");
-  pom.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(text));
+  pom.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(String(text)));
   pom.setAttribute("download", filename);
 
   if (document.createEvent) {
@@ -243,7 +243,7 @@ export const convertors = {
   dec2bcd: (x: number) => parseInt(x.toString(10), 16).toString(2),
 };
 
-export function setBaseValues(x) {
+export function setBaseValues(x: number) {
   if (isNaN(x)) return;
   $("#binaryInput").val(convertors.dec2bin(x));
   $("#bcdInput").val(convertors.dec2bcd(x));
@@ -262,24 +262,24 @@ export function parseNumber(num: string | number) {
 
 export function setupBitConvertor() {
   $("#decimalInput").on("keyup", function () {
-    var x = parseInt($("#decimalInput").val(), 10);
+    var x = parseInt(String($("#decimalInput").val()), 10);
     setBaseValues(x);
   });
 
   $("#binaryInput").on("keyup", function () {
-    var inp = $("#binaryInput").val();
+    var inp = String($("#binaryInput").val());
     var x;
     if (inp.slice(0, 2) == "0b") x = parseInt(inp.slice(2), 2);
     else x = parseInt(inp, 2);
     setBaseValues(x);
   });
   $("#bcdInput").on("keyup", function () {
-    var input = $("#bcdInput").val();
+    var input = String($("#bcdInput").val());
     var num = 0;
     while (input.length % 4 !== 0) {
       input = "0" + input;
     }
-    if (input !== 0) {
+    if (input !== "0") {
       var i = 0;
       while (i < input.length / 4) {
         if (parseInt(input.slice(4 * i, 4 * (i + 1)), 2) < 10)
@@ -288,16 +288,16 @@ export function setupBitConvertor() {
         i++;
       }
     }
-    return setBaseValues(x);
+    return setBaseValues(num);
   });
 
   $("#hexInput").on("keyup", function () {
-    var x = parseInt($("#hexInput").val(), 16);
+    var x = parseInt(String($("#hexInput").val()), 16);
     setBaseValues(x);
   });
 
   $("#octalInput").on("keyup", function () {
-    var x = parseInt($("#octalInput").val(), 8);
+    var x = parseInt(String($("#octalInput").val()), 8);
     setBaseValues(x);
   });
 }
