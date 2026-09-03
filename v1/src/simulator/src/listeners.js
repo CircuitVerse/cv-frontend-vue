@@ -192,7 +192,7 @@ export function panStart(e) {
     e.preventDefault();
     scheduleBackup();
     scheduleUpdate(1);
-    $('.dropdown.open').removeClass('open');
+    document.querySelectorAll('.dropdown.open').forEach(el => el.classList.remove('open'));
 }
 
 /*
@@ -298,16 +298,20 @@ export function panStop(e) {
 }
 
 export default function startListeners() {
-    $(document).on('keyup', (e) => {
-        if (e.key === 'Escape') exitFullView()
-    })
+    document.addEventListener('keyup', (e) => {
+        if (e.key === 'Escape') exitFullView();
+    });
 
-    $('#projectName').on('click', () => {
-		simulationArea.lastSelected = globalScope.root;
-		setTimeout(() => {
-			document.getElementById("projname").select();
-		}, 100);
-	});
+    const projectNameEl = document.getElementById('projectName');
+    if (projectNameEl) {
+        projectNameEl.addEventListener('click', () => {
+            simulationArea.lastSelected = globalScope.root;
+            setTimeout(() => {
+                const projNameInput = document.getElementById("projname");
+                if (projNameInput) projNameInput.select();
+            }, 100);
+        });
+    }
 
     document
         .getElementById('simulationArea')
@@ -676,35 +680,45 @@ export default function startListeners() {
     })
 
     // 'drag and drop' event listener for subcircuit elements in layout mode
-    $('#subcircuitMenu').on('dragstop', '.draggableSubcircuitElement', function (event, ui) {
-        const sideBarWidth = $('#guide_1')[0].clientWidth;
-        let tempElement;
+    const subcircuitMenu = document.getElementById('subcircuitMenu');
+    if (subcircuitMenu) {
+        subcircuitMenu.addEventListener('dragend', function (event) {
+            const target = event.target;
+            if (!target.classList.contains('draggableSubcircuitElement')) return;
 
-        if (ui.position.top > 10 && ui.position.left > sideBarWidth) {
-            // Make a shallow copy of the element with the new coordinates
-            tempElement = globalScope[this.dataset.elementName][this.dataset.elementId];
-            // Changing the coordinate doesn't work yet, nodes get far from element
-            tempElement.x = ui.position.left - sideBarWidth;
-            tempElement.y = ui.position.top;
-            for (const node of tempElement.nodeList) {
-                node.x = ui.position.left - sideBarWidth;
-                node.y = ui.position.top;
+            const guide1 = document.getElementById('guide_1');
+            const sideBarWidth = guide1 ? guide1.clientWidth : 0;
+            let tempElement;
+            const rect = target.getBoundingClientRect();
+
+            if (rect.top > 10 && rect.left > sideBarWidth) {
+                // Make a shallow copy of the element with the new coordinates
+                tempElement = globalScope[target.dataset.elementName][target.dataset.elementId];
+                // Changing the coordinate doesn't work yet, nodes get far from element
+                tempElement.x = rect.left - sideBarWidth;
+                tempElement.y = rect.top;
+                for (const node of tempElement.nodeList) {
+                    node.x = rect.left - sideBarWidth;
+                    node.y = rect.top;
+                }
+
+                tempBuffer.subElements.push(tempElement);
+                target.parentElement.removeChild(target);
             }
-
-            tempBuffer.subElements.push(tempElement);
-            this.parentElement.removeChild(this);
-        }
-    });
+        });
+    }
 
     restrictedElements.forEach((element) => {
-        $(`#${element}`).mouseover(() => {
-            showRestricted()
-        })
-
-        $(`#${element}`).mouseout(() => {
-            hideRestricted()
-        })
-    })
+        const el = document.getElementById(element);
+        if (el) {
+            el.addEventListener('mouseover', () => {
+                showRestricted();
+            });
+            el.addEventListener('mouseout', () => {
+                hideRestricted();
+            });
+        }
+    });
 
     zoomSliderListeners()
     if (!embed) {
@@ -713,12 +727,13 @@ export default function startListeners() {
 }
 
 function resizeTabs() {
-    const $windowsize = $('body').width()
-    const $sideBarsize = $('.side').width()
-    const $maxwidth = $windowsize - $sideBarsize
-    $('#tabsBar div').each(function (e) {
-        $(this).css({ 'max-width': $maxwidth - 30 })
-    })
+    const windowsize = document.body.clientWidth;
+    const side = document.querySelector('.side');
+    const sideBarsize = side ? side.clientWidth : 0;
+    const maxwidth = windowsize - sideBarsize;
+    document.querySelectorAll('#tabsBar div').forEach(function (el) {
+        el.style.maxWidth = `${maxwidth - 30}px`;
+    });
 }
 
 window.addEventListener('resize', resizeTabs)
