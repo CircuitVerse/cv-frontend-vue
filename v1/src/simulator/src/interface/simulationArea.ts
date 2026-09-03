@@ -4,7 +4,7 @@ export interface SimulationArea {
   canvas: HTMLCanvasElement;
   context: CanvasRenderingContext2D | null;
   selected: boolean;
-  hover: boolean;
+  hover: boolean | undefined | Record<string, any>;
   clockState: number;
   clockEnabled: boolean;
   lastSelected: CircuitElement | null | undefined;
