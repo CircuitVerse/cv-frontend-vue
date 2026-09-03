@@ -620,12 +620,6 @@ export function fillText4(
     fontSize: number = 14,
     textAlign: CanvasTextAlign = 'center'
 ) {
-    var angle: Record<string, number> = {
-        RIGHT: 0,
-        LEFT: 0,
-        DOWN: Math.PI / 2,
-        UP: -Math.PI / 2,
-    }
     x1 *= globalScope.scale
     y1 *= globalScope.scale
     ;[x1, y1] = rotate(x1, y1, dir)
