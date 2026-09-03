@@ -15,7 +15,7 @@ declare module "*.vue" {
 }
 
 declare var $: JQueryStatic;
-declare var globalScope: import('./simulator/src/circuit').default;
+declare var globalScope: import("./simulator/src/circuit").default;
 declare var DPR: number;
 declare var restrictedElements: string[];
 declare var embed: boolean;

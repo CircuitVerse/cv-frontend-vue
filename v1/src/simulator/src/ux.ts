@@ -3,124 +3,118 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable guard-for-in */
-import { layoutModeGet } from './layoutMode'
-import {
-    scheduleUpdate,
-    wireToBeCheckedSet,
-    updateCanvasSet
-} from './engine'
-import { simulationArea } from './simulationArea'
-import logixFunction from './data'
-import { circuitProperty } from './circuit'
-import { updateRestrictedElementsInScope } from './restrictedElementDiv'
-import { dragging } from './drag'
-import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
-import { toRefs } from 'vue'
-import { circuitElementList } from './metadata'
-import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
+import { layoutModeGet } from "./layoutMode";
+import { scheduleUpdate, wireToBeCheckedSet, updateCanvasSet } from "./engine";
+import { simulationArea } from "./simulationArea";
+import logixFunction from "./data";
+import { circuitProperty } from "./circuit";
+import { updateRestrictedElementsInScope } from "./restrictedElementDiv";
+import { dragging } from "./drag";
+import { SimulatorStore } from "#/store/SimulatorStore/SimulatorStore";
+import { toRefs } from "vue";
+import { circuitElementList } from "./metadata";
+import { useSimulatorMobileStore } from "#/store/simulatorMobileStore";
 
 export const uxvar = {
-    smartDropXX: 50,
-    smartDropYY: 80,
-}
+  smartDropXX: 50,
+  smartDropYY: 80,
+};
 /**
  * @type {number} - Is used to calculate the position where an element from sidebar is dropped
  * @category ux
  */
-uxvar.smartDropXX = 50
+uxvar.smartDropXX = 50;
 
 /**
  * @type {number} - Is used to calculate the position where an element from sidebar is dropped
  * @category ux
  */
-uxvar.smartDropYY = 80
+uxvar.smartDropYY = 80;
 
 /**
  * @type {Object} - Object stores the position of context menu;
  * @category ux
  */
 var ctxPos = {
-    x: 0,
-    y: 0,
-    visible: false,
-}
-let isFullViewActive = false
+  x: 0,
+  y: 0,
+  visible: false,
+};
+let isFullViewActive = false;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-let prevMobileState: any = null 
+let prevMobileState: any = null;
 // FUNCTION TO SHOW AND HIDE CONTEXT MENU
 function hideContextMenu() {
-    var el = document.getElementById('contextMenu')
-    if (el) {
-        el.style.opacity = '0';
-        setTimeout(() => {
-            el!.style.visibility = 'hidden';
-            ctxPos.visible = false
-        }, 200) // Hide after 2 sec
-    }
+  var el = document.getElementById("contextMenu");
+  if (el) {
+    el.style.opacity = "0";
+    setTimeout(() => {
+      el!.style.visibility = "hidden";
+      ctxPos.visible = false;
+    }, 200); // Hide after 2 sec
+  }
 }
 /**
  * Function displays context menu
  * @category ux
  */
 function showContextMenu() {
-    if (layoutModeGet()) return false // Hide context menu when it is in Layout Mode
-    $('#contextMenu').css({
-        visibility: 'visible',
-        opacity: 1,
-    })
+  if (layoutModeGet()) return false; // Hide context menu when it is in Layout Mode
+  $("#contextMenu").css({
+    visibility: "visible",
+    opacity: 1,
+  });
 
-    var windowHeight =
-        ($('#simulationArea').height() ?? 0) - ($('#contextMenu').height() ?? 0) - 10
-    var windowWidth =
-        ($('#simulationArea').width() ?? 0) - ($('#contextMenu').width() ?? 0) - 10
-    // for top, left, right, bottom
-    var topPosition
-    var leftPosition
-    var rightPosition
-    var bottomPosition
-    if (ctxPos.y > windowHeight && ctxPos.x <= windowWidth) {
-        //When user click on bottom-left part of window
-        leftPosition = ctxPos.x
-        bottomPosition = ($(window).height() ?? 0) - ctxPos.y
-        $('#contextMenu').css({
-            left: `${leftPosition}px`,
-            bottom: `${bottomPosition}px`,
-            right: 'auto',
-            top: 'auto',
-        })
-    } else if (ctxPos.y > windowHeight && ctxPos.x > windowWidth) {
-        //When user click on bottom-right part of window
-        bottomPosition = ($(window).height() ?? 0) - ctxPos.y
-        rightPosition = ($(window).width() ?? 0) - ctxPos.x
-        $('#contextMenu').css({
-            left: 'auto',
-            bottom: `${bottomPosition}px`,
-            right: `${rightPosition}px`,
-            top: 'auto',
-        })
-    } else if (ctxPos.y <= windowHeight && ctxPos.x <= windowWidth) {
-        //When user click on top-left part of window
-        leftPosition = ctxPos.x
-        topPosition = ctxPos.y
-        $('#contextMenu').css({
-            left: `${leftPosition}px`,
-            bottom: 'auto',
-            right: 'auto',
-            top: `${topPosition}px`,
-        })
-    } else {
-        //When user click on top-right part of window
-        rightPosition = ($(window).width() ?? 0) - ctxPos.x
-        topPosition = ctxPos.y
-        $('#contextMenu').css({
-            left: 'auto',
-            bottom: 'auto',
-            right: `${rightPosition}px`,
-            top: `${topPosition}px`,
-        })
-    }
-    ctxPos.visible = true
-    return false
+  var windowHeight = ($("#simulationArea").height() ?? 0) - ($("#contextMenu").height() ?? 0) - 10;
+  var windowWidth = ($("#simulationArea").width() ?? 0) - ($("#contextMenu").width() ?? 0) - 10;
+  // for top, left, right, bottom
+  var topPosition;
+  var leftPosition;
+  var rightPosition;
+  var bottomPosition;
+  if (ctxPos.y > windowHeight && ctxPos.x <= windowWidth) {
+    //When user click on bottom-left part of window
+    leftPosition = ctxPos.x;
+    bottomPosition = ($(window).height() ?? 0) - ctxPos.y;
+    $("#contextMenu").css({
+      left: `${leftPosition}px`,
+      bottom: `${bottomPosition}px`,
+      right: "auto",
+      top: "auto",
+    });
+  } else if (ctxPos.y > windowHeight && ctxPos.x > windowWidth) {
+    //When user click on bottom-right part of window
+    bottomPosition = ($(window).height() ?? 0) - ctxPos.y;
+    rightPosition = ($(window).width() ?? 0) - ctxPos.x;
+    $("#contextMenu").css({
+      left: "auto",
+      bottom: `${bottomPosition}px`,
+      right: `${rightPosition}px`,
+      top: "auto",
+    });
+  } else if (ctxPos.y <= windowHeight && ctxPos.x <= windowWidth) {
+    //When user click on top-left part of window
+    leftPosition = ctxPos.x;
+    topPosition = ctxPos.y;
+    $("#contextMenu").css({
+      left: `${leftPosition}px`,
+      bottom: "auto",
+      right: "auto",
+      top: `${topPosition}px`,
+    });
+  } else {
+    //When user click on top-right part of window
+    rightPosition = ($(window).width() ?? 0) - ctxPos.x;
+    topPosition = ctxPos.y;
+    $("#contextMenu").css({
+      left: "auto",
+      bottom: "auto",
+      right: `${rightPosition}px`,
+      top: `${topPosition}px`,
+    });
+  }
+  ctxPos.visible = true;
+  return false;
 }
 
 /**
@@ -129,39 +123,39 @@ function showContextMenu() {
  * @category ux
  */
 export function setupUI() {
-    var ctxEl = document.getElementById('contextMenu')
-    document.addEventListener('mousedown', (e: MouseEvent) => {
-        // Check if mouse is not inside the context menu and menu is visible
-        if (
-            ctxEl &&
-            !(
-                e.clientX >= ctxPos.x &&
-                e.clientX <= ctxPos.x + ctxEl.offsetWidth &&
-                e.clientY >= ctxPos.y &&
-                e.clientY <= ctxPos.y + ctxEl.offsetHeight
-            ) &&
-            ctxPos.visible &&
-            e.which !== 3
-        ) {
-            hideContextMenu()
-        }
-
-        // Change the position of context whenever mouse is clicked
-        ctxPos.x = e.clientX
-        ctxPos.y = e.clientY
-    })
-    const canvasArea = document.getElementById('canvasArea');
-    if (canvasArea) {
-        canvasArea.oncontextmenu = showContextMenu as any;
+  var ctxEl = document.getElementById("contextMenu");
+  document.addEventListener("mousedown", (e: MouseEvent) => {
+    // Check if mouse is not inside the context menu and menu is visible
+    if (
+      ctxEl &&
+      !(
+        e.clientX >= ctxPos.x &&
+        e.clientX <= ctxPos.x + ctxEl.offsetWidth &&
+        e.clientY >= ctxPos.y &&
+        e.clientY <= ctxPos.y + ctxEl.offsetHeight
+      ) &&
+      ctxPos.visible &&
+      e.which !== 3
+    ) {
+      hideContextMenu();
     }
 
-    $('.logixButton').on('click', function (this: HTMLElement) {
-        const handler = (logixFunction as any)[this.id];
-        if (typeof handler === 'function') {
-            handler.call(logixFunction);
-        }
-    })
-    setupPanels()
+    // Change the position of context whenever mouse is clicked
+    ctxPos.x = e.clientX;
+    ctxPos.y = e.clientY;
+  });
+  const canvasArea = document.getElementById("canvasArea");
+  if (canvasArea) {
+    canvasArea.oncontextmenu = showContextMenu as any;
+  }
+
+  $(".logixButton").on("click", function (this: HTMLElement) {
+    const handler = (logixFunction as any)[this.id];
+    if (typeof handler === "function") {
+      handler.call(logixFunction);
+    }
+  });
+  setupPanels();
 }
 
 /**
@@ -169,80 +163,69 @@ export function setupUI() {
  * @category ux
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-var prevPropertyObj: any
+var prevPropertyObj: any;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function prevPropertyObjSet(param: any) {
-    prevPropertyObj = param
+  prevPropertyObj = param;
 }
 
 export function prevPropertyObjGet() {
-    return prevPropertyObj
+  return prevPropertyObj;
 }
 
 function checkValidBitWidth() {
-    const selector = $("[name='newBitWidth']")
-    const val = Number(selector.val())
-    if (
-        selector === undefined ||
-        isNaN(val) ||
-        val > 32 ||
-        val < 1
-    ) {
-        // fallback to previously saves state
-        selector.val(selector.attr('old-val') ?? '')
-    } else {
-        selector.attr('old-val', String(val))
-    }
+  const selector = $("[name='newBitWidth']");
+  const val = Number(selector.val());
+  if (selector === undefined || isNaN(val) || val > 32 || val < 1) {
+    // fallback to previously saves state
+    selector.val(selector.attr("old-val") ?? "");
+  } else {
+    selector.attr("old-val", String(val));
+  }
 }
 
 export function objectPropertyAttributeUpdate(this: HTMLInputElement) {
-    checkValidBitWidth()
-    scheduleUpdate()
-    updateCanvasSet(true)
-    wireToBeCheckedSet(1)
-    let value: string | number = this.value;
-    if (this.type === 'number') {
-        value = parseFloat(value as string)
-    }
-    if (simulationArea.lastSelected && typeof simulationArea.lastSelected[this.name] === 'function') {
-        simulationArea.lastSelected[this.name].call(simulationArea.lastSelected, value)
-    } else if (typeof (circuitProperty as any)[this.name] === 'function') {
-        (circuitProperty as any)[this.name].call(circuitProperty, value)
-    }
+  checkValidBitWidth();
+  scheduleUpdate();
+  updateCanvasSet(true);
+  wireToBeCheckedSet(1);
+  let value: string | number = this.value;
+  if (this.type === "number") {
+    value = parseFloat(value as string);
+  }
+  if (simulationArea.lastSelected && typeof simulationArea.lastSelected[this.name] === "function") {
+    simulationArea.lastSelected[this.name].call(simulationArea.lastSelected, value);
+  } else if (typeof (circuitProperty as any)[this.name] === "function") {
+    (circuitProperty as any)[this.name].call(circuitProperty, value);
+  }
 }
 
 export function objectPropertyAttributeCheckedUpdate(this: HTMLInputElement) {
-    if (this.name === 'toggleLabelInLayoutMode') return // Hack to prevent toggleLabelInLayoutMode from toggling twice
-    scheduleUpdate()
-    updateCanvasSet(true)
-    wireToBeCheckedSet(1)
-    if (simulationArea.lastSelected && typeof simulationArea.lastSelected[this.name] === 'function') {
-        simulationArea.lastSelected[this.name].call(simulationArea.lastSelected, this.checked)
-    } else if (typeof (circuitProperty as any)[this.name] === 'function') {
-        (circuitProperty as any)[this.name].call(circuitProperty, this.checked)
-    }
+  if (this.name === "toggleLabelInLayoutMode") return; // Hack to prevent toggleLabelInLayoutMode from toggling twice
+  scheduleUpdate();
+  updateCanvasSet(true);
+  wireToBeCheckedSet(1);
+  if (simulationArea.lastSelected && typeof simulationArea.lastSelected[this.name] === "function") {
+    simulationArea.lastSelected[this.name].call(simulationArea.lastSelected, this.checked);
+  } else if (typeof (circuitProperty as any)[this.name] === "function") {
+    (circuitProperty as any)[this.name].call(circuitProperty, this.checked);
+  }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function checkPropertiesUpdate() {
-    $('.objectPropertyAttribute').off(
-        'change keyup paste click',
-        objectPropertyAttributeUpdate
-    )
-    $('.objectPropertyAttribute').on(
-        'change keyup paste click',
-        objectPropertyAttributeUpdate
-    )
+  $(".objectPropertyAttribute").off("change keyup paste click", objectPropertyAttributeUpdate);
+  $(".objectPropertyAttribute").on("change keyup paste click", objectPropertyAttributeUpdate);
 
-    $('.objectPropertyAttributeChecked').off(
-        'change keyup paste click',
-        objectPropertyAttributeCheckedUpdate
-    )
-    $('.objectPropertyAttributeChecked').on(
-        'change keyup paste click',
-        objectPropertyAttributeCheckedUpdate
-    )
+  $(".objectPropertyAttributeChecked").off(
+    "change keyup paste click",
+    objectPropertyAttributeCheckedUpdate,
+  );
+  $(".objectPropertyAttributeChecked").on(
+    "change keyup paste click",
+    objectPropertyAttributeCheckedUpdate,
+  );
 }
 
 /**
@@ -252,8 +235,8 @@ export function checkPropertiesUpdate() {
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function showProperties(obj: any) {
-    if (obj === prevPropertyObjGet()) return
-    checkPropertiesUpdate()
+  if (obj === prevPropertyObjGet()) return;
+  checkPropertiesUpdate();
 }
 
 /**
@@ -261,283 +244,276 @@ export function showProperties(obj: any) {
  * @category ux
  */
 export function hideProperties() {
-    $('#moduleProperty-inner').empty()
-    $('#moduleProperty').hide()
-    prevPropertyObjSet(undefined)
-    $('.objectPropertyAttribute').unbind('change keyup paste click')
+  $("#moduleProperty-inner").empty();
+  $("#moduleProperty").hide();
+  prevPropertyObjSet(undefined);
+  $(".objectPropertyAttribute").unbind("change keyup paste click");
 }
 
 export function deleteSelected() {
+  if (
+    simulationArea.lastSelected &&
+    !(simulationArea.lastSelected.objectType === "Node" && simulationArea.lastSelected.type !== 2)
+  ) {
+    simulationArea.lastSelected.delete();
+  }
+
+  for (var i = 0; i < simulationArea.multipleObjectSelections.length; i++) {
     if (
-        simulationArea.lastSelected &&
-        !(
-            simulationArea.lastSelected.objectType === 'Node' &&
-            simulationArea.lastSelected.type !== 2
-        )
-    ) {
-        simulationArea.lastSelected.delete()
-    }
+      !(
+        simulationArea.multipleObjectSelections[i].objectType === "Node" &&
+        simulationArea.multipleObjectSelections[i].type !== 2
+      )
+    )
+      simulationArea.multipleObjectSelections[i].cleanDelete();
+  }
 
-    for (var i = 0; i < simulationArea.multipleObjectSelections.length; i++) {
-        if (
-            !(
-                simulationArea.multipleObjectSelections[i].objectType ===
-                    'Node' &&
-                simulationArea.multipleObjectSelections[i].type !== 2
-            )
-        )
-            simulationArea.multipleObjectSelections[i].cleanDelete()
-    }
-
-    simulationArea.multipleObjectSelections = []
-    simulationArea.lastSelected = undefined
-    showProperties(simulationArea.lastSelected)
-    // Updated restricted elements
-    updateCanvasSet(true)
-    scheduleUpdate()
-    updateRestrictedElementsInScope()
+  simulationArea.multipleObjectSelections = [];
+  simulationArea.lastSelected = undefined;
+  showProperties(simulationArea.lastSelected);
+  // Updated restricted elements
+  updateCanvasSet(true);
+  scheduleUpdate();
+  updateRestrictedElementsInScope();
 }
 
 /**
  * listener for opening the prompt for bin conversion
  * @category ux
  */
-$('#bitconverter').on('click', () => {
-    const bitconverterprompt = $('#bitconverterprompt') as any
-    bitconverterprompt.dialog({
-        resizable: false,
-        width: 'auto',
-        buttons: [
-            {
-                text: 'Reset',
-                click() {
-                    $('#decimalInput').val('0')
-                    $('#binaryInput').val('0')
-                    $('#octalInput').val('0')
-                    $('#hexInput').val('0')
-                },
-            },
-        ],
-    })
-})
+$("#bitconverter").on("click", () => {
+  const bitconverterprompt = $("#bitconverterprompt") as any;
+  bitconverterprompt.dialog({
+    resizable: false,
+    width: "auto",
+    buttons: [
+      {
+        text: "Reset",
+        click() {
+          $("#decimalInput").val("0");
+          $("#binaryInput").val("0");
+          $("#octalInput").val("0");
+          $("#hexInput").val("0");
+        },
+      },
+    ],
+  });
+});
 
 // convertors
 const convertors = {
-    dec2bin: (x: number) => `0b${x.toString(2)}`,
-    dec2hex: (x: number) => `0x${x.toString(16)}`,
-    dec2octal: (x: number) => `0${x.toString(8)}`,
-}
+  dec2bin: (x: number) => `0b${x.toString(2)}`,
+  dec2hex: (x: number) => `0x${x.toString(16)}`,
+  dec2octal: (x: number) => `0${x.toString(8)}`,
+};
 
 function setBaseValues(x: number) {
-    if (isNaN(x)) return
-    $('#binaryInput').val(convertors.dec2bin(x))
-    $('#octalInput').val(convertors.dec2octal(x))
-    $('#hexInput').val(convertors.dec2hex(x))
-    $('#decimalInput').val(x)
+  if (isNaN(x)) return;
+  $("#binaryInput").val(convertors.dec2bin(x));
+  $("#octalInput").val(convertors.dec2octal(x));
+  $("#hexInput").val(convertors.dec2hex(x));
+  $("#decimalInput").val(x);
 }
 
-$('#decimalInput').on('keyup', () => {
-    var x = parseInt(String($('#decimalInput').val()), 10)
-    setBaseValues(x)
-})
+$("#decimalInput").on("keyup", () => {
+  var x = parseInt(String($("#decimalInput").val()), 10);
+  setBaseValues(x);
+});
 
-$('#binaryInput').on('keyup', () => {
-    var x = parseInt(String($('#binaryInput').val()), 2)
-    setBaseValues(x)
-})
+$("#binaryInput").on("keyup", () => {
+  var x = parseInt(String($("#binaryInput").val()), 2);
+  setBaseValues(x);
+});
 
-$('#hexInput').on('keyup', () => {
-    var x = parseInt(String($('#hexInput').val()), 16)
-    setBaseValues(x)
-})
+$("#hexInput").on("keyup", () => {
+  var x = parseInt(String($("#hexInput").val()), 16);
+  setBaseValues(x);
+});
 
-$('#octalInput').on('keyup', () => {
-    var x = parseInt(String($('#octalInput').val()), 8)
-    setBaseValues(x)
-})
-
+$("#octalInput").on("keyup", () => {
+  var x = parseInt(String($("#octalInput").val()), 8);
+  setBaseValues(x);
+});
 
 export function minimizePanel(panelSelector: string) {
-    $(panelSelector + ' .minimize').trigger('click')
+  $(panelSelector + " .minimize").trigger("click");
 }
 
 export function setupPanels() {
-    dragging('#dragQPanel', '.quick-btn')
+  dragging("#dragQPanel", ".quick-btn");
 
-    setupPanelListeners('.elementPanel')
-    setupPanelListeners('.layoutElementPanel')
-    setupPanelListeners('#moduleProperty')
-    setupPanelListeners('#layoutDialog')
-    setupPanelListeners('#verilogEditorPanel')
-    setupPanelListeners('.timing-diagram-panel')
-    setupPanelListeners('.testbench-manual-panel')
+  setupPanelListeners(".elementPanel");
+  setupPanelListeners(".layoutElementPanel");
+  setupPanelListeners("#moduleProperty");
+  setupPanelListeners("#layoutDialog");
+  setupPanelListeners("#verilogEditorPanel");
+  setupPanelListeners(".timing-diagram-panel");
+  setupPanelListeners(".testbench-manual-panel");
 
-    // Minimize Timing Diagram (takes too much space)
-    minimizePanel('.timing-diagram-panel')
+  // Minimize Timing Diagram (takes too much space)
+  minimizePanel(".timing-diagram-panel");
 
-    // Minimize Testbench UI
-    minimizePanel('.testbench-manual-panel')
+  // Minimize Testbench UI
+  minimizePanel(".testbench-manual-panel");
 
-    $('#projectName').on('click', () => {
-        $("input[name='setProjectName']").focus().select()
-    })
+  $("#projectName").on("click", () => {
+    $("input[name='setProjectName']").focus().select();
+  });
 }
 
 export function setupPanelListeners(panelSelector: string) {
-    var headerSelector = `${panelSelector} .panel-header`
-    var minimizeSelector = `${panelSelector} .minimize`
-    var maximizeSelector = `${panelSelector} .maximize`
-    var bodySelector = `${panelSelector} > .panel-body`
+  var headerSelector = `${panelSelector} .panel-header`;
+  var minimizeSelector = `${panelSelector} .minimize`;
+  var maximizeSelector = `${panelSelector} .maximize`;
+  var bodySelector = `${panelSelector} > .panel-body`;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    dragging(headerSelector, panelSelector)
-    // Current Panel on Top
-    var minimized = false
-    $(headerSelector)
-        .off('dblclick.panelListeners')
-        .on('dblclick.panelListeners', () =>
-            minimized
-                ? $(maximizeSelector).trigger('click')
-                : $(minimizeSelector).trigger('click')
-        )
-    // Minimize
-    $(minimizeSelector)
-        .off('click.panelListeners')
-        .on('click.panelListeners', () => {
-            $(bodySelector).hide()
-            $(minimizeSelector).hide()
-            $(maximizeSelector).show()
-            minimized = true
-        })
-    // Maximize
-    $(maximizeSelector)
-        .off('click.panelListeners')
-        .on('click.panelListeners', () => {
-            $(bodySelector).show()
-            $(minimizeSelector).show()
-            $(maximizeSelector).hide()
-            minimized = false
-        })
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  dragging(headerSelector, panelSelector);
+  // Current Panel on Top
+  var minimized = false;
+  $(headerSelector)
+    .off("dblclick.panelListeners")
+    .on("dblclick.panelListeners", () =>
+      minimized ? $(maximizeSelector).trigger("click") : $(minimizeSelector).trigger("click"),
+    );
+  // Minimize
+  $(minimizeSelector)
+    .off("click.panelListeners")
+    .on("click.panelListeners", () => {
+      $(bodySelector).hide();
+      $(minimizeSelector).hide();
+      $(maximizeSelector).show();
+      minimized = true;
+    });
+  // Maximize
+  $(maximizeSelector)
+    .off("click.panelListeners")
+    .on("click.panelListeners", () => {
+      $(bodySelector).show();
+      $(minimizeSelector).show();
+      $(maximizeSelector).hide();
+      minimized = false;
+    });
 }
 
 export function exitFullView() {
-    // Remove ALL exit buttons (handles edge cases)
-    const exitViewBtns = document.querySelectorAll('#exitViewBtn')
-    exitViewBtns.forEach(btn => btn.remove())
+  // Remove ALL exit buttons (handles edge cases)
+  const exitViewBtns = document.querySelectorAll("#exitViewBtn");
+  exitViewBtns.forEach((btn) => btn.remove());
 
-    const elements = document.querySelectorAll(
-        '.navbar, .modules, .report-sidebar, #tabsBar, #moduleProperty, .timing-diagram-panel, .testbench-manual-panel, .quick-btn'
-    )
+  const elements = document.querySelectorAll(
+    ".navbar, .modules, .report-sidebar, #tabsBar, #moduleProperty, .timing-diagram-panel, .testbench-manual-panel, .quick-btn",
+  );
 
-    elements.forEach((element) => {
-        if (element instanceof HTMLElement) {
-            element.style.display = ''
-        }
-    })
-
-    // Mobile Components - Restore previous state
-    const simulatorMobileStore = toRefs(useSimulatorMobileStore())
-    
-    // ✅ RESTORE PREVIOUS STATE
-    if (prevMobileState) {
-        simulatorMobileStore.showElementsPanel.value = prevMobileState.showElementsPanel
-        simulatorMobileStore.showPropertiesPanel.value = prevMobileState.showPropertiesPanel
-        simulatorMobileStore.showTimingDiagram.value = prevMobileState.showTimingDiagram
-        simulatorMobileStore.showQuickButtons.value = prevMobileState.showQuickButtons
-        simulatorMobileStore.showMobileButtons.value = prevMobileState.showMobileButtons
-        prevMobileState = null // Clear saved state
+  elements.forEach((element) => {
+    if (element instanceof HTMLElement) {
+      element.style.display = "";
     }
+  });
 
-    // Reset state flag
-    isFullViewActive = false
+  // Mobile Components - Restore previous state
+  const simulatorMobileStore = toRefs(useSimulatorMobileStore());
+
+  // ✅ RESTORE PREVIOUS STATE
+  if (prevMobileState) {
+    simulatorMobileStore.showElementsPanel.value = prevMobileState.showElementsPanel;
+    simulatorMobileStore.showPropertiesPanel.value = prevMobileState.showPropertiesPanel;
+    simulatorMobileStore.showTimingDiagram.value = prevMobileState.showTimingDiagram;
+    simulatorMobileStore.showQuickButtons.value = prevMobileState.showQuickButtons;
+    simulatorMobileStore.showMobileButtons.value = prevMobileState.showMobileButtons;
+    prevMobileState = null; // Clear saved state
+  }
+
+  // Reset state flag
+  isFullViewActive = false;
 }
 
 export function fullView() {
-    // Prevent multiple calls
-    if (isFullViewActive) return
-    
-    const app = document.querySelector('#app')
-    if (!app) return
+  // Prevent multiple calls
+  if (isFullViewActive) return;
 
-    // Close all menus using custom event (Vue-safe approach)
-    document.dispatchEvent(new Event('ui:close-menus'))
+  const app = document.querySelector("#app");
+  if (!app) return;
 
-    isFullViewActive = true
+  // Close all menus using custom event (Vue-safe approach)
+  document.dispatchEvent(new Event("ui:close-menus"));
 
-    const exitViewEl = document.createElement('button')
-    exitViewEl.id = 'exitViewBtn'
-    exitViewEl.textContent = 'Exit Full Preview'
+  isFullViewActive = true;
 
-    const elements = document.querySelectorAll(
-        '.navbar, .modules, .report-sidebar, #tabsBar, #moduleProperty, .timing-diagram-panel, .testbench-manual-panel, .quick-btn'
-    )
+  const exitViewEl = document.createElement("button");
+  exitViewEl.id = "exitViewBtn";
+  exitViewEl.textContent = "Exit Full Preview";
 
-    elements.forEach((element) => {
-        if (element instanceof HTMLElement) {
-            element.style.display = 'none'
-        }
-    })
+  const elements = document.querySelectorAll(
+    ".navbar, .modules, .report-sidebar, #tabsBar, #moduleProperty, .timing-diagram-panel, .testbench-manual-panel, .quick-btn",
+  );
 
-    // Mobile Components - Save previous state before hiding
-    const simulatorMobileStore = toRefs(useSimulatorMobileStore())
-    
-    // ✅ SAVE PREVIOUS STATE
-    prevMobileState = {
-        showElementsPanel: simulatorMobileStore.showElementsPanel.value,
-        showPropertiesPanel: simulatorMobileStore.showPropertiesPanel.value,
-        showTimingDiagram: simulatorMobileStore.showTimingDiagram.value,
-        showQuickButtons: simulatorMobileStore.showQuickButtons.value,
-        showMobileButtons: simulatorMobileStore.showMobileButtons.value
+  elements.forEach((element) => {
+    if (element instanceof HTMLElement) {
+      element.style.display = "none";
     }
+  });
 
-    simulatorMobileStore.showElementsPanel.value = false
-    simulatorMobileStore.showPropertiesPanel.value = false
-    simulatorMobileStore.showTimingDiagram.value = false
-    simulatorMobileStore.showQuickButtons.value = false
-    simulatorMobileStore.showMobileButtons.value = false
+  // Mobile Components - Save previous state before hiding
+  const simulatorMobileStore = toRefs(useSimulatorMobileStore());
 
-    app.appendChild(exitViewEl)
-    exitViewEl.addEventListener('click', exitFullView)
+  // ✅ SAVE PREVIOUS STATE
+  prevMobileState = {
+    showElementsPanel: simulatorMobileStore.showElementsPanel.value,
+    showPropertiesPanel: simulatorMobileStore.showPropertiesPanel.value,
+    showTimingDiagram: simulatorMobileStore.showTimingDiagram.value,
+    showQuickButtons: simulatorMobileStore.showQuickButtons.value,
+    showMobileButtons: simulatorMobileStore.showMobileButtons.value,
+  };
+
+  simulatorMobileStore.showElementsPanel.value = false;
+  simulatorMobileStore.showPropertiesPanel.value = false;
+  simulatorMobileStore.showTimingDiagram.value = false;
+  simulatorMobileStore.showQuickButtons.value = false;
+  simulatorMobileStore.showMobileButtons.value = false;
+
+  app.appendChild(exitViewEl);
+  exitViewEl.addEventListener("click", exitFullView);
 }
 
 /**
     Fills the elements that can be displayed in the subcircuit, in the subcircuit menu
 **/
 export function fillSubcircuitElements() {
-    const simulatorStore = SimulatorStore()
-    const { subCircuitElementList, isEmptySubCircuitElementList } = toRefs(simulatorStore)
-    subCircuitElementList.value = []
-    isEmptySubCircuitElementList.value = true
+  const simulatorStore = SimulatorStore();
+  const { subCircuitElementList, isEmptySubCircuitElementList } = toRefs(simulatorStore);
+  subCircuitElementList.value = [];
+  isEmptySubCircuitElementList.value = true;
 
-    const subcircuitElements: any[] = []
+  const subcircuitElements: any[] = [];
 
-    let subCircuitElementExists = false
+  let subCircuitElementExists = false;
 
-    for (let el of circuitElementList) {
-        if ((globalScope as any)[el].length === 0) continue
-        if (!(globalScope as any)[el][0].canShowInSubcircuit) continue
+  for (let el of circuitElementList) {
+    if ((globalScope as any)[el].length === 0) continue;
+    if (!(globalScope as any)[el][0].canShowInSubcircuit) continue;
 
-        let available = false
+    let available = false;
 
-        const elementGroup = {
-            type: el,
-            elements: [] as any[],
-        }
+    const elementGroup = {
+      type: el,
+      elements: [] as any[],
+    };
 
-        // add an SVG for each element
-        for (let i = 0; i < (globalScope as any)[el].length; i++) {
-            if (!(globalScope as any)[el][i].subcircuitMetadata.showInSubcircuit) {
-                available = true
-                const element = (globalScope as any)[el][i];
-                elementGroup.elements.push(element);
-            }
-        }
-        subCircuitElementExists = subCircuitElementExists || available
-        if (available) {
-            subcircuitElements.push(elementGroup);
-        }
-
-        subCircuitElementList.value = subcircuitElements
-        isEmptySubCircuitElementList.value = !subCircuitElementExists
+    // add an SVG for each element
+    for (let i = 0; i < (globalScope as any)[el].length; i++) {
+      if (!(globalScope as any)[el][i].subcircuitMetadata.showInSubcircuit) {
+        available = true;
+        const element = (globalScope as any)[el][i];
+        elementGroup.elements.push(element);
+      }
     }
+    subCircuitElementExists = subCircuitElementExists || available;
+    if (available) {
+      subcircuitElements.push(elementGroup);
+    }
+
+    subCircuitElementList.value = subcircuitElements;
+    isEmptySubCircuitElementList.value = !subCircuitElementExists;
+  }
 }
