@@ -92,10 +92,6 @@ function getTap(e: any) {
   e.preventDefault();
 }
 
-const isIe =
-  navigator.userAgent.toLowerCase().indexOf("msie") != -1 ||
-  navigator.userAgent.toLowerCase().indexOf("trident") != -1;
-
 // Function to getCoordinate
 //  *If touch is enable then it will return touch coordinate
 //  *else it will return mouse coordinate
@@ -600,11 +596,7 @@ export default function startListeners() {
       if (textToPutOnClipboard == undefined) return;
       localStorage.setItem("clipboardData", textToPutOnClipboard);
       e.preventDefault();
-      if (isIe) {
-        (window as any).clipboardData.setData("Text", textToPutOnClipboard);
-      } else {
-        e.clipboardData.setData("text/plain", textToPutOnClipboard);
-      }
+      e.clipboardData.setData("text/plain", textToPutOnClipboard);
     }
   });
 
@@ -630,11 +622,7 @@ export default function startListeners() {
       if (textToPutOnClipboard == undefined) return;
       localStorage.setItem("clipboardData", textToPutOnClipboard);
       e.preventDefault();
-      if (isIe) {
-        (window as any).clipboardData.setData("Text", textToPutOnClipboard);
-      } else {
-        e.clipboardData.setData("text/plain", textToPutOnClipboard);
-      }
+      e.clipboardData.setData("text/plain", textToPutOnClipboard);
     }
   });
 
@@ -643,12 +631,7 @@ export default function startListeners() {
     if (document.activeElement?.tagName != "BODY") return;
 
     if (listenToSimulator) {
-      var data;
-      if (isIe) {
-        data = (window as any).clipboardData.getData("Text");
-      } else {
-        data = e.clipboardData.getData("text/plain");
-      }
+      var data = e.clipboardData.getData("text/plain");
 
       paste(data);
 
