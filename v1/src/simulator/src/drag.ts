@@ -58,11 +58,21 @@ export function dragging(targetEl: HTMLElement, DragEl: HTMLElement): void {
         updatePosition(event.target as HTMLElement, event.dx, event.dy, positions);
       },
     },
-    // Set up modifiers to apply constraints to the draggable element
     modifiers: [
       interact.modifiers.restrictRect({
-        // Restrict the draggable element within its parent container
-        restriction: "body",
+        restriction: () => {
+          const navbar =
+            document.querySelector(".navbar") ||
+            document.querySelector("nav") ||
+            document.querySelector(".header");
+          const topOffset = navbar ? navbar.getBoundingClientRect().bottom : 46;
+          return {
+            top: topOffset,
+            left: 0,
+            bottom: window.innerHeight,
+            right: window.innerWidth,
+          };
+        },
       }),
     ],
   });
