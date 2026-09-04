@@ -44,7 +44,7 @@ function rectifyObjectType(obj) {
  */
 function loadModule(data, scope) {
     const objType = rectifyObjectType(data.objectType);
-    if (!Object.prototype.hasOwnProperty.call(modules, objType) || typeof modules[objType] !== 'function') {
+    if (!moduleList.includes(objType)) {
         console.error(`Invalid module type: ${data.objectType}`);
         return;
     }
