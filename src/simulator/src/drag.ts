@@ -67,10 +67,10 @@ export function dragging(targetEl: HTMLElement, DragEl: HTMLElement): void {
             document.querySelector(".header");
           const topOffset = navbar ? navbar.getBoundingClientRect().bottom : 46;
           return {
-            top: topOffset,
-            left: 0,
-            bottom: window.innerHeight,
-            right: window.innerWidth,
+            top: topOffset + window.scrollY,
+            left: window.scrollX,
+            bottom: window.innerHeight + window.scrollY,
+            right: window.innerWidth + window.scrollX,
           };
         },
       }),
