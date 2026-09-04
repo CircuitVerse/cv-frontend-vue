@@ -429,6 +429,9 @@ export function setupPanels() {
     }
 }
 
+// WeakMap to store named panel listener handlers per element, allowing cleanup on re-call
+const _panelListenerHandlers = new WeakMap()
+
 export function setupPanelListeners(panelSelector) {
     var headerSelector = `${panelSelector} .panel-header`
     var minimizeSelector = `${panelSelector} .minimize`
@@ -438,34 +441,48 @@ export function setupPanelListeners(panelSelector) {
     dragging(headerSelector, panelSelector)
     // Current Panel on Top
     var minimized = false
+
+    const onDblClick = () => {
+        if (minimized) {
+            const maxBtn = document.querySelector(maximizeSelector)
+            if (maxBtn) maxBtn.click()
+        } else {
+            const minBtn = document.querySelector(minimizeSelector)
+            if (minBtn) minBtn.click()
+        }
+    }
+    const onMinimize = () => {
+        document.querySelectorAll(bodySelector).forEach(b => { b.style.display = 'none' })
+        document.querySelectorAll(minimizeSelector).forEach(m => { m.style.display = 'none' })
+        document.querySelectorAll(maximizeSelector).forEach(m => { m.style.display = '' })
+        minimized = true
+    }
+    const onMaximize = () => {
+        document.querySelectorAll(bodySelector).forEach(b => { b.style.display = '' })
+        document.querySelectorAll(minimizeSelector).forEach(m => { m.style.display = '' })
+        document.querySelectorAll(maximizeSelector).forEach(m => { m.style.display = 'none' })
+        minimized = false
+    }
+
     document.querySelectorAll(headerSelector).forEach(el => {
-        el.addEventListener('dblclick', () => {
-            if (minimized) {
-                const maxBtn = document.querySelector(maximizeSelector)
-                if (maxBtn) maxBtn.click()
-            } else {
-                const minBtn = document.querySelector(minimizeSelector)
-                if (minBtn) minBtn.click()
-            }
-        })
+        const prev = _panelListenerHandlers.get(el)
+        if (prev?.dblclick) el.removeEventListener('dblclick', prev.dblclick)
+        el.addEventListener('dblclick', onDblClick)
+        _panelListenerHandlers.set(el, { ...(_panelListenerHandlers.get(el) || {}), dblclick: onDblClick })
     })
     // Minimize
     document.querySelectorAll(minimizeSelector).forEach(el => {
-        el.addEventListener('click', () => {
-            document.querySelectorAll(bodySelector).forEach(b => { b.style.display = 'none' })
-            document.querySelectorAll(minimizeSelector).forEach(m => { m.style.display = 'none' })
-            document.querySelectorAll(maximizeSelector).forEach(m => { m.style.display = '' })
-            minimized = true
-        })
+        const prev = _panelListenerHandlers.get(el)
+        if (prev?.click) el.removeEventListener('click', prev.click)
+        el.addEventListener('click', onMinimize)
+        _panelListenerHandlers.set(el, { ...(_panelListenerHandlers.get(el) || {}), click: onMinimize })
     })
     // Maximize
     document.querySelectorAll(maximizeSelector).forEach(el => {
-        el.addEventListener('click', () => {
-            document.querySelectorAll(bodySelector).forEach(b => { b.style.display = '' })
-            document.querySelectorAll(minimizeSelector).forEach(m => { m.style.display = '' })
-            document.querySelectorAll(maximizeSelector).forEach(m => { m.style.display = 'none' })
-            minimized = false
-        })
+        const prev = _panelListenerHandlers.get(el)
+        if (prev?.click) el.removeEventListener('click', prev.click)
+        el.addEventListener('click', onMaximize)
+        _panelListenerHandlers.set(el, { ...(_panelListenerHandlers.get(el) || {}), click: onMaximize })
     })
 }
 
