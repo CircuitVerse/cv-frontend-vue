@@ -240,7 +240,18 @@ export const convertors = {
   dec2bin: (x: number) => "0b" + x.toString(2),
   dec2hex: (x: number) => "0x" + x.toString(16),
   dec2octal: (x: number) => "0" + x.toString(8),
-  dec2bcd: (x: number) => parseInt(x.toString(10), 16).toString(2),
+  // Encode each decimal digit as its own 4 bit group. The old
+  // parseInt(x.toString(10), 16) routed the value through a Number, so past 13
+  // decimal digits it exceeded MAX_SAFE_INTEGER and silently corrupted the
+  // result (99999999999999 came back as 99999999999998). Building the nibbles
+  // from the digit characters is exact at any length, emits canonical BCD with
+  // one nibble per digit, and matches convertToBCD in HexBinDec.vue.
+  dec2bcd: (x: number) =>
+    x
+      .toString(10)
+      .split("")
+      .map((digit) => parseInt(digit, 10).toString(2).padStart(4, "0"))
+      .join(""),
 };
 
 export function setBaseValues(x) {
