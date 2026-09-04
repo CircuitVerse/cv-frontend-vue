@@ -40,10 +40,10 @@ function disableSelection(element: HTMLElement): void {
 
 /**
  * Make an element draggable within a specified container.
- * @param {HTMLElement} targetEl - Element that triggers the drag event.
- * @param {HTMLElement} DragEl - Element to be dragged.
+ * @param {string} targetEl - CSS selector string that triggers the drag event.
+ * @param {string} DragEl - CSS selector string for the element to be dragged.
  */
-export function dragging(targetEl: HTMLElement, DragEl: HTMLElement): void {
+export function dragging(targetEl: string, DragEl: string): void {
   // WeakMap to store the position of each dragged element
   const positions = new WeakMap<HTMLElement, Position>();
 

@@ -43,8 +43,13 @@ function rectifyObjectType(obj) {
  * @category data
  */
 function loadModule(data, scope) {
+    const objType = rectifyObjectType(data.objectType);
+    if (!moduleList.includes(objType)) {
+        console.error(`Invalid module type: ${data.objectType}`);
+        return;
+    }
     // Create circuit element
-    var obj = new modules[rectifyObjectType(data.objectType)](
+    var obj = new modules[objType](
         data.x,
         data.y,
         scope,
