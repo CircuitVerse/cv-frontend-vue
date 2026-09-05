@@ -61,15 +61,17 @@ function hideContextMenu() {
  */
 function showContextMenu() {
     if (layoutModeGet()) return false // Hide context menu when it is in Layout Mode
-    $('#contextMenu').css({
-        visibility: 'visible',
-        opacity: 1,
-    })
+    const contextMenu = document.getElementById('contextMenu')
+    if (contextMenu) {
+        contextMenu.style.visibility = 'visible'
+        contextMenu.style.opacity = '1'
+    }
 
+    const simArea = document.getElementById('simulationArea')
     var windowHeight =
-        $('#simulationArea').height() - $('#contextMenu').height() - 10
+        (simArea ? simArea.clientHeight : 0) - (contextMenu ? contextMenu.clientHeight : 0) - 10
     var windowWidth =
-        $('#simulationArea').width() - $('#contextMenu').width() - 10
+        (simArea ? simArea.clientWidth : 0) - (contextMenu ? contextMenu.clientWidth : 0) - 10
     // for top, left, right, bottom
     var topPosition
     var leftPosition
@@ -78,43 +80,43 @@ function showContextMenu() {
     if (ctxPos.y > windowHeight && ctxPos.x <= windowWidth) {
         //When user click on bottom-left part of window
         leftPosition = ctxPos.x
-        bottomPosition = $(window).height() - ctxPos.y
-        $('#contextMenu').css({
-            left: `${leftPosition}px`,
-            bottom: `${bottomPosition}px`,
-            right: 'auto',
-            top: 'auto',
-        })
+        bottomPosition = window.innerHeight - ctxPos.y
+        if (contextMenu) {
+            contextMenu.style.left = `${leftPosition}px`
+            contextMenu.style.bottom = `${bottomPosition}px`
+            contextMenu.style.right = 'auto'
+            contextMenu.style.top = 'auto'
+        }
     } else if (ctxPos.y > windowHeight && ctxPos.x > windowWidth) {
         //When user click on bottom-right part of window
-        bottomPosition = $(window).height() - ctxPos.y
-        rightPosition = $(window).width() - ctxPos.x
-        $('#contextMenu').css({
-            left: 'auto',
-            bottom: `${bottomPosition}px`,
-            right: `${rightPosition}px`,
-            top: 'auto',
-        })
+        bottomPosition = window.innerHeight - ctxPos.y
+        rightPosition = window.innerWidth - ctxPos.x
+        if (contextMenu) {
+            contextMenu.style.left = 'auto'
+            contextMenu.style.bottom = `${bottomPosition}px`
+            contextMenu.style.right = `${rightPosition}px`
+            contextMenu.style.top = 'auto'
+        }
     } else if (ctxPos.y <= windowHeight && ctxPos.x <= windowWidth) {
         //When user click on top-left part of window
         leftPosition = ctxPos.x
         topPosition = ctxPos.y
-        $('#contextMenu').css({
-            left: `${leftPosition}px`,
-            bottom: 'auto',
-            right: 'auto',
-            top: `${topPosition}px`,
-        })
+        if (contextMenu) {
+            contextMenu.style.left = `${leftPosition}px`
+            contextMenu.style.bottom = 'auto'
+            contextMenu.style.right = 'auto'
+            contextMenu.style.top = `${topPosition}px`
+        }
     } else {
         //When user click on top-right part of window
-        rightPosition = $(window).width() - ctxPos.x
+        rightPosition = window.innerWidth - ctxPos.x
         topPosition = ctxPos.y
-        $('#contextMenu').css({
-            left: 'auto',
-            bottom: 'auto',
-            right: `${rightPosition}px`,
-            top: `${topPosition}px`,
-        })
+        if (contextMenu) {
+            contextMenu.style.left = 'auto'
+            contextMenu.style.bottom = 'auto'
+            contextMenu.style.right = `${rightPosition}px`
+            contextMenu.style.top = `${topPosition}px`
+        }
     }
     ctxPos.visible = true
     return false
@@ -148,8 +150,10 @@ export function setupUI() {
     })
     document.getElementById('canvasArea').oncontextmenu = showContextMenu
 
-    $('.logixButton').on('click', function () {
-        logixFunction[this.id]()
+    document.querySelectorAll('.logixButton').forEach(btn => {
+        btn.addEventListener('click', function () {
+            if (logixFunction[this.id]) logixFunction[this.id]()
+        })
     })
     setupPanels()
 }
@@ -169,17 +173,19 @@ export function prevPropertyObjGet() {
 }
 
 function checkValidBitWidth() {
-    const selector = $("[name='newBitWidth']")
+    const selector = document.querySelector("[name='newBitWidth']")
+    if (!selector) return
+    const val = selector.value
+    const isNumeric = !isNaN(parseFloat(val)) && isFinite(val)
     if (
-        selector === undefined ||
-        selector.val() > 32 ||
-        selector.val() < 1 ||
-        !$.isNumeric(selector.val())
+        !isNumeric ||
+        parseFloat(val) > 32 ||
+        parseFloat(val) < 1
     ) {
         // fallback to previously saves state
-        selector.val(selector.attr('old-val'))
+        selector.value = selector.getAttribute('old-val') || ''
     } else {
-        selector.attr('old-val', selector.val())
+        selector.setAttribute('old-val', selector.value)
     }
 }
 
@@ -212,23 +218,29 @@ export function objectPropertyAttributeCheckedUpdate() {
 }
 
 export function checkPropertiesUpdate(value = 0) {
-    $('.objectPropertyAttribute').off(
-        'change keyup paste click',
-        objectPropertyAttributeUpdate
-    )
-    $('.objectPropertyAttribute').on(
-        'change keyup paste click',
-        objectPropertyAttributeUpdate
-    )
+    document.querySelectorAll('.objectPropertyAttribute').forEach(el => {
+        el.removeEventListener('change', objectPropertyAttributeUpdate)
+        el.removeEventListener('keyup', objectPropertyAttributeUpdate)
+        el.removeEventListener('paste', objectPropertyAttributeUpdate)
+        el.removeEventListener('click', objectPropertyAttributeUpdate)
 
-    $('.objectPropertyAttributeChecked').off(
-        'change keyup paste click',
-        objectPropertyAttributeCheckedUpdate
-    )
-    $('.objectPropertyAttributeChecked').on(
-        'change keyup paste click',
-        objectPropertyAttributeCheckedUpdate
-    )
+        el.addEventListener('change', objectPropertyAttributeUpdate)
+        el.addEventListener('keyup', objectPropertyAttributeUpdate)
+        el.addEventListener('paste', objectPropertyAttributeUpdate)
+        el.addEventListener('click', objectPropertyAttributeUpdate)
+    })
+
+    document.querySelectorAll('.objectPropertyAttributeChecked').forEach(el => {
+        el.removeEventListener('change', objectPropertyAttributeCheckedUpdate)
+        el.removeEventListener('keyup', objectPropertyAttributeCheckedUpdate)
+        el.removeEventListener('paste', objectPropertyAttributeCheckedUpdate)
+        el.removeEventListener('click', objectPropertyAttributeCheckedUpdate)
+
+        el.addEventListener('change', objectPropertyAttributeCheckedUpdate)
+        el.addEventListener('keyup', objectPropertyAttributeCheckedUpdate)
+        el.addEventListener('paste', objectPropertyAttributeCheckedUpdate)
+        el.addEventListener('click', objectPropertyAttributeCheckedUpdate)
+    })
 }
 
 /**
@@ -246,10 +258,17 @@ export function showProperties(obj) {
  * @category ux
  */
 export function hideProperties() {
-    $('#moduleProperty-inner').empty()
-    $('#moduleProperty').hide()
+    const modInner = document.getElementById('moduleProperty-inner')
+    if (modInner) modInner.innerHTML = ''
+    const modProp = document.getElementById('moduleProperty')
+    if (modProp) modProp.style.display = 'none'
     prevPropertyObjSet(undefined)
-    $('.objectPropertyAttribute').unbind('change keyup paste click')
+    document.querySelectorAll('.objectPropertyAttribute').forEach(el => {
+        el.removeEventListener('change', objectPropertyAttributeUpdate)
+        el.removeEventListener('keyup', objectPropertyAttributeUpdate)
+        el.removeEventListener('paste', objectPropertyAttributeUpdate)
+        el.removeEventListener('click', objectPropertyAttributeUpdate)
+    })
 }
 /**
  * checkss the input is safe or not
@@ -300,22 +319,29 @@ export function deleteSelected() {
  * listener for opening the prompt for bin conversion
  * @category ux
  */
-$('#bitconverter').on('click', () => {
-    $('#bitconverterprompt').dialog({
-        resizable: false,
-        buttons: [
-            {
-                text: 'Reset',
-                click() {
-                    $('#decimalInput').val('0')
-                    $('#binaryInput').val('0')
-                    $('#octalInput').val('0')
-                    $('#hexInput').val('0')
+const bitconverterBtn = document.getElementById('bitconverter')
+if (bitconverterBtn) {
+    bitconverterBtn.addEventListener('click', () => {
+        $('#bitconverterprompt').dialog({
+            resizable: false,
+            buttons: [
+                {
+                    text: 'Reset',
+                    click() {
+                        const dI = document.getElementById('decimalInput')
+                        const bI = document.getElementById('binaryInput')
+                        const oI = document.getElementById('octalInput')
+                        const hI = document.getElementById('hexInput')
+                        if (dI) dI.value = '0'
+                        if (bI) bI.value = '0'
+                        if (oI) oI.value = '0'
+                        if (hI) hI.value = '0'
+                    },
                 },
-            },
-        ],
+            ],
+        })
     })
-})
+}
 
 // convertors
 const convertors = {
@@ -326,35 +352,52 @@ const convertors = {
 
 function setBaseValues(x) {
     if (isNaN(x)) return
-    $('#binaryInput').val(convertors.dec2bin(x))
-    $('#octalInput').val(convertors.dec2octal(x))
-    $('#hexInput').val(convertors.dec2hex(x))
-    $('#decimalInput').val(x)
+    const bI = document.getElementById('binaryInput')
+    const oI = document.getElementById('octalInput')
+    const hI = document.getElementById('hexInput')
+    const dI = document.getElementById('decimalInput')
+    if (bI) bI.value = convertors.dec2bin(x)
+    if (oI) oI.value = convertors.dec2octal(x)
+    if (hI) hI.value = convertors.dec2hex(x)
+    if (dI) dI.value = x
 }
 
-$('#decimalInput').on('keyup', () => {
-    var x = parseInt($('#decimalInput').val(), 10)
-    setBaseValues(x)
-})
+const decimalInput = document.getElementById('decimalInput')
+if (decimalInput) {
+    decimalInput.addEventListener('keyup', () => {
+        var x = parseInt(decimalInput.value, 10)
+        setBaseValues(x)
+    })
+}
 
-$('#binaryInput').on('keyup', () => {
-    var x = parseInt($('#binaryInput').val(), 2)
-    setBaseValues(x)
-})
+const binaryInput = document.getElementById('binaryInput')
+if (binaryInput) {
+    binaryInput.addEventListener('keyup', () => {
+        var x = parseInt(binaryInput.value, 2)
+        setBaseValues(x)
+    })
+}
 
-$('#hexInput').on('keyup', () => {
-    var x = parseInt($('#hexInput').val(), 16)
-    setBaseValues(x)
-})
+const hexInput = document.getElementById('hexInput')
+if (hexInput) {
+    hexInput.addEventListener('keyup', () => {
+        var x = parseInt(hexInput.value, 16)
+        setBaseValues(x)
+    })
+}
 
-$('#octalInput').on('keyup', () => {
-    var x = parseInt($('#octalInput').val(), 8)
-    setBaseValues(x)
-})
+const octalInput = document.getElementById('octalInput')
+if (octalInput) {
+    octalInput.addEventListener('keyup', () => {
+        var x = parseInt(octalInput.value, 8)
+        setBaseValues(x)
+    })
+}
 
 
 export function minimizePanel(panelSelector) {
-    $(panelSelector + ' .minimize').trigger('click')
+    const btn = document.querySelector(panelSelector + ' .minimize')
+    if (btn) btn.click()
 }
 
 export function setupPanels() {
@@ -374,10 +417,20 @@ export function setupPanels() {
     // Minimize Testbench UI
     minimizePanel('.testbench-manual-panel')
 
-    $('#projectName').on('click', () => {
-        $("input[name='setProjectName']").focus().select()
-    })
+    const projName = document.getElementById('projectName')
+    if (projName) {
+        projName.addEventListener('click', () => {
+            const input = document.querySelector("input[name='setProjectName']")
+            if (input) {
+                input.focus()
+                input.select()
+            }
+        })
+    }
 }
+
+// WeakMap to store named panel listener handlers per element, allowing cleanup on re-call
+const _panelListenerHandlers = new WeakMap()
 
 export function setupPanelListeners(panelSelector) {
     var headerSelector = `${panelSelector} .panel-header`
@@ -388,31 +441,49 @@ export function setupPanelListeners(panelSelector) {
     dragging(headerSelector, panelSelector)
     // Current Panel on Top
     var minimized = false
-    $(headerSelector)
-        .off('dblclick.panelListeners')
-        .on('dblclick.panelListeners', () =>
-            minimized
-                ? $(maximizeSelector).trigger('click')
-                : $(minimizeSelector).trigger('click')
-        )
+
+    const onDblClick = () => {
+        if (minimized) {
+            const maxBtn = document.querySelector(maximizeSelector)
+            if (maxBtn) maxBtn.click()
+        } else {
+            const minBtn = document.querySelector(minimizeSelector)
+            if (minBtn) minBtn.click()
+        }
+    }
+    const onMinimize = () => {
+        document.querySelectorAll(bodySelector).forEach(b => { b.style.display = 'none' })
+        document.querySelectorAll(minimizeSelector).forEach(m => { m.style.display = 'none' })
+        document.querySelectorAll(maximizeSelector).forEach(m => { m.style.display = '' })
+        minimized = true
+    }
+    const onMaximize = () => {
+        document.querySelectorAll(bodySelector).forEach(b => { b.style.display = '' })
+        document.querySelectorAll(minimizeSelector).forEach(m => { m.style.display = '' })
+        document.querySelectorAll(maximizeSelector).forEach(m => { m.style.display = 'none' })
+        minimized = false
+    }
+
+    document.querySelectorAll(headerSelector).forEach(el => {
+        const prev = _panelListenerHandlers.get(el)
+        if (prev?.dblclick) el.removeEventListener('dblclick', prev.dblclick)
+        el.addEventListener('dblclick', onDblClick)
+        _panelListenerHandlers.set(el, { ...(_panelListenerHandlers.get(el) || {}), dblclick: onDblClick })
+    })
     // Minimize
-    $(minimizeSelector)
-        .off('click.panelListeners')
-        .on('click.panelListeners', () => {
-            $(bodySelector).hide()
-            $(minimizeSelector).hide()
-            $(maximizeSelector).show()
-            minimized = true
-        })
+    document.querySelectorAll(minimizeSelector).forEach(el => {
+        const prev = _panelListenerHandlers.get(el)
+        if (prev?.click) el.removeEventListener('click', prev.click)
+        el.addEventListener('click', onMinimize)
+        _panelListenerHandlers.set(el, { ...(_panelListenerHandlers.get(el) || {}), click: onMinimize })
+    })
     // Maximize
-    $(maximizeSelector)
-        .off('click.panelListeners')
-        .on('click.panelListeners', () => {
-            $(bodySelector).show()
-            $(minimizeSelector).show()
-            $(maximizeSelector).hide()
-            minimized = false
-        })
+    document.querySelectorAll(maximizeSelector).forEach(el => {
+        const prev = _panelListenerHandlers.get(el)
+        if (prev?.click) el.removeEventListener('click', prev.click)
+        el.addEventListener('click', onMaximize)
+        _panelListenerHandlers.set(el, { ...(_panelListenerHandlers.get(el) || {}), click: onMaximize })
+    })
 }
 
 export function exitFullView() {
