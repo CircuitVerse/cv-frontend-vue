@@ -46,7 +46,7 @@
         <button v-if="!isEmbed()" @click="createNewCircuitScope()">
             &#43;
         </button>
-        <button class="tabsbar-toggle" @click="toggleHeight">
+        <button v-if="!isEmbed()" class="tabsbar-toggle" @click="toggleHeight">
             <i :class="showMaxHeight ? 'fa fa-chevron-down' : 'fa fa-chevron-up'"></i>
         </button>
     </div>
