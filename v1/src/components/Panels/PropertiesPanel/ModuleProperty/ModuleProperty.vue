@@ -2,6 +2,8 @@
     <div
         id="moduleProperty"
         class="moduleProperty noSelect effect1 properties-panel draggable-panel draggable-panel-css guide_2"
+        :style="{ zIndex: zIndexFor('moduleProperty') }"
+        @mousedown="bringToFront('moduleProperty')"
     >
         <PanelHeader :header-title="$t('simulator.panel_header.properties')" />
         <div class="panel-body">
@@ -32,6 +34,7 @@ import ProjectProperty from '#/components/Panels/PropertiesPanel/ModuleProperty/
 import SubcircuitProperty from '#/components/Panels/PropertiesPanel/ModuleProperty/SubcircuitProperty/SubcircuitProperty.vue'
 import { ref, toRefs } from 'vue'
 import { onMounted } from 'vue'
+import { bringToFront, zIndexFor } from '#/simulator/src/drag'
 
 const props = defineProps({
     panleBodyData: { type: Object, default: undefined },
