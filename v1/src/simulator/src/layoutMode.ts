@@ -45,7 +45,7 @@ export var tempBuffer: LayoutBuffer;
  * Helper function to determine alignment and position of nodes for rendering
  * @category layoutMode
  */
-export function determineLabel(x: number, y: number) {
+export function determineLabel(x: number, y: number): [CanvasTextAlign, number, number] {
   if (x === 0) return ["left", 5, 5];
   if (x === tempBuffer.layout.width) return ["right", -5, 5];
   if (y === 0) return ["center", 0, 13];
@@ -87,6 +87,7 @@ export function paneLayout(scope = globalScope) {
 export function renderLayout(scope = globalScope) {
   if (!layoutModeGet()) return;
   var ctx = simulationArea.context;
+  if (!ctx) return;
   simulationArea.clear();
   ctx.strokeStyle = "black";
   ctx.fillStyle = "white";
@@ -107,29 +108,25 @@ export function renderLayout(scope = globalScope) {
   var info;
   for (let i = 0; i < tempBuffer.Input.length; i++) {
     if (!tempBuffer.Input[i].label) continue;
-    info = determineLabel(tempBuffer.Input[i].x, tempBuffer.Input[i].y, scope);
+    info = determineLabel(tempBuffer.Input[i].x, tempBuffer.Input[i].y);
     [ctx.textAlign] = info;
-    const xOffset = typeof info[1] === "number" ? info[1] : parseInt(info[1] as string);
-    const yOffset = typeof info[2] === "number" ? info[2] : parseInt(info[2] as string);
     fillText(
       ctx,
       tempBuffer.Input[i].label,
-      tempBuffer.Input[i].x + xOffset,
-      tempBuffer.Input[i].y + yOffset,
+      tempBuffer.Input[i].x + info[1],
+      tempBuffer.Input[i].y + info[2],
       12,
     );
   }
   for (let i = 0; i < tempBuffer.Output.length; i++) {
     if (!tempBuffer.Output[i].label) continue;
-    info = determineLabel(tempBuffer.Output[i].x, tempBuffer.Output[i].y, scope);
+    info = determineLabel(tempBuffer.Output[i].x, tempBuffer.Output[i].y);
     [ctx.textAlign] = info;
-    const xOffset = typeof info[1] === "number" ? info[1] : parseInt(info[1] as string);
-    const yOffset = typeof info[2] === "number" ? info[2] : parseInt(info[2] as string);
     fillText(
       ctx,
       tempBuffer.Output[i].label,
-      tempBuffer.Output[i].x + xOffset,
-      tempBuffer.Output[i].y + yOffset,
+      tempBuffer.Output[i].x + info[1],
+      tempBuffer.Output[i].y + info[2],
       12,
     );
   }

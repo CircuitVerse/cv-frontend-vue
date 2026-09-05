@@ -1,14 +1,11 @@
 import CircuitElement from "../circuitElement";
 import Node, { findNode } from "../node";
 import { simulationArea } from "../simulationArea";
+import type { QueueObject } from "../eventQueue";
 import { correctWidth, bezierCurveTo, moveTo } from "../canvasApi";
 import { changeInputSize } from "../modules";
 import { gateGenerateVerilog } from "../utils";
-import type {
-  Scope,
-  CircuitElement as ICircuitElement,
-  SavedCircuitElement,
-} from "../types/circuitElement.types";
+import type { Scope, ICircuitElement, SavedCircuitElement } from "../types/circuitElement.types";
 
 import { colors } from "../themer/themer";
 
@@ -71,7 +68,7 @@ export default class OrGate extends CircuitElement implements ICircuitElement {
       result |= this.inp[i].value || 0;
     }
     this.output1.value = result >>> 0;
-    simulationArea.simulationQueue.add(this.output1);
+    simulationArea.simulationQueue.add(this.output1 as QueueObject);
   }
 
   customDraw() {
