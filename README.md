@@ -109,6 +109,37 @@ The output executables and installers (e.g., `.msi` / `.exe` on Windows, `.dmg` 
 src-tauri/target/release/bundle/
 ```
 
+## Testing
+This repository uses [Vitest](https://vitest.dev/) for unit and integration testing across different simulator modules.
+
+### Running Tests
+To run all tests:
+```bash
+npm test
+```
+
+### Running Specific Test Suites
+You can run test suites for specific versions or components using project filters:
+
+- **Run tests for `src` (v0 base)**:
+  ```bash
+  npm run test:src
+  ```
+- **Run tests for `v1`**:
+  ```bash
+  npm run test:v1
+  ```
+- **Run synthesis tests**:
+  ```bash
+  npm run test:synthesis
+  ```
+
+### Watch Mode
+To run tests interactively in watch mode during development:
+```bash
+npx vitest
+```
+
 ## Route-Agnostic Support
 The simulator is designed to be **route-agnostic**. It can be mounted on any path (e.g., within a Rails view) by including the appropriate script and setting global variables:
 
