@@ -187,7 +187,7 @@
 
     <v-btn
       class="cir-btn"
-      @mousedown="(e: React.MouseEvent) => {
+      @mousedown="(e: MouseEvent) => {
         if(simulationArea.shiftDown == false) {
             simulationArea.shiftDown = true;
             selectMultiple = true;
