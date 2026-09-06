@@ -107,7 +107,7 @@ function removeBugNodes(scope = globalScope) {
 /**
  * Function to load a full circuit
  * @param {Scope} scope
- * @param {JSON} data
+ * @param {Object} data
  * @category data
  */
 export function loadScope(scope, data) {
