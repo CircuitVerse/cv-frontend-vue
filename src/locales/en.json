@@ -207,6 +207,7 @@
             "testbench_creator": {
                 "create_test": "Create Test",
                 "enter_test_title": "Enter Test Title",
+                "untitled": "Untitled",
                 "sequential_test": "Sequential Test",
                 "combinational_test": "Combinational Test",
                 "no_groups": "No test groups added yet. Click \"+ New Group\" to start creating your test.",
