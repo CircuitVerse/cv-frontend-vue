@@ -85,7 +85,7 @@ Before developing or building the desktop app, ensure you have the following ins
 3. **Platform-specific dependencies**: Follow the official [Tauri Prerequisites Guide](https://tauri.app/start/prerequisites/) for your operating system:
    - **Windows**: Microsoft Visual Studio C++ Build Tools or Visual Studio Community with the "Desktop development with C++" workload, and WebView2.
    - **macOS**: Xcode Command Line Tools (`xcode-select --install`).
-   - **Linux**: System packages for `webkit2gtk`, `libssl-dev`, `gtk3`, and build essentials.
+   - **Linux**: See the [Tauri Linux Prerequisites Guide](https://v2.tauri.app/start/prerequisites/#linux) (for Debian/Ubuntu: `libwebkit2gtk-4.1-dev`, `libssl-dev`, `libayatana-appindicator3-dev`, `librsvg2-dev`, and `build-essential`).
 4. **Tauri CLI**: Bundled with the repository's devDependencies (`@tauri-apps/cli`). You can run it directly via `npm run tauri` or `npx tauri`.
 
 ### Running in Development
@@ -138,6 +138,40 @@ You can run test suites for specific versions or components using project filter
 To run tests interactively in watch mode during development:
 ```bash
 npx vitest
+```
+
+## Code Quality & Formatting
+We use **oxc** tools ([`oxfmt`](https://oxc.rs/docs/guide/usage/oxfmt.html) and [`oxlint`](https://oxc.rs/docs/guide/usage/oxlint.html)) for ultra-fast linting and code formatting, alongside **Husky** and **commitlint** to enforce commit message conventions.
+
+### Formatting Code
+To automatically format all TypeScript and codebase files:
+```bash
+npm run format
+```
+
+To check if all files adhere to formatting guidelines without modifying them:
+```bash
+npm run fmt:check
+```
+
+### Linting
+To check for linting errors across the codebase:
+```bash
+# Run lint check across the project
+npm run lint
+
+# Run lint check for v1
+npm run lint:v1
+```
+
+### Commit Standards & Husky Git Hooks
+This repository enforces [Conventional Commits](https://www.conventionalcommits.org/) via Husky and `@commitlint/cli`. 
+
+Ensure your commit messages follow the structured format:
+```bash
+git commit -m "docs: add formatting guidelines"
+git commit -m "feat(v1): add new gate component"
+git commit -m "fix: resolve theme styling in user menu"
 ```
 
 ## Route-Agnostic Support
