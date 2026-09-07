@@ -29,9 +29,3 @@ export function redoit(): void {
 export function view(): void {
   fullView();
 }
-export function decrement(): void {
-  ZoomOut();
-}
-export function increment(): void {
-  ZoomIn();
-}
