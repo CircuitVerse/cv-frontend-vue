@@ -724,22 +724,8 @@ function resizeTabs() {
 window.addEventListener('resize', resizeTabs)
 resizeTabs()
 
-// direction is only 1 or -1
-function handleZoom (direction) {
-    if (globalScope.scale > 0.5 * DPR) {
-      changeScale(direction * 0.1 * DPR);
-    } else if (globalScope.scale < 4 * DPR) {
-      changeScale(direction * 0.1 * DPR);
-    }
-    gridUpdateSet(true);
-    scheduleUpdate();
-  }
-  export function ZoomIn () {
-    handleZoom(1);
-  }
-  export function ZoomOut () {
-    handleZoom(-1);
-  }
+import { ZoomIn, ZoomOut } from './commands/zoom';
+export { ZoomIn, ZoomOut };
   function zoomSliderListeners () {
     document.getElementById("customRange1").value = 5;
     document.getElementById('simulationArea').addEventListener('DOMMouseScroll', zoomSliderScroll);
