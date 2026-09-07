@@ -6,9 +6,8 @@ import { gridUpdateSet, scheduleUpdate } from "../engine";
  * @param direction - 1 to zoom in, -1 to zoom out
  */
 export function zoomBy(direction: 1 | -1): void {
-  if (globalScope.scale > 0.5 * DPR) {
-    changeScale(direction * 0.1 * DPR);
-  } else if (globalScope.scale < 4 * DPR) {
+  const canZoom = direction === 1 ? globalScope.scale < 4 * DPR : globalScope.scale > 0.5;
+  if (canZoom) {
     changeScale(direction * 0.1 * DPR);
   }
   gridUpdateSet(true);
