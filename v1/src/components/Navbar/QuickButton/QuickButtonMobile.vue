@@ -110,6 +110,7 @@ const simulatorMobileStore = useSimulatorMobileStore();
 }
 
 .slider-container {
+  --zoom-range-width: 90%;
   display: flex;
   justify-content: center;
 }

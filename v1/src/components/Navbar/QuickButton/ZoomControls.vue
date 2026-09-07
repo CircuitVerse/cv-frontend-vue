@@ -47,8 +47,9 @@ const increment = () => {
 
 // Sync UI slider if user zooms canvas with mouse wheel
 const handleWheel = (e: WheelEvent | any) => {
-  const deltaY = e.wheelDelta ? e.wheelDelta : -e.detail;
-  const directionY = deltaY > 0 ? 1 : -1;
+  const deltaY = e.type === "wheel" ? -e.deltaY : -e.detail;
+  if (deltaY === 0) return;
+  const directionY = Math.sign(deltaY);
   if (directionY > 0 && zoomLevel.value < 45) zoomLevel.value++;
   else if (directionY < 0 && zoomLevel.value > 0) zoomLevel.value--;
   curLevel = zoomLevel.value;
@@ -110,7 +111,7 @@ onUnmounted(() => {
 }
 
 .custom-range {
-  width: 80px !important;
+  width: var(--zoom-range-width, 80px) !important;
 }
 .custom-range::-moz-range-track {
   height: 1px;
