@@ -32,9 +32,9 @@ function disableSelection(element: HTMLElement): void {
   element.setAttribute("unselectable", "on");
   element.style.userSelect = "none";
   element.style.webkitUserSelect = "none";
-  element.style.MozUserSelect = "none";
-  element.style.msUserSelect = "none";
-  element.style.OUserSelect = "none";
+  element.style.setProperty("-moz-user-select", "none");
+  element.style.setProperty("-ms-user-select", "none");
+  element.style.setProperty("-o-user-select", "none");
   element.onselectstart = () => false;
 }
 

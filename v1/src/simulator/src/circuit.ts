@@ -313,16 +313,17 @@ export default class Scope {
     title_y: number;
     titleEnabled: boolean;
   };
-  tunnelList?: {};
-  pending?: any[];
-  nodes?: any[];
-  allNodes?: any[];
-  wires?: any[];
-  Input?: any[];
-  Output?: any[];
-  Splitter?: any[];
-  SubCircuit?: any[];
-  Clock?: any[];
+  tunnelList!: Record<string, any>;
+  pending!: any[];
+  nodes!: any[];
+  allNodes!: any[];
+  wires!: any[];
+  Input!: any[];
+  Output!: any[];
+  Splitter!: any[];
+  SubCircuit!: any[];
+  Clock!: any[];
+  [key: string]: any;
   constructor(name = "localScope", id = undefined) {
     this.restrictedCircuitElementsUsed = [];
     this.id = id || Math.floor(Math.random() * 100000000000 + 1);
@@ -455,8 +456,8 @@ export default class Scope {
   /**
    * Get dependency list - list of all circuits, this circuit depends on
    */
-  getDependencies() {
-    var list = [];
+  getDependencies(): string[] {
+    var list: string[] = [];
     if (this.SubCircuit) {
       for (let i = 0; i < this.SubCircuit.length; i++) {
         list.push(this.SubCircuit[i].id);

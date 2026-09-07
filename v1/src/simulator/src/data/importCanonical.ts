@@ -1,5 +1,5 @@
 import modules from "../modules";
-import { newCircuit, switchCircuit, scopeList } from "../circuit";
+import { newCircuit, resetScopeList, switchCircuit } from "../circuit";
 import type Scope from "../circuit";
 import { SimulatorStore } from "#/store/SimulatorStore/SimulatorStore";
 import {
@@ -10,28 +10,23 @@ import {
 } from "./canonical";
 import type {
   CanonicalScope,
+  CanonicalAnnotation,
   CanonicalLayout,
   CanonicalComponent,
   CanonicalComponentPosition,
   IntermediateNet,
   CanonicalJsonValue,
   CanonicalNet,
-  CanonicalProject,
   ComponentInstance,
+  RoutingEndpoint,
 } from "../types/canonical.types";
-import { resetup } from "../setup";
-import {
-  updateSimulationSet,
-  updateCanvasSet,
-  updateSubcircuitSet,
-  forceResetNodesSet,
-  gridUpdateSet,
-  scheduleUpdate,
-  renderCanvas,
-  update,
-} from "../engine";
+import { updateSimulationSet, updateCanvasSet, gridUpdateSet, scheduleUpdate } from "../engine";
 import Node from "../node";
 import SubCircuit from "../subcircuit";
+import plotArea from "../plotArea";
+import { simulationArea } from "../simulationArea";
+import { useProjectStore } from "#/store/projectStore";
+import { validateCanonicalJson } from "./validate";
 
 /** Constructor shared by component classes registered in modules.js. */
 type ComponentConstructor = new (
@@ -41,19 +36,11 @@ type ComponentConstructor = new (
   ...rest: CanonicalJsonValue[]
 ) => ComponentInstance;
 
-type ValidationResult = { valid: true; errors: [] } | { valid: false; errors: string[] };
-
 export type ImportResult = {
   success: boolean;
   imported: number;
   errors: string[];
 };
-
-// TODO: Replace with JSON Schema validation (deferred).
-/** Validates a canonical circuit JSON against the expected schema. Currently a no-op stub. */
-export function validateCanonicalJson(_circuitData: CanonicalScope): ValidationResult {
-  return { valid: true, errors: [] };
-}
 
 function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
@@ -61,15 +48,14 @@ function errorMessage(error: unknown): string {
 
 /** Returns constructor parameters emitted by customSave(). */
 function getConstructorParams(properties: CanonicalComponent["properties"]): CanonicalJsonValue[] {
-  const params = properties.constructorParamaters;
-  return Array.isArray(params) ? params : [];
+  return properties.constructorParamaters ?? [];
 }
 
 /** Constructs all component instances from the canonical JSON and returns them in a map keyed by component ID. */
 function buildComponents(
   scope: Scope,
   components: CanonicalComponent[],
-  layout: CanonicalLayout,
+  layout: CanonicalLayout | undefined,
   scopeMap: Map<number, Scope>,
 ): { instanceMap: Map<string, ComponentInstance>; errors: string[] } {
   const instanceMap = new Map<string, ComponentInstance>();
@@ -79,7 +65,9 @@ function buildComponents(
 
   for (let i = 0; i < components.length; i++) {
     const { id, type, label, properties } = components[i];
-    const position = layout[id] as CanonicalComponentPosition;
+    const position = layout?.[id] as CanonicalComponentPosition | undefined;
+    const x = position?.x ?? 0;
+    const y = position?.y ?? 0;
 
     let instance: ComponentInstance;
 
@@ -91,12 +79,7 @@ function buildComponents(
       }
 
       try {
-        instance = new SubCircuit(
-          position.x,
-          position.y,
-          scope,
-          String(subcircuitId),
-        ) as ComponentInstance;
+        instance = new SubCircuit(x, y, scope, String(subcircuitId)) as ComponentInstance;
       } catch (err) {
         errors.push(`SubCircuit "${id}": ${errorMessage(err)}`);
         continue;
@@ -104,14 +87,13 @@ function buildComponents(
     } else {
       const Constructor = registry[type];
       if (typeof Constructor !== "function") {
-        errors.push(`"${id}": unknown type "${type}"`);
+        errors.push(`"${id}": unknown component type "${type}"`);
         continue;
       }
-
       const constructorArgs = getConstructorParams(properties);
 
       try {
-        instance = new Constructor(position.x, position.y, scope, ...constructorArgs);
+        instance = new Constructor(x, y, scope, ...constructorArgs);
       } catch (err) {
         errors.push(`"${id}" (${type}): ${errorMessage(err)}`);
         continue;
@@ -122,22 +104,92 @@ function buildComponents(
 
     instance.propagationDelay = properties.propagationDelay;
 
-    instance.labelDirection = position.labelDirection;
+    if (position) instance.labelDirection = position.labelDirection;
+
+    const metadata = position?.subcircuitMetadata;
+    if (metadata) {
+      Reflect.set(instance, "subcircuitMetadata", { ...metadata });
+    } else if (Reflect.get(instance, "canShowInSubcircuit") && position) {
+      Reflect.get(instance, "subcircuitMetadata").labelDirection = position.labelDirection;
+    }
 
     instanceMap.set(id, instance);
+  }
+
+  for (const comp of components) {
+    const position = layout?.[comp.id] as CanonicalComponentPosition | undefined;
+    if (!position?.portPositions) continue;
+
+    for (const [portName, point] of Object.entries(position.portPositions)) {
+      const node = resolvePortNode(`${comp.id}.${portName}`, instanceMap);
+      if (!node) {
+        errors.push(`"${comp.id}.${portName}": port not found`);
+        continue;
+      }
+      node.leftx = point.x;
+      node.lefty = point.y;
+      node.updateRotation();
+    }
   }
 
   return { instanceMap, errors };
 }
 
+function applyComponentLayout(
+  instanceMap: Map<string, ComponentInstance>,
+  layout: CanonicalLayout,
+): string[] {
+  const errors: string[] = [];
+  for (const [id, instance] of instanceMap) {
+    const pos = layout[id] as CanonicalComponentPosition | undefined;
+    if (!pos) {
+      errors.push(`Layout is missing for component "${id}"`);
+      continue;
+    }
+    Reflect.set(instance, "x", pos.x);
+    Reflect.set(instance, "y", pos.y);
+  }
+  return errors;
+}
+
+function buildAnnotations(scope: Scope, annotations?: CanonicalAnnotation[]): string[] {
+  const errors: string[] = [];
+  if (annotations === undefined) return errors;
+
+  const registry = modules as Record<string, ComponentConstructor | undefined>;
+
+  for (let i = 0; i < annotations.length; i++) {
+    const annotation = annotations[i];
+    const Constructor = registry[annotation.type];
+    if (typeof Constructor !== "function") {
+      errors.push(`Annotation at index ${i}: unknown annotation type "${annotation.type}"`);
+      continue;
+    }
+
+    try {
+      const instance = new Constructor(
+        annotation.x,
+        annotation.y,
+        scope,
+        ...annotation.constructorParamaters,
+      );
+      instance.label = annotation.label ?? "";
+      instance.labelDirection = annotation.labelDirection;
+      instance.propagationDelay = annotation.propagationDelay;
+    } catch (err) {
+      errors.push(`Annotation at index ${i} (${annotation.type}): ${errorMessage(err)}`);
+    }
+  }
+
+  return errors;
+}
+
 /** Resolves a "ComponentId.portName" reference string to a live Node on the constructed instance. */
-function resolvePortNode(
+export function resolvePortNode(
   portRef: string,
   instanceMap: Map<string, ComponentInstance>,
 ): Node | null {
   const dotIdx = portRef.indexOf(".");
-  if (dotIdx === -1) return null;
-
   const compId = portRef.substring(0, dotIdx);
   const portName = portRef.substring(dotIdx + 1);
 
@@ -162,7 +214,22 @@ function resolvePortNode(
   return (Reflect.get(instance, portName) as Node | undefined) ?? null;
 }
 
-/** Wires component ports together by connecting them through shared nets. Skips nets that have intermediate routing. */
+function routingEndpointLabel(endpoint: RoutingEndpoint): string {
+  return typeof endpoint === "number" ? `node ${endpoint}` : `port "${endpoint}"`;
+}
+
+function resolveRoutingEndpoint(
+  endpoint: RoutingEndpoint,
+  junctionNodes: Node[],
+  instanceMap: Map<string, ComponentInstance>,
+): Node | null {
+  if (typeof endpoint === "number") {
+    return junctionNodes[endpoint] ?? null;
+  }
+  return resolvePortNode(endpoint, instanceMap);
+}
+
+/** Wires simple nets as port chains; explicit routing is always authoritative when present. */
 function wireComponents(
   instanceMap: Map<string, ComponentInstance>,
   nets: CanonicalNet[],
@@ -172,20 +239,19 @@ function wireComponents(
 
   for (let i = 0; i < nets.length; i++) {
     const net = nets[i];
-    if (intermediateNodesByNet?.[net.id]?.nodes.length) continue;
+    if (intermediateNodesByNet?.[net.id]) continue;
 
     const portNodes: Node[] = [];
     for (let j = 0; j < net.connections.length; j++) {
       const node = resolvePortNode(net.connections[j], instanceMap);
-      if (node !== null) portNodes.push(node);
+      if (node === null) {
+        errors.push(`net "${net.id}": cannot resolve "${net.connections[j]}"`);
+      } else {
+        portNodes.push(node);
+      }
     }
 
-    if (portNodes.length < 2) {
-      if (portNodes.length === 1) {
-        errors.push(`net "${net.id}": only 1 node resolved, skipping`);
-      }
-      continue;
-    }
+    if (portNodes.length < 2) continue;
 
     // Chain: port[0]↔port[1]↔port[2]…
     for (let j = 1; j < portNodes.length; j++) {
@@ -211,11 +277,7 @@ function restoreDefaultState(
   for (const comp of components) {
     if (comp.defaultState === undefined) continue;
 
-    const instance = instanceMap.get(comp.id);
-    if (instance === undefined) {
-      errors.push(`"${comp.id}" component was not built`);
-      continue;
-    }
+    const instance = instanceMap.get(comp.id)!;
 
     const stateProp = STATEFUL_DEFAULT_STATE[comp.type];
     if (stateProp === undefined) {
@@ -238,55 +300,47 @@ function restoreIntermediateNodes(
 ): string[] {
   const errors: string[] = [];
 
-  const netBitWidthMap = new Map<string, number>();
-  for (let i = 0; i < nets.length; i++) {
-    netBitWidthMap.set(nets[i].id, nets[i].bitWidth);
-  }
+  const netMap = new Map(nets.map((net) => [net.id, net]));
 
   for (const [netId, routing] of Object.entries(intermediateNodes)) {
-    const { nodes: junctionPoints, edges, portConnections } = routing;
-
-    const netBitWidth = netBitWidthMap.get(netId);
-    if (netBitWidth === undefined) {
-      errors.push(`intermediateNodes references unknown net "${netId}"`);
-      continue;
-    }
+    const { nodes: junctionPoints } = routing;
+    const net = netMap.get(netId)!;
     const junctionNodes: Node[] = [];
 
     for (let i = 0; i < junctionPoints.length; i++) {
       const point = junctionPoints[i];
       // node.js makes TypeScript infer bitWidth as undefined even though its JSDoc and runtime accept a number.
-      const node = Reflect.construct(Node, [point.x, point.y, 2, scope.root, netBitWidth]) as Node;
+      const node = Reflect.construct(Node, [point.x, point.y, 2, scope.root, net.bitWidth]) as Node;
       junctionNodes.push(node);
     }
 
-    // Junction-to-junction connections
-    for (let i = 0; i < edges.length; i++) {
-      const [fromId, toId] = edges[i];
-      const fromNode = junctionNodes[fromId];
-      const toNode = junctionNodes[toId];
-      try {
-        fromNode.connect(toNode);
-      } catch {
-        errors.push(`Junction-to-junction failed for net "${netId}" (${fromId} → ${toId})`);
+    const { connections } = routing;
+    for (let i = 0; i < connections.length; i++) {
+      const [firstEndpoint, secondEndpoint] = connections[i];
+
+      const firstNode = resolveRoutingEndpoint(firstEndpoint, junctionNodes, instanceMap);
+      if (!firstNode) {
+        errors.push(
+          `Routing for net "${netId}" cannot resolve first endpoint ${routingEndpointLabel(firstEndpoint)}`,
+        );
+        continue;
       }
-    }
 
-    // Port-to-junction connections
-    for (let i = 0; i < portConnections.length; i++) {
-      const { portRef, nodeId } = portConnections[i];
-      const junctionNode = junctionNodes[nodeId];
-
-      const portNode = resolvePortNode(portRef, instanceMap);
-      if (!portNode) {
-        errors.push(`portConnection: cannot resolve "${portRef}"`);
+      const secondNode = resolveRoutingEndpoint(secondEndpoint, junctionNodes, instanceMap);
+      if (!secondNode) {
+        errors.push(
+          `Routing for net "${netId}" cannot resolve second endpoint ${routingEndpointLabel(secondEndpoint)}`,
+        );
         continue;
       }
 
       try {
-        portNode.connect(junctionNode);
+        firstNode.connect(secondNode);
       } catch {
-        errors.push(`Port-to-junction failed for net "${netId}" ("${portRef}" → node ${nodeId})`);
+        errors.push(
+          `Routing connection failed for net "${netId}" ` +
+            `(${routingEndpointLabel(firstEndpoint)} ↔ ${routingEndpointLabel(secondEndpoint)})`,
+        );
       }
     }
   }
@@ -294,16 +348,25 @@ function restoreIntermediateNodes(
 }
 
 /** Copies visual metadata from the canonical JSON back onto the scope object. */
-function restoreScopeMetadata(scope: Scope, circuitData: CanonicalScope): void {
+function restoreScopeMetadata(
+  scope: Scope,
+  circuitData: CanonicalScope,
+  layout: CanonicalLayout,
+): void {
   scope.name = circuitData.projectMetadata.name;
   scope.restrictedCircuitElementsUsed = [...circuitData.projectMetadata.restrictedElementsUsed];
 
-  const { scale, ox, oy } = circuitData.visual.canvas;
-  scope.scale = scale;
-  scope.ox = ox;
-  scope.oy = oy;
+  const canvas = circuitData.visual?.canvas;
+  if (canvas) {
+    const { scale, ox, oy } = canvas;
+    scope.scale = scale;
+    scope.ox = ox;
+    scope.oy = oy;
+  } else {
+    scope.centerFocus(false);
+  }
 
-  const sym = circuitData.layout.subcircuitSymbol;
+  const sym = layout.subcircuitSymbol;
   scope.layout = {
     width: sym.width,
     height: sym.height,
@@ -346,13 +409,27 @@ async function importSingleScope(
   originalChildHashes?: Map<number, string>,
 ): Promise<string[]> {
   const { components, nets } = circuitData.netlist;
-  const { layout } = circuitData;
+  let layout: CanonicalLayout | undefined = circuitData.layout;
 
   const { instanceMap, errors: buildErrors } = buildComponents(scope, components, layout, scopeMap);
 
   if (buildErrors.length > 0) {
     return buildErrors;
   }
+
+  if (layout === undefined) {
+    try {
+      const { generateElkLayout } = await import("./autoLayout");
+      layout = await generateElkLayout(components, nets, instanceMap);
+    } catch (err) {
+      return [`Auto layout failed: ${errorMessage(err)}`];
+    }
+  }
+
+  const layoutErrors = applyComponentLayout(instanceMap, layout);
+  if (layoutErrors.length > 0) return layoutErrors;
+
+  const annotationErrors = buildAnnotations(scope, layout.annotations);
 
   const wireErrors = wireComponents(instanceMap, nets, layout.intermediateNodes);
   const stateErrors = restoreDefaultState(instanceMap, components);
@@ -361,9 +438,9 @@ async function importSingleScope(
     ? restoreIntermediateNodes(scope, layout.intermediateNodes, instanceMap, nets)
     : [];
 
-  restoreScopeMetadata(scope, circuitData);
+  restoreScopeMetadata(scope, circuitData, layout);
 
-  const allErrors = [...wireErrors, ...stateErrors, ...routingErrors];
+  const allErrors = [...annotationErrors, ...wireErrors, ...stateErrors, ...routingErrors];
 
   if (allErrors.length === 0) {
     const hashMatch = await verifyRoundTrip(scope, circuitData, originalChildHashes);
@@ -378,11 +455,9 @@ async function importSingleScope(
 function computeImportOrder(circuits: Record<string, CanonicalScope>): number[] {
   const inDegreeMap = new Map<number, number>();
   const dependents = new Map<number, number[]>();
-  const scopeIds = new Set<number>();
 
   for (const id of Object.keys(circuits)) {
     const circuitId = Number(id);
-    scopeIds.add(circuitId);
     dependents.set(circuitId, []);
   }
 
@@ -393,11 +468,6 @@ function computeImportOrder(circuits: Record<string, CanonicalScope>): number[] 
     for (const comp of circuit.netlist.components) {
       if (comp.type !== "SubCircuit") continue;
       const targetId = Number(getConstructorParams(comp.properties)[0]);
-      if (!scopeIds.has(targetId)) {
-        throw new Error(
-          `Circuit ${circuitId} references missing SubCircuit scope ${String(targetId)}`,
-        );
-      }
       subcircuitRefs.add(targetId);
     }
 
@@ -415,26 +485,16 @@ function computeImportOrder(circuits: Record<string, CanonicalScope>): number[] 
   return topologicalOrder;
 }
 
-export async function importCanonical(
-  json: CanonicalProject,
-  targetScope: Scope | null | undefined,
-): Promise<ImportResult> {
+export async function importCanonical(project: unknown): Promise<ImportResult> {
   const results: ImportResult = { success: false, imported: 0, errors: [] };
 
-  if (!json.circuits || typeof json.circuits !== "object") {
-    results.errors.push("Missing circuits object in JSON");
+  const validation = validateCanonicalJson(project);
+  if (!validation.valid) {
+    results.errors.push(...validation.errors);
     return results;
   }
 
-  if (Object.keys(json.circuits).length === 0) {
-    results.errors.push("No circuits found in JSON");
-    return results;
-  }
-
-  if (!targetScope) {
-    results.errors.push("No target scope provided");
-    return results;
-  }
+  const json = validation.project;
 
   let topologicalOrder: number[];
   try {
@@ -444,36 +504,9 @@ export async function importCanonical(
     return results;
   }
 
-  const hostCircuitId =
-    topologicalOrder.find((id) => json.circuits[String(id)].verilogMetadata.isMainCircuit) ??
-    topologicalOrder[topologicalOrder.length - 1];
+  const hostCircuitId = json.projectMetadata.focussedCircuit;
 
-  targetScope.initialize();
-
-  if (targetScope.id !== hostCircuitId) {
-    targetScope.id = hostCircuitId;
-    scopeList[String(hostCircuitId)] = targetScope;
-  }
-
-  const keepScopeId = String(targetScope.id);
-  for (const sid of Object.keys(scopeList)) {
-    if (sid !== keepScopeId) {
-      delete scopeList[sid];
-    }
-  }
-  {
-    const store = SimulatorStore();
-    store.circuit_list.splice(0, store.circuit_list.length);
-    store.circuit_list.push({
-      id: targetScope.id,
-      name: targetScope.name,
-    });
-    if (store.activeCircuit) {
-      store.activeCircuit.id = targetScope.id;
-      store.activeCircuit.name = targetScope.name;
-    }
-  }
-
+  resetScopeList();
   const scopeMap = new Map<number, Scope>();
 
   const originalChildHashes = new Map<number, string>();
@@ -484,27 +517,15 @@ export async function importCanonical(
   for (const canonicalId of topologicalOrder) {
     const circuitData = json.circuits[String(canonicalId)];
 
-    const validation = validateCanonicalJson(circuitData);
-    if (!validation.valid) {
-      results.errors.push(`[${canonicalId}] validation: ${validation.errors.join(", ")}`);
+    const currentScope = newCircuit(
+      circuitData.projectMetadata.name,
+      String(canonicalId),
+      circuitData.verilogMetadata.isVerilogCircuit,
+      circuitData.verilogMetadata.isMainCircuit,
+    );
+    if (!currentScope) {
+      results.errors.push(`[${canonicalId}] Failed to create scope`);
       continue;
-    }
-
-    let currentScope: Scope;
-    if (canonicalId === hostCircuitId) {
-      currentScope = targetScope;
-    } else {
-      const newScope = newCircuit(
-        circuitData.projectMetadata.name,
-        String(canonicalId),
-        circuitData.verilogMetadata.isVerilogCircuit,
-        circuitData.verilogMetadata.isMainCircuit,
-      );
-      if (!newScope) {
-        results.errors.push(`[${canonicalId}] Failed to create scope — name may be empty`);
-        continue;
-      }
-      currentScope = newScope;
     }
 
     scopeMap.set(canonicalId, currentScope);
@@ -522,18 +543,7 @@ export async function importCanonical(
       results.errors.push(`[${canonicalId}] ${err}`);
     }
   }
-
   results.success = results.errors.length === 0;
-
-  {
-    const store = SimulatorStore();
-    const hostIdx = store.circuit_list.findIndex(
-      (c: { id: string | number; name?: string }) => String(c.id) === String(targetScope.id),
-    );
-    if (hostIdx !== -1) {
-      store.circuit_list[hostIdx].name = targetScope.name;
-    }
-  }
 
   if (results.success) {
     try {
@@ -558,15 +568,19 @@ export async function importCanonical(
   }
 
   if (results.success) {
-    resetup();
-    renderCanvas(targetScope);
-    switchCircuit(String(targetScope.id));
+    const order = new Map(json.projectMetadata.orderedTabs.map((id, index) => [id, index]));
+    const rank = (id: string | number) => order.get(String(id))!;
+    const circuitList = SimulatorStore().circuit_list as Array<{ id: string | number }>;
+    circuitList.sort((a, b) => rank(a.id) - rank(b.id));
+    useProjectStore().setProjectName(json.projectMetadata.name);
+    simulationArea.changeClockTime(json.projectMetadata.timePeriod);
+    simulationArea.clockEnabled = json.projectMetadata.clockEnabled;
+
+    switchCircuit(hostCircuitId);
     updateSimulationSet(true);
-    updateSubcircuitSet(true);
-    forceResetNodesSet(true);
     updateCanvasSet(true);
     gridUpdateSet(true);
-    update(targetScope, true);
+    if (!embed) plotArea.reset();
     scheduleUpdate(1);
   }
 
