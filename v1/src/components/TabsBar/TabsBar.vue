@@ -68,7 +68,7 @@
 <script lang="ts" setup>
 import draggable from 'vuedraggable'
 import { showMessage, truncateString } from '#/simulator/src/utils'
-import { ref, Ref } from 'vue'
+import { ref, Ref, onMounted, onUnmounted, nextTick } from 'vue'
 import {
     createNewCircuitScope,
     // deleteCurrentCircuit,
@@ -87,9 +87,46 @@ const updateCount: Ref<number> = ref(0)
 
 const showMaxHeight = ref(false)
 
+let resizeObserver: ResizeObserver | null = null
+
+function updateTabsHeight() {
+    const tabsBarEl = document.getElementById('tabsBar')
+    if (tabsBarEl) {
+        const height = tabsBarEl.offsetHeight
+        if (height > 0) {
+            document.documentElement.style.setProperty('--tabs-height', `${height}px`)
+        }
+    }
+}
+
 function toggleHeight() {
     showMaxHeight.value = !showMaxHeight.value
+    nextTick(() => {
+        updateTabsHeight()
+    })
 }
+
+onMounted(() => {
+    updateTabsHeight()
+    const tabsBarEl = document.getElementById('tabsBar')
+    if (tabsBarEl && typeof ResizeObserver !== 'undefined') {
+        resizeObserver = new ResizeObserver((entries) => {
+            for (const entry of entries) {
+                const height = entry.borderBoxSize?.[0]?.blockSize ?? tabsBarEl.offsetHeight
+                if (height > 0) {
+                    document.documentElement.style.setProperty('--tabs-height', `${height}px`)
+                }
+            }
+        })
+        resizeObserver.observe(tabsBarEl)
+    }
+})
+
+onUnmounted(() => {
+    resizeObserver?.disconnect()
+    resizeObserver = null
+    document.documentElement.style.removeProperty('--tabs-height')
+})
 
 // const persistentShow: Ref<boolean> = ref(false)
 // const messageVal: Ref<string> = ref('')
