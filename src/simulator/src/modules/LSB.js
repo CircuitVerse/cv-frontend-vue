@@ -24,7 +24,7 @@ export default class LSB extends CircuitElement {
         this.directionFixed = true
         this.bitWidth = bitWidth || parseInt(prompt('Enter bitWidth'), 10)
         this.rectangleObject = false
-        this.intputSize = this.bitWidth
+        this.inputSize = this.bitWidth
 
         this.inp1 = new Node(-10, 0, 0, this, this.inputSize)
         this.output1 = new Node(20, 0, 1, this, this.bitWidth)
@@ -121,8 +121,28 @@ export default class LSB extends CircuitElement {
         ctx.stroke()
         ctx.fill()
     }
-    generateVerilog() {
-        return `assign ${this.output1.verilogLabel} = (${this.enable.verilogLabel}!=0) ? ${this.inp1.verilogLabel}[0] : 0;`
+    static moduleVerilog() {
+        return `
+    module LSB(out, en, inp);
+      parameter WIDTH = 1;
+      output reg [WIDTH-1:0] out;
+      output reg en;
+      input [WIDTH-1:0] inp;
+    
+       integer i;
+
+    always @(*) begin
+        out = 0;
+        en = 0;
+        for (i = WIDTH-1; i >=0; i = i - 1) begin
+            if (inp[i]) begin
+                out = WIDTH-1-i;
+                en = 1;
+                break;
+            end
+        end
+    end
+    endmodule`
     }
 }
 
