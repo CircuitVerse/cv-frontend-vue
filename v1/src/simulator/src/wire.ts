@@ -219,24 +219,29 @@ export default class Wire {
   }
 
   private alignNodesAlongYAxis(): boolean {
+    // Re-converge onto the other node's axis coordinate so a moved component
+    // keeps its connected wires orthogonal instead of leaving a detached
+    // segment at the stale this.y1/this.y2 (CircuitVerse/CircuitVerse#3928).
     return this.checkAndCreateNode(
       this.node1.absY(),
       this.y1,
-      () => new Node(this.node1.absX(), this.y1, 2, this.scope.root),
+      () => new Node(this.node2.absX(), this.node1.absY(), 2, this.scope.root),
       this.node2.absY(),
       this.y2,
-      () => new Node(this.node2.absX(), this.y2, 2, this.scope.root),
+      () => new Node(this.node1.absX(), this.node2.absY(), 2, this.scope.root),
     );
   }
 
   private alignNodesAlongXAxis(): boolean {
+    // See alignNodesAlongYAxis - symmetric fix for vertical wires
+    // (CircuitVerse/CircuitVerse#3928).
     return this.checkAndCreateNode(
       this.node1.absX(),
       this.x1,
-      () => new Node(this.x1, this.node1.absY(), 2, this.scope.root),
+      () => new Node(this.node1.absX(), this.node2.absY(), 2, this.scope.root),
       this.node2.absX(),
       this.x2,
-      () => new Node(this.x2, this.node2.absY(), 2, this.scope.root),
+      () => new Node(this.node2.absX(), this.node1.absY(), 2, this.scope.root),
     );
   }
 
