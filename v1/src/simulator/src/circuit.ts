@@ -98,10 +98,10 @@ export function switchCircuit(id: string) {
     // $(`#${id}`).addClass('current')
     const index = circuit_list.value.findIndex((circuit) => circuit.id == id); // TODO: add strict equality after typescript
     circuit_list.value[index].focussed = true;
-    if (activeCircuit.value) {
-      activeCircuit.value.id = globalScope.id;
-      activeCircuit.value.name = globalScope.name;
-    }
+    activeCircuit.value = {
+      id: globalScope.id,
+      name: globalScope.name,
+    };
   }
   syncTestbenchWithScope(globalScope);
   updateSimulationSet(true);
@@ -241,10 +241,10 @@ export function newCircuit(
   // $('.circuits').removeClass('current')
   circuit_list.value.forEach((circuit) => (circuit.focussed = false));
   circuit_list.value[circuit_list.value.length - 1].focussed = true;
-  if (activeCircuit.value) {
-    activeCircuit.value.id = scope.id;
-    activeCircuit.value.name = scope.name;
-  }
+  activeCircuit.value = {
+    id: globalScope.id,
+    name: globalScope.name,
+  };
 
   if (!isVerilog || isVerilogMain) {
     circuit_name_clickable.value = false;
@@ -275,12 +275,15 @@ export function newCircuit(
  */
 export function changeCircuitName(name: string, id = globalScope.id) {
   const simulatorStore = SimulatorStore();
-  const { circuit_list } = toRefs(simulatorStore);
+  const { circuit_list, activeCircuit } = toRefs(simulatorStore);
   name = name || "Untitled";
   name = stripTags(name);
   scopeList[id].name = name;
   const index = circuit_list.value.findIndex((circuit) => circuit.id === id);
   circuit_list.value[index].name = name;
+  if (activeCircuit.value && activeCircuit.value.id === id) {
+    activeCircuit.value = { id, name };
+  }
 }
 
 /**
