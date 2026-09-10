@@ -36,6 +36,7 @@ import { verilogModeGet } from './Verilog2CV'
 import { setupTimingListeners } from './plotArea'
 import logixFunction from './data'
 import { listen } from '@tauri-apps/api/event'
+import { isTauri } from '@tauri-apps/api/core'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { toRefs } from 'vue'
 import { fitToSelection } from './canvasApi'
@@ -825,91 +826,97 @@ function zoomSliderListeners() {
 }
 
 // Desktop App Listeners
+// These rely on Tauri's IPC bridge (window.__TAURI_INTERNALS__), which only
+// exists inside the Tauri desktop shell. Registering them on the plain web
+// build throws "Cannot read properties of undefined (reading 'transformCallback')"
+// so they must only run when actually inside Tauri.
 
-listen('new-project', () => {
-    logixFunction.newProject();
-});
+if (isTauri()) {
+    listen('new-project', () => {
+        logixFunction.newProject();
+    });
 
-listen('save-online', () => {
-    logixFunction.save();
-});
+    listen('save-online', () => {
+        logixFunction.save();
+    });
 
-listen('save-offline', () => {
-    logixFunction.saveOffline();
-});
+    listen('save-offline', () => {
+        logixFunction.saveOffline();
+    });
 
-listen('open-offline', () => {
-    logixFunction.createOpenLocalPrompt();
-});
+    listen('open-offline', () => {
+        logixFunction.createOpenLocalPrompt();
+    });
 
-listen('export', () => {
-    logixFunction.ExportProject();
-});
+    listen('export', () => {
+        logixFunction.ExportProject();
+    });
 
-listen('import', () => {
-    logixFunction.ImportProject();
-});
+    listen('import', () => {
+        logixFunction.ImportProject();
+    });
 
-listen('recover', () => {
-    logixFunction.recoverProject();
-});
+    listen('recover', () => {
+        logixFunction.recoverProject();
+    });
 
-listen('clear', () => {
-    logixFunction.clearProject();
-});
+    listen('clear', () => {
+        logixFunction.clearProject();
+    });
 
-listen('preview-circuit', () => {
-    logixFunction.fullViewOption();
-});
+    listen('preview-circuit', () => {
+        logixFunction.fullViewOption();
+    });
 
-listen('new-circuit', () => {
-    logixFunction.createNewCircuitScope();
-});
+    listen('new-circuit', () => {
+        logixFunction.createNewCircuitScope();
+    });
 
-listen('new-verilog-module', () => {
-    logixFunction.newVerilogModule();
-});
+    listen('new-verilog-module', () => {
+        logixFunction.newVerilogModule();
+    });
 
-listen('insert-sub-circuit', () => {
-    logixFunction.createSubCircuitPrompt();
-});
+    listen('insert-sub-circuit', () => {
+        logixFunction.createSubCircuitPrompt();
+    });
 
-listen('combinational-analysis', () => {
-    logixFunction.createCombinationalAnalysisPrompt();
-});
+    listen('combinational-analysis', () => {
+        logixFunction.createCombinationalAnalysisPrompt();
+    });
 
-listen('hex-bin-dec', () => {
-    logixFunction.bitconverter();
-});
+    listen('hex-bin-dec', () => {
+        logixFunction.bitconverter();
+    });
 
-listen('download-image', () => {
-    logixFunction.createSaveAsImgPrompt();
-});
+    listen('download-image', () => {
+        logixFunction.createSaveAsImgPrompt();
+    });
 
-listen('themes', () => {
-    logixFunction.colorThemes();
-});
+    listen('themes', () => {
+        logixFunction.colorThemes();
+    });
 
-listen('custom-shortcut', () => {
-    logixFunction.customShortcut();
-});
+    listen('custom-shortcut', () => {
+        logixFunction.customShortcut();
+    });
 
-listen('export-verilog', () => {
-    logixFunction.generateVerilog();
-});
+    listen('export-verilog', () => {
+        logixFunction.generateVerilog();
+    });
 
-listen('tutorial', () => {
-    logixFunction.showTourGuide();
-});
+    listen('tutorial', () => {
+        logixFunction.showTourGuide();
+    });
 
-listen('user-manual', () => {
-    logixFunction.showUserManual();
-});
+    listen('user-manual', () => {
+        logixFunction.showUserManual();
+    });
 
-listen('learn-digital-circuit', () => {
-    logixFunction.showDigitalCircuit();
-});
+    listen('learn-digital-circuit', () => {
+        logixFunction.showDigitalCircuit();
+    });
 
-listen('discussion-forum', () => {
-    logixFunction.showDiscussionForum();
-});
+    listen('discussion-forum', () => {
+        logixFunction.showDiscussionForum();
+    });
+}
