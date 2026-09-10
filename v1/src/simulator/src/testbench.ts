@@ -125,8 +125,8 @@ export class TestbenchData {
  * Checks if all the labels in the test data are unique. Called by validate()
  */
 function checkDistinctIdentifiersData(data: TestData) {
-  const inputIdentifiersData = data.groups[0].inputs.map((input) => input.label);
-  const outputIdentifiersData = data.groups[0].outputs.map((output) => output.label);
+  const inputIdentifiersData = data.groups[0].inputs.map((input) => input.label.trim());
+  const outputIdentifiersData = data.groups[0].outputs.map((output) => output.label.trim());
   const identifiersData = inputIdentifiersData.concat(outputIdentifiersData);
 
   return new Set(identifiersData).size === identifiersData.length;
@@ -137,8 +137,8 @@ function checkDistinctIdentifiersData(data: TestData) {
  * TODO: Replace with identifiers
  */
 function checkDistinctIdentifiersScope(scope: any) {
-  const inputIdentifiersScope = scope.Input.map((input: any) => input.label);
-  const outputIdentifiersScope = scope.Output.map((output: any) => output.label);
+  const inputIdentifiersScope = scope.Input.map((input: any) => input.label.trim());
+  const outputIdentifiersScope = scope.Output.map((output: any) => output.label.trim());
   let identifiersScope = inputIdentifiersScope.concat(outputIdentifiersScope);
 
   // Remove identifiers which have not been set yet (ie. empty strings)
@@ -156,19 +156,19 @@ function validateInputs(data: TestData, scope: any) {
 
   data.groups[0].inputs.forEach((dataInput) => {
     const matchInput = scope.Input.find(
-      (simulatorInput: any) => simulatorInput.label === dataInput.label,
+      (simulatorInput: any) => simulatorInput.label.trim() === dataInput.label.trim(),
     );
 
     if (matchInput === undefined) {
       invalids.push({
         type: VALIDATION_ERRORS.NOTPRESENT,
-        identifier: dataInput.label,
+        identifier: dataInput.label.trim(),
         message: "Input is not present in the circuit",
       });
     } else if (matchInput.bitWidth !== dataInput.bitWidth) {
       invalids.push({
         type: VALIDATION_ERRORS.WRONGBITWIDTH,
-        identifier: dataInput.label,
+        identifier: dataInput.label.trim(),
         extraInfo: {
           element: matchInput,
           expectedBitWidth: dataInput.bitWidth,
@@ -198,19 +198,19 @@ function validateOutputs(data: TestData, scope: any) {
 
   data.groups[0].outputs.forEach((dataOutput) => {
     const matchOutput = scope.Output.find(
-      (simulatorOutput: any) => simulatorOutput.label === dataOutput.label,
+      (simulatorOutput: any) => simulatorOutput.label.trim() === dataOutput.label.trim(),
     );
 
     if (matchOutput === undefined) {
       invalids.push({
         type: VALIDATION_ERRORS.NOTPRESENT,
-        identifier: dataOutput.label,
+        identifier: dataOutput.label.trim(),
         message: "Output is not present in the circuit",
       });
     } else if (matchOutput.bitWidth !== dataOutput.bitWidth) {
       invalids.push({
         type: VALIDATION_ERRORS.WRONGBITWIDTH,
-        identifier: dataOutput.label,
+        identifier: dataOutput.label.trim(),
         extraInfo: {
           element: matchOutput,
           expectedBitWidth: dataOutput.bitWidth,
@@ -288,19 +288,19 @@ function bindIO(data: TestData, scope: any) {
   let reset;
 
   data.groups[0].inputs.forEach((dataInput) => {
-    inputs[dataInput.label] = scope.Input.find(
-      (simulatorInput: any) => simulatorInput.label === dataInput.label,
+    inputs[dataInput.label.trim()] = scope.Input.find(
+      (simulatorInput: any) => simulatorInput.label.trim() === dataInput.label.trim(),
     );
   });
 
   data.groups[0].outputs.forEach((dataOutput) => {
-    outputs[dataOutput.label] = scope.Output.find(
-      (simulatorOutput: any) => simulatorOutput.label === dataOutput.label,
+    outputs[dataOutput.label.trim()] = scope.Output.find(
+      (simulatorOutput: any) => simulatorOutput.label.trim() === dataOutput.label.trim(),
     );
   });
 
   if (data.type === "seq") {
-    reset = scope.Input.find((simulatorOutput: any) => simulatorOutput.label === "RST");
+    reset = scope.Input.find((simulatorOutput: any) => simulatorOutput.label.trim() === "RST");
   }
 
   return { inputs, outputs, reset };
@@ -312,7 +312,7 @@ function bindIO(data: TestData, scope: any) {
  */
 function setInputValues(inputs: any, group: any, caseIndex: number, scope: any) {
   group.inputs.forEach((input: any) => {
-    inputs[input.label].state = parseInt(input.values[caseIndex], 2);
+    inputs[input.label.trim()].state = parseInt(input.values[caseIndex], 2);
   });
 
   // Propagate inputs
@@ -347,9 +347,9 @@ function getOutputValues(data: TestData, outputs: any) {
 
   data.groups[0].outputs.forEach((dataOutput) => {
     // Using node value because output state only changes on rendering
-    const resultValue = outputs[dataOutput.label].nodeList[0].value;
-    const resultBW = outputs[dataOutput.label].nodeList[0].bitWidth;
-    values.set(dataOutput.label, dec2bin(resultValue, resultBW));
+    const resultValue = outputs[dataOutput.label.trim()].nodeList[0].value;
+    const resultBW = outputs[dataOutput.label.trim()].nodeList[0].bitWidth;
+    values.set(dataOutput.label.trim(), dec2bin(resultValue, resultBW));
   });
 
   return values;
@@ -435,7 +435,7 @@ export function runAll(data: TestData, scope = globalScope) {
 
       caseResult.forEach((_, outName) => {
         // TODO: find() is not the best idea because of O(n)
-        const output = group.outputs.find((dataOutput) => dataOutput.label === outName);
+        const output = group.outputs.find((dataOutput) => dataOutput.label.trim() === outName);
         output?.results?.push(caseResult.get(outName));
 
         if (output?.values[case_i] !== caseResult.get(outName)) casePassed = false;
@@ -559,7 +559,7 @@ function setUIResult(testbenchData: TestBenchData, result: any) {
   for (const output of result.keys()) {
     const resultValue = result.get(output);
     const outputData = data.groups[groupIndex].outputs.find(
-      (dataOutput) => dataOutput.label === output,
+      (dataOutput) => dataOutput.label.trim() === output,
     );
 
     const expectedValue = outputData ? outputData.values[caseIndex] : undefined;
