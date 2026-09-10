@@ -34,6 +34,7 @@ import { showError, showMessage } from './utils';
 import { showProperties } from './ux';
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore';
 import { useSynthesisStore } from '#/store/synthesisStore';
+import { useVerilogStore } from '#/store/verilogStore';
 import { toRefs } from 'vue';
 
 var editor;
@@ -70,12 +71,18 @@ export function applyVerilogTheme(theme) {
     editor.setOption('theme', theme);
 }
 
-// Lazy-init: cannot call useSynthesisStore() at module scope because
+// Lazy-init: cannot call stores at module scope because
 // this file is imported before app.use(pinia) runs. Cache on first use.
 let _synthesisStore = null;
 function getSynthesisStore() {
     if (!_synthesisStore) _synthesisStore = useSynthesisStore();
     return _synthesisStore;
+}
+
+let _verilogStore = null;
+function getVerilogStore() {
+    if (!_verilogStore) _verilogStore = useVerilogStore();
+    return _verilogStore;
 }
 
 function setVerilogOutput(text, type = 'info') {
@@ -124,6 +131,8 @@ export function verilogModeSet(mode) {
         }
         resetVerilogCode();
     } else {
+        getVerilogStore().hideTerminal();
+
         const code_window = document.getElementById('code-window');
         if (code_window) code_window.style.display = 'none';
 

@@ -97,10 +97,10 @@ export function switchCircuit(id: string) {
     // $(`#${id}`).addClass('current')
     const index = circuit_list.value.findIndex((circuit) => circuit.id == id); // TODO: add strict equality after typescript
     circuit_list.value[index].focussed = true;
-    if (activeCircuit.value) {
-      activeCircuit.value.id = globalScope.id;
-      activeCircuit.value.name = globalScope.name;
-    }
+    activeCircuit.value = {
+      id: globalScope.id,
+      name: globalScope.name,
+    };
   }
   updateSimulationSet(true);
   updateSubcircuitSet(true);
@@ -239,10 +239,10 @@ export function newCircuit(
   // $('.circuits').removeClass('current')
   circuit_list.value.forEach((circuit) => (circuit.focussed = false));
   circuit_list.value[circuit_list.value.length - 1].focussed = true;
-  if (activeCircuit.value) {
-    activeCircuit.value.id = scope.id;
-    activeCircuit.value.name = scope.name;
-  }
+  activeCircuit.value = {
+    id: globalScope.id,
+    name: globalScope.name,
+  };
 
   if (!isVerilog || isVerilogMain) {
     circuit_name_clickable.value = false;
@@ -272,12 +272,15 @@ export function newCircuit(
  */
 export function changeCircuitName(name: string, id = globalScope.id) {
   const simulatorStore = SimulatorStore();
-  const { circuit_list } = toRefs(simulatorStore);
+  const { circuit_list, activeCircuit } = toRefs(simulatorStore);
   name = name || "Untitled";
   name = stripTags(name);
   scopeList[id].name = name;
   const index = circuit_list.value.findIndex((circuit) => circuit.id === id);
   circuit_list.value[index].name = name;
+  if (activeCircuit.value && activeCircuit.value.id === id) {
+    activeCircuit.value = { id, name };
+  }
 }
 
 /**
@@ -313,16 +316,17 @@ export default class Scope {
     title_y: number;
     titleEnabled: boolean;
   };
-  tunnelList?: {};
-  pending?: any[];
-  nodes?: any[];
-  allNodes?: any[];
-  wires?: any[];
-  Input?: any[];
-  Output?: any[];
-  Splitter?: any[];
-  SubCircuit?: any[];
-  Clock?: any[];
+  tunnelList!: Record<string, any>;
+  pending!: any[];
+  nodes!: any[];
+  allNodes!: any[];
+  wires!: any[];
+  Input!: any[];
+  Output!: any[];
+  Splitter!: any[];
+  SubCircuit!: any[];
+  Clock!: any[];
+  [key: string]: any;
   constructor(name = "localScope", id = undefined) {
     this.restrictedCircuitElementsUsed = [];
     this.id = id || Math.floor(Math.random() * 100000000000 + 1);
@@ -455,8 +459,8 @@ export default class Scope {
   /**
    * Get dependency list - list of all circuits, this circuit depends on
    */
-  getDependencies() {
-    var list = [];
+  getDependencies(): string[] {
+    var list: string[] = [];
     if (this.SubCircuit) {
       for (let i = 0; i < this.SubCircuit.length; i++) {
         list.push(this.SubCircuit[i].id);

@@ -50,7 +50,7 @@ export class TestbenchData {
 
   groupNext() {
     const newCase = new TestbenchData(this.testData, this.currentGroup, 0);
-    const _groupCount = newCase.testData.groups.length;
+    const groupCount = newCase.testData.groups.length;
     let caseCount = 0;
     if (newCase.testData.groups[this.currentGroup].inputs[0]) {
       caseCount = newCase.testData.groups[this.currentGroup].inputs[0].values.length;
@@ -136,13 +136,13 @@ function checkDistinctIdentifiersData(data: TestData) {
  * Checks if all the input/output labels in the scope are unique. Called by validate()
  * TODO: Replace with identifiers
  */
-function checkDistinctIdentifiersScope(scope) {
-  const inputIdentifiersScope = scope.Input.map((input) => input.label);
-  const outputIdentifiersScope = scope.Output.map((output) => output.label);
+function checkDistinctIdentifiersScope(scope: any) {
+  const inputIdentifiersScope = scope.Input.map((input: any) => input.label);
+  const outputIdentifiersScope = scope.Output.map((output: any) => output.label);
   let identifiersScope = inputIdentifiersScope.concat(outputIdentifiersScope);
 
   // Remove identifiers which have not been set yet (ie. empty strings)
-  identifiersScope = identifiersScope.filter((identifer) => identifer != "");
+  identifiersScope = identifiersScope.filter((identifer: any) => identifer != "");
 
   return new Set(identifiersScope).size === identifiersScope.length;
 }
@@ -151,12 +151,12 @@ function checkDistinctIdentifiersScope(scope) {
  * Validates presence and bitwidths of test inputs in the circuit.
  * Called by validate()
  */
-function validateInputs(data: TestData, scope) {
+function validateInputs(data: TestData, scope: any) {
   const invalids: Invalids[] = [];
 
   data.groups[0].inputs.forEach((dataInput) => {
     const matchInput = scope.Input.find(
-      (simulatorInput) => simulatorInput.label === dataInput.label,
+      (simulatorInput: any) => simulatorInput.label === dataInput.label,
     );
 
     if (matchInput === undefined) {
@@ -193,12 +193,12 @@ interface Invalids {
  * Validates presence and bitwidths of test outputs in the circuit.
  * Called by validate()
  */
-function validateOutputs(data: TestData, scope) {
+function validateOutputs(data: TestData, scope: any) {
   const invalids: Invalids[] = [];
 
   data.groups[0].outputs.forEach((dataOutput) => {
     const matchOutput = scope.Output.find(
-      (simulatorOutput) => simulatorOutput.label === dataOutput.label,
+      (simulatorOutput: any) => simulatorOutput.label === dataOutput.label,
     );
 
     if (matchOutput === undefined) {
@@ -227,7 +227,7 @@ function validateOutputs(data: TestData, scope) {
 /**
  * Validate if all inputs and output elements are present with correct bitwidths
  */
-function validate(data: TestData, scope) {
+function validate(data: TestData, scope: any) {
   let invalids = [];
 
   // Check for duplicate identifiers
@@ -254,13 +254,13 @@ function validate(data: TestData, scope) {
   const inputsValid = validateInputs(data, scope);
   const outputsValid = validateOutputs(data, scope);
 
-  invalids = inputsValid.ok ? invalids : invalids.concat(inputsValid.invalids);
-  invalids = outputsValid.ok ? invalids : invalids.concat(outputsValid.invalids);
+  invalids = inputsValid.ok ? invalids : invalids.concat(inputsValid.invalids ?? []);
+  invalids = outputsValid.ok ? invalids : invalids.concat(outputsValid.invalids ?? []);
 
   // Validate presence of reset if test is sequential
   if (data.type === "seq") {
     const resetPresent = scope.Input.some(
-      (simulatorReset) =>
+      (simulatorReset: any) =>
         simulatorReset.label === "RST" &&
         simulatorReset.bitWidth === 1 &&
         simulatorReset.objectType === "Input",
@@ -282,25 +282,25 @@ function validate(data: TestData, scope) {
 /**
  * Returns object of scope inputs and outputs keyed by their labels
  */
-function bindIO(data: TestData, scope) {
+function bindIO(data: TestData, scope: any) {
   const inputs: { [key: string]: any } = {};
   const outputs: { [key: string]: any } = {};
   let reset;
 
   data.groups[0].inputs.forEach((dataInput) => {
     inputs[dataInput.label] = scope.Input.find(
-      (simulatorInput) => simulatorInput.label === dataInput.label,
+      (simulatorInput: any) => simulatorInput.label === dataInput.label,
     );
   });
 
   data.groups[0].outputs.forEach((dataOutput) => {
     outputs[dataOutput.label] = scope.Output.find(
-      (simulatorOutput) => simulatorOutput.label === dataOutput.label,
+      (simulatorOutput: any) => simulatorOutput.label === dataOutput.label,
     );
   });
 
   if (data.type === "seq") {
-    reset = scope.Input.find((simulatorOutput) => simulatorOutput.label === "RST");
+    reset = scope.Input.find((simulatorOutput: any) => simulatorOutput.label === "RST");
   }
 
   return { inputs, outputs, reset };
@@ -310,8 +310,8 @@ function bindIO(data: TestData, scope) {
  * Set and propogate the input values according to the testcase.
  * Called by runSingle() and runAll()
  */
-function setInputValues(inputs, group, caseIndex: number, scope) {
-  group.inputs.forEach((input) => {
+function setInputValues(inputs: any, group: any, caseIndex: number, scope: any) {
+  group.inputs.forEach((input: any) => {
     inputs[input.label].state = parseInt(input.values[caseIndex], 2);
   });
 
@@ -342,7 +342,7 @@ function dec2bin(dec: number | undefined, bitWidth = undefined) {
 /**
  * Gets Output values as a Map with keys as output name and value as output state
  */
-function getOutputValues(data: TestData, outputs) {
+function getOutputValues(data: TestData, outputs: any) {
   const values = new Map();
 
   data.groups[0].outputs.forEach((dataOutput) => {
@@ -463,7 +463,7 @@ export function runAll(data: TestData, scope = globalScope) {
 /**
  * Runs single combinational test
  */
-function runSingleCombinational(testbenchData: TestBenchData, scope) {
+function runSingleCombinational(testbenchData: TestBenchData, scope: any) {
   const data = testbenchData.testData;
   const groupIndex = testbenchData.currentGroup;
   const caseIndex = testbenchData.currentCase;
@@ -487,7 +487,7 @@ function runSingleCombinational(testbenchData: TestBenchData, scope) {
  * Runs single sequential test and all tests above it in the group
  * Used in MANUAL mode
  */
-function runSingleSequential(testbenchData: TestBenchData, scope) {
+function runSingleSequential(testbenchData: TestBenchData, scope: any) {
   const data = testbenchData.testData;
   const groupIndex = testbenchData.currentGroup;
   const caseIndex = testbenchData.currentCase;
@@ -543,7 +543,7 @@ export function openCreator(type: openCreatorType) {
  * Set the current test case result on the UI
  */
 
-function setUIResult(testbenchData: TestBenchData, result) {
+function setUIResult(testbenchData: TestBenchData, result: any) {
   const testBenchStore = useTestBenchStore();
   const data = testbenchData.testData;
   const groupIndex = testbenchData.currentGroup;
@@ -700,7 +700,7 @@ export const buttonListenerFunctions = {
 /**
  * Runs single test
  */
-function runSingleTest(testbenchData: TestBenchData, scope) {
+function runSingleTest(testbenchData: TestBenchData, scope: any) {
   const data = testbenchData.testData;
 
   let result;
