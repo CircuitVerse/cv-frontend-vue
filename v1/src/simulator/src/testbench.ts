@@ -424,7 +424,6 @@ export function syncTestbenchWithScope(scope = globalScope) {
     return;
   }
 
-
   const groupCount = savedData.groups.length;
   let currentGroup = scope.testbenchData.currentGroup ?? 0;
   let currentCase = scope.testbenchData.currentCase ?? 0;
