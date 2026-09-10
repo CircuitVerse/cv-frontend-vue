@@ -50,7 +50,6 @@ function getCycleStartX(cycleNumber) {
 }
 
 /**
- * @type {Object} plotArea
  * @category plotArea
  */
 const plotArea = {
@@ -194,7 +193,8 @@ const plotArea = {
     calibrate() {
         var recommendedUnit = Math.max(20, Math.round(this.unitUsed * 3))
         this.cycleUnit = recommendedUnit
-        $('#timing-diagram-units').val(recommendedUnit)
+        const unitsEl = document.getElementById('timing-diagram-units')
+        if (unitsEl) unitsEl.value = recommendedUnit
         this.reset()
     },
     // Get current time in clock cycles
@@ -217,21 +217,22 @@ const plotArea = {
         var unitUsed = this.unitUsed
         var units = this.cycleUnit
         var utilization = Math.round((unitUsed * 10000) / units) / 100
-        $('#timing-diagram-log').html(
-            `Utilization: ${Math.round(unitUsed)} Units (${utilization}%)`
-        )
+        const logEl = document.getElementById('timing-diagram-log')
+        if (logEl) {
+            logEl.innerHTML = `Utilization: ${Math.round(unitUsed)} Units (${utilization}%)`
+        }
         if (utilization >= 90 || utilization <= 10) {
             var recommendedUnit = Math.max(20, Math.round(unitUsed * 3))
-            $('#timing-diagram-log').append(
-                ` Recommended Units: ${recommendedUnit}`
-            )
-            $('#timing-diagram-log').css('background-color', dangerColor)
+            if (logEl) {
+                logEl.insertAdjacentHTML('beforeend', ` Recommended Units: ${recommendedUnit}`)
+                logEl.style.backgroundColor = dangerColor
+            }
             if (utilization >= 100) {
                 this.clear()
                 return
             }
         } else {
-            $('#timing-diagram-log').css('background-color', normalColor)
+            if (logEl) logEl.style.backgroundColor = normalColor
         }
 
         var width = this.width
