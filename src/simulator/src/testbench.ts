@@ -73,12 +73,12 @@ export class TestbenchData {
   groupPrev() {
     const newCase = new TestbenchData(this.testData, this.currentGroup, 0);
     const groupCount = newCase.testData?.groups?.length ?? 0;
-    let caseCount = newCase.testData.groups[newCase.currentGroup]?.inputs?.[0]?.values?.length ?? 0;
+    let caseCount = newCase.testData?.groups?.[newCase.currentGroup]?.inputs?.[0]?.values?.length ?? 0;
 
     while (caseCount === 0 || this.currentGroup === newCase.currentGroup) {
       newCase.currentGroup--;
       if (newCase.currentGroup < 0) return false;
-      caseCount = newCase.testData.groups[newCase.currentGroup]?.inputs?.[0]?.values?.length ?? 0;
+      caseCount = newCase.testData?.groups?.[newCase.currentGroup]?.inputs?.[0]?.values?.length ?? 0;
     }
 
     this.currentGroup = newCase.currentGroup;
