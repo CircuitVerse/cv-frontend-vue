@@ -240,8 +240,8 @@ export function newCircuit(
   circuit_list.value.forEach((circuit) => (circuit.focussed = false));
   circuit_list.value[circuit_list.value.length - 1].focussed = true;
   activeCircuit.value = {
-      id: globalScope.id,
-      name: globalScope.name,
+    id: globalScope.id,
+    name: globalScope.name,
   };
 
   if (!isVerilog || isVerilogMain) {
