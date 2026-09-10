@@ -60,7 +60,7 @@
           </button>
           <span class="tb-test-label group-label">
             {{
-              testData.groups[testBenchStore.testbenchData.currentGroup].label
+              testData.groups[testBenchStore.testbenchData.currentGroup]?.label ?? ""
             }}</span
           >
           <button
@@ -200,14 +200,16 @@ const testData = computed(() => testBenchStore.testbenchData?.testData);
 
 const combinedIO = computed(() => {
   const group = testData.value.groups[0];
-  return group.inputs.concat(group.outputs);
+  return group ? group.inputs.concat(group.outputs) : [];
 });
 
 const currentGroup = computed(() => testBenchStore.testbenchData.currentGroup);
 const currentCase = computed(() => testBenchStore.testbenchData.currentCase);
 
-const inputs = computed(() => testData.value.groups[currentGroup.value].inputs);
+const inputs = computed(
+  () => testData.value.groups[currentGroup.value]?.inputs ?? [],
+);
 const outputs = computed(
-  () => testData.value.groups[currentGroup.value].outputs,
+  () => testData.value.groups[currentGroup.value]?.outputs ?? [],
 );
 </script>
