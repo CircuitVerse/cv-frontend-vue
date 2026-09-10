@@ -399,6 +399,18 @@ export function runTestBench(
   }
 }
 
+export function emptyTestbenchData(): TestBenchData {
+  return {
+    testData: {
+      type: "",
+      title: "",
+      groups: [{ label: "Group 1", inputs: [], outputs: [], n: 0 }],
+    },
+    currentGroup: 0,
+    currentCase: 0,
+  };
+}
+
 /**
  * Syncs the testbench panel with the testbench data saved on a scope.
  */
@@ -407,25 +419,39 @@ export function syncTestbenchWithScope(scope = globalScope) {
   const savedData = scope?.testbenchData?.testData;
 
   if (!savedData || !savedData.groups || savedData.groups.length === 0) {
+    testBenchStore.testbenchData = emptyTestbenchData();
     testBenchStore.showTestbenchUI = false;
     return;
   }
 
-  const tempTestbenchData = new TestbenchData(
-    savedData,
-    scope.testbenchData.currentGroup ?? 0,
-    scope.testbenchData.currentCase ?? 0,
-  );
+
+  const groupCount = savedData.groups.length;
+  let currentGroup = scope.testbenchData.currentGroup ?? 0;
+  let currentCase = scope.testbenchData.currentCase ?? 0;
+  if (!Number.isInteger(currentGroup) || currentGroup < 0 || currentGroup >= groupCount) {
+    currentGroup = 0;
+  }
+  if (!Number.isInteger(currentCase) || currentCase < 0) {
+    currentCase = 0;
+  }
+
+  const tempTestbenchData = new TestbenchData(savedData, currentGroup, currentCase);
 
   if (!tempTestbenchData.goToFirstValidGroup()) {
+    testBenchStore.testbenchData = emptyTestbenchData();
     testBenchStore.showTestbenchUI = false;
     return;
+  }
+
+  if (!tempTestbenchData.isCaseValid()) {
+    tempTestbenchData.currentCase = 0;
   }
 
   scope.testbenchData = tempTestbenchData;
   testBenchStore.testbenchData = tempTestbenchData;
   testBenchStore.showTestbenchUI = true;
 }
+
 interface Results {
   detailed: TestData;
   summary: {
