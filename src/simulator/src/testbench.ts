@@ -31,9 +31,12 @@ export class TestbenchData {
   }
 
   isCaseValid() {
-    if (this.currentGroup >= this.testData.groups.length || this.currentGroup < 0) return false;
-    const caseCount = this.testData.groups[this.currentGroup].inputs[0].values.length;
-    if (this.currentCase >= caseCount || this.currentCase < 0) return false;
+    const groupCount = this.testData?.groups?.length ?? 0;
+    if (this.currentGroup >= groupCount || this.currentGroup < 0) return false;
+
+    const group = this.testData.groups[this.currentGroup];
+    const caseCount = group?.inputs?.[0]?.values?.length ?? 0;
+    if (caseCount === 0 || this.currentCase >= caseCount || this.currentCase < 0) return false;
 
     return true;
   }
@@ -50,16 +53,16 @@ export class TestbenchData {
 
   groupNext() {
     const newCase = new TestbenchData(this.testData, this.currentGroup, 0);
-    const groupCount = newCase.testData.groups.length;
+    const groupCount = newCase.testData?.groups?.length ?? 0;
     let caseCount = 0;
-    if (newCase.testData.groups[this.currentGroup].inputs[0]) {
-      caseCount = newCase.testData.groups[this.currentGroup].inputs[0].values.length;
+    if (newCase.testData?.groups?.[this.currentGroup]?.inputs?.[0]) {
+      caseCount = newCase.testData.groups[this.currentGroup].inputs[0].values?.length ?? 0;
     }
 
     while (caseCount === 0 || this.currentGroup === newCase.currentGroup) {
       newCase.currentGroup++;
       if (newCase.currentGroup >= groupCount) return false;
-      caseCount = newCase.testData.groups[newCase.currentGroup].inputs[0].values.length;
+      caseCount = newCase.testData.groups[newCase.currentGroup]?.inputs?.[0]?.values?.length ?? 0;
     }
 
     this.currentGroup = newCase.currentGroup;
@@ -69,13 +72,13 @@ export class TestbenchData {
 
   groupPrev() {
     const newCase = new TestbenchData(this.testData, this.currentGroup, 0);
-    const groupCount = newCase.testData.groups.length;
-    let caseCount = newCase.testData.groups[newCase.currentGroup].inputs[0].values.length;
+    const groupCount = newCase.testData?.groups?.length ?? 0;
+    let caseCount = newCase.testData.groups[newCase.currentGroup]?.inputs?.[0]?.values?.length ?? 0;
 
     while (caseCount === 0 || this.currentGroup === newCase.currentGroup) {
       newCase.currentGroup--;
       if (newCase.currentGroup < 0) return false;
-      caseCount = newCase.testData.groups[newCase.currentGroup].inputs[0].values.length;
+      caseCount = newCase.testData.groups[newCase.currentGroup]?.inputs?.[0]?.values?.length ?? 0;
     }
 
     this.currentGroup = newCase.currentGroup;
@@ -84,7 +87,9 @@ export class TestbenchData {
   }
 
   caseNext() {
-    const caseCount = this.testData.groups[this.currentGroup].inputs[0].values.length;
+    const group = this.testData?.groups?.[this.currentGroup];
+    const caseCount = group?.inputs?.[0]?.values?.length ?? 0;
+    if (caseCount === 0) return false;
     if (this.currentCase >= caseCount - 1) return this.groupNext();
     this.currentCase++;
     return true;
@@ -93,7 +98,8 @@ export class TestbenchData {
   casePrev() {
     if (this.currentCase <= 0) {
       if (!this.groupPrev()) return false;
-      const caseCount = this.testData.groups[this.currentGroup].inputs[0].values.length;
+      const group = this.testData?.groups?.[this.currentGroup];
+      const caseCount = group?.inputs?.[0]?.values?.length ?? 0;
       this.currentCase = caseCount - 1;
       return true;
     }
@@ -104,20 +110,18 @@ export class TestbenchData {
 
   goToFirstValidGroup() {
     const newCase = new TestbenchData(this.testData, 0, 0);
-    let caseCount = 0;
-    if (newCase.testData.groups[this.currentGroup].inputs[0]) {
-      caseCount = newCase.testData.groups[this.currentGroup].inputs[0].values.length;
+    const groupCount = newCase.testData?.groups?.length ?? 0;
+
+    for (let i = 0; i < groupCount; i++) {
+      const caseCount = newCase.testData.groups[i]?.inputs?.[0]?.values?.length ?? 0;
+      if (caseCount > 0) {
+        this.currentGroup = i;
+        this.currentCase = 0;
+        return true;
+      }
     }
 
-    if (caseCount > 0) return true;
-
-    const validExists = newCase.groupNext();
-
-    if (!validExists) return false;
-
-    this.currentGroup = newCase.currentGroup;
-    this.currentCase = newCase.currentCase;
-    return true;
+    return false;
   }
 }
 
