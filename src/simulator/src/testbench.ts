@@ -36,7 +36,12 @@ export class TestbenchData {
 
     const group = this.testData.groups[this.currentGroup];
     const caseCount = group?.inputs?.[0]?.values?.length ?? 0;
-    if (caseCount === 0 || this.currentCase >= caseCount || this.currentCase < 0) return false;
+    if (
+      caseCount === 0 ||
+      this.currentCase >= caseCount ||
+      this.currentCase < 0
+    )
+      return false;
 
     return true;
   }
@@ -56,13 +61,17 @@ export class TestbenchData {
     const groupCount = newCase.testData?.groups?.length ?? 0;
     let caseCount = 0;
     if (newCase.testData?.groups?.[this.currentGroup]?.inputs?.[0]) {
-      caseCount = newCase.testData.groups[this.currentGroup].inputs[0].values?.length ?? 0;
+      caseCount =
+        newCase.testData.groups[this.currentGroup].inputs[0].values?.length ??
+        0;
     }
 
     while (caseCount === 0 || this.currentGroup === newCase.currentGroup) {
       newCase.currentGroup++;
       if (newCase.currentGroup >= groupCount) return false;
-      caseCount = newCase.testData.groups[newCase.currentGroup]?.inputs?.[0]?.values?.length ?? 0;
+      caseCount =
+        newCase.testData.groups[newCase.currentGroup]?.inputs?.[0]?.values
+          ?.length ?? 0;
     }
 
     this.currentGroup = newCase.currentGroup;
@@ -73,12 +82,16 @@ export class TestbenchData {
   groupPrev() {
     const newCase = new TestbenchData(this.testData, this.currentGroup, 0);
     const groupCount = newCase.testData?.groups?.length ?? 0;
-    let caseCount = newCase.testData?.groups?.[newCase.currentGroup]?.inputs?.[0]?.values?.length ?? 0;
+    let caseCount =
+      newCase.testData?.groups?.[newCase.currentGroup]?.inputs?.[0]?.values
+        ?.length ?? 0;
 
     while (caseCount === 0 || this.currentGroup === newCase.currentGroup) {
       newCase.currentGroup--;
       if (newCase.currentGroup < 0) return false;
-      caseCount = newCase.testData?.groups?.[newCase.currentGroup]?.inputs?.[0]?.values?.length ?? 0;
+      caseCount =
+        newCase.testData?.groups?.[newCase.currentGroup]?.inputs?.[0]?.values
+          ?.length ?? 0;
     }
 
     this.currentGroup = newCase.currentGroup;
@@ -113,7 +126,8 @@ export class TestbenchData {
     const groupCount = newCase.testData?.groups?.length ?? 0;
 
     for (let i = 0; i < groupCount; i++) {
-      const caseCount = newCase.testData.groups[i]?.inputs?.[0]?.values?.length ?? 0;
+      const caseCount =
+        newCase.testData.groups[i]?.inputs?.[0]?.values?.length ?? 0;
       if (caseCount > 0) {
         this.currentGroup = i;
         this.currentCase = 0;
@@ -129,8 +143,12 @@ export class TestbenchData {
  * Checks if all the labels in the test data are unique. Called by validate()
  */
 function checkDistinctIdentifiersData(data: TestData) {
-  const inputIdentifiersData = data.groups[0].inputs.map((input) => input.label);
-  const outputIdentifiersData = data.groups[0].outputs.map((output) => output.label);
+  const inputIdentifiersData = data.groups[0].inputs.map(
+    (input) => input.label,
+  );
+  const outputIdentifiersData = data.groups[0].outputs.map(
+    (output) => output.label,
+  );
   const identifiersData = inputIdentifiersData.concat(outputIdentifiersData);
 
   return new Set(identifiersData).size === identifiersData.length;
@@ -259,7 +277,9 @@ function validate(data: TestData, scope) {
   const outputsValid = validateOutputs(data, scope);
 
   invalids = inputsValid.ok ? invalids : invalids.concat(inputsValid.invalids);
-  invalids = outputsValid.ok ? invalids : invalids.concat(outputsValid.invalids);
+  invalids = outputsValid.ok
+    ? invalids
+    : invalids.concat(outputsValid.invalids);
 
   // Validate presence of reset if test is sequential
   if (data.type === "seq") {
@@ -304,7 +324,9 @@ function bindIO(data: TestData, scope) {
   });
 
   if (data.type === "seq") {
-    reset = scope.Input.find((simulatorOutput) => simulatorOutput.label === "RST");
+    reset = scope.Input.find(
+      (simulatorOutput) => simulatorOutput.label === "RST",
+    );
   }
 
   return { inputs, outputs, reset };
@@ -381,7 +403,9 @@ export function runTestBench(
   // const { testbenchData } = toRefs(testBenchStore)
   const isValid = validate(data, scope);
   if (!isValid.ok) {
-    showMessage("Testbench: Some elements missing from circuit. Click Validate to know more");
+    showMessage(
+      "Testbench: Some elements missing from circuit. Click Validate to know more",
+    );
   }
 
   if (runContext === CONTEXT.CONTEXT_SIMULATOR) {
@@ -439,10 +463,13 @@ export function runAll(data: TestData, scope = globalScope) {
 
       caseResult.forEach((_, outName) => {
         // TODO: find() is not the best idea because of O(n)
-        const output = group.outputs.find((dataOutput) => dataOutput.label === outName);
+        const output = group.outputs.find(
+          (dataOutput) => dataOutput.label === outName,
+        );
         output?.results?.push(caseResult.get(outName));
 
-        if (output?.values[case_i] !== caseResult.get(outName)) casePassed = false;
+        if (output?.values[case_i] !== caseResult.get(outName))
+          casePassed = false;
       });
 
       // If current case passed, then increment passedCases
@@ -579,9 +606,14 @@ function setUIResult(testbenchData: TestBenchData, result) {
  */
 export const buttonListenerFunctions = {
   previousCaseButton: () => {
-    const isValid = validate(useTestBenchStore().testbenchData.testData, globalScope);
+    const isValid = validate(
+      useTestBenchStore().testbenchData.testData,
+      globalScope,
+    );
     if (!isValid.ok) {
-      showMessage("Testbench: Some elements missing from circuit. Click Validate to know more");
+      showMessage(
+        "Testbench: Some elements missing from circuit. Click Validate to know more",
+      );
       return;
     }
     const testbenchData = useTestBenchStore().testbenchData;
@@ -592,9 +624,14 @@ export const buttonListenerFunctions = {
   },
 
   nextCaseButton: () => {
-    const isValid = validate(useTestBenchStore().testbenchData.testData, globalScope);
+    const isValid = validate(
+      useTestBenchStore().testbenchData.testData,
+      globalScope,
+    );
     if (!isValid.ok) {
-      showMessage("Testbench: Some elements missing from circuit. Click Validate to know more");
+      showMessage(
+        "Testbench: Some elements missing from circuit. Click Validate to know more",
+      );
       return;
     }
     const testbenchData = useTestBenchStore().testbenchData;
@@ -605,9 +642,14 @@ export const buttonListenerFunctions = {
   },
 
   previousGroupButton: () => {
-    const isValid = validate(useTestBenchStore().testbenchData.testData, globalScope);
+    const isValid = validate(
+      useTestBenchStore().testbenchData.testData,
+      globalScope,
+    );
     if (!isValid.ok) {
-      showMessage("Testbench: Some elements missing from circuit. Click Validate to know more");
+      showMessage(
+        "Testbench: Some elements missing from circuit. Click Validate to know more",
+      );
       return;
     }
     const testbenchData = useTestBenchStore().testbenchData;
@@ -618,9 +660,14 @@ export const buttonListenerFunctions = {
   },
 
   nextGroupButton: () => {
-    const isValid = validate(useTestBenchStore().testbenchData.testData, globalScope);
+    const isValid = validate(
+      useTestBenchStore().testbenchData.testData,
+      globalScope,
+    );
     if (!isValid.ok) {
-      showMessage("Testbench: Some elements missing from circuit. Click Validate to know more");
+      showMessage(
+        "Testbench: Some elements missing from circuit. Click Validate to know more",
+      );
       return;
     }
     const testbenchData = useTestBenchStore().testbenchData;
@@ -635,12 +682,20 @@ export const buttonListenerFunctions = {
   },
 
   runAllButton: () => {
-    const isValid = validate(useTestBenchStore().testbenchData.testData, globalScope);
+    const isValid = validate(
+      useTestBenchStore().testbenchData.testData,
+      globalScope,
+    );
     if (!isValid.ok) {
-      showMessage("Testbench: Some elements missing from circuit. Click Validate to know more");
+      showMessage(
+        "Testbench: Some elements missing from circuit. Click Validate to know more",
+      );
       return;
     }
-    const results = runAll(useTestBenchStore().testbenchData.testData, globalScope);
+    const results = runAll(
+      useTestBenchStore().testbenchData.testData,
+      globalScope,
+    );
     const { passed } = results.summary;
     const { total } = results.summary;
 
@@ -654,19 +709,28 @@ export const buttonListenerFunctions = {
   },
 
   editTestButton: () => {
-    const editDataString = JSON.stringify(useTestBenchStore().testbenchData.testData);
+    const editDataString = JSON.stringify(
+      useTestBenchStore().testbenchData.testData,
+    );
     openCreator("edit");
   },
 
   validateButton: () => {
     const testBenchStore = useTestBenchStore();
-    const isValid = validate(useTestBenchStore().testbenchData.testData, globalScope);
+    const isValid = validate(
+      useTestBenchStore().testbenchData.testData,
+      globalScope,
+    );
     testBenchStore.validationErrors = isValid;
     testBenchStore.showTestBenchValidator = true;
   },
 
   removeTestButton: async () => {
-    if (await confirmOption("Are you sure you want to remove the test from the circuit?")) {
+    if (
+      await confirmOption(
+        "Are you sure you want to remove the test from the circuit?",
+      )
+    ) {
       useTestBenchStore().testbenchData = {
         testData: {
           type: "",
@@ -696,7 +760,10 @@ export const buttonListenerFunctions = {
   },
 
   computeCase: () => {
-    const result = runSingleTest(useTestBenchStore().testbenchData, globalScope);
+    const result = runSingleTest(
+      useTestBenchStore().testbenchData,
+      globalScope,
+    );
     setUIResult(useTestBenchStore().testbenchData, result);
   },
 };
