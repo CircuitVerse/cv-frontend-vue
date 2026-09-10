@@ -219,9 +219,6 @@ export default class Wire {
   }
 
   private alignNodesAlongYAxis(): boolean {
-    // Re-converge onto the other node's axis coordinate so a moved component
-    // keeps its connected wires orthogonal instead of leaving a detached
-    // segment at the stale this.y1/this.y2 (CircuitVerse/CircuitVerse#3928).
     return this.checkAndCreateNode(
       this.node1.absY(),
       this.y1,
@@ -233,8 +230,6 @@ export default class Wire {
   }
 
   private alignNodesAlongXAxis(): boolean {
-    // See alignNodesAlongYAxis - symmetric fix for vertical wires
-    // (CircuitVerse/CircuitVerse#3928).
     return this.checkAndCreateNode(
       this.node1.absX(),
       this.x1,
