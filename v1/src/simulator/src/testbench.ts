@@ -389,6 +389,7 @@ export function runTestBench(
     }
 
     testBenchStore.testbenchData = tempTestbenchData;
+    if (scope) scope.testbenchData = tempTestbenchData;
 
     return;
   }
@@ -398,6 +399,33 @@ export function runTestBench(
   }
 }
 
+/**
+ * Syncs the testbench panel with the testbench data saved on a scope.
+ */
+export function syncTestbenchWithScope(scope = globalScope) {
+  const testBenchStore = useTestBenchStore();
+  const savedData = scope?.testbenchData?.testData;
+
+  if (!savedData || !savedData.groups || savedData.groups.length === 0) {
+    testBenchStore.showTestbenchUI = false;
+    return;
+  }
+
+  const tempTestbenchData = new TestbenchData(
+    savedData,
+    scope.testbenchData.currentGroup ?? 0,
+    scope.testbenchData.currentCase ?? 0,
+  );
+
+  if (!tempTestbenchData.goToFirstValidGroup()) {
+    testBenchStore.showTestbenchUI = false;
+    return;
+  }
+
+  scope.testbenchData = tempTestbenchData;
+  testBenchStore.testbenchData = tempTestbenchData;
+  testBenchStore.showTestbenchUI = true;
+}
 interface Results {
   detailed: TestData;
   summary: {
@@ -680,6 +708,7 @@ export const buttonListenerFunctions = {
         currentCase: 0,
       };
       useTestBenchStore().showTestbenchUI = false;
+      if (globalScope) globalScope.testbenchData = undefined;
     }
   },
 
