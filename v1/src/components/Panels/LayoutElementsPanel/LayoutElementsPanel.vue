@@ -17,7 +17,9 @@
               <div v-for="(element, elementIndex) in group.elements" class="icon subcircuitModule"
               :key="`${groupIndex}-${elementIndex}`" :id="`${group.type}-${elementIndex}`"
               :data-element-id="elementIndex" :data-element-name="group.type"
-              @mousedown="dragElement(group.type, element, elementIndex)">
+              draggable="true"
+              @mousedown="dragElement(group.type, element, elementIndex)"
+              @dragend="onSubcircuitDragEnd($event, group.type, elementIndex)">
               <div class="icon-image">
                 <img :src="getImgUrl(group.type)" />
                 <p class="img__description">
@@ -37,6 +39,7 @@
 import { useState } from '#/store/SimulatorStore/state'
 import { simulationArea } from '#/simulator/src/simulationArea'
 import { useLayoutStore } from '#/store/layoutStore';
+import { tempBuffer } from '#/simulator/src/layoutMode';
 import { ref, onMounted } from 'vue';
 
 const layoutStore = useLayoutStore()
@@ -79,6 +82,37 @@ function getImgUrl(elementName: string) {
     import.meta.url
   ).href;
   return elementImg;
+}
+
+function onSubcircuitDragEnd(event: DragEvent, elementName: string, elementId: number) {
+  const panelEl = layoutElementPanelRef.value
+  const rect = panelEl?.getBoundingClientRect()
+  const top = event.clientY - (rect?.top ?? 0)
+  const left = event.clientX - (rect?.left ?? 0)
+
+  const sideBarWidth = document.getElementById('guide_1')?.clientWidth ?? 0
+
+  if (top > 10 && left > sideBarWidth) {
+    const tempElement = globalScope[elementName][elementId]
+    if (!tempElement) return
+
+    tempElement.x = left - sideBarWidth
+    tempElement.y = top
+    for (const node of tempElement.nodeList) {
+      node.x = left - sideBarWidth
+      node.y = top
+    }
+    tempBuffer.subElements.push(tempElement)
+
+    // Remove element from reactive list — Vue removes DOM node, no removeChild needed
+    SimulatorState.subCircuitElementList.forEach((typeGroup) => {
+      if (typeGroup.type === elementName) {
+        typeGroup.elements = typeGroup.elements.filter((_, index) => index !== elementId)
+      }
+    })
+    SimulatorState.subCircuitElementList =
+      SimulatorState.subCircuitElementList.filter((typeGroup) => typeGroup.elements.length > 0)
+  }
 }
 </script>
 
