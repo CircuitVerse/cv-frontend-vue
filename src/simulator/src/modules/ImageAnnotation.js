@@ -139,7 +139,11 @@ export default class ImageAnnotation extends CircuitElement {
     async uploadImage() {
         var file = await promptFile('image/*', false)
         var apiUrl = 'https://api.imgur.com/3/image'
-        var apiKey = '9a33b3b370f1054'
+        var apiKey = window.imgurClientId
+        if (!apiKey) {
+            showMessage('Image upload unavailable: Imgur client ID is not configured.')
+            return
+        }
         var settings = {
             crossDomain: true,
             processData: false,
