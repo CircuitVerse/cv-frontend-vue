@@ -70,25 +70,17 @@
                 <i style="color: #ddd" class="fas fa-expand-arrows-alt"></i>
             </button>
         </div>
-        <div class="zoom-slider">
-            <button class="zoom-slider-decrement" @click="decrement">-</button>
-            <input
-                id="customRange1"
-                type="range"
-                class="custom-range"
-                min="0"
-                max="45"
-                step="1"
-            />
-            <span id="slider_value"></span>
-            <button class="zoom-slider-increment" @click="increment">+</button>
+        <!-- Zoom controls: +/- buttons -->
+        <div class="zoom-controls">
+            <button class="zoom-button-decrement" @click="decrement" title="Zoom Out">−</button>
+            <button class="zoom-button-increment" @click="increment" title="Zoom In">+</button>
         </div>
     </div>
     <div id="exitView"></div>
 </template>
 
 <script lang="ts" setup>
-import { saveOnline, saveOffline, deleteSelectedItem, createSaveAsImgPrompt, zoomToFit, undoit, redoit, view, decrement, increment } from './QuickButton';
+import { saveOnline, saveOffline, deleteSelectedItem, createSaveAsImgPrompt, zoomToFit, undoit, redoit, view, increment, decrement } from './QuickButton'
 
 function dragover(): void {
     const quickBtn: HTMLElement | null = document.querySelector('.quick-btn')
@@ -203,58 +195,77 @@ function dragover(): void {
     color: white
 }
 
-.zoom-slider {
+/* Zoom controls with slider (1-100% display) */
+.zoom-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.zoom-button-decrement,
+.zoom-button-increment {
+    background: transparent;
     color: white;
+    border: none;
+    cursor: pointer;
     font-size: 20px;
-    padding-top: 0.2rem;
+    font-weight: bold;
+    padding: 0 6px;
+    line-height: 1;
+    min-width: 24px;
 }
 
-.zoom-slider-decrement {
-    position: relative;
-    padding-right: 4px;
-    bottom: 0.3rem;
-}
-.zoom-slider-increment {
-    position: relative;
-    padding-left: 4px;
-    bottom: 0.3rem;
+.zoom-button-decrement:hover,
+.zoom-button-increment:hover {
+    opacity: 0.7;
 }
 
-.custom-range {
-    width: 80px !important;
-}
-.custom-range::-moz-range-track {
-    height: 1px;
-}
-
-.custom-range::-moz-range-thumb {
-    width: 10px;
-    height: 10px;
-    background-color: white;
-    border: 0;
-    border-radius: 50%;
+.zoom-slider {
+    width: 100px;
+    height: 5px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+    outline: none;
     cursor: pointer;
 }
-.custom-range:focus::-moz-range-thumb {
-    box-shadow: 0 0 0 1px #fff, 0 0 0 0.2rem rgba(75, 86, 99, 0.25);
-}
 
-input[type='range'] {
+.zoom-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
-}
-
-input[type='range']::-webkit-slider-runnable-track {
-    height: 1px;
-}
-
-input[type='range']::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 10px;
-    height: 10px;
-    background-color: white;
-    border: 0;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    background: white;
     border-radius: 50%;
     cursor: pointer;
+    transition: background 0.15s ease-in-out;
+}
+
+.zoom-slider::-webkit-slider-thumb:hover {
+    background: #ddd;
+}
+
+.zoom-slider::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    background: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.15s ease-in-out;
+}
+
+.zoom-slider::-moz-range-thumb:hover {
+    background: #ddd;
+}
+
+.zoom-label {
+    color: white;
+    font-size: 12px;
+    font-weight: 500;
+    min-width: 40px;
+    text-align: right;
 }
 
 @media (max-width: 991px) {
