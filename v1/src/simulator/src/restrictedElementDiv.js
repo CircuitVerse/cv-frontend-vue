@@ -9,7 +9,9 @@ export function hideRestricted() {
 }
 
 export function updateRestrictedElementsList() {
-  // no-op: store.usedElements is the source of truth now
+  useRestrictedElementStore().usedElements = [
+    ...globalScope.restrictedCircuitElementsUsed,
+  ]
 }
 
 export function updateRestrictedElementsInScope(scope = globalScope) {
