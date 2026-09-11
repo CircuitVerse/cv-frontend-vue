@@ -36,8 +36,8 @@
                     class="icon logixModules"
                     @click="createElement(element.name)"
                     @mousedown="createElement(element.name)"
-                    @mouseover="getTooltipText(element.name)"
-                    @mouseleave="tooltipText = 'null'"
+                    @mouseover="onMouseOver(element.name)"
+                    @mouseleave="onMouseLeave(element.name)"
                 >
                     <img :src="element.imgURL" :alt="element.name" />
                 </div>
@@ -70,8 +70,8 @@
                                 class="icon logixModules"
                                 @click="createElement(element.name)"
                                 @mousedown="createElement(element.name)"
-                                @mouseover="getTooltipText(element.name)"
-                                @mouseleave="tooltipText = 'null'"
+                                @mouseover="onMouseOver(element.name)"
+                                @mouseleave="onMouseLeave(element.name)"
                             >
                                 <img
                                     :src="element.imgURL"
@@ -116,8 +116,8 @@
                                 class="icon logixModules"
                                 @click="createElement(element.name)"
                                 @mousedown="createElement(element.name)"
-                                @mouseover="getTooltipText(element.name)"
-                                @mouseleave="tooltipText = 'null'"
+                                @mouseover="onMouseOver(element.name)"
+                                @mouseleave="onMouseLeave(element.name)"
                             >
                                 <img
                                     :src="element.imgURL"
@@ -143,6 +143,7 @@ import PanelHeader from '../Shared/PanelHeader.vue'
 import { elementHierarchy } from '#/simulator/src/metadata'
 import { createElement, getImgUrl } from './ElementsPanel'
 import modules from '#/simulator/src/modules'
+import { showRestricted, hideRestricted } from '#/simulator/src/restrictedElementDiv'
 import { onBeforeMount, onMounted, ref } from 'vue'
 import { useLayoutStore } from '#/store/layoutStore'
 import { setupPanelListeners } from '#/simulator/src/ux'
@@ -215,8 +216,18 @@ function searchCategories() {
 }
 
 const tooltipText = ref('null')
-function getTooltipText(elementName: string) {
+function onMouseOver(elementName: string) {
     tooltipText.value = modules[elementName].prototype.tooltipText
+    if (window.restrictedElements && window.restrictedElements.includes(elementName)) {
+        showRestricted()
+    }
+}
+
+function onMouseLeave(elementName: string) {
+    tooltipText.value = 'null'
+    if (window.restrictedElements && window.restrictedElements.includes(elementName)) {
+        hideRestricted()
+    }
 }
 </script>
 

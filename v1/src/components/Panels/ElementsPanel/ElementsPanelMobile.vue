@@ -42,8 +42,8 @@
               class="icon logixModules"
               @click="createElement(element.name)"
               @mousedown="createElement(element.name)"
-              @mouseover="getTooltipText(element.name)"
-              @mouseleave="tooltipText = ''"
+              @mouseover="onMouseOver(element.name)"
+              @mouseleave="onMouseLeave(element.name)"
             >
               <img
                 :src="element.imgURL"
@@ -101,6 +101,7 @@ import { elementHierarchy } from '#/simulator/src/metadata'
 import { simulationArea } from '#/simulator/src/simulationArea'
 import { createElement, getImgUrl } from './ElementsPanel'
 import modules from '#/simulator/src/modules'
+import { showRestricted, hideRestricted } from '#/simulator/src/restrictedElementDiv'
 import { onBeforeMount, onMounted, ref, computed, watch } from 'vue'
 import { useLayoutStore } from '#/store/layoutStore'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
@@ -224,8 +225,18 @@ function selectCategory(categoryData, categoryName, type: ElementsType = 'elemen
 var elementInput = ref('')
 
 const tooltipText = ref('null')
-function getTooltipText(elementName: string) {
-  tooltipText.value = modules[elementName].prototype.tooltipText
+function onMouseOver(elementName: string) {
+    tooltipText.value = modules[elementName].prototype.tooltipText
+    if (window.restrictedElements && window.restrictedElements.includes(elementName)) {
+        showRestricted()
+    }
+}
+
+function onMouseLeave(elementName: string) {
+    tooltipText.value = ''
+    if (window.restrictedElements && window.restrictedElements.includes(elementName)) {
+        hideRestricted()
+    }
 }
 </script>
 

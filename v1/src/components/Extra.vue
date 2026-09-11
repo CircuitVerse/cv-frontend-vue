@@ -81,7 +81,7 @@
     <!-- --------------------------------------------------------------------------------------------- -->
     <!-- Simulation Area - Canvas (3) + Help Section-->
     <div id="simulation" class="simulation">
-        <!-- <div id="restrictedDiv" class="alert alert-danger display--none"></div> -->
+        <RestrictedElementNotice />
         <div id="canvasArea" class="canvasArea">
             <canvas id="backgroundArea" style="
                     position: absolute;
@@ -256,6 +256,7 @@ import SaveImage from './DialogBox/SaveImage.vue'
 import ApplyThemes from './DialogBox/Themes/ApplyThemes.vue'
 import ExportVerilog from './DialogBox/ExportVerilog.vue'
 import CustomShortcut from './DialogBox/CustomShortcut.vue'
+import RestrictedElementNotice from './RestrictedElementNotice.vue'
 import InsertSubcircuit from './DialogBox/InsertSubcircuit.vue'
 import OpenOffline from './DialogBox/OpenOffline.vue'
 import ReportIssue from './ReportIssue/ReportIssue.vue'
