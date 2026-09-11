@@ -1,12 +1,98 @@
+use std::sync::Mutex;
 use tauri::menu::{MenuBuilder, SubmenuBuilder};
-use tauri::Emitter;
+use tauri::{AppHandle, Emitter, Listener, Manager, Runtime};
+
+#[derive(Clone, serde::Serialize)]
+struct AuthCompletePayload {
+    code: Option<String>,
+    state: Option<String>,
+}
+
+struct LastHandledAuthCode(Mutex<Option<String>>);
+
+fn parse_auth_callback(url: &str) -> Option<AuthCompletePayload> {
+    let parsed = url::Url::parse(url).ok()?;
+    if parsed.scheme() != "circuitverse" || parsed.host_str() != Some("auth") {
+        return None;
+    }
+
+    let mut code = None;
+    let mut state = None;
+    for (key, value) in parsed.query_pairs() {
+        match key.as_ref() {
+            "code" => code = Some(value.into_owned()),
+            "state" => state = Some(value.into_owned()),
+            _ => {}
+        }
+    }
+
+    Some(AuthCompletePayload { code, state })
+}
+
+fn handle_incoming_urls<R: Runtime>(handle: &AppHandle<R>, urls: &[String]) {
+    log::info!("[auth] scanning {} incoming url(s) for the auth callback", urls.len());
+
+    let mut matched = false;
+    for url in urls {
+        if let Some(payload) = parse_auth_callback(url) {
+            matched = true;
+            log::info!(
+                "[auth] matched circuitverse://auth callback, code_present={} state_present={}",
+                payload.code.is_some(),
+                payload.state.is_some()
+            );
+
+            if let Some(guard) = handle.try_state::<LastHandledAuthCode>() {
+                let mut last = guard.0.lock().unwrap();
+                if payload.code.is_some() && *last == payload.code {
+                    log::info!("[auth] duplicate delivery of the same code, skipping re-emit");
+                    break;
+                }
+                *last = payload.code.clone();
+            }
+
+            match handle.emit("cv-auth-complete", payload) {
+                Ok(()) => log::info!("[auth] emitted cv-auth-complete to frontend"),
+                Err(e) => log::error!("[auth] error emitting cv-auth-complete: {e}"),
+            }
+            if let Some(window) = handle.get_webview_window("main") {
+                let _ = window.set_focus();
+            }
+            break;
+        }
+    }
+    if !matched {
+        log::warn!("[auth] no incoming url matched the circuitverse://auth scheme/host");
+    }
+}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_single_instance::init(|app, argv, _cwd| {
+            log::info!("[auth] single-instance relaunch detected, argv={argv:?}");
+            handle_incoming_urls(app, &argv);
+        }))
         .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_deep_link::init())
         .setup(|app| {
+            app.manage(LastHandledAuthCode(Mutex::new(None)));
+            log::info!("[auth] deep-link listener registered for circuitverse://auth");
+            let handle = app.handle().clone();
+            app.listen("deep-link://new-url", move |event| {
+                log::info!("[auth] deep-link://new-url event received");
+                let urls: Vec<String> = match serde_json::from_str(event.payload()) {
+                    Ok(urls) => urls,
+                    Err(e) => {
+                        log::error!("[auth] failed to parse deep-link payload: {e}");
+                        return;
+                    }
+                };
+                handle_incoming_urls(&handle, &urls);
+            });
+
             if cfg!(debug_assertions) {
                 app.handle().plugin(
                     tauri_plugin_log::Builder::default()
