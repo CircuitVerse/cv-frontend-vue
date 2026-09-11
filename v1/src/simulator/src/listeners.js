@@ -27,7 +27,7 @@ import {
 import { changeScale, findDimensions } from './canvasApi'
 import { scheduleBackup } from './data/backupCircuit'
 import { hideProperties, deleteSelected, uxvar, exitFullView } from './ux';
-import { updateRestrictedElementsList, updateRestrictedElementsInScope, hideRestricted, showRestricted } from './restrictedElementDiv';
+import { updateRestrictedElementsList, updateRestrictedElementsInScope } from './restrictedElementDiv';
 import { removeMiniMap, updatelastMinimapShown } from './minimap'
 import undo from './data/undo'
 import redo from './data/redo'
@@ -695,16 +695,6 @@ export default function startListeners() {
             this.parentElement.removeChild(this);
         }
     });
-
-    restrictedElements.forEach((element) => {
-        $(`#${element}`).mouseover(() => {
-            showRestricted()
-        })
-
-        $(`#${element}`).mouseout(() => {
-            hideRestricted()
-        })
-    })
 
     if (!embed) {
         setupTimingListeners()
