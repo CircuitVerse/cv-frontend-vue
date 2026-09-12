@@ -6,7 +6,7 @@ export interface CircuitNode {
   y: number;
   type: number;
   bitWidth: number;
-  parent: CircuitElement;
+  parent: ICircuitElement;
   value: number | undefined;
   connections: CircuitNode[];
   label: string;
@@ -19,7 +19,7 @@ export interface CircuitNode {
 export interface Scope {
   id: string | number;
   name: string;
-  root: CircuitElement;
+  root: ICircuitElement;
   allNodes: CircuitNode[];
   wires: unknown[];
   [objectType: string]: unknown;
@@ -93,7 +93,7 @@ export interface SavedCircuitElement {
  * save/load and listeners. Component classes extend the JS base class
  * `circuitElement.js`, which provides default implementations.
  */
-export interface CircuitElement {
+export interface ICircuitElement {
   // Geometry & rendering (engine.js renderCanvas/update, minimap, canvasApi)
   x: number;
   y: number;
@@ -154,7 +154,7 @@ export interface CircuitElement {
   saveObject(): SavedCircuitElement;
   customSave(): CustomSaveData;
   updateScope(scope: Scope): void;
-  copyFrom(obj: Pick<CircuitElement, "label" | "labelDirection">): void;
+  copyFrom(obj: Pick<ICircuitElement, "label" | "labelDirection">): void;
   delete(): void;
   cleanDelete(): void;
 
