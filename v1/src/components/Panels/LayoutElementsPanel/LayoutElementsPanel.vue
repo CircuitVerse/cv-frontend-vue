@@ -98,6 +98,9 @@ function onSubcircuitDragEnd(event: DragEvent) {
       SimulatorState.subCircuitElementList.filter((typeGroup) => typeGroup.elements.length > 0)
   }
 
+  // Clear newElement flag native drag suppresses mouseup on simulationArea,
+  // so the canvas never resets it. Must clear for both valid and cancelled drops.
+  if (draggingElement.value) draggingElement.value.newElement = false
   draggingElement.value = null
 }
 </script>
