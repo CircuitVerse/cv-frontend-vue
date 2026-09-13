@@ -116,8 +116,8 @@ export function renderLayout(scope = globalScope) {
     fillText(
       ctx,
       tempBuffer.Input[i].label,
-      tempBuffer.Input[i].x + typeof info[1] === "number" ? info[1] : parseInt(info[1] as string),
-      tempBuffer.Input[i].y + typeof info[2] === "number" ? info[2] : parseInt(info[2] as string),
+      tempBuffer.Input[i].x + (typeof info[1] === "number" ? info[1] : parseInt(info[1] as string)),
+      tempBuffer.Input[i].y + (typeof info[2] === "number" ? info[2] : parseInt(info[2] as string)),
       12,
     );
   }
@@ -128,8 +128,8 @@ export function renderLayout(scope = globalScope) {
     fillText(
       ctx,
       tempBuffer.Output[i].label,
-      tempBuffer.Output[i].x + typeof info[1] === "number" ? info[1] : parseInt(info[1] as string),
-      tempBuffer.Output[i].y + typeof info[2] === "number" ? info[2] : parseInt(info[2] as string),
+      tempBuffer.Output[i].x + (typeof info[1] === "number" ? info[1] : parseInt(info[1] as string)),
+      tempBuffer.Output[i].y + (typeof info[2] === "number" ? info[2] : parseInt(info[2] as string)),
       12,
     );
   }
