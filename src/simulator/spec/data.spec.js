@@ -15,6 +15,8 @@ import {
     openOffline,
 } from '../src/data/project';
 import createSaveAsImgPrompt from '../src/data/saveImage';
+import { encodeBmp, encodeTiff } from '../src/data/imageFormats';
+import { nextTick } from 'vue';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import simulator from '#/pages/simulatorHandler.vue';
@@ -34,6 +36,12 @@ vi.mock('codemirror', async (importOriginal) => {
 vi.mock('codemirror-editor-vue3', () => ({
     defineSimpleMode: vi.fn(),
 }));
+
+function twoByTwoPixels() {
+    return new Uint8ClampedArray([
+        255, 0, 0, 255, 0, 255, 0, 255, 0, 0, 255, 255, 10, 20, 30, 255,
+    ]);
+}
 
 describe('data dir working', () => {
     let pinia;
@@ -166,5 +174,41 @@ describe('data dir working', () => {
 
     test('saveImage working', () => {
         expect(() => createSaveAsImgPrompt()).not.toThrow();
+    });
+
+    test('render image dialog offers the formats the app can produce', async () => {
+        createSaveAsImgPrompt();
+        await nextTick();
+        const formats = Array.from(
+            document.querySelectorAll('input[name="imgType"]')
+        ).map((input) => input.value);
+        expect(formats).toEqual(['png', 'jpeg', 'svg', 'bmp', 'tiff']);
+    });
+
+    test('BMP encoding writes a real BMP header', () => {
+        const bmp = encodeBmp(twoByTwoPixels(), 2, 2);
+        const header = new DataView(bmp.buffer);
+        expect(String.fromCharCode(bmp[0], bmp[1])).toBe('BM');
+        expect(header.getUint32(2, true)).toBe(bmp.length);
+        expect(header.getInt32(18, true)).toBe(2);
+        expect(header.getInt32(22, true)).toBe(2);
+        expect(header.getUint16(28, true)).toBe(24);
+    });
+
+    test('TIFF encoding writes a real TIFF header', () => {
+        const tiff = encodeTiff(twoByTwoPixels(), 2, 2);
+        const header = new DataView(tiff.buffer);
+        const ifd = header.getUint32(4, true);
+        expect(String.fromCharCode(tiff[0], tiff[1])).toBe('II');
+        expect(header.getUint16(2, true)).toBe(42);
+        expect(header.getUint16(ifd, true)).toBe(12);
+        expect(header.getUint16(ifd + 2, true)).toBe(256);
+        expect(header.getUint32(ifd + 10, true)).toBe(2);
+    });
+
+    test('TIFF offsets stay even when the pixel count is odd', () => {
+        const tiff = encodeTiff(new Uint8ClampedArray([255, 0, 0, 255]), 1, 1);
+        const header = new DataView(tiff.buffer);
+        expect(header.getUint32(4, true) % 2).toBe(0);
     });
 });

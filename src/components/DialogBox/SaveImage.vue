@@ -120,7 +120,7 @@ const SimulatorState = useState()
 
 const dialogState = computed(() => SimulatorState.dialogBox)
 
-const imgTypeList: Ref<string[]> = ref(['PNG', 'JPEG', 'SVG', 'BMP', 'GIF', 'TIFF'])
+const imgTypeList: Ref<string[]> = ref(['PNG', 'JPEG', 'SVG', 'BMP', 'TIFF'])
 const toShow: Ref<boolean> = ref(true)
 const toShow1: Ref<boolean> = ref(true)
 const fullImg: Ref<boolean> = ref(false)
