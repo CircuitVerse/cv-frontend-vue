@@ -577,7 +577,7 @@ export default function startListeners() {
         event.preventDefault()
         var deltaY = event.wheelDelta ? event.wheelDelta : -event.detail
         const direction = deltaY > 0 ? 1 : -1
-        handleZoom(direction)
+        zoomBy(direction)
         updateCanvasSet(true)
         gridUpdateSet(true)
 
@@ -723,7 +723,7 @@ function resizeTabs() {
 window.addEventListener('resize', resizeTabs)
 resizeTabs()
 
-import { ZoomIn, ZoomOut } from './commands/zoom';
+import { ZoomIn, ZoomOut, zoomBy } from './commands/zoom';
 export { ZoomIn, ZoomOut };
 
 // Desktop App Listeners
