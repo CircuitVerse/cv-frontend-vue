@@ -36,6 +36,7 @@ import { provideCircuitName } from "#/components/helpers/promptComponent/PromptC
 import { deleteCurrentCircuit } from "#/components/helpers/deleteCircuit/DeleteCircuit.vue";
 import { useSimulatorMobileStore } from "#/store/simulatorMobileStore";
 import { inputList, moduleList } from "./metadata";
+import { syncTestbenchWithScope } from "./testbench";
 
 export const circuitProperty = {
   toggleLayoutMode,
@@ -103,6 +104,7 @@ export function switchCircuit(id: string) {
       name: globalScope.name,
     };
   }
+  syncTestbenchWithScope(globalScope);
   updateSimulationSet(true);
   updateSubcircuitSet(true);
   forceResetNodesSet(true);
@@ -265,6 +267,7 @@ export function newCircuit(
     }
     dots(false);
   }
+  syncTestbenchWithScope(scope);
   return scope;
 }
 
