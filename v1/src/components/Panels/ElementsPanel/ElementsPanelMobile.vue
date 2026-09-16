@@ -226,10 +226,12 @@ var elementInput = ref('')
 
 const tooltipText = ref('null')
 function onMouseOver(elementName: string) {
-    tooltipText.value = modules[elementName].prototype.tooltipText
     if (window.restrictedElements && window.restrictedElements.includes(elementName)) {
+        // Show no help text for restricted elements
         showRestricted()
+        return
     }
+    tooltipText.value = modules[elementName].prototype.tooltipText
 }
 
 function onMouseLeave(elementName: string) {
