@@ -10,8 +10,11 @@
                 <th
                     v-for="(tableElement, colIndex) in tableRow"
                     :key="colIndex"
-                    :class="{ 'boolean-output-cell': isEditableCell(colIndex) }"
+                    :class="{ output: isEditableCell(colIndex) }"
+                    :tabindex="isEditableCell(colIndex) ? 0 : undefined"
+                    :role="isEditableCell(colIndex) ? 'button' : undefined"
                     @click="isEditableCell(colIndex) && cycleValue(rowIndex, colIndex)"
+                    @keydown.enter.space.prevent="isEditableCell(colIndex) && cycleValue(rowIndex, colIndex)"
                 >
                     {{ tableElement }}
                 </th>
@@ -38,10 +41,3 @@ function cycleValue(rowIndex: number, colIndex: number) {
     ;(props.tableBody[rowIndex] as any[])[colIndex] = next
 }
 </script>
-
-<style scoped>
-.boolean-output-cell {
-    cursor: pointer;
-    user-select: none;
-}
-</style>
