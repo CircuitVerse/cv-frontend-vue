@@ -40,11 +40,12 @@ const returnCoordinate = {
   y: 0,
 };
 
-let currDistance = 0;
-let distance = 0;
-let pinchZ = 0;
-let centreX: number;
-let centreY: number;
+// Pinch-zoom state for the current two-finger gesture (see pinchZoom / resetPinch).
+let pinchActive = false;
+let pinchDistance = 0;
+let pinchScale = 0;
+// Scale change per pinch step; matches the legacy 0.02 * 3 sensitivity.
+const PINCH_STEP = 0.06;
 let lastTap = 0;
 
 /**
@@ -102,49 +103,80 @@ export function getCoordinate(e: PointerLikeEvent): { x: number; y: number } {
 }
 
 /**
- * Two-finger pinch to zoom.
+ * Two-finger pinch to zoom, about the midpoint of the two touches.
+ *
+ * The first two-finger move seeds the gesture from the current zoom (so a
+ * pinch continues from where the canvas already is), and every later move
+ * nudges the scale by PINCH_STEP depending on whether the fingers spread or
+ * close. The pan offset is adjusted the same way `changeScale` does, so the
+ * point between the fingers stays put.
  * @param e - touch event with two touches
  * @param scope - scope to zoom (defaults to the global scope)
  */
 export function pinchZoom(e: TouchEvent, scope = globalScope): void {
   e.preventDefault();
+  const a = e.touches[0];
+  const b = e.touches[1];
+  const distance = Math.hypot(b.clientX - a.clientX, b.clientY - a.clientY);
+
+  if (!pinchActive) {
+    pinchActive = true;
+    pinchDistance = distance;
+    pinchScale = scope.scale;
+    syncPanOrigin(scope);
+    return;
+  }
+
+  if (distance > pinchDistance) {
+    pinchScale += PINCH_STEP;
+  } else if (distance < pinchDistance) {
+    pinchScale -= PINCH_STEP;
+  }
+  pinchDistance = distance;
+  // Same bounds as changeScale
+  pinchScale = Math.max(0.5, Math.min(4 * DPR, pinchScale));
+
+  const oldScale = scope.scale;
+  const newScale = Math.round(pinchScale * 10) / 10;
+  if (newScale === oldScale) return;
+
+  // Zoom about the midpoint of the two touches, in canvas coordinates
+  const rect = simulationArea.canvas.getBoundingClientRect();
+  const midX = ((a.clientX + b.clientX) / 2 - rect.left) * DPR;
+  const midY = ((a.clientY + b.clientY) / 2 - rect.top) * DPR;
+  const xx = (midX - scope.ox) / oldScale;
+  const yy = (midY - scope.oy) / oldScale;
+
+  scope.scale = newScale;
+  scope.ox -= Math.round(xx * (newScale - oldScale));
+  scope.oy -= Math.round(yy * (newScale - oldScale));
+  syncPanOrigin(scope);
+
   gridUpdateSet(true);
-  scheduleUpdate();
   updateSimulationSet(true);
   updatePositionSet(true);
   updateCanvasSet(true);
-  // Calculating distance between touch to see if its pinchIN or pinchOut
-  // (legacy behaviour kept as-is: only the horizontal distance is measured)
-  distance = Math.sqrt((e.touches[1].clientX - e.touches[0].clientX) ** 2);
-  if (distance >= currDistance) {
-    pinchZ += 0.02;
-    currDistance = distance;
-  } else if (currDistance >= distance) {
-    pinchZ -= 0.02;
-    currDistance = distance;
-  }
-  if (pinchZ >= 2) {
-    pinchZ = 2;
-  } else if (pinchZ <= 0.5) {
-    pinchZ = 0.5;
-  }
-  const oldScale = scope.scale;
-  scope.scale = Math.max(0.5, Math.min(4 * DPR, pinchZ * 3));
-  scope.scale = Math.round(scope.scale * 10) / 10;
-  // This is not working as expected
-  centreX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-  centreY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-  const rect = simulationArea.canvas.getBoundingClientRect();
-  const RawX = (centreX - rect.left) * DPR;
-  const RawY = (centreY - rect.top) * DPR;
-  const Xf = Math.round((RawX - scope.ox) / scope.scale / unit);
-  const Yf = Math.round((RawY - scope.ox) / scope.scale / unit);
-  const currCentreX = Math.round(Xf / unit) * unit;
-  const currCentreY = Math.round(Yf / unit) * unit;
-  scope.ox = Math.round(currCentreX * (scope.scale - oldScale));
-  scope.oy = Math.round(currCentreY * (scope.scale - oldScale));
-  gridUpdateSet(true);
   scheduleUpdate(1);
+}
+
+/**
+ * While a finger is down with the root selected, the engine's pan logic
+ * (`updateSelectionsAndPane`) rewrites `ox/oy` as
+ * `mouseRaw - mouseDownRaw + oldx/oldy` on every update. Re-base `oldx/oldy`
+ * so that formula reproduces the offset the pinch just set instead of
+ * overwriting it.
+ */
+function syncPanOrigin(scope: typeof globalScope): void {
+  simulationArea.oldx = scope.ox - (simulationArea.mouseRawX - simulationArea.mouseDownRawX);
+  simulationArea.oldy = scope.oy - (simulationArea.mouseRawY - simulationArea.mouseDownRawY);
+}
+
+/**
+ * Ends the current pinch gesture so the next one starts from the live zoom.
+ */
+export function resetPinch(): void {
+  pinchActive = false;
+  pinchDistance = 0;
 }
 
 /**
@@ -248,6 +280,9 @@ export function panMove(e: PointerLikeEvent): void {
 export function panStop(e: PointerLikeEvent): void {
   const simulatorMobileStore = useSimulatorMobileStore();
   simulationArea.mouseDown = false;
+  if (simulationArea.touch && (e as TouchEvent).touches.length < 2) {
+    resetPinch();
+  }
   if (!lightMode) {
     updatelastMinimapShown();
     setTimeout(removeMiniMap, 2000);
