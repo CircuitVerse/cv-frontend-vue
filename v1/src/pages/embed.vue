@@ -14,16 +14,7 @@
             <div id="code-window" class="code-window-embed">
                 <textarea id="codeTextArea"></textarea>
             </div>
-            <!-- <% if @project&.assignment_id.present? && @project&.assignment.elements_restricted? %> -->
-            <!-- <div id="restrictedElementsDiv" class="alert alert-danger">
-                <div>
-                    <span style="font-style: italic">
-                        Restricted elements used:
-                    </span>
-                    <span id="restrictedElementsDiv--list"> </span>
-                </div>
-            </div> -->
-            <!-- <% end %> -->
+            <RestrictedElementNotice />
             <div id="MessageDiv"></div>
 
             <div
@@ -179,6 +170,7 @@ import { ZoomIn, ZoomOut } from '#/simulator/src/listeners'
 import { setup } from '#/simulator/src/setup'
 import startListeners from '#/simulator/src/embedListeners'
 import TabsBar from '#/components/TabsBar/TabsBar.vue'
+import RestrictedElementNotice from '#/components/RestrictedElementNotice.vue'
 import { updateThemeForStyle } from '#/simulator/src/themer/themer'
 import { THEME, ThemeType } from '#/assets/constants/theme'
 // import { time } from 'console'
