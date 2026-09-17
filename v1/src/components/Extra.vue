@@ -91,41 +91,7 @@
                     width: 100%;
                     height: 100%;
                 "></canvas>
-            <canvas
-                    id="simulationArea"
-                    style="
-                    position: absolute;
-                    left: 0;
-                    top: 0;
-                    z-index: 1;
-                    width: 100%;
-                    height: 100%;
-                    "
-                    @touchstart="(e) => {
-                        simulationArea.touch = true;
-                        panStart(e)
-                    }"
-                    @touchend="(e) => {
-                        simulationArea.touch = true;
-                        panStop(e)
-                    }"
-                    @touchmove="(e) => {
-                        simulationArea.touch = true;
-                        panMove(e)
-                    }"
-                    @mousedown="(e) => {
-                        simulationArea.touch = false;
-                        panStart(e)
-                    }"
-                    @mousemove="(e) => {
-                        simulationArea.touch = false;
-                        panMove(e)
-                    }"
-                    @mouseup="(e) => {
-                        simulationArea.touch = false;
-                        panStop(e)
-                    }"
-            ></canvas>
+            <SimulatorCanvas />
             <div id="miniMap">
                 <canvas id="miniMapArea" style="position: absolute; left: 0; top: 0; z-index: 3"></canvas>
             </div>
@@ -268,9 +234,9 @@ import QuickButtonMobile from './Navbar/QuickButton/QuickButtonMobile.vue'
 import TimingDiagramMobile from './Panels/TimingDiagramPanel/TimingDiagramMobile.vue'
 import ElementsPanelMobile from './Panels/ElementsPanel/ElementsPanelMobile.vue'
 import PropertiesPanelMobile from './Panels/PropertiesPanel/PropertiesPanelMobile.vue'
+import SimulatorCanvas from './SimulatorCanvas.vue'
 import { simulationArea } from '#/simulator/src/simulationArea'
 import { paste } from '#/simulator/src/events'
-import  { panStart, panMove, panStop } from '#/simulator/src/listeners'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { useState } from '#/store/SimulatorStore/state'
 import { reactive, ref, watch } from 'vue'
