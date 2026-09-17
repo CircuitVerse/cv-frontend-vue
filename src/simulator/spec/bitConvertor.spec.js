@@ -80,6 +80,40 @@ describe('data dir working', () => {
         expect(() => setupBitConvertor()).not.toThrow();
     });
 
+    test('bcd input updates the other fields', () => {
+        setupBitConvertor();
+        // 0010 0101 is the BCD encoding of the decimal number 25.
+        $('#bcdInput').val('00100101');
+        $('#bcdInput').trigger('keyup');
+        expect($('#decimalInput').val()).toBe('25');
+        expect($('#hexInput').val()).toBe('0x19');
+        expect($('#binaryInput').val()).toBe('0b11001');
+        expect($('#octalInput').val()).toBe('031');
+        // setBaseValues writes the field back through dec2bcd. Assert the value
+        // it round-trips to rather than its exact width: dec2bcd's missing
+        // zero-padding is a separate bug being fixed in #1247, and pinning the
+        // literal string here would make the two changes break each other.
+        expect($('#bcdInput').val().replace(/^0+/, '')).toBe('100101');
+    });
+
+    test('bcd input leaves the other fields alone when cleared', () => {
+        setupBitConvertor();
+        setBaseValues(7);
+        // Clearing the field must not be read as the number zero.
+        $('#bcdInput').val('');
+        $('#bcdInput').trigger('keyup');
+        expect($('#decimalInput').val()).toBe('7');
+    });
+
+    test('bcd input rejects a nibble that is not a decimal digit', () => {
+        setupBitConvertor();
+        setBaseValues(7);
+        // 1010 is 10, which is not a valid BCD digit, so nothing should update.
+        $('#bcdInput').val('1010');
+        $('#bcdInput').trigger('keyup');
+        expect($('#decimalInput').val()).toBe('7');
+    });
+
     test('function setBaseValues working', () => {
         const randomBaseValue = Math.floor(Math.random() * 100);
         console.log('Testing for Base Value --> ', randomBaseValue);
