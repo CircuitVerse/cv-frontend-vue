@@ -1,7 +1,8 @@
 import { setup } from '../src/setup';
 import { runAll } from '../src/testbench';
 import testData from './testData/gates-testdata.json';
-import { GenerateCircuit, performCombinationalAnalysis } from '../src/combinationalAnalysis';
+import { GenerateCircuit, performCombinationalAnalysis, solveBooleanFunction } from '../src/combinationalAnalysis';
+import Scope from '../src/circuit';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import { createRouter, createWebHistory } from 'vue-router';
@@ -78,7 +79,32 @@ describe('Combinational Analysis Testing', () => {
     });
 
     test('Generating Circuit', () => {
-        expect(() => GenerateCircuit([13], ['A', 'B'], [0, 0, 0, 1], 'AB')).not.toThrow();
+        const tableBody = [
+            [0, 0, 0],
+            [0, 1, 0],
+            [1, 0, 0],
+            [1, 1, 1],
+        ];
+        expect(() =>
+            GenerateCircuit([13], ['A', 'B'], [0, 0, 0, 1], 'AB', tableBody, 2)
+        ).not.toThrow();
+    });
+
+    test('solveBooleanFunction returns a truth table instead of throwing', () => {
+        const output = solveBooleanFunction(['A', 'B'], 'AB');
+        expect(output).toEqual([0, 0, 0, 1]);
+    });
+
+    test('Generating Circuit from an editable (x/0/1) truth table', () => {
+        const tableBody = [
+            [0, 0, '0'],
+            [0, 1, 'x'],
+            [1, 0, 'x'],
+            [1, 1, '1'],
+        ];
+        expect(() =>
+            GenerateCircuit([13], ['C', 'D'], null, ['OUT'], tableBody, 2, new Scope('testScope'))
+        ).not.toThrow();
     });
 
     test('testing Combinational circuit', () => {
@@ -87,6 +113,6 @@ describe('Combinational Analysis Testing', () => {
         testData.AndGate.groups[0].outputs[0].label = 'AB';
 
         const result = runAll(testData.AndGate);
-        expect(result.summary.passed).toBe(3);
+        expect(result.summary.passed).toBe(4);
     });
 });
