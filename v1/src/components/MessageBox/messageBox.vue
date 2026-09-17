@@ -28,6 +28,8 @@
                     v-if="tableHeader.length > 0"
                     :table-header="tableHeader"
                     :table-body="tableBody"
+                    :editable="tableEditable"
+                    :output-start-col="outputStartCol"
                 />
             </v-card-text>
             <v-card-actions>
@@ -76,6 +78,8 @@ defineProps({
     circuitItem: { type: Object, default: () => ({}) },
     tableHeader: { type: Array, default: () => [] },
     tableBody: { type: Array, default: () => [] },
+    tableEditable: { type: Boolean, default: false },
+    outputStartCol: { type: Number, default: -1 },
 })
 </script>
 
