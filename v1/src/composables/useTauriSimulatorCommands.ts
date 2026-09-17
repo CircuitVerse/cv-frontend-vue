@@ -52,11 +52,18 @@ export function useTauriSimulatorCommands(): void {
   onMounted(async () => {
     if (!isTauri()) return;
     active = true;
-    const registrations = await Promise.all(
-      Object.entries(TAURI_MENU_COMMANDS).map(([event, action]) =>
-        listen(event, () => runMenuCommand(event, action)),
-      ),
+    const entries = Object.entries(TAURI_MENU_COMMANDS);
+    const results = await Promise.allSettled(
+      entries.map(([event, action]) => listen(event, () => runMenuCommand(event, action))),
     );
+    const registrations: UnlistenFn[] = [];
+    results.forEach((result, i) => {
+      if (result.status === "fulfilled") {
+        registrations.push(result.value);
+      } else {
+        console.warn(`[tauri] failed to register menu event "${entries[i][0]}"`, result.reason);
+      }
+    });
     // Component may have unmounted while listen() was resolving
     if (!active) {
       registrations.forEach((unlisten) => unlisten());
