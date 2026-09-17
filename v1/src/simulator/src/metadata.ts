@@ -61,7 +61,7 @@ export const circuitElementList = [
   "TB_Output",
   "ForceGate",
 ];
-const annotationList = ["Text", "Rectangle", "Arrow", "ImageAnnotation"];
+export const annotationList = ["Text", "Rectangle", "Arrow", "ImageAnnotation"];
 export const moduleList = [...circuitElementList, ...annotationList];
 export const updateOrder = ["wires", ...circuitElementList, "nodes", ...annotationList]; // Order of update
 export const renderOrder = [...moduleList.slice().reverse(), "wires", "allNodes"]; // Order of render

@@ -91,7 +91,7 @@ import {
     confirmMultiOption,
     confirmSingleOption,
 } from '../confirmComponent/ConfirmComponent.vue'
-import { getToken } from '#/pages/simulatorHandler.vue'
+import { getToken } from '#/utils/auth'
 
 interface dataType {
     project: {

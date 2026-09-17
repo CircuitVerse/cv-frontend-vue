@@ -85,7 +85,7 @@ const SimulatorState = useState()
 const drag: Ref<boolean> = ref(false)
 const updateCount: Ref<number> = ref(0)
 
-const showMaxHeight = ref(true)
+const showMaxHeight = ref(false)
 
 function toggleHeight() {
     showMaxHeight.value = !showMaxHeight.value

@@ -33,7 +33,7 @@ export function loadSubCircuit(savedData: any, scope: any): void {
 }
 
 /**
- * Prompt to create subcircuit, shows list of circuits which dont depend on the current circuit
+ * Prompt to create subcircuit, shows list of circuits which don't depend on the current circuit
  * @param scope - The current scope
  * @category subcircuit
  */

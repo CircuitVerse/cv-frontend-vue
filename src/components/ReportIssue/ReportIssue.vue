@@ -124,7 +124,7 @@ import { generateSaveData, generateImage } from '#/simulator/src/data/save'
 import ReportIssueButton from './ReportIssueButton.vue'
 import { ref, Ref } from 'vue'
 import { useAuthStore } from '#/store/authStore'
-import { getToken } from '#/pages/simulatorHandler.vue'
+import { getToken } from '#/utils/auth'
 
 const authStore = useAuthStore()
 const reportIssueOpen: Ref<boolean> = ref(false)

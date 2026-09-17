@@ -2,12 +2,20 @@
     <table class="content-table">
         <tbody style="display: block; max-height: 70vh;">
             <tr>
-                <th v-for="tableHeading in tableHeader" :key="tableHeading">
+                <th v-for="(tableHeading, headIndex) in tableHeader" :key="headIndex">
                     {{ tableHeading }}
                 </th>
             </tr>
-            <tr v-for="tableRow in tableBody" :key="tableRow">
-                <th v-for="tableElement in tableRow" :key="tableElement">
+            <tr v-for="(tableRow, rowIndex) in tableBody" :key="rowIndex">
+                <th
+                    v-for="(tableElement, colIndex) in tableRow"
+                    :key="colIndex"
+                    :class="{ output: isEditableCell(colIndex) }"
+                    :tabindex="isEditableCell(colIndex) ? 0 : undefined"
+                    :role="isEditableCell(colIndex) ? 'button' : undefined"
+                    @click="isEditableCell(colIndex) && cycleValue(rowIndex, colIndex)"
+                    @keydown.enter.space.prevent="isEditableCell(colIndex) && cycleValue(rowIndex, colIndex)"
+                >
                     {{ tableElement }}
                 </th>
             </tr>
@@ -19,5 +27,17 @@
 const props = defineProps({
     tableHeader: { type: Array, default: () => [] },
     tableBody: { type: Array, default: () => [] },
+    editable: { type: Boolean, default: false },
+    outputStartCol: { type: Number, default: -1 },
 })
+
+function isEditableCell(colIndex: number) {
+    return props.editable && props.outputStartCol >= 0 && colIndex >= props.outputStartCol
+}
+
+function cycleValue(rowIndex: number, colIndex: number) {
+    const current = String((props.tableBody[rowIndex] as any[])[colIndex])
+    const next = current === '0' ? '1' : current === '1' ? 'x' : '0'
+    ;(props.tableBody[rowIndex] as any[])[colIndex] = next
+}
 </script>

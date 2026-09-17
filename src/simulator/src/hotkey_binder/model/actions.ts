@@ -66,17 +66,17 @@ export const checkUpdate = (): void => {
 };
 
 const syncKeys = (userK: KeyMap, defaultK: KeyMap): boolean => {
-  const hasAddedOrUpdated = addOrUpdateKeys(userK, defaultK);
+  const hasAddedOrUpdated = addMissingKeys(userK, defaultK);
   const hasRemoved = removeObsoleteKeys(userK, defaultK);
 
   return hasAddedOrUpdated || hasRemoved;
 };
 
-const addOrUpdateKeys = (userK: KeyMap, defaultK: KeyMap): boolean => {
+const addMissingKeys = (userK: KeyMap, defaultK: KeyMap): boolean => {
   let hasChanges = false;
 
   for (const key of Object.keys(defaultK)) {
-    if (!Object.hasOwn(userK, key) || userK[key] !== defaultK[key]) {
+    if (!Object.hasOwn(userK, key)) {
       userK[key] = defaultK[key];
       hasChanges = true;
     }
@@ -96,17 +96,6 @@ const removeObsoleteKeys = (userK: KeyMap, defaultK: KeyMap): boolean => {
   }
 
   return hasChanges;
-};
-
-/**
- * Add missing keys to user keys
- */
-const addMissingKeys = (userK: KeyMap): void => {
-  Object.entries(defaultKeys).forEach(([key, value]) => {
-    if (!userK[key]) {
-      userK[key] = value;
-    }
-  });
 };
 
 /**

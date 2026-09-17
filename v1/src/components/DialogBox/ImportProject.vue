@@ -65,13 +65,6 @@
 
 <script lang="ts">
 import { useState } from '#/store/SimulatorStore/state'
-import type { ScopeLike } from '#/simulator/src/data/importCanonical'
-
-declare global {
-    interface Window {
-        globalScope?: ScopeLike
-    }
-}
 
 export function ImportProject() {
     const SimulatorState = useState()
@@ -86,7 +79,7 @@ import { canonicaliseProject } from '#/simulator/src/data/canonical'
 import { scopeList } from '#/simulator/src/circuit'
 import { useState } from '#/store/SimulatorStore/state'
 import { ref, computed, watch, onUnmounted } from 'vue'
-import type { CanonicalProject } from '#/simulator/src/data/canonical'
+import type { CanonicalProject } from '#/simulator/src/types/canonical.types'
 
 const SimulatorState = useState()
 const { t } = useI18n()
@@ -114,11 +107,6 @@ function addDropFile(e: DragEvent) {
     }
 }
 
-// TODO: Add JSON Schema validation for JSON files
-function validateData() {
-    // Validation will be implemented using JSON Schema
-}
-
 async function receivedText(fileContent: string) {
     // receive file content
 
@@ -133,18 +121,14 @@ async function receivedText(fileContent: string) {
 
     try {
         const parsedFileData = JSON.parse(fileContent)
-        const activeScope = window.globalScope
-        if (!activeScope) {
-            errorMessage.value = t('simulator.import.active_scope_error')
-            return
-        }
-        const result = await importCanonical(parsedFileData, activeScope)
+        const result = await importCanonical(parsedFileData)
         if (result.success) {
             errorMessage.value = ''
             SimulatorState.dialogBox.import_project_dialog = false
         } else {
             try {
-                await importCanonical(backup, activeScope)
+                const restoreResult = await importCanonical(backup)
+                if (!restoreResult.success) throw new Error(restoreResult.errors.join(' • '))
             } catch {
                 errorMessage.value = t('simulator.import.restore_failed_error')
                 return

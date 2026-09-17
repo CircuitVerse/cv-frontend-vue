@@ -190,7 +190,7 @@ export default class CircuitElement {
 
     /**
      * check hover over the element
-     * @return {boolean}
+     * @return {void}
      */
     checkHover() {
         if (simulationArea.mouseDown) return
@@ -1000,6 +1000,7 @@ CircuitElement.prototype.rectangleObject = true
 CircuitElement.prototype.objectType = 'CircuitElement'
 CircuitElement.prototype.canShowInSubcircuit = false // determines whether the element is supported to be shown inside a subcircuit
 CircuitElement.prototype.subcircuitMetadata = {} // stores the coordinates and stuff for the elements in the subcircuit
+/** @type {{rightDimensionX: number, leftDimensionX: number, upDimensionY: number, downDimensionY: number, x?: number, y?: number, id?: string}} */
 CircuitElement.prototype.layoutProperties = {
     rightDimensionX: 5,
     leftDimensionX: 5,

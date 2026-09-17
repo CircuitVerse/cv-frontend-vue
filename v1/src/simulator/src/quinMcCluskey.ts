@@ -1,6 +1,7 @@
 // Algorithm used for Combinational Analysis
 
 export default function BooleanMinimize(
+  this: any,
   numVarsArg: number,
   minTermsArg: number[],
   dontCaresArg: number[] = [],
