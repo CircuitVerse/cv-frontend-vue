@@ -288,7 +288,7 @@ export function setupBitConvertor() {
         i++;
       }
     }
-    return setBaseValues(x);
+    return setBaseValues(num);
   });
 
   $("#hexInput").on("keyup", function () {
