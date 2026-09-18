@@ -3,6 +3,7 @@ import { resetup } from '../setup'
 import { update, updateSubcircuitSet } from '../engine'
 import { stripTags, showMessage } from '../utils'
 import { backUp } from './backupCircuit'
+import { encodeCanvas, rawEncodedTypes } from './imageFormats'
 import { simulationArea } from '../simulationArea'
 import { backgroundArea } from '../backgroundArea'
 import { findDimensions } from '../canvasApi'
@@ -56,11 +57,15 @@ export function getProjectName() {
  * @category data
  */
 function downloadAsImg(name, imgType) {
-    const gh = simulationArea.canvas.toDataURL(`image/${imgType}`)
+    const raw = rawEncodedTypes.includes(imgType)
+    const gh = raw
+        ? URL.createObjectURL(encodeCanvas(simulationArea.canvas, imgType))
+        : simulationArea.canvas.toDataURL(`image/${imgType}`)
     const anchor = document.createElement('a')
     anchor.href = gh
     anchor.download = `${name}.${imgType}`
     anchor.click()
+    if (raw) URL.revokeObjectURL(gh)
 }
 
 /**
