@@ -120,9 +120,6 @@ BooleanMinimize.prototype.solve = function () {
   };
 
   const get_essential_prime_implicants = (primeImplicants: string[], minTerms: string[]) => {
-    var table = [],
-      column;
-
     const check_if_similar = (minTerm: string, primeImplicant: string) => {
       for (let i = 0; i < primeImplicant.length; ++i) {
         if (primeImplicant[i] !== "-" && minTerm[i] !== primeImplicant[i]) return false;
@@ -131,31 +128,10 @@ BooleanMinimize.prototype.solve = function () {
       return true;
     };
 
-    const get_complexity = (terms: string[]) => {
-      var complexity = terms.length;
-
-      for (let t of terms) {
-        for (let i = 0; i < t.length; ++i) {
-          if (t[i] !== "-") {
-            complexity++;
-            if (t[i] === "0") complexity++;
-          }
-        }
-      }
-
-      return complexity;
-    };
-
-    const isSubset = (sub: Set<number>, sup: Set<number>) => {
-      for (let i of sub) {
-        if (!sup.has(i)) return false;
-      }
-
-      return true;
-    };
-
+    // Coverage table: one row per minterm, listing the implicants that cover it.
+    var rows: number[][] = [];
     for (let m of minTerms) {
-      column = [];
+      let column: number[] = [];
 
       for (let i = 0; i < primeImplicants.length; ++i) {
         if (check_if_similar(m, primeImplicants[i])) {
@@ -163,57 +139,199 @@ BooleanMinimize.prototype.solve = function () {
         }
       }
 
-      table.push(column);
+      rows.push(column);
     }
 
-    let possibleSets: Set<number>[] = [],
-      tempSets: Set<number>[];
+    // Reduce the table before enumerating covers, which is exponential in the
+    // number of rows. A minterm covered by exactly one implicant forces that
+    // implicant into every cover, and a row whose implicants are a superset of
+    // another row's is satisfied whenever that row is. Both are removable
+    // without changing the cheapest cover, and on real inputs they usually
+    // leave nothing to enumerate.
+    const selected = new Set<number>();
 
-    for (let i of table[0]) {
-      possibleSets.push(new Set([i]));
+    const rowKey = (row: number[]) =>
+      row
+        .slice()
+        .sort((a, b) => a - b)
+        .join(",");
+
+    for (;;) {
+      let changed = false;
+
+      for (let row of rows) {
+        if (row.length === 1 && !selected.has(row[0])) {
+          selected.add(row[0]);
+          changed = true;
+        }
+      }
+
+      if (selected.size > 0) {
+        const remaining = rows.filter((row) => !row.some((pi) => selected.has(pi)));
+        if (remaining.length !== rows.length) {
+          rows = remaining;
+          changed = true;
+        }
+      }
+
+      const seen = new Set<string>();
+      const unique: number[][] = [];
+      for (let row of rows) {
+        const key = rowKey(row);
+        if (seen.has(key)) {
+          changed = true;
+          continue;
+        }
+        seen.add(key);
+        unique.push(row);
+      }
+      rows = unique;
+
+      const kept: number[][] = [];
+      for (let i = 0; i < rows.length; ++i) {
+        const dominated = rows.some(
+          (other, j) =>
+            j !== i && other.length < rows[i].length && other.every((pi) => rows[i].includes(pi)),
+        );
+        if (dominated) {
+          changed = true;
+        } else {
+          kept.push(rows[i]);
+        }
+      }
+      rows = kept;
+
+      if (!changed) break;
     }
 
-    for (let i = 1; i < table.length; ++i) {
-      tempSets = [];
-      for (let s of possibleSets) {
-        for (let p of table[i]) {
-          let x = new Set(s);
-          x.add(p);
-          let append = true;
+    const essentials: string[] = [];
+    for (let i of selected) {
+      essentials.push(primeImplicants[i]);
+    }
 
-          for (let j = tempSets.length - 1; j >= 0; --j) {
-            if (isSubset(x, tempSets[j])) {
-              tempSets.splice(j, 1);
-            } else {
-              append = false;
-            }
+    if (rows.length === 0) {
+      return essentials;
+    }
+
+    // What one implicant adds to the cost: itself, plus a literal per
+    // fixed position and another for each inverted one.
+    const implicant_cost = (implicant: string) => {
+      let cost = 1;
+      for (let i = 0; i < implicant.length; ++i) {
+        if (implicant[i] !== "-") {
+          cost++;
+          if (implicant[i] === "0") cost++;
+        }
+      }
+      return cost;
+    };
+
+    // Cheapest cover per unit of cost, repeated until everything is covered.
+    // Always produces a valid cover, so it both seeds the bound below and
+    // guarantees an answer if the search does not finish.
+    const greedy_cover = () => {
+      const covers = new Map<number, number[]>();
+      for (let r = 0; r < rows.length; ++r) {
+        for (let pi of rows[r]) {
+          const list = covers.get(pi);
+          if (list) list.push(r);
+          else covers.set(pi, [r]);
+        }
+      }
+
+      const picked = new Set<number>();
+      const covered = rows.map(() => false);
+      let remaining = rows.length;
+
+      while (remaining > 0) {
+        let bestPi = -1;
+        let bestRatio = -1;
+
+        for (let [pi, list] of covers) {
+          if (picked.has(pi)) continue;
+          let gain = 0;
+          for (let r of list) {
+            if (!covered[r]) gain++;
           }
-
-          if (append) {
-            tempSets.push(x);
+          if (gain === 0) continue;
+          const ratio = gain / implicant_cost(primeImplicants[pi]);
+          if (ratio > bestRatio) {
+            bestRatio = ratio;
+            bestPi = pi;
           }
         }
 
-        possibleSets = tempSets;
+        if (bestPi === -1) break;
+
+        picked.add(bestPi);
+        for (let r of covers.get(bestPi)!) {
+          if (!covered[r]) {
+            covered[r] = true;
+            remaining--;
+          }
+        }
       }
+
+      return picked;
+    };
+
+    const cover_cost = (cover: Iterable<number>) => {
+      let cost = 0;
+      for (let pi of cover) cost += implicant_cost(primeImplicants[pi]);
+      return cost;
+    };
+
+    // Branch and bound over the reduced table. Enumerating every candidate
+    // cover is exponential in the number of rows, which made 6 variables hang.
+    // Cost is a sum over the chosen implicants, so a partial cover already at
+    // or above the best complete one can be abandoned, and branching on the
+    // row with the fewest choices keeps the tree narrow.
+    //
+    // Finding the true minimum is set cover, so the search is capped. Within
+    // the cap the answer is optimal; past it the greedy cover stands, which
+    // is still correct, only possibly a term or two larger. Real truth tables
+    // reduce away long before the cap.
+    const chosen = new Set<number>();
+    let chosenCost = 0;
+    let bestSet: number[] = [...greedy_cover()];
+    let bestCost = cover_cost(bestSet);
+    let steps = 0;
+    const STEP_LIMIT = 50000;
+
+    const search = () => {
+      if (chosenCost >= bestCost) return;
+      if (++steps > STEP_LIMIT) return;
+
+      let target: number[] | undefined;
+      for (let row of rows) {
+        if (row.some((pi) => chosen.has(pi))) continue;
+        if (target === undefined || row.length < target.length) target = row;
+      }
+
+      if (target === undefined) {
+        bestSet = [...chosen];
+        bestCost = chosenCost;
+        return;
+      }
+
+      for (let pi of target) {
+        const cost = implicant_cost(primeImplicants[pi]);
+        chosen.add(pi);
+        chosenCost += cost;
+        search();
+        chosenCost -= cost;
+        chosen.delete(pi);
+      }
+    };
+
+    search();
+
+    const result = essentials.slice();
+    for (let pi of bestSet) {
+      result.push(primeImplicants[pi]);
     }
 
-    var essentialImplicants,
-      minComplexity = 1e9;
-
-    for (let s of possibleSets) {
-      let p = [];
-      for (let i of s) {
-        p.push(primeImplicants[i]);
-      }
-      let comp = get_complexity(p);
-      if (comp < minComplexity) {
-        essentialImplicants = p;
-        minComplexity = comp;
-      }
-    }
-
-    return essentialImplicants;
+    return result;
   };
 
   var minTerms: string[] = this.minTerms.map(dec_to_binary_string.bind(this));
