@@ -102,6 +102,7 @@
                                     id="report"
                                     type="submit"
                                     class="btn btn-primary"
+                                    :disabled="!issueTextContent.trim()"
                                     @click="reportIssue"
                                 >
                                     {{
@@ -164,6 +165,9 @@ function closeReportModal(): void {
 }
 
 function reportIssue(): void {
+    if (!issueTextContent.value.trim()) {
+        return
+    }
     resultOpen.value = true
     const issuetext = issueTextContent.value
     const emailtext = issueEmailContent.value
