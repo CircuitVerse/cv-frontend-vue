@@ -3,6 +3,8 @@ import load from '../src/data/load';
 import circuitData from './circuits/sequential-circuitdata.json';
 import testData from './testData/sequential-testdata.json';
 import { runAll } from '../src/testbench';
+import TTY from '../src/sequential/TTY';
+import Input from '../src/modules/Input';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import { createRouter, createWebHistory } from 'vue-router';
@@ -101,5 +103,40 @@ describe('Simulator Sequential Element Testing', () => {
     test('T Flip Flop working', () => {
         const result = runAll(testData.TFlipFlop);
         expect(result.summary.passed).toBe(4);
+    });
+
+    test('TTY keeps its wiring and text when resized', () => {
+        const tty = new TTY(100, 100, globalScope, 3, 32);
+        const source = new Input(300, 100, globalScope);
+        source.output1.connect(tty.clockInp);
+        const wires = globalScope.wires.length;
+        tty.data = 'HELLO';
+
+        tty.changeRowSize(5);
+        tty.changeColSize(40);
+
+        expect(globalScope.TTY).toContain(tty);
+        expect(globalScope.wires.length).toBe(wires);
+        expect(tty.clockInp.connections).toContain(source.output1);
+        expect(source.output1.connections).toContain(tty.clockInp);
+        expect(tty.data).toBe('HELLO');
+        expect(tty.clockInp.x).toBe(-tty.elementWidth / 2);
+
+        tty.changeRowSize(1);
+        tty.changeColSize(20);
+
+        expect(tty.clockInp.connections).toContain(source.output1);
+        expect(source.output1.connections).toContain(tty.clockInp);
+        expect(tty.data).toBe('HELLO');
+        expect(tty.clockInp.x).toBe(-tty.elementWidth / 2);
+    });
+
+    test('TTY drops text that no longer fits after a shrink', () => {
+        const tty = new TTY(100, 100, globalScope, 2, 20);
+        tty.data = 'X'.repeat(40);
+
+        tty.changeRowSize(1);
+
+        expect(tty.data).toBe('X'.repeat(20));
     });
 });

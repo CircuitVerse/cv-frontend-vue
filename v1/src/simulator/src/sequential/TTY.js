@@ -4,6 +4,12 @@ import { simulationArea } from '../simulationArea'
 import { correctWidth, lineTo, moveTo, fillText3 } from '../canvasApi'
 import { colors } from '../themer/themer'
 
+function movePin(node, x, y) {
+    node.leftx = x
+    node.lefty = y
+    node.updateRotation()
+}
+
 /**
  * @class
  * TTY
@@ -26,47 +32,15 @@ export default class TTY extends CircuitElement {
         this.cols = cols || parseInt(prompt('Enter cols:'))
         this.rows = rows || parseInt(prompt('Enter rows:'))
 
-        this.elementWidth = Math.max(40, Math.ceil(this.cols / 2) * 20)
-        this.elementHeight = Math.max(40, Math.ceil((this.rows * 15) / 20) * 20)
-        this.setWidth(this.elementWidth / 2)
-        this.setHeight(this.elementHeight / 2)
+        this.clockInp = new Node(0, 0, 0, this, 1, 'Clock')
+        this.asciiInp = new Node(0, 0, 0, this, 7, 'Ascii Input')
+        this.reset = new Node(0, 0, 0, this, 1, 'Reset')
+        this.en = new Node(0, 0, 0, this, 1, 'Enable')
 
-        this.clockInp = new Node(
-            -this.elementWidth / 2,
-            this.elementHeight / 2 - 10,
-            0,
-            this,
-            1,
-            'Clock'
-        )
-        this.asciiInp = new Node(
-            -this.elementWidth / 2,
-            this.elementHeight / 2 - 30,
-            0,
-            this,
-            7,
-            'Ascii Input'
-        )
-        this.reset = new Node(
-            30 - this.elementWidth / 2,
-            this.elementHeight / 2,
-            0,
-            this,
-            1,
-            'Reset'
-        )
-        this.en = new Node(
-            10 - this.elementWidth / 2,
-            this.elementHeight / 2,
-            0,
-            this,
-            1,
-            'Enable'
-        )
         this.prevClockState = 0
-
         this.data = ''
         this.buffer = ''
+        this.setSize()
     }
 
     /**
@@ -76,10 +50,9 @@ export default class TTY extends CircuitElement {
     changeRowSize(size) {
         if (size == undefined || size < 1 || size > 10) return
         if (this.rows == size) return
-        var obj = new TTY(this.x, this.y, this.scope, size, this.cols)
-        this.delete()
-        simulationArea.lastSelected = obj
-        return obj
+        this.rows = size
+        this.setSize()
+        return this
     }
 
     /**
@@ -89,10 +62,25 @@ export default class TTY extends CircuitElement {
     changeColSize(size) {
         if (size == undefined || size < 20 || size > 100) return
         if (this.cols == size) return
-        var obj = new TTY(this.x, this.y, this.scope, this.rows, size)
-        this.delete()
-        simulationArea.lastSelected = obj
-        return obj
+        this.cols = size
+        this.setSize()
+        return this
+    }
+
+    /**
+     * @memberof TTY
+     * fits the screen to the current rows and cols and moves the pins to match
+     */
+    setSize() {
+        this.data = this.data.slice(-this.rows * this.cols)
+        this.elementWidth = Math.max(40, Math.ceil(this.cols / 2) * 20)
+        this.elementHeight = Math.max(40, Math.ceil((this.rows * 15) / 20) * 20)
+        this.setWidth(this.elementWidth / 2)
+        this.setHeight(this.elementHeight / 2)
+        movePin(this.clockInp, -this.elementWidth / 2, this.elementHeight / 2 - 10)
+        movePin(this.asciiInp, -this.elementWidth / 2, this.elementHeight / 2 - 30)
+        movePin(this.reset, 30 - this.elementWidth / 2, this.elementHeight / 2)
+        movePin(this.en, 10 - this.elementWidth / 2, this.elementHeight / 2)
     }
 
     /**
