@@ -19,7 +19,7 @@
             <button
                 type="button"
                 class="report-close"
-                aria-label="Close"
+                :aria-label="$t('simulator.panel_body.report_issue.close_btn')"
                 @click="closeReportModal"
             >
                 <span aria-hidden="true">&times;</span>
@@ -42,7 +42,6 @@
                 <button
                     type="button"
                     class="btn close-btn"
-                    aria-label="Close"
                     @click="closeReportModal"
                 >
                     {{ $t('simulator.panel_body.report_issue.close_btn') }}
