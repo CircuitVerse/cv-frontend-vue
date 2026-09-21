@@ -18,7 +18,7 @@ import { generateId } from '../utils'
 import modules from '../modules'
 import { oppositeDirection } from '../canvasApi'
 import plotArea from '../plotArea'
-import { TestbenchData } from '#/simulator/src/testbench'
+import { TestbenchData, syncTestbenchWithScope } from '#/simulator/src/testbench'
 import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
 import { toRefs } from 'vue'
 import { moduleList } from '../metadata'
@@ -154,7 +154,7 @@ export function loadScope(scope, data) {
 
     // If Test exists, then restore
     if (data.testbenchData) {
-        globalScope.testbenchData = new TestbenchData(
+        scope.testbenchData = new TestbenchData(
             data.testbenchData.testData,
             data.testbenchData.currentGroup,
             data.testbenchData.currentCase
@@ -287,6 +287,7 @@ export default function load(data) {
 
     // Switch to last focussedCircuit
     if (data.focussedCircuit) switchCircuit(String(data.focussedCircuit))
+    if (!embed) syncTestbenchWithScope(globalScope)
 
     updateSimulationSet(true)
     updateCanvasSet(true)
