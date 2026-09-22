@@ -63,7 +63,7 @@ export default class Random extends CircuitElement {
     resolve() {
         var maxValue = this.maxValue.connections.length
             ? this.maxValue.value + 1
-            : 2 << (this.bitWidth - 1)
+            : 2 ** this.bitWidth
         if (this.clockInp.value != undefined) {
             if (this.clockInp.value != this.prevClockState) {
                 if (this.clockInp.value == 1) {

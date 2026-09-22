@@ -69,7 +69,7 @@ export default class Counter extends CircuitElement {
         var maxValue =
             this.maxValue.value != undefined
                 ? this.maxValue.value
-                : (1 << this.bitWidth) - 1
+                : 2 ** this.bitWidth - 1
         var outputValue = this.value
 
         // Increase value when clock is raised
