@@ -1,5 +1,11 @@
 <template>
-    <div id="layoutDialog" ref="layoutDialogRef" class="draggable-panel draggable-panel-css">
+    <div
+        id="layoutDialog"
+        ref="layoutDialogRef"
+        class="draggable-panel draggable-panel-css"
+        :style="{ zIndex: zIndexFor('layoutDialog') }"
+        @mousedown="bringToFront('layoutDialog')"
+    >
         <PanelHeader :header-title="$t('simulator.panel_header.layout')" />
         <div id="layout-body" class="layout-body panel-body">
             <div class="">
@@ -117,6 +123,7 @@ import PanelHeader from '#/components/Panels/Shared/PanelHeader.vue'
 import { layoutFunction } from '../PropertiesPanel'
 import { useLayoutStore } from '#/store/layoutStore'
 import { usePropertiesPanelStore } from '#/store/propertiesPanelStore'
+import { bringToFront, zIndexFor } from '#/simulator/src/drag'
 
 const layoutStore = useLayoutStore()
 const propertiesPanelStore = usePropertiesPanelStore()
