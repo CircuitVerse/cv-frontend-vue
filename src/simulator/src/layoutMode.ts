@@ -15,6 +15,7 @@ import { showMessage } from "./utils";
 import { verilogModeSet } from "./Verilog2CV";
 import { useLayoutStore } from "#/store/layoutStore";
 import { useSimulatorMobileStore } from "#/store/simulatorMobileStore";
+import { usePropertiesPanelStore } from "#/store/propertiesPanelStore";
 import { toRefs } from "vue";
 import { circuitElementList } from "./metadata";
 
@@ -427,6 +428,8 @@ export function toggleLayoutMode() {
     globalScope.scale = DPR * 1.3;
     dots();
     tempBuffer = new LayoutBuffer();
+    const propertiesPanelStore = toRefs(usePropertiesPanelStore());
+    propertiesPanelStore.titleEnable.value = tempBuffer.layout.titleEnabled;
   }
   update(globalScope, true);
   scheduleUpdate();
