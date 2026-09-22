@@ -401,12 +401,14 @@ export function saveLayout() {
 export function toggleLayoutMode() {
   const layoutStore = toRefs(useLayoutStore());
   const simulatorMobileStore = toRefs(useSimulatorMobileStore());
+  const propertiesPanelStore = toRefs(usePropertiesPanelStore());
   prevPropertyObjSet(undefined);
   $(".objectPropertyAttribute").unbind("change keyup paste click");
 
   if (layoutModeGet()) {
     layoutModeSet(false);
     layoutStore.layoutMode.value = false;
+    propertiesPanelStore.titleEnable.value = globalScope.layout.titleEnabled;
     globalScope.centerFocus(false);
     if (globalScope.verilogMetadata.isVerilogCircuit) {
       verilogModeSet(true);
@@ -425,9 +427,8 @@ export function toggleLayoutMode() {
     globalScope.scale = DPR * 1.3;
     dots();
     tempBuffer = new LayoutBuffer();
+    propertiesPanelStore.titleEnable.value = tempBuffer.layout.titleEnabled;
   }
-  const propertiesPanelStore = toRefs(usePropertiesPanelStore());
-  propertiesPanelStore.titleEnable.value = tempBuffer.layout.titleEnabled;
   update(globalScope, true);
   scheduleUpdate();
 }
