@@ -28,6 +28,8 @@
                         v-if="tableHeader.length > 0"
                         :table-header="tableHeader"
                         :table-body="tableBody"
+                        :editable="tableEditable"
+                        :output-start-col="outputStartCol"
                     />
                 </v-card-text>
                 <v-card-actions>
@@ -47,37 +49,6 @@
                     </v-btn>
                 </v-card-actions>
             </form>
-                        <p>{{ inputItem.text }}</p>
-                        <input
-                            v-if="inputItem.type != 'nil'"
-                            v-model="inputItem.val"
-                            :class="inputItem.class"
-                            :placeholder="inputItem.placeholder"
-                            :type="inputItem.type"
-                        />
-                    </div>
-                </template>
-                <BooleanTable
-                    v-if="tableHeader.length > 0"
-                    :table-header="tableHeader"
-                    :table-body="tableBody"
-                    :editable="tableEditable"
-                    :output-start-col="outputStartCol"
-                />
-            </v-card-text>
-            <v-card-actions>
-                <v-btn
-                    v-for="buttonItem in buttonList"
-                    :key="buttonItem.text"
-                    class="messageBtn"
-                    block
-                    @click="
-                        $emit('buttonClick', buttonItem.emitOption, circuitItem)
-                    "
-                >
-                    {{ buttonItem.text }}
-                </v-btn>
-            </v-card-actions>
         </v-card>
     </v-dialog>
 </template>
