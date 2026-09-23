@@ -194,7 +194,15 @@ const timePeriod = ref(simulationArea.timePeriod)
 const clockEnabled = ref(simulationArea.clockEnabled)
 
 // Embed user preferences
-const theme = computed(() => route.query.theme);
+const selectedEmbedTheme = computed(() => {
+    const themeValue = route.query.theme;
+
+    if (typeof themeValue !== 'string') {
+        return THEME.default;
+    }
+
+    return THEME[themeValue as keyof ThemeType] ?? THEME.default;
+});
 const hasDisplayTitle = computed(() => route.query.display_title ? route.query.display_title === 'true' : false);
 const hasClockTime = computed(() => route.query.clock_time ? route.query.clock_time === 'true' : true);
 const hasFullscreen = computed(() => route.query.fullscreen ? route.query.fullscreen === 'true' : true);
@@ -246,8 +254,7 @@ onBeforeMount(() => {
 })
 
 onMounted(() => {
-    const themeValue = theme?.value as string;
-    updateThemeForStyle(THEME[themeValue as keyof ThemeType]);
+    updateThemeForStyle(selectedEmbedTheme.value);
 })
 
 onMounted(() => {
