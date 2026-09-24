@@ -80,19 +80,11 @@
       <Hamburger2 v-if="simulatorMobileStore.showMobileView" :navbar-data="navbarData" />
     </nav>
     </div>
+    <!-- Zoom controls: +/- buttons -->
     <div class="slider-container">
-      <div class="zoom-slider">
-          <button class="zoom-slider-decrement" @click="decrement">-</button>
-          <input
-              id="customRange1"
-              type="range"
-              class="custom-range"
-              min="0"
-              max="45"
-              step="1"
-          />
-          <span id="slider_value"></span>
-          <button class="zoom-slider-increment" @click="increment">+</button>
+      <div class="zoom-controls">
+          <button class="zoom-button-decrement" @click="decrement" title="Zoom Out">−</button>
+          <button class="zoom-button-increment" @click="increment" title="Zoom In">+</button>
       </div>
   </div>
   </div>
@@ -101,9 +93,9 @@
 
 <script lang="ts" setup>
 import Hamburger2 from '../Hamburger/Hamburger2.vue'
-import navbarData from '#/assets/constants/Navbar/NAVBAR_DATA.json'
-import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
-import { saveOnline, saveOffline, deleteSelectedItem, createSaveAsImgPrompt, zoomToFit, undoit, redoit, view, decrement, increment } from './QuickButton';
+import navbarData from '../../../assets/constants/Navbar/NAVBAR_DATA.json'
+import { useSimulatorMobileStore } from '../../../store/simulatorMobileStore'
+import { saveOnline, saveOffline, deleteSelectedItem, createSaveAsImgPrompt, zoomToFit, undoit, redoit, view, increment, decrement } from './QuickButton'
 
 const simulatorMobileStore = useSimulatorMobileStore()
 </script>
@@ -154,14 +146,79 @@ const simulatorMobileStore = useSimulatorMobileStore()
   color: white;
 }
 
-.zoom-slider {
+/* Zoom controls with slider (1-100% display) */
+.zoom-controls {
   display: flex;
   gap: 1rem;
-  width: 90%;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem 0;
 }
 
-.custom-range {
-  width: 90% !important;
+.zoom-button-decrement,
+.zoom-button-increment {
+  background: transparent;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  font-weight: bold;
+  padding: 0 8px;
+  line-height: 1;
+  min-width: 32px;
+}
+
+.zoom-button-decrement:hover,
+.zoom-button-increment:hover {
+  opacity: 0.7;
+}
+
+.zoom-slider {
+  width: 120px;
+  height: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+
+.zoom-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: white;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.15s ease-in-out;
+}
+
+.zoom-slider::-webkit-slider-thumb:hover {
+  background: #ddd;
+}
+
+.zoom-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.15s ease-in-out;
+}
+
+.zoom-slider::-moz-range-thumb:hover {
+  background: #ddd;
+}
+
+.zoom-label {
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  min-width: 45px;
+  text-align: right;
 }
 
 @media (max-width: 768px) {
