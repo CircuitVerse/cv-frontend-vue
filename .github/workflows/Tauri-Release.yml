@@ -96,6 +96,9 @@ jobs:
                   # Update src-tauri/Cargo.toml
                   sed -i "s/^version = \".*\"/version = \"$VERSION_NO_V\"/" src-tauri/Cargo.toml
 
+                  # Update snap/snapcraft.yaml
+                  sed -i "s/^version: .*/version: '$VERSION_NO_V'/" snap/snapcraft.yaml
+
                   echo "Updated version files to $VERSION_NO_V"
 
             - name: Generate Changelog
@@ -119,7 +122,7 @@ jobs:
                   RELEASE_BRANCH="release/$NEW_VERSION"
 
                   git checkout -b "$RELEASE_BRANCH"
-                  git add package.json src-tauri/tauri.conf.json src-tauri/Cargo.toml
+                  git add package.json src-tauri/tauri.conf.json src-tauri/Cargo.toml snap/snapcraft.yaml
                   git commit -m "chore: bump version to $NEW_VERSION"
                   git tag "$NEW_VERSION"
                   git push origin "$RELEASE_BRANCH"
@@ -146,7 +149,7 @@ jobs:
                   This PR contains the version bump for release $NEW_VERSION.
 
                   ### Changes
-                  - Updated version in package.json, tauri.conf.json, and Cargo.toml
+                  - Updated version in package.json, tauri.conf.json, Cargo.toml, and snapcraft.yaml
                   - Tagged release $NEW_VERSION
 
                   > **Note:** The tag is created on the release branch before merge. This is intentional to allow the build and release process to complete. The tag points to the version bump commit.
@@ -232,6 +235,23 @@ jobs:
               run: npm run tauri build
               shell: bash
 
+            - name: Install Snapcraft and Build Snap Package
+              if: matrix.os == 'ubuntu-latest'
+              run: |
+                  sudo snap install snapcraft --classic
+                  mkdir -p snap-build
+                  if [ -f "src-tauri/target/release/CircuitVerse" ]; then
+                    cp src-tauri/target/release/CircuitVerse snap-build/CircuitVerse
+                  elif [ -f "src-tauri/target/release/circuit-verse" ]; then
+                    cp src-tauri/target/release/circuit-verse snap-build/CircuitVerse
+                  else
+                    echo "No supported Tauri release binary found" >&2
+                    exit 1
+                  fi
+                  cp snap/gui/circuitverse-simulator.desktop snap-build/
+                  snapcraft --destructive-mode
+              shell: bash
+
             # TODO: Add code signing steps here once certificates are obtained
             # - Windows: Sign .msi and .exe files with Authenticode via SignPath
             # - macOS: Sign .app bundles and .dmg with Apple Developer ID
@@ -244,6 +264,7 @@ jobs:
                   name: Tauri Build Artifacts (${{ matrix.os }})
                   path: |
                       src-tauri/target/release/bundle
+                      *.snap
 
     create-release:
         runs-on: ubuntu-latest
@@ -305,7 +326,7 @@ jobs:
             - name: Prepare Release Assets
               run: |
                   mkdir -p release-assets
-                  find artifacts -type f \( -name "*.deb" -o -name "*.AppImage" -o -name "*.msi" -o -name "*.dmg" \) -exec cp {} release-assets/ \; || true
+                  find artifacts -type f \( -name "*.deb" -o -name "*.AppImage" -o -name "*.msi" -o -name "*.dmg" -o -name "*.snap" -o -name "*.exe" \) -exec cp {} release-assets/ \; || true
 
                   if [ -d "artifacts/Tauri Build Artifacts (macos-latest)/src-tauri/target/release/bundle/macos" ]; then
                     MACOS_BUNDLE_DIR="artifacts/Tauri Build Artifacts (macos-latest)/src-tauri/target/release/bundle/macos"
