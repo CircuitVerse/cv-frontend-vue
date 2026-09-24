@@ -137,7 +137,8 @@ export default class TflipFlop extends CircuitElement {
         ctx.font = '20px Raleway'
         ctx.fillStyle = colors['input_text']
         ctx.textAlign = 'center'
-        fillText(ctx, this.slaveState.toString(16), xx, yy + 5)
+        fillText(ctx, 'T', xx, yy - 9, 10)
+        fillText(ctx, this.slaveState.toString(16), xx, yy + 10)
         ctx.fill()
     }
 
