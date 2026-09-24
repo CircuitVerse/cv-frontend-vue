@@ -18,7 +18,7 @@ import {
     errorDetectedSet,
 } from './engine'
 import { hideProperties, deleteSelected, exitFullView } from './ux';
-import { updateRestrictedElementsInScope, hideRestricted, showRestricted } from './restrictedElementDiv';
+import { updateRestrictedElementsInScope } from './restrictedElementDiv';
 import undo from './data/undo'
 import redo from './data/redo'
 import { copy, paste, selectAll } from './events'
@@ -369,16 +369,6 @@ export default function startListeners() {
             this.parentElement.removeChild(this);
         }
     });
-
-    restrictedElements.forEach((element) => {
-        $(`#${element}`).mouseover(() => {
-            showRestricted()
-        })
-
-        $(`#${element}`).mouseout(() => {
-            hideRestricted()
-        })
-    })
 
     if (!embed) {
         setupTimingListeners()
