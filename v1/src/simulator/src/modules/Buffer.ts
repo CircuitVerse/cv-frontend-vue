@@ -69,7 +69,7 @@ export default class Buffer extends CircuitElement implements ICircuitElement {
   }
 
   customDraw() {
-    var ctx = simulationArea.context;
+    const ctx = simulationArea.context;
     if (!ctx) return;
     ctx.strokeStyle = colors["stroke_alt"];
     ctx.lineWidth = correctWidth(3);

@@ -81,7 +81,7 @@ export default class XnorGate extends CircuitElement implements ICircuitElement 
   }
 
   customDraw() {
-    var ctx = simulationArea.context;
+    const ctx = simulationArea.context;
     if (!ctx) return;
     ctx.strokeStyle = colors["stroke"];
     ctx.lineWidth = correctWidth(3);

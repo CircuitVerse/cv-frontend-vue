@@ -68,7 +68,7 @@ export default class ControlledInverter extends CircuitElement implements ICircu
   }
 
   customDraw() {
-    var ctx = simulationArea.context;
+    const ctx = simulationArea.context;
     if (!ctx) return;
     ctx.strokeStyle = colors["stroke"];
     ctx.lineWidth = correctWidth(3);
