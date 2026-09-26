@@ -35,6 +35,13 @@
         "click": "download"
     },
     {
+        "title": "Download As CSV",
+        "icon": "fa-file-csv",
+        "class": "timing-diagram-download-csv",
+        "type": "primary",
+        "click": "downloadAsCSV"
+    },
+    {
         "title": "Reset Timing Diagram",
         "icon": "fa-undo",
         "class": "timing-diagram-reset",
