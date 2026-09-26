@@ -3,6 +3,7 @@ import load from '../src/data/load';
 import circuitData from './circuits/misc-circuitdata.json';
 import testData from './testData/misc-testdata.json';
 import { runAll } from '../src/testbench';
+import Splitter from '../src/modules/Splitter';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import { createRouter, createWebHistory } from 'vue-router';
@@ -126,5 +127,15 @@ describe('Simulator Misc-Elements Testing', () => {
     test('Force Gate working', () => {
         const result = runAll(testData.ForceGate);
         expect(result.summary.passed).toBe(2);
+    });
+
+    test('Splitter keeps its output widths when the bit width changes', () => {
+        const splitter = new Splitter(100, 100, globalScope, 'RIGHT', 4, [1, 3]);
+
+        splitter.newBitWidth(8);
+
+        expect(splitter.bitWidth).toBe(8);
+        expect(splitter.inp1.bitWidth).toBe(8);
+        expect(splitter.outputs.map((node) => node.bitWidth)).toEqual([1, 3]);
     });
 });
