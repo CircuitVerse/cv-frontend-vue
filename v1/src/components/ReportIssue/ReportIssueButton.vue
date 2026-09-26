@@ -3,8 +3,6 @@
         <a
             type="button"
             class="btn btn-primary text-light"
-            data-toggle="modal"
-            data-target=".issue"
             :style="reportButtonStyle"
             @click="openReportingModal"
         >
