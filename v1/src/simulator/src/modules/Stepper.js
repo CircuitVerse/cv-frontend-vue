@@ -71,7 +71,7 @@ export default class Stepper extends CircuitElement {
      * @param {string} key - the key pressed
      */
     keyDown2(key) {
-        if (this.state < 2 ** this.bitWidth && (key === '+' || key === '='))
+        if (this.state < 2 ** this.bitWidth - 1 && (key === '+' || key === '='))
             this.state++
         if (this.state > 0 && (key === '_' || key === '-')) this.state--
     }
