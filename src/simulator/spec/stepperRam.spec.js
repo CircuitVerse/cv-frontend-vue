@@ -88,7 +88,9 @@ describe('Stepper and RAM at 31 and 32 bit widths', () => {
         const max = 2 ** bitWidth - 1;
         const stepper = new Stepper(0, 0, globalScope, 'RIGHT', bitWidth);
         stepper.state = max;
-        pressPlus(stepper, 1);
+        stepper.keyDown2('+');
+        expect(stepper.state).toBe(max);
+        stepper.resolve();
         expect(stepper.output1.value).toBe(max);
     });
 
