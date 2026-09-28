@@ -1,5 +1,4 @@
 import { setup } from '../src/setup';
-import load from '../src/data/load';
 import Stepper from '../src/modules/Stepper';
 import RAM from '../src/sequential/RAM';
 import { createPinia, setActivePinia } from 'pinia';
@@ -109,9 +108,13 @@ describe('Stepper and RAM at 31 and 32 bit widths', () => {
         expect(loadRam(31, '0 2147483647')).toEqual([0, 2147483647]);
     });
 
-    test('RAM still rejects values that do not fit', () => {
-        const ram = new RAM(0, 0, globalScope, 'RIGHT', 8, 4);
-        vi.spyOn(window, 'prompt').mockReturnValueOnce('1 256');
+    test.each([
+        [8, '1 256'],
+        [31, '1 2147483648'],
+        [32, '1 4294967296'],
+    ])('RAM rejects values that do not fit in %i bits', (bitWidth, input) => {
+        const ram = new RAM(0, 0, globalScope, 'RIGHT', bitWidth, 4);
+        vi.spyOn(window, 'prompt').mockReturnValueOnce(input);
         ram.promptData();
         expect(ram.data[0]).toBeUndefined();
         expect(ram.data[1]).toBeUndefined();
