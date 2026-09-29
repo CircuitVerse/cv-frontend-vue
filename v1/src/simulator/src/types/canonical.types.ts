@@ -111,7 +111,7 @@ export interface CanonicalScope {
     components: CanonicalComponent[];
     nets: CanonicalNet[];
   };
-  layout: CanonicalLayout;
+  layout?: CanonicalLayout;
   visual?: {
     canvas?: {
       scale: number;

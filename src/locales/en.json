@@ -165,11 +165,8 @@
                 "save": "Save"
             },
             "report_issue": {
-                "describe_issue": "Describe your issue:",
-                "email": "Email",
-                "optional": " [Optional]",
-                "report_btn": "Report",
-                "cancel_btn": "Cancel",
+                "forum_message": "If you're facing any issues or would like to share feedback, please reach out to support{'@'}circuitverse.org or start a thread on our forum.",
+                "forum_btn": "Go to Forum",
                 "close_btn": "Close"
             },
             "testbench": {
@@ -207,6 +204,7 @@
             "testbench_creator": {
                 "create_test": "Create Test",
                 "enter_test_title": "Enter Test Title",
+                "untitled": "Untitled",
                 "sequential_test": "Sequential Test",
                 "combinational_test": "Combinational Test",
                 "no_groups": "No test groups added yet. Click \"+ New Group\" to start creating your test.",
