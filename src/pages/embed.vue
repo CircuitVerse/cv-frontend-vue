@@ -201,7 +201,9 @@ const selectedEmbedTheme = computed(() => {
         return THEME.default;
     }
 
-    return THEME[themeValue as keyof ThemeType] ?? THEME.default;
+    return Object.hasOwn(THEME, themeValue)
+    ? THEME[themeValue as keyof ThemeType]
+    : THEME.default;
 });
 const hasDisplayTitle = computed(() => route.query.display_title ? route.query.display_title === 'true' : false);
 const hasClockTime = computed(() => route.query.clock_time ? route.query.clock_time === 'true' : true);
