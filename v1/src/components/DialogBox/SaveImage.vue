@@ -136,7 +136,7 @@ function checkImgType(imageType: string) {
     if (isDisabled) {
         resolution.value = 1
         fullImg.value = true
-    } else if (imageType.toLowerCase() !== 'png') {
+    } else if (imageType.toLowerCase() !== 'png' && imageType.toLowerCase() !== 'webp') {
         transparent.value = false
     }
 }
