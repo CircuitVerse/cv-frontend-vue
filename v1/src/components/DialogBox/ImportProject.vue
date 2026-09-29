@@ -107,11 +107,6 @@ function addDropFile(e: DragEvent) {
     }
 }
 
-// TODO: Add JSON Schema validation for JSON files
-function validateData() {
-    // Validation will be implemented using JSON Schema
-}
-
 async function receivedText(fileContent: string) {
     // receive file content
 

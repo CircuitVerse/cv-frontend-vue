@@ -18,7 +18,8 @@ import {
     errorDetectedSet,
 } from './engine'
 import { changeScale } from './canvasApi'
-import { ZoomIn, ZoomOut, pinchZoom, getCoordinate, } from './listeners';
+import { ZoomIn, ZoomOut } from './commands/zoom';
+import { pinchZoom, getCoordinate } from './commands/pointer';
 
 const unit = 10
 let embedCoordinate;

@@ -910,10 +910,11 @@ function buildProjectMetadata(scopes: Scope[], topologicalOrder: number[]) {
         scopes.find((scope) => scope.verilogMetadata.isMainCircuit)?.id ?? topologicalOrder.at(-1),
       );
   const projectStore = useProjectStore();
+  const timePeriod = Number(simulationArea.timePeriod);
 
   return {
     name: projectStore.getProjectNameDefined ? projectStore.getProjectName : "Untitled",
-    timePeriod: simulationArea.timePeriod,
+    timePeriod: Number.isFinite(timePeriod) && timePeriod >= 50 ? timePeriod : 500,
     clockEnabled: simulationArea.clockEnabled,
     focussedCircuit,
     orderedTabs,
