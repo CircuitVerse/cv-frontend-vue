@@ -162,6 +162,10 @@ async function fetchProjectData(projectId) {
         )
         if (response.ok) {
             const data = await response.json()
+            if (!data) {
+                fadeOutLoadingIcons()
+                return
+            }
             const simulatorVersion = data.simulatorVersion  
             const projectName = data.name
             if(!simulatorVersion){                 
