@@ -69,6 +69,111 @@ Built assets will be available in `dist/simulatorvue/`. Each version will have a
 - `dist/simulatorvue/v0/simulator-v0.js`
 - `dist/simulatorvue/v1/simulator-v1.js`
 
+## Desktop Application (Tauri)
+CircuitVerse can also be run and packaged as a standalone desktop application using [Tauri v2](https://tauri.app/).
+
+### Prerequisites
+Before developing or building the desktop app, ensure you have the following installed:
+
+1. **Node.js**: LTS version (>= 18.x) and `npm` installed.
+2. **Rust & Cargo**: Install Rust via [rustup.rs](https://rustup.rs/):
+   ```bash
+   # Verify installation
+   rustc --version
+   cargo --version
+   ```
+3. **Platform-specific dependencies**: Follow the official [Tauri Prerequisites Guide](https://tauri.app/start/prerequisites/) for your operating system:
+   - **Windows**: Microsoft Visual Studio C++ Build Tools or Visual Studio Community with the "Desktop development with C++" workload, and WebView2.
+   - **macOS**: Xcode Command Line Tools (`xcode-select --install`).
+   - **Linux**: See the [Tauri Linux Prerequisites Guide](https://v2.tauri.app/start/prerequisites/#linux) (for Debian/Ubuntu: `libwebkit2gtk-4.1-dev`, `libssl-dev`, `libayatana-appindicator3-dev`, `librsvg2-dev`, and `build-essential`).
+4. **Tauri CLI**: Bundled with the repository's devDependencies (`@tauri-apps/cli`). You can run it directly via `npm run tauri` or `npx tauri`.
+
+### Running in Development
+To start the desktop application with hot-reloading:
+
+```bash
+npm run tauri dev
+```
+
+This starts the Vite dev server with `DESKTOP_MODE` enabled and automatically opens the native CircuitVerse desktop window.
+
+### Building the Desktop Application
+To compile and package the desktop app into a production binary and platform-specific installer:
+
+```bash
+npm run tauri build
+```
+
+The output executables and installers (e.g., `.msi` / `.exe` on Windows, `.dmg` / `.app` on macOS, `.deb` / `.AppImage` on Linux) will be generated in:
+```text
+src-tauri/target/release/bundle/
+```
+
+## Testing
+This repository uses [Vitest](https://vitest.dev/) for unit and integration testing across different simulator modules.
+
+### Running Tests
+To run all tests:
+```bash
+npm test
+```
+
+### Running Specific Test Suites
+You can run test suites for specific versions or components using project filters:
+
+- **Run tests for `src` (v0 base)**:
+  ```bash
+  npm run test:src
+  ```
+- **Run tests for `v1`**:
+  ```bash
+  npm run test:v1
+  ```
+- **Run synthesis tests**:
+  ```bash
+  npm run test:synthesis
+  ```
+
+### Watch Mode
+To run tests interactively in watch mode during development:
+```bash
+npx vitest
+```
+
+## Code Quality & Formatting
+We use **oxc** tools ([`oxfmt`](https://oxc.rs/docs/guide/usage/oxfmt.html) and [`oxlint`](https://oxc.rs/docs/guide/usage/oxlint.html)) for ultra-fast linting and code formatting, alongside **Husky** and **commitlint** to enforce commit message conventions.
+
+### Formatting Code
+To automatically format all TypeScript and codebase files:
+```bash
+npm run format
+```
+
+To check if all files adhere to formatting guidelines without modifying them:
+```bash
+npm run fmt:check
+```
+
+### Linting
+To check for linting errors across the codebase:
+```bash
+# Run lint check across the project
+npm run lint
+
+# Run lint check for v1
+npm run lint:v1
+```
+
+### Commit Standards & Husky Git Hooks
+This repository enforces [Conventional Commits](https://www.conventionalcommits.org/) via Husky and `@commitlint/cli`. 
+
+Ensure your commit messages follow the structured format:
+```bash
+git commit -m "docs: add formatting guidelines"
+git commit -m "feat(v1): add new gate component"
+git commit -m "fix: resolve theme styling in user menu"
+```
+
 ## Route-Agnostic Support
 The simulator is designed to be **route-agnostic**. It can be mounted on any path (e.g., within a Rails view) by including the appropriate script and setting global variables:
 
