@@ -194,7 +194,7 @@ export function generateImage(
     if (imgType === 'svg') {
         simulationArea.context = new canvasToSvg(width, height)
         resolution = 1
-    } else if (imgType !== 'png' && imgType !== 'webp') {
+    } else if (imgType !== 'png') {
         transparent = false
     }
 
