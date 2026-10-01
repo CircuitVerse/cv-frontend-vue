@@ -570,6 +570,12 @@ export default function startListeners() {
 
                 // deselect all Shortcut
                 if (e.keyCode == 27) {
+                    if (
+                        simulationArea.lastSelected &&
+                        simulationArea.lastSelected.newElement
+                    ) {
+                        simulationArea.lastSelected.delete()
+                    }
                     simulationArea.multipleObjectSelections = []
                     simulationArea.lastSelected = undefined
                     e.preventDefault()
