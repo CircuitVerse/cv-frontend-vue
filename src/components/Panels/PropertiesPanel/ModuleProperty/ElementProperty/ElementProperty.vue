@@ -38,7 +38,7 @@
             type="text"
             name="setLabel"
             autocomplete="off"
-            :value="escapeHtml(obj.label)"
+            :value="obj.label"
         />
     </p>
     <DropdownSelect
@@ -111,15 +111,12 @@
                 autocomplete="off"
                 rows="9"
                 :name="value.func"
-            >
-                {{ obj[name] }}
-            </textarea>
+            >{{ obj[name] }}</textarea>
         </p>
     </div>
 </template>
 
 <script lang="ts" setup>
-import { escapeHtml } from '#/simulator/src/utils'
 import InputGroups from '#/components/Panels/Shared/InputGroups.vue'
 import DropdownSelect from '#/components/Panels/Shared/DropdownSelect.vue'
 import { computed } from 'vue'

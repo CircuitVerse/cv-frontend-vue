@@ -47,7 +47,7 @@ export default {
         }
     },
 
-    // Lifecycle hook on mounted - dont initially display the context menu
+    // Lifecycle hook on mounted - don't initially display the context menu
     mounted() {
         this.hideContextMenu()
     },

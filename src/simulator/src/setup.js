@@ -24,7 +24,7 @@ import { setupCodeMirrorEnvironment } from './Verilog2CV'
 import '../vendor/jquery-ui.min.css'
 import '../vendor/jquery-ui.min'
 import { confirmSingleOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
-import { getToken } from '#/pages/simulatorHandler.vue'
+import { getToken } from '#/utils/auth'
 
 // Loading icon fade animation constants and helpers
 const LOADING_ICON_SELECTOR = '.loadingIcon'
@@ -162,6 +162,10 @@ async function fetchProjectData(projectId) {
         )
         if (response.ok) {
             const data = await response.json()
+            if (!data) {
+                fadeOutLoadingIcons()
+                return
+            }
             await load(data)
             await simulationArea.changeClockTime(data.timePeriod || 500)
             fadeOutLoadingIcons()
