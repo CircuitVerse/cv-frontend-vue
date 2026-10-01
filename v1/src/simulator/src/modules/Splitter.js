@@ -93,6 +93,11 @@ export default class Splitter extends CircuitElement {
      */
     newBitWidth(bitWidth) {
         if (bitWidth < 1) return
+        const splitTotal = this.bitWidthSplit.reduce(
+            (total, width) => total + width,
+            0
+        )
+        if (bitWidth < splitTotal) return
         this.bitWidth = bitWidth
         this.inp1.bitWidth = bitWidth
     }
