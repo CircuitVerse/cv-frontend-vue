@@ -164,10 +164,8 @@
                 "save": "সংরক্ষণ করুন"
             },
             "report_issue": {
-                "describe_issue": "সমস্যার বিবরণ:",
-                "email_html": "<b>Email</b><span> [Optional]</span>:",
-                "report_btn": "সমস্যা রিপোর্ট করুন",
-                "cancel_btn": "বাতিল করুন",
+                "forum_message": "যদি আপনি কোনো সমস্যার সম্মুখীন হন বা মতামত জানাতে চান, তাহলে অনুগ্রহ করে support{'@'}circuitverse.org-এ যোগাযোগ করুন অথবা আমাদের ফোরামে একটি থ্রেড শুরু করুন।",
+                "forum_btn": "ফোরামে যান",
                 "close_btn": "বন্ধ করুন"
             },
             "testbench": {
