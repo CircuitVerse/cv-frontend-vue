@@ -25,6 +25,8 @@ export class EventQueue {
   }
 
   add(obj: QueueObject, delay?: number) {
+    if (Number.isNaN(delay)) throw "EventQueue delay cannot be NaN";
+
     if (obj.queueProperties.inQueue) {
       obj.queueProperties.time = this.time + (delay ?? obj.propagationDelay);
       let i = obj.queueProperties.index;
