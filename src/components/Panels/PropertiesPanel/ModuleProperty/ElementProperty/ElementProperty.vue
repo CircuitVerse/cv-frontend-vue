@@ -4,7 +4,7 @@
         :property-name="$t('simulator.panel_body.element_property.bit_width')"
         :property-value="obj.bitWidth"
         property-value-type="number"
-        value-min="1"
+        :value-min="String(obj.minBitWidth || 1)"
         value-max="32"
         property-input-name="newBitWidth"
         property-input-id="bitWidth"
