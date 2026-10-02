@@ -87,17 +87,21 @@ export default class Splitter extends CircuitElement {
 
     /**
      * @memberof Splitter
+     * the narrowest bitwidth that still fits the split
+     */
+    get minBitWidth() {
+        return this.bitWidthSplit.reduce((total, width) => total + width, 0)
+    }
+
+    /**
+     * @memberof Splitter
      * function to change bitwidth of the element
      * the outputs keep the widths given by the split
      * @param {number} bitWidth - new bitwidth
      */
     newBitWidth(bitWidth) {
         if (bitWidth < 1) return
-        const splitTotal = this.bitWidthSplit.reduce(
-            (total, width) => total + width,
-            0
-        )
-        if (bitWidth < splitTotal) return
+        if (bitWidth < this.minBitWidth) return
         this.bitWidth = bitWidth
         this.inp1.bitWidth = bitWidth
     }
