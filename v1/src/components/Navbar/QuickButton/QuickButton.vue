@@ -107,10 +107,11 @@ function dragover(): void {
   position: absolute;
   width: 400px;
   height: 33px;
-  top: 90px;
+  top: calc(var(--tabs-height, 30px) + 60px);
   right: 280px;
   border-radius: 7px;
   z-index: 100;
+  transition: top 0.2s ease-in-out;
 }
 
 .quick-btn > div {
