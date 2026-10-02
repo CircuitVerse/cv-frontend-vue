@@ -120,7 +120,7 @@ const SimulatorState = useState()
 
 const dialogState = computed(() => SimulatorState.dialogBox)
 
-const imgTypeList: Ref<string[]> = ref(['PNG', 'JPEG', 'SVG', 'BMP', 'TIFF'])
+const imgTypeList: Ref<string[]> = ref(['PNG', 'JPEG', 'WebP', 'SVG', 'BMP', 'TIFF'])
 const toShow: Ref<boolean> = ref(true)
 const toShow1: Ref<boolean> = ref(true)
 const fullImg: Ref<boolean> = ref(false)
@@ -131,12 +131,12 @@ const selectedImageType: Ref<string> = ref('png')
 function checkImgType(imageType: string) {
     const isDisabled = imageType.toLowerCase() === 'svg'
     toShow.value = !isDisabled
-    toShow1.value = imageType.toLowerCase() === 'png'
+    toShow1.value = imageType.toLowerCase() === 'png' || imageType.toLowerCase() === 'webp'
 
     if (isDisabled) {
         resolution.value = 1
         fullImg.value = true
-    } else if (imageType.toLowerCase() !== 'png') {
+    } else if (imageType.toLowerCase() !== 'png' && imageType.toLowerCase() !== 'webp') {
         transparent.value = false
     }
 }

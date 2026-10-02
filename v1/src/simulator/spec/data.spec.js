@@ -182,7 +182,7 @@ describe('data dir working', () => {
         const formats = Array.from(
             document.querySelectorAll('input[name="imgType"]')
         ).map((input) => input.value);
-        expect(formats).toEqual(['png', 'jpeg', 'svg', 'bmp', 'tiff']);
+        expect(formats).toEqual(['png', 'jpeg', 'webp', 'svg', 'bmp', 'tiff']);
     });
 
     test('BMP encoding writes a real BMP header', () => {
