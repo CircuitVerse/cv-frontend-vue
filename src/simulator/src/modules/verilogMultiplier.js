@@ -68,6 +68,7 @@ export default class verilogMultiplier extends CircuitElement {
      */
     newBitWidth(bitWidth) {
         this.bitWidth = bitWidth
+        this.outputBitWidth = bitWidth
         this.inpA.bitWidth = bitWidth
         this.inpB.bitWidth = bitWidth
         this.product.bitWidth = bitWidth

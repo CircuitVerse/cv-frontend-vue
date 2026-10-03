@@ -4,6 +4,10 @@ import circuitData from './circuits/misc-circuitdata.json';
 import testData from './testData/misc-testdata.json';
 import { runAll } from '../src/testbench';
 import Splitter from '../src/modules/Splitter';
+import verilogMultiplier from '../src/modules/verilogMultiplier';
+import verilogPower from '../src/modules/verilogPower';
+import verilogShiftLeft from '../src/modules/verilogShiftLeft';
+import verilogShiftRight from '../src/modules/verilogShiftRight';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import { createRouter, createWebHistory } from 'vue-router';
@@ -137,5 +141,31 @@ describe('Simulator Misc-Elements Testing', () => {
         expect(splitter.bitWidth).toBe(8);
         expect(splitter.inp1.bitWidth).toBe(8);
         expect(splitter.outputs.map((node) => node.bitWidth)).toEqual([1, 3]);
+    });
+
+    test('Verilog arithmetic modules update outputBitWidth on newBitWidth', () => {
+        const mult = new verilogMultiplier(0, 0, globalScope);
+        expect(mult.outputBitWidth).toBe(1);
+        mult.newBitWidth(8);
+        expect(mult.outputBitWidth).toBe(8);
+        expect(mult.product.bitWidth).toBe(8);
+
+        const power = new verilogPower(0, 0, globalScope);
+        expect(power.outputBitWidth).toBe(1);
+        power.newBitWidth(8);
+        expect(power.outputBitWidth).toBe(8);
+        expect(power.answer.bitWidth).toBe(8);
+
+        const shl = new verilogShiftLeft(0, 0, globalScope);
+        expect(shl.outputBitWidth).toBe(1);
+        shl.newBitWidth(8);
+        expect(shl.outputBitWidth).toBe(8);
+        expect(shl.output1.bitWidth).toBe(8);
+
+        const shr = new verilogShiftRight(0, 0, globalScope);
+        expect(shr.outputBitWidth).toBe(1);
+        shr.newBitWidth(8);
+        expect(shr.outputBitWidth).toBe(8);
+        expect(shr.output1.bitWidth).toBe(8);
     });
 });

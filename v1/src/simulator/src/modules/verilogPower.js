@@ -68,6 +68,7 @@ export default class verilogPower extends CircuitElement {
      */
     newBitWidth(bitWidth) {
         this.bitWidth = bitWidth
+        this.outputBitWidth = bitWidth
         this.inpA.bitWidth = bitWidth
         this.inpB.bitWidth = bitWidth
         this.answer.bitWidth = bitWidth
