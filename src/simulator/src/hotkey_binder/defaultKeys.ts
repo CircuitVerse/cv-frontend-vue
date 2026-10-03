@@ -29,4 +29,7 @@ export const defaultKeys: DefaultKeysType = {
   "Move Element Right": "Shift + Right",
   "Hotkey Preference": "F8",
   "Open Documentation": "F1",
+  "Search Elements/Panel": "Alt + S",
+  "Preview Circuit": "Alt + P",
+  "Fit to Screen": "Alt + Shift + F",
 };
