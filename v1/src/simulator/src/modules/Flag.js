@@ -35,7 +35,6 @@ export default class Flag extends CircuitElement {
         this.identifier = identifier || `F${this.scope.Flag.length}`
         this.plotValues = []
 
-        this.xSize = 10
         this.flagTimeUnit = 0
 
         this.inp1 = new Node(40, 0, 0, this)
@@ -91,10 +90,17 @@ export default class Flag extends CircuitElement {
     setIdentifier(id = '') {
         if (id.length === 0) return
         this.identifier = id
+    }
+
+    /**
+     * @memberof Flag
+     * how far the box is pulled in on each side, from the identifier length
+     */
+    get xSize() {
         const len = this.identifier.length
-        if (len === 1) this.xSize = 20
-        else if (len > 1 && len < 4) this.xSize = 10
-        else this.xSize = 0
+        if (len === 1) return 20
+        if (len > 1 && len < 4) return 10
+        return 0
     }
 
     /**
