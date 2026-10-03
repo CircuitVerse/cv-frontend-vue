@@ -1,6 +1,8 @@
 <template>
   <div class="noSelect defaultCursor layoutElementPanel draggable-panel draggable-panel-css"
-    ref="layoutElementPanelRef">
+    ref="layoutElementPanelRef"
+    :style="{ zIndex: zIndexFor('layoutElementPanel') }"
+    @mousedown="bringToFront('layoutElementPanel')">
     <div class="panel-header">
       {{ $t('simulator.layout.layout_elements') }}
       <span class="fas fa-minus-square minimize"></span>
@@ -38,6 +40,7 @@ import { useState } from '#/store/SimulatorStore/state'
 import { simulationArea } from '#/simulator/src/simulationArea'
 import { useLayoutStore } from '#/store/layoutStore';
 import { ref, onMounted } from 'vue';
+import { bringToFront, zIndexFor } from '#/simulator/src/drag'
 
 const layoutStore = useLayoutStore()
 

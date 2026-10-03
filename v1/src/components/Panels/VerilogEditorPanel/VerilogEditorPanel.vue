@@ -6,6 +6,8 @@
         <div
             id="verilogEditorPanel"
             class="noSelect defaultCursor draggable-panel draggable-panel-css"
+            :style="{ zIndex: zIndexFor('verilogEditorPanel') }"
+            @mousedown="bringToFront('verilogEditorPanel')"
         >
             <PanelHeader
                 :header-title="$t('simulator.panel_header.verilog_module')"
@@ -86,6 +88,7 @@ import PanelHeader from '../Shared/PanelHeader.vue';
 import VerilogTerminal from './VerilogTerminal.vue';
 import { watch } from 'vue';
 import { useVerilogStore } from '#/store/verilogStore';
+import { bringToFront, zIndexFor } from '#/simulator/src/drag';
 
 const verilogStore = useVerilogStore();
 
