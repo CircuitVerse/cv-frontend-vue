@@ -174,16 +174,19 @@ export default function startListeners() {
         updateSimulationSet(true);
         updatePositionSet(true);
 
-        // zoom in (+)
+        // Zoom is now on Cmd/Ctrl +/- (primary zoom method)
         if (e.key == 'Meta' || e.key == 'Control') {
             simulationArea.controlDown = true;
         }
-        if (simulationArea.controlDown && (e.keyCode == 187 || e.KeyCode == 171)) {
+        // Zoom in: Cmd/Ctrl + '+' or Cmd/Ctrl + '='
+        // (On US keyboards, '+' is Shift+'=', so we accept both to handle with/without Shift)
+        if (simulationArea.controlDown && (e.keyCode == 187 || e.keyCode == 171 || e.key == '+' || e.key == '=')) {
             e.preventDefault();
             ZoomIn();
         }
-        // zoom out (-)
-        if (simulationArea.controlDown && (e.keyCode == 189 || e.Keycode == 173)) {
+        // Zoom out: Cmd/Ctrl + '-'
+        // (Only '-', not '_', since '_' requires Shift and could cause confusion)
+        if (simulationArea.controlDown && (e.keyCode == 189 || e.keyCode == 173 || e.key == '-')) {
             e.preventDefault();
             ZoomOut();
         }
