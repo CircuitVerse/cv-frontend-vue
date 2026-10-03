@@ -70,6 +70,7 @@ export default class verilogShiftLeft extends CircuitElement {
      */
     newBitWidth(bitWidth) {
         this.bitWidth = bitWidth
+        this.outputBitWidth = bitWidth
         this.inp1.bitWidth = bitWidth
         this.shiftInp.bitWidth = bitWidth
         this.output1.bitWidth = bitWidth
