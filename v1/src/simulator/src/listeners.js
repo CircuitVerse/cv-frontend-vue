@@ -17,6 +17,7 @@ import {
     updateCanvasSet,
     errorDetectedSet,
 } from './engine'
+import { fitToSelection } from './canvasApi'
 import { hideProperties, deleteSelected, exitFullView } from './ux';
 import { updateRestrictedElementsInScope, hideRestricted, showRestricted } from './restrictedElementDiv';
 import undo from './data/undo'
@@ -32,6 +33,28 @@ import { listen } from '@tauri-apps/api/event'
 export { getCoordinate, pinchZoom, panStart, panMove, panStop } from './commands/pointer'
 
 let listenToSimulator = true
+
+/**
+ * Returns the current selection context:
+ * - multiple selection if present
+ * - otherwise last selected element
+ * - empty array if nothing is selected
+ */
+export function getSelectedElements() {
+    if (
+        simulationArea.multipleObjectSelections &&
+        simulationArea.multipleObjectSelections.length > 0
+    ) {
+        return simulationArea.multipleObjectSelections
+    }
+
+    if (simulationArea.lastSelected) {
+        return [simulationArea.lastSelected]
+    }
+
+    return []
+}
+
 const isIe = (navigator.userAgent.toLowerCase().indexOf('msie') != -1 || navigator.userAgent.toLowerCase().indexOf('trident') != -1);
 
 export default function startListeners() {
@@ -95,13 +118,7 @@ export default function startListeners() {
 
             if (listenToSimulator) {
                 // If mouse is focusing on input element, then override any action
-                if (
-                    document.activeElement.tagName == 'INPUT' ||
-                    simulationArea.mouseRawX < 0 ||
-                    simulationArea.mouseRawY < 0 ||
-                    simulationArea.mouseRawX > width ||
-                    simulationArea.mouseRawY > height
-                ) {
+                if (document.activeElement.tagName == 'INPUT') {
                     return
                 }
                 // HACK TO REMOVE FOCUS ON PROPERTIES
@@ -117,6 +134,61 @@ export default function startListeners() {
 
                 if (e.key == 'Meta' || e.key == 'Control') {
                     simulationArea.controlDown = true
+                }
+
+                scheduleUpdate(1)
+                updateCanvasSet(true)
+                wireToBeCheckedSet(1)
+
+                if (
+                    simulationArea.lastSelected &&
+                    simulationArea.lastSelected.keyDown
+                ) {
+                    if (
+                        e.key.toString().length == 1 ||
+                        e.key.toString() == 'Backspace' ||
+                        e.key.toString() == 'Enter'
+                    ) {
+                        simulationArea.lastSelected.keyDown(e.key.toString())
+                        updateCanvasSet(true)
+                        scheduleUpdate(1)
+                        e.cancelBubble = true
+                        e.returnValue = false
+
+                        //e.stopPropagation works in Firefox.
+                        if (e.stopPropagation) {
+                            e.stopPropagation()
+                            e.preventDefault()
+                        }
+                        return
+                    }
+                }
+
+                if (
+                    simulationArea.lastSelected &&
+                    simulationArea.lastSelected.keyDown2
+                ) {
+                    if (e.key.toString().length == 1) {
+                        simulationArea.lastSelected.keyDown2(e.key.toString())
+                        updateCanvasSet(true)
+                        scheduleUpdate(1)
+                        return
+                    }
+                }
+
+                if (
+                    simulationArea.lastSelected &&
+                    simulationArea.lastSelected.keyDown3
+                ) {
+                    if (
+                        e.key.toString() != 'Backspace' &&
+                        e.key.toString() != 'Delete'
+                    ) {
+                        simulationArea.lastSelected.keyDown3(e.key.toString())
+                        updateCanvasSet(true)
+                        scheduleUpdate(1)
+                        return
+                    }
                 }
 
                 // zoom in (+)
@@ -138,6 +210,20 @@ export default function startListeners() {
                     ZoomOut()
                 }
 
+                // Fit view to selection (F)
+                // Guard: skip this shortcut if a component is actively handling keyboard input
+                if (
+                    (e.key === 'f' || e.key === 'F') &&
+                    !(simulationArea.lastSelected && simulationArea.lastSelected.keyDown)
+                ) {
+                    e.preventDefault()
+                    fitToSelection(getSelectedElements())
+                    updateCanvasSet(true)
+                    gridUpdateSet(true)
+                    scheduleUpdate(1)
+                    return
+                }
+
                 if (
                     simulationArea.mouseRawX < 0 ||
                     simulationArea.mouseRawY < 0 ||
@@ -145,55 +231,6 @@ export default function startListeners() {
                     simulationArea.mouseRawY > height
                 )
                     return
-
-                scheduleUpdate(1)
-                updateCanvasSet(true)
-                wireToBeCheckedSet(1)
-
-                if (
-                    simulationArea.lastSelected &&
-                    simulationArea.lastSelected.keyDown
-                ) {
-                    if (
-                        e.key.toString().length == 1 ||
-                        e.key.toString() == 'Backspace' ||
-                        e.key.toString() == 'Enter'
-                    ) {
-                        simulationArea.lastSelected.keyDown(e.key.toString())
-                        e.cancelBubble = true
-                        e.returnValue = false
-
-                        //e.stopPropagation works in Firefox.
-                        if (e.stopPropagation) {
-                            e.stopPropagation()
-                            e.preventDefault()
-                        }
-                        return
-                    }
-                }
-
-                if (
-                    simulationArea.lastSelected &&
-                    simulationArea.lastSelected.keyDown2
-                ) {
-                    if (e.key.toString().length == 1) {
-                        simulationArea.lastSelected.keyDown2(e.key.toString())
-                        return
-                    }
-                }
-
-                if (
-                    simulationArea.lastSelected &&
-                    simulationArea.lastSelected.keyDown3
-                ) {
-                    if (
-                        e.key.toString() != 'Backspace' &&
-                        e.key.toString() != 'Delete'
-                    ) {
-                        simulationArea.lastSelected.keyDown3(e.key.toString())
-                        return
-                    }
-                }
 
                 if (e.keyCode == 16) {
                     simulationArea.shiftDown = true
