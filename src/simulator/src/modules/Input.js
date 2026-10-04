@@ -186,7 +186,7 @@ Input.prototype.tooltipText =
  * @category modules
  */
 Input.prototype.helplink =
-    'https://docs.circuitverse.org/#/chapter4/2input?id=input'
+    'https://docs.circuitverse.org/chapter4/chapter4-input#input-1'
 
 /**
  * @memberof Input
