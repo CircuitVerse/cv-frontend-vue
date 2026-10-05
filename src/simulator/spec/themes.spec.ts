@@ -19,6 +19,15 @@ describe("themes", () => {
     warning.mockRestore();
   });
 
+  it("falls back to the default custom theme when stored data is empty", async () => {
+    localStorage.setItem("Custom Theme", "{}");
+
+    const { default: themes } = await import("../src/themer/themes");
+
+    expect(themes["Custom Theme"]["--primary"]).toBe("#454545");
+    expect(localStorage.getItem("Custom Theme")).toBeNull();
+  });
+
   it("falls back to the default custom theme when no stored data exists", async () => {
     const { default: themes } = await import("../src/themer/themes");
 

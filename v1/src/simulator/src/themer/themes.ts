@@ -12,6 +12,7 @@ const getCustomTheme = (): Themes[string] | null => {
       parsedTheme !== null &&
       typeof parsedTheme === "object" &&
       !Array.isArray(parsedTheme) &&
+      Object.keys(parsedTheme).length > 0 &&
       Object.values(parsedTheme).every((value) => typeof value === "string")
     ) {
       return parsedTheme as Themes[string];
