@@ -17,7 +17,6 @@ import type {
   IntermediateNet,
   CanonicalJsonValue,
   CanonicalNet,
-  CanonicalProject,
   ComponentInstance,
   RoutingEndpoint,
 } from "../types/canonical.types";
@@ -27,6 +26,7 @@ import SubCircuit from "../subcircuit";
 import plotArea from "../plotArea";
 import { simulationArea } from "../simulationArea";
 import { useProjectStore } from "#/store/projectStore";
+import { validateCanonicalJson } from "./validate";
 
 /** Constructor shared by component classes registered in modules.js. */
 type ComponentConstructor = new (
@@ -36,19 +36,11 @@ type ComponentConstructor = new (
   ...rest: CanonicalJsonValue[]
 ) => ComponentInstance;
 
-type ValidationResult = { valid: true; errors: [] } | { valid: false; errors: string[] };
-
 export type ImportResult = {
   success: boolean;
   imported: number;
   errors: string[];
 };
-
-// TODO: Replace with JSON Schema validation (deferred).
-/** Validates a canonical circuit JSON against the expected schema. Currently a no-op stub. */
-export function validateCanonicalJson(_circuitData: CanonicalScope): ValidationResult {
-  return { valid: true, errors: [] };
-}
 
 function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
@@ -56,8 +48,7 @@ function errorMessage(error: unknown): string {
 
 /** Returns constructor parameters emitted by customSave(). */
 function getConstructorParams(properties: CanonicalComponent["properties"]): CanonicalJsonValue[] {
-  const params = properties.constructorParamaters;
-  return Array.isArray(params) ? params : [];
+  return properties.constructorParamaters ?? [];
 }
 
 /** Constructs all component instances from the canonical JSON and returns them in a map keyed by component ID. */
@@ -96,10 +87,9 @@ function buildComponents(
     } else {
       const Constructor = registry[type];
       if (typeof Constructor !== "function") {
-        errors.push(`"${id}": unknown type "${type}"`);
+        errors.push(`"${id}": unknown component type "${type}"`);
         continue;
       }
-
       const constructorArgs = getConstructorParams(properties);
 
       try {
@@ -152,7 +142,7 @@ function applyComponentLayout(
   const errors: string[] = [];
   for (const [id, instance] of instanceMap) {
     const pos = layout[id] as CanonicalComponentPosition | undefined;
-    if (!pos || !Number.isFinite(pos.x) || !Number.isFinite(pos.y)) {
+    if (!pos) {
       errors.push(`Layout is missing for component "${id}"`);
       continue;
     }
@@ -172,7 +162,7 @@ function buildAnnotations(scope: Scope, annotations?: CanonicalAnnotation[]): st
     const annotation = annotations[i];
     const Constructor = registry[annotation.type];
     if (typeof Constructor !== "function") {
-      errors.push(`Annotation at index ${i}: unknown type "${annotation.type}"`);
+      errors.push(`Annotation at index ${i}: unknown annotation type "${annotation.type}"`);
       continue;
     }
 
@@ -200,8 +190,6 @@ export function resolvePortNode(
   instanceMap: Map<string, ComponentInstance>,
 ): Node | null {
   const dotIdx = portRef.indexOf(".");
-  if (dotIdx === -1) return null;
-
   const compId = portRef.substring(0, dotIdx);
   const portName = portRef.substring(dotIdx + 1);
 
@@ -289,11 +277,7 @@ function restoreDefaultState(
   for (const comp of components) {
     if (comp.defaultState === undefined) continue;
 
-    const instance = instanceMap.get(comp.id);
-    if (instance === undefined) {
-      errors.push(`"${comp.id}" component was not built`);
-      continue;
-    }
+    const instance = instanceMap.get(comp.id)!;
 
     const stateProp = STATEFUL_DEFAULT_STATE[comp.type];
     if (stateProp === undefined) {
@@ -320,12 +304,7 @@ function restoreIntermediateNodes(
 
   for (const [netId, routing] of Object.entries(intermediateNodes)) {
     const { nodes: junctionPoints } = routing;
-    const net = netMap.get(netId);
-
-    if (!net) {
-      errors.push(`intermediateNodes references unknown net "${netId}"`);
-      continue;
-    }
+    const net = netMap.get(netId)!;
     const junctionNodes: Node[] = [];
 
     for (let i = 0; i < junctionPoints.length; i++) {
@@ -476,11 +455,9 @@ async function importSingleScope(
 function computeImportOrder(circuits: Record<string, CanonicalScope>): number[] {
   const inDegreeMap = new Map<number, number>();
   const dependents = new Map<number, number[]>();
-  const scopeIds = new Set<number>();
 
   for (const id of Object.keys(circuits)) {
     const circuitId = Number(id);
-    scopeIds.add(circuitId);
     dependents.set(circuitId, []);
   }
 
@@ -491,11 +468,6 @@ function computeImportOrder(circuits: Record<string, CanonicalScope>): number[] 
     for (const comp of circuit.netlist.components) {
       if (comp.type !== "SubCircuit") continue;
       const targetId = Number(getConstructorParams(comp.properties)[0]);
-      if (!scopeIds.has(targetId)) {
-        throw new Error(
-          `Circuit ${circuitId} references missing SubCircuit scope ${String(targetId)}`,
-        );
-      }
       subcircuitRefs.add(targetId);
     }
 
@@ -513,18 +485,16 @@ function computeImportOrder(circuits: Record<string, CanonicalScope>): number[] 
   return topologicalOrder;
 }
 
-export async function importCanonical(json: CanonicalProject): Promise<ImportResult> {
+export async function importCanonical(project: unknown): Promise<ImportResult> {
   const results: ImportResult = { success: false, imported: 0, errors: [] };
 
-  if (!json.circuits || typeof json.circuits !== "object") {
-    results.errors.push("Missing circuits object in JSON");
+  const validation = validateCanonicalJson(project);
+  if (!validation.valid) {
+    results.errors.push(...validation.errors);
     return results;
   }
 
-  if (Object.keys(json.circuits).length === 0) {
-    results.errors.push("No circuits found in JSON");
-    return results;
-  }
+  const json = validation.project;
 
   let topologicalOrder: number[];
   try {
@@ -534,16 +504,7 @@ export async function importCanonical(json: CanonicalProject): Promise<ImportRes
     return results;
   }
 
-  if (!json.projectMetadata || typeof json.projectMetadata !== "object") {
-    results.errors.push("Missing projectMetadata object in JSON");
-    return results;
-  }
-
   const hostCircuitId = json.projectMetadata.focussedCircuit;
-  if (!json.circuits[hostCircuitId]) {
-    results.errors.push(`Focused circuit "${hostCircuitId}" was not found`);
-    return results;
-  }
 
   resetScopeList();
   const scopeMap = new Map<number, Scope>();
@@ -555,12 +516,6 @@ export async function importCanonical(json: CanonicalProject): Promise<ImportRes
 
   for (const canonicalId of topologicalOrder) {
     const circuitData = json.circuits[String(canonicalId)];
-
-    const validation = validateCanonicalJson(circuitData);
-    if (!validation.valid) {
-      results.errors.push(`[${canonicalId}] validation: ${validation.errors.join(", ")}`);
-      continue;
-    }
 
     const currentScope = newCircuit(
       circuitData.projectMetadata.name,
@@ -614,7 +569,7 @@ export async function importCanonical(json: CanonicalProject): Promise<ImportRes
 
   if (results.success) {
     const order = new Map(json.projectMetadata.orderedTabs.map((id, index) => [id, index]));
-    const rank = (id: string | number) => order.get(String(id)) ?? Number.MAX_SAFE_INTEGER;
+    const rank = (id: string | number) => order.get(String(id))!;
     const circuitList = SimulatorStore().circuit_list as Array<{ id: string | number }>;
     circuitList.sort((a, b) => rank(a.id) - rank(b.id));
     useProjectStore().setProjectName(json.projectMetadata.name);
