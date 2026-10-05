@@ -3,7 +3,7 @@ import { Themes } from "./themer.types";
 const getCustomTheme = (): Themes[string] | null => {
   const storedTheme = localStorage.getItem("Custom Theme");
 
-  if (storedTheme === null) return {};
+  if (storedTheme === null) return null;
 
   try {
     const parsedTheme: unknown = JSON.parse(storedTheme);

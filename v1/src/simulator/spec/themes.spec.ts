@@ -18,4 +18,10 @@ describe("themes", () => {
 
     warning.mockRestore();
   });
+
+  it("falls back to the default custom theme when no stored data exists", async () => {
+    const { default: themes } = await import("../src/themer/themes");
+
+    expect(themes["Custom Theme"]["--primary"]).toBe("#454545");
+  });
 });
