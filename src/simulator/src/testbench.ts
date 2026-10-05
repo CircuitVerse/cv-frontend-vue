@@ -476,7 +476,13 @@ export function runAll(data: TestData, scope = globalScope) {
     const outputMap = new Map();
     group.outputs.forEach((output) => {
       output.results = [];
-      outputMap.set(output.label.trim(), output);
+
+      // Preserve the first output record for each label.
+      // An imported CSV can give group 0 only one row for a repeated output name
+      // and give a later group both rows.
+      if (!outputMap.has(output.label.trim())) {
+        outputMap.set(output.label.trim(), output);
+      }
     });
     for (let case_i = 0; case_i < group.n; case_i++) {
       totalCases++;
