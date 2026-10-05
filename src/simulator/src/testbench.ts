@@ -476,7 +476,7 @@ export function runAll(data: TestData, scope = globalScope) {
     const outputMap = new Map();
     group.outputs.forEach((output) => {
       output.results = [];
-      outputMap.set(output.label, output);
+      outputMap.set(output.label.trim(), output);
     });
     for (let case_i = 0; case_i < group.n; case_i++) {
       totalCases++;
