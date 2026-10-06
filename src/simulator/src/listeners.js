@@ -442,6 +442,51 @@ export default function startListeners() {
                 wireToBeCheckedSet(1)
 
                 if (
+                    !(
+                        simulationArea.mouseRawX < 0 ||
+                        simulationArea.mouseRawY < 0 ||
+                        simulationArea.mouseRawX > width ||
+                        simulationArea.mouseRawY > height
+                    )
+                ) {
+                    // zoom in (+)
+                    if (
+                        (simulationArea.controlDown &&
+                            (e.keyCode == 187 || e.keyCode == 171)) ||
+                        e.keyCode == 107
+                    ) {
+                        e.preventDefault()
+                        ZoomIn()
+                    }
+                    // zoom out (-)
+                    if (
+                        (simulationArea.controlDown &&
+                            (e.keyCode == 189 || e.keyCode == 173)) ||
+                        e.keyCode == 109
+                    ) {
+                        e.preventDefault()
+                        ZoomOut()
+                    }
+
+                    // Fit view to selection (F)
+                    // Guard: skip this shortcut if a component is actively handling keyboard input
+                    if (
+                        (e.key === 'f' || e.key === 'F') &&
+                        !(
+                            simulationArea.lastSelected &&
+                            simulationArea.lastSelected.keyDown
+                        )
+                    ) {
+                        e.preventDefault()
+                        fitToSelection(getSelectedElements())
+                        updateCanvasSet(true)
+                        gridUpdateSet(true)
+                        scheduleUpdate(1)
+                        return
+                    }
+                }
+
+                if (
                     simulationArea.lastSelected &&
                     simulationArea.lastSelected.keyDown
                 ) {
@@ -451,8 +496,6 @@ export default function startListeners() {
                         e.key.toString() == 'Enter'
                     ) {
                         simulationArea.lastSelected.keyDown(e.key.toString())
-                        updateCanvasSet(true)
-                        scheduleUpdate(1)
                         e.cancelBubble = true
                         e.returnValue = false
 
@@ -471,8 +514,6 @@ export default function startListeners() {
                 ) {
                     if (e.key.toString().length == 1) {
                         simulationArea.lastSelected.keyDown2(e.key.toString())
-                        updateCanvasSet(true)
-                        scheduleUpdate(1)
                         return
                     }
                 }
@@ -486,43 +527,8 @@ export default function startListeners() {
                         e.key.toString() != 'Delete'
                     ) {
                         simulationArea.lastSelected.keyDown3(e.key.toString())
-                        updateCanvasSet(true)
-                        scheduleUpdate(1)
                         return
                     }
-                }
-
-                // zoom in (+)
-                if (
-                    (simulationArea.controlDown &&
-                        (e.keyCode == 187 || e.keyCode == 171)) ||
-                    e.keyCode == 107
-                ) {
-                    e.preventDefault()
-                    ZoomIn()
-                }
-                // zoom out (-)
-                if (
-                    (simulationArea.controlDown &&
-                        (e.keyCode == 189 || e.keyCode == 173)) ||
-                    e.keyCode == 109
-                ) {
-                    e.preventDefault()
-                    ZoomOut()
-                }
-                
-                // Fit view to selection (F)
-                // Guard: skip this shortcut if a component is actively handling keyboard input
-                if (
-                    (e.key === 'f' || e.key === 'F') &&
-                    !(simulationArea.lastSelected && simulationArea.lastSelected.keyDown)
-                ) {
-                    e.preventDefault()
-                    fitToSelection(getSelectedElements())
-                    updateCanvasSet(true)
-                    gridUpdateSet(true)
-                    scheduleUpdate(1)
-                    return
                 }
 
                 if (
