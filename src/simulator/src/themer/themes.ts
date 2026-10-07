@@ -1,5 +1,16 @@
 import { Themes } from "./themer.types";
 
+function getCustomTheme() {
+  try {
+    if (typeof localStorage !== "undefined" && typeof localStorage.getItem === "function") {
+      return JSON.parse(localStorage.getItem("Custom Theme") || "{}");
+    }
+  } catch {
+    // Ignore in test or restricted environments
+  }
+  return null;
+}
+
 const themes: Themes = {
   "Default Theme": {
     "--text-navbar--alt": "#000",
@@ -327,7 +338,8 @@ const themes: Themes = {
     "--disable": "#956c6a",
     "--table-head-dark": "#2e2b21",
   },
-  "Custom Theme": JSON.parse(localStorage.getItem("Custom Theme") || "{}") || {
+
+  "Custom Theme": getCustomTheme() || {
     "--text-navbar--alt": "#000",
     "--br-secondary": "#7d7d7d",
     "--br-circuit-cur": "#ffffff",
