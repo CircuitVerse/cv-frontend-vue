@@ -1,5 +1,11 @@
 <template>
-   <div class="timing-diagram-panel draggable-panel" ref="timingDiagramPanelRef" id="time-Diagram">
+   <div
+        class="timing-diagram-panel draggable-panel"
+        ref="timingDiagramPanelRef"
+        id="time-Diagram"
+        :style="{ zIndex: zIndexFor('timing-diagram-panel') }"
+        @mousedown="bringToFront('timing-diagram-panel')"
+    >
         <!-- Timing Diagram Panel -->
         <PanelHeader
             :header-title="$t('simulator.panel_header.timing_diagram')"
@@ -50,6 +56,7 @@ import { handleButtonClick, handleUnitsChange } from './TimingDiagramPanel'
 import { useLayoutStore } from '#/store/layoutStore'
 import { useTimingDiagramPanelStore } from '#/store/timingDiagramPanelStore'
 import { setupPanelListeners, minimizePanel } from '#/simulator/src/ux'
+import { bringToFront, zIndexFor } from '#/simulator/src/drag'
 
 const layoutStore = useLayoutStore()
 const timingDiagramPanelStore = useTimingDiagramPanelStore();
