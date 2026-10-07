@@ -175,5 +175,5 @@ NorGate.prototype.changeInputSize = changeInputSize
  * @category modules
  */
 NorGate.prototype.verilogType = 'nor'
-NorGate.prototype.helplink = 'https://docs.circuitverse.org/#/chapter4/4gates?id=nor-gate'
+NorGate.prototype.helplink = 'https://docs.circuitverse.org/chapter4/chapter4-gates#nor-gate'
 NorGate.prototype.objectType = 'NorGate'
