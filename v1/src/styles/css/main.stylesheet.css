@@ -1509,7 +1509,7 @@ input:checked + .slider:before {
 #miniMap {
     position: fixed;
     z-index: 3;
-    bottom: -6rem;
+    bottom: -4rem;
     right: 0.5rem;
     overflow-y: scroll;
     opacity: 0.5;
