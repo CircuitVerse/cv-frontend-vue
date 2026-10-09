@@ -29,7 +29,7 @@
                         {{ projectName }}<span></span>
                         <i
                             class="fa fa-trash deleteOfflineProject"
-                            @click.stop="deleteOfflineProject(projectId.toString())"
+                            @click.stop.prevent="deleteOfflineProject(projectId.toString())"
                         ></i>
                     </label>
                     <p v-if="Object.keys(projectList).length === 0">
@@ -106,7 +106,11 @@ watch(
             selectedProjectId.value = null
             try {
                 const data = localStorage.getItem('projectList')
-                projectList.value = data ? JSON.parse(data) : {}
+                const parsed = data ? JSON.parse(data) : {}
+                projectList.value =
+                    parsed && typeof parsed === 'object' && !Array.isArray(parsed)
+                        ? parsed
+                        : {}
             } catch {
                 projectList.value = {}
             }
@@ -128,7 +132,11 @@ async function deleteOfflineProject(id: string) {
     const data = localStorage.getItem('projectList')
     let temp: { [key: string]: string } = {}
     try {
-        temp = data ? JSON.parse(data) : {}
+        const parsed = data ? JSON.parse(data) : {}
+        temp =
+            parsed && typeof parsed === 'object' && !Array.isArray(parsed)
+                ? parsed
+                : {}
     } catch {
         temp = {}
     }
