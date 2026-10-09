@@ -7,25 +7,23 @@ import { setUserKeys } from '../model/actions'
 export const updateHTML = (mode) => {
     let x = 0
     if (mode == 'user') {
-        const userKeys = localStorage.get('userKeys')
+        const userKeys = JSON.parse(localStorage.getItem('userKeys') || '{}')
         while ($('#preference').children()[x]) {
-            $('#preference').children()[x].children[1].children[1].innerText =
-                userKeys[
-                    $('#preference').children()[
-                        x
-                    ].children[1].children[0].innerText
-                ]
+            const command = $('#preference').children()[x]?.children[1]?.children[0]?.innerText
+            const keywordElem = $('#preference').children()[x]?.children[1]?.children[1]
+            if (command && keywordElem && userKeys[command] !== undefined) {
+                keywordElem.innerText = userKeys[command]
+            }
             x++
         }
     } else if (mode == 'default') {
+        const defaultKeys = JSON.parse(localStorage.getItem('defaultKeys') || '{}')
         while ($('#preference').children()[x]) {
-            const defaultKeys = localStorage.get('defaultKeys')
-            $('#preference').children()[x].children[1].children[1].innerText =
-                defaultKeys[
-                    $('#preference').children()[
-                        x
-                    ].children[1].children[0].innerText
-                ]
+            const command = $('#preference').children()[x]?.children[1]?.children[0]?.innerText
+            const keywordElem = $('#preference').children()[x]?.children[1]?.children[1]
+            if (command && keywordElem && defaultKeys[command] !== undefined) {
+                keywordElem.innerText = defaultKeys[command]
+            }
             x++
         }
     }
@@ -38,12 +36,10 @@ export const updateHTML = (mode) => {
 export const override = (combo) => {
     let x = 0
     while ($('#preference').children()[x]) {
-        if (
-            $('#preference').children()[x].children[1].children[1].innerText ===
-            combo
-        )
-            $('#preference').children()[x].children[1].children[1].innerText =
-                ''
+        const keywordElem = $('#preference').children()[x]?.children[1]?.children[1]
+        if (keywordElem && keywordElem.innerText === combo) {
+            keywordElem.innerText = ''
+        }
         x++
     }
 }

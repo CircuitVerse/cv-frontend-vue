@@ -142,15 +142,22 @@ onUpdated(() => {
 })
 
 function updatePreference(e: MouseEvent) {
+    const target = e.target as HTMLElement
+    const row = target.closest('#preference > div') as HTMLElement | null
+    if (!row) return
+
     pressedKeys.value = ''
     warning.value = ''
-    document.getElementById('edit')!.style.border = 'none'
-    document.getElementById('edit')!.style.display = 'block'
-    document.getElementById('edit')!.focus()
-    ;[, targetPref.value] = e.target!.closest('div')!.children as [
-        HTMLSpanElement,
-        HTMLSpanElement
-    ]
+    const editPanel = document.getElementById('edit')
+    if (editPanel) {
+        editPanel.style.border = 'none'
+        editPanel.style.display = 'block'
+        editPanel.focus()
+    }
+    const keywordSpan = row.children[1]?.children[1] as HTMLSpanElement | undefined
+    if (keywordSpan) {
+        targetPref.value = keywordSpan
+    }
 }
 
 function updateEdit(e: KeyboardEvent) {
