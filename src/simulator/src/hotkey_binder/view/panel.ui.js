@@ -6,28 +6,24 @@ import { setUserKeys } from '../model/actions'
  */
 export const updateHTML = (mode) => {
     let x = 0
-    if (mode == 'user') {
-        const userKeys = localStorage.get('userKeys')
-        while ($('#preference').children()[x]) {
-            $('#preference').children()[x].children[1].children[1].innerText =
-                userKeys[
-                    $('#preference').children()[
-                        x
-                    ].children[1].children[0].innerText
-                ]
-            x++
+    let keys = {}
+    try {
+        const raw = localStorage.getItem(
+            mode === 'user' ? 'userKeys' : 'defaultKeys'
+        )
+        keys = raw ? JSON.parse(raw) : {}
+    } catch {
+        keys = {}
+    }
+    while ($('#preference').children()[x]) {
+        const command =
+            $('#preference').children()[x]?.children[1]?.children[0]?.innerText
+        const keywordElem =
+            $('#preference').children()[x]?.children[1]?.children[1]
+        if (command && keywordElem && keys[command] !== undefined) {
+            keywordElem.innerText = keys[command]
         }
-    } else if (mode == 'default') {
-        while ($('#preference').children()[x]) {
-            const defaultKeys = localStorage.get('defaultKeys')
-            $('#preference').children()[x].children[1].children[1].innerText =
-                defaultKeys[
-                    $('#preference').children()[
-                        x
-                    ].children[1].children[0].innerText
-                ]
-            x++
-        }
+        x++
     }
 }
 /**
@@ -38,12 +34,10 @@ export const updateHTML = (mode) => {
 export const override = (combo) => {
     let x = 0
     while ($('#preference').children()[x]) {
-        if (
-            $('#preference').children()[x].children[1].children[1].innerText ===
-            combo
-        )
-            $('#preference').children()[x].children[1].children[1].innerText =
-                ''
+        const keywordElem = $('#preference').children()[x]?.children[1]?.children[1]
+        if (keywordElem && keywordElem.innerText === combo) {
+            keywordElem.innerText = ''
+        }
         x++
     }
 }

@@ -142,15 +142,22 @@ onUpdated(() => {
 })
 
 function updatePreference(e: MouseEvent) {
+    const target = e.target as HTMLElement
+    const row = target.closest('#preference > div') as HTMLElement | null
+    if (!row) return
+
     pressedKeys.value = ''
     warning.value = ''
-    document.getElementById('edit')!.style.border = 'none'
-    document.getElementById('edit')!.style.display = 'block'
-    document.getElementById('edit')!.focus()
-    ;[, targetPref.value] = e.target!.closest('div')!.children as [
-        HTMLSpanElement,
-        HTMLSpanElement
-    ]
+    const editPanel = document.getElementById('edit')
+    if (editPanel) {
+        editPanel.style.border = 'none'
+        editPanel.style.display = 'block'
+        editPanel.focus()
+    }
+    const keywordSpan = row.children[1]?.children[1] as HTMLSpanElement | undefined
+    if (keywordSpan) {
+        targetPref.value = keywordSpan
+    }
 }
 
 function updateEdit(e: KeyboardEvent) {
@@ -239,16 +246,28 @@ function closeDialog() {
 }
 
 function closeAllDialog() {
-    const editDialogState = document.getElementById('edit')!.style.display
-    if (editDialogState === 'block') {
-        document.getElementById('edit')!.style.display = 'none'
+    const editPanel = document.getElementById('edit')
+    if (editPanel && editPanel.style.display === 'block') {
+        editPanel.style.display = 'none'
     }
-    if (localStorage.userKeys) {
-        updateHTML('user')
-    } else {
-        updateHTML('default')
+    try {
+        if (localStorage.getItem('userKeys')) {
+            try {
+                JSON.parse(localStorage.getItem('userKeys') || '')
+                updateHTML('user')
+            } catch {
+                localStorage.removeItem('userKeys')
+                setDefault()
+                updateHTML('default')
+            }
+        } else {
+            updateHTML('default')
+        }
+    } catch {
+        // Fallback in case of unexpected errors
+    } finally {
+        SimulatorState.dialogBox.customshortcut_dialog = false
     }
-    SimulatorState.dialogBox.customshortcut_dialog = false
 }
 </script>
 
