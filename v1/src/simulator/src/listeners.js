@@ -95,13 +95,7 @@ export default function startListeners() {
 
             if (listenToSimulator) {
                 // If mouse is focusing on input element, then override any action
-                if (
-                    document.activeElement.tagName == 'INPUT' ||
-                    simulationArea.mouseRawX < 0 ||
-                    simulationArea.mouseRawY < 0 ||
-                    simulationArea.mouseRawX > width ||
-                    simulationArea.mouseRawY > height
-                ) {
+                if (document.activeElement.tagName == 'INPUT') {
                     return
                 }
                 // HACK TO REMOVE FOCUS ON PROPERTIES
@@ -119,36 +113,37 @@ export default function startListeners() {
                     simulationArea.controlDown = true
                 }
 
-                // zoom in (+)
-                if (
-                    (simulationArea.controlDown &&
-                        (e.keyCode == 187 || e.keyCode == 171)) ||
-                    e.keyCode == 107
-                ) {
-                    e.preventDefault()
-                    ZoomIn()
-                }
-                // zoom out (-)
-                if (
-                    (simulationArea.controlDown &&
-                        (e.keyCode == 189 || e.keyCode == 173)) ||
-                    e.keyCode == 109
-                ) {
-                    e.preventDefault()
-                    ZoomOut()
-                }
-
-                if (
-                    simulationArea.mouseRawX < 0 ||
-                    simulationArea.mouseRawY < 0 ||
-                    simulationArea.mouseRawX > width ||
-                    simulationArea.mouseRawY > height
-                )
-                    return
-
                 scheduleUpdate(1)
                 updateCanvasSet(true)
                 wireToBeCheckedSet(1)
+
+                if (
+                    !(
+                        simulationArea.mouseRawX < 0 ||
+                        simulationArea.mouseRawY < 0 ||
+                        simulationArea.mouseRawX > width ||
+                        simulationArea.mouseRawY > height
+                    )
+                ) {
+                    // zoom in (+)
+                    if (
+                        (simulationArea.controlDown &&
+                            (e.keyCode == 187 || e.keyCode == 171)) ||
+                        e.keyCode == 107
+                    ) {
+                        e.preventDefault()
+                        ZoomIn()
+                    }
+                    // zoom out (-)
+                    if (
+                        (simulationArea.controlDown &&
+                            (e.keyCode == 189 || e.keyCode == 173)) ||
+                        e.keyCode == 109
+                    ) {
+                        e.preventDefault()
+                        ZoomOut()
+                    }
+                }
 
                 if (
                     simulationArea.lastSelected &&
@@ -194,6 +189,14 @@ export default function startListeners() {
                         return
                     }
                 }
+
+                if (
+                    simulationArea.mouseRawX < 0 ||
+                    simulationArea.mouseRawY < 0 ||
+                    simulationArea.mouseRawX > width ||
+                    simulationArea.mouseRawY > height
+                )
+                    return
 
                 if (e.keyCode == 16) {
                     simulationArea.shiftDown = true
