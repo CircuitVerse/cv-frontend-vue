@@ -29,7 +29,7 @@
                         {{ projectName }}<span></span>
                         <i
                             class="fa fa-trash deleteOfflineProject"
-                            @click="deleteOfflineProject(projectId)"
+                            @click.stop="deleteOfflineProject(projectId)"
                         ></i>
                     </label>
                     <p v-if="Object.keys(projectList).length === 0">
@@ -41,6 +41,7 @@
             <v-card-actions>
                 <v-btn
                     v-if="Object.keys(projectList).length > 0"
+                    :disabled="!selectedProjectId"
                     class="messageBtn"
                     block
                     @click="openProjectOffline()"
@@ -61,44 +62,71 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watchEffect } from 'vue';
+import { ref, watch } from 'vue';
 import load from '#/simulator/src/data/load'
 import { useState } from '#/store/SimulatorStore/state'
+import { confirmOption } from '../helpers/confirmComponent/ConfirmComponent.vue'
 const SimulatorState = useState()
 const projectList = ref<{ [key: string]: string }>({})
 const selectedProjectId = ref<string | null>(null)
 
-watchEffect(() => {
-    if (SimulatorState.dialogBox.open_project_dialog) {
-        const data = localStorage.getItem('projectList');
-        projectList.value = data ? JSON.parse(data) : {};
+watch(
+    () => SimulatorState.dialogBox.open_project_dialog,
+    (isOpen) => {
+        if (isOpen) {
+            selectedProjectId.value = null
+            try {
+                const data = localStorage.getItem('projectList')
+                projectList.value = data ? JSON.parse(data) : {}
+            } catch {
+                projectList.value = {}
+            }
+        }
     }
-});
+)
+
 function closeDialog() {
-    SimulatorState.dialogBox.open_project_dialog = false;
+    selectedProjectId.value = null
+    SimulatorState.dialogBox.open_project_dialog = false
 }
 
-function deleteOfflineProject(id: string) {
+async function deleteOfflineProject(id: string) {
+    const projectName = projectList.value[id] || 'this project'
+    if (!(await confirmOption(`Are you sure you want to delete "${projectName}"?`))) {
+        return
+    }
     localStorage.removeItem(id)
     const data = localStorage.getItem('projectList')
-    const temp = data ? JSON.parse(data) : {}
+    let temp: { [key: string]: string } = {}
+    try {
+        temp = data ? JSON.parse(data) : {}
+    } catch {
+        temp = {}
+    }
     delete temp[id]
     projectList.value = temp
     localStorage.setItem('projectList', JSON.stringify(temp))
-}
-
-function openProjectOffline() {
-    closeDialog();  
-    if (!selectedProjectId.value) return
-    const projectData = localStorage.getItem(selectedProjectId.value)
-    if (projectData) {
-        load(JSON.parse(projectData))
-        window.projectId = selectedProjectId.value
+    if (selectedProjectId.value === id) {
+        selectedProjectId.value = null
     }
 }
 
+function openProjectOffline() {
+    if (!selectedProjectId.value) return
+    const projectData = localStorage.getItem(selectedProjectId.value)
+    if (projectData) {
+        try {
+            load(JSON.parse(projectData))
+            window.projectId = selectedProjectId.value
+        } catch (e) {
+            console.error('Failed to load project:', e)
+        }
+    }
+    closeDialog()
+}
+
 function OpenImportProjectDialog() {
-    closeDialog();
+    closeDialog()
     SimulatorState.dialogBox.import_project_dialog = true
 }
 </script>
