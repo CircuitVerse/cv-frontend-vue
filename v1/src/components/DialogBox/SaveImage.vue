@@ -140,6 +140,7 @@ const resolution: Ref<number> = ref(1)
 const transparent: Ref<boolean> = ref(false)
 const selectedImageType: Ref<string> = ref('png')
 const copyBtnText: Ref<string> = ref('Copy to Clipboard')
+let copyTimer: ReturnType<typeof setTimeout> | null = null
 
 function checkImgType(imageType: string) {
     const isDisabled = imageType.toLowerCase() === 'svg'
@@ -185,6 +186,7 @@ async function copyToClipboard() {
     } catch {
         copyBtnText.value = 'Failed to copy'
     }
-    setTimeout(() => { copyBtnText.value = 'Copy to Clipboard' }, 2000)
+    if (copyTimer) clearTimeout(copyTimer)
+    copyTimer = setTimeout(() => { copyBtnText.value = 'Copy to Clipboard' }, 2000)
 }
 </script>
