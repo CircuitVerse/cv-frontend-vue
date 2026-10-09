@@ -29,6 +29,7 @@
                             'simulator.panel_body.bit_converter.' +
                                 value[1].label
                                     .toLocaleLowerCase()
+                                    .replaceAll('-', '_')
                                     .replaceAll(' ', '_')
                         )
                     }}</label>
