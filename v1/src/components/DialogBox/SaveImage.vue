@@ -103,7 +103,15 @@
                 </div>
             </v-card-text>
             <v-card-actions>
-                <v-btn class="messageBtn" block @click="renderCircuit">
+                <v-btn
+                    v-if="isClipboardSupported"
+                    class="messageBtn"
+                    :disabled="selectedImageType === 'svg'"
+                    @click="copyToClipboard"
+                >
+                    {{ copyBtnText }}
+                </v-btn>
+                <v-btn class="messageBtn" @click="renderCircuit">
                     Render Circuit Image
                 </v-btn>
             </v-card-actions>
@@ -120,6 +128,10 @@ const SimulatorState = useState()
 
 const dialogState = computed(() => SimulatorState.dialogBox)
 
+const isClipboardSupported = computed(() => {
+    return !!(navigator.clipboard && navigator.clipboard.write && window.ClipboardItem)
+})
+
 const imgTypeList: Ref<string[]> = ref(['PNG', 'JPEG', 'WebP', 'SVG', 'BMP', 'GIF', 'TIFF'])
 const toShow: Ref<boolean> = ref(true)
 const toShow1: Ref<boolean> = ref(true)
@@ -127,6 +139,8 @@ const fullImg: Ref<boolean> = ref(false)
 const resolution: Ref<number> = ref(1)
 const transparent: Ref<boolean> = ref(false)
 const selectedImageType: Ref<string> = ref('png')
+const copyBtnText: Ref<string> = ref('Copy to Clipboard')
+let copyTimer: ReturnType<typeof setTimeout> | null = null
 
 function checkImgType(imageType: string) {
     const isDisabled = imageType.toLowerCase() === 'svg'
@@ -153,5 +167,26 @@ function renderCircuit() {
         transparent.value,
         resolution.value
     )
+}
+
+async function copyToClipboard() {
+    try {
+        const dataUrl = generateImage(
+            'png',
+            fullImg.value ? 'full' : 'current',
+            transparent.value,
+            resolution.value,
+            false
+        ) as string
+        const blobPromise = fetch(dataUrl).then((response) => response.blob())
+        await navigator.clipboard.write([
+            new ClipboardItem({ 'image/png': blobPromise }),
+        ])
+        copyBtnText.value = 'Copied!'
+    } catch {
+        copyBtnText.value = 'Failed to copy'
+    }
+    if (copyTimer) clearTimeout(copyTimer)
+    copyTimer = setTimeout(() => { copyBtnText.value = 'Copy to Clipboard' }, 2000)
 }
 </script>
