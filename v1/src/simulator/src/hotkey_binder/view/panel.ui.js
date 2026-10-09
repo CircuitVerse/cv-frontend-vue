@@ -6,26 +6,24 @@ import { setUserKeys } from '../model/actions'
  */
 export const updateHTML = (mode) => {
     let x = 0
-    if (mode == 'user') {
-        const userKeys = JSON.parse(localStorage.getItem('userKeys') || '{}')
-        while ($('#preference').children()[x]) {
-            const command = $('#preference').children()[x]?.children[1]?.children[0]?.innerText
-            const keywordElem = $('#preference').children()[x]?.children[1]?.children[1]
-            if (command && keywordElem && userKeys[command] !== undefined) {
-                keywordElem.innerText = userKeys[command]
-            }
-            x++
+    let keys = {}
+    try {
+        const raw = localStorage.getItem(
+            mode === 'user' ? 'userKeys' : 'defaultKeys'
+        )
+        keys = raw ? JSON.parse(raw) : {}
+    } catch {
+        keys = {}
+    }
+    while ($('#preference').children()[x]) {
+        const command =
+            $('#preference').children()[x]?.children[1]?.children[0]?.innerText
+        const keywordElem =
+            $('#preference').children()[x]?.children[1]?.children[1]
+        if (command && keywordElem && keys[command] !== undefined) {
+            keywordElem.innerText = keys[command]
         }
-    } else if (mode == 'default') {
-        const defaultKeys = JSON.parse(localStorage.getItem('defaultKeys') || '{}')
-        while ($('#preference').children()[x]) {
-            const command = $('#preference').children()[x]?.children[1]?.children[0]?.innerText
-            const keywordElem = $('#preference').children()[x]?.children[1]?.children[1]
-            if (command && keywordElem && defaultKeys[command] !== undefined) {
-                keywordElem.innerText = defaultKeys[command]
-            }
-            x++
-        }
+        x++
     }
 }
 /**

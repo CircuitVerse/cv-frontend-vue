@@ -246,16 +246,28 @@ function closeDialog() {
 }
 
 function closeAllDialog() {
-    const editDialogState = document.getElementById('edit')!.style.display
-    if (editDialogState === 'block') {
-        document.getElementById('edit')!.style.display = 'none'
+    const editPanel = document.getElementById('edit')
+    if (editPanel && editPanel.style.display === 'block') {
+        editPanel.style.display = 'none'
     }
-    if (localStorage.userKeys) {
-        updateHTML('user')
-    } else {
-        updateHTML('default')
+    try {
+        if (localStorage.getItem('userKeys')) {
+            try {
+                JSON.parse(localStorage.getItem('userKeys') || '')
+                updateHTML('user')
+            } catch {
+                localStorage.removeItem('userKeys')
+                setDefault()
+                updateHTML('default')
+            }
+        } else {
+            updateHTML('default')
+        }
+    } catch {
+        // Fallback in case of unexpected errors
+    } finally {
+        SimulatorState.dialogBox.customshortcut_dialog = false
     }
-    SimulatorState.dialogBox.customshortcut_dialog = false
 }
 </script>
 
