@@ -3,6 +3,10 @@ import load from '../src/data/load';
 import circuitData from './circuits/sequential-circuitdata.json';
 import testData from './testData/sequential-testdata.json';
 import { runAll } from '../src/testbench';
+import { verilog } from '../src/verilog';
+import Dlatch from '../src/sequential/Dlatch';
+import JKflipFlop from '../src/sequential/JKflipFlop';
+import SRflipFlop from '../src/sequential/SRflipFlop';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import { createRouter, createWebHistory } from 'vue-router';
@@ -22,6 +26,25 @@ vi.mock('codemirror', async (importOriginal) => {
 vi.mock('codemirror-editor-vue3', () => ({
     defineSimpleMode: vi.fn(),
 }));
+
+const VERILOG_KEYWORDS = new Set([
+    'module',
+    'input',
+    'output',
+    'inout',
+    'wire',
+    'reg',
+    'assign',
+    'parameter',
+    'always',
+    'initial',
+    'integer',
+    'begin',
+    'end',
+    'endmodule',
+    'if',
+    'else',
+]);
 
 describe('Simulator Sequential Element Testing', () => {
     let pinia;
@@ -86,6 +109,25 @@ describe('Simulator Sequential Element Testing', () => {
     test('D latch working', () => {
         const result = runAll(testData.DLatch);
         expect(result.summary.passed).toBe(2);
+    });
+
+    test('Verilog export defines every module it instantiates', () => {
+        new Dlatch(100, 100, globalScope);
+        new JKflipFlop(200, 100, globalScope);
+        new SRflipFlop(300, 100, globalScope);
+
+        const body = verilog.exportVerilog().replace(/\/\*[\s\S]*?\*\//g, '');
+        const defined = new Set(
+            [...body.matchAll(/^\s*module\s+(\w+)/gm)].map((m) => m[1])
+        );
+        const instantiated = [
+            ...new Set(
+                [...body.matchAll(/^\s+(\w+)\s+\w+\s*\(/gm)].map((m) => m[1])
+            ),
+        ].filter((name) => !VERILOG_KEYWORDS.has(name));
+
+        expect(instantiated).toContain('JKflipFlop');
+        expect(instantiated.filter((name) => !defined.has(name))).toEqual([]);
     });
 
     test('JK Flip Flop working', () => {
