@@ -147,6 +147,94 @@ const plotArea = {
             console.error('Error during download:', error);
         }
     },
+    generateCSV() {
+        if (!globalScope || !globalScope.Flag || globalScope.Flag.length === 0) {
+            return ''
+        }
+
+        var escapeCSV = (field) => {
+            if (field === undefined || field === null) return ''
+            var str = String(field)
+            if (/^\s*[=+\-@]/.test(str)) {
+                str = "'" + str
+            }
+            if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
+                str = '"' + str.replace(/"/g, '""') + '"'
+            }
+            return str
+        }
+
+        var flags = globalScope.Flag
+        var timeSet = new Set()
+
+        for (var i = 0; i < flags.length; i++) {
+            var plotValues = flags[i].plotValues
+            for (var j = 0; j < plotValues.length; j++) {
+                timeSet.add(plotValues[j][0])
+            }
+        }
+
+        var times = Array.from(timeSet).sort((a, b) => a - b)
+        var csvRows = []
+
+        var header = [escapeCSV('Time')]
+        for (var i = 0; i < flags.length; i++) {
+            header.push(escapeCSV(flags[i].identifier))
+        }
+        csvRows.push(header.join(','))
+
+        var lastValues = new Array(flags.length).fill(undefined)
+        var flagIndices = new Array(flags.length).fill(0)
+
+        for (var t = 0; t < times.length; t++) {
+            var currentTime = times[t]
+            var row = [escapeCSV(currentTime)]
+
+            for (var i = 0; i < flags.length; i++) {
+                var plotValues = flags[i].plotValues
+                var currentIndex = flagIndices[i]
+
+                if (currentIndex < plotValues.length && plotValues[currentIndex][0] === currentTime) {
+                    lastValues[i] = plotValues[currentIndex][1]
+                    flagIndices[i]++
+                }
+
+                var val = lastValues[i] !== undefined ? lastValues[i] : ''
+                row.push(escapeCSV(val))
+            }
+
+            csvRows.push(row.join(','))
+        }
+
+        return csvRows.join('\n')
+    },
+    downloadAsCSV() {
+        if (isTauri()) {
+            this.downloadCSVDesktop()
+            return
+        }
+
+        var csvContent = this.generateCSV()
+        var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+        var url = URL.createObjectURL(blob)
+        var anchor = document.createElement('a')
+        anchor.href = url
+        anchor.download = 'waveform.csv'
+        anchor.click()
+        URL.revokeObjectURL(url)
+    },
+    async downloadCSVDesktop() {
+        try {
+            const csvContent = this.generateCSV()
+            const encoder = new TextEncoder()
+            const arrayBuffer = encoder.encode(csvContent)
+            const downloadsDirectory = await downloadDir()
+            const path = await join(downloadsDirectory, 'waveform.csv')
+            await writeFile({ path, contents: new Uint8Array(arrayBuffer) })
+        } catch (error) {
+            console.error('Error during CSV download:', error)
+        }
+    },
     // update canvas size to use full screen
     resize() {
         var oldHeight = this.height
