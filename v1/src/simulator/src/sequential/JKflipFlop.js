@@ -151,7 +151,8 @@ export default class JKflipFlop extends CircuitElement {
     static moduleVerilog() {
         return `
 module JKflipFlop(q,q_inv,j,k,clk,rst,pre,en);
-    output reg q,q_inv;
+    output reg q;
+    output wire q_inv;
     input wire j,k,clk,rst,pre,en;
     
     always @(posedge clk) begin
