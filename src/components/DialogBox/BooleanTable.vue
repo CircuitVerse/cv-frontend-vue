@@ -1,26 +1,28 @@
 <template>
-    <table class="content-table">
-        <tbody style="display: block; max-height: 70vh;">
-            <tr>
-                <th v-for="(tableHeading, headIndex) in tableHeader" :key="headIndex">
-                    {{ tableHeading }}
-                </th>
-            </tr>
-            <tr v-for="(tableRow, rowIndex) in tableBody" :key="rowIndex">
-                <th
-                    v-for="(tableElement, colIndex) in tableRow"
-                    :key="colIndex"
-                    :class="{ output: isEditableCell(colIndex) }"
-                    :tabindex="isEditableCell(colIndex) ? 0 : undefined"
-                    :role="isEditableCell(colIndex) ? 'button' : undefined"
-                    @click="isEditableCell(colIndex) && cycleValue(rowIndex, colIndex)"
-                    @keydown.enter.space.prevent="isEditableCell(colIndex) && cycleValue(rowIndex, colIndex)"
-                >
-                    {{ tableElement }}
-                </th>
-            </tr>
-        </tbody>
-    </table>
+    <div class="boolean-table-container">
+        <table class="content-table">
+            <tbody style="display: block; max-height: 70vh;">
+                <tr>
+                    <th v-for="(tableHeading, headIndex) in tableHeader" :key="headIndex">
+                        {{ tableHeading }}
+                    </th>
+                </tr>
+                <tr v-for="(tableRow, rowIndex) in tableBody" :key="rowIndex">
+                    <th
+                        v-for="(tableElement, colIndex) in tableRow"
+                        :key="colIndex"
+                        :class="{ output: isEditableCell(colIndex) }"
+                        :tabindex="isEditableCell(colIndex) ? 0 : undefined"
+                        :role="isEditableCell(colIndex) ? 'button' : undefined"
+                        @click="isEditableCell(colIndex) && cycleValue(rowIndex, colIndex)"
+                        @keydown.enter.space.prevent="isEditableCell(colIndex) && cycleValue(rowIndex, colIndex)"
+                    >
+                        {{ tableElement }}
+                    </th>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </template>
 
 <script lang="ts" setup>
@@ -41,3 +43,25 @@ function cycleValue(rowIndex: number, colIndex: number) {
     ;(props.tableBody[rowIndex] as any[])[colIndex] = next
 }
 </script>
+
+<style scoped>
+.boolean-table-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    overflow-x: auto;
+}
+
+.content-table {
+    margin: 0 auto;
+}
+
+:deep(.content-table tbody) {
+    margin-left: 0 !important;
+    margin: 0 auto;
+}
+
+:deep(.content-table tbody tr) {
+    justify-content: center;
+}
+</style>

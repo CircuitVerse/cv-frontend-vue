@@ -25,8 +25,7 @@
 import { stripTags } from '#/simulator/src/utils'
 import { useState } from '#/store/SimulatorStore/state'
 import messageBox from '@/MessageBox/messageBox.vue'
-import { ref } from 'vue'
-import { onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 
 /* imports from combinationalAnalysis.js */
 import { GenerateCircuit, solveBooleanFunction } from '#/simulator/src/combinationalAnalysis'
@@ -35,6 +34,14 @@ const SimulatorState = useState()
 onMounted(() => {
     SimulatorState.dialogBox.combinationalanalysis_dialog = false
 })
+watch(
+    () => SimulatorState.dialogBox.combinationalanalysis_dialog,
+    (isOpen) => {
+        if (!isOpen) {
+            clearData()
+        }
+    }
+)
 const inputArr = ref([{}])
 const buttonArr = ref([{}])
 const showAlert = ref(false)
@@ -111,7 +118,7 @@ function clearData() {
     inputArr.value[0].val = ''
     inputArr.value[1].val = ''
     inputArr.value[3].val = ''
-    inputArr.value[4].val = ''
+    inputArr.value[4].val = false
     buttonArr.value = buttonArray
     outputListNamesInteger.value = []
     inputListNames.value = []
@@ -127,6 +134,12 @@ function dialogBoxConformation(selectedOption, circuitItem) {
     // use the above value to show tables and later clear it all
     if (selectedOption == 'showLogicTable') {
         createLogicTable()
+    }
+    if (selectedOption == 'backToInputPrompt') {
+        tableHeader.value = []
+        tableBody.value = []
+        output.value = []
+        buttonArr.value = buttonArray
     }
     if (selectedOption == 'closeMessageBox') {
         for (var ind = 0; ind < inputArr.value.length; ind++) {
@@ -293,11 +306,22 @@ function createBooleanPrompt(inputList, outputList, scope = globalScope) {
             text: 'Print Truth Table',
             emitOption: 'printTruthTable',
         },
+        {
+            text: 'Back',
+            emitOption: 'backToInputPrompt',
+        },
+        {
+            text: 'Close',
+            emitOption: 'closeMessageBox',
+        },
     ]
 }
 
 function printBooleanTable() {
-    var sTable = $('.messageBox .v-card-text')[0].innerHTML
+    const textElem = $('.messageBox .v-card-text')[0]
+    if (!textElem) return
+
+    var sTable = textElem.innerHTML
 
     var style =
         `<style>
@@ -306,6 +330,8 @@ function printBooleanTable() {
         tbody {padding: 2px 3px;text-align: center;}
         </style>`.replace(/\n/g, "")
     var win = window.open('', '', 'height=700,width=700')
+    if (!win) return
+
     var htmlBody = `
                        <html><head>\
                        <title>Boolean Logic Table</title>\
