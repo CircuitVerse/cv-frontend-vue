@@ -47,7 +47,7 @@ function cycleValue(rowIndex: number, colIndex: number) {
 <style scoped>
 .boolean-table-container {
     display: flex;
-    justify-content: center;
+    justify-content: safe center;
     width: 100%;
     overflow-x: auto;
 }

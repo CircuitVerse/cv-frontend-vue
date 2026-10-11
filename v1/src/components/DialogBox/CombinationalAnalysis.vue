@@ -167,9 +167,11 @@ function dialogBoxConformation(selectedOption, circuitItem) {
         SimulatorState.dialogBox.combinationalanalysis_dialog = false
     }
     if (selectedOption == 'printTruthTable') {
-        printBooleanTable()
-        clearData()
-        SimulatorState.dialogBox.combinationalanalysis_dialog = false
+        const isSuccess = printBooleanTable()
+        if (isSuccess) {
+            clearData()
+            SimulatorState.dialogBox.combinationalanalysis_dialog = false
+        }
     }
 }
 
@@ -319,7 +321,7 @@ function createBooleanPrompt(inputList, outputList, scope = globalScope) {
 
 function printBooleanTable() {
     const textElem = $('.messageBox .v-card-text')[0]
-    if (!textElem) return
+    if (!textElem) return false
 
     var sTable = textElem.innerHTML
 
@@ -330,7 +332,7 @@ function printBooleanTable() {
         tbody {padding: 2px 3px;text-align: center;}
         </style>`.replace(/\n/g, "")
     var win = window.open('', '', 'height=700,width=700')
-    if (!win) return
+    if (!win) return false
 
     var htmlBody = `
                        <html><head>\
@@ -344,6 +346,7 @@ function printBooleanTable() {
     win.document.write(htmlBody)
     win.document.close()
     win.print()
+    return true
 }
 </script>
 
