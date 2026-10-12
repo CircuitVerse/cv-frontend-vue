@@ -286,6 +286,9 @@ export default class SubCircuit extends CircuitElement implements ICircuitElemen
   reset(): void {
     this.removeConnections();
 
+    this.inputNodes = this.inputNodes.filter((node) => node != undefined);
+    this.outputNodes = this.outputNodes.filter((node) => node != undefined);
+
     const subcircuitScope = scopeList[this.id];
 
     for (let i = 0; i < subcircuitScope.SubCircuit.length; i++) {

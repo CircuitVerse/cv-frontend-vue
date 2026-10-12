@@ -277,7 +277,6 @@ export default class SubCircuit extends CircuitElement {
   reset(): void {
     this.removeConnections();
 
-    // Defend against stale undefined entries left over from corrupted save data.
     this.inputNodes = this.inputNodes.filter((node) => node != undefined);
     this.outputNodes = this.outputNodes.filter((node) => node != undefined);
 
