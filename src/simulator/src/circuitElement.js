@@ -544,21 +544,25 @@ export default class CircuitElement {
      * NOT OVERRIDABLE
      */
     draw() {
-        //
-        var ctx = simulationArea.context
-        this.checkHover()
+        var canvasWidth = simulationArea.canvas ? simulationArea.canvas.width : width
+        var canvasHeight = simulationArea.canvas ? simulationArea.canvas.height : height
 
         if (
             this.x * this.scope.scale + this.scope.ox <
-                -this.rightDimensionX * this.scope.scale - 0 ||
+                -this.rightDimensionX * this.scope.scale ||
             this.x * this.scope.scale + this.scope.ox >
-                width + this.leftDimensionX * this.scope.scale + 0 ||
+                canvasWidth + this.leftDimensionX * this.scope.scale ||
             this.y * this.scope.scale + this.scope.oy <
-                -this.downDimensionY * this.scope.scale - 0 ||
+                -this.downDimensionY * this.scope.scale ||
             this.y * this.scope.scale + this.scope.oy >
-                height + 0 + this.upDimensionY * this.scope.scale
-        )
+                canvasHeight + this.upDimensionY * this.scope.scale
+        ) {
+            this.hover = false
             return
+        }
+
+        var ctx = simulationArea.context
+        this.checkHover()
 
         // Draws rectangle and highlights
         if (this.rectangleObject) {
