@@ -139,9 +139,6 @@ export default class SubCircuit extends CircuitElement implements ICircuitElemen
       this.labelDirection = this.savedData.labelDirection || "RIGHT";
       for (let i = 0; i < this.savedData.inputNodes.length; i++) {
         const idx = this.savedData.inputNodes[i];
-        // Reject anything that isn't a valid in-range array index (e.g. a stale
-        // index from corrupted save data, or a crafted "__proto__" string that
-        // would otherwise resolve to Array.prototype instead of undefined).
         if (!Number.isInteger(idx) || idx < 0 || idx >= this.scope.allNodes.length) {
           continue;
         }
