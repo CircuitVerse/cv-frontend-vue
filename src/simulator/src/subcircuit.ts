@@ -130,23 +130,26 @@ export default class SubCircuit extends CircuitElement {
       this.labelDirection = this.savedData.labelDirection || "RIGHT";
       for (let i = 0; i < this.savedData.inputNodes.length; i++) {
         const idx = this.savedData.inputNodes[i];
+        // Reject anything that isn't a valid in-range array index (e.g. a stale
+        // index from corrupted save data, or a crafted "__proto__" string that
+        // would otherwise resolve to Array.prototype instead of undefined).
         if (!Number.isInteger(idx) || idx < 0 || idx >= this.scope.allNodes.length) {
           continue;
         }
-        const node = this.scope.allNodes[idx];
-        this.inputNodes.push(node);
-        node.parent = this;
-        node.layout_id = subcircuitScope.Input[i]?.layoutProperties.id;
+        this.inputNodes.push(this.scope.allNodes[idx]);
+        this.inputNodes[this.inputNodes.length - 1].parent = this;
+        this.inputNodes[this.inputNodes.length - 1].layout_id =
+          subcircuitScope.Input[i]?.layoutProperties.id;
       }
       for (let i = 0; i < this.savedData.outputNodes.length; i++) {
         const idx = this.savedData.outputNodes[i];
         if (!Number.isInteger(idx) || idx < 0 || idx >= this.scope.allNodes.length) {
           continue;
         }
-        const node = this.scope.allNodes[idx];
-        this.outputNodes.push(node);
-        node.parent = this;
-        node.layout_id = subcircuitScope.Output[i]?.layoutProperties.id;
+        this.outputNodes.push(this.scope.allNodes[idx]);
+        this.outputNodes[this.outputNodes.length - 1].parent = this;
+        this.outputNodes[this.outputNodes.length - 1].layout_id =
+          subcircuitScope.Output[i]?.layoutProperties.id;
       }
       if (this.version == "1.0") {
         // For backward compatibility
