@@ -3,11 +3,11 @@
  * @category eventQueue
  */
 
-interface QueueObject {
+export interface QueueObject {
   queueProperties: {
     inQueue: boolean;
-    time: number;
-    index: number;
+    time: number | undefined;
+    index: number | undefined;
   };
   propagationDelay: number;
 }
@@ -24,18 +24,18 @@ export class EventQueue {
     this.time = 0;
   }
 
-  add(obj: QueueObject, delay: number) {
+  add(obj: QueueObject, delay?: number) {
     if (obj.queueProperties.inQueue) {
       obj.queueProperties.time = this.time + (delay || obj.propagationDelay);
-      let i = obj.queueProperties.index;
-      while (i > 0 && obj.queueProperties.time > this.queue[i - 1].queueProperties.time) {
+      let i = obj.queueProperties.index!;
+      while (i > 0 && obj.queueProperties.time > this.queue[i - 1].queueProperties.time!) {
         this.swap(i, i - 1);
         i--;
       }
-      i = obj.queueProperties.index;
+      i = obj.queueProperties.index!;
       while (
         i < this.frontIndex - 1 &&
-        obj.queueProperties.time < this.queue[i + 1].queueProperties.time
+        obj.queueProperties.time < this.queue[i + 1].queueProperties.time!
       ) {
         this.swap(i, i + 1);
         i++;
@@ -50,7 +50,7 @@ export class EventQueue {
     this.frontIndex++;
     obj.queueProperties.inQueue = true;
     let i = obj.queueProperties.index;
-    while (i > 0 && obj.queueProperties.time > this.queue[i - 1].queueProperties.time) {
+    while (i > 0 && obj.queueProperties.time > this.queue[i - 1].queueProperties.time!) {
       this.swap(i, i - 1);
       i--;
     }
@@ -90,7 +90,7 @@ export class EventQueue {
 
     this.frontIndex--;
     const obj = this.queue[this.frontIndex];
-    this.time = obj.queueProperties.time;
+    this.time = obj.queueProperties.time!;
     obj.queueProperties.inQueue = false;
     return obj;
   }
