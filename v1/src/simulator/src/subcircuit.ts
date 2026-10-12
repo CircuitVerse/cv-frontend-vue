@@ -137,15 +137,23 @@ export default class SubCircuit extends CircuitElement implements ICircuitElemen
       this.id = this.savedData.id;
       this.label = this.savedData.label || "";
       this.labelDirection = this.savedData.labelDirection || "RIGHT";
-      for (let i = 0; i < this.savedData.inputNodes.length; i++) {
-        this.inputNodes.push(this.scope.allNodes[this.savedData.inputNodes[i]]);
-        this.inputNodes[i].parent = this;
-        this.inputNodes[i].layout_id = subcircuitScope.Input[i]?.layoutProperties.id;
+      for (let i = 0, k = 0; i < this.savedData.inputNodes.length; i++) {
+        const node = this.scope.allNodes[this.savedData.inputNodes[i]];
+        if (node == undefined) {
+          continue;
+        }
+        this.inputNodes.push(node);
+        node.parent = this;
+        node.layout_id = subcircuitScope.Input[k++]?.layoutProperties.id;
       }
-      for (let i = 0; i < this.savedData.outputNodes.length; i++) {
-        this.outputNodes.push(this.scope.allNodes[this.savedData.outputNodes[i]]);
-        this.outputNodes[i].parent = this;
-        this.outputNodes[i].layout_id = subcircuitScope.Output[i]?.layoutProperties.id;
+      for (let i = 0, k = 0; i < this.savedData.outputNodes.length; i++) {
+        const node = this.scope.allNodes[this.savedData.outputNodes[i]];
+        if (node == undefined) {
+          continue;
+        }
+        this.outputNodes.push(node);
+        node.parent = this;
+        node.layout_id = subcircuitScope.Output[k++]?.layoutProperties.id;
       }
       if (this.version == "1.0") {
         // For backward compatibility
