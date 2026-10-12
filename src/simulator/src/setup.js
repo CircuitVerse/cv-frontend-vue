@@ -162,6 +162,10 @@ async function fetchProjectData(projectId) {
         )
         if (response.ok) {
             const data = await response.json()
+            if (!data) {
+                fadeOutLoadingIcons()
+                return
+            }
             await load(data)
             await simulationArea.changeClockTime(data.timePeriod || 500)
             fadeOutLoadingIcons()
