@@ -428,9 +428,7 @@ export function play(scope: Scope | any = globalScope, resetNodes: boolean = fal
       simulationArea.simulationQueue.reset();
       return;
     }
-    elem = simulationArea.simulationQueue.pop() as QueueObject & {
-    	resolve(): void;
-    };
+    elem = simulationArea.simulationQueue.pop();
 
     elem.resolve();
 
