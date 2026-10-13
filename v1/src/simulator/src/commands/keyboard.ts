@@ -88,10 +88,6 @@ export function handleSimulatorKeyDown(e: KeyboardEvent): void {
     redo();
   }
 
-  // If mouse is focusing on input element, then override any action
-  if (isPointerOutsideCanvas()) {
-    return;
-  }
   // HACK TO REMOVE FOCUS ON PROPERTIES
   if ((document.activeElement as HTMLInputElement | null)?.type == "number") {
     hideProperties();
@@ -107,22 +103,28 @@ export function handleSimulatorKeyDown(e: KeyboardEvent): void {
     simulationArea.controlDown = true;
   }
 
-  // zoom in (+)
-  if ((simulationArea.controlDown && (e.keyCode == 187 || e.keyCode == 171)) || e.keyCode == 107) {
-    e.preventDefault();
-    ZoomIn();
-  }
-  // zoom out (-)
-  if ((simulationArea.controlDown && (e.keyCode == 189 || e.keyCode == 173)) || e.keyCode == 109) {
-    e.preventDefault();
-    ZoomOut();
-  }
-
-  if (isPointerOutsideCanvas()) return;
-
   scheduleUpdate(1);
   updateCanvasSet(true);
   wireToBeCheckedSet(1);
+
+  if (!isPointerOutsideCanvas()) {
+    // zoom in (+)
+    if (
+      (simulationArea.controlDown && (e.keyCode == 187 || e.keyCode == 171)) ||
+      e.keyCode == 107
+    ) {
+      e.preventDefault();
+      ZoomIn();
+    }
+    // zoom out (-)
+    if (
+      (simulationArea.controlDown && (e.keyCode == 189 || e.keyCode == 173)) ||
+      e.keyCode == 109
+    ) {
+      e.preventDefault();
+      ZoomOut();
+    }
+  }
 
   const lastSelected = simulationArea.lastSelected as SelectedLike | null | undefined;
 
@@ -158,6 +160,10 @@ export function handleSimulatorKeyDown(e: KeyboardEvent): void {
       return;
     }
   }
+
+  // Component keys above work wherever the pointer is; the canvas shortcuts
+  // below only apply while the pointer is over the canvas.
+  if (isPointerOutsideCanvas()) return;
 
   if (e.keyCode == 16) {
     simulationArea.shiftDown = true;
