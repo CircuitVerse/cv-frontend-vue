@@ -2,6 +2,7 @@ import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
 import { simulationArea } from '../simulationArea'
 import { fillText4 } from '../canvasApi'
+import type { QueueObject } from '../eventQueue'
 /**
  * @class
  * ForceGate
@@ -14,7 +15,12 @@ import { fillText4 } from '../canvasApi'
  * @category testbench
  */
 export default class ForceGate extends CircuitElement {
-    constructor(x, y, scope = globalScope, dir = 'RIGHT', bitWidth = 1) {
+    inp1: Node
+    inp2: Node
+    output1: Node
+    declare tooltipText: string
+
+    constructor(x: number, y: number, scope = globalScope, dir = 'RIGHT', bitWidth = 1) {
         super(x, y, scope, dir, bitWidth)
         this.setDimensions(20, 10)
         this.objectType = 'ForceGate'
@@ -60,7 +66,7 @@ export default class ForceGate extends CircuitElement {
         } else {
             this.output1.value = this.inp1.value
         }
-        simulationArea.simulationQueue.add(this.output1)
+        simulationArea.simulationQueue.add(this.output1 as QueueObject)
     }
 
     /**
@@ -69,6 +75,7 @@ export default class ForceGate extends CircuitElement {
      */
     customDraw() {
         var ctx = simulationArea.context
+        if (!ctx) return
         const xx = this.x
         const yy = this.y
 
