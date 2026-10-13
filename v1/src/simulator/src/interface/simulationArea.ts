@@ -3,6 +3,7 @@ import type { ICircuitElement } from "../types/circuitElement.types";
 import type Wire from "../wire";
 import type Node from "../node";
 import type LayoutNode from "../layout/layoutNode";
+import ContentionPendingData from "../contention";
 
 /** Anything that can be selected/hovered on the canvas. */
 export type SelectableElement = ICircuitElement | Wire | Node | LayoutNode;
@@ -50,4 +51,5 @@ export interface SimulationArea {
   setup: () => void;
   changeClockTime: (t: number) => void;
   clear: () => void;
+  contentionPending: ContentionPendingData;
 }
