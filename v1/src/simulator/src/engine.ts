@@ -189,7 +189,7 @@ export function errorDetectedGet() {
  * @property {number} string - the message
  * @category engine
  */
-export var canvasMessageData = {
+export var canvasMessageData: { x?: number; y?: number; string?: string } = {
   x: undefined,
   y: undefined,
   string: undefined,
@@ -275,7 +275,9 @@ export function renderCanvas(scope: Scope) {
     }
   }
   // Show any message
-  if (canvasMessageData.string !== undefined) {
+  if (canvasMessageData.x !== undefined && 
+  canvasMessageData.y !== undefined &&
+  canvasMessageData.string !== undefined) {
     canvasMessage(ctx, canvasMessageData.string, canvasMessageData.x, canvasMessageData.y);
   }
   // If multiple object selections are going on, show selected area
