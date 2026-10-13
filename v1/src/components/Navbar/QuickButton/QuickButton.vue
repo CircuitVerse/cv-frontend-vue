@@ -103,6 +103,14 @@ function dragover(): void {
 }
 
 .quick-btn {
+    display: flex;
+    position: absolute;
+    width: 400px;
+    height: 33px;
+    top: 10px;
+    right: 280px;
+    border-radius: 7px;
+    z-index: 100;
   display: flex;
   position: absolute;
   width: 400px;
