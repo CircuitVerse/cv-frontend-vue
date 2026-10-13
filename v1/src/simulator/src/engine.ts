@@ -528,7 +528,7 @@ export function update(scope: Scope | any = globalScope, updateEverything: boole
   if (updatePosition || updateEverything) {
     for (let i = 0; i < updateOrder.length; i++) {
       for (let j = 0; j < (scope as any)[updateOrder[i]].length; j++) {
-        updated |= (scope as any)[updateOrder[i]][j].update();
+        updated = Boolean((scope as any)[updateOrder[i]][j].update() || updated);
       }
     }
   }
