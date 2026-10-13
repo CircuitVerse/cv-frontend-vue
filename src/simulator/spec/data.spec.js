@@ -15,6 +15,7 @@ import {
     openOffline,
 } from '../src/data/project';
 import createSaveAsImgPrompt from '../src/data/saveImage';
+import { nextTick } from 'vue';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import simulator from '#/pages/simulatorHandler.vue';
@@ -166,5 +167,14 @@ describe('data dir working', () => {
 
     test('saveImage working', () => {
         expect(() => createSaveAsImgPrompt()).not.toThrow();
+    });
+
+    test('render image dialog only offers formats the canvas can produce', async () => {
+        createSaveAsImgPrompt();
+        await nextTick();
+        const formats = Array.from(
+            document.querySelectorAll('input[name="imgType"]')
+        ).map((input) => input.value);
+        expect(formats).toEqual(['png', 'jpeg', 'svg']);
     });
 });
