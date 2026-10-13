@@ -1,10 +1,10 @@
 <template>
   <div v-if="store.isHoverVisible" class="alert alert-danger">
-    The element has been restricted by mentor. Usage might lead to deduction in marks.
+    {{ $t('simulator.restricted_element_notice') }}
   </div>
   <div v-if="usedElements.length > 0" id="restrictedElementsDiv" class="alert alert-danger">
-    <span style="font-style: italic">Restricted elements used: </span>
-    <span>{{ store.usedElements.join(', ') || 'None' }}</span>
+    <span style="font-style: italic">{{ $t('simulator.restricted_elements_used') }} </span>
+    <span>{{ usedElements.join(', ') }}</span>
   </div>
 </template>
 
