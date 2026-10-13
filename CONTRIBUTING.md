@@ -21,7 +21,9 @@ This repository hosts two simulator versions:
 - **v0** (`v0/`, served from `src/`): stable production version.
 - **v1** (`v1/`): experimental version where new features land and the JavaScript-to-TypeScript migration happens.
 
-New simulator work should target **v1** unless the bug also affects production v0.
+New simulator work follows this rule: **v0 accepts bug fixes only — all new
+features go to v1 alone.** If a bug affects both versions, fix it in both;
+otherwise target **v1**.
 
 ### ⚠️ Windows users (important)
 
@@ -118,6 +120,19 @@ A large part of `v1/src/simulator` is still JavaScript. When picking up a `JS to
 - Avoid `as unknown as`; it defeats the purpose of TypeScript.
 - Don't include file extensions in imports (`./node`, not `./node.ts`).
 - Ensure files importing the converted module still typecheck, and behaviour is unchanged (`npm run test:v1`).
+
+## AI Assistance Policy
+
+You may use AI assistance under these conditions:
+
+- Read and understand every line of code before submitting it.
+- Verify the change by running it in the development environment.
+- Attach before-and-after screenshots for any visual change.
+- Write issue and pull request titles and descriptions yourself, following the
+  issue/pull request templates — do not paste AI-generated content into them.
+- Fill out the AI-assistance section of the pull request template honestly.
+
+AI-generated contributions will not be counted toward Google Summer of Code (GSoC).
 
 ## Commit Convention
 
