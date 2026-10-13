@@ -179,6 +179,63 @@ export default class ALU extends CircuitElement {
             simulationArea.simulationQueue.add(this.carryOut)
         }
     }
+    static moduleVerilog() {
+        return `
+module ALU(cout, out, a, b, ctr);
+    parameter WIDTH = 1;
+    input  [WIDTH-1:0]a;
+    input  [WIDTH-1:0]b;
+    input  [2:0] ctr;
+    output reg [WIDTH-1:0]out;
+    output reg cout;
+
+    wire [WIDTH:0] sum = a + b;
+    wire [WIDTH-1:0]notb = ~b;
+
+    always @(*) begin
+        case (ctr)
+            3'b000: begin // a & b
+                out = a & b;
+                cout = 0;
+            end
+            3'b001: begin // a | b
+                out = a | b;
+                cout = 0;
+            end
+            3'b010: begin // a + b
+                out = sum[WIDTH-1:0];
+                cout = sum[WIDTH];
+            end
+            3'b011: begin
+                // 3'b011 is Reserved: "ALU"
+                // No assignment: previous values are preserved
+            end
+            3'b100: begin // a & ~b
+                out = a & notb;
+                cout = 0;
+            end
+            3'b101: begin // a | ~b
+                out = a | notb;
+                cout = 0;
+            end
+            3'b110: begin // a - b
+                out = (a - b) & {WIDTH{1'b1}};  // Masked to avoid truncation failure
+                cout = 0;
+            end
+            3'b111: begin // a < b
+                out = (a < b) ? {{(WIDTH-1){1'b0}}, 1'b1} : {WIDTH{1'b0}};
+                // out = (a < b) ? 1 : 0; the above is written for multi-width handling
+                cout = 0;
+            end
+            default: begin
+                out = 0;
+                cout = 0;
+            end
+        endcase
+    end
+endmodule
+    `
+    }
 }
 
 /**
