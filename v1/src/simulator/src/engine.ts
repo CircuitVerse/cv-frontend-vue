@@ -15,6 +15,7 @@ import { resetup } from "./setup";
 import { verilogModeGet } from "./Verilog2CV";
 import { renderOrder, updateOrder } from "./metadata";
 import ContentionPendingData from "./contention";
+import { QueueObject } from "./eventQueue";
 
 /**
  * Core of the simulation and rendering algorithm.
@@ -425,7 +426,9 @@ export function play(scope: Scope | any = globalScope, resetNodes: boolean = fal
       simulationArea.simulationQueue.reset();
       return;
     }
-    elem = simulationArea.simulationQueue.pop();
+    elem = simulationArea.simulationQueue.pop() as QueueObject & {
+    	resolve(): void;
+    };
 
     elem.resolve();
 
