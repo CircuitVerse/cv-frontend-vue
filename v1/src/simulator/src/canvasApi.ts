@@ -115,7 +115,7 @@ export function fitToSelection(selected: any[]) {
 // Function used to change the zoom level wrt to a point
 // fn to change scale (zoom) - It also shifts origin so that the position
 // of the object in focus doesn't change
-export function changeScale(delta: number, xx: any, yy: any, method: number = 1) {
+export function changeScale(delta: number, xx?: any, yy?: any, method: number = 1) {
   // method = 3/2 - Zoom wrt center of screen
   // method = 1 - Zoom wrt position of mouse
   // Otherwise zoom wrt to selected object
