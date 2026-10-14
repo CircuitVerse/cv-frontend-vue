@@ -1,11 +1,11 @@
-import CircuitElement from '../circuitElement'
-import Node, { findNode } from '../node'
-import { simulationArea } from '../simulationArea'
-import { correctWidth, lineTo, moveTo, fillText } from '../canvasApi'
-import { colors } from '../themer/themer'
-import Scope from '../circuit'
+import CircuitElement from "../circuitElement";
+import Node, { findNode } from "../node";
+import { simulationArea } from "../simulationArea";
+import { correctWidth, lineTo, moveTo, fillText } from "../canvasApi";
+import { colors } from "../themer/themer";
+import Scope from "../circuit";
 
-declare let globalScope: Scope
+declare let globalScope: Scope;
 
 /**
  * @class
@@ -22,106 +22,105 @@ declare let globalScope: Scope
  * @category sequential
  */
 export default class Dlatch extends CircuitElement {
-    declare tooltipText: string
-    declare helplink: string
-    clockInp: Node
-    dInp: Node
-    qOutput: Node
-    qInvOutput: Node
-    state: number
-    prevClockState: number
-    wasClicked: boolean
+  declare tooltipText: string;
+  declare helplink: string;
+  clockInp: Node;
+  dInp: Node;
+  qOutput: Node;
+  qInvOutput: Node;
+  state: number;
+  prevClockState: number;
+  wasClicked: boolean;
 
-    constructor(
-        x: number,
-        y: number,
-        scope: Scope = globalScope,
-        dir: string = 'RIGHT',
-        bitWidth: number = 1,
-    ) {
-        super(x, y, scope, dir, bitWidth)
-        this.directionFixed = true
-        this.setDimensions(20, 20)
-        this.rectangleObject = true
-        this.clockInp = new Node(-20, +10, 0, this, 1, 'Clock')
-        this.dInp = new Node(-20, -10, 0, this, this.bitWidth, 'D')
-        this.qOutput = new Node(20, -10, 1, this, this.bitWidth, 'Q')
-        this.qInvOutput = new Node(20, 10, 1, this, this.bitWidth, 'Q Inverse')
-        this.state = 0
-        this.prevClockState = 0
-        this.wasClicked = false
+  constructor(
+    x: number,
+    y: number,
+    scope: Scope = globalScope,
+    dir: string = "RIGHT",
+    bitWidth: number = 1,
+  ) {
+    super(x, y, scope, dir, bitWidth);
+    this.directionFixed = true;
+    this.setDimensions(20, 20);
+    this.rectangleObject = true;
+    this.clockInp = new Node(-20, +10, 0, this, 1, "Clock");
+    this.dInp = new Node(-20, -10, 0, this, this.bitWidth, "D");
+    this.qOutput = new Node(20, -10, 1, this, this.bitWidth, "Q");
+    this.qInvOutput = new Node(20, 10, 1, this, this.bitWidth, "Q Inverse");
+    this.state = 0;
+    this.prevClockState = 0;
+    this.wasClicked = false;
+  }
+
+  /**
+   * Idea: should be D FF?
+   */
+  isResolvable(): boolean {
+    if (this.clockInp.value != undefined && this.dInp.value != undefined) return true;
+    return false;
+  }
+
+  newBitWidth(bitWidth: number): void {
+    this.bitWidth = bitWidth;
+    this.dInp.bitWidth = bitWidth;
+    this.qOutput.bitWidth = bitWidth;
+    this.qInvOutput.bitWidth = bitWidth;
+  }
+
+  /**
+   * @memberof Dlatch
+   * when the clock input is high we update the state
+   * qOutput is set to the state
+   */
+  resolve(): void {
+    if (this.clockInp.value == 1 && this.dInp.value != undefined) {
+      this.state = this.dInp.value;
     }
 
-    /**
-     * Idea: should be D FF?
-     */
-    isResolvable(): boolean {
-        if (this.clockInp.value != undefined && this.dInp.value != undefined)
-            return true
-        return false
+    if (this.qOutput.value != this.state) {
+      this.qOutput.value = this.state;
+      this.qInvOutput.value = this.flipBits(this.state);
+      simulationArea.simulationQueue.add(this.qOutput);
+      simulationArea.simulationQueue.add(this.qInvOutput);
     }
+  }
 
-    newBitWidth(bitWidth: number): void {
-        this.bitWidth = bitWidth
-        this.dInp.bitWidth = bitWidth
-        this.qOutput.bitWidth = bitWidth
-        this.qInvOutput.bitWidth = bitWidth
-    }
+  customSave() {
+    const data = {
+      nodes: {
+        clockInp: findNode(this.clockInp),
+        dInp: findNode(this.dInp),
+        qOutput: findNode(this.qOutput),
+        qInvOutput: findNode(this.qInvOutput),
+      },
+      constructorParamaters: [this.direction, this.bitWidth],
+    };
+    return data;
+  }
 
-    /**
-     * @memberof Dlatch
-     * when the clock input is high we update the state
-     * qOutput is set to the state
-     */
-    resolve(): void {
-        if (this.clockInp.value == 1 && this.dInp.value != undefined) {
-            this.state = this.dInp.value
-        }
-
-        if (this.qOutput.value != this.state) {
-            this.qOutput.value = this.state
-            this.qInvOutput.value = this.flipBits(this.state)
-            simulationArea.simulationQueue.add(this.qOutput)
-            simulationArea.simulationQueue.add(this.qInvOutput)
-        }
-    }
-
-    customSave() {
-        const data = {
-            nodes: {
-                clockInp: findNode(this.clockInp),
-                dInp: findNode(this.dInp),
-                qOutput: findNode(this.qOutput),
-                qInvOutput: findNode(this.qInvOutput),
-            },
-            constructorParamaters: [this.direction, this.bitWidth],
-        }
-        return data
-    }
-
-    customDraw(): void {
-        const ctx = simulationArea.context
-        if (!ctx) return
-        ctx.strokeStyle = colors['stroke']
-        ctx.fillStyle = colors['fill']
-        ctx.beginPath()
-        ctx.lineWidth = correctWidth(3)
-        const xx = this.x
-        const yy = this.y
-        moveTo(ctx, -20, 5, xx, yy, this.direction)
-        lineTo(ctx, -15, 10, xx, yy, this.direction)
-        lineTo(ctx, -20, 15, xx, yy, this.direction)
-        ctx.stroke()
-        ctx.beginPath()
-        ctx.font = '20px Raleway'
-        ctx.fillStyle = colors['input_text']
-        ctx.textAlign = 'center'
-        fillText(ctx, this.state.toString(16), xx, yy + 5)
-        ctx.fill()
-    }
+  customDraw(): void {
+    const ctx = simulationArea.context;
+    if (!ctx) return;
+    ctx.strokeStyle = colors["stroke"];
+    ctx.fillStyle = colors["fill"];
+    ctx.beginPath();
+    ctx.lineWidth = correctWidth(3);
+    const xx = this.x;
+    const yy = this.y;
+    moveTo(ctx, -20, 5, xx, yy, this.direction);
+    lineTo(ctx, -15, 10, xx, yy, this.direction);
+    lineTo(ctx, -20, 15, xx, yy, this.direction);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.font = "20px Raleway";
+    ctx.fillStyle = colors["input_text"];
+    ctx.textAlign = "center";
+    fillText(ctx, this.state.toString(16), xx, yy + 5);
+    ctx.fill();
+  }
 }
 
-Dlatch.prototype.tooltipText = 'D Latch : Single input Flip flop or D FlipFlop'
+Dlatch.prototype.tooltipText = "D Latch : Single input Flip flop or D FlipFlop";
 Dlatch.prototype.helplink =
-    'https://docs.circuitverse.org/chapter4/chapter4-sequentialelements/#d-latch'
-Dlatch.prototype.objectType = 'Dlatch'
+  "https://docs.circuitverse.org/chapter4/chapter4-sequentialelements/#d-latch";
+Dlatch.prototype.objectType = "Dlatch";
