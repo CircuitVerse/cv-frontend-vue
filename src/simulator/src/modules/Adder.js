@@ -82,7 +82,8 @@ export default class Adder extends CircuitElement {
         const sum = this.inpA.value + this.inpB.value + carryIn
 
         this.sum.value = (sum << (32 - this.bitWidth)) >>> (32 - this.bitWidth)
-        this.carryOut.value = +(sum >>> this.bitWidth !== 0)
+        // `>>> 32` is a no-op in JS, so compare against the range instead
+        this.carryOut.value = +(sum >= 2 ** this.bitWidth)
         simulationArea.simulationQueue.add(this.carryOut)
         simulationArea.simulationQueue.add(this.sum)
     }
