@@ -148,6 +148,9 @@ var uniqueIdCounter = 10
  * @category node
  */
 export default class Node {
+    /**
+     * @param {number | undefined} [bitWidth] - defaults to the parent's bitWidth
+     */
     constructor(x, y, type, parent, bitWidth = undefined, label = '') {
         // Should never raise, but just in case
         if (isNaN(x) || isNaN(y)) {
@@ -199,6 +202,9 @@ export default class Node {
         this.prev = 'a'
         this.count = 0
         this.highlighted = false
+        // Type-only declaration, set during Verilog export (see processVerilog)
+        /** @type {string | undefined} */
+        this.verilogLabel
 
         // This fn is called during rotations and setup
         this.refresh()
@@ -209,6 +215,7 @@ export default class Node {
 
         this.parent.scope.allNodes.push(this)
 
+        /** @type {{inQueue: boolean, time: number | undefined, index: number | undefined}} */
         this.queueProperties = {
             inQueue: false,
             time: undefined,
