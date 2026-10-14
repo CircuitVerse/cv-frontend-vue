@@ -9,6 +9,20 @@ import { getOS } from "./utils";
 import { shortcut } from "./shortcuts.plugin";
 
 import { KeyMap } from "./model.types";
+import type { ICircuitElement } from "../../types/circuitElement.types";
+import type { Direction } from "../../types/canonical.types";
+import type { SelectableElement } from "../../interface/simulationArea";
+
+const isCircuitElement = (
+  element: SelectableElement | null | undefined,
+): element is ICircuitElement => {
+  return Boolean(
+    element &&
+    element.objectType !== "Wire" &&
+    element.objectType !== "Node" &&
+    element.objectType !== "LayoutNode",
+  );
+};
 
 type DirectionType = "up" | "down" | "left" | "right";
 
@@ -225,8 +239,8 @@ const setEditElementBorder = (color: string): void => {
  * Update element direction
  */
 export const elementDirection = (direct: string) => (): void => {
-  if (simulationArea.lastSelected) {
-    simulationArea.lastSelected.newDirection(direct.toUpperCase());
+  if (isCircuitElement(simulationArea.lastSelected)) {
+    simulationArea.lastSelected.newDirection(direct.toUpperCase() as Direction);
     updateSelectElement("select[name^='newDirection']", direct.toUpperCase());
     updateSystem();
   }
@@ -236,8 +250,11 @@ export const elementDirection = (direct: string) => (): void => {
  * Update label direction
  */
 export const labelDirection = (direct: string) => (): void => {
-  if (simulationArea.lastSelected && !simulationArea.lastSelected.labelDirectionFixed) {
-    simulationArea.lastSelected.labelDirection = direct.toUpperCase();
+  if (
+    isCircuitElement(simulationArea.lastSelected) &&
+    !simulationArea.lastSelected.labelDirectionFixed
+  ) {
+    simulationArea.lastSelected.labelDirection = direct.toUpperCase() as Direction;
     updateSelectElement("select[name^='newLabelDirection']", direct.toUpperCase());
     updateSystem();
   }
@@ -281,11 +298,12 @@ const focusAndSetLabel = (labelInput: HTMLInputElement): void => {
  * Move element in a specific direction
  */
 export const moveElement = (direct: DirectionType) => (): void => {
-  if (simulationArea.lastSelected) {
-    const { x, y } = simulationArea.lastSelected;
+  const selected = simulationArea.lastSelected;
+  if (selected && "x" in selected && "y" in selected) {
+    const { x, y } = selected;
     const newPosition = calculateNewPosition(direct, x, y);
-    simulationArea.lastSelected.x = newPosition.x;
-    simulationArea.lastSelected.y = newPosition.y;
+    selected.x = newPosition.x;
+    selected.y = newPosition.y;
     updateSystem();
   }
 };
@@ -321,7 +339,8 @@ export const openHotkey = (): void => {
  * Open documentation
  */
 export const openDocumentation = (): void => {
-  const url = simulationArea.lastSelected?.helplink || "https://docs.circuitverse.org/";
+  const selected = simulationArea.lastSelected;
+  const url = (isCircuitElement(selected) && selected.helplink) || "https://docs.circuitverse.org/";
   window.open(url, "_blank");
 };
 
