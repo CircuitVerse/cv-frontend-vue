@@ -355,9 +355,20 @@ export var verilog = {
 
         // Generate connection verilog code and module instantiations
         for (var elem of verilogResolvedSet) {
+            // Elements driving nothing have no output label to assign to
+            if (this.hasNoConnectedOutputs(elem)) continue
             res += '  ' + elem.generateVerilog() + '\n'
         }
         return res
+    },
+
+    // True if the element has output nodes and none of them are connected
+    hasNoConnectedOutputs: function (elem) {
+        var outputs = elem.nodeList.filter((node) => node.type == NODE_OUTPUT)
+        return (
+            outputs.length > 0 &&
+            outputs.every((node) => node.connections.length == 0)
+        )
     },
 
     resetLabels: function (scope) {
