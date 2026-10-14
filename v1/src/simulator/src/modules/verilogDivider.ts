@@ -2,6 +2,7 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
 import { simulationArea } from '../simulationArea'
+import type { QueueObject } from '../eventQueue'
 
 /**
  * @class
@@ -15,9 +16,17 @@ import { simulationArea } from '../simulationArea'
  * @category modules
  */
 export default class verilogDivider extends CircuitElement {
+    outputBitWidth: number
+    inpA: Node
+    inpB: Node
+    quotient: Node
+    remainder: Node
+    declare tooltipText: string
+    declare helplink: string
+
     constructor(
-        x,
-        y,
+        x: number,
+        y: number,
         scope = globalScope,
         dir = 'RIGHT',
         bitWidth = 1,
@@ -82,7 +91,7 @@ export default class verilogDivider extends CircuitElement {
      * function to change bitwidth of the element
      * @param {number} bitWidth - new bitwidth
      */
-    newBitWidth(bitWidth) {
+    newBitWidth(bitWidth: number) {
         this.bitWidth = bitWidth
         this.inpA.bitWidth = bitWidth
         this.inpB.bitWidth = bitWidth
@@ -106,8 +115,8 @@ export default class verilogDivider extends CircuitElement {
         this.quotient.value =
             (quotient << (32 - this.outputBitWidth)) >>>
             (32 - this.outputBitWidth)
-        simulationArea.simulationQueue.add(this.quotient)
-        simulationArea.simulationQueue.add(this.remainder)
+        simulationArea.simulationQueue.add(this.quotient as QueueObject)
+        simulationArea.simulationQueue.add(this.remainder as QueueObject)
     }
 }
 

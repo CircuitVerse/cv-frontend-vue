@@ -2,10 +2,11 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
 import { simulationArea } from '../simulationArea'
+import type { QueueObject } from '../eventQueue'
 
 /**
  * @class
- * verilogPower
+ * verilogShiftLeft
  * @extends CircuitElement
  * @param {number} x - x coordinate of element.
  * @param {number} y - y coordinate of element.
@@ -14,10 +15,17 @@ import { simulationArea } from '../simulationArea'
  * @param {number=} bitWidth - bit width per node. modules
  * @category modules
  */
-export default class verilogPower extends CircuitElement {
+export default class verilogShiftLeft extends CircuitElement {
+    outputBitWidth: number
+    inp1: Node
+    shiftInp: Node
+    output1: Node
+    declare tooltipText: string
+    declare helplink: string
+
     constructor(
-        x,
-        y,
+        x: number,
+        y: number,
         scope = globalScope,
         dir = 'RIGHT',
         bitWidth = 1,
@@ -26,13 +34,13 @@ export default class verilogPower extends CircuitElement {
         super(x, y, scope, dir, bitWidth)
         this.setDimensions(20, 20)
         this.outputBitWidth = outputBitWidth
-        this.inpA = new Node(-20, -10, 0, this, this.bitWidth, 'A')
-        this.inpB = new Node(-20, 0, 0, this, this.bitWidth, 'B')
-        this.answer = new Node(20, 0, 1, this, this.outputBitWidth, 'Answer')
+        this.inp1 = new Node(-20, -10, 0, this, this.bitWidth, 'Input')
+        this.shiftInp = new Node(-20, 0, 0, this, this.bitWidth, 'ShiftInput')
+        this.output1 = new Node(20, 0, 1, this, this.outputBitWidth, 'Output')
     }
 
     /**
-     * @memberof verilogPower
+     * @memberof verilogShiftLeft
      * fn to create save Json Data of object
      * @return {JSON}
      */
@@ -44,60 +52,62 @@ export default class verilogPower extends CircuitElement {
                 this.outputBitWidth,
             ],
             nodes: {
-                inpA: findNode(this.inpA),
-                inpB: findNode(this.inpB),
-                answer: findNode(this.answer),
+                inp1: findNode(this.inp1),
+                shiftInp: findNode(this.shiftInp),
+                output1: findNode(this.output1),
             },
         }
         return data
     }
 
     /**
-     * @memberof verilogPower
+     * @memberof verilogShiftLeft
      * Checks if the element is resolvable
      * @return {boolean}
      */
     isResolvable() {
-        return this.inpA.value !== undefined && this.inpB.value !== undefined
+        return (
+            this.inp1.value !== undefined && this.shiftInp.value !== undefined
+        )
     }
 
     /**
-     * @memberof verilogPower
+     * @memberof verilogShiftLeft
      * function to change bitwidth of the element
      * @param {number} bitWidth - new bitwidth
      */
-    newBitWidth(bitWidth) {
+    newBitWidth(bitWidth: number) {
         this.bitWidth = bitWidth
-        this.inpA.bitWidth = bitWidth
-        this.inpB.bitWidth = bitWidth
-        this.answer.bitWidth = bitWidth
+        this.inp1.bitWidth = bitWidth
+        this.shiftInp.bitWidth = bitWidth
+        this.output1.bitWidth = bitWidth
     }
 
     /**
-     * @memberof verilogPower
+     * @memberof verilogShiftLeft
      * resolve output values based on inputData
      */
     resolve() {
         if (this.isResolvable() === false) {
             return
         }
-        const answer = Math.pow(this.inpA.value, this.inpB.value)
+        const output1 = this.inp1.value << this.shiftInp.value
 
-        this.answer.value =
-            (answer << (32 - this.outputBitWidth)) >>>
+        this.output1.value =
+            (output1 << (32 - this.outputBitWidth)) >>>
             (32 - this.outputBitWidth)
-        simulationArea.simulationQueue.add(this.answer)
+        simulationArea.simulationQueue.add(this.output1 as QueueObject)
     }
 }
 
 /**
- * @memberof verilogPower
+ * @memberof verilogShiftLeft
  * Help Tip
  * @type {string}
  * @category modules
  */
-verilogPower.prototype.tooltipText =
-    'verilogPower ToolTip : Performs addition of numbers.'
-verilogPower.prototype.helplink =
-    'https://docs.circuitverse.org/#/miscellaneous?id=verilogPower'
-verilogPower.prototype.objectType = 'verilogPower'
+verilogShiftLeft.prototype.tooltipText =
+    'verilogShiftLeft ToolTip : Performs addition of numbers.'
+verilogShiftLeft.prototype.helplink =
+    'https://docs.circuitverse.org/#/miscellaneous?id=verilogShiftLeft'
+verilogShiftLeft.prototype.objectType = 'verilogShiftLeft'

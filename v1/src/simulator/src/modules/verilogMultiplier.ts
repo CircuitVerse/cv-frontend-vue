@@ -2,10 +2,11 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
 import { simulationArea } from '../simulationArea'
+import type { QueueObject } from '../eventQueue'
 
 /**
  * @class
- * verilogShiftRight
+ * verilogMultiplier
  * @extends CircuitElement
  * @param {number} x - x coordinate of element.
  * @param {number} y - y coordinate of element.
@@ -14,10 +15,17 @@ import { simulationArea } from '../simulationArea'
  * @param {number=} bitWidth - bit width per node. modules
  * @category modules
  */
-export default class verilogShiftRight extends CircuitElement {
+export default class verilogMultiplier extends CircuitElement {
+    outputBitWidth: number
+    inpA: Node
+    inpB: Node
+    product: Node
+    declare tooltipText: string
+    declare helplink: string
+
     constructor(
-        x,
-        y,
+        x: number,
+        y: number,
         scope = globalScope,
         dir = 'RIGHT',
         bitWidth = 1,
@@ -26,13 +34,13 @@ export default class verilogShiftRight extends CircuitElement {
         super(x, y, scope, dir, bitWidth)
         this.setDimensions(20, 20)
         this.outputBitWidth = outputBitWidth
-        this.inp1 = new Node(-20, -10, 0, this, this.bitWidth, 'Input')
-        this.shiftInp = new Node(-20, 0, 0, this, this.bitWidth, 'ShiftInput')
-        this.output1 = new Node(20, 0, 1, this, this.outputBitWidth, 'Output')
+        this.inpA = new Node(-20, -10, 0, this, this.bitWidth, 'A')
+        this.inpB = new Node(-20, 0, 0, this, this.bitWidth, 'B')
+        this.product = new Node(20, 0, 1, this, this.outputBitWidth, 'Product')
     }
 
     /**
-     * @memberof verilogShiftRight
+     * @memberof verilogMultiplier
      * fn to create save Json Data of object
      * @return {JSON}
      */
@@ -44,62 +52,60 @@ export default class verilogShiftRight extends CircuitElement {
                 this.outputBitWidth,
             ],
             nodes: {
-                inp1: findNode(this.inp1),
-                shiftInp: findNode(this.shiftInp),
-                output1: findNode(this.output1),
+                inpA: findNode(this.inpA),
+                inpB: findNode(this.inpB),
+                product: findNode(this.product),
             },
         }
         return data
     }
 
     /**
-     * @memberof verilogShiftRight
+     * @memberof verilogMultiplier
      * Checks if the element is resolvable
      * @return {boolean}
      */
     isResolvable() {
-        return (
-            this.inp1.value !== undefined && this.shiftInp.value !== undefined
-        )
+        return this.inpA.value !== undefined && this.inpB.value !== undefined
     }
 
     /**
-     * @memberof verilogShiftRight
+     * @memberof verilogMultiplier
      * function to change bitwidth of the element
      * @param {number} bitWidth - new bitwidth
      */
-    newBitWidth(bitWidth) {
+    newBitWidth(bitWidth: number) {
         this.bitWidth = bitWidth
-        this.inp1.bitWidth = bitWidth
-        this.shiftInp.bitWidth = bitWidth
-        this.output1.bitWidth = bitWidth
+        this.inpA.bitWidth = bitWidth
+        this.inpB.bitWidth = bitWidth
+        this.product.bitWidth = bitWidth
     }
 
     /**
-     * @memberof verilogShiftRight
+     * @memberof verilogMultiplier
      * resolve output values based on inputData
      */
     resolve() {
         if (this.isResolvable() === false) {
             return
         }
-        const output1 = this.inp1.value >> this.shiftInp.value
+        const product = this.inpA.value * this.inpB.value
 
-        this.output1.value =
-            (output1 << (32 - this.outputBitWidth)) >>>
+        this.product.value =
+            (product << (32 - this.outputBitWidth)) >>>
             (32 - this.outputBitWidth)
-        simulationArea.simulationQueue.add(this.output1)
+        simulationArea.simulationQueue.add(this.product as QueueObject)
     }
 }
 
 /**
- * @memberof verilogShiftRight
+ * @memberof verilogMultiplier
  * Help Tip
  * @type {string}
  * @category modules
  */
-verilogShiftRight.prototype.tooltipText =
-    'verilogShiftRight ToolTip : Performs addition of numbers.'
-verilogShiftRight.prototype.helplink =
-    'https://docs.circuitverse.org/#/miscellaneous?id=verilogShiftRight'
-verilogShiftRight.prototype.objectType = 'verilogShiftRight'
+verilogMultiplier.prototype.tooltipText =
+    'verilogMultiplier ToolTip : Performs addition of numbers.'
+verilogMultiplier.prototype.helplink =
+    'https://docs.circuitverse.org/#/miscellaneous?id=verilogMultiplier'
+verilogMultiplier.prototype.objectType = 'verilogMultiplier'
