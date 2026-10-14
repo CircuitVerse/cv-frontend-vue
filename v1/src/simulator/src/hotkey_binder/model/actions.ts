@@ -20,7 +20,7 @@ const isCircuitElement = (
     element &&
     element.objectType !== "Wire" &&
     element.objectType !== "Node" &&
-    element.objectType !== "LayoutNode",
+    element.objectType !== "Layout Node",
   );
 };
 
