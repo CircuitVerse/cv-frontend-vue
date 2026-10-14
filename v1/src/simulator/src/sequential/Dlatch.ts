@@ -2,6 +2,11 @@ import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
 import { simulationArea } from '../simulationArea'
 import { correctWidth, lineTo, moveTo, fillText } from '../canvasApi'
+import { colors } from '../themer/themer'
+import Scope from '../circuit'
+
+declare let globalScope: Scope
+
 /**
  * @class
  * Dlatch
@@ -16,9 +21,24 @@ import { correctWidth, lineTo, moveTo, fillText } from '../canvasApi'
  * @param {string=} dir - direcion in which element has to drawn
  * @category sequential
  */
-import { colors } from '../themer/themer'
 export default class Dlatch extends CircuitElement {
-    constructor(x, y, scope = globalScope, dir = 'RIGHT', bitWidth = 1) {
+    declare tooltipText: string
+    declare helplink: string
+    clockInp: Node
+    dInp: Node
+    qOutput: Node
+    qInvOutput: Node
+    state: number
+    prevClockState: number
+    wasClicked: boolean
+
+    constructor(
+        x: number,
+        y: number,
+        scope: Scope = globalScope,
+        dir: string = 'RIGHT',
+        bitWidth: number = 1,
+    ) {
         super(x, y, scope, dir, bitWidth)
         this.directionFixed = true
         this.setDimensions(20, 20)
@@ -35,13 +55,13 @@ export default class Dlatch extends CircuitElement {
     /**
      * Idea: should be D FF?
      */
-    isResolvable() {
+    isResolvable(): boolean {
         if (this.clockInp.value != undefined && this.dInp.value != undefined)
             return true
         return false
     }
 
-    newBitWidth(bitWidth) {
+    newBitWidth(bitWidth: number): void {
         this.bitWidth = bitWidth
         this.dInp.bitWidth = bitWidth
         this.qOutput.bitWidth = bitWidth
@@ -53,7 +73,7 @@ export default class Dlatch extends CircuitElement {
      * when the clock input is high we update the state
      * qOutput is set to the state
      */
-    resolve() {
+    resolve(): void {
         if (this.clockInp.value == 1 && this.dInp.value != undefined) {
             this.state = this.dInp.value
         }
@@ -67,7 +87,7 @@ export default class Dlatch extends CircuitElement {
     }
 
     customSave() {
-        var data = {
+        const data = {
             nodes: {
                 clockInp: findNode(this.clockInp),
                 dInp: findNode(this.dInp),
@@ -79,14 +99,15 @@ export default class Dlatch extends CircuitElement {
         return data
     }
 
-    customDraw() {
-        var ctx = simulationArea.context
+    customDraw(): void {
+        const ctx = simulationArea.context
+        if (!ctx) return
         ctx.strokeStyle = colors['stroke']
         ctx.fillStyle = colors['fill']
         ctx.beginPath()
         ctx.lineWidth = correctWidth(3)
-        var xx = this.x
-        var yy = this.y
+        const xx = this.x
+        const yy = this.y
         moveTo(ctx, -20, 5, xx, yy, this.direction)
         lineTo(ctx, -15, 10, xx, yy, this.direction)
         lineTo(ctx, -20, 15, xx, yy, this.direction)
