@@ -509,7 +509,7 @@ export function correctWidth(w: any) {
   return Math.max(1, Math.round(w * globalScope.scale));
 }
 
-function rotateAngle(start: number, stop: number, dir: string) {
+function rotateAngle(start: number, stop: number, dir: string): [number, number, boolean] {
   if (dir === "LEFT") {
     return [start, stop, true];
   }
@@ -570,6 +570,7 @@ export function colorToRGBA(color: string) {
   cvs.height = 1;
   cvs.width = 1;
   ctx = cvs.getContext("2d");
+  if (!ctx) return new Uint8ClampedArray(4);
   ctx.fillStyle = color;
   ctx.fillRect(0, 0, 1, 1);
   return ctx.getImageData(0, 0, 1, 1).data;

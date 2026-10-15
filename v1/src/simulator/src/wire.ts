@@ -95,6 +95,7 @@ export default class Wire {
   }
 
   draw(): void {
+    if (!simulationArea.context) return;
     drawLine(
       simulationArea.context,
       this.node1.absX(),
