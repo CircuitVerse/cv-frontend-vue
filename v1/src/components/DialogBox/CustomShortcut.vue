@@ -142,15 +142,18 @@ onUpdated(() => {
 })
 
 function updatePreference(e: MouseEvent) {
+    const target = e.target as HTMLElement | null
+    if (!target) return
+    const row = target.closest('#preference > div')
+    const keywordSpan = row?.querySelector('#keyword') as HTMLSpanElement | null
+    if (!keywordSpan) return
+
     pressedKeys.value = ''
     warning.value = ''
     document.getElementById('edit')!.style.border = 'none'
     document.getElementById('edit')!.style.display = 'block'
     document.getElementById('edit')!.focus()
-    ;[, targetPref.value] = e.target!.closest('div')!.children as [
-        HTMLSpanElement,
-        HTMLSpanElement
-    ]
+    targetPref.value = keywordSpan
 }
 
 function updateEdit(e: KeyboardEvent) {
