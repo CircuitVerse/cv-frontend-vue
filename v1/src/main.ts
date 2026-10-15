@@ -15,7 +15,9 @@ import "../../node_modules/bootstrap/scss/bootstrap.scss";
 import "./styles/color_theme.scss";
 import "./styles/simulator.scss";
 import "./styles/tutorials.scss";
-import "@fortawesome/fontawesome-free/css/all.css";
+import "@fortawesome/fontawesome-free/css/fontawesome.css";
+import "@fortawesome/fontawesome-free/css/solid.css";
+import "@fortawesome/fontawesome-free/css/v4-shims.css";
 
 loadFonts();
 
