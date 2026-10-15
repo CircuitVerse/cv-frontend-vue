@@ -275,9 +275,11 @@ export function renderCanvas(scope: Scope) {
     }
   }
   // Show any message
-  if (canvasMessageData.x !== undefined && 
-  canvasMessageData.y !== undefined &&
-  canvasMessageData.string !== undefined) {
+  if (
+    canvasMessageData.x !== undefined &&
+    canvasMessageData.y !== undefined &&
+    canvasMessageData.string !== undefined
+  ) {
     canvasMessage(ctx, canvasMessageData.string, canvasMessageData.x, canvasMessageData.y);
   }
   // If multiple object selections are going on, show selected area
