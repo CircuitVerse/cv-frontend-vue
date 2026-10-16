@@ -110,4 +110,42 @@ describe('Adder and ALU carry out', () => {
         expect(alu.output.value).toBe(output);
         expect(alu.carryOut.value).toBe(cout);
     });
+
+    // 32-bit values can reach a node as signed numbers, e.g. the ALU's
+    // A&B output for 0xFFFFFFFF & 0xFFFFFFFF is -1 in JavaScript
+    test('Adder treats signed 32-bit operands as unsigned', () => {
+        const adder = new Adder(0, 0, globalScope, 'RIGHT', 32);
+        adder.inpA.value = -1; // 0xFFFFFFFF
+        adder.inpB.value = 2;
+        adder.carryIn.value = 0;
+        adder.resolve();
+        expect(adder.sum.value).toBe(1);
+        expect(adder.carryOut.value).toBe(1);
+    });
+
+    test('ALU A+B treats signed 32-bit operands as unsigned', () => {
+        const alu = new ALU(0, 0, globalScope, 'RIGHT', 32);
+        alu.inp1.value = -1; // 0xFFFFFFFF
+        alu.inp2.value = 2;
+        alu.controlSignalInput.value = 2;
+        alu.resolve();
+        expect(alu.output.value).toBe(1);
+        expect(alu.carryOut.value).toBe(1);
+    });
+
+    test('carry is correct when an ALU A&B output feeds an Adder', () => {
+        const alu = new ALU(0, 0, globalScope, 'RIGHT', 32);
+        alu.inp1.value = 0xffffffff;
+        alu.inp2.value = 0xffffffff;
+        alu.controlSignalInput.value = 0; // A&B
+        alu.resolve();
+
+        const adder = new Adder(0, 0, globalScope, 'RIGHT', 32);
+        adder.inpA.value = alu.output.value;
+        adder.inpB.value = 2;
+        adder.carryIn.value = 0;
+        adder.resolve();
+        expect(adder.sum.value).toBe(1);
+        expect(adder.carryOut.value).toBe(1);
+    });
 });

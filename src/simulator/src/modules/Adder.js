@@ -79,7 +79,8 @@ export default class Adder extends CircuitElement {
         }
         let carryIn = this.carryIn.value
         if (carryIn === undefined) carryIn = 0
-        const sum = this.inpA.value + this.inpB.value + carryIn
+        // Read operands as unsigned: 32-bit values can arrive as negative numbers
+        const sum = (this.inpA.value >>> 0) + (this.inpB.value >>> 0) + carryIn
 
         this.sum.value = (sum << (32 - this.bitWidth)) >>> (32 - this.bitWidth)
         // `>>> 32` is a no-op in JS, so compare against the range instead
