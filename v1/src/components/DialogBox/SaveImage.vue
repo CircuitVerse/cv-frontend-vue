@@ -132,7 +132,7 @@ const isClipboardSupported = computed(() => {
     return !!(navigator.clipboard && navigator.clipboard.write && window.ClipboardItem)
 })
 
-const imgTypeList: Ref<string[]> = ref(['PNG', 'JPEG', 'WebP', 'SVG', 'BMP', 'GIF', 'TIFF'])
+const imgTypeList: Ref<string[]> = ref(['PNG', 'JPEG', 'WebP', 'SVG'])
 const toShow: Ref<boolean> = ref(true)
 const toShow1: Ref<boolean> = ref(true)
 const fullImg: Ref<boolean> = ref(false)
