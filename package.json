@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "serve": "vite preview",
-    "build": "node scripts/multi-build.js",
-    "dev": "node scripts/dev.js",
+    "build": "node api.js && node scripts/multi-build.js",
+    "dev": "node api.js && node scripts/dev.js",
     "tauri": "tauri",
     "preview": "vite preview",
     "lint": "find . -name \"*.ts\" -not -path \"*/node_modules/*\" | xargs oxlint --ignore-path .gitignore",

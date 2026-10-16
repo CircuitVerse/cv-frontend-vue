@@ -11,11 +11,10 @@ node_modules
 dist
 dist-ssr
 public/simulatorvue/*
+temp_auto_push.bat
 *.local
 
 # Editor directories and files
-.vscode/*
-!.vscode/extensions.json
 .idea
 .DS_Store
 *.suo
@@ -26,3 +25,5 @@ public/simulatorvue/*
 
 # npm package staging
 packages/
+.gitignore
+branch_structure.json
