@@ -137,10 +137,12 @@ export default class ALU extends CircuitElement {
             simulationArea.simulationQueue.add(this.carryOut)
             this.message = 'A|B'
         } else if (this.controlSignalInput.value === 2) {
-            const sum = this.inp1.value + this.inp2.value
+            // Read operands as unsigned: 32-bit values can arrive as negative numbers
+            const sum = (this.inp1.value >>> 0) + (this.inp2.value >>> 0)
             this.output.value =
                 (sum << (32 - this.bitWidth)) >>> (32 - this.bitWidth)
-            this.carryOut.value = +(sum >>> this.bitWidth !== 0)
+            // `>>> 32` is a no-op in JS, so compare against the range instead
+            this.carryOut.value = +(sum >= 2 ** this.bitWidth)
             simulationArea.simulationQueue.add(this.carryOut)
             simulationArea.simulationQueue.add(this.output)
             this.message = 'A+B'
