@@ -1,8 +1,19 @@
 import interact from "interactjs";
+import { ref } from "vue";
 
 interface Position {
   x: number;
   y: number;
+}
+
+export const activePanelId = ref<string | null>(null);
+
+export function bringToFront(panelId: string): void {
+  activePanelId.value = panelId;
+}
+
+export function zIndexFor(panelId: string): number | undefined {
+  return activePanelId.value === panelId ? 99 : undefined;
 }
 
 function updatePosition(
@@ -40,10 +51,21 @@ function disableSelection(element: HTMLElement): void {
 
 /**
  * Make an element draggable within a specified container.
- * @param {HTMLElement} targetEl - Element that triggers the drag event.
- * @param {HTMLElement} DragEl - Element to be dragged.
+ * @param {string} dragSelector - CSS selector for the element to be dragged.
+ * @param {string} targetSelector - CSS selector for the element that triggers the drag event.
+ * @param {string} panelId - Identifier used to track which panel is active/on top.
  */
-export function dragging(targetEl: HTMLElement, DragEl: HTMLElement): void {
+export function dragging(dragSelector: string, targetSelector: string, panelId: string): void {
+  const targetEl = document.querySelector(targetSelector) as HTMLElement | null;
+  const DragEl = document.querySelector(dragSelector) as HTMLElement | null;
+
+  if (!targetEl || !DragEl) return;
+
+  // Bring this panel to front (via reactive state) when clicked
+  DragEl.addEventListener("mousedown", () => {
+    bringToFront(panelId);
+  });
+
   // WeakMap to store the position of each dragged element
   const positions = new WeakMap<HTMLElement, Position>();
 
@@ -66,13 +88,6 @@ export function dragging(targetEl: HTMLElement, DragEl: HTMLElement): void {
       }),
     ],
   });
-
-  $(DragEl)
-    .off("mousedown.dragging")
-    .on("mousedown.dragging", () => {
-      $(`.draggable-panel:not(${DragEl})`).css("z-index", "99");
-      $(DragEl).css("z-index", "99");
-    });
 
   let panelElements = document.querySelectorAll(
     ".elementPanel, .layoutElementPanel, #moduleProperty, #layoutDialog, #verilogEditorPanel, .timing-diagram-panel, .testbench-manual-panel, .quick-btn",
