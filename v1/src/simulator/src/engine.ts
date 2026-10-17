@@ -15,6 +15,7 @@ import { resetup } from "./setup";
 import { verilogModeGet } from "./Verilog2CV";
 import { renderOrder, updateOrder } from "./metadata";
 import ContentionPendingData from "./contention";
+import { QueueObject } from "./eventQueue";
 
 /**
  * Core of the simulation and rendering algorithm.
@@ -188,7 +189,7 @@ export function errorDetectedGet() {
  * @property {number} string - the message
  * @category engine
  */
-export var canvasMessageData = {
+export var canvasMessageData: { x?: number; y?: number; string?: string } = {
   x: undefined,
   y: undefined,
   string: undefined,
@@ -274,7 +275,11 @@ export function renderCanvas(scope: Scope) {
     }
   }
   // Show any message
-  if (canvasMessageData.string !== undefined) {
+  if (
+    canvasMessageData.x !== undefined &&
+    canvasMessageData.y !== undefined &&
+    canvasMessageData.string !== undefined
+  ) {
     canvasMessage(ctx, canvasMessageData.string, canvasMessageData.x, canvasMessageData.y);
   }
   // If multiple object selections are going on, show selected area
@@ -523,7 +528,7 @@ export function update(scope: Scope | any = globalScope, updateEverything: boole
   if (updatePosition || updateEverything) {
     for (let i = 0; i < updateOrder.length; i++) {
       for (let j = 0; j < (scope as any)[updateOrder[i]].length; j++) {
-        updated |= (scope as any)[updateOrder[i]][j].update();
+        updated = Boolean((scope as any)[updateOrder[i]][j].update() || updated);
       }
     }
   }

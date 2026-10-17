@@ -1,6 +1,7 @@
 import { EventQueue } from "./eventQueue";
 import { SimulationArea } from "./interface/simulationArea";
 import { clockTick } from "./utils";
+import ContentionPendingData from "./contention";
 
 const simulationArea: SimulationArea = {
   canvas: document.getElementById("simulationArea") as HTMLCanvasElement,
@@ -38,6 +39,7 @@ const simulationArea: SimulationArea = {
   mouseDown: false,
   ClockInterval: null,
   touch: false,
+  contentionPending: new ContentionPendingData(),
 
   timer() {
     const _clickTimer = setTimeout(() => {
