@@ -2,10 +2,11 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
 import { simulationArea } from '../simulationArea'
+import type { QueueObject } from '../eventQueue'
 
 /**
  * @class
- * verilogShiftLeft
+ * verilogShiftRight
  * @extends CircuitElement
  * @param {number} x - x coordinate of element.
  * @param {number} y - y coordinate of element.
@@ -14,10 +15,17 @@ import { simulationArea } from '../simulationArea'
  * @param {number=} bitWidth - bit width per node. modules
  * @category modules
  */
-export default class verilogShiftLeft extends CircuitElement {
+export default class verilogShiftRight extends CircuitElement {
+    outputBitWidth: number
+    inp1: Node
+    shiftInp: Node
+    output1: Node
+    declare tooltipText: string
+    declare helplink: string
+
     constructor(
-        x,
-        y,
+        x: number,
+        y: number,
         scope = globalScope,
         dir = 'RIGHT',
         bitWidth = 1,
@@ -32,7 +40,7 @@ export default class verilogShiftLeft extends CircuitElement {
     }
 
     /**
-     * @memberof verilogShiftLeft
+     * @memberof verilogShiftRight
      * fn to create save Json Data of object
      * @return {JSON}
      */
@@ -53,7 +61,7 @@ export default class verilogShiftLeft extends CircuitElement {
     }
 
     /**
-     * @memberof verilogShiftLeft
+     * @memberof verilogShiftRight
      * Checks if the element is resolvable
      * @return {boolean}
      */
@@ -64,11 +72,11 @@ export default class verilogShiftLeft extends CircuitElement {
     }
 
     /**
-     * @memberof verilogShiftLeft
+     * @memberof verilogShiftRight
      * function to change bitwidth of the element
      * @param {number} bitWidth - new bitwidth
      */
-    newBitWidth(bitWidth) {
+    newBitWidth(bitWidth: number) {
         this.bitWidth = bitWidth
         this.inp1.bitWidth = bitWidth
         this.shiftInp.bitWidth = bitWidth
@@ -76,30 +84,30 @@ export default class verilogShiftLeft extends CircuitElement {
     }
 
     /**
-     * @memberof verilogShiftLeft
+     * @memberof verilogShiftRight
      * resolve output values based on inputData
      */
     resolve() {
         if (this.isResolvable() === false) {
             return
         }
-        const output1 = this.inp1.value << this.shiftInp.value
+        const output1 = this.inp1.value >> this.shiftInp.value
 
         this.output1.value =
             (output1 << (32 - this.outputBitWidth)) >>>
             (32 - this.outputBitWidth)
-        simulationArea.simulationQueue.add(this.output1)
+        simulationArea.simulationQueue.add(this.output1 as QueueObject)
     }
 }
 
 /**
- * @memberof verilogShiftLeft
+ * @memberof verilogShiftRight
  * Help Tip
  * @type {string}
  * @category modules
  */
-verilogShiftLeft.prototype.tooltipText =
-    'verilogShiftLeft ToolTip : Performs addition of numbers.'
-verilogShiftLeft.prototype.helplink =
-    'https://docs.circuitverse.org/#/miscellaneous?id=verilogShiftLeft'
-verilogShiftLeft.prototype.objectType = 'verilogShiftLeft'
+verilogShiftRight.prototype.tooltipText =
+    'verilogShiftRight ToolTip : Performs addition of numbers.'
+verilogShiftRight.prototype.helplink =
+    'https://docs.circuitverse.org/#/miscellaneous?id=verilogShiftRight'
+verilogShiftRight.prototype.objectType = 'verilogShiftRight'

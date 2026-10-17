@@ -2,10 +2,11 @@
 import CircuitElement from '../circuitElement'
 import Node, { findNode } from '../node'
 import { simulationArea } from '../simulationArea'
+import type { QueueObject } from '../eventQueue'
 
 /**
  * @class
- * verilogMultiplier
+ * verilogPower
  * @extends CircuitElement
  * @param {number} x - x coordinate of element.
  * @param {number} y - y coordinate of element.
@@ -14,10 +15,17 @@ import { simulationArea } from '../simulationArea'
  * @param {number=} bitWidth - bit width per node. modules
  * @category modules
  */
-export default class verilogMultiplier extends CircuitElement {
+export default class verilogPower extends CircuitElement {
+    outputBitWidth: number
+    inpA: Node
+    inpB: Node
+    answer: Node
+    declare tooltipText: string
+    declare helplink: string
+
     constructor(
-        x,
-        y,
+        x: number,
+        y: number,
         scope = globalScope,
         dir = 'RIGHT',
         bitWidth = 1,
@@ -28,11 +36,11 @@ export default class verilogMultiplier extends CircuitElement {
         this.outputBitWidth = outputBitWidth
         this.inpA = new Node(-20, -10, 0, this, this.bitWidth, 'A')
         this.inpB = new Node(-20, 0, 0, this, this.bitWidth, 'B')
-        this.product = new Node(20, 0, 1, this, this.outputBitWidth, 'Product')
+        this.answer = new Node(20, 0, 1, this, this.outputBitWidth, 'Answer')
     }
 
     /**
-     * @memberof verilogMultiplier
+     * @memberof verilogPower
      * fn to create save Json Data of object
      * @return {JSON}
      */
@@ -46,14 +54,14 @@ export default class verilogMultiplier extends CircuitElement {
             nodes: {
                 inpA: findNode(this.inpA),
                 inpB: findNode(this.inpB),
-                product: findNode(this.product),
+                answer: findNode(this.answer),
             },
         }
         return data
     }
 
     /**
-     * @memberof verilogMultiplier
+     * @memberof verilogPower
      * Checks if the element is resolvable
      * @return {boolean}
      */
@@ -62,42 +70,42 @@ export default class verilogMultiplier extends CircuitElement {
     }
 
     /**
-     * @memberof verilogMultiplier
+     * @memberof verilogPower
      * function to change bitwidth of the element
      * @param {number} bitWidth - new bitwidth
      */
-    newBitWidth(bitWidth) {
+    newBitWidth(bitWidth: number) {
         this.bitWidth = bitWidth
         this.inpA.bitWidth = bitWidth
         this.inpB.bitWidth = bitWidth
-        this.product.bitWidth = bitWidth
+        this.answer.bitWidth = bitWidth
     }
 
     /**
-     * @memberof verilogMultiplier
+     * @memberof verilogPower
      * resolve output values based on inputData
      */
     resolve() {
         if (this.isResolvable() === false) {
             return
         }
-        const product = this.inpA.value * this.inpB.value
+        const answer = Math.pow(this.inpA.value, this.inpB.value)
 
-        this.product.value =
-            (product << (32 - this.outputBitWidth)) >>>
+        this.answer.value =
+            (answer << (32 - this.outputBitWidth)) >>>
             (32 - this.outputBitWidth)
-        simulationArea.simulationQueue.add(this.product)
+        simulationArea.simulationQueue.add(this.answer as QueueObject)
     }
 }
 
 /**
- * @memberof verilogMultiplier
+ * @memberof verilogPower
  * Help Tip
  * @type {string}
  * @category modules
  */
-verilogMultiplier.prototype.tooltipText =
-    'verilogMultiplier ToolTip : Performs addition of numbers.'
-verilogMultiplier.prototype.helplink =
-    'https://docs.circuitverse.org/#/miscellaneous?id=verilogMultiplier'
-verilogMultiplier.prototype.objectType = 'verilogMultiplier'
+verilogPower.prototype.tooltipText =
+    'verilogPower ToolTip : Performs addition of numbers.'
+verilogPower.prototype.helplink =
+    'https://docs.circuitverse.org/#/miscellaneous?id=verilogPower'
+verilogPower.prototype.objectType = 'verilogPower'
