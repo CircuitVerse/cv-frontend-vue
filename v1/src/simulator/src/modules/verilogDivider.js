@@ -119,6 +119,4 @@ export default class verilogDivider extends CircuitElement {
  */
 verilogDivider.prototype.tooltipText =
     'verilogDivider ToolTip : Performs addition of numbers.'
-verilogDivider.prototype.helplink =
-    'https://docs.circuitverse.org/#/miscellaneous?id=verilogDivider'
 verilogDivider.prototype.objectType = 'verilogDivider'

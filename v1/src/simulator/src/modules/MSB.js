@@ -132,5 +132,5 @@ export default class MSB extends CircuitElement {
 MSB.prototype.tooltipText =
     'MSB ToolTip : The most significant bit or the high-order bit.'
 MSB.prototype.helplink =
-    'https://docs.circuitverse.org/#/chapter4/5muxandplex?id=most-significant-bit-msb-detector'
+    'https://docs.circuitverse.org/chapter4/chapter4-muxandplex#most-significant-bit-msb-detector'
 MSB.prototype.objectType = 'MSB'

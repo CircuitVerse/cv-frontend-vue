@@ -132,6 +132,4 @@ export default class verilogDivider extends CircuitElement {
  */
 verilogDivider.prototype.tooltipText =
     'verilogDivider ToolTip : Performs division and outputs quotient and remainder.'
-verilogDivider.prototype.helplink =
-    'https://docs.circuitverse.org/#/miscellaneous?id=verilogDivider'
 verilogDivider.prototype.objectType = 'verilogDivider'
