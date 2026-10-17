@@ -17,7 +17,9 @@
               <div v-for="(element, elementIndex) in group.elements" class="icon subcircuitModule"
               :key="`${groupIndex}-${elementIndex}`" :id="`${group.type}-${elementIndex}`"
               :data-element-id="elementIndex" :data-element-name="group.type"
-              @mousedown="dragElement(group.type, element, elementIndex)">
+              draggable="true"
+              @mousedown="dragElement(element)"
+              @dragend="onSubcircuitDragEnd($event)">
               <div class="icon-image">
                 <img :src="getImgUrl(group.type)" />
                 <p class="img__description">
@@ -37,11 +39,13 @@
 import { useState } from '#/store/SimulatorStore/state'
 import { simulationArea } from '#/simulator/src/simulationArea'
 import { useLayoutStore } from '#/store/layoutStore';
+import { tempBuffer } from '#/simulator/src/layoutMode';
 import { ref, onMounted } from 'vue';
 
 const layoutStore = useLayoutStore()
 
 const layoutElementPanelRef = ref<HTMLElement | null>(null);
+const draggingElement = ref<any>(null);
 
 onMounted(() => {
     layoutStore.layoutElementPanelRef = layoutElementPanelRef.value
@@ -49,28 +53,11 @@ onMounted(() => {
 
 const SimulatorState = useState();
 
-const dragElement = (groupType: string, element: any, index: number) => {
-  element.subcircuitMetadata.showInSubcircuit = true
+const dragElement = (element: any) => {
+  // Store reference; list removal deferred to @dragend (valid drop only)
   element.newElement = true
   simulationArea.lastSelected = element
-
-  // Remove the element from subCircuitElementList
-  SimulatorState.subCircuitElementList.forEach((typeGroup) => {
-    typeGroup.elements = typeGroup.elements.filter(
-      (_, elementIndex) => {
-        if(typeGroup.type === groupType && index === elementIndex)
-        return false
-
-        return true;
-      }
-    )
-  })
-
-  // Remove the type group if its elements array is empty
-  SimulatorState.subCircuitElementList =
-    SimulatorState.subCircuitElementList.filter(
-      (typeGroup) => typeGroup.elements.length > 0
-    )
+  draggingElement.value = element
 }
 
 function getImgUrl(elementName: string) {
@@ -79,6 +66,42 @@ function getImgUrl(elementName: string) {
     import.meta.url
   ).href;
   return elementImg;
+}
+
+function onSubcircuitDragEnd(event: DragEvent) {
+  const panelEl = layoutElementPanelRef.value
+  const rect = panelEl?.getBoundingClientRect()
+  const top = event.clientY - (rect?.top ?? 0)
+  const left = event.clientX - (rect?.left ?? 0)
+
+  const sideBarWidth = document.getElementById('guide_1')?.clientWidth ?? 0
+
+  if (top > 10 && left > sideBarWidth) {
+    const tempElement = draggingElement.value
+    if (!tempElement) return
+
+    // Set showInSubcircuit here - deferred from mousedown, only on valid drop
+    tempElement.subcircuitMetadata.showInSubcircuit = true
+    tempElement.x = left - sideBarWidth
+    tempElement.y = top
+    for (const node of tempElement.nodeList) {
+      node.x = left - sideBarWidth
+      node.y = top
+    }
+    tempBuffer.subElements.push(tempElement)
+
+    // Remove by object identity - safe even if indices shifted
+    SimulatorState.subCircuitElementList.forEach((typeGroup) => {
+      typeGroup.elements = typeGroup.elements.filter((el) => el !== tempElement)
+    })
+    SimulatorState.subCircuitElementList =
+      SimulatorState.subCircuitElementList.filter((typeGroup) => typeGroup.elements.length > 0)
+  }
+
+  // Clear newElement flag native drag suppresses mouseup on simulationArea,
+  // so the canvas never resets it. Must clear for both valid and cancelled drops.
+  if (draggingElement.value) draggingElement.value.newElement = false
+  draggingElement.value = null
 }
 </script>
 
