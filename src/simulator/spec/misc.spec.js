@@ -138,4 +138,16 @@ describe('Simulator Misc-Elements Testing', () => {
         expect(splitter.inp1.bitWidth).toBe(8);
         expect(splitter.outputs.map((node) => node.bitWidth)).toEqual([1, 3]);
     });
+
+    test('Splitter refuses a bit width narrower than its split', () => {
+        const splitter = new Splitter(100, 100, globalScope, 'RIGHT', 4, [1, 3]);
+
+        splitter.newBitWidth(2);
+
+        expect(splitter.bitWidth).toBe(4);
+        expect(splitter.inp1.bitWidth).toBe(4);
+
+        splitter.newBitWidth(4);
+        expect(splitter.bitWidth).toBe(4);
+    });
 });
