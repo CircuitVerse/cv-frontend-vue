@@ -10,6 +10,7 @@ import i18n from '#/locales/i18n';
 import { routes } from '#/router';
 import vuetify from '#/plugins/vuetify';
 import simulator from '#/pages/simulator.vue';
+import modules from '../src/modules';
 
 vi.mock('codemirror', async (importOriginal) => {
     const actual = await importOriginal();
@@ -81,6 +82,17 @@ describe('Simulator Sequential Element Testing', () => {
     test('D Flip Flop working', () => {
         const result = runAll(testData.DFlipFlop);
         expect(result.summary.passed).toBe(2);
+    });
+
+    test('D Flip Flop Verilog uses preset during asynchronous reset', () => {
+        const verilog = modules.DflipFlop.moduleVerilog();
+
+        expect(verilog).toContain('input clk, a_rst, en;');
+        expect(verilog).toContain('input [WIDTH-1:0] d, pre;');
+        expect(verilog).toContain('q <= pre;');
+        expect(verilog).toContain('q_inv <= ~pre;');
+        expect(verilog).not.toContain("q <= 'b0;");
+        expect(verilog).not.toContain("q_inv <= 'b1;");
     });
 
     test('D latch working', () => {
