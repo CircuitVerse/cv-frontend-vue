@@ -395,10 +395,11 @@ html {
 
 #restrictedElementsDiv {
     position: absolute;
-    top: 90px;
+    top: calc(var(--tabs-height, 30px) + 60px);
     right: 10px;
     z-index: 100;
     width: 200px;
+    transition: top 0.2s ease-in-out;
 }
 
 #MessageDiv {
