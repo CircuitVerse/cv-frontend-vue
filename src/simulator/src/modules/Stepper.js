@@ -60,7 +60,7 @@ export default class Stepper extends CircuitElement {
      * resolve output values based on inputData
      */
     resolve() {
-        this.state = Math.min(this.state, (1 << this.bitWidth) - 1)
+        this.state = Math.min(this.state, 2 ** this.bitWidth - 1)
         this.output1.value = this.state
         simulationArea.simulationQueue.add(this.output1)
     }
@@ -71,7 +71,7 @@ export default class Stepper extends CircuitElement {
      * @param {string} key - the key pressed
      */
     keyDown2(key) {
-        if (this.state < 1 << this.bitWidth && (key === '+' || key === '='))
+        if (this.state < 2 ** this.bitWidth - 1 && (key === '+' || key === '='))
             this.state++
         if (this.state > 0 && (key === '_' || key === '-')) this.state--
     }
