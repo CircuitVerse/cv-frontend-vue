@@ -739,11 +739,11 @@ export default class CircuitElement {
         if (this.deleteNodesWhenDeleted) {
             this.deleteNodes()
         } else {
-            for (let i = 0; i < this.nodeList.length; i++) {
-                if (this.nodeList[i].connections.length) {
-                    this.nodeList[i].converToIntermediate()
+            for (const node of [...this.nodeList]) {
+                if (node.connections.length) {
+                    node.converToIntermediate()
                 } else {
-                    this.nodeList[i].delete()
+                    node.delete()
                 }
             }
         }
@@ -764,8 +764,9 @@ export default class CircuitElement {
      * Helper Function to delete the element and all the node attached to it.
      */
     deleteNodes() {
-        for (let i = 0; i < this.nodeList.length; i++) {
-            this.nodeList[i].delete()
+        // iterate over a copy: Node.delete() removes the node from this.nodeList
+        for (const node of [...this.nodeList]) {
+            node.delete()
         }
     }
 
