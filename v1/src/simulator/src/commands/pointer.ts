@@ -330,7 +330,8 @@ export function panStop(e: PointerLikeEvent): void {
     // small hack so Current circuit element should not spawn above last circuit element
     if (!isCopy.value) {
       findDimensions(globalScope);
-      simulationArea.mouseX = 100 + simulationArea.maxWidth || 0;
+      simulationArea.mouseX =
+        simulationArea.maxWidth === undefined ? 0 : simulationArea.maxWidth + 100;
       simulationArea.mouseY = simulationArea.minHeight || 0;
       getTap(e);
     }
