@@ -3,6 +3,8 @@ import load from '../src/data/load';
 import circuitData from './circuits/sequential-circuitdata.json';
 import testData from './testData/sequential-testdata.json';
 import { runAll } from '../src/testbench';
+import JKflipFlop from '../src/sequential/JKflipFlop';
+import SRflipFlop from '../src/sequential/SRflipFlop';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import { createRouter, createWebHistory } from 'vue-router';
@@ -101,5 +103,18 @@ describe('Simulator Sequential Element Testing', () => {
     test('T Flip Flop working', () => {
         const result = runAll(testData.TFlipFlop);
         expect(result.summary.passed).toBe(4);
+    });
+
+    test('JK and SR Flip Flops keep their fixed bit width', () => {
+        const jk = new JKflipFlop(100, 100, globalScope);
+        const sr = new SRflipFlop(200, 100, globalScope);
+
+        expect(() => jk.newBitWidth(4)).not.toThrow();
+        expect(() => sr.newBitWidth(4)).not.toThrow();
+
+        expect(jk.bitWidth).toBe(1);
+        expect(sr.bitWidth).toBe(1);
+        expect(jk.nodeList.every((node) => node.bitWidth === 1)).toBe(true);
+        expect(sr.nodeList.every((node) => node.bitWidth === 1)).toBe(true);
     });
 });
