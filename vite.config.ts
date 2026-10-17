@@ -8,6 +8,34 @@ import vuetify from "vite-plugin-vuetify";
 
 import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 
+// Drop legacy icon-font formats (eot/woff/ttf) so Vite only emits woff2.
+// All supported browsers read woff2; the icon class rules are untouched.
+function woff2OnlyFontsPlugin() {
+  return {
+    name: "woff2-only-fonts",
+    enforce: "pre" as const,
+    transform(code: string, id: string) {
+      if (id.endsWith("@mdi/font/css/materialdesignicons.css")) {
+        return {
+          code: code
+            .replace(/\s*src:\s*url\([^)]*\.eot\?v=[^)]*\)\s*;/g, "")
+            .replace(/\s*url\([^)]*\.eot\?#iefix[^)]*\)\s*format\("embedded-opentype"\),/g, "")
+            .replace(/,\s*url\([^)]*\.woff\?v=[^)]*\)\s*format\("woff"\)/g, "")
+            .replace(/,\s*url\([^)]*\.ttf\?v=[^)]*\)\s*format\("truetype"\)/g, ""),
+          map: null,
+        };
+      }
+      if (id.includes("@fortawesome/fontawesome-free/css/")) {
+        return {
+          code: code.replace(/,\s*url\([^)]*\.ttf[^)]*\)\s*format\("truetype"\)/g, ""),
+          map: null,
+        };
+      }
+      return null;
+    },
+  };
+}
+
 function stripShebangPlugin() {
   return {
     name: "strip-shebang",
@@ -42,6 +70,7 @@ export default defineConfig(() => {
 
   return {
     plugins: [
+      woff2OnlyFontsPlugin(),
       stripShebangPlugin(),
       wasmMimePlugin(),
       vue(),
