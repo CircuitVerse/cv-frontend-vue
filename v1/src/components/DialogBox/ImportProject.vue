@@ -77,7 +77,6 @@ import { useI18n } from 'vue-i18n'
 import { importCanonical } from '#/simulator/src/data/importCanonical'
 import { canonicaliseProject } from '#/simulator/src/data/canonical'
 import { scopeList } from '#/simulator/src/circuit'
-import { useState } from '#/store/SimulatorStore/state'
 import { ref, computed, watch, onUnmounted } from 'vue'
 import type { CanonicalProject } from '#/simulator/src/types/canonical.types'
 
