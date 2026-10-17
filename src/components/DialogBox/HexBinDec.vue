@@ -20,7 +20,7 @@
                 </v-btn>
                 <div
                     v-for="(value, index) in Object.entries(inputArr)"
-                    id="bitconverterprompt"
+                    class="bitconverterprompt"
                     :key="value[0]"
                     title="Dec-Bin-Hex-Converter"
                 >
@@ -51,49 +51,6 @@
             </v-card-actions>
         </v-card>
     </v-dialog>
-  <v-dialog
-      v-model="SimulatorState.dialogBox.hex_bin_dec_converter_dialog"
-      :persistent="false"
-  >
-      <v-card class="messageBoxContent">
-          <v-card-text>
-              <p class="dialogHeader">Hex-Bin-Dec Converter</p>
-              <v-btn
-                  size="x-small"
-                  icon
-                  class="dialogClose"
-                  @click="
-                      SimulatorState.dialogBox.hex_bin_dec_converter_dialog = false
-                  "
-              >
-                  <v-icon>mdi-close</v-icon>
-              </v-btn>
-              <div
-              v-for="(value, index) in Object.entries(inputArr)"
-                  id="bitconverterprompt"
-                  :key="value[0]"
-                  title="Dec-Bin-Hex-Converter"
-              >
-                  <label>{{ value[1].label }}</label>
-                  <br />
-                  <input
-                      :id="value[0]"
-                      type="text"
-                      :value="value[1].val"
-                      :label="value[1].label"
-                      name="text1"
-                      @keyup="(payload) => converter(payload)"
-                  />
-                  <br /><br />
-              </div>
-          </v-card-text>
-          <v-card-actions>
-              <v-btn class="messageBtn" block @click="setBaseValues(0)">
-                  Reset
-              </v-btn>
-          </v-card-actions>
-      </v-card>
-  </v-dialog>
 </template>
 
 <script lang="ts" setup>
@@ -228,19 +185,19 @@ function hexConverter(input: string) {
 </script>
 
 <style scoped>
-#bitconverterprompt {
+.bitconverterprompt {
     color: var(--text-lite);
 }
 
-#bitconverterprompt input {
+.bitconverterprompt input {
     color: var(--text-lite);
 }
 
-#bitconverterprompt label {
+.bitconverterprompt label {
     color: var(--text-lite) !important;
 }
 
-#bitconverterprompt {
+.bitconverterprompt {
     text-align: center;
     font: inherit;
     border: none;
@@ -248,7 +205,7 @@ function hexConverter(input: string) {
     padding: 0;
 }
 
-#bitconverterprompt input {
+.bitconverterprompt input {
     background: transparent;
     border: none;
     outline: none;
@@ -256,7 +213,7 @@ function hexConverter(input: string) {
     font: inherit;
 }
 
-#bitconverterprompt input:focus {
+.bitconverterprompt input:focus {
     border: none;
 }
 </style>
