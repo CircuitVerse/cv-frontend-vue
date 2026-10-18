@@ -559,6 +559,11 @@ export default class CircuitElement {
         ) {
             if (simulationArea.hover === this) simulationArea.hover = undefined
             this.hover = false
+            for (let i = 0; i < this.nodeList.length; i++) {
+                if (simulationArea.hover === this.nodeList[i]) simulationArea.hover = undefined
+                this.nodeList[i].hover = false
+                this.nodeList[i].showHover = false
+            }
             return
         }
 
