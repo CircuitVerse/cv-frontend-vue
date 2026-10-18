@@ -8,6 +8,8 @@
         :is-persistent="true"
         :table-header="tableHeader"
         :table-body="tableBody"
+        :table-editable="output == null"
+        :output-start-col="outputStartCol"
         message-text="Boolean Logic Table"
         @button-click="
             (selectedOption, circuitItem, circuitNameVal) =>
@@ -44,6 +46,7 @@ const outputListNames = ref([])
 const tableHeader = ref([])
 const tableBody = ref([])
 const output = ref([])
+const outputStartCol = ref(0)
 
 inputArr.value = [
     {
@@ -116,6 +119,7 @@ function clearData() {
     tableHeader.value = []
     tableBody.value = []
     output.value = []
+    outputStartCol.value = 0
 }
 
 function dialogBoxConformation(selectedOption, circuitItem) {
@@ -138,7 +142,14 @@ function dialogBoxConformation(selectedOption, circuitItem) {
     }
     if (selectedOption == 'generateCircuit') {
         SimulatorState.dialogBox.combinationalanalysis_dialog = false
-        GenerateCircuit()
+        GenerateCircuit(
+            outputListNamesInteger.value,
+            inputListNames.value,
+            output.value,
+            outputListNames.value,
+            tableBody.value,
+            outputStartCol.value
+        )
         clearData()
         SimulatorState.dialogBox.combinationalanalysis_dialog = false
     }
@@ -178,8 +189,8 @@ function createLogicTable() {
     ) {
         // $(this).dialog('close')
         SimulatorState.dialogBox.combinationalanalysis_dialog = false
-
-        createBooleanPrompt(inputList, outputList, null)
+        output.value = null
+        createBooleanPrompt(inputList, outputList)
     } else if (
         booleanInputVariables.length > 0 &&
         inputList.length == 0 &&
@@ -187,8 +198,7 @@ function createLogicTable() {
     ) {
         // $(this).dialog('close')
         SimulatorState.dialogBox.combinationalanalysis_dialog = false
-        output.value = []
-        solveBooleanFunction(booleanInputVariables, booleanExpression)
+        output.value = solveBooleanFunction(booleanInputVariables, booleanExpression)
         if (output.value != null) {
             createBooleanPrompt(booleanInputVariables, booleanExpression)
         }
@@ -233,6 +243,7 @@ function createBooleanPrompt(inputList, outputList, scope = globalScope) {
         fw = 1
         tableHeader.value.push('dec')
     }
+    outputStartCol.value = inputListNames.value.length + fw
     for (var i = 0; i < inputListNames.value.length; i++) {
         tableHeader.value.push(inputListNames.value[i])
     }
@@ -320,8 +331,3 @@ function printBooleanTable() {
     z-index: 10000;
 }
 </style>
-
-<!--
-    some errors due to output.value
-    output.value == null not working
--->

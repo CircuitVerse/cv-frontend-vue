@@ -1,6 +1,7 @@
 /* eslint-disable import/no-cycle */
 import Scope, { scopeList, switchCircuit } from "./circuit";
 import CircuitElement from "./circuitElement";
+import type { ICircuitElement } from "./types/circuitElement.types";
 import { simulationArea } from "./simulationArea";
 import { scheduleBackup, checkIfBackup } from "./data/backupCircuit";
 import {
@@ -46,28 +47,36 @@ export function createSubCircuitPrompt(_scope = globalScope): void {
   simulatorStore.dialogBox.insertsubcircuit_dialog = true;
 }
 
+/** Node with the layout id that SubCircuit attaches for layout mapping. */
+type SubCircuitNode = Node & { layout_id?: string };
+
 /**
  * SubCircuit class representing a nested circuit component
  * @extends CircuitElement
  * @category subcircuit
  */
-export default class SubCircuit extends CircuitElement {
+export default class SubCircuit extends CircuitElement implements ICircuitElement {
+  declare propagationDelay: number;
+  declare tooltipText: string;
+  declare helplink: string;
+  declare centerElement: boolean;
+
   id: string;
   directionFixed: boolean;
   fixedBitWidth: boolean;
   savedData: any;
-  inputNodes: Node[];
-  outputNodes: Node[];
+  inputNodes: SubCircuitNode[];
+  outputNodes: SubCircuitNode[];
   localScope: any;
   preventCircuitSwitch: boolean;
   rectangleObject: boolean;
-  version: string;
+  version!: string;
   data: any;
   lastUpdated: any;
-  leftDimensionX: number;
-  upDimensionY: number;
-  rightDimensionX: number;
-  downDimensionY: number;
+  declare leftDimensionX: number;
+  declare upDimensionY: number;
+  declare rightDimensionX: number;
+  declare downDimensionY: number;
   lastClickedElement: any;
   elementHover: any;
 
@@ -129,14 +138,24 @@ export default class SubCircuit extends CircuitElement {
       this.label = this.savedData.label || "";
       this.labelDirection = this.savedData.labelDirection || "RIGHT";
       for (let i = 0; i < this.savedData.inputNodes.length; i++) {
-        this.inputNodes.push(this.scope.allNodes[this.savedData.inputNodes[i]]);
-        this.inputNodes[i].parent = this;
-        this.inputNodes[i].layout_id = subcircuitScope.Input[i]?.layoutProperties.id;
+        const idx = this.savedData.inputNodes[i];
+        if (!Number.isInteger(idx) || idx < 0 || idx >= this.scope.allNodes.length) {
+          continue;
+        }
+        this.inputNodes.push(this.scope.allNodes[idx]);
+        this.inputNodes[this.inputNodes.length - 1].parent = this;
+        this.inputNodes[this.inputNodes.length - 1].layout_id =
+          subcircuitScope.Input[i]?.layoutProperties.id;
       }
       for (let i = 0; i < this.savedData.outputNodes.length; i++) {
-        this.outputNodes.push(this.scope.allNodes[this.savedData.outputNodes[i]]);
-        this.outputNodes[i].parent = this;
-        this.outputNodes[i].layout_id = subcircuitScope.Output[i]?.layoutProperties.id;
+        const idx = this.savedData.outputNodes[i];
+        if (!Number.isInteger(idx) || idx < 0 || idx >= this.scope.allNodes.length) {
+          continue;
+        }
+        this.outputNodes.push(this.scope.allNodes[idx]);
+        this.outputNodes[this.outputNodes.length - 1].parent = this;
+        this.outputNodes[this.outputNodes.length - 1].layout_id =
+          subcircuitScope.Output[i]?.layoutProperties.id;
       }
       if (this.version == "1.0") {
         // For backward compatibility
@@ -228,7 +247,7 @@ export default class SubCircuit extends CircuitElement {
           1,
           this,
           subcircuitScope.Output[i].bitWidth,
-        );
+        ) as SubCircuitNode;
         a.layout_id = subcircuitScope.Output[i].layoutProperties.id;
         this.outputNodes.push(a);
       }
@@ -239,7 +258,7 @@ export default class SubCircuit extends CircuitElement {
           0,
           this,
           subcircuitScope.Input[i].bitWidth,
-        );
+        ) as SubCircuitNode;
         a.layout_id = subcircuitScope.Input[i].layoutProperties.id;
         this.inputNodes.push(a);
       }
@@ -268,6 +287,9 @@ export default class SubCircuit extends CircuitElement {
    */
   reset(): void {
     this.removeConnections();
+
+    this.inputNodes = this.inputNodes.filter((node) => node != undefined);
+    this.outputNodes = this.outputNodes.filter((node) => node != undefined);
 
     const subcircuitScope = scopeList[this.id];
 
@@ -302,8 +324,9 @@ export default class SubCircuit extends CircuitElement {
       ];
     }
     for (let i = 0; i < this.inputNodes.length; i++) {
-      if (temp_map_inp.hasOwnProperty(this.inputNodes[i].layout_id)) {
-        temp_map_inp[this.inputNodes[i].layout_id][1] = this.inputNodes[i];
+      const layoutId = this.inputNodes[i].layout_id;
+      if (layoutId !== undefined && temp_map_inp.hasOwnProperty(layoutId)) {
+        temp_map_inp[layoutId][1] = this.inputNodes[i];
       } else {
         this.scope.backups = [];
         this.inputNodes[i].delete();
@@ -346,7 +369,7 @@ export default class SubCircuit extends CircuitElement {
           0,
           this,
           input.bitWidth,
-        );
+        ) as SubCircuitNode;
         a.layout_id = input.layoutProperties.id;
         this.inputNodes.push(a);
       }
@@ -360,8 +383,9 @@ export default class SubCircuit extends CircuitElement {
       ];
     }
     for (let i = 0; i < this.outputNodes.length; i++) {
-      if (temp_map_out.hasOwnProperty(this.outputNodes[i].layout_id)) {
-        temp_map_out[this.outputNodes[i].layout_id][1] = this.outputNodes[i];
+      const layoutId = this.outputNodes[i].layout_id;
+      if (layoutId !== undefined && temp_map_out.hasOwnProperty(layoutId)) {
+        temp_map_out[layoutId][1] = this.outputNodes[i];
       } else {
         this.outputNodes[i].delete();
         this.nodeList = this.nodeList.filter((x) => x !== this.outputNodes[i]);
@@ -402,7 +426,7 @@ export default class SubCircuit extends CircuitElement {
           1,
           this,
           output.bitWidth,
-        );
+        ) as SubCircuitNode;
         a.layout_id = output.layoutProperties.id;
         this.outputNodes.push(a);
       }
@@ -545,7 +569,7 @@ export default class SubCircuit extends CircuitElement {
   /**
    * determines where to show label
    */
-  determine_label(x: number, y: number): [string, number, number] {
+  determine_label(x: number, y: number): [CanvasTextAlign, number, number] {
     if (x == 0) return ["left", 5, 0];
     if (x == scopeList[this.id].layout.width) return ["right", -5, 0];
     if (y == 0) return ["center", 0, 13];
@@ -579,6 +603,7 @@ export default class SubCircuit extends CircuitElement {
     const subcircuitScope = scopeList[this.id];
 
     const ctx = simulationArea.context;
+    if (!ctx) return;
 
     ctx.lineWidth = globalScope.scale * 3;
     ctx.strokeStyle = colors["stroke"]; // ("rgba(0,0,0,1)");

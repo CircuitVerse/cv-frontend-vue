@@ -40,6 +40,7 @@ export function paste(copyData: string): void {
         isVerilogCircuit,
         isMainCircuit,
       );
+      if (!scope) continue;
       loadScope(scope, data.scopes[i]);
       scopeList[data.scopes[i].id] = scope;
     }

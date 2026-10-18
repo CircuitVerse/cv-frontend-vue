@@ -73,7 +73,7 @@ async function verifyCanonicalRoundTrip(fixture: EditorPickProject): Promise<voi
   const canonical = await canonicaliseProject(Object.values(scopeList));
 
   expect(canonical.projectMetadata.name).toBe(fixture.name);
-  expect(canonical.projectMetadata.timePeriod).toBe(fixture.timePeriod);
+  expect(canonical.projectMetadata.timePeriod).toBe(Number(fixture.timePeriod));
   expect(canonical.projectMetadata.clockEnabled).toBe(fixture.clockEnabled);
   expect(String(canonical.projectMetadata.focussedCircuit)).toBe(String(fixture.focussedCircuit));
   expect(canonical.projectMetadata.orderedTabs.map(String)).toEqual(
