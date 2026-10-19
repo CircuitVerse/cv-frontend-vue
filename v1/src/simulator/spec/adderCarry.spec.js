@@ -133,6 +133,16 @@ describe('Adder and ALU carry out', () => {
         expect(alu.carryOut.value).toBe(1);
     });
 
+    test('ALU A+B leaves outputs unset while an operand is undefined', () => {
+        const alu = new ALU(0, 0, globalScope, 'RIGHT', 32);
+        alu.inp1.value = 1;
+        alu.inp2.value = undefined;
+        alu.controlSignalInput.value = 2;
+        alu.resolve();
+        expect(alu.output.value).toBeUndefined();
+        expect(alu.carryOut.value).toBeUndefined();
+    });
+
     test('carry is correct when an ALU A&B output feeds an Adder', () => {
         const alu = new ALU(0, 0, globalScope, 'RIGHT', 32);
         alu.inp1.value = 0xffffffff;
