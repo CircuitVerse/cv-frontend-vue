@@ -62,6 +62,15 @@
         </div>
         <div>
             <button
+                id="quick-btn-beautify"
+                type="button"
+                class="quick-btn-beautify"
+                title="Beautify Circuit (Ctrl+Shift+B)"
+                @click="beautifyCircuitAction"
+            >✨</button>
+        </div>
+        <div>
+            <button
                 type="button"
                 class="quick-btn-view"
                 title="Preview Circuit"
@@ -88,7 +97,7 @@
 </template>
 
 <script lang="ts" setup>
-import { saveOnline, saveOffline, deleteSelectedItem, createSaveAsImgPrompt, zoomToFit, undoit, redoit, view, decrement, increment } from './QuickButton';
+import { saveOnline, saveOffline, deleteSelectedItem, createSaveAsImgPrompt, zoomToFit, undoit, redoit, view, decrement, increment, beautifyCircuitAction } from './QuickButton';
 
 function dragover(): void {
     const quickBtn: HTMLElement | null = document.querySelector('.quick-btn')
@@ -201,6 +210,21 @@ function dragover(): void {
 
 .quick-btn-view {
     color: white
+}
+
+.quick-btn-beautify {
+    background: transparent;
+    border: none;
+    color: #f0e68c;
+    font-size: 16px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 2px;
+    transition: transform 0.15s ease, filter 0.15s ease;
+}
+.quick-btn-beautify:hover {
+    transform: scale(1.25) rotate(-10deg);
+    filter: brightness(1.3);
 }
 
 .zoom-slider {
