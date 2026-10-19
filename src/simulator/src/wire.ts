@@ -115,7 +115,7 @@ export default class Wire {
       const minY = Math.min(y1, y2);
       const maxY = Math.max(y1, y2);
 
-      const buffer = 5; // Accounts for stroke width and line caps
+      const buffer = Math.ceil(Math.max(1, Math.round(3 * scale)) / 2 + 1);
       if (
         maxX < -buffer ||
         minX > canvas.width + buffer ||
