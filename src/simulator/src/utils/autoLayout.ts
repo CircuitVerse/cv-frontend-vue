@@ -209,6 +209,7 @@ async function runBeautify(
   }
 
   // Rebuild each net with shared trunk junctions and preserved boundary connections
+  // Record a post‑layout backup so undo restores pre‑layout state
   for (const net of nets) {
     const netNodeMap = new Map<string, CircuitPin>();
     const rawBranchPaths: Point[][] = [];
@@ -246,6 +247,7 @@ async function runBeautify(
     }
   }
 
+  scheduleBackup(scope);
   forceResetNodesSet(true);
   updateSimulationSet(true);
   updateCanvasSet(true);
