@@ -61,8 +61,6 @@ async function runBeautify(
   minX = snapGrid(minX);
   minY = snapGrid(minY);
 
-  scheduleBackup(scope);
-
   const nets = extractNets(workingSet);
 
   const elementIdMap = new Map<CircuitElement, string>();
