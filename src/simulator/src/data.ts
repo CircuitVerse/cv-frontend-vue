@@ -85,5 +85,7 @@ function createNewCircuit(): void {
 // Hack to call beautifyCircuit with keyboard shortcut and navbar button
 function triggerBeautifyCircuit(): void {
   const hasSelection = (simulationArea.multipleObjectSelections?.length ?? 0) > 0;
-  beautifyCircuit(undefined, hasSelection).catch((err) => console.error("[autoLayout] Error:", err));
+  beautifyCircuit(undefined, hasSelection).catch((err) =>
+    console.error("[autoLayout] Error:", err),
+  );
 }
