@@ -11,6 +11,249 @@ import {
   updateSimulationSet,
   updateCanvasSet,
 } from "../engine";
+
+let layoutInProgress = false;
+
+async function runBeautify(
+  scope: CircuitScope = globalScope,
+  selectedOnly = false,
+): Promise<boolean> {
+  const { simulationArea } = await import("../simulationArea");
+  const { moduleList } = await import("../metadata");
+
+  const allElements: CircuitElement[] = [];
+  for (const key of moduleList as string[]) {
+    const list = scope[key];
+    if (Array.isArray(list)) {
+      allElements.push(...(list as CircuitElement[]));
+    }
+  }
+
+  let workingSet: Set<CircuitElement>;
+  if (selectedOnly && simulationArea.multipleObjectSelections?.length > 0) {
+    workingSet = new Set(
+      (simulationArea.multipleObjectSelections as CircuitElement[]).filter(
+        (o) =>
+          o.objectType !== "Node" &&
+          o.objectType !== "Wire" &&
+          Array.isArray(o.nodeList) &&
+          !o.isPositionLocked,
+      ),
+    );
+  } else {
+    workingSet = new Set(
+      allElements.filter((el) => Array.isArray(el.nodeList) && !el.isPositionLocked),
+    );
+  }
+
+  if (workingSet.size === 0) {
+    console.warn("[autoLayout] No elements to layout.");
+    return false;
+  }
+
+  // Anchor layout to the current top-left bounding box of the working set
+  let minX = Infinity;
+  let minY = Infinity;
+  for (const el of workingSet) {
+    minX = Math.min(minX, el.x - (el.leftDimensionX || 20));
+    minY = Math.min(minY, el.y - (el.upDimensionY || 20));
+  }
+  minX = snapGrid(minX);
+  minY = snapGrid(minY);
+
+  scheduleBackup(scope);
+
+  const nets = extractNets(workingSet);
+
+  const elementIdMap = new Map<CircuitElement, string>();
+  let elIdx = 0;
+  for (const el of workingSet) {
+    elementIdMap.set(el, `el_${elIdx++}`);
+  }
+
+  const pinToPortId = new Map<CircuitPin, string>();
+  const elkNodes: ElkNode[] = [];
+
+  for (const el of workingSet) {
+    const id = elementIdMap.get(el)!;
+    const lx = el.leftDimensionX || 20;
+    const rx = el.rightDimensionX || 20;
+    const uy = el.upDimensionY || 20;
+    const dy = el.downDimensionY || 20;
+
+    const w = snapGrid(Math.max(lx + rx, 40));
+    const h = snapGrid(Math.max(uy + dy, 40));
+
+    const ports: ElkPort[] = [];
+    let portIdx = 0;
+    for (const pin of el.nodeList || []) {
+      const portId = `${id}_p${portIdx++}`;
+      pinToPortId.set(pin, portId);
+      ports.push({
+        id: portId,
+        x: pin.x + lx,
+        y: pin.y + uy,
+        // Zero-size ports prevent ELK from adding a +3px center offset to wires
+        width: 0,
+        height: 0,
+        properties: { "elk.port.side": portSide(pin, el) },
+      });
+    }
+
+    const nodeProps: Record<string, string> = {
+      "elk.portConstraints": "FIXED_POS",
+    };
+    const lc = layerConstraint(el);
+    if (lc) {
+      nodeProps["elk.layered.layering.layerConstraint"] = lc;
+    }
+
+    elkNodes.push({
+      id,
+      width: w,
+      height: h,
+      ports,
+      properties: nodeProps,
+    });
+  }
+
+  const elkEdges: ElkEdge[] = [];
+  const edgeByPinPair = new Map<string, ElkEdge>();
+  const pairKey = (src: CircuitPin, tgt: CircuitPin): string => {
+    const sId = pinToPortId.get(src) || "";
+    const tId = pinToPortId.get(tgt) || "";
+    return `${sId}->${tId}`;
+  };
+
+  let edgeIdx = 0;
+  for (const net of nets) {
+    const srcPortId = pinToPortId.get(net.source);
+    if (!srcPortId) continue;
+
+    for (const tgt of net.targets) {
+      const tgtPortId = pinToPortId.get(tgt);
+      if (!tgtPortId) continue;
+
+      const srcElId = srcPortId.substring(0, srcPortId.lastIndexOf("_"));
+      const tgtElId = tgtPortId.substring(0, tgtPortId.lastIndexOf("_"));
+
+      const edge: ElkEdge = {
+        id: `e_${edgeIdx++}`,
+        sources: [srcPortId],
+        targets: [tgtPortId],
+        sourceNode: srcElId,
+        targetNode: tgtElId,
+      };
+      elkEdges.push(edge);
+      edgeByPinPair.set(pairKey(net.source, tgt), edge);
+    }
+  }
+
+  const elkGraph = {
+    id: "root",
+    layoutOptions: {
+      "elk.algorithm": "layered",
+      "elk.direction": "RIGHT",
+      "elk.edgeRouting": "ORTHOGONAL",
+      // All spacing options are multiples of 10px to stay aligned with the CircuitVerse grid
+      "elk.layered.spacing.nodeNodeBetweenLayers": "60",
+      "elk.spacing.nodeNode": "40",
+      "elk.spacing.edgeNode": "20",
+      "elk.spacing.edgeEdge": "20",
+      "elk.layered.nodePlacement.strategy": "NETWORK_SIMPLEX",
+    },
+    children: elkNodes,
+    edges: elkEdges,
+  };
+
+  const elk = new ELK();
+  let result: { children?: ElkNode[]; edges?: ElkEdge[] };
+  try {
+    result = (await elk.layout(elkGraph)) as { children?: ElkNode[]; edges?: ElkEdge[] };
+  } catch (err) {
+    console.error("[autoLayout] ELK layout failed:", err);
+    return false;
+  }
+
+  // Tear down old intermediate nodes and wires only after ELK succeeds
+  for (const net of nets) {
+    teardownNet(net, scope);
+  }
+
+  let elkMinX = Infinity;
+  let elkMinY = Infinity;
+  for (const n of result.children || []) {
+    elkMinX = Math.min(elkMinX, n.x ?? 0);
+    elkMinY = Math.min(elkMinY, n.y ?? 0);
+  }
+  if (!Number.isFinite(elkMinX)) elkMinX = 0;
+  if (!Number.isFinite(elkMinY)) elkMinY = 0;
+
+  const elkNodeById = new Map<string, ElkNode>();
+  for (const n of result.children || []) {
+    elkNodeById.set(n.id, n);
+  }
+
+  // Update positions of elements in workingSet
+  for (const el of workingSet) {
+    const en = elkNodeById.get(elementIdMap.get(el)!);
+    if (!en) continue;
+    el.x = snapGrid(minX + ((en.x ?? 0) - elkMinX) + (el.leftDimensionX || 20));
+    el.y = snapGrid(minY + ((en.y ?? 0) - elkMinY) + (el.upDimensionY || 20));
+  }
+
+  // Index laid-out ELK edges by id
+  const resultEdgeById = new Map<string, ElkEdge>();
+  for (const e of result.edges || []) {
+    resultEdgeById.set(e.id, e);
+  }
+
+  // Rebuild each net with shared trunk junctions and preserved boundary connections
+  for (const net of nets) {
+    const netNodeMap = new Map<string, CircuitPin>();
+    const rawBranchPaths: Point[][] = [];
+
+    const srcAbs: Point = {
+      x: snapGrid(net.source.absX()),
+      y: snapGrid(net.source.absY()),
+    };
+
+    for (const tgt of net.targets) {
+      const tgtAbs: Point = {
+        x: snapGrid(tgt.absX()),
+        y: snapGrid(tgt.absY()),
+      };
+
+      const reqEdge = edgeByPinPair.get(pairKey(net.source, tgt));
+      const laidOutEdge = reqEdge ? resultEdgeById.get(reqEdge.id) : undefined;
+      const sections = laidOutEdge?.sections || [];
+
+      const rawBends =
+        sections.length > 0 ? extractBendPoints(sections, minX, minY, elkMinX, elkMinY) : [];
+
+      const cleanedPath = simplifyOrthogonalPath([srcAbs, ...rawBends, tgtAbs]);
+      rawBranchPaths.push(cleanedPath);
+    }
+
+    // Split shared trunk segments at branch points so 1-to-N fan-out nets share nodes
+    const subdividedPaths = subdivideSharedTrunks(rawBranchPaths);
+
+    for (let i = 0; i < net.targets.length; i++) {
+      const tgt = net.targets[i];
+      const fullPath = subdividedPaths[i];
+      const bendOnly = fullPath.slice(1, fullPath.length - 1);
+      buildWireChain(net.source, tgt, bendOnly, scope, netNodeMap);
+    }
+  }
+
+  forceResetNodesSet(true);
+  updateSimulationSet(true);
+  updateCanvasSet(true);
+  scheduleUpdate(1);
+
+  return true;
+}
+
 import Node from "../node";
 
 // Global scope is dynamically populated at runtime in the simulator
@@ -420,238 +663,11 @@ export async function beautifyCircuit(
   scope: CircuitScope = globalScope,
   selectedOnly = false,
 ): Promise<boolean> {
-  const { simulationArea } = await import("../simulationArea");
-  const { moduleList } = await import("../metadata");
-
-  const allElements: CircuitElement[] = [];
-  for (const key of moduleList as string[]) {
-    const list = scope[key];
-    if (Array.isArray(list)) {
-      allElements.push(...(list as CircuitElement[]));
-    }
-  }
-
-  let workingSet: Set<CircuitElement>;
-  if (selectedOnly && simulationArea.multipleObjectSelections?.length > 0) {
-    workingSet = new Set(
-      (simulationArea.multipleObjectSelections as CircuitElement[]).filter(
-        (o) =>
-          o.objectType !== "Node" &&
-          o.objectType !== "Wire" &&
-          Array.isArray(o.nodeList) &&
-          !o.isPositionLocked,
-      ),
-    );
-  } else {
-    workingSet = new Set(
-      allElements.filter((el) => Array.isArray(el.nodeList) && !el.isPositionLocked),
-    );
-  }
-
-  if (workingSet.size === 0) {
-    console.warn("[autoLayout] No elements to layout.");
-    return false;
-  }
-
-  // Anchor layout to the current top-left bounding box of the working set
-  let minX = Infinity;
-  let minY = Infinity;
-  for (const el of workingSet) {
-    minX = Math.min(minX, el.x - (el.leftDimensionX || 20));
-    minY = Math.min(minY, el.y - (el.upDimensionY || 20));
-  }
-  minX = snapGrid(minX);
-  minY = snapGrid(minY);
-
-  scheduleBackup(scope);
-
-  const nets = extractNets(workingSet);
-
-  const elementIdMap = new Map<CircuitElement, string>();
-  let elIdx = 0;
-  for (const el of workingSet) {
-    elementIdMap.set(el, `el_${elIdx++}`);
-  }
-
-  const pinToPortId = new Map<CircuitPin, string>();
-  const elkNodes: ElkNode[] = [];
-
-  for (const el of workingSet) {
-    const id = elementIdMap.get(el)!;
-    const lx = el.leftDimensionX || 20;
-    const rx = el.rightDimensionX || 20;
-    const uy = el.upDimensionY || 20;
-    const dy = el.downDimensionY || 20;
-
-    const w = snapGrid(Math.max(lx + rx, 40));
-    const h = snapGrid(Math.max(uy + dy, 40));
-
-    const ports: ElkPort[] = [];
-    let portIdx = 0;
-    for (const pin of el.nodeList || []) {
-      const portId = `${id}_p${portIdx++}`;
-      pinToPortId.set(pin, portId);
-      ports.push({
-        id: portId,
-        x: pin.x + lx,
-        y: pin.y + uy,
-        // Zero-size ports prevent ELK from adding a +3px center offset to wires
-        width: 0,
-        height: 0,
-        properties: { "elk.port.side": portSide(pin, el) },
-      });
-    }
-
-    const nodeProps: Record<string, string> = {
-      "elk.portConstraints": "FIXED_POS",
-    };
-    const lc = layerConstraint(el);
-    if (lc) {
-      nodeProps["elk.layered.layering.layerConstraint"] = lc;
-    }
-
-    elkNodes.push({
-      id,
-      width: w,
-      height: h,
-      ports,
-      properties: nodeProps,
-    });
-  }
-
-  const elkEdges: ElkEdge[] = [];
-  const edgeByPinPair = new Map<string, ElkEdge>();
-  const pairKey = (src: CircuitPin, tgt: CircuitPin): string => {
-    const sId = pinToPortId.get(src) || "";
-    const tId = pinToPortId.get(tgt) || "";
-    return `${sId}->${tId}`;
-  };
-
-  let edgeIdx = 0;
-  for (const net of nets) {
-    const srcPortId = pinToPortId.get(net.source);
-    if (!srcPortId) continue;
-
-    for (const tgt of net.targets) {
-      const tgtPortId = pinToPortId.get(tgt);
-      if (!tgtPortId) continue;
-
-      const srcElId = srcPortId.substring(0, srcPortId.lastIndexOf("_"));
-      const tgtElId = tgtPortId.substring(0, tgtPortId.lastIndexOf("_"));
-
-      const edge: ElkEdge = {
-        id: `e_${edgeIdx++}`,
-        sources: [srcPortId],
-        targets: [tgtPortId],
-        sourceNode: srcElId,
-        targetNode: tgtElId,
-      };
-      elkEdges.push(edge);
-      edgeByPinPair.set(pairKey(net.source, tgt), edge);
-    }
-  }
-
-  const elkGraph = {
-    id: "root",
-    layoutOptions: {
-      "elk.algorithm": "layered",
-      "elk.direction": "RIGHT",
-      "elk.edgeRouting": "ORTHOGONAL",
-      // All spacing options are multiples of 10px to stay aligned with the CircuitVerse grid
-      "elk.layered.spacing.nodeNodeBetweenLayers": "60",
-      "elk.spacing.nodeNode": "40",
-      "elk.spacing.edgeNode": "20",
-      "elk.spacing.edgeEdge": "20",
-      "elk.layered.nodePlacement.strategy": "NETWORK_SIMPLEX",
-    },
-    children: elkNodes,
-    edges: elkEdges,
-  };
-
-  const elk = new ELK();
-  let result: { children?: ElkNode[]; edges?: ElkEdge[] };
+  if (layoutInProgress) return false;
+  layoutInProgress = true;
   try {
-    result = (await elk.layout(elkGraph)) as { children?: ElkNode[]; edges?: ElkEdge[] };
-  } catch (err) {
-    console.error("[autoLayout] ELK layout failed:", err);
-    return false;
+    return await runBeautify(scope, selectedOnly);
+  } finally {
+    layoutInProgress = false;
   }
-
-  // Tear down old intermediate nodes and wires only after ELK succeeds
-  for (const net of nets) {
-    teardownNet(net, scope);
-  }
-
-  let elkMinX = Infinity;
-  let elkMinY = Infinity;
-  for (const n of result.children || []) {
-    elkMinX = Math.min(elkMinX, n.x ?? 0);
-    elkMinY = Math.min(elkMinY, n.y ?? 0);
-  }
-  if (!Number.isFinite(elkMinX)) elkMinX = 0;
-  if (!Number.isFinite(elkMinY)) elkMinY = 0;
-
-  const elkNodeById = new Map<string, ElkNode>();
-  for (const n of result.children || []) {
-    elkNodeById.set(n.id, n);
-  }
-
-  // Update positions of elements in workingSet
-  for (const el of workingSet) {
-    const en = elkNodeById.get(elementIdMap.get(el)!);
-    if (!en) continue;
-    el.x = snapGrid(minX + ((en.x ?? 0) - elkMinX) + (el.leftDimensionX || 20));
-    el.y = snapGrid(minY + ((en.y ?? 0) - elkMinY) + (el.upDimensionY || 20));
-  }
-
-  // Index laid-out ELK edges by id
-  const resultEdgeById = new Map<string, ElkEdge>();
-  for (const e of result.edges || []) {
-    resultEdgeById.set(e.id, e);
-  }
-
-  // Rebuild each net with shared trunk junctions and preserved boundary connections
-  for (const net of nets) {
-    const netNodeMap = new Map<string, CircuitPin>();
-    const rawBranchPaths: Point[][] = [];
-
-    const srcAbs: Point = {
-      x: snapGrid(net.source.absX()),
-      y: snapGrid(net.source.absY()),
-    };
-
-    for (const tgt of net.targets) {
-      const tgtAbs: Point = {
-        x: snapGrid(tgt.absX()),
-        y: snapGrid(tgt.absY()),
-      };
-
-      const reqEdge = edgeByPinPair.get(pairKey(net.source, tgt));
-      const laidOutEdge = reqEdge ? resultEdgeById.get(reqEdge.id) : undefined;
-      const sections = laidOutEdge?.sections || [];
-
-      const rawBends =
-        sections.length > 0 ? extractBendPoints(sections, minX, minY, elkMinX, elkMinY) : [];
-
-      const cleanedPath = simplifyOrthogonalPath([srcAbs, ...rawBends, tgtAbs]);
-      rawBranchPaths.push(cleanedPath);
-    }
-
-    // Split shared trunk segments at branch points so 1-to-N fan-out nets share nodes
-    const subdividedPaths = subdivideSharedTrunks(rawBranchPaths);
-
-    for (let i = 0; i < net.targets.length; i++) {
-      const tgt = net.targets[i];
-      const fullPath = subdividedPaths[i];
-      const bendOnly = fullPath.slice(1, fullPath.length - 1);
-      buildWireChain(net.source, tgt, bendOnly, scope, netNodeMap);
-    }
-  }
-
-  forceResetNodesSet(true);
-  updateSimulationSet(true);
-  updateCanvasSet(true);
-  scheduleUpdate(1);
-
-  return true;
 }
