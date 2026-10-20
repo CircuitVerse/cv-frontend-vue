@@ -49,7 +49,8 @@
                 "download_image": "ছবি ডাউনলোড",
                 "themes": "থিম",
                 "export_verilog": "ভেরিলগ রপ্তানি",
-                "custom_shortcut": "কাস্টম শর্টকাট"
+                "custom_shortcut": "কাস্টম শর্টকাট",
+                "beautify_circuit": "সার্কিট সুন্দর করা"
             },
             "help": {
                 "heading": "সাহায্য",
