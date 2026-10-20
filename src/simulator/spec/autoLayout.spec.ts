@@ -125,7 +125,7 @@ vi.mock("../src/wire", () => ({
       public node1: any,
       public node2: any,
       public scope: any,
-    ) { }
+    ) {}
   },
 }));
 
