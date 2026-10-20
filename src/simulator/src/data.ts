@@ -15,6 +15,7 @@ import { keyBinder } from "#/components/DialogBox/CustomShortcut.vue";
 import { ExportProject } from "#/components/DialogBox/ExportProject.vue";
 import { ImportProject } from "#/components/DialogBox/ImportProject.vue";
 import { beautifyCircuit } from "./utils/autoLayout";
+import { simulationArea } from "./simulationArea";
 
 interface LogixFunction {
   save: typeof save;
@@ -83,5 +84,6 @@ function createNewCircuit(): void {
 
 // Hack to call beautifyCircuit with keyboard shortcut and navbar button
 function triggerBeautifyCircuit(): void {
-  beautifyCircuit().catch((err) => console.error("[autoLayout] Error:", err));
+  const hasSelection = (simulationArea.multipleObjectSelections?.length ?? 0) > 0;
+  beautifyCircuit(undefined, hasSelection).catch((err) => console.error("[autoLayout] Error:", err));
 }
