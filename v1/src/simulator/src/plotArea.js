@@ -69,7 +69,9 @@ const plotArea = {
         return cycleWidth
     },
     set cycleWidth(val) {
-        cycleWidth = val
+        if (typeof val === 'number' && !Number.isNaN(val)) {
+            cycleWidth = Math.max(minCycleWidth, val)
+        }
     },
     get minCycleWidth() {
         return minCycleWidth
