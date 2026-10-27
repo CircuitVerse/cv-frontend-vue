@@ -78,7 +78,8 @@
     </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { Editor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import TextAlign from '@tiptap/extension-text-align'
@@ -87,202 +88,209 @@ import Subscript from '@tiptap/extension-subscript'
 import Superscript from '@tiptap/extension-superscript'
 import CharacterCount from '@tiptap/extension-character-count'
 
-export default {
-    components: {
-        EditorContent,
+interface Props {
+    modelValue?: string
+    maxLimit?: number | null
+}
+
+const props = withDefaults(defineProps<Props>(), {
+    modelValue: '',
+    maxLimit: null,
+})
+
+const emit = defineEmits<{
+    (e: 'toggleFullscreen'): void
+    (e: 'update:modelValue', value: string): void
+}>()
+
+interface TextAction {
+    slug: string
+    icon: string
+    active: string | { textAlign: string }
+    option?: string
+}
+
+const editor = ref<Editor | null>(null)
+const showSourceCode = ref(false)
+const sourceCode = ref('')
+const fullscreen = ref(false)
+const textActions: TextAction[] = [
+    { slug: 'bold', icon: 'fas fa-bold', active: 'bold' },
+    { slug: 'italic', icon: 'fas fa-italic', active: 'italic' },
+    {
+        slug: 'underline',
+        icon: 'fas fa-underline',
+        active: 'underline',
     },
-    props: {
-        modelValue: {
-            type: String,
-            default: '',
-        },
-        maxLimit: {
-            type: Number,
-            default: null,
-        },
+    {
+        slug: 'strike',
+        icon: 'fas fa-strikethrough',
+        active: 'strike',
     },
-    emits: ['toggleFullscreen', 'update:modelValue'],
-    data() {
-        return {
-            editor: null,
-            showSourceCode: false,
-            sourceCode: '',
-            fullscreen: false,
-            textActions: [
-                { slug: 'bold', icon: 'fas fa-bold', active: 'bold' },
-                { slug: 'italic', icon: 'fas fa-italic', active: 'italic' },
-                {
-                    slug: 'underline',
-                    icon: 'fas fa-underline',
-                    active: 'underline',
-                },
-                {
-                    slug: 'strike',
-                    icon: 'fas fa-strikethrough',
-                    active: 'strike',
-                },
-                {
-                    slug: 'align',
-                    option: 'left',
-                    icon: 'fas fa-align-left',
-                    active: { textAlign: 'left' },
-                },
-                {
-                    slug: 'align',
-                    option: 'center',
-                    icon: 'fas fa-align-center',
-                    active: { textAlign: 'center' },
-                },
-                {
-                    slug: 'align',
-                    option: 'right',
-                    icon: 'fas fa-align-right',
-                    active: { textAlign: 'right' },
-                },
-                {
-                    slug: 'align',
-                    option: 'justify',
-                    icon: 'fas fa-align-justify',
-                    active: { textAlign: 'justify' },
-                },
-                {
-                    slug: 'bulletList',
-                    icon: 'fas fa-list-ul',
-                    active: 'bulletList',
-                },
-                {
-                    slug: 'orderedList',
-                    icon: 'fas fa-list-ol',
-                    active: 'orderedList',
-                },
-                {
-                    slug: 'subscript',
-                    icon: 'fas fa-subscript',
-                    active: 'subscript',
-                },
-                {
-                    slug: 'superscript',
-                    icon: 'fas fa-superscript',
-                    active: 'superscript',
-                },
-                { slug: 'undo', icon: 'fas fa-undo', active: 'undo' },
-                { slug: 'redo', icon: 'fas fa-redo', active: 'redo' },
-                { slug: 'clear', icon: 'fas fa-times-circle', active: 'clear' },
-            ],
+    {
+        slug: 'align',
+        option: 'left',
+        icon: 'fas fa-align-left',
+        active: { textAlign: 'left' },
+    },
+    {
+        slug: 'align',
+        option: 'center',
+        icon: 'fas fa-align-center',
+        active: { textAlign: 'center' },
+    },
+    {
+        slug: 'align',
+        option: 'right',
+        icon: 'fas fa-align-right',
+        active: { textAlign: 'right' },
+    },
+    {
+        slug: 'align',
+        option: 'justify',
+        icon: 'fas fa-align-justify',
+        active: { textAlign: 'justify' },
+    },
+    {
+        slug: 'bulletList',
+        icon: 'fas fa-list-ul',
+        active: 'bulletList',
+    },
+    {
+        slug: 'orderedList',
+        icon: 'fas fa-list-ol',
+        active: 'orderedList',
+    },
+    {
+        slug: 'subscript',
+        icon: 'fas fa-subscript',
+        active: 'subscript',
+    },
+    {
+        slug: 'superscript',
+        icon: 'fas fa-superscript',
+        active: 'superscript',
+    },
+    { slug: 'undo', icon: 'fas fa-undo', active: 'undo' },
+    { slug: 'redo', icon: 'fas fa-redo', active: 'redo' },
+    { slug: 'clear', icon: 'fas fa-times-circle', active: 'clear' },
+]
+
+const charactersCount = computed(() => {
+    return editor.value?.storage.characterCount.characters() ?? 0
+})
+
+const wordsCount = computed(() => {
+    return editor.value?.storage.characterCount.words() ?? 0
+})
+
+const limitWarning = computed(() => {
+    if (props.maxLimit == null) return ''
+    const isCloseToMax = charactersCount.value >= props.maxLimit - 20
+    const isMax = charactersCount.value === props.maxLimit
+
+    if (isCloseToMax && !isMax) return 'warning'
+    if (isMax) return 'danger'
+
+    return ''
+})
+
+watch(
+    () => props.modelValue,
+    (value) => {
+        if (showSourceCode.value) {
+            sourceCode.value = value
+        } else if (editor.value && editor.value.getHTML() !== value) {
+            editor.value.commands.setContent(value, false)
         }
     },
-    computed: {
-        charactersCount() {
-            return this.editor.storage.characterCount.characters()
-        },
-        wordsCount() {
-            return this.editor.storage.characterCount.words()
-        },
-        limitWarning() {
-            const isCloseToMax = this.charactersCount >= this.maxLimit - 20
-            const isMax = this.charactersCount === this.maxLimit
+)
 
-            if (isCloseToMax && !isMax) return 'warning'
-            if (isMax) return 'danger'
+watch(showSourceCode, (value) => {
+    if (!editor.value) return
+    if (value) {
+        sourceCode.value = editor.value.getHTML()
+    } else {
+        editor.value.commands.setContent(sourceCode.value, false)
+    }
+})
 
-            return ''
+onMounted(() => {
+    editor.value = new Editor({
+        content: props.modelValue,
+        extensions: [
+            StarterKit,
+            Underline,
+            Subscript,
+            Superscript,
+            CharacterCount.configure({
+                limit: props.maxLimit ?? undefined,
+            }),
+            TextAlign.configure({
+                types: ['heading', 'paragraph'],
+            }),
+        ],
+        onUpdate: () => {
+            emit('update:modelValue', editor.value?.getHTML() ?? '')
         },
-    },
-    watch: {
-        modelValue(value) {
-            if (this.showSourceCode) {
-                this.sourceCode = value
-            } else if (this.editor.getHTML() !== value) {
-                this.editor.commands.setContent(value, false)
-            }
-        },
-        showSourceCode(value) {
-            if (value) {
-                this.sourceCode = this.editor.getHTML()
-            } else {
-                this.editor.commands.setContent(this.sourceCode, false)
-            }
-        },
-    },
-    mounted() {
-        this.editor = new Editor({
-            content: this.modelValue,
-            extensions: [
-                StarterKit,
-                Underline,
-                Subscript,
-                Superscript,
-                CharacterCount.configure({
-                    limit: this.maxLimit,
-                }),
-                TextAlign.configure({
-                    types: ['heading', 'paragraph'],
-                }),
-            ],
-            onUpdate: () => {
-                this.$emit('update:modelValue', this.editor.getHTML())
-            },
-        })
-        document.addEventListener(
-            'fullscreenchange',
-            this.handleFullscreenChange
-        )
-    },
-    beforeUnmount() {
-        this.editor.destroy()
-        document.removeEventListener(
-            'fullscreenchange',
-            this.handleFullscreenChange
-        )
-    },
-    methods: {
-        onActionClick(slug, option = null) {
-            if (this.showSourceCode) return
-            const vm = this.editor.chain().focus()
-            const actionTriggers = {
-                bold: () => vm.toggleBold().run(),
-                italic: () => vm.toggleItalic().run(),
-                underline: () => vm.toggleUnderline().run(),
-                strike: () => vm.toggleStrike().run(),
-                bulletList: () => vm.toggleBulletList().run(),
-                orderedList: () => vm.toggleOrderedList().run(),
-                align: () => vm.setTextAlign(option).run(),
-                subscript: () => vm.toggleSubscript().run(),
-                superscript: () => vm.toggleSuperscript().run(),
-                undo: () => vm.undo().run(),
-                redo: () => vm.redo().run(),
-                clear: () => {
-                    vm.clearNodes().run()
-                    vm.unsetAllMarks().run()
-                },
-            }
+    })
+    document.addEventListener('fullscreenchange', handleFullscreenChange)
+})
 
-            actionTriggers[slug]()
+onBeforeUnmount(() => {
+    editor.value?.destroy()
+    document.removeEventListener('fullscreenchange', handleFullscreenChange)
+})
+
+function onActionClick(slug: string, option?: string) {
+    if (showSourceCode.value || !editor.value) return
+    const vm = editor.value.chain().focus()
+    const actionTriggers: Record<string, () => void> = {
+        bold: () => vm.toggleBold().run(),
+        italic: () => vm.toggleItalic().run(),
+        underline: () => vm.toggleUnderline().run(),
+        strike: () => vm.toggleStrike().run(),
+        bulletList: () => vm.toggleBulletList().run(),
+        orderedList: () => vm.toggleOrderedList().run(),
+        align: () => vm.setTextAlign(option ?? '').run(),
+        subscript: () => vm.toggleSubscript().run(),
+        superscript: () => vm.toggleSuperscript().run(),
+        undo: () => vm.undo().run(),
+        redo: () => vm.redo().run(),
+        clear: () => {
+            vm.clearNodes().run()
+            vm.unsetAllMarks().run()
         },
-        onHeadingClick(index) {
-            if (this.showSourceCode) return
-            const vm = this.editor.chain().focus()
-            vm.toggleHeading({ level: index }).run()
-        },
-        toggleMode() {
-            if (this.fullscreen) return
-            this.showSourceCode = !this.showSourceCode
-        },
-        toggleFullscreen() {
-            if (this.showSourceCode) return
-            this.fullscreen = !this.fullscreen
-            this.$emit('toggleFullscreen')
-            if (this.fullscreen) {
-                document.documentElement.requestFullscreen()
-            } else {
-                document.exitFullscreen()
-            }
-        },
-        handleFullscreenChange() {
-            if (this.showSourceCode) return
-            this.fullscreen = document.fullscreenElement !== null
-        },
-    },
+    }
+
+    actionTriggers[slug]?.()
+}
+
+function onHeadingClick(index: number) {
+    if (showSourceCode.value || !editor.value) return
+    const vm = editor.value.chain().focus()
+    vm.toggleHeading({ level: index as any }).run()
+}
+
+function toggleMode() {
+    if (fullscreen.value) return
+    showSourceCode.value = !showSourceCode.value
+}
+
+function toggleFullscreen() {
+    if (showSourceCode.value) return
+    fullscreen.value = !fullscreen.value
+    emit('toggleFullscreen')
+    if (fullscreen.value) {
+        document.documentElement.requestFullscreen()
+    } else {
+        document.exitFullscreen()
+    }
+}
+
+function handleFullscreenChange() {
+    if (showSourceCode.value) return
+    fullscreen.value = document.fullscreenElement !== null
 }
 </script>
 
