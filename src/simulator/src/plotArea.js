@@ -258,8 +258,10 @@ const plotArea = {
     },
     render() {
         var { width, height } = this
-        if (this.canvas.height !== height) this.canvas.height = height
-        if (this.canvas.width !== width) this.canvas.width = width
+        const canvasHeight = Math.trunc(height)
+        const canvasWidth = Math.trunc(width)
+        if (this.canvas.height !== canvasHeight) this.canvas.height = canvasHeight
+        if (this.canvas.width !== canvasWidth) this.canvas.width = canvasWidth
         var endTime = this.getCurrentTime()
         // Reset canvas
         this.clear()
