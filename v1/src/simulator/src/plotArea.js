@@ -29,6 +29,7 @@ var waveFormPadding = sh(5)
 var waveFormHeight = plotHeight - 2 * waveFormPadding
 var flagLabelWidth = sh(75)
 var cycleWidth = sh(30)
+var minCycleWidth = sh(10)
 var backgroundColor = 'black'
 var foregroundColor = '#eee'
 var textColor = 'black'
@@ -64,6 +65,15 @@ const plotArea = {
     height: 0, // canvas height
     unitUsed: 0, // Number of simulation units used by the engine
     cycleUnit: 1000, // Number of simulation units per cycle
+    get cycleWidth() {
+        return cycleWidth
+    },
+    set cycleWidth(val) {
+        cycleWidth = val
+    },
+    get minCycleWidth() {
+        return minCycleWidth
+    },
     mouseDown: false,
     mouseX: 0, // Current mouse position
     mouseDownX: 0, // position of mouse when clicked
@@ -106,7 +116,7 @@ const plotArea = {
     },
     // Scale timeline down
     zoomOut() {
-        cycleWidth -= sh(2)
+        cycleWidth = Math.max(minCycleWidth, cycleWidth - sh(2))
     },
     // download as image
     download() {
