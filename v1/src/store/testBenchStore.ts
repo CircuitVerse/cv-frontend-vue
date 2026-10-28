@@ -80,15 +80,11 @@ export const useTestBenchStore = defineStore("testBenchStore", () => {
   });
 
   const sendData = (dataValues: TestData) => {
-    showTestbenchUI.value = true;
-    testData.type = dataValues.type;
-    testData.title = dataValues.title;
-    testData.groups = dataValues.groups;
     const isValid = runTestBench(dataValues, globalScope, 0);
     if (!isValid) {
-      showTestbenchUI.value = false;
       return;
     }
+    showTestbenchUI.value = true;
     showTestBenchCreator.value = false;
   };
 
