@@ -372,12 +372,13 @@ export function runTestBench(
   data: TestData,
   scope = globalScope,
   runContext = CONTEXT.CONTEXT_SIMULATOR,
-) {
+): boolean {
   const testBenchStore = useTestBenchStore();
   // const { testbenchData } = toRefs(testBenchStore)
   const isValid = validate(data, scope);
   if (!isValid.ok) {
     showMessage("Testbench: Some elements missing from circuit. Click Validate to know more");
+    return false;
   }
 
   if (runContext === CONTEXT.CONTEXT_SIMULATOR) {
@@ -385,18 +386,19 @@ export function runTestBench(
     if (!tempTestbenchData.goToFirstValidGroup()) {
       showMessage("Testbench: The test is empty");
       testBenchStore.showTestbenchUI = false;
-      return;
+      return false;
     }
 
     testBenchStore.testbenchData = tempTestbenchData;
     if (scope) scope.testbenchData = tempTestbenchData;
 
-    return;
+    return true;
   }
 
   if (runContext === CONTEXT.CONTEXT_ASSIGNMENTS) {
     // Not implemented
   }
+  return false;
 }
 
 export function emptyTestbenchData(): TestBenchData {
