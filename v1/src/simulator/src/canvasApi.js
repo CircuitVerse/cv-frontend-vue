@@ -160,6 +160,7 @@ export function dots(
             }
         }
         backgroundCtx.fill()
+        backgroundCtx.beginPath()
     }
 
     backgroundCtx.strokeStyle = colors['canvas_stroke']
