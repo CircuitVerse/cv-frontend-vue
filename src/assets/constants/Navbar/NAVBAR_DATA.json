@@ -125,6 +125,12 @@
                 "item": "export_verilog",
                 "itemid": "generateVerilog",
                 "attributes": []
+            },
+            {
+                "id": "7",
+                "item": "beautify_circuit",
+                "itemid": "beautifyCircuit",
+                "attributes": []
             }
         ]
     },

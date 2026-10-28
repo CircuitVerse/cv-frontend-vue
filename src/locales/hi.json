@@ -49,7 +49,8 @@
                 "download_image": "छवि डाउनलोड करें",
                 "themes": "थीम",
                 "export_verilog": "निर्यात Verilog",
-                "custom_shortcut": "कस्टम शॉर्टकट"
+                "custom_shortcut": "कस्टम शॉर्टकट",
+                "beautify_circuit": "सर्किट को सुंदर बनाओ"
             },
             "help": {
                 "heading": "सहायता",
