@@ -208,8 +208,8 @@ const plotArea = {
     },
     update() {
         this.resize()
-        var dangerColor = '#dc5656'
-        var normalColor = '#42b983'
+        var dangerColor = 'rgb(220, 86, 86)'
+        var normalColor = 'rgb(66, 185, 131)'
         this.unitUsed = Math.max(
             this.unitUsed,
             simulationArea.simulationQueue.time
@@ -225,7 +225,9 @@ const plotArea = {
             var recommendedUnit = Math.max(20, Math.round(unitUsed * 3))
             if (logEl) {
                 logEl.insertAdjacentHTML('beforeend', ` Recommended Units: ${recommendedUnit}`)
-                logEl.style.backgroundColor = dangerColor
+                if (logEl.style.backgroundColor !== dangerColor) {
+                    logEl.style.backgroundColor = dangerColor
+                }
             }
             if (utilization >= 100) {
                 this.clear()
