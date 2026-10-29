@@ -124,10 +124,16 @@ export function changeScale(delta: number, xx: any, yy: any, method: number = 1)
     xx = (width / 2 - globalScope.ox) / globalScope.scale;
     yy = (height / 2 - globalScope.oy) / globalScope.scale;
   } else if (xx === undefined || yy === undefined || xx === "zoomButton" || yy === "zoomButton") {
-    if (simulationArea.lastSelected && simulationArea.lastSelected.objectType !== "Wire") {
+    const lastSelected = simulationArea.lastSelected;
+    if (
+      lastSelected &&
+      lastSelected.objectType !== "Wire" &&
+      "x" in lastSelected &&
+      "y" in lastSelected
+    ) {
       // selected object
-      xx = simulationArea.lastSelected.x;
-      yy = simulationArea.lastSelected.y;
+      xx = lastSelected.x;
+      yy = lastSelected.y;
     } else {
       // mouse location
       // eslint-disable-next-line no-lonely-if
