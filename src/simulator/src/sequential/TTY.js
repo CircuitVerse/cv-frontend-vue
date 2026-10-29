@@ -71,15 +71,37 @@ export default class TTY extends CircuitElement {
 
     /**
      * @memberof TTY
+     * Recalculates element dimensions and repositions existing pins in-place
+     */
+    updateDimensions() {
+        this.elementWidth = Math.max(40, Math.ceil(this.cols / 2) * 20)
+        this.elementHeight = Math.max(40, Math.ceil((this.rows * 15) / 20) * 20)
+        this.setWidth(this.elementWidth / 2)
+        this.setHeight(this.elementHeight / 2)
+
+        this.clockInp.x = this.clockInp.leftx = -this.elementWidth / 2
+        this.clockInp.y = this.clockInp.lefty = this.elementHeight / 2 - 10
+
+        this.asciiInp.x = this.asciiInp.leftx = -this.elementWidth / 2
+        this.asciiInp.y = this.asciiInp.lefty = this.elementHeight / 2 - 30
+
+        this.reset.x = this.reset.leftx = 30 - this.elementWidth / 2
+        this.reset.y = this.reset.lefty = this.elementHeight / 2
+
+        this.en.x = this.en.leftx = 10 - this.elementWidth / 2
+        this.en.y = this.en.lefty = this.elementHeight / 2
+    }
+
+    /**
+     * @memberof TTY
      * this function is used to change the size of the screen
      */
     changeRowSize(size) {
         if (size == undefined || size < 1 || size > 10) return
         if (this.rows == size) return
-        var obj = new TTY(this.x, this.y, this.scope, size, this.cols)
-        this.delete()
-        simulationArea.lastSelected = obj
-        return obj
+        this.rows = size
+        this.updateDimensions()
+        return this
     }
 
     /**
@@ -89,10 +111,9 @@ export default class TTY extends CircuitElement {
     changeColSize(size) {
         if (size == undefined || size < 20 || size > 100) return
         if (this.cols == size) return
-        var obj = new TTY(this.x, this.y, this.scope, this.rows, size)
-        this.delete()
-        simulationArea.lastSelected = obj
-        return obj
+        this.cols = size
+        this.updateDimensions()
+        return this
     }
 
     /**
