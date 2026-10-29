@@ -25,7 +25,7 @@
 import { stripTags } from '#/simulator/src/utils'
 import { useState } from '#/store/SimulatorStore/state'
 import messageBox from '@/MessageBox/messageBox.vue'
-import { ref } from 'vue'
+import { provide,ref } from 'vue'
 import { onMounted } from 'vue'
 
 /* imports from combinationalAnalysis.js */
@@ -47,6 +47,9 @@ const tableHeader = ref([])
 const tableBody = ref([])
 const output = ref([])
 const outputStartCol = ref(0)
+const undoStack = ref([])
+const redoStack = ref([])
+
 
 inputArr.value = [
     {
@@ -120,7 +123,39 @@ function clearData() {
     tableBody.value = []
     output.value = []
     outputStartCol.value = 0
+    undoStack.value = []
+    redoStack.value = []
 }
+
+function recordEdit(action) {
+    undoStack.value.push(
+     action)
+    redoStack.value = []
+}
+
+function undo() {
+    const action = undoStack.value.pop()
+    if (!action) return
+
+    tableBody.value[action.rowIndex][action.colIndex] = action.prevValue
+    redoStack.value.push(action)
+}
+
+function redo() {
+    const action = redoStack.value.pop()
+    if (!action) return
+
+    tableBody.value[action.rowIndex][action.colIndex] = action.nextValue
+    undoStack.value.push(action)
+}
+
+provide('tableHistory',{
+    undoStack,
+    redoStack,
+    recordEdit,
+    undo,
+    redo
+})
 
 function dialogBoxConformation(selectedOption, circuitItem) {
     // SimulatorState.dialogBox.combinationalanalysis_dialog = false
@@ -128,17 +163,27 @@ function dialogBoxConformation(selectedOption, circuitItem) {
     if (selectedOption == 'showLogicTable') {
         createLogicTable()
     }
+
+    if (selectedOption == 'backToInputs') {
+        tableHeader.value = []
+        tableBody.value = []
+        buttonArr.value = buttonArray
+        undoStack.value = []
+        redoStack.value = []
+    }
     if (selectedOption == 'closeMessageBox') {
-        for (var ind = 0; ind < inputArr.value.length; ind++) {
-            if (inputArr.value[ind].type == 'text') {
-                inputArr.value[ind].val = ''
-            }
-            if (inputArr.value[ind].type == 'checkbox') {
-                inputArr.value[ind].val = false
-            }
-        }
-        clearData()
         SimulatorState.dialogBox.combinationalanalysis_dialog = false
+        setTimeout(() => {
+            for (var ind = 0; ind < inputArr.value.length; ind++) {
+                if (inputArr.value[ind].type == 'text') {
+                    inputArr.value[ind].val = ''
+                }
+                if (inputArr.value[ind].type == 'checkbox') {
+                    inputArr.value[ind].val = false
+                }
+            }
+            clearData()
+        }, 300)
     }
     if (selectedOption == 'generateCircuit') {
         SimulatorState.dialogBox.combinationalanalysis_dialog = false
@@ -150,13 +195,16 @@ function dialogBoxConformation(selectedOption, circuitItem) {
             tableBody.value,
             outputStartCol.value
         )
-        clearData()
-        SimulatorState.dialogBox.combinationalanalysis_dialog = false
+        setTimeout(() => {
+            clearData()
+        }, 300)
     }
     if (selectedOption == 'printTruthTable') {
         printBooleanTable()
-        clearData()
         SimulatorState.dialogBox.combinationalanalysis_dialog = false
+        setTimeout(() => {
+            clearData()
+        }, 300)
     }
 }
 
@@ -285,6 +333,14 @@ function createBooleanPrompt(inputList, outputList, scope = globalScope) {
     // display Message Box
     SimulatorState.dialogBox.combinationalanalysis_dialog = true
     buttonArr.value = [
+        {
+            text: 'Back',
+            emitOption: 'backToInputs',
+        },
+        {
+            text: 'Close',
+            emitOption: 'closeMessageBox',
+        },
         {
             text: 'Generate Circuit',
             emitOption: 'generateCircuit',
