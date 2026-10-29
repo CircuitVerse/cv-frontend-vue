@@ -34,6 +34,8 @@ const simulationArea: SimulationArea = {
   mouseDown: false,
   ClockInterval: null,
   touch: false,
+  isResizingRectangle: false,
+  resizeCursor: "",
 
   timer() {
     const clickTimer = setTimeout(() => {
