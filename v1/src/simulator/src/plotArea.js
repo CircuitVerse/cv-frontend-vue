@@ -232,7 +232,9 @@ const plotArea = {
                 return
             }
         } else {
-            if (logEl) logEl.style.backgroundColor = normalColor
+            if (logEl && logEl.style.backgroundColor !== normalColor) {
+                logEl.style.backgroundColor = normalColor
+            }
         }
 
         var width = this.width

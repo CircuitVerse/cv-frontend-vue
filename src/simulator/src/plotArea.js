@@ -233,7 +233,9 @@ const plotArea = {
                 return
             }
         } else {
-            if (logEl) logEl.style.backgroundColor = normalColor
+            if (logEl && logEl.style.backgroundColor !== normalColor) {
+                logEl.style.backgroundColor = normalColor
+            }
         }
 
         var width = this.width
@@ -260,8 +262,12 @@ const plotArea = {
     },
     render() {
         var { width, height } = this
-        this.canvas.height = height
-        this.canvas.width = width
+        if (this.canvas.height !== height) {
+            this.canvas.height = height
+        }
+        if (this.canvas.width !== width) {
+            this.canvas.width = width
+        }
         var endTime = this.getCurrentTime()
         // Reset canvas
         this.clear()
