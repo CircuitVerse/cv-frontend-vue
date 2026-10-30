@@ -4,6 +4,41 @@ import { correctWidth, rect } from '../canvasApi'
 import { updateCanvasSet, scheduleUpdate } from '../engine'
 
 /**
+ * Global canvas pointerdown dispatcher.
+ * Attached ONCE to avoid per-instance event listener multiplication and memory leaks.
+ */
+let canvasDispatcherAttached = false
+
+function handleCanvasPointerDown(e) {
+    if (e.button !== 0) return
+    const selected = simulationArea.lastSelected
+    if (!selected || !(selected instanceof Rectangle)) return
+    if (selected.scope !== globalScope || selected.newElement) return
+
+    const coords = selected.getEventCoordinates(e)
+    const handle = selected.getHandleAt(coords.xf, coords.yf)
+    if (handle) {
+        if (e.target && e.target.setPointerCapture && e.pointerId !== undefined) {
+            try {
+                e.target.setPointerCapture(e.pointerId)
+            } catch (err) {
+                // Ignore capture errors on unsupported pointers
+            }
+        }
+        selected.startResize(handle, e.pointerId)
+        e.stopPropagation()
+        e.preventDefault()
+    }
+}
+
+function ensureCanvasDispatcher() {
+    const canvas = simulationArea.canvas || document.getElementById('simulationArea')
+    if (!canvas || canvasDispatcherAttached) return
+    canvas.addEventListener('pointerdown', handleCanvasPointerDown)
+    canvasDispatcherAttached = true
+}
+
+/**
  * @class
  * Rectangle
  * @extends CircuitElement
@@ -24,81 +59,47 @@ export default class Rectangle extends CircuitElement {
         this.rows = rows || parseInt(prompt('Enter rows:'), 10) || 15
         this.setSize()
 
-        // Drag handle and resizing state
+        // Resizing state
         this.resizing = false
         this.activeHandle = null
         this.activePointerId = null
-        this.canvasBound = false
 
-        this.bindEvents()
-    }
-
-    /**
-     * Bind pointer events to support dynamic mouse-drag resizing with pointer capture
-     */
-    bindEvents() {
-        this.onPointerDown = this.onPointerDown.bind(this)
+        // Bound listener references for active resize session only
         this.onPointerMove = this.onPointerMove.bind(this)
         this.onPointerUp = this.onPointerUp.bind(this)
 
-        const canvas = simulationArea.canvas || document.getElementById('simulationArea')
-        if (canvas) {
-            canvas.addEventListener('pointerdown', this.onPointerDown)
-            canvas.addEventListener('mousedown', this.onPointerDown)
-            this.canvasBound = true
-        }
-
-        window.addEventListener('pointermove', this.onPointerMove)
-        window.addEventListener('mousemove', this.onPointerMove)
-        window.addEventListener('pointerup', this.onPointerUp)
-        window.addEventListener('mouseup', this.onPointerUp)
-        window.addEventListener('pointercancel', this.onPointerUp)
+        ensureCanvasDispatcher()
     }
 
     /**
-     * Ensure canvas event listener is attached once canvas element is available
+     * Clean up event listeners and reset global cursor on deletion
      */
-    ensureCanvasBound() {
-        if (this.canvasBound) return
-        const canvas = simulationArea.canvas || document.getElementById('simulationArea')
-        if (canvas) {
-            canvas.addEventListener('pointerdown', this.onPointerDown)
-            canvas.addEventListener('mousedown', this.onPointerDown)
-            this.canvasBound = true
-        }
-    }
-
-    /**
-     * Remove attached pointer event listeners
-     */
-    removeEventListeners() {
-        const canvas = simulationArea.canvas || document.getElementById('simulationArea')
-        if (canvas) {
-            canvas.removeEventListener('pointerdown', this.onPointerDown)
-            canvas.removeEventListener('mousedown', this.onPointerDown)
-        }
-        window.removeEventListener('pointermove', this.onPointerMove)
-        window.removeEventListener('mousemove', this.onPointerMove)
-        window.removeEventListener('pointerup', this.onPointerUp)
-        window.removeEventListener('mouseup', this.onPointerUp)
-        window.removeEventListener('pointercancel', this.onPointerUp)
-
-        // Safety cleanup if deleted while resizing
+    delete() {
         if (this.resizing) {
             this.stopResize()
         }
-    }
-
-    /**
-     * Clean up event listeners on element deletion
-     */
-    delete() {
-        this.removeEventListeners()
+        if (simulationArea.resizeCursor) {
+            simulationArea.resizeCursor = ''
+            if (simulationArea.canvas) {
+                simulationArea.canvas.style.cursor = 'default'
+            }
+        }
         super.delete()
     }
 
+    /**
+     * Clean up event listeners and reset global cursor on clean deletion
+     */
     cleanDelete() {
-        this.removeEventListeners()
+        if (this.resizing) {
+            this.stopResize()
+        }
+        if (simulationArea.resizeCursor) {
+            simulationArea.resizeCursor = ''
+            if (simulationArea.canvas) {
+                simulationArea.canvas.style.cursor = 'default'
+            }
+        }
         super.cleanDelete()
     }
 
@@ -154,7 +155,7 @@ export default class Rectangle extends CircuitElement {
         const w = this.elementWidth
         const h = this.elementHeight
 
-        // Hit-test threshold in world units (scaled from 8 screen pixels)
+        // Hit-test threshold in world units (scaled from screen pixels)
         const threshold = Math.max(8, 10 / scale)
         const cornerThreshold = threshold * 1.5
 
@@ -230,11 +231,13 @@ export default class Rectangle extends CircuitElement {
 
     /**
      * Start resizing from a specific handle.
-     * Integrates with simulationArea global resize state to eliminate cursor flickering.
+     * Attaches window listeners dynamically for the duration of the resize session only.
      * @param {string} handle
      * @param {number=} pointerId
      */
     startResize(handle, pointerId = null) {
+        if (this.scope !== globalScope) return
+
         this.resizing = true
         this.activeHandle = handle
         this.activePointerId = pointerId
@@ -256,41 +259,52 @@ export default class Rectangle extends CircuitElement {
 
         const cursor = this.getCursorForHandle(handle)
 
-        // 1. Set global engine flags to lock cursor and bypass hover checks in renderCanvas()
+        // Set global engine flags to lock cursor and bypass hover checks in renderCanvas()
         simulationArea.isResizingRectangle = true
         simulationArea.resizeCursor = cursor
 
-        // 2. Lock cursor on document.body and canvas
         document.body.style.cursor = cursor
         if (simulationArea.canvas) {
             simulationArea.canvas.style.cursor = cursor
         }
+
+        // Attach window listeners strictly for the active resize lifecycle
+        window.addEventListener('pointermove', this.onPointerMove)
+        window.addEventListener('pointerup', this.onPointerUp)
+        window.addEventListener('pointercancel', this.onPointerUp)
     }
 
     /**
-     * Stop active resize operation and clean up global cursor lock
+     * Stop active resize operation, teardown session listeners, and clean up cursor
      */
     stopResize() {
         if (!this.resizing) return
         this.resizing = false
         this.activeHandle = null
 
-        // 1. Release pointer capture if held
-        const canvas = simulationArea.canvas || document.getElementById('simulationArea')
-        if (canvas && canvas.releasePointerCapture && this.activePointerId !== null && this.activePointerId !== undefined) {
-            try {
-                canvas.releasePointerCapture(this.activePointerId)
-            } catch (err) {
-                // Ignore capture release error
+        // Teardown active resize listeners immediately
+        window.removeEventListener('pointermove', this.onPointerMove)
+        window.removeEventListener('pointerup', this.onPointerUp)
+        window.removeEventListener('pointercancel', this.onPointerUp)
+
+        // Release pointer capture if active
+        if (this.activePointerId !== null && this.activePointerId !== undefined) {
+            const canvas = simulationArea.canvas || document.getElementById('simulationArea')
+            if (canvas && canvas.releasePointerCapture) {
+                try {
+                    canvas.releasePointerCapture(this.activePointerId)
+                } catch (err) {
+                    // Ignore capture release error
+                }
             }
         }
         this.activePointerId = null
 
-        // 2. Reset global engine flags so standard cursor management resumes cleanly
+        // Reset global engine flags so standard cursor management resumes cleanly
         simulationArea.isResizingRectangle = false
         simulationArea.resizeCursor = ''
 
-        // 3. Clear locked cursor styles
+        // Clear locked cursor styles
         document.body.style.cursor = ''
         if (simulationArea.canvas) {
             simulationArea.canvas.style.cursor = 'default'
@@ -376,74 +390,24 @@ export default class Rectangle extends CircuitElement {
     }
 
     /**
-     * Pointer / Mouse down event listener
-     */
-    onPointerDown(e) {
-        if (e.button !== 0) return
-        if (this.newElement) return
-
-        const coords = this.getEventCoordinates(e)
-        const handle = this.getHandleAt(coords.xf, coords.yf)
-
-        if (handle && (simulationArea.lastSelected === this || this.isHover())) {
-            // Use pointer capture to keep tracking pointer events even if mouse moves outside canvas
-            const canvas = simulationArea.canvas || document.getElementById('simulationArea')
-            if (canvas && canvas.setPointerCapture && e.pointerId !== undefined) {
-                try {
-                    canvas.setPointerCapture(e.pointerId)
-                } catch (err) {
-                    // Ignore pointer capture errors
-                }
-            }
-
-            this.startResize(handle, e.pointerId)
-            e.stopPropagation()
-            e.preventDefault()
-        }
-    }
-
-    /**
-     * Pointer / Mouse move event listener
+     * Active resize pointer move listener
      */
     onPointerMove(e) {
-        if (this.newElement) return
-
-        const coords = this.getEventCoordinates(e)
-
-        if (this.resizing) {
-            // Keep cursor locked
-            const cursor = this.getCursorForHandle(this.activeHandle)
-            simulationArea.isResizingRectangle = true
-            simulationArea.resizeCursor = cursor
-            document.body.style.cursor = cursor
-            if (simulationArea.canvas) simulationArea.canvas.style.cursor = cursor
-
-            this.resize(coords)
+        if (this.scope !== globalScope) {
+            this.stopResize()
             return
         }
 
-        // When selected and hovered over handles, inform simulationArea of desired resize cursor
-        if (simulationArea.lastSelected === this && simulationArea.canvas) {
-            const handle = this.getHandleAt(coords.xf, coords.yf)
-            if (handle) {
-                const cursor = this.getCursorForHandle(handle)
-                simulationArea.resizeCursor = cursor
-                simulationArea.canvas.style.cursor = cursor
-            } else {
-                if (simulationArea.resizeCursor) {
-                    simulationArea.resizeCursor = ''
-                }
-                if (this.isHover()) {
-                    simulationArea.canvas.style.cursor = 'move'
-                }
-            }
+        if (this.resizing) {
+            const coords = this.getEventCoordinates(e)
+            this.resize(coords)
         }
     }
 
     /**
-     * Pointer / Mouse up event listener
+     * Active resize pointer up/cancel listener
      */
-    onPointerUp(e) {
+    onPointerUp() {
         if (this.resizing) {
             this.stopResize()
         }
@@ -453,7 +417,8 @@ export default class Rectangle extends CircuitElement {
      * Override isHover to consider drag handles and bypass hit detection during active resize
      */
     isHover() {
-        // Bypass hover checks during resize drag so engine does not reset cursor to hand
+        if (this.scope !== globalScope) return false
+        // Bypass hover checks during resize drag so engine does not reset cursor
         if (this.resizing) return true
 
         const mouseXf = simulationArea.mouseXf
@@ -470,7 +435,7 @@ export default class Rectangle extends CircuitElement {
      * Override startDragging to intercept drag-handle resizing
      */
     startDragging() {
-        if (this.resizing) return
+        if (this.scope !== globalScope || this.resizing) return
 
         const handle = this.getHandleAt(simulationArea.mouseXf, simulationArea.mouseYf)
         if (handle && simulationArea.lastSelected === this) {
@@ -485,6 +450,7 @@ export default class Rectangle extends CircuitElement {
      * Override drag to perform resizing when a handle is active
      */
     drag() {
+        if (this.scope !== globalScope) return
         if (this.resizing) {
             this.resize()
             return
@@ -493,20 +459,23 @@ export default class Rectangle extends CircuitElement {
     }
 
     /**
-     * Override update to manage resizing lifecycle and prevent accidental moves
+     * Override update to manage resizing lifecycle and prevent accidental moves.
+     * Reliant solely on pointerup/pointercancel (no simulationArea.mouseDown guard).
      */
     update() {
-        this.ensureCanvasBound()
+        if (this.scope !== globalScope) {
+            if (this.resizing) this.stopResize()
+            return false
+        }
+        ensureCanvasDispatcher()
 
         if (this.newElement) {
             return super.update()
         }
 
         if (this.resizing) {
-            if (!simulationArea.mouseDown) {
-                this.stopResize()
-                return super.update()
-            }
+            // Relies on pointerup/pointercancel to terminate resize.
+            // Do NOT guard with simulationArea.mouseDown to avoid timing race conditions.
             simulationArea.lastSelected = this
             simulationArea.selected = true
             this.clicked = true
@@ -521,6 +490,23 @@ export default class Rectangle extends CircuitElement {
 
             this.resize()
             return true
+        }
+
+        // Hover cursor management when selected and hovering over handles
+        if (simulationArea.lastSelected === this && simulationArea.canvas && !simulationArea.isResizingRectangle) {
+            const handle = this.getHandleAt(simulationArea.mouseXf, simulationArea.mouseYf)
+            if (handle) {
+                const cursor = this.getCursorForHandle(handle)
+                simulationArea.resizeCursor = cursor
+                simulationArea.canvas.style.cursor = cursor
+            } else if (simulationArea.resizeCursor) {
+                simulationArea.resizeCursor = ''
+                if (this.isHover()) {
+                    simulationArea.canvas.style.cursor = 'move'
+                }
+            }
+        } else if (simulationArea.lastSelected !== this && simulationArea.resizeCursor && !simulationArea.isResizingRectangle) {
+            simulationArea.resizeCursor = ''
         }
 
         return super.update()
