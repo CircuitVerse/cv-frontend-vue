@@ -95,7 +95,7 @@ function getName(x) {
 
 function availableSubCircuits(value, scopeId) {
     return (
-        !value.checkDependency(scopeId) &&
+        !value.checkDependency(Number(scopeId)) &&
         value.isVisible() &&
         value !== globalScope
     )
