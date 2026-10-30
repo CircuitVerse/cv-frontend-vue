@@ -2,7 +2,7 @@
     <v-dialog :persistent="isPersistent" @after-enter="focusFirstInput">
         <v-card ref="messageBoxCard" class="messageBoxContent">
             <form @submit.prevent="handlePrimaryAction">
-                <v-card-text>
+                <v-card-text ref="cardTextRef">
                     <p v-if="messageText" style="font-weight: bold">
                         {{ messageText }}
                     </p>
@@ -88,6 +88,12 @@ const props = defineProps({
 })
 
 const messageBoxCard = ref(null)
+const cardTextRef = ref(null)
+
+defineExpose({
+    messageBoxCard,
+    cardTextRef,
+})
 
 function focusFirstInput(): void {
     const firstField = (messageBoxCard.value as any)?.$el?.querySelector('input')
