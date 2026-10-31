@@ -190,14 +190,17 @@ export function dots(dots = true, transparentBackground = false, force = false) 
   }
 
   if (dots) {
+    const radius = scale / 10;
     backgroundCtx.fillStyle = colors["dot_fill"];
+    backgroundCtx.beginPath();
     for (let i = 0; i < canvasWidth; i += scale) {
       for (let j = 0; j < canvasHeight; j += scale) {
-        backgroundCtx.beginPath();
-        backgroundCtx.arc(i, j, scale / 10, 0, Math.PI * 2);
-        backgroundCtx.fill();
+        backgroundCtx.moveTo(i + radius, j);
+        backgroundCtx.arc(i, j, radius, 0, Math.PI * 2);
       }
     }
+    backgroundCtx.fill();
+    backgroundCtx.beginPath();
   }
 
   backgroundCtx.strokeStyle = colors["canvas_stroke"];
