@@ -102,6 +102,7 @@ export default class LayoutNode {
    */
   draw() {
     var ctx = simulationArea.context;
+    if (!ctx) return;
     drawCircle(
       ctx,
       this.absX(),

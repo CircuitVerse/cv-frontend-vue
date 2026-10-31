@@ -14,7 +14,7 @@ declare global {
   var NODE_INTERMEDIATE: number;
 
   interface Window {
-    globalScope: Scope;
+    globalScope: Scope | undefined;
     lightMode: boolean;
     projectId: string | undefined;
     id: string | undefined;
