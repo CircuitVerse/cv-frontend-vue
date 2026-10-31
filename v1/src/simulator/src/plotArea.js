@@ -4,7 +4,6 @@ import { join, downloadDir } from '@tauri-apps/api/path';
 import { writeFile } from '@tauri-apps/plugin-fs';
 import { isTauri } from '@tauri-apps/api/core'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
-import { toRefs } from 'vue'
 
 var DPR = window.devicePixelRatio || 1
 
@@ -68,10 +67,14 @@ const plotArea = {
     mouseX: 0, // Current mouse position
     mouseDownX: 0, // position of mouse when clicked
     mouseDownTime: 0, // time when mouse clicked (in ms)
+    lastLogText: '',
+    lastLogColor: '',
     // Reset timeline to 0 and resume autoscroll
     reset() {
         this.cycleCount = 0
         this.cycleTime = new Date().getTime()
+        this.lastLogText = ''
+        this.lastLogColor = ''
         for (var i = 0; i < globalScope.Flag.length; i++) {
             globalScope.Flag[i].plotValues = [
                 [0, globalScope.Flag[i].inp1.value],
@@ -217,22 +220,27 @@ const plotArea = {
         var unitUsed = this.unitUsed
         var units = this.cycleUnit
         var utilization = Math.round((unitUsed * 10000) / units) / 100
-        const logEl = document.getElementById('timing-diagram-log')
-        if (logEl) {
-            logEl.innerHTML = `Utilization: ${Math.round(unitUsed)} Units (${utilization}%)`
-        }
-        if (utilization >= 90 || utilization <= 10) {
-            var recommendedUnit = Math.max(20, Math.round(unitUsed * 3))
+
+        const isAbnormal = utilization >= 90 || utilization <= 10
+        const recommendedUnit = isAbnormal ? Math.max(20, Math.round(unitUsed * 3)) : null
+        const targetColor = isAbnormal ? dangerColor : normalColor
+        const logText = isAbnormal
+            ? `Utilization: ${Math.round(unitUsed)} Units (${utilization}%) Recommended Units: ${recommendedUnit}`
+            : `Utilization: ${Math.round(unitUsed)} Units (${utilization}%)`
+
+        if (this.lastLogText !== logText || this.lastLogColor !== targetColor) {
+            this.lastLogText = logText
+            this.lastLogColor = targetColor
+            const logEl = document.getElementById('timing-diagram-log')
             if (logEl) {
-                logEl.insertAdjacentHTML('beforeend', ` Recommended Units: ${recommendedUnit}`)
-                logEl.style.backgroundColor = dangerColor
+                logEl.textContent = logText
+                logEl.style.backgroundColor = targetColor
             }
-            if (utilization >= 100) {
-                this.clear()
-                return
-            }
-        } else {
-            if (logEl) logEl.style.backgroundColor = normalColor
+        }
+
+        if (utilization >= 100) {
+            this.clear()
+            return
         }
 
         var width = this.width
@@ -450,6 +458,22 @@ const plotArea = {
     },
     // Driver function to render and update
     plot() {
+        if (embed) return
+        if (typeof globalScope === 'undefined' || !globalScope) return
+
+        // Guard against idle polling when no flags exist in circuit
+        if (!globalScope.Flag || globalScope.Flag.length === 0) {
+            if (this.canvas) {
+                if (this.canvas.width !== 0) this.canvas.width = 0
+                if (this.canvas.height !== 0) this.canvas.height = 0
+            }
+            const simulatorMobileStore = useSimulatorMobileStore()
+            if (simulatorMobileStore.showCanvas) {
+                simulatorMobileStore.showCanvas = false
+            }
+            return
+        }
+
         // Check if canvas is available (may be unmounted in Verilog mode)
         if (!this.canvas) {
             this.canvas = document.getElementById('plotArea')
@@ -459,18 +483,13 @@ const plotArea = {
         }
         if (!this.canvas) return
 
-        if (typeof globalScope === 'undefined' || !globalScope) return
+        // Guard when panel is closed, minimized (display: none), or browser tab is in background
+        if (document.hidden || this.canvas.offsetParent === null) return
 
         const simulatorMobileStore = useSimulatorMobileStore()
-        const { showCanvas } = toRefs(simulatorMobileStore)
-        if (embed) return
-        if (globalScope.Flag.length === 0) {
-            this.canvas.width = 0
-            this.canvas.height = 0
-            showCanvas.value = false
-            return
+        if (!simulatorMobileStore.showCanvas) {
+            simulatorMobileStore.showCanvas = true
         }
-        showCanvas.value = true
 
         this.update()
         this.render()
