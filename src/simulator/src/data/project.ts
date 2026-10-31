@@ -182,8 +182,8 @@ window.onbeforeunload = async function () {
 /**
  * Function to clear project
  */
-export async function clearProject() {
-  if (await confirmOption("Would you like to clear the project?")) {
+export async function clearProject(skipConfirm = false) {
+  if (skipConfirm || (await confirmOption("Would you like to clear the project?"))) {
     globalScope = undefined;
     resetScopeList();
     // $('.circuits').remove()
@@ -202,11 +202,12 @@ export async function newProject(verify: boolean) {
     !checkToSave() ||
     (await confirmOption("What you like to start a new project? Any unsaved changes will be lost."))
   ) {
-    clearProject();
+    await clearProject(true);
     localStorage.removeItem("recover");
+    projectSaved = true;
     const baseUrl =
       window.location.origin !== "null" ? window.location.origin : "http://localhost:4000";
-    window.location.assign(`${baseUrl}/simulator/`);
+    window.location.assign(new URL(import.meta.env.BASE_URL, baseUrl).toString());
 
     setProjectName(undefined);
     projectId = generateId();
