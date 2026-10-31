@@ -2,6 +2,8 @@
     <div
         ref="elementsPanelRef"
         class="noSelect defaultCursor draggable-panel draggable-panel-css modules ce-panel elementPanel"
+        :style="{ zIndex: zIndexFor('elementPanel') }"
+        @mousedown="bringToFront('elementPanel')"
     >
         <PanelHeader
             :header-title="$t('simulator.panel_header.circuit_elements')"
@@ -146,6 +148,7 @@ import modules from '#/simulator/src/modules'
 import { onBeforeMount, onMounted, ref } from 'vue'
 import { useLayoutStore } from '#/store/layoutStore'
 import { setupPanelListeners } from '#/simulator/src/ux'
+import { bringToFront, zIndexFor } from '#/simulator/src/drag'
 var panelData = []
 window.elementPanelList = []
 const layoutStore = useLayoutStore()
