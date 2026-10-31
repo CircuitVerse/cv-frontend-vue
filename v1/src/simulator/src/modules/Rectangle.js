@@ -6,11 +6,14 @@ import { scheduleBackup } from '../data/backupCircuit'
 
 /**
  * Global canvas pointerdown dispatcher.
- * Attached ONCE to avoid per-instance event listener multiplication and memory leaks.
+ * Tracks the specific canvas element it is attached to.
+ * When the simulator remounts and simulationArea.setup() assigns a new canvas,
+ * ensureCanvasDispatcher() detects the mismatch, removes the old listener,
+ * and attaches to the new canvas — preventing ghost listeners and missing dispatchers.
  * Resizing is disabled in embed mode.
  * @param {PointerEvent} e - Pointerdown event on canvas
  */
-let canvasDispatcherAttached = false
+let attachedCanvas = null
 
 function handleCanvasPointerDown(e) {
     if (typeof embed !== 'undefined' && embed) return
@@ -36,13 +39,23 @@ function handleCanvasPointerDown(e) {
 }
 
 /**
- * Ensures the single canvas pointerdown dispatcher is attached once canvas is available.
+ * Ensures the single canvas pointerdown dispatcher is attached to the current canvas.
+ * Compares the stored canvas reference with the current one. When they differ
+ * (e.g. after simulator remount and simulationArea.setup() replacing the element),
+ * removes the listener from the old canvas and attaches it to the new one.
  */
 function ensureCanvasDispatcher() {
     const canvas = simulationArea.canvas || document.getElementById('simulationArea')
-    if (!canvas || canvasDispatcherAttached) return
+    if (!canvas) return
+    if (canvas === attachedCanvas) return
+
+    // Canvas has changed (remount) — remove stale listener from old canvas
+    if (attachedCanvas) {
+        attachedCanvas.removeEventListener('pointerdown', handleCanvasPointerDown)
+    }
+
     canvas.addEventListener('pointerdown', handleCanvasPointerDown)
-    canvasDispatcherAttached = true
+    attachedCanvas = canvas
 }
 
 /**
