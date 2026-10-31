@@ -230,6 +230,19 @@ function validateOutputs(data: TestData, scope: any) {
 function validate(data: TestData, scope: any) {
   let invalids = [];
 
+  if (!data.groups?.length) {
+    return {
+      ok: false,
+      invalids: [
+        {
+          type: VALIDATION_ERRORS.NOTPRESENT,
+          identifier: "TestBench",
+          message: "TestBench has no groups",
+        },
+      ],
+    };
+  }
+
   // Check for duplicate identifiers
   if (!checkDistinctIdentifiersData(data)) {
     invalids.push({
@@ -372,31 +385,37 @@ export function runTestBench(
   data: TestData,
   scope = globalScope,
   runContext = CONTEXT.CONTEXT_SIMULATOR,
-) {
+): boolean {
   const testBenchStore = useTestBenchStore();
   // const { testbenchData } = toRefs(testBenchStore)
   const isValid = validate(data, scope);
   if (!isValid.ok) {
+    testBenchStore.validationErrors = isValid;
+    testBenchStore.showTestBenchValidator = true;
     showMessage("Testbench: Some elements missing from circuit. Click Validate to know more");
+    return false;
   }
 
   if (runContext === CONTEXT.CONTEXT_SIMULATOR) {
     const tempTestbenchData = new TestbenchData(data);
     if (!tempTestbenchData.goToFirstValidGroup()) {
       showMessage("Testbench: The test is empty");
-      testBenchStore.showTestbenchUI = false;
-      return;
+      return false;
     }
 
+    // Commit store and scope state only after validation and the empty-test check pass.
     testBenchStore.testbenchData = tempTestbenchData;
     if (scope) scope.testbenchData = tempTestbenchData;
+    testBenchStore.validationErrors = isValid;
+    testBenchStore.showTestBenchValidator = false;
 
-    return;
+    return true;
   }
 
   if (runContext === CONTEXT.CONTEXT_ASSIGNMENTS) {
     // Not implemented
   }
+  return false;
 }
 
 export function emptyTestbenchData(): TestBenchData {
