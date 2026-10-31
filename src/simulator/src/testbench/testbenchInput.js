@@ -29,7 +29,7 @@ export default class TB_Input extends CircuitElement {
     ) {
         super(x, y, scope, dir, 1)
         this.objectType = 'TB_Input'
-        this.scope.TB_Input.push(this)
+        /* this is done in this.baseSetup() now */
         this.setIdentifier(identifier || 'Test1')
         this.testData = testData || { inputs: [], outputs: [], n: 0 }
         this.clockInp = new Node(0, 20, 0, this, 1)
