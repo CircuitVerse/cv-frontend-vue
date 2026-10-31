@@ -2,14 +2,18 @@ import CircuitElement from '../circuitElement'
 import { simulationArea } from '../simulationArea'
 import { correctWidth, rect } from '../canvasApi'
 import { updateCanvasSet, scheduleUpdate } from '../engine'
+import { scheduleBackup } from '../data/backupCircuit'
 
 /**
  * Global canvas pointerdown dispatcher.
  * Attached ONCE to avoid per-instance event listener multiplication and memory leaks.
+ * Resizing is disabled in embed mode.
+ * @param {PointerEvent} e - Pointerdown event on canvas
  */
 let canvasDispatcherAttached = false
 
 function handleCanvasPointerDown(e) {
+    if (typeof embed !== 'undefined' && embed) return
     if (e.button !== 0) return
     const selected = simulationArea.lastSelected
     if (!selected || !(selected instanceof Rectangle)) return
@@ -25,12 +29,15 @@ function handleCanvasPointerDown(e) {
                 // Ignore capture errors on unsupported pointers
             }
         }
-        selected.startResize(handle, e.pointerId)
+        selected.startResize(handle, e.pointerId, coords)
         e.stopPropagation()
         e.preventDefault()
     }
 }
 
+/**
+ * Ensures the single canvas pointerdown dispatcher is attached once canvas is available.
+ */
 function ensureCanvasDispatcher() {
     const canvas = simulationArea.canvas || document.getElementById('simulationArea')
     if (!canvas || canvasDispatcherAttached) return
@@ -63,10 +70,12 @@ export default class Rectangle extends CircuitElement {
         this.resizing = false
         this.activeHandle = null
         this.activePointerId = null
+        this.resizeSession = null
 
         // Bound listener references for active resize session only
         this.onPointerMove = this.onPointerMove.bind(this)
         this.onPointerUp = this.onPointerUp.bind(this)
+        this.onLostPointerCapture = this.onLostPointerCapture.bind(this)
 
         ensureCanvasDispatcher()
     }
@@ -104,24 +113,33 @@ export default class Rectangle extends CircuitElement {
     }
 
     /**
-     * Convert DOM Mouse/Pointer Event coordinates into circuit coordinates
-     * @param {MouseEvent|PointerEvent} e
+     * Convert DOM Mouse/Pointer Event coordinates into circuit coordinates.
+     * Matches the coordinate conversion in panMove() from commands/pointer.ts.
+     * @param {MouseEvent|PointerEvent|TouchEvent} e - DOM event
+     * @returns {{x: number, y: number, xf: number, yf: number}} Computed canvas coordinates
      */
     getEventCoordinates(e) {
         const canvas = simulationArea.canvas || document.getElementById('simulationArea')
         if (!canvas) {
             return {
-                x: simulationArea.mouseX,
-                y: simulationArea.mouseY,
-                xf: simulationArea.mouseXf,
-                yf: simulationArea.mouseYf,
+                x: 0,
+                y: 0,
+                xf: 0,
+                yf: 0,
             }
         }
 
+        const clientX = e.clientX !== undefined
+            ? e.clientX
+            : (e.touches && e.touches[0] ? e.touches[0].clientX : 0)
+        const clientY = e.clientY !== undefined
+            ? e.clientY
+            : (e.touches && e.touches[0] ? e.touches[0].clientY : 0)
+
         const rectBounds = canvas.getBoundingClientRect()
-        const dpr = window.devicePixelRatio || 1
-        const rawX = (e.clientX - rectBounds.left) * dpr
-        const rawY = (e.clientY - rectBounds.top) * dpr
+        const dpr = typeof DPR !== 'undefined' ? DPR : (window.DPR || window.devicePixelRatio || 1)
+        const rawX = (clientX - rectBounds.left) * dpr
+        const rawY = (clientY - rectBounds.top) * dpr
 
         const activeScope = this.scope || globalScope
         const scale = activeScope.scale || 1
@@ -140,12 +158,14 @@ export default class Rectangle extends CircuitElement {
     }
 
     /**
-     * Detect if a coordinate hits any handle or bounding edge
+     * Detect if a coordinate hits any handle or bounding edge.
+     * Disabled in embed mode.
      * @param {number} mouseXf - unrounded x in world coordinates
      * @param {number} mouseYf - unrounded y in world coordinates
      * @returns {string|null} handle name or null
      */
     getHandleAt(mouseXf, mouseYf) {
+        if (typeof embed !== 'undefined' && embed) return null
         if (mouseXf === undefined || mouseYf === undefined) return null
 
         const activeScope = this.scope || globalScope
@@ -208,7 +228,8 @@ export default class Rectangle extends CircuitElement {
 
     /**
      * Return corresponding CSS cursor for given handle
-     * @param {string} handle
+     * @param {string} handle - Handle identifier
+     * @returns {string} CSS cursor string
      */
     getCursorForHandle(handle) {
         switch (handle) {
@@ -231,26 +252,41 @@ export default class Rectangle extends CircuitElement {
 
     /**
      * Start resizing from a specific handle.
-     * Attaches window listeners dynamically for the duration of the resize session only.
-     * @param {string} handle
-     * @param {number=} pointerId
+     * Initializes a single-source-of-truth resize session and binds active pointer listeners.
+     * Resizing is disabled in embed mode and when not in the active globalScope.
+     * @param {string} handle - The handle name being dragged
+     * @param {number=} pointerId - Optional pointer identifier for pointer capture
+     * @param {object=} startCoords - Optional initial coordinates
      */
-    startResize(handle, pointerId = null) {
+    startResize(handle, pointerId = null, startCoords = null) {
+        if (typeof embed !== 'undefined' && embed) return
         if (this.scope !== globalScope) return
+
+        const initialCoords = startCoords ? { ...startCoords } : {
+            x: this.x,
+            y: this.y,
+            xf: this.x,
+            yf: this.y,
+        }
 
         this.resizing = true
         this.activeHandle = handle
         this.activePointerId = pointerId
-        this.fixedLeft = this.x
-        this.fixedTop = this.y
-        this.fixedRight = this.x + this.elementWidth
-        this.fixedBottom = this.y + this.elementHeight
-        this.initialX = this.x
-        this.initialY = this.y
-        this.initialCols = this.cols
-        this.initialRows = this.rows
-        this.initialWidth = this.elementWidth
-        this.initialHeight = this.elementHeight
+
+        this.resizeSession = {
+            handle,
+            pointerId,
+            startCoords: { ...initialCoords },
+            latestCoords: { ...initialCoords },
+            origX: this.x,
+            origY: this.y,
+            origCols: this.cols,
+            origRows: this.rows,
+            fixedLeft: this.x,
+            fixedTop: this.y,
+            fixedRight: this.x + this.elementWidth,
+            fixedBottom: this.y + this.elementHeight,
+        }
 
         simulationArea.lastSelected = this
         simulationArea.selected = true
@@ -266,6 +302,7 @@ export default class Rectangle extends CircuitElement {
         document.body.style.cursor = cursor
         if (simulationArea.canvas) {
             simulationArea.canvas.style.cursor = cursor
+            simulationArea.canvas.addEventListener('lostpointercapture', this.onLostPointerCapture)
         }
 
         // Attach window listeners strictly for the active resize lifecycle
@@ -275,12 +312,26 @@ export default class Rectangle extends CircuitElement {
     }
 
     /**
-     * Stop active resize operation, teardown session listeners, and clean up cursor
+     * Stop active resize operation, record backup if geometry changed, teardown session listeners, and clean up cursor.
+     * Idempotent and safe when called multiple times.
      */
     stopResize() {
-        if (!this.resizing) return
-        this.resizing = false
-        this.activeHandle = null
+        if (!this.resizing && !this.resizeSession) return
+
+        // Finalize resize computation with latest session coordinates
+        if (this.resizeSession) {
+            this.resize()
+
+            const hasChanged =
+                this.x !== this.resizeSession.origX ||
+                this.y !== this.resizeSession.origY ||
+                this.cols !== this.resizeSession.origCols ||
+                this.rows !== this.resizeSession.origRows
+
+            if (hasChanged) {
+                scheduleBackup(this.scope || globalScope)
+            }
+        }
 
         // Teardown active resize listeners immediately
         window.removeEventListener('pointermove', this.onPointerMove)
@@ -288,9 +339,10 @@ export default class Rectangle extends CircuitElement {
         window.removeEventListener('pointercancel', this.onPointerUp)
 
         // Release pointer capture if active
-        if (this.activePointerId !== null && this.activePointerId !== undefined) {
-            const canvas = simulationArea.canvas || document.getElementById('simulationArea')
-            if (canvas && canvas.releasePointerCapture) {
+        const canvas = simulationArea.canvas || document.getElementById('simulationArea')
+        if (canvas) {
+            canvas.removeEventListener('lostpointercapture', this.onLostPointerCapture)
+            if (this.activePointerId !== null && this.activePointerId !== undefined && canvas.releasePointerCapture) {
                 try {
                     canvas.releasePointerCapture(this.activePointerId)
                 } catch (err) {
@@ -298,7 +350,11 @@ export default class Rectangle extends CircuitElement {
                 }
             }
         }
+
+        this.resizing = false
+        this.activeHandle = null
         this.activePointerId = null
+        this.resizeSession = null
 
         // Reset global engine flags so standard cursor management resumes cleanly
         simulationArea.isResizingRectangle = false
@@ -315,24 +371,20 @@ export default class Rectangle extends CircuitElement {
     }
 
     /**
-     * Dynamically update element dimensions during mouse/pointer dragging
-     * @param {{x: number, y: number}=} coords
+     * Dynamically updates the rectangle dimensions strictly using the active resize session.
+     * Computes new dimensions solely from the session state (fixed opposite edges and latest coordinates).
+     * Never reads simulationArea.mouseX or simulationArea.mouseY to avoid stale press coordinate snap-back.
+     * Idempotent: calling with no arguments any number of times produces the same geometry.
+     * Safe no-op when there is no active session.
      */
-    resize(coords = null) {
-        if (!this.resizing || !this.activeHandle) return
+    resize() {
+        if (!this.resizing || !this.resizeSession) return
 
-        let mouseX = coords && coords.x !== undefined ? coords.x : simulationArea.mouseX
-        let mouseY = coords && coords.y !== undefined ? coords.y : simulationArea.mouseY
+        const { handle, fixedLeft, fixedTop, fixedRight, fixedBottom, latestCoords } = this.resizeSession
+        if (!latestCoords) return
 
-        if (mouseX === undefined) mouseX = simulationArea.mouseX
-        if (mouseY === undefined) mouseY = simulationArea.mouseY
-        if (mouseX === undefined || mouseY === undefined) return
-
-        const handle = this.activeHandle
-        const fixedLeft = this.fixedLeft !== undefined ? this.fixedLeft : this.x
-        const fixedTop = this.fixedTop !== undefined ? this.fixedTop : this.y
-        const fixedRight = this.fixedRight !== undefined ? this.fixedRight : this.x + this.elementWidth
-        const fixedBottom = this.fixedBottom !== undefined ? this.fixedBottom : this.y + this.elementHeight
+        const mouseX = latestCoords.x
+        const mouseY = latestCoords.y
 
         let newX = this.x
         let newY = this.y
@@ -390,7 +442,9 @@ export default class Rectangle extends CircuitElement {
     }
 
     /**
-     * Active resize pointer move listener
+     * Active resize pointer move listener.
+     * Converts client coordinates via standard canvas transform, updates session latestCoords, and triggers resize().
+     * @param {PointerEvent|MouseEvent} e - The pointer move event
      */
     onPointerMove(e) {
         if (this.scope !== globalScope) {
@@ -398,14 +452,16 @@ export default class Rectangle extends CircuitElement {
             return
         }
 
-        if (this.resizing) {
+        if (this.resizing && this.resizeSession) {
             const coords = this.getEventCoordinates(e)
-            this.resize(coords)
+            this.resizeSession.latestCoords = coords
+            this.resize()
         }
     }
 
     /**
-     * Active resize pointer up/cancel listener
+     * Active resize pointer up/cancel listener.
+     * Terminates the active resize session.
      */
     onPointerUp() {
         if (this.resizing) {
@@ -414,7 +470,18 @@ export default class Rectangle extends CircuitElement {
     }
 
     /**
-     * Override isHover to consider drag handles and bypass hit detection during active resize
+     * Handles lost pointer capture event to cleanly terminate active resize session.
+     */
+    onLostPointerCapture() {
+        if (this.resizing) {
+            this.stopResize()
+        }
+    }
+
+    /**
+     * Override isHover to consider drag handles and bypass hit detection during active resize.
+     * Disabled in embed mode.
+     * @returns {boolean}
      */
     isHover() {
         if (this.scope !== globalScope) return false
@@ -432,14 +499,25 @@ export default class Rectangle extends CircuitElement {
     }
 
     /**
-     * Override startDragging to intercept drag-handle resizing
+     * Override startDragging to intercept drag-handle resizing.
+     * Disabled in embed mode.
      */
     startDragging() {
+        if (typeof embed !== 'undefined' && embed) {
+            super.startDragging()
+            return
+        }
         if (this.scope !== globalScope || this.resizing) return
 
         const handle = this.getHandleAt(simulationArea.mouseXf, simulationArea.mouseYf)
         if (handle && simulationArea.lastSelected === this) {
-            this.startResize(handle)
+            const startCoords = {
+                x: simulationArea.mouseX,
+                y: simulationArea.mouseY,
+                xf: simulationArea.mouseXf,
+                yf: simulationArea.mouseYf,
+            }
+            this.startResize(handle, null, startCoords)
             return
         }
 
@@ -447,7 +525,7 @@ export default class Rectangle extends CircuitElement {
     }
 
     /**
-     * Override drag to perform resizing when a handle is active
+     * Override drag to perform resizing when a handle is active.
      */
     drag() {
         if (this.scope !== globalScope) return
@@ -460,7 +538,9 @@ export default class Rectangle extends CircuitElement {
 
     /**
      * Override update to manage resizing lifecycle and prevent accidental moves.
-     * Reliant solely on pointerup/pointercancel (no simulationArea.mouseDown guard).
+     * When resizing is active, updates from the session without reading mouseX/mouseY.
+     * Reliant solely on pointerup/pointercancel/lostpointercapture to stop resizing.
+     * @returns {boolean|undefined}
      */
     update() {
         if (this.scope !== globalScope) {
@@ -515,6 +595,7 @@ export default class Rectangle extends CircuitElement {
     /**
      * @memberof Rectangle
      * @param {number} size - new size of rows
+     * @returns {Rectangle}
      */
     changeRowSize(size) {
         if (size === undefined || size < 5 || size > 1000) return
@@ -527,6 +608,7 @@ export default class Rectangle extends CircuitElement {
     /**
      * @memberof Rectangle
      * @param {number} size - new size of columns
+     * @returns {Rectangle}
      */
     changeColSize(size) {
         if (size === undefined || size < 5 || size > 1000) return
@@ -559,7 +641,7 @@ export default class Rectangle extends CircuitElement {
     /**
      * @memberof Rectangle
      * fn to create save Json Data of object
-     * @return {JSON}
+     * @returns {JSON}
      */
     customSave() {
         const data = {
@@ -569,10 +651,13 @@ export default class Rectangle extends CircuitElement {
     }
 
     /**
-     * Render visible drag handles at bounding box corners and midpoints
-     * @param {CanvasRenderingContext2D} ctx
+     * Render visible drag handles at bounding box corners and midpoints.
+     * Disabled in embed mode.
+     * @param {CanvasRenderingContext2D} ctx - 2D rendering context
      */
     drawHandles(ctx) {
+        if (typeof embed !== 'undefined' && embed) return
+
         const activeScope = this.scope || globalScope
         const scale = activeScope.scale || 1
         const ox = activeScope.ox !== undefined ? activeScope.ox : 0
