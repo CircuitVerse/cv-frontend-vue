@@ -26,12 +26,18 @@ export interface SimulationArea {
   mouseY: number;
   mouseDownX: number;
   mouseDownY: number;
+  mouseRawX?: number;
+  mouseRawY?: number;
+  mouseDownRawX?: number;
+  mouseDownRawY?: number;
   simulationQueue: EventQueue;
   clickCount: number;
   lock: string;
   mouseDown: boolean;
   ClockInterval: NodeJS.Timeout | null;
   touch: boolean;
+  isResizingRectangle?: boolean;
+  resizeCursor?: string;
   timer: () => void;
   setup: () => void;
   changeClockTime: (t: number) => void;
