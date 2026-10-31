@@ -26,7 +26,7 @@
                         :key="scopeId"
                     >
                         <label
-                            v-if="availableSubCircuits(value, scopeId)"
+                            v-if="availableSubCircuits(value)"
                             class="option custom-radio inline"
                         >
                             <input
@@ -93,9 +93,9 @@ function getName(x) {
     return x.name
 }
 
-function availableSubCircuits(value, scopeId) {
+function availableSubCircuits(value) {
     return (
-        !value.checkDependency(Number(scopeId)) &&
+        !value.checkDependency(globalScope.id) &&
         value.isVisible() &&
         value !== globalScope
     )

@@ -112,12 +112,12 @@ export default class SubCircuit extends CircuitElement implements ICircuitElemen
           (savedData && savedData.title) || subcircuitScope.name
         } is an empty circuit`,
       );
-    } else if (subcircuitScope.checkDependency(Number(scope.id))) {
+    } else if (subcircuitScope.checkDependency(scope.id)) {
       // check for cyclic dependency
       showError("Cyclic Circuit Error");
     }
     // Error handling, cleanup
-    if (subcircuitScope == undefined || subcircuitScope.checkDependency(Number(scope.id))) {
+    if (subcircuitScope == undefined || subcircuitScope.checkDependency(scope.id)) {
       if (savedData) {
         for (let i = 0; i < savedData.inputNodes.length; i++) {
           scope.allNodes[savedData.inputNodes[i]].deleted = true;
