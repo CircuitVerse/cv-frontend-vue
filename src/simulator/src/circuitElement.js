@@ -288,13 +288,13 @@ export default class CircuitElement {
                     Math.round(
                         (simulationArea.mouseX -
                             (this.rightDimensionX - this.leftDimensionX) / 2) /
-                            10
+                        10
                     ) * 10
                 this.y =
                     Math.round(
                         (simulationArea.mouseY -
                             (this.downDimensionY - this.upDimensionY) / 2) /
-                            10
+                        10
                     ) * 10
             } else {
                 this.x = simulationArea.mouseX
@@ -544,21 +544,31 @@ export default class CircuitElement {
      * NOT OVERRIDABLE
      */
     draw() {
-        //
-        var ctx = simulationArea.context
-        this.checkHover()
+        var canvasWidth = simulationArea.canvas ? simulationArea.canvas.width : width
+        var canvasHeight = simulationArea.canvas ? simulationArea.canvas.height : height
 
         if (
             this.x * this.scope.scale + this.scope.ox <
-                -this.rightDimensionX * this.scope.scale - 0 ||
+            -this.rightDimensionX * this.scope.scale ||
             this.x * this.scope.scale + this.scope.ox >
-                width + this.leftDimensionX * this.scope.scale + 0 ||
+            canvasWidth + this.leftDimensionX * this.scope.scale ||
             this.y * this.scope.scale + this.scope.oy <
-                -this.downDimensionY * this.scope.scale - 0 ||
+            -this.downDimensionY * this.scope.scale ||
             this.y * this.scope.scale + this.scope.oy >
-                height + 0 + this.upDimensionY * this.scope.scale
-        )
+            canvasHeight + this.upDimensionY * this.scope.scale
+        ) {
+            if (simulationArea.hover === this) simulationArea.hover = undefined
+            this.hover = false
+            for (let i = 0; i < this.nodeList.length; i++) {
+                if (simulationArea.hover === this.nodeList[i]) simulationArea.hover = undefined
+                this.nodeList[i].hover = false
+                this.nodeList[i].showHover = false
+            }
             return
+        }
+
+        var ctx = simulationArea.context
+        this.checkHover()
 
         // Draws rectangle and highlights
         if (this.rectangleObject) {
@@ -659,14 +669,14 @@ export default class CircuitElement {
         }
         if (
             this.subcircuitMetadata.x * this.scope.scale + this.scope.ox <
-                -this.layoutProperties.rightDimensionX * this.scope.scale ||
+            -this.layoutProperties.rightDimensionX * this.scope.scale ||
             this.subcircuitMetadata.x * this.scope.scale + this.scope.ox >
-                width +
-                    this.layoutProperties.leftDimensionX * this.scope.scale ||
+            width +
+            this.layoutProperties.leftDimensionX * this.scope.scale ||
             this.subcircuitMetadata.y * this.scope.scale + this.scope.oy <
-                -this.layoutProperties.downDimensionY * this.scope.scale ||
+            -this.layoutProperties.downDimensionY * this.scope.scale ||
             this.subcircuitMetadata.y * this.scope.scale + this.scope.oy >
-                height + this.layoutProperties.upDimensionY * this.scope.scale
+            height + this.layoutProperties.upDimensionY * this.scope.scale
         )
             return
 
@@ -850,7 +860,7 @@ export default class CircuitElement {
      * Dummy resolve function
      * OVERRIDE if necessary
      */
-    resolve() {}
+    resolve() { }
 
     /**
      * Helper Function to process Verilog
