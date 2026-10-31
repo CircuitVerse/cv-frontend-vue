@@ -10,6 +10,9 @@ interface Scope {
   wires: Wire[];
   root: CircuitElement;
   timeStamp: number;
+  ox?: number;
+  oy?: number;
+  scale?: number;
 }
 
 declare var globalScope: Scope;
@@ -95,6 +98,34 @@ export default class Wire {
   }
 
   draw(): void {
+    const canvas = simulationArea.canvas;
+
+    if (canvas && globalScope && globalScope.scale) {
+      const scale = globalScope.scale;
+      const ox = globalScope.ox ?? 0;
+      const oy = globalScope.oy ?? 0;
+
+      const x1 = this.node1.absX() * scale + ox;
+      const x2 = this.node2.absX() * scale + ox;
+      const y1 = this.node1.absY() * scale + oy;
+      const y2 = this.node2.absY() * scale + oy;
+
+      const minX = Math.min(x1, x2);
+      const maxX = Math.max(x1, x2);
+      const minY = Math.min(y1, y2);
+      const maxY = Math.max(y1, y2);
+
+      const buffer = Math.ceil(Math.max(1, Math.round(3 * scale)) / 2 + 1);
+      if (
+        maxX < -buffer ||
+        minX > canvas.width + buffer ||
+        maxY < -buffer ||
+        minY > canvas.height + buffer
+      ) {
+        return;
+      }
+    }
+
     drawLine(
       simulationArea.context,
       this.node1.absX(),
