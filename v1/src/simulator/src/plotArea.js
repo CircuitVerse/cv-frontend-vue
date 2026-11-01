@@ -69,12 +69,14 @@ const plotArea = {
     mouseDownTime: 0, // time when mouse clicked (in ms)
     lastLogText: '',
     lastLogColor: '',
+    lastLogEl: null,
     // Reset timeline to 0 and resume autoscroll
     reset() {
         this.cycleCount = 0
         this.cycleTime = new Date().getTime()
         this.lastLogText = ''
         this.lastLogColor = ''
+        this.lastLogEl = null
         for (var i = 0; i < globalScope.Flag.length; i++) {
             globalScope.Flag[i].plotValues = [
                 [0, globalScope.Flag[i].inp1.value],
@@ -228,14 +230,18 @@ const plotArea = {
             ? `Utilization: ${Math.round(unitUsed)} Units (${utilization}%) Recommended Units: ${recommendedUnit}`
             : `Utilization: ${Math.round(unitUsed)} Units (${utilization}%)`
 
-        if (this.lastLogText !== logText || this.lastLogColor !== targetColor) {
+        const logEl = document.getElementById('timing-diagram-log')
+        if (
+            logEl &&
+            (this.lastLogEl !== logEl ||
+                this.lastLogText !== logText ||
+                this.lastLogColor !== targetColor)
+        ) {
+            this.lastLogEl = logEl
             this.lastLogText = logText
             this.lastLogColor = targetColor
-            const logEl = document.getElementById('timing-diagram-log')
-            if (logEl) {
-                logEl.textContent = logText
-                logEl.style.backgroundColor = targetColor
-            }
+            logEl.textContent = logText
+            logEl.style.backgroundColor = targetColor
         }
 
         if (utilization >= 100) {
