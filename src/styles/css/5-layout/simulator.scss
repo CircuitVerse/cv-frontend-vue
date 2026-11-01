@@ -127,8 +127,6 @@
     /* Hidden by default. Visible on click */
     min-width: 250px;
     /* Set a default minimum width */
-    margin-left: -125px;
-    /* Divide value of min-width by 2 */
     background-color: #333;
     /* Black background color */
     color: #fff;
@@ -141,11 +139,11 @@
     /* Padding */
     position: fixed;
     /* Sit on top of the screen */
-    z-index: 1;
+    z-index: 100;
     /* Add a z-index if needed */
-    right: 50px;
+    left: 260px;
     /* Center the snackbar */
-    bottom: 50px;
+    bottom: 25px;
     /* 30px from the bottom */
     opacity: 0;
 }
