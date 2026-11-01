@@ -461,13 +461,20 @@ const plotArea = {
         if (embed) return
         if (typeof globalScope === 'undefined' || !globalScope) return
 
+        // Keep utilization sampling active even when panel is hidden or idle
+        this.unitUsed = Math.max(
+            this.unitUsed,
+            simulationArea.simulationQueue.time
+        )
+
+        const simulatorMobileStore = useSimulatorMobileStore()
+
         // Guard against idle polling when no flags exist in circuit
         if (!globalScope.Flag || globalScope.Flag.length === 0) {
             if (this.canvas) {
                 if (this.canvas.width !== 0) this.canvas.width = 0
                 if (this.canvas.height !== 0) this.canvas.height = 0
             }
-            const simulatorMobileStore = useSimulatorMobileStore()
             if (simulatorMobileStore.showCanvas) {
                 simulatorMobileStore.showCanvas = false
             }
@@ -483,10 +490,10 @@ const plotArea = {
         }
         if (!this.canvas) return
 
-        // Guard when panel is closed, minimized (display: none), or browser tab is in background
-        if (document.hidden || this.canvas.offsetParent === null) return
+        // Check panel container visibility (avoid checking canvas directly since mobile v-show uses showCanvas)
+        const container = document.getElementById('plot') || this.canvas.parentElement || this.canvas
+        if (document.hidden || container.offsetParent === null) return
 
-        const simulatorMobileStore = useSimulatorMobileStore()
         if (!simulatorMobileStore.showCanvas) {
             simulatorMobileStore.showCanvas = true
         }
