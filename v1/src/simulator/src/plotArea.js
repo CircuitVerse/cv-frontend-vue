@@ -98,15 +98,8 @@ const plotArea = {
     },
     // Called every time clock is ticked
     nextCycle() {
-        var now = new Date().getTime()
-        var timePeriod = simulationArea.timePeriod
-        if (this.cycleTime && timePeriod > 0) {
-            var elapsedCycles = Math.round((now - this.cycleTime) / timePeriod)
-            this.cycleCount += Math.max(1, elapsedCycles)
-        } else {
-            this.cycleCount++
-        }
-        this.cycleTime = now
+        this.cycleCount++
+        this.cycleTime = new Date().getTime()
     },
     // Called everytime play() function is execute in engine.js
     setExecutionTime() {
