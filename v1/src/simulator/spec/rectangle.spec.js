@@ -1,4 +1,4 @@
-import { describe, test, expect, vi, beforeEach } from 'vitest'
+﻿import { describe, test, expect, vi, beforeEach } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
 import { setup } from '../src/setup'
 import { newCircuit } from '../src/circuit'
@@ -130,7 +130,35 @@ describe('Rectangle annotation tests (v1)', () => {
         expect(rect.rows).toBe(15)
     })
 
-    test('onLostPointerCapture terminates active resize session', () => {
+    test('onPointerMove updates session coords for matching pointerId and ignores different pointerId', () => {
+        const rect = new Rectangle(100, 100, scope, 15, 20)
+        simulationArea.lastSelected = rect
+
+        rect.startResize('bottom-right', 42, { x: 300, y: 250, xf: 300, yf: 250 })
+        expect(rect.resizing).toBe(true)
+
+        // Pointer move event with different pointerId is ignored
+        const diffPointerEvent = {
+            pointerId: 999,
+            clientX: 500,
+            clientY: 500,
+        }
+        rect.onPointerMove(diffPointerEvent)
+        expect(rect.resizeSession.latestCoords.x).toBe(300)
+        expect(rect.resizeSession.latestCoords.y).toBe(250)
+
+        // Pointer move event with matching pointerId updates latestCoords
+        const matchingPointerEvent = {
+            pointerId: 42,
+            clientX: 400,
+            clientY: 350,
+        }
+        rect.onPointerMove(matchingPointerEvent)
+        expect(rect.resizeSession.latestCoords.x).toBe(400)
+        expect(rect.resizeSession.latestCoords.y).toBe(350)
+    })
+
+    test('lostpointercapture ends active resize, is ignored for different pointerId, and does nothing when no resize active', () => {
         const rect = new Rectangle(100, 100, scope, 15, 20)
         simulationArea.lastSelected = rect
 

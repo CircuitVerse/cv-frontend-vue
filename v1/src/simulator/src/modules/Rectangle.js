@@ -456,10 +456,15 @@ export default class Rectangle extends CircuitElement {
 
     /**
      * Active resize pointer move listener.
+     * Ignores events whose pointerId differs from the active pointer.
      * Converts client coordinates via standard canvas transform, updates session latestCoords, and triggers resize().
      * @param {PointerEvent|MouseEvent} e - The pointer move event
      */
     onPointerMove(e) {
+        if (e && this.activePointerId !== null && this.activePointerId !== undefined && e.pointerId !== undefined && e.pointerId !== this.activePointerId) {
+            return
+        }
+
         if (this.scope !== globalScope) {
             this.stopResize()
             return
