@@ -38,10 +38,29 @@ export function stripTags(string = "") {
   return string.replace(/(<([^>]+)>)/gi, "").trim();
 }
 
+/**
+ * Recursively checks if the given scope or any of its subcircuits contain clock elements.
+ */
+export function hasClock(
+  scope: any = typeof globalScope !== "undefined" ? globalScope : undefined,
+  visited = new Set<any>()
+): boolean {
+  if (!scope || visited.has(scope)) return false;
+  visited.add(scope);
+  if (scope.Clock && scope.Clock.length > 0) return true;
+  if (scope.SubCircuit && scope.SubCircuit.length > 0) {
+    for (let i = 0; i < scope.SubCircuit.length; i++) {
+      if (hasClock(scope.SubCircuit[i].localScope, visited)) return true;
+    }
+  }
+  return false;
+}
+
 export function clockTick() {
   if (!simulationArea.clockEnabled) return;
   if (errorDetectedGet()) return;
   if (layoutModeGet()) return;
+  if (!hasClock(globalScope)) return;
   updateCanvasSet(true);
   globalScope.clockTick();
   plotArea.nextCycle();
