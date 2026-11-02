@@ -39,12 +39,11 @@ export function stripTags(string = "") {
 }
 
 /**
- * Recursively checks if the given scope or any of its subcircuits contain clock elements.
+ * Recursively checks if the given scope or any of its subcircuits contain
+ * at least one Clock element. Uses a visited set to guard against circular
+ * subcircuit graphs.
  */
-export function hasClock(
-  scope: any = typeof globalScope !== "undefined" ? globalScope : undefined,
-  visited = new Set<any>()
-): boolean {
+export function hasClock(scope: any, visited = new Set<any>()): boolean {
   if (!scope || visited.has(scope)) return false;
   visited.add(scope);
   if (scope.Clock && scope.Clock.length > 0) return true;

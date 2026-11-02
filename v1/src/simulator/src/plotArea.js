@@ -487,6 +487,15 @@ const plotArea = {
             return
         }
 
+        // Keep cycleTime anchored so getCurrentTime() stays monotonic when a
+        // Clock element is added to a previously clockless circuit.
+        // Without this, the first clockTick after a long idle interval computes
+        // a huge elapsed-time fraction (now - stale_cycleTime) and makes the
+        // timeline appear to jump backward.
+        if (!globalScope.Clock || globalScope.Clock.length === 0) {
+            this.cycleTime = new Date().getTime()
+        }
+
         // Check if canvas is available (may be unmounted in Verilog mode)
         if (!this.canvas) {
             this.canvas = document.getElementById('plotArea')
