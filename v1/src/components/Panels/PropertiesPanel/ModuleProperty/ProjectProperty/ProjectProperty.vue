@@ -123,13 +123,20 @@ const SimulatorState = <SimulatorStateType>useState()
 const circnameInput = ref<HTMLInputElement | null>(null)
 const circuitNameDraft = ref(SimulatorState.activeCircuit?.name ?? '')
 watch(
-    () => [SimulatorState.activeCircuit?.id, SimulatorState.activeCircuit?.name],
+    () => SimulatorState.activeCircuit?.id,
+    () => {
+        circuitNameDraft.value = SimulatorState.activeCircuit?.name ?? ''
+    }
+)
+
+watch(
+    () => SimulatorState.activeCircuit?.name,
     () => {
         if (document.activeElement?.id !== 'circname') {
             circuitNameDraft.value = SimulatorState.activeCircuit?.name ?? ''
         }
-    },
-);
+    }
+)
 
 function onCircnameBlur() {
     if (!circuitNameDraft.value.trim()) {
