@@ -59,8 +59,8 @@ export function clockTick() {
   if (!simulationArea.clockEnabled) return;
   if (errorDetectedGet()) return;
   if (layoutModeGet()) return;
-  plotArea.nextCycle();
   if (!hasClock(globalScope)) return;
+  plotArea.nextCycle();
   updateCanvasSet(true);
   globalScope.clockTick();
   play();
