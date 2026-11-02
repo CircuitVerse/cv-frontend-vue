@@ -65,7 +65,7 @@ function wasmMimePlugin() {
 
 // https://vitejs.dev/config/
 export default defineConfig(() => {
-  const version = process.env.VITE_SIM_VERSION || "v1";
+  const version = process.env.VITE_SIM_VERSION || "v0";
   const isDesktop = !!process.env.DESKTOP_MODE;
 
   return {
@@ -96,7 +96,7 @@ export default defineConfig(() => {
     // Set publicDir to the root 'public' folder instead of the version-specific 'root' folder.
     // This allows sharing common static assets across all simulator versions.
     publicDir: fileURLToPath(new URL("./public", import.meta.url)),
-    base: process.env.VITE_BASE || "/",
+    base: process.env.VITE_BASE || (isDesktop ? "/" : `/simulatorvue/${version}/`),
     build: {
       outDir: fileURLToPath(new URL(`./dist/simulatorvue/${version}/`, import.meta.url)),
       assetsDir: "assets",
@@ -111,7 +111,6 @@ export default defineConfig(() => {
     },
     server: {
       port: 4000,
-      host: true,
       watch: {
         ignored: ["**/src-tauri/target/**"],
       },

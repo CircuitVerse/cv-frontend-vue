@@ -479,9 +479,15 @@ export default class Rectangle extends CircuitElement {
 
     /**
      * Active resize pointer up/cancel listener.
+     * Ignores events whose pointerId differs from the active pointer.
      * Terminates the active resize session.
+     * @param {PointerEvent|MouseEvent} [e] - The pointer up/cancel event
      */
-    onPointerUp() {
+    onPointerUp(e) {
+        if (e && this.activePointerId !== null && this.activePointerId !== undefined && e.pointerId !== undefined && e.pointerId !== this.activePointerId) {
+            return
+        }
+
         if (this.resizing) {
             this.stopResize()
         }

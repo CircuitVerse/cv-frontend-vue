@@ -169,4 +169,55 @@ describe('Rectangle annotation tests (v1)', () => {
         expect(rect.resizing).toBe(false)
         expect(rect.resizeSession).toBeNull()
     })
+    test('onPointerUp ignores different pointerId, ends resize on matching pointerId, and handles missing/null pointerId', () => {
+        const rect = new Rectangle(100, 100, scope, 15, 20)
+        simulationArea.lastSelected = rect
+
+        // Start resize with activePointerId = 42
+        rect.startResize('bottom-right', 42, { x: 300, y: 250, xf: 300, yf: 250 })
+        expect(rect.resizing).toBe(true)
+
+        // Event from another pointerId does not end resize
+        rect.onPointerUp({ pointerId: 999 })
+        expect(rect.resizing).toBe(true)
+        expect(rect.resizeSession).not.toBeNull()
+
+        // Event from active pointer ends resize
+        rect.onPointerUp({ pointerId: 42 })
+        expect(rect.resizing).toBe(false)
+        expect(rect.resizeSession).toBeNull()
+
+        // Event with missing pointerId or null/undefined behaves as before (ends resize)
+        rect.startResize('bottom-right', 42, { x: 300, y: 250, xf: 300, yf: 250 })
+        expect(rect.resizing).toBe(true)
+        rect.onPointerUp({})
+        expect(rect.resizing).toBe(false)
+
+        // Calling onPointerUp with no arguments behaves as before (ends resize)
+        rect.startResize('bottom-right', null, { x: 300, y: 250, xf: 300, yf: 250 })
+        expect(rect.resizing).toBe(true)
+        rect.onPointerUp()
+        expect(rect.resizing).toBe(false)
+    })
+
+    test('pointerup followed by lostpointercapture still calls scheduleBackup exactly once', () => {
+        const rect = new Rectangle(100, 100, scope, 15, 20)
+        simulationArea.lastSelected = rect
+
+        rect.startResize('bottom-right', 42, { x: 300, y: 250, xf: 300, yf: 250 })
+        // Move to change dimensions
+        rect.resizeSession.latestCoords = { x: 400, y: 350, xf: 400, yf: 350 }
+        rect.resize()
+
+        backupCircuit.scheduleBackup.mockClear()
+
+        // Pointer up from active pointer terminates session and triggers backup
+        rect.onPointerUp({ pointerId: 42 })
+        expect(backupCircuit.scheduleBackup).toHaveBeenCalledTimes(1)
+        expect(rect.resizing).toBe(false)
+
+        // Subsequent lostpointercapture event must be idempotent and not schedule a second backup
+        rect.onLostPointerCapture()
+        expect(backupCircuit.scheduleBackup).toHaveBeenCalledTimes(1)
+    })
 })

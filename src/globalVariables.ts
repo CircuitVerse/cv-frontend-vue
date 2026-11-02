@@ -5,7 +5,6 @@ declare const window: any;
 
 import jQuery from "jquery";
 window.$ = window.jQuery = jQuery;
-(globalThis as any).$ = (globalThis as any).jQuery = jQuery;
 
 window.isUserLoggedIn = window.isUserLoggedIn ?? false;
 window.logixProjectId = window.logixProjectId ?? undefined;
