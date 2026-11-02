@@ -26,9 +26,10 @@
                             :id="theme"
                             :key="theme"
                             class="theme"
-                            :class="
-                                theme == selectedTheme ? 'selected set' : ''
-                            "
+                            :class="{
+                                selected: theme === selectedTheme,
+                                set: theme === selectedThemeRef
+                            }"
                         >
                             <div
                                 class="themeSel"
@@ -70,9 +71,10 @@
                                 <input
                                     :id="theme.replace(' ', '')"
                                     type="radio"
-                                    value="theme"
+                                    :value="theme"
                                     name="theme"
-                                    :checked="theme == selectedTheme || theme == 'Default Theme'"
+                                    :checked="theme === selectedTheme"
+                                    @change="changeTheme(theme)"
                                 />
                                 <label :for="theme.replace(' ', '')">{{
                                     theme
@@ -91,7 +93,7 @@
                     >
                         <v-icon>mdi-close</v-icon>
                     </v-btn>
-                    <form @input="changeCustomTheme($event)">
+                    <form>
                         <div
                             v-for="customTheme in customThemes"
                             :key="customTheme"
@@ -146,8 +148,8 @@
 
 <script lang="ts" setup>
 import { useState } from '#/store/SimulatorStore/state'
-import { onMounted, onUpdated, ref, reactive } from '@vue/runtime-core'
-import themeOptions from '#/simulator/src/themer/themes'
+import { onMounted, ref, reactive, watch } from 'vue'
+import themeOptions, { defaultCustomTheme } from '#/simulator/src/themer/themes'
 import {
     getThemeCardSvg,
     updateBG,
@@ -159,12 +161,15 @@ import { confirmSingleOption } from '#/utils/confirm'
 const themes = ref([''])
 const customThemes = ref<((keyof typeof customThemesList)[]) | undefined>(undefined);
 const customThemesList: Themes = reactive({})
-const selectedTheme = ref('default-theme')
+const selectedTheme = ref('Default Theme')
 const iscustomTheme = ref(false)
+const selectedThemeRef = ref<string | null>('Default Theme')
 
 onMounted(() => {
     SimulatorState.dialogBox.theme_dialog = false
-    selectedTheme.value = localStorage.getItem('theme') ?? 'default-theme'
+    const appliedTheme = localStorage.getItem('theme') ?? 'Default Theme'
+    selectedTheme.value = appliedTheme
+    selectedThemeRef.value = appliedTheme
     themes.value = Object.keys(themeOptions)
     themes.value.splice(-1, 1)
     const customTheme = CreateAbstraction(themeOptions['Custom Theme'])
@@ -174,80 +179,115 @@ onMounted(() => {
     customThemes.value = Object.keys(customThemesList) as (keyof typeof customThemesList)[]
 })
 
-function changeTheme(theme: string) {
-    selectedTheme.value = theme;
+watch(
+    () => SimulatorState.dialogBox.theme_dialog,
+    (isOpen) => {
+        if (isOpen) {
+            const appliedTheme = localStorage.getItem('theme') ?? 'Default Theme'
+            selectedTheme.value = appliedTheme
+            selectedThemeRef.value = appliedTheme
+            iscustomTheme.value = false
+        }
+    }
+)
+
+/**
+ * Updates the selected theme preview and refreshes the canvas background.
+ * @param theme - Name of the selected theme to preview.
+ */
+function changeTheme(theme: string): void {
+    selectedTheme.value = theme
     updateThemeForStyle(theme)
     updateBG()
 }
 
-function changeCustomTheme(e: InputEvent) {
-    const customTheme = customThemesList[(e.target as HTMLInputElement).name as keyof typeof customThemesList];
+/**
+ * Updates a custom theme color property and refreshes the canvas preview.
+ * @param e - Input event triggered by a color input element.
+ */
+function changeCustomTheme(e: Event): void {
+    const target = e.target as HTMLInputElement
+    const customTheme = customThemesList[target.name as keyof typeof customThemesList]
     if (customTheme) {
-        customTheme.color = (e.target as HTMLInputElement).value;
+        customTheme.color = target.value
         customTheme.ref.forEach((property: string) => {
-            themeOptions['Custom Theme'][property] = (e.target as HTMLInputElement).value
+            themeOptions['Custom Theme'][property] = target.value
         })
     }
-    customThemesList[(e.target as HTMLInputElement).name as keyof typeof customThemesList] = customTheme
+    customThemesList[target.name as keyof typeof customThemesList] = customTheme
     updateThemeForStyle('Custom Theme')
     updateBG()
 }
 
-function applyTheme() {
-    if (iscustomTheme.value == false) {
-        if ($('.selected label').text()) {
-            localStorage.removeItem('Custom Theme')
-            localStorage.setItem('theme', $('.selected label').text())
+/**
+ * Applies the selected predefined or custom theme and saves it to storage.
+ */
+function applyTheme(): void {
+    if (iscustomTheme.value === false) {
+        if (selectedTheme.value) {
+            localStorage.setItem('theme', selectedTheme.value)
+            updateThemeForStyle(selectedTheme.value)
+            updateBG()
         }
     } else {
-        // update theme to Custom Theme
         localStorage.setItem('theme', 'Custom Theme')
-        // add Custom theme to custom theme object
         localStorage.setItem(
             'Custom Theme',
             JSON.stringify(themeOptions['Custom Theme'])
         )
+        selectedTheme.value = 'Custom Theme'
+        updateThemeForStyle('Custom Theme')
+        updateBG()
     }
-    $('.set').removeClass('set')
-    $('.selected').addClass('set')
+    selectedThemeRef.value = selectedTheme.value
     SimulatorState.dialogBox.theme_dialog = false
     setTimeout(() => (iscustomTheme.value = false), 1000)
 }
-function applyCustomTheme() {
-    iscustomTheme.value = true
-    updateThemeForStyle(localStorage.getItem('theme'))
-    updateBG()
-    localStorage.setItem('theme', 'Custom Theme')
-    // add Custom theme to custom theme object
-    localStorage.setItem(
-        'Custom Theme',
-        JSON.stringify(themeOptions['Custom Theme'])
-    )
-    $('.set').removeClass('set')
-    $('.selected').addClass('set')
-}
 
-function receivedText(e: ProgressEvent<FileReader>) {
-    let lines = []
-    if(typeof e.target?.result === 'string') {
-        lines = JSON.parse(e.target.result)
+/**
+ * Opens the custom theme editor view and previews custom theme colors.
+ */
+function applyCustomTheme(): void {
+    iscustomTheme.value = true
+    const savedCustomTheme = localStorage.getItem('Custom Theme')
+    if (savedCustomTheme) {
+        themeOptions['Custom Theme'] = JSON.parse(savedCustomTheme)
     }
-    let customTheme = CreateAbstraction(lines)
-    themeOptions['Custom Theme'] = lines
-    // preview theme
+    const customThemeAbstraction = CreateAbstraction(themeOptions['Custom Theme'])
+    Object.keys(customThemeAbstraction).forEach((key) => {
+        customThemesList[key as keyof typeof customThemesList] =
+            customThemeAbstraction[key as keyof typeof customThemesList]
+    })
     updateThemeForStyle('Custom Theme')
     updateBG()
-    // update colors in dialog box
+}
+
+/**
+ * Parses uploaded JSON theme file and applies it to custom theme options.
+ * @param e - Progress event from the file reader containing file contents.
+ */
+function receivedText(e: ProgressEvent<FileReader>): void {
+    let lines = []
+    if (typeof e.target?.result === 'string') {
+        lines = JSON.parse(e.target.result)
+    }
+    themeOptions['Custom Theme'] = lines
+    updateThemeForStyle('Custom Theme')
+    updateBG()
     SimulatorState.dialogBox.theme_dialog = false
     SimulatorState.dialogBox.theme_dialog = true
     const customThemeValues = CreateAbstraction(themeOptions['Custom Theme'])
     Object.keys(customThemeValues).forEach((key) => {
-        customThemesList[key as keyof typeof customThemesList] = customThemeValues[key as keyof typeof customThemesList]
+        customThemesList[key as keyof typeof customThemesList] =
+            customThemeValues[key as keyof typeof customThemesList]
     })
     customThemes.value = Object.keys(customThemesList) as (keyof typeof customThemesList)[]
 }
 
-function importCustomTheme() {
+/**
+ * Prompts user to select a JSON file to import a custom theme.
+ */
+function importCustomTheme(): void {
     const fileInput = document.createElement('input')
     fileInput.type = 'file'
     fileInput.accept = '.json'
@@ -267,7 +307,10 @@ function importCustomTheme() {
     document.body.removeChild(fileInput)
 }
 
-function exportCustomTheme() {
+/**
+ * Exports current custom theme settings as a downloadable JSON file.
+ */
+function exportCustomTheme(): void {
     const dlAnchorElem = document.getElementById('downloadThemeFile')
     dlAnchorElem?.setAttribute(
         'href',
@@ -279,21 +322,40 @@ function exportCustomTheme() {
     dlAnchorElem?.click()
 }
 
-function closeThemeDialog() {
+/**
+ * Closes the theme selection dialog and reverts unapplied preview changes.
+ */
+function closeThemeDialog(): void {
     SimulatorState.dialogBox.theme_dialog = false
     setTimeout(() => (iscustomTheme.value = false), 1000)
-    updateThemeForStyle(localStorage.getItem('theme'))
+    const appliedTheme = localStorage.getItem('theme') ?? 'Default Theme'
+    selectedTheme.value = appliedTheme
+    selectedThemeRef.value = appliedTheme
+    updateThemeForStyle(appliedTheme)
     updateBG()
 }
-function closeCustomThemeDialog() {
+
+/**
+ * Closes the custom theme editor and reverts unsaved color modifications.
+ */
+function closeCustomThemeDialog(): void {
     SimulatorState.dialogBox.theme_dialog = false
     setTimeout(() => (iscustomTheme.value = false), 1000)
-    const customTheme = localStorage.getItem('Custom Theme')
-    if (customTheme) {
-        themeOptions['Custom Theme'] = JSON.parse(customTheme) || themeOptions['Default Theme'] // hack for closing dialog box without saving
+    const savedCustomTheme = localStorage.getItem('Custom Theme')
+    if (savedCustomTheme) {
+        themeOptions['Custom Theme'] = JSON.parse(savedCustomTheme)
+    } else {
+        themeOptions['Custom Theme'] = { ...defaultCustomTheme }
     }
-    // Rollback to previous theme
-    updateThemeForStyle(localStorage.getItem('theme'))
+    const customThemeAbstraction = CreateAbstraction(themeOptions['Custom Theme'])
+    Object.keys(customThemeAbstraction).forEach((key) => {
+        customThemesList[key as keyof typeof customThemesList] =
+            customThemeAbstraction[key as keyof typeof customThemesList]
+    })
+    const appliedTheme = localStorage.getItem('theme') ?? 'Default Theme'
+    selectedTheme.value = appliedTheme
+    selectedThemeRef.value = appliedTheme
+    updateThemeForStyle(appliedTheme)
     updateBG()
 }
 </script>
