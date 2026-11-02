@@ -98,8 +98,15 @@ const plotArea = {
     },
     // Called every time clock is ticked
     nextCycle() {
-        this.cycleCount++
-        this.cycleTime = new Date().getTime()
+        var now = new Date().getTime()
+        var timePeriod = simulationArea.timePeriod
+        if (this.cycleTime && timePeriod > 0) {
+            var elapsedCycles = Math.round((now - this.cycleTime) / timePeriod)
+            this.cycleCount += Math.max(1, elapsedCycles)
+        } else {
+            this.cycleCount++
+        }
+        this.cycleTime = now
     },
     // Called everytime play() function is execute in engine.js
     setExecutionTime() {
@@ -485,15 +492,6 @@ const plotArea = {
                 simulatorMobileStore.showCanvas = false
             }
             return
-        }
-
-        // Keep cycleTime anchored so getCurrentTime() stays monotonic when a
-        // Clock element is added to a previously clockless circuit.
-        // Without this, the first clockTick after a long idle interval computes
-        // a huge elapsed-time fraction (now - stale_cycleTime) and makes the
-        // timeline appear to jump backward.
-        if (!globalScope.Clock || globalScope.Clock.length === 0) {
-            this.cycleTime = new Date().getTime()
         }
 
         // Check if canvas is available (may be unmounted in Verilog mode)

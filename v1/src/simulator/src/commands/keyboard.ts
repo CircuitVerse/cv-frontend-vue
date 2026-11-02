@@ -103,7 +103,6 @@ export function handleSimulatorKeyDown(e: KeyboardEvent): void {
     simulationArea.controlDown = true;
   }
 
-  scheduleUpdate(1);
   updateCanvasSet(true);
   wireToBeCheckedSet(1);
 
@@ -143,6 +142,7 @@ export function handleSimulatorKeyDown(e: KeyboardEvent): void {
         e.stopPropagation();
         e.preventDefault();
       }
+      scheduleUpdate(1);
       return;
     }
   }
@@ -150,6 +150,7 @@ export function handleSimulatorKeyDown(e: KeyboardEvent): void {
   if (lastSelected && lastSelected.keyDown2) {
     if (e.key.toString().length == 1) {
       lastSelected.keyDown2(e.key.toString());
+      scheduleUpdate(1);
       return;
     }
   }
@@ -157,9 +158,12 @@ export function handleSimulatorKeyDown(e: KeyboardEvent): void {
   if (lastSelected && lastSelected.keyDown3) {
     if (e.key.toString() != "Backspace" && e.key.toString() != "Delete") {
       lastSelected.keyDown3(e.key.toString());
+      scheduleUpdate(1);
       return;
     }
   }
+
+  scheduleUpdate(1);
 
   // Component keys above work wherever the pointer is; the canvas shortcuts
   // below only apply while the pointer is over the canvas.
