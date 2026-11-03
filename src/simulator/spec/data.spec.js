@@ -39,6 +39,8 @@ vi.mock('codemirror-editor-vue3', () => ({
 describe('data dir working', () => {
     let pinia;
     let router;
+    let savedOfflineProjectId;
+    let savedOfflineProjectKey;
 
     beforeAll(async () => {
         pinia = createPinia();
@@ -154,15 +156,22 @@ describe('data dir working', () => {
         expect(() => recoverProject()).not.toThrow();
     });
 
-    test('SaveOffline working', () => {
-        expect(() => saveOffline()).not.toThrow();
+    test('SaveOffline working', async () => {
+        savedOfflineProjectId = globalScope.id;
+        savedOfflineProjectKey = window.projectId;
+        await expect(saveOffline()).resolves.toBeUndefined();
     });
 
-    test('OpenOffline working', () => {
+    test('OpenOffline working', async () => {
+        clearProject(true);
         openOffline();
-        document.querySelector('#openProjectDialog input')?.click();
-        document.querySelector('#Open_offline_btn')?.click();
-        expect(globalScope.id).toBe(11597572508);
+        await nextTick();
+        document.querySelector(`input[value="${savedOfflineProjectKey}"]`)?.click();
+        Array.from(document.querySelectorAll('.messageBtn'))
+            .find((button) => button.textContent?.trim().toLowerCase() === 'open project')
+            ?.click();
+        await nextTick();
+        expect(globalScope.id).toBe(savedOfflineProjectId);
     });
 
     test('saveImage working', () => {
