@@ -16,11 +16,11 @@ import { colorThemes } from './themer/themer'
 import { showTourGuide } from './tutorials'
 import { createVerilogCircuit } from './Verilog2CV'
 import { generateVerilog } from './verilog'
-import { bitConverterDialog } from './utils'
+import { bitConverterDialog, showError } from './utils'
 import { keyBinder } from '#/components/DialogBox/CustomShortcut.vue'
 import { ExportProject } from '#/components/DialogBox/ExportProject.vue'
 import { ImportProject } from '#/components/DialogBox/ImportProject.vue'
-import { beautifyCircuit } from './utils/autoLayout'
+import { beautifyCircuit, isBeautifyInProgress } from './utils/autoLayout'
 import { simulationArea } from './simulationArea'
 
 const logixFunction = {}
@@ -61,8 +61,14 @@ function createNewCircuit() {
 }
 
 function triggerBeautifyCircuit() {
+    if (isBeautifyInProgress()) return
     const hasSelection = (simulationArea.multipleObjectSelections?.length ?? 0) > 0
-    beautifyCircuit(undefined, hasSelection).catch((err) =>
-        console.error('[autoLayout] Error:', err),
-    )
+    beautifyCircuit(undefined, hasSelection)
+        .then((ok) => {
+            if (!ok) showError('Beautify Circuit could not lay out the circuit.')
+        })
+        .catch((err) => {
+            console.error('[autoLayout] Error:', err)
+            showError('Beautify Circuit failed.')
+        })
 }

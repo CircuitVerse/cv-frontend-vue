@@ -3,7 +3,6 @@
  * Auto-layout engine using ELK to reposition circuit elements and route orthogonal wires.
  */
 
-import ELK from "elkjs/lib/elk.bundled.js";
 import { scheduleBackup } from "../data/backupCircuit";
 import {
   scheduleUpdate,
@@ -49,6 +48,10 @@ async function runBeautify(
   if (workingSet.size === 0) {
     console.warn("[autoLayout] No elements to layout.");
     return false;
+  }
+
+  if (!(scope.backups as unknown[] | undefined)?.length) {
+    scheduleBackup(scope);
   }
 
   // Anchor layout to the current top-left bounding box of the working set
@@ -164,6 +167,7 @@ async function runBeautify(
     edges: elkEdges,
   };
 
+  const { default: ELK } = await import("elkjs/lib/elk.bundled.js");
   const elk = new ELK();
   let result: { children?: ElkNode[]; edges?: ElkEdge[] };
   try {
@@ -659,6 +663,10 @@ function extractBendPoints(
  * @param selectedOnly - layout only currently selected elements
  * @returns true if layout succeeded, false otherwise
  */
+export function isBeautifyInProgress(): boolean {
+  return layoutInProgress;
+}
+
 export async function beautifyCircuit(
   scope: CircuitScope = globalScope,
   selectedOnly = false,
