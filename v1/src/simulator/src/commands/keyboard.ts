@@ -207,6 +207,7 @@ export function handleSimulatorKeyDown(e: KeyboardEvent): void {
       if (Number.isInteger(newWidth)) {
         lastSelected.newBitWidth?.(newWidth);
         updateSimulationSet(true);
+        updateCanvasSet(true);
         scheduleUpdate(1);
       }
     }
