@@ -50,7 +50,7 @@
     "jquery": "^3.6.0",
     "pinia": "^3.0.4",
     "vue": "^3.5.34",
-    "vue-i18n": "^11.4.4",
+    "vue-i18n": "^11.4.18",
     "vue-router": "^4.6.4",
     "vuedraggable": "^4.1.0",
     "vuetify": "^3.7.9",
@@ -60,7 +60,7 @@
   "devDependencies": {
     "@commitlint/cli": "^19.0.0",
     "@commitlint/config-conventional": "^19.0.0",
-    "@intlify/unplugin-vue-i18n": "^6.0.0",
+    "@intlify/unplugin-vue-i18n": "^11.2.8",
     "@tauri-apps/cli": "^2.11.2",
     "@types/jquery": "^3.5.14",
     "@types/webfontloader": "^1.0.0",
