@@ -1,10 +1,21 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
+const getInitialTheme = (): string => {
+  try {
+    if (typeof localStorage !== "undefined" && typeof localStorage.getItem === "function") {
+      return localStorage.getItem("verilog-theme") || "default";
+    }
+  } catch {
+    // Ignore in environments where localStorage is restricted or mocked
+  }
+  return "default";
+};
+
 export const useVerilogStore = defineStore("verilogStore", () => {
   const isTerminalVisible = ref(false);
 
-  const selectedTheme = ref(localStorage.getItem("verilog-theme") || "default");
+  const selectedTheme = ref(getInitialTheme());
 
   const toggleTerminal = () => {
     isTerminalVisible.value = !isTerminalVisible.value;
@@ -20,7 +31,13 @@ export const useVerilogStore = defineStore("verilogStore", () => {
 
   const setTheme = (theme: string) => {
     selectedTheme.value = theme;
-    localStorage.setItem("verilog-theme", theme);
+    try {
+      if (typeof localStorage !== "undefined" && typeof localStorage.setItem === "function") {
+        localStorage.setItem("verilog-theme", theme);
+      }
+    } catch {
+      // Ignore
+    }
   };
 
   return {
