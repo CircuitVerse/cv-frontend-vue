@@ -163,11 +163,12 @@ export function handleSimulatorKeyDown(e: KeyboardEvent): void {
     }
   }
 
-  scheduleUpdate(1);
-
   // Component keys above work wherever the pointer is; the canvas shortcuts
   // below only apply while the pointer is over the canvas.
-  if (isPointerOutsideCanvas()) return;
+  if (isPointerOutsideCanvas()) {
+    scheduleUpdate(1);
+    return;
+  }
 
   if (e.keyCode == 16) {
     simulationArea.shiftDown = true;
@@ -221,4 +222,6 @@ export function handleSimulatorKeyDown(e: KeyboardEvent): void {
   if (e.keyCode == 8 || e.key == "Delete") {
     deleteSelected();
   }
+
+  scheduleUpdate(1);
 }

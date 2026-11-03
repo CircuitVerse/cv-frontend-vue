@@ -1,5 +1,5 @@
 import { changeScale } from "../canvasApi";
-import { gridUpdateSet, scheduleUpdate } from "../engine";
+import { gridUpdateSet, scheduleUpdate, updateCanvasSet } from "../engine";
 
 /**
  * Changes zoom level by the given direction.
@@ -11,6 +11,7 @@ export function zoomBy(direction: 1 | -1): void {
     changeScale(direction * 0.1 * DPR);
   }
   gridUpdateSet(true);
+  updateCanvasSet(true);
   scheduleUpdate();
 }
 

@@ -56,18 +56,18 @@ export function hasClock(scope: any, visited = new Set<any>()): boolean {
 }
 
 /**
- * Advances the clock by one tick: increments the plot timeline, repaints the
- * canvas, runs the global scope's clock tick logic, and schedules the next
- * simulation update. Returns early when the clock is disabled, an error is
- * detected, the editor is in layout mode, or the circuit contains no Clock
- * elements.
+ * Advances the clock by one tick: increments the plot timeline, and if the
+ * circuit contains Clock elements, repaints the canvas, runs the global
+ * scope's clock tick logic, and schedules the next simulation update. Returns
+ * early when the clock is disabled, an error is detected, or the editor is in
+ * layout mode.
  */
 export function clockTick() {
   if (!simulationArea.clockEnabled) return;
   if (errorDetectedGet()) return;
   if (layoutModeGet()) return;
-  if (!hasClock(globalScope)) return;
   plotArea.nextCycle();
+  if (!hasClock(globalScope)) return;
   updateCanvasSet(true);
   globalScope.clockTick();
   play();
