@@ -35,6 +35,3 @@ export function decrement(): void {
 export function increment(): void {
   ZoomIn();
 }
-export function beautifyCircuitAction(): void {
-  logixFunction.beautifyCircuit();
-}

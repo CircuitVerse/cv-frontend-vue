@@ -1,4 +1,4 @@
-/* eslint-disable import/no-cycle */
+﻿/* eslint-disable import/no-cycle */
 /**
  * Auto-layout engine using ELK to reposition circuit elements and route orthogonal wires.
  */

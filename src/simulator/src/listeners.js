@@ -7,6 +7,9 @@
 /* eslint-disable prefer-template */
 /* eslint-disable no-param-reassign */
 // Most Listeners are stored here
+import jQuery from 'jquery'
+window.$ = window.jQuery = jQuery
+
 import {
     layoutModeGet,
     tempBuffer,

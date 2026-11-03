@@ -20,6 +20,8 @@ import { bitConverterDialog } from './utils'
 import { keyBinder } from '#/components/DialogBox/CustomShortcut.vue'
 import { ExportProject } from '#/components/DialogBox/ExportProject.vue'
 import { ImportProject } from '#/components/DialogBox/ImportProject.vue'
+import { beautifyCircuit } from './utils/autoLayout'
+import { simulationArea } from './simulationArea'
 
 const logixFunction = {}
 logixFunction.save = save
@@ -43,6 +45,7 @@ logixFunction.createNewCircuitScope = createNewCircuit
 logixFunction.customShortcut = keyBinder
 logixFunction.ExportProject = ExportProject
 logixFunction.ImportProject = ImportProject
+logixFunction.beautifyCircuit = triggerBeautifyCircuit
 export default logixFunction
 
 // Hack to restart tour guide
@@ -55,4 +58,11 @@ function showTourGuideHelper() {
 // Hack to call createNewCircuitScope with keyboard shortcut
 function createNewCircuit() {
     createNewCircuitScope()
+}
+
+function triggerBeautifyCircuit() {
+    const hasSelection = (simulationArea.multipleObjectSelections?.length ?? 0) > 0
+    beautifyCircuit(undefined, hasSelection).catch((err) =>
+        console.error('[autoLayout] Error:', err),
+    )
 }

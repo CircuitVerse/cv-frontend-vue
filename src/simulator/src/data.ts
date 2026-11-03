@@ -14,8 +14,6 @@ import { bitConverterDialog } from "./utils";
 import { keyBinder } from "#/components/DialogBox/CustomShortcut.vue";
 import { ExportProject } from "#/components/DialogBox/ExportProject.vue";
 import { ImportProject } from "#/components/DialogBox/ImportProject.vue";
-import { beautifyCircuit } from "./utils/autoLayout";
-import { simulationArea } from "./simulationArea";
 
 interface LogixFunction {
   save: typeof save;
@@ -38,7 +36,6 @@ interface LogixFunction {
   customShortcut: typeof keyBinder;
   ExportProject: typeof ExportProject;
   ImportProject: typeof ImportProject;
-  beautifyCircuit: () => void;
 }
 
 const logixFunction: LogixFunction = {
@@ -62,7 +59,6 @@ const logixFunction: LogixFunction = {
   customShortcut: keyBinder,
   ExportProject,
   ImportProject,
-  beautifyCircuit: triggerBeautifyCircuit,
 };
 
 export default logixFunction;
@@ -80,12 +76,4 @@ function showTourGuideHelper(): void {
 // Hack to call createNewCircuitScope with keyboard shortcut
 function createNewCircuit(): void {
   createNewCircuitScope();
-}
-
-// Hack to call beautifyCircuit with keyboard shortcut and navbar button
-function triggerBeautifyCircuit(): void {
-  const hasSelection = (simulationArea.multipleObjectSelections?.length ?? 0) > 0;
-  beautifyCircuit(undefined, hasSelection).catch((err) =>
-    console.error("[autoLayout] Error:", err),
-  );
 }
