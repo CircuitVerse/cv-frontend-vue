@@ -7,7 +7,8 @@ import { layoutModeGet } from './layoutMode'
 import {
     scheduleUpdate,
     wireToBeCheckedSet,
-    updateCanvasSet
+    updateCanvasSet,
+    updateSimulationSet
 } from './engine'
 import { simulationArea } from './simulationArea'
 import logixFunction from './data'
@@ -197,6 +198,7 @@ export function objectPropertyAttributeUpdate() {
     } else {
         circuitProperty[this.name](value)
     }
+    updateSimulationSet(true)
 }
 
 export function objectPropertyAttributeCheckedUpdate() {
@@ -209,6 +211,7 @@ export function objectPropertyAttributeCheckedUpdate() {
     } else {
         circuitProperty[this.name](this.checked)
     }
+    updateSimulationSet(true)
 }
 
 export function checkPropertiesUpdate(value = 0) {
