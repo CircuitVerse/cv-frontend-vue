@@ -28,3 +28,6 @@ export function redoit(): void {
 export function view(): void {
   fullView();
 }
+export function beautifyCircuitAction(): void {
+  logixFunction.beautifyCircuit();
+}
