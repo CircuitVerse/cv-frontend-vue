@@ -184,6 +184,13 @@ function checkValidBitWidth() {
     }
 }
 
+/**
+ * jQuery `change`/`keyup`/`paste`/`click` handler for `.objectPropertyAttribute`
+ * inputs in the properties panel. Reads the input value, validates bit-width,
+ * applies the property setter on the selected element or the global circuit,
+ * and marks the simulation for update so clockless circuits re-resolve
+ * immediately.
+ */
 export function objectPropertyAttributeUpdate() {
     checkValidBitWidth()
     scheduleUpdate()
@@ -201,6 +208,13 @@ export function objectPropertyAttributeUpdate() {
     updateSimulationSet(true)
 }
 
+/**
+ * jQuery `change`/`keyup`/`paste`/`click` handler for
+ * `.objectPropertyAttributeChecked` checkboxes in the properties panel.
+ * Applies the toggled property setter on the selected element or the global
+ * circuit, and marks the simulation for update so clockless circuits
+ * re-resolve immediately.
+ */
 export function objectPropertyAttributeCheckedUpdate() {
     if (this.name === 'toggleLabelInLayoutMode') return // Hack to prevent toggleLabelInLayoutMode from toggling twice
     scheduleUpdate()

@@ -204,7 +204,11 @@ export function handleSimulatorKeyDown(e: KeyboardEvent): void {
   if ((e.keyCode == 113 || e.keyCode == 81) && lastSelected != undefined) {
     if (lastSelected.bitWidth !== undefined) {
       const newWidth = parseInt(prompt("Enter new bitWidth") ?? "", 10);
-      if (Number.isInteger(newWidth)) lastSelected.newBitWidth?.(newWidth);
+      if (Number.isInteger(newWidth)) {
+        lastSelected.newBitWidth?.(newWidth);
+        updateSimulationSet(true);
+        scheduleUpdate(1);
+      }
     }
   }
 

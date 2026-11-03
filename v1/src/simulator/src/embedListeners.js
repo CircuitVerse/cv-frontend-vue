@@ -191,18 +191,21 @@ export default function startListeners() {
 
         if (simulationArea.mouseRawX < 0 || simulationArea.mouseRawY < 0 || simulationArea.mouseRawX > width || simulationArea.mouseRawY > height) return;
 
-        scheduleUpdate(1);
-        updateCanvasSet(true);
-
         if (simulationArea.lastSelected && simulationArea.lastSelected.keyDown) {
             if (e.key.toString().length == 1 || e.key.toString() == 'Backspace') {
                 simulationArea.lastSelected.keyDown(e.key.toString());
+                updateSimulationSet(true);
+                scheduleUpdate(1);
+                updateCanvasSet(true);
                 return;
             }
         }
         if (simulationArea.lastSelected && simulationArea.lastSelected.keyDown2) {
             if (e.key.toString().length == 1) {
                 simulationArea.lastSelected.keyDown2(e.key.toString());
+                updateSimulationSet(true);
+                scheduleUpdate(1);
+                updateCanvasSet(true);
                 return;
             }
         }
