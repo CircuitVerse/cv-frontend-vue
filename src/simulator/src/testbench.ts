@@ -471,6 +471,10 @@ export function runAll(data: TestData, scope = globalScope) {
   let totalCases = 0;
   let passedCases = 0;
 
+  // If sequential, start from reset so the first group doesn't depend on
+  // whatever state the circuit was left in (later groups are reset below)
+  if (data.type === "seq") triggerReset(reset, scope);
+
   data.groups.forEach((group) => {
     // for (const output of group.outputs) output.results = [];
     group.outputs.forEach((output) => (output.results = []));
