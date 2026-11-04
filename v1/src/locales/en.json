@@ -8,6 +8,7 @@
         "undo": "Undo",
         "report_issue": "Report an issue",
         "restricted_elements_used": "Restricted elements used:",
+        "restricted_element_notice": "The element has been restricted by mentor. Usage might lead to deduction in marks.",
         "made_with_circuitverse": "Made With CircuitVerse",
         "layout": {
             "layout_elements": "Layout Elements",
