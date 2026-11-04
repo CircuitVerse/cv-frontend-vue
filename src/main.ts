@@ -1,3 +1,5 @@
+import "./globalVariables";
+
 import { createApp } from "vue";
 import App from "./App.vue";
 import vuetify from "./plugins/vuetify";
@@ -7,8 +9,6 @@ import { loadFonts } from "./plugins/webfontloader";
 import i18n from "./locales/i18n";
 
 import "bootstrap";
-
-import "./globalVariables";
 
 import "./styles/css/main.stylesheet.css";
 import "../node_modules/bootstrap/scss/bootstrap.scss";
@@ -23,8 +23,20 @@ loadFonts();
 
 const app = createApp(App);
 
+app.config.errorHandler = (err, _instance, info) => {
+  console.error(`[Vue Error: ${info}]`, err);
+};
+
 app.use(createPinia());
 app.use(vuetify);
 app.use(router);
 app.use(i18n);
-app.mount("#app");
+
+const mountElement = document.getElementById("app");
+if (mountElement) {
+  try {
+    app.mount(mountElement);
+  } catch (err) {
+    console.error("[Vue Mount Error]", err);
+  }
+}

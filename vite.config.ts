@@ -63,6 +63,20 @@ function wasmMimePlugin() {
   };
 }
 
+function v0SymlinkFallbackPlugin(version: string) {
+  return {
+    name: "v0-symlink-fallback",
+    resolveId(id: string) {
+      if (version === "v0") {
+        if (id === "/src/main.ts" || id === "./src/main.ts" || id.startsWith("/src/") || id.startsWith("./src/")) {
+          return fileURLToPath(new URL(id.replace(/^\.?\/src\//, "./src/"), import.meta.url));
+        }
+      }
+      return null;
+    },
+  };
+}
+
 // https://vitejs.dev/config/
 export default defineConfig(() => {
   const version = process.env.VITE_SIM_VERSION || "v0";
@@ -73,6 +87,7 @@ export default defineConfig(() => {
       woff2OnlyFontsPlugin(),
       stripShebangPlugin(),
       wasmMimePlugin(),
+      v0SymlinkFallbackPlugin(version),
       vue(),
       vuetify({ autoImport: true }),
       cssInjectedByJsPlugin(),
@@ -88,8 +103,8 @@ export default defineConfig(() => {
     },
     resolve: {
       alias: {
-        "#": fileURLToPath(new URL(`./${version}/src`, import.meta.url)),
-        "@": fileURLToPath(new URL(`./${version}/src/components`, import.meta.url)),
+        "#": fileURLToPath(new URL(version === "v0" ? "./src" : `./${version}/src`, import.meta.url)),
+        "@": fileURLToPath(new URL(version === "v0" ? "./src/components" : `./${version}/src/components`, import.meta.url)),
       },
     },
     root: fileURLToPath(new URL(`./${version}`, import.meta.url)),
@@ -111,6 +126,9 @@ export default defineConfig(() => {
     },
     server: {
       port: 4000,
+      fs: {
+        allow: [".."],
+      },
       watch: {
         ignored: ["**/src-tauri/target/**"],
       },
