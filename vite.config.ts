@@ -2,8 +2,39 @@ import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import { fileURLToPath, URL } from "url";
 import VueI18nPlugin from "@intlify/unplugin-vue-i18n/vite";
+
+// https://github.com/vuetifyjs/vuetify-loader/tree/next/packages/vite-plugin
 import vuetify from "vite-plugin-vuetify";
+
 import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
+
+// Drop legacy icon-font formats (eot/woff/ttf) so Vite only emits woff2.
+// All supported browsers read woff2; the icon class rules are untouched.
+function woff2OnlyFontsPlugin() {
+  return {
+    name: "woff2-only-fonts",
+    enforce: "pre" as const,
+    transform(code: string, id: string) {
+      if (id.endsWith("@mdi/font/css/materialdesignicons.css")) {
+        return {
+          code: code
+            .replace(/\s*src:\s*url\([^)]*\.eot\?v=[^)]*\)\s*;/g, "")
+            .replace(/\s*url\([^)]*\.eot\?#iefix[^)]*\)\s*format\("embedded-opentype"\),/g, "")
+            .replace(/,\s*url\([^)]*\.woff\?v=[^)]*\)\s*format\("woff"\)/g, "")
+            .replace(/,\s*url\([^)]*\.ttf\?v=[^)]*\)\s*format\("truetype"\)/g, ""),
+          map: null,
+        };
+      }
+      if (id.includes("@fortawesome/fontawesome-free/css/")) {
+        return {
+          code: code.replace(/,\s*url\([^)]*\.ttf[^)]*\)\s*format\("truetype"\)/g, ""),
+          map: null,
+        };
+      }
+      return null;
+    },
+  };
+}
 
 function stripShebangPlugin() {
   return {
@@ -32,36 +63,16 @@ function wasmMimePlugin() {
   };
 }
 
-// Fallback resolver for v0 where ./src is symlinked inside ./v0
-function v0SymlinkFallbackPlugin(version: string) {
-  return {
-    name: "v0-symlink-fallback",
-    resolveId(id: string) {
-      if (version === "v0") {
-        if (
-          id === "/src/main.ts" ||
-          id === "./src/main.ts" ||
-          id.startsWith("/src/") ||
-          id.startsWith("./src/")
-        ) {
-          return fileURLToPath(
-            new URL(id.replace(/^\.?\/src\//, "./src/"), import.meta.url)
-          );
-        }
-      }
-      return null;
-    },
-  };
-}
-
+// https://vitejs.dev/config/
 export default defineConfig(() => {
   const version = process.env.VITE_SIM_VERSION || "v0";
-  const isDesktop = !process.env.DESKTOP_MODE;
+  const isDesktop = !!process.env.DESKTOP_MODE;
+
   return {
     plugins: [
+      woff2OnlyFontsPlugin(),
       stripShebangPlugin(),
       wasmMimePlugin(),
-      v0SymlinkFallbackPlugin(version),
       vue(),
       vuetify({ autoImport: true }),
       cssInjectedByJsPlugin(),
@@ -70,27 +81,24 @@ export default defineConfig(() => {
       }),
     ],
     optimizeDeps: {
+      // Vue is excluded from pre-bundling: bundling its esm-bundler runtime
+      // alongside vuetify + vue-i18n triggers a runtime
+      // "init_runtime_dom_esm_bundler is not defined" ReferenceError in dev.
       exclude: ["@yowasp/yosys", "vue"],
     },
     resolve: {
       alias: {
-        "#": fileURLToPath(
-          new URL(version === "v0" ? "./src" : `./${version}/src`, import.meta.url)
-        ),
-        "@": fileURLToPath(
-          new URL(
-            version === "v0" ? "./src/components" : `./${version}/src/components`,
-            import.meta.url
-          )
-        ),
+        "#": fileURLToPath(new URL(`./${version}/src`, import.meta.url)),
+        "@": fileURLToPath(new URL(`./${version}/src/components`, import.meta.url)),
       },
     },
     root: fileURLToPath(new URL(`./${version}`, import.meta.url)),
+    // Set publicDir to the root 'public' folder instead of the version-specific 'root' folder.
+    // This allows sharing common static assets across all simulator versions.
+    publicDir: fileURLToPath(new URL("./public", import.meta.url)),
     base: process.env.VITE_BASE || (isDesktop ? "/" : `/simulatorvue/${version}/`),
     build: {
-      outDir: fileURLToPath(
-        new URL(`./dist/simulatorvue/${version}/`, import.meta.url)
-      ),
+      outDir: fileURLToPath(new URL(`./dist/simulatorvue/${version}/`, import.meta.url)),
       assetsDir: "assets",
       chunkSizeWarningLimit: 1600,
       rollupOptions: {
@@ -103,9 +111,6 @@ export default defineConfig(() => {
     },
     server: {
       port: 4000,
-      fs: {
-        allow: [".."],
-      },
       watch: {
         ignored: ["**/src-tauri/target/**"],
       },
