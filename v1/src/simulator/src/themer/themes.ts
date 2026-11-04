@@ -1,5 +1,32 @@
 import { Themes } from "./themer.types";
 
+const getCustomTheme = (): Themes[string] | null => {
+  const storedTheme = localStorage.getItem("Custom Theme");
+
+  if (storedTheme === null) return null;
+
+  try {
+    const parsedTheme: unknown = JSON.parse(storedTheme);
+
+    if (
+      parsedTheme !== null &&
+      typeof parsedTheme === "object" &&
+      !Array.isArray(parsedTheme) &&
+      Object.keys(parsedTheme).length > 0 &&
+      Object.values(parsedTheme).every((value) => typeof value === "string")
+    ) {
+      return parsedTheme as Themes[string];
+    }
+
+    localStorage.removeItem("Custom Theme");
+    return null;
+  } catch (error) {
+    localStorage.removeItem("Custom Theme");
+    console.warn("Ignoring malformed Custom Theme from localStorage.", error);
+    return null;
+  }
+};
+
 const themes: Themes = {
   "Default Theme": {
     "--text-navbar--alt": "#000",
@@ -327,7 +354,7 @@ const themes: Themes = {
     "--disable": "#956c6a",
     "--table-head-dark": "#2e2b21",
   },
-  "Custom Theme": JSON.parse(localStorage.getItem("Custom Theme") || "{}") || {
+  "Custom Theme": getCustomTheme() || {
     "--text-navbar--alt": "#000",
     "--br-secondary": "#7d7d7d",
     "--br-circuit-cur": "#ffffff",
