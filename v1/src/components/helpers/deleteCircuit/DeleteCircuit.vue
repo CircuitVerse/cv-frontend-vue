@@ -51,7 +51,8 @@ export function closeCircuit(circuitItem: CircuitItem): void {
     const promptStore = usePromptStore()
 
     clearMessageBoxFields()
-    //  * Ensures that at least one circuit is there
+
+    // Ensure at least one circuit remains
     if (SimulatorState.circuit_list.length <= 1) {
         promptStore.DeleteCircuit.activate = true
         promptStore.DeleteCircuit.isPersistent = false
@@ -65,29 +66,34 @@ export function closeCircuit(circuitItem: CircuitItem): void {
         ]
         return
     }
-    clearMessageBoxFields()
 
-    //  * Ensures that no circuit depends on the current circuit
-    let dependencies = getDependenciesList(circuitItem.id)
+    // Check whether other circuits depend on this circuit
+    const dependencies = getDependenciesList(circuitItem.id)
+
     if (dependencies) {
-        dependencies = `\nThe following circuits are depending on '${
-            scopeList[circuitItem.id].name
-        }': [ ${dependencies} ].\n Delete subcircuits of ${
-            scopeList[circuitItem.id].name
-        } before trying to delete ${scopeList[circuitItem.id].name}`
+        const circuitName = scopeList[circuitItem.id].name
+
         promptStore.DeleteCircuit.activate = true
         promptStore.DeleteCircuit.isPersistent = true
-        promptStore.DeleteCircuit.messageText = dependencies
+        promptStore.DeleteCircuit.circuitItem = circuitItem
+        promptStore.DeleteCircuit.messageText =
+            `The following circuits depend on '${circuitName}': [ ${dependencies} ].\n` +
+            `Deleting it may break these circuits. Do you want to delete it anyway?`
+
         promptStore.DeleteCircuit.buttonList = [
             {
-                text: 'OK',
-                emitOption: 'dispMessage',
+                text: 'Delete Anyway',
+                emitOption: 'confirmDeletion',
+            },
+            {
+                text: 'Cancel',
+                emitOption: 'cancelDeletion',
             },
         ]
         return
     }
 
-    clearMessageBoxFields()
+    // Normal confirmation when no dependencies exist
     promptStore.DeleteCircuit.activate = true
     promptStore.DeleteCircuit.isPersistent = true
     promptStore.DeleteCircuit.buttonList = [
