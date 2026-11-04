@@ -3,6 +3,7 @@ import { simulationArea } from '../simulationArea'
 import { correctWidth, rect, fillText, drawImage } from '../canvasApi'
 import { colors } from '../themer/themer'
 import { promptFile, showMessage } from '../utils'
+import { updateCanvasSet, scheduleUpdate } from '../engine'
 /**
  * @class
  * Image
@@ -165,10 +166,18 @@ export default class ImageAnnotation extends CircuitElement {
         this.loadImage()
     }
 
+    /**
+     * @memberof Image
+     * Loads the image from imageUrl and schedules a canvas redraw once loaded.
+     */
     async loadImage() {
         if (!this.imageUrl) return
         this.image = new Image()
         this.image.crossOrigin = 'anonymous'
+        this.image.onload = () => {
+            updateCanvasSet(true)
+            scheduleUpdate()
+        }
         this.image.src = this.imageUrl
     }
     /**

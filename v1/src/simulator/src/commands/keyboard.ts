@@ -209,7 +209,6 @@ export function handleSimulatorKeyDown(e: KeyboardEvent): void {
         lastSelected.newBitWidth?.(newWidth);
         updateSimulationSet(true);
         updateCanvasSet(true);
-        scheduleUpdate(1);
       }
     }
   }
