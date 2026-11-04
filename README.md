@@ -69,6 +69,46 @@ Built assets will be available in `dist/simulatorvue/`. Each version will have a
 - `dist/simulatorvue/v0/simulator-v0.js`
 - `dist/simulatorvue/v1/simulator-v1.js`
 
+## Desktop Application (Tauri)
+CircuitVerse can also be run and packaged as a standalone desktop application using [Tauri v2](https://tauri.app/).
+
+### Prerequisites
+Before developing or building the desktop app, ensure you have the following installed:
+
+1. **Node.js**: LTS version (>= 18.x) and `npm` installed.
+2. **Rust & Cargo**: Install Rust via [rustup.rs](https://rustup.rs/):
+   ```bash
+   # Verify installation
+   rustc --version
+   cargo --version
+   ```
+3. **Platform-specific dependencies**: Follow the official [Tauri Prerequisites Guide](https://tauri.app/start/prerequisites/) for your operating system:
+   - **Windows**: Microsoft Visual Studio C++ Build Tools or Visual Studio Community with the "Desktop development with C++" workload, and WebView2.
+   - **macOS**: Xcode Command Line Tools (`xcode-select --install`).
+   - **Linux**: System packages for `webkit2gtk`, `libssl-dev`, `gtk3`, and build essentials.
+4. **Tauri CLI**: Bundled with the repository's devDependencies (`@tauri-apps/cli`). You can run it directly via `npm run tauri` or `npx tauri`.
+
+### Running in Development
+To start the desktop application with hot-reloading:
+
+```bash
+npm run tauri dev
+```
+
+This starts the Vite dev server with `DESKTOP_MODE` enabled and automatically opens the native CircuitVerse desktop window.
+
+### Building the Desktop Application
+To compile and package the desktop app into a production binary and platform-specific installer:
+
+```bash
+npm run tauri build
+```
+
+The output executables and installers (e.g., `.msi` / `.exe` on Windows, `.dmg` / `.app` on macOS, `.deb` / `.AppImage` on Linux) will be generated in:
+```text
+src-tauri/target/release/bundle/
+```
+
 ## Route-Agnostic Support
 The simulator is designed to be **route-agnostic**. It can be mounted on any path (e.g., within a Rails view) by including the appropriate script and setting global variables:
 
