@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=CircuitVerse Simulator
+Comment=Digital logic circuit simulator
+Exec=circuitverse-simulator
+Icon=${SNAP}/meta/gui/icon.png
+Terminal=false
+Type=Application
+Categories=Education;Science;Electronics;
+Keywords=circuit;simulator;digital;logic;electronics;
