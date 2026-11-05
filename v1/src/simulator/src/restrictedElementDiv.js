@@ -14,7 +14,10 @@ export function updateRestrictedElementsList() {
         restrictedStr = restrictedStr.slice(0, -2)
     }
 
-    document.getElementById('restrictedElementsDiv--list').innerHTML = restrictedStr
+    const listEl = document.getElementById('restrictedElementsDiv--list')
+    if (listEl && listEl.innerHTML !== restrictedStr) {
+        listEl.innerHTML = restrictedStr
+    }
 }
 
 export function updateRestrictedElementsInScope(scope = globalScope) {
@@ -33,10 +36,16 @@ export function updateRestrictedElementsInScope(scope = globalScope) {
 }
 
 export function showRestricted() {
-    document.getElementById('restrictedDiv').classList.remove('display--none')
+    const restrictedDiv = document.getElementById('restrictedDiv')
+    if (restrictedDiv) {
+        restrictedDiv.classList.remove('display--none')
+        const msg = 'The element has been restricted by mentor. Usage might lead to deduction in marks'
+        if (restrictedDiv.innerHTML !== msg) {
+            restrictedDiv.innerHTML = msg
+        }
+    }
     // Show no help text for restricted elements
-    document.getElementById('Help').classList.remove('show')
-    document.getElementById('restrictedDiv').innerHTML = 'The element has been restricted by mentor. Usage might lead to deduction in marks'
+    document.getElementById('Help')?.classList.remove('show')
 }
 
 export function hideRestricted() {
