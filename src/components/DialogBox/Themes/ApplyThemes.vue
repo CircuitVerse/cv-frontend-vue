@@ -195,7 +195,7 @@ watch(
     () => SimulatorState.dialogBox.theme_dialog,
     (isOpen) => {
         if (isOpen) {
-            const appliedTheme = localStorage.getItem('theme') ?? 'Default Theme'
+            const appliedTheme = readAppliedTheme()
             selectedTheme.value = appliedTheme
             selectedThemeRef.value = appliedTheme
             iscustomTheme.value = false
@@ -237,16 +237,24 @@ function changeCustomTheme(e: Event): void {
 function applyTheme(): void {
     if (!iscustomTheme.value) {
         if (selectedTheme.value) {
-            localStorage.setItem('theme', selectedTheme.value)
+            try {
+                localStorage.setItem('theme', selectedTheme.value)
+            } catch {
+                // Ignore storage write errors (e.g. private browsing or quota limits)
+            }
             updateThemeForStyle(selectedTheme.value)
             updateBG()
         }
     } else {
-        localStorage.setItem('theme', 'Custom Theme')
-        localStorage.setItem(
-            'Custom Theme',
-            JSON.stringify(themeOptions['Custom Theme'])
-        )
+        try {
+            localStorage.setItem('theme', 'Custom Theme')
+            localStorage.setItem(
+                'Custom Theme',
+                JSON.stringify(themeOptions['Custom Theme'])
+            )
+        } catch {
+            // Ignore storage write errors (e.g. private browsing or quota limits)
+        }
         updateThemeForStyle('Custom Theme')
         updateBG()
     }
@@ -297,7 +305,12 @@ function receivedText(e: ProgressEvent<FileReader>): void {
     if (typeof e.target?.result !== 'string') return
     try {
         const lines = JSON.parse(e.target.result)
-        if (!lines || typeof lines !== 'object' || Array.isArray(lines)) {
+        if (
+            !lines ||
+            typeof lines !== 'object' ||
+            Array.isArray(lines) ||
+            Object.keys(lines).length === 0
+        ) {
             confirmSingleOption('Invalid Theme File!')
             return
         }
@@ -361,7 +374,7 @@ function exportCustomTheme(): void {
 function closeThemeDialog(): void {
     SimulatorState.dialogBox.theme_dialog = false
     iscustomTheme.value = false
-    const appliedTheme = localStorage.getItem('theme') ?? 'Default Theme'
+    const appliedTheme = readAppliedTheme()
     selectedTheme.value = appliedTheme
     selectedThemeRef.value = appliedTheme
     updateThemeForStyle(appliedTheme)
@@ -380,7 +393,7 @@ function closeCustomThemeDialog(): void {
         customThemesList[key as keyof typeof customThemesList] =
             customThemeAbstraction[key as keyof typeof customThemesList]
     })
-    const appliedTheme = localStorage.getItem('theme') ?? 'Default Theme'
+    const appliedTheme = readAppliedTheme()
     selectedTheme.value = appliedTheme
     selectedThemeRef.value = appliedTheme
     updateThemeForStyle(appliedTheme)
