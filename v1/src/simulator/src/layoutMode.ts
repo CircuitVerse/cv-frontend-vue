@@ -47,8 +47,8 @@ export var tempBuffer: LayoutBuffer;
  * @category layoutMode
  */
 export function determineLabel(x: number, y: number): [CanvasTextAlign, number, number] {
-  if (x === 0) return ["left", 5, 5];
-  if (x === tempBuffer.layout.width) return ["right", -5, 5];
+  if (x === 0) return ["left", 5, 0];
+  if (x === tempBuffer.layout.width) return ["right", -5, 0];
   if (y === 0) return ["center", 0, 13];
   return ["center", 0, -6];
 }
