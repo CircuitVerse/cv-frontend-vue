@@ -756,7 +756,12 @@ export default function startListeners() {
     }
 }
 
+/**
+ * Adjusts the maximum width of tabs in the tabs bar based on available window and sidebar widths to prevent layout overflow.
+ */
 function resizeTabs() {
+    const $ = window.$
+    if (!$ || !$('body').length) return
     const $windowsize = $('body').width()
     const $sideBarsize = $('.side').width()
     const $maxwidth = $windowsize - $sideBarsize

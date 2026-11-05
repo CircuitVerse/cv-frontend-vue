@@ -1,5 +1,84 @@
 import { Themes } from "./themer.types";
 
+export const defaultCustomTheme: Record<string, string> = {
+  "--text-navbar--alt": "#000",
+  "--br-secondary": "#7d7d7d",
+  "--br-circuit-cur": "#ffffff",
+  "--cus-radio_label": "#656565",
+  "--primary": "#454545",
+  "--text-lite": "#ffffff",
+  "--text-dark": "#000",
+  "--text-panel": "#ffffff",
+  "--bg-navbar": "#454545",
+  "--qp-br-tl": "#333333",
+  "--qp-br-rd": "#535353",
+  "--qp-box-shadow-1": "#3b3b3b",
+  "--qp-box-shadow-2": "#4f4f4f",
+  "--bg-circuit": "#ddd",
+  "--br-circuit": "#454545",
+  "--br-primary": "#ffffff",
+  "--bg-primary-moz": "#454545e6",
+  "--bg-primary-chr": "#454545b3",
+  "--bg-tabs": "#8b8b8b",
+  "--bg-icons": "#7d7d7d",
+  "--bg-text": "#cacaca",
+  "--bg-secondary": "#bbbbbb",
+  "--canvas-stroke": "#eee",
+  "--canvas-fill": "#ffffff",
+  "--context-text": "#ffffff",
+  "--bg-toggle-btn-primary": "#42b983",
+  "--primary-btn-hov": "#3ca877",
+  "--btn-danger": "#dc5656",
+  "--btn-danger-darken": "#b03662",
+  "--disable": "#6c8b93",
+  "--cus-btn-hov--bg": "#ddd",
+  "--cus-btn-hov-text": "#000",
+  "--node": "#008000",
+  "--stroke": "#000",
+  "--fill": "#ffffff",
+  "--hover-and-sel": "#ffff20cc",
+  "--wire-draw": "#000",
+  "--wire-cnt": "#008000",
+  "--wire-pow": "#90ee90",
+  "--wire-sel": "#0000ff",
+  "--wire-lose": "#ff0000",
+  "--mini-map": "#008000",
+  "--mini-map-stroke": "#006400",
+  "--input-text": "#008000",
+  "--secondary-stroke": "#ff0000",
+  "--text": "#000",
+  "--wire-norm": "#000",
+  "--node-norm": "#008000",
+  "--splitter": "#000",
+  "--output-rect": "#0000ff",
+  "--table-head-dark": "#3d3d3d",
+};
+
+/**
+ * Loads custom theme settings from localStorage with fallback to default custom theme.
+ * @returns An object containing custom theme CSS variables.
+ */
+function getCustomTheme(): Record<string, string> {
+  try {
+    const customTheme = localStorage.getItem("Custom Theme");
+    if (!customTheme) {
+      return { ...defaultCustomTheme };
+    }
+    const parsed = JSON.parse(customTheme);
+    if (
+      parsed &&
+      typeof parsed === "object" &&
+      !Array.isArray(parsed) &&
+      Object.keys(parsed).length > 0
+    ) {
+      return parsed;
+    }
+  } catch {
+    // Storage unavailable or malformed JSON: use the default custom theme
+  }
+  return { ...defaultCustomTheme };
+}
+
 const themes: Themes = {
   "Default Theme": {
     "--text-navbar--alt": "#000",
@@ -327,57 +406,7 @@ const themes: Themes = {
     "--disable": "#956c6a",
     "--table-head-dark": "#2e2b21",
   },
-  "Custom Theme": JSON.parse(localStorage.getItem("Custom Theme") || "{}") || {
-    "--text-navbar--alt": "#000",
-    "--br-secondary": "#7d7d7d",
-    "--br-circuit-cur": "#ffffff",
-    "--cus-radio_label": "#656565",
-    "--primary": "#454545",
-    "--text-lite": "#ffffff",
-    "--text-dark": "#000",
-    "--text-panel": "#ffffff",
-    "--bg-navbar": "#454545",
-    "--qp-br-tl": "#333333",
-    "--qp-br-rd": "#535353",
-    "--qp-box-shadow-1": "#3b3b3b",
-    "--qp-box-shadow-2": "#4f4f4f",
-    "--bg-circuit": "#ddd",
-    "--br-primary": "#ffffff",
-    "--bg-primary-moz": "#454545e6",
-    "--bg-primary-chr": "#454545b3",
-    "--bg-tabs": "#8b8b8b",
-    "--bg-icons": "#7d7d7d",
-    "--bg-text": "#cacaca",
-    "--bg-secondary": "#bbbbbb",
-    "--canvas-stroke": "#eee",
-    "--canvas-fill": "#ffffff",
-    "--context-text": "#ffffff",
-    "--bg-toggle-btn-primary": "#42b983",
-    "--primary-btn-hov": "#3ca877",
-    "--btn-danger": "#dc5656",
-    "--btn-danger-darken": "#b03662",
-    "--disable": "#6c8b93",
-    "--cus-btn-hov--bg": "#ddd",
-    "--cus-btn-hov-text": "#000",
-    "--node": "#008000",
-    "--stroke": "#000",
-    "--fill": "#ffffff",
-    "--hover-and-sel": "#ffff20cc",
-    "--wire-draw": "#000",
-    "--wire-cnt": "#008000",
-    "--wire-pow": "#90ee90",
-    "--wire-sel": "#0000ff",
-    "--wire-lose": "#ff0000",
-    "--mini-map": "#008000",
-    "--mini-map-stroke": "#006400",
-    "--input-text": "#008000",
-    "--secondary-stroke": "#ff0000",
-    "--text": "#000",
-    "--wire-norm": "#000",
-    "--node-norm": "#008000",
-    "--splitter": "#000",
-    "--output-rect": "#0000ff",
-  },
+  "Custom Theme": getCustomTheme(),
 };
 
 export default themes;
