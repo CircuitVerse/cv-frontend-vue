@@ -80,9 +80,9 @@ export function getSelectedElements() {
 }
 
 /**
- *
- * @param {event} e
- * function for double click or double tap
+ * Handles double click or double tap on the simulation canvas.
+ * @param {Event} e - originating event
+ * @category listeners
  */
 function onDoubleClickorTap(e) {
     updateCanvasSet(true);
@@ -757,6 +757,11 @@ export default function startListeners() {
     }
 }
 
+/**
+ * Adjusts the maximum width of tabs in the tabs bar based on current window
+ * and sidebar dimensions to prevent layout overflow.
+ * @category listeners
+ */
 function resizeTabs() {
     const $ = window.$
     if (!$ || !$('body').length) return
