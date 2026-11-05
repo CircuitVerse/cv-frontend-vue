@@ -71,7 +71,7 @@ import { CreateAbstraction } from "../src/themer/customThemeAbstraction";
 import ApplyThemes from "#/components/DialogBox/Themes/ApplyThemes.vue";
 import { useState } from "#/store/SimulatorStore/state";
 
-describe("Theme subsystem & dialog (#1504)", () => {
+describe("Theme subsystem and dialog", () => {
   let pinia: ReturnType<typeof createPinia>;
 
   beforeEach(() => {

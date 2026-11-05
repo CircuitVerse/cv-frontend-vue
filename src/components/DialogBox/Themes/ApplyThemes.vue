@@ -165,32 +165,19 @@ const selectedTheme = ref('Default Theme')
 const iscustomTheme = ref(false)
 const selectedThemeRef = ref<string | null>('Default Theme')
 
-function readAppliedTheme(): string {
-    try {
-        return localStorage.getItem('theme') ?? 'Default Theme'
-    } catch {
-        return 'Default Theme'
-    }
-}
-
-
 onMounted(() => {
     SimulatorState.dialogBox.theme_dialog = false
-    const appliedTheme = readAppliedTheme()
+    const appliedTheme = localStorage.getItem('theme') ?? 'Default Theme'
     selectedTheme.value = appliedTheme
     selectedThemeRef.value = appliedTheme
     themes.value = Object.keys(themeOptions)
     themes.value.splice(-1, 1)
-    try {
-        themeOptions['Custom Theme'] = loadSavedCustomTheme()
-        const customTheme = CreateAbstraction(themeOptions['Custom Theme'])
-        Object.keys(customTheme).forEach((key) => {
-            customThemesList[key as keyof typeof customThemesList] = customTheme[key as keyof typeof customThemesList]
-        })
-        customThemes.value = Object.keys(customThemesList) as (keyof typeof customThemesList)[]
-    } catch {
-        // Safe fallback on initial mount
-    }
+    themeOptions['Custom Theme'] = loadSavedCustomTheme()
+    const customTheme = CreateAbstraction(themeOptions['Custom Theme'])
+    Object.keys(customTheme).forEach((key) => {
+        customThemesList[key as keyof typeof customThemesList] = customTheme[key as keyof typeof customThemesList]
+    })
+    customThemes.value = Object.keys(customThemesList) as (keyof typeof customThemesList)[]
 })
 
 watch(
@@ -258,22 +245,20 @@ function applyTheme(): void {
 }
 
 /**
- * Loads the saved custom theme from localStorage or falls back to the default custom theme.
- * Safely handles missing data, literal "null" values, and malformed JSON.
- * @returns An object containing the custom theme CSS variable key-value pairs.
+ * Loads custom theme settings from localStorage with fallback to default custom theme.
+ * @returns An object containing custom theme CSS variables.
  */
 function loadSavedCustomTheme(): Record<string, string> {
-    const saved = localStorage.getItem('Custom Theme')
-    if (!saved) {
-        return { ...defaultCustomTheme }
-    }
     try {
-        const parsed = JSON.parse(saved)
-        if (parsed && typeof parsed === 'object' && !Array.isArray(parsed) && Object.keys(parsed).length > 0) {
-            return parsed
+        const saved = localStorage.getItem('Custom Theme')
+        if (saved) {
+            const parsed = JSON.parse(saved)
+            if (parsed && typeof parsed === 'object' && !Array.isArray(parsed) && Object.keys(parsed).length > 0) {
+                return parsed
+            }
         }
     } catch {
-        // Fall back to default custom theme on malformed JSON
+        // Storage restricted or corrupt JSON
     }
     return { ...defaultCustomTheme }
 }
@@ -283,18 +268,14 @@ function loadSavedCustomTheme(): Record<string, string> {
  */
 function applyCustomTheme(): void {
     iscustomTheme.value = true
-    try {
-        themeOptions['Custom Theme'] = loadSavedCustomTheme()
-        const customThemeAbstraction = CreateAbstraction(themeOptions['Custom Theme'])
-        Object.keys(customThemeAbstraction).forEach((key) => {
-            customThemesList[key as keyof typeof customThemesList] =
-                customThemeAbstraction[key as keyof typeof customThemesList]
-        })
-        updateThemeForStyle('Custom Theme')
-        updateBG()
-    } catch {
-        iscustomTheme.value = false
-    }
+    themeOptions['Custom Theme'] = loadSavedCustomTheme()
+    const customThemeAbstraction = CreateAbstraction(themeOptions['Custom Theme'])
+    Object.keys(customThemeAbstraction).forEach((key) => {
+        customThemesList[key as keyof typeof customThemesList] =
+            customThemeAbstraction[key as keyof typeof customThemesList]
+    })
+    updateThemeForStyle('Custom Theme')
+    updateBG()
 }
 
 /**
@@ -302,26 +283,27 @@ function applyCustomTheme(): void {
  * @param e - Progress event from the file reader containing file contents.
  */
 function receivedText(e: ProgressEvent<FileReader>): void {
-    let lines = []
-    if (typeof e.target?.result === 'string') {
-        try {
-            lines = JSON.parse(e.target.result)
-        } catch {
+    if (typeof e.target?.result !== 'string') return
+    try {
+        const lines = JSON.parse(e.target.result)
+        if (!lines || typeof lines !== 'object' || Array.isArray(lines)) {
             confirmSingleOption('Invalid Theme File!')
             return
         }
+        themeOptions['Custom Theme'] = lines
+        updateThemeForStyle('Custom Theme')
+        updateBG()
+        SimulatorState.dialogBox.theme_dialog = false
+        SimulatorState.dialogBox.theme_dialog = true
+        const customThemeValues = CreateAbstraction(themeOptions['Custom Theme'])
+        Object.keys(customThemeValues).forEach((key) => {
+            customThemesList[key as keyof typeof customThemesList] =
+                customThemeValues[key as keyof typeof customThemesList]
+        })
+        customThemes.value = Object.keys(customThemesList) as (keyof typeof customThemesList)[]
+    } catch {
+        confirmSingleOption('Invalid Theme File!')
     }
-    themeOptions['Custom Theme'] = lines
-    updateThemeForStyle('Custom Theme')
-    updateBG()
-    SimulatorState.dialogBox.theme_dialog = false
-    SimulatorState.dialogBox.theme_dialog = true
-    const customThemeValues = CreateAbstraction(themeOptions['Custom Theme'])
-    Object.keys(customThemeValues).forEach((key) => {
-        customThemesList[key as keyof typeof customThemesList] =
-            customThemeValues[key as keyof typeof customThemesList]
-    })
-    customThemes.value = Object.keys(customThemesList) as (keyof typeof customThemesList)[]
 }
 
 /**
@@ -380,22 +362,17 @@ function closeThemeDialog(): void {
  */
 function closeCustomThemeDialog(): void {
     SimulatorState.dialogBox.theme_dialog = false
-    try {
-        themeOptions['Custom Theme'] = loadSavedCustomTheme()
-        const customThemeAbstraction = CreateAbstraction(themeOptions['Custom Theme'])
-        Object.keys(customThemeAbstraction).forEach((key) => {
-            customThemesList[key as keyof typeof customThemesList] =
-                customThemeAbstraction[key as keyof typeof customThemesList]
-        })
-    } catch {
-        // Fall back safely if custom theme abstraction encounters an error
-    } finally {
-        iscustomTheme.value = false
-        const appliedTheme = localStorage.getItem('theme') ?? 'Default Theme'
-        selectedTheme.value = appliedTheme
-        selectedThemeRef.value = appliedTheme
-        updateThemeForStyle(appliedTheme)
-        updateBG()
-    }
+    iscustomTheme.value = false
+    themeOptions['Custom Theme'] = loadSavedCustomTheme()
+    const customThemeAbstraction = CreateAbstraction(themeOptions['Custom Theme'])
+    Object.keys(customThemeAbstraction).forEach((key) => {
+        customThemesList[key as keyof typeof customThemesList] =
+            customThemeAbstraction[key as keyof typeof customThemesList]
+    })
+    const appliedTheme = localStorage.getItem('theme') ?? 'Default Theme'
+    selectedTheme.value = appliedTheme
+    selectedThemeRef.value = appliedTheme
+    updateThemeForStyle(appliedTheme)
+    updateBG()
 }
 </script>
