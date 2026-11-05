@@ -80,14 +80,15 @@ export function getSelectedElements() {
 }
 
 /**
- *
- * @param {event} e
- * function for double click or double tap
+ * Handles double click or double tap on the simulation canvas.
+ * @param {Event} e - originating event
+ * @category listeners
  */
 function onDoubleClickorTap(e) {
     updateCanvasSet(true);
     if (simulationArea.lastSelected && simulationArea.lastSelected.dblclick !== undefined) {
         simulationArea.lastSelected.dblclick();
+        updateSimulationSet(true);
     } else if (!simulationArea.shiftDown) {
         simulationArea.multipleObjectSelections = [];
     }
@@ -756,7 +757,14 @@ export default function startListeners() {
     }
 }
 
+/**
+ * Adjusts the maximum width of tabs in the tabs bar based on current window
+ * and sidebar dimensions to prevent layout overflow.
+ * @category listeners
+ */
 function resizeTabs() {
+    const $ = window.$
+    if (!$ || !$('body').length) return
     const $windowsize = $('body').width()
     const $sideBarsize = $('.side').width()
     const $maxwidth = $windowsize - $sideBarsize

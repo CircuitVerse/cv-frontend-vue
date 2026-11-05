@@ -57,6 +57,7 @@ export function onDoubleClickorTap(e: Event): void {
   const lastSelected = simulationArea.lastSelected as { dblclick?: () => void } | null | undefined;
   if (lastSelected && lastSelected.dblclick !== undefined) {
     lastSelected.dblclick();
+    updateSimulationSet(true);
   } else if (!simulationArea.shiftDown) {
     simulationArea.multipleObjectSelections = [];
   }
