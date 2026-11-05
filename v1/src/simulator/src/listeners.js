@@ -7,9 +7,6 @@
 /* eslint-disable prefer-template */
 /* eslint-disable no-param-reassign */
 // Most Listeners are stored here
-import jQuery from 'jquery'
-window.$ = window.jQuery = jQuery
-
 import { tempBuffer } from './layoutMode'
 import { simulationArea } from './simulationArea'
 import { hideRestricted, showRestricted } from './restrictedElementDiv';

@@ -61,6 +61,7 @@
         type="button"
         class="quick-btn-beautify"
         title="Beautify Circuit (Ctrl+Shift+B)"
+        :aria-label="t('simulator.nav.tools.beautify_circuit')"
         @click="beautifyCircuitAction"
       >✨</button>
     </div>
@@ -70,6 +71,7 @@
 </template>
 
 <script lang="ts" setup>
+import { useI18n } from "vue-i18n";
 import ZoomControls from "./ZoomControls.vue";
 import {
   saveOnline,
@@ -82,6 +84,8 @@ import {
   view,
   beautifyCircuitAction,
 } from "./QuickButton";
+
+const { t } = useI18n();
 
 function dragover(): void {
   const quickBtn: HTMLElement | null = document.querySelector(".quick-btn");

@@ -406,6 +406,50 @@ function addConnection(
   routing.connections.push([first, second]);
 }
 
+/** Removes degree-two bends which do not change an orthogonal route. */
+function removeCollinearNodes(routing: IntermediateNet): void {
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (let nodeIndex = 0; nodeIndex < routing.nodes.length; nodeIndex++) {
+      const links = routing.connections
+        .map((connection, index) => ({ connection, index }))
+        .filter(({ connection }) => connection[0] === nodeIndex || connection[1] === nodeIndex);
+      if (links.length !== 2) continue;
+
+      const other = links.map(({ connection }) =>
+        connection[0] === nodeIndex ? connection[1] : connection[0],
+      );
+      if (typeof other[0] === "number" && typeof other[1] === "number") {
+        const first = routing.nodes[other[0]];
+        const middle = routing.nodes[nodeIndex];
+        const last = routing.nodes[other[1]];
+        if (
+          (first.x === middle.x && middle.x === last.x) ||
+          (first.y === middle.y && middle.y === last.y)
+        ) {
+          routing.connections = routing.connections.filter(
+            (_, index) => !links.some((link) => link.index === index),
+          );
+          addConnection(
+            routing,
+            new Set(),
+            other[0],
+            other[1],
+          );
+          routing.nodes.splice(nodeIndex, 1);
+          routing.connections = routing.connections.map(([source, target]) => [
+            typeof source === "number" && source > nodeIndex ? source - 1 : source,
+            typeof target === "number" && target > nodeIndex ? target - 1 : target,
+          ]);
+          changed = true;
+          break;
+        }
+      }
+    }
+  }
+}
+
 /** Treats nearly equal ELK coordinates as aligned. */
 function sameCoordinate(first: number, second: number): boolean {
   return Math.abs(first - second) < 0.001;
@@ -531,6 +575,7 @@ export function buildIntermediateNodes(
     }
   }
 
+  for (const routing of Object.values(result)) removeCollinearNodes(routing);
   return result;
 }
 
