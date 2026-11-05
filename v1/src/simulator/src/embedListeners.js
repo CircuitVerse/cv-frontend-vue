@@ -223,6 +223,8 @@ export default function startListeners() {
         scheduleUpdate(2);
         if (simulationArea.lastSelected && simulationArea.lastSelected.dblclick !== undefined) {
             simulationArea.lastSelected.dblclick();
+            updateSimulationSet(true);
+            updateCanvasSet(true);
         }
     });
     function MouseScroll(event) {

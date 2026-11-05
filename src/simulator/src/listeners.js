@@ -88,6 +88,7 @@ function onDoubleClickorTap(e) {
     updateCanvasSet(true);
     if (simulationArea.lastSelected && simulationArea.lastSelected.dblclick !== undefined) {
         simulationArea.lastSelected.dblclick();
+        updateSimulationSet(true);
     } else if (!simulationArea.shiftDown) {
         simulationArea.multipleObjectSelections = [];
     }
@@ -757,6 +758,8 @@ export default function startListeners() {
 }
 
 function resizeTabs() {
+    const $ = window.$
+    if (!$ || !$('body').length) return
     const $windowsize = $('body').width()
     const $sideBarsize = $('.side').width()
     const $maxwidth = $windowsize - $sideBarsize
