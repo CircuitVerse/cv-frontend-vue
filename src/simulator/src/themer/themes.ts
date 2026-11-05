@@ -59,14 +59,11 @@ export const defaultCustomTheme: Record<string, string> = {
  * @returns An object containing custom theme CSS variables.
  */
 function getCustomTheme(): Record<string, string> {
-  if (typeof localStorage === "undefined") {
-    return { ...defaultCustomTheme };
-  }
-  const customTheme = localStorage.getItem("Custom Theme");
-  if (!customTheme) {
-    return { ...defaultCustomTheme };
-  }
   try {
+    const customTheme = localStorage.getItem("Custom Theme");
+    if (!customTheme) {
+      return { ...defaultCustomTheme };
+    }
     const parsed = JSON.parse(customTheme);
     if (
       parsed &&
@@ -77,7 +74,7 @@ function getCustomTheme(): Record<string, string> {
       return parsed;
     }
   } catch {
-    // Return default custom theme on malformed JSON
+    // Storage unavailable or malformed JSON: use the default custom theme
   }
   return { ...defaultCustomTheme };
 }

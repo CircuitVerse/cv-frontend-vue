@@ -295,8 +295,11 @@ function applyCustomTheme(): void {
 function receivedText(e: ProgressEvent<FileReader>): void {
     let lines = []
     if (typeof e.target?.result === 'string') {
-        try {
+         try {
             lines = JSON.parse(e.target.result)
+            if (!lines || typeof lines !== 'object' || Array.isArray(lines)) {
+                throw new Error('Theme file must contain a JSON object')
+            }
         } catch {
             confirmSingleOption('Invalid Theme File!')
             return
