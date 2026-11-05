@@ -164,10 +164,21 @@ const customThemesList: Themes = reactive({})
 const selectedTheme = ref('Default Theme')
 const iscustomTheme = ref(false)
 const selectedThemeRef = ref<string | null>('Default Theme')
+/**
+ * Retrieves the currently active theme from localStorage or returns the default theme.
+ * @returns The active theme name.
+ */
+function readAppliedTheme(): string {
+    try {
+        return localStorage.getItem('theme') ?? 'Default Theme'
+    } catch {
+        return 'Default Theme'
+    }
+}
 
 onMounted(() => {
     SimulatorState.dialogBox.theme_dialog = false
-    const appliedTheme = localStorage.getItem('theme') ?? 'Default Theme'
+    const appliedTheme = readAppliedTheme()
     selectedTheme.value = appliedTheme
     selectedThemeRef.value = appliedTheme
     themes.value = Object.keys(themeOptions)

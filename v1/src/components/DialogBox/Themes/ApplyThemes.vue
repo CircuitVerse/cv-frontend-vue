@@ -164,10 +164,21 @@ const customThemesList: Themes = reactive({})
 const selectedTheme = ref('Default Theme')
 const iscustomTheme = ref(false)
 const selectedThemeRef = ref<string | null>('Default Theme')
+/**
+ * Retrieves the currently active theme from localStorage or returns the default theme.
+ * @returns The active theme name.
+ */
+function readAppliedTheme(): string {
+    try {
+        return localStorage.getItem('theme') ?? 'Default Theme'
+    } catch {
+        return 'Default Theme'
+    }
+}
 
 onMounted(() => {
     SimulatorState.dialogBox.theme_dialog = false
-    const appliedTheme = localStorage.getItem('theme') ?? 'Default Theme'
+    const appliedTheme = readAppliedTheme()
     selectedTheme.value = appliedTheme
     selectedThemeRef.value = appliedTheme
     themes.value = Object.keys(themeOptions)
@@ -286,7 +297,12 @@ function receivedText(e: ProgressEvent<FileReader>): void {
     if (typeof e.target?.result !== 'string') return
     try {
         const lines = JSON.parse(e.target.result)
-        if (!lines || typeof lines !== 'object' || Array.isArray(lines)) {
+        if (
+            !lines ||
+            typeof lines !== 'object' ||
+            Array.isArray(lines) ||
+            Object.keys(lines).length === 0
+        ) {
             confirmSingleOption('Invalid Theme File!')
             return
         }
