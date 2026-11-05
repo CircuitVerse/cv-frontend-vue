@@ -164,11 +164,16 @@ const customThemesList: Themes = reactive({})
 const selectedTheme = ref('Default Theme')
 const iscustomTheme = ref(false)
 const selectedThemeRef = ref<string | null>('Default Theme')
+let inMemoryAppliedTheme: string | null = null
+
 /**
- * Retrieves the currently active theme from localStorage or returns the default theme.
+ * Retrieves the currently active theme from localStorage or returns the in-memory fallback.
  * @returns The active theme name.
  */
 function readAppliedTheme(): string {
+    if (inMemoryAppliedTheme !== null) {
+        return inMemoryAppliedTheme
+    }
     try {
         return localStorage.getItem('theme') ?? 'Default Theme'
     } catch {
@@ -179,6 +184,7 @@ function readAppliedTheme(): string {
 onMounted(() => {
     SimulatorState.dialogBox.theme_dialog = false
     const appliedTheme = readAppliedTheme()
+    inMemoryAppliedTheme = appliedTheme
     selectedTheme.value = appliedTheme
     selectedThemeRef.value = appliedTheme
     themes.value = Object.keys(themeOptions)
@@ -237,6 +243,7 @@ function changeCustomTheme(e: Event): void {
 function applyTheme(): void {
     if (!iscustomTheme.value) {
         if (selectedTheme.value) {
+            inMemoryAppliedTheme = selectedTheme.value
             try {
                 localStorage.setItem('theme', selectedTheme.value)
             } catch {
@@ -246,12 +253,13 @@ function applyTheme(): void {
             updateBG()
         }
     } else {
+        inMemoryAppliedTheme = 'Custom Theme'
         try {
-            localStorage.setItem('theme', 'Custom Theme')
             localStorage.setItem(
                 'Custom Theme',
                 JSON.stringify(themeOptions['Custom Theme'])
             )
+            localStorage.setItem('theme', 'Custom Theme')
         } catch {
             // Ignore storage write errors (e.g. private browsing or quota limits)
         }
