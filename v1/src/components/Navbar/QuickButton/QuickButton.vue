@@ -55,6 +55,15 @@
         <i style="color: #ddd" class="fas fa-expand-arrows-alt"></i>
       </button>
     </div>
+    <div>
+      <button
+        id="quick-btn-beautify"
+        type="button"
+        class="quick-btn-beautify"
+        title="Beautify Circuit (Ctrl+Shift+B)"
+        @click="beautifyCircuitAction"
+      >✨</button>
+    </div>
     <ZoomControls />
   </div>
   <div id="exitView"></div>
@@ -71,6 +80,7 @@ import {
   undoit,
   redoit,
   view,
+  beautifyCircuitAction,
 } from "./QuickButton";
 
 function dragover(): void {
@@ -181,6 +191,22 @@ function dragover(): void {
 
 .quick-btn-view {
   color: white;
+}
+
+.quick-btn-beautify {
+  background: transparent;
+  border: none;
+  color: #f0e68c;
+  font-size: 16px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0 2px;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.quick-btn-beautify:hover {
+  transform: scale(1.25) rotate(-10deg);
+  filter: brightness(1.3);
 }
 
 .zoom-slider {
