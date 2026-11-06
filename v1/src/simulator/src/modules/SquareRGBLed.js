@@ -181,7 +181,12 @@ export default class SquareRGBLed extends CircuitElement {
     }
 
     generateVerilog() {
-        return this.generateVerilog.call(this)
+        const inp1 = this.inp1.verilogLabel || "8'b0"
+        const inp2 = this.inp2.verilogLabel || "8'b0"
+        const inp3 = this.inp3.verilogLabel || "8'b0"
+        return `
+      always @ (*)
+        $display("SquareRGBLed:{${inp1},${inp2},${inp3}} = {%d,%d,%d}", ${inp1}, ${inp2}, ${inp3});`
     }
 }
 
