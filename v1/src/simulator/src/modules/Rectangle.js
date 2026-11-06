@@ -5,6 +5,12 @@ import { updateCanvasSet, scheduleUpdate } from '../engine'
 import { scheduleBackup } from '../data/backupCircuit'
 
 /**
+ * Reference to the canvas element currently attached to the dispatcher.
+ * @type {HTMLCanvasElement|null}
+ */
+let attachedCanvas = null
+
+/**
  * Global canvas pointerdown dispatcher.
  * Tracks the specific canvas element it is attached to.
  * When the simulator remounts and simulationArea.setup() assigns a new canvas,
@@ -12,9 +18,8 @@ import { scheduleBackup } from '../data/backupCircuit'
  * and attaches to the new canvas — preventing ghost listeners and missing dispatchers.
  * Resizing is disabled in embed mode.
  * @param {PointerEvent} e - Pointerdown event on canvas
+ * @returns {void}
  */
-let attachedCanvas = null
-
 function handleCanvasPointerDown(e) {
     if (typeof embed !== 'undefined' && embed) return
     if (e.button !== 0) return
@@ -43,6 +48,7 @@ function handleCanvasPointerDown(e) {
  * Compares the stored canvas reference with the current one. When they differ
  * (e.g. after simulator remount and simulationArea.setup() replacing the element),
  * removes the listener from the old canvas and attaches it to the new one.
+ * @returns {void}
  */
 function ensureCanvasDispatcher() {
     const canvas = simulationArea.canvas || document.getElementById('simulationArea')
@@ -94,7 +100,8 @@ export default class Rectangle extends CircuitElement {
     }
 
     /**
-     * Clean up event listeners and reset global cursor on deletion
+     * Clean up event listeners and reset global cursor on deletion.
+     * @returns {void}
      */
     delete() {
         if (this.resizing) {
@@ -110,7 +117,8 @@ export default class Rectangle extends CircuitElement {
     }
 
     /**
-     * Clean up event listeners and reset global cursor on clean deletion
+     * Clean up event listeners and reset global cursor on clean deletion.
+     * @returns {void}
      */
     cleanDelete() {
         if (this.resizing) {
@@ -240,7 +248,7 @@ export default class Rectangle extends CircuitElement {
     }
 
     /**
-     * Return corresponding CSS cursor for given handle
+     * Return corresponding CSS cursor for given handle.
      * @param {string} handle - Handle identifier
      * @returns {string} CSS cursor string
      */
@@ -268,8 +276,9 @@ export default class Rectangle extends CircuitElement {
      * Initializes a single-source-of-truth resize session and binds active pointer listeners.
      * Resizing is disabled in embed mode and when not in the active globalScope.
      * @param {string} handle - The handle name being dragged
-     * @param {number=} pointerId - Optional pointer identifier for pointer capture
-     * @param {object=} startCoords - Optional initial coordinates
+     * @param {number|null} [pointerId=null] - Optional pointer identifier for pointer capture
+     * @param {object|null} [startCoords=null] - Optional initial coordinates
+     * @returns {void}
      */
     startResize(handle, pointerId = null, startCoords = null) {
         if (typeof embed !== 'undefined' && embed) return
@@ -301,9 +310,12 @@ export default class Rectangle extends CircuitElement {
             fixedBottom: this.y + this.elementHeight,
         }
 
+        this.oldx = this.x
+        this.oldy = this.y
+
         simulationArea.lastSelected = this
         simulationArea.selected = true
-        this.clicked = true
+        this.clicked = false
         this.hover = true
 
         const cursor = this.getCursorForHandle(handle)
@@ -327,6 +339,7 @@ export default class Rectangle extends CircuitElement {
     /**
      * Stop active resize operation, record backup if geometry changed, teardown session listeners, and clean up cursor.
      * Idempotent and safe when called multiple times.
+     * @returns {void}
      */
     stopResize() {
         if (!this.resizing && !this.resizeSession) return
@@ -345,6 +358,14 @@ export default class Rectangle extends CircuitElement {
                 scheduleBackup(this.scope || globalScope)
             }
         }
+
+        // Synchronize anchor and reset selection click state so super.drag() is never called with stale offsets
+        this.oldx = this.x
+        this.oldy = this.y
+        this.clicked = false
+        this.wasClicked = false
+        simulationArea.mouseDown = false
+        simulationArea.selected = false
 
         // Teardown active resize listeners immediately
         window.removeEventListener('pointermove', this.onPointerMove)
@@ -389,6 +410,7 @@ export default class Rectangle extends CircuitElement {
      * Never reads simulationArea.mouseX or simulationArea.mouseY to avoid stale press coordinate snap-back.
      * Idempotent: calling with no arguments any number of times produces the same geometry.
      * Safe no-op when there is no active session.
+     * @returns {void}
      */
     resize() {
         if (!this.resizing || !this.resizeSession) return
@@ -438,6 +460,8 @@ export default class Rectangle extends CircuitElement {
             this.cols = newCols
             this.rows = newRows
             this.setSize()
+            this.oldx = this.x
+            this.oldy = this.y
 
             // Update DOM inputs in Properties Panel if open
             const colInput = document.getElementById('Columns')
@@ -459,6 +483,7 @@ export default class Rectangle extends CircuitElement {
      * Ignores events whose pointerId differs from the active pointer.
      * Converts client coordinates via standard canvas transform, updates session latestCoords, and triggers resize().
      * @param {PointerEvent|MouseEvent} e - The pointer move event
+     * @returns {void}
      */
     onPointerMove(e) {
         if (e && this.activePointerId !== null && this.activePointerId !== undefined && e.pointerId !== undefined && e.pointerId !== this.activePointerId) {
@@ -482,6 +507,7 @@ export default class Rectangle extends CircuitElement {
      * Ignores events whose pointerId differs from the active pointer.
      * Terminates the active resize session.
      * @param {PointerEvent|MouseEvent} [e] - The pointer up/cancel event
+     * @returns {void}
      */
     onPointerUp(e) {
         if (e && this.activePointerId !== null && this.activePointerId !== undefined && e.pointerId !== undefined && e.pointerId !== this.activePointerId) {
@@ -495,6 +521,7 @@ export default class Rectangle extends CircuitElement {
 
     /**
      * Handles lost pointer capture event to cleanly terminate active resize session.
+     * @returns {void}
      */
     onLostPointerCapture() {
         if (this.resizing) {
@@ -505,7 +532,7 @@ export default class Rectangle extends CircuitElement {
     /**
      * Override isHover to consider drag handles and bypass hit detection during active resize.
      * Disabled in embed mode.
-     * @returns {boolean}
+     * @returns {boolean} Whether the element or its handles are hovered
      */
     isHover() {
         if (this.scope !== globalScope) return false
@@ -525,6 +552,7 @@ export default class Rectangle extends CircuitElement {
     /**
      * Override startDragging to intercept drag-handle resizing.
      * Disabled in embed mode.
+     * @returns {void}
      */
     startDragging() {
         if (typeof embed !== 'undefined' && embed) {
@@ -550,6 +578,7 @@ export default class Rectangle extends CircuitElement {
 
     /**
      * Override drag to perform resizing when a handle is active.
+     * @returns {void}
      */
     drag() {
         if (this.scope !== globalScope) return
@@ -582,7 +611,7 @@ export default class Rectangle extends CircuitElement {
             // Do NOT guard with simulationArea.mouseDown to avoid timing race conditions.
             simulationArea.lastSelected = this
             simulationArea.selected = true
-            this.clicked = true
+            this.clicked = false
             this.hover = true
 
             // Keep cursor locked
@@ -619,26 +648,30 @@ export default class Rectangle extends CircuitElement {
     /**
      * @memberof Rectangle
      * @param {number} size - new size of rows
-     * @returns {Rectangle}
+     * @returns {Rectangle|undefined} This rectangle instance
      */
     changeRowSize(size) {
         if (size === undefined || size < 5 || size > 1000) return
         if (this.rows === size) return
         this.rows = parseInt(size, 10)
         this.setSize()
+        this.oldx = this.x
+        this.oldy = this.y
         return this
     }
 
     /**
      * @memberof Rectangle
      * @param {number} size - new size of columns
-     * @returns {Rectangle}
+     * @returns {Rectangle|undefined} This rectangle instance
      */
     changeColSize(size) {
         if (size === undefined || size < 5 || size > 1000) return
         if (this.cols === size) return
         this.cols = parseInt(size, 10)
         this.setSize()
+        this.oldx = this.x
+        this.oldy = this.y
         return this
     }
 
@@ -646,6 +679,7 @@ export default class Rectangle extends CircuitElement {
      * @memberof Rectangle
      * listener function to change direction of rectangle
      * @param {string} dir - new direction
+     * @returns {void}
      */
     keyDown3(dir) {
         if (dir === 'ArrowRight') {
@@ -665,7 +699,7 @@ export default class Rectangle extends CircuitElement {
     /**
      * @memberof Rectangle
      * fn to create save Json Data of object
-     * @returns {JSON}
+     * @returns {{constructorParamaters: number[]}} Serialized data
      */
     customSave() {
         const data = {
@@ -678,6 +712,7 @@ export default class Rectangle extends CircuitElement {
      * Render visible drag handles at bounding box corners and midpoints.
      * Disabled in embed mode.
      * @param {CanvasRenderingContext2D} ctx - 2D rendering context
+     * @returns {void}
      */
     drawHandles(ctx) {
         if (typeof embed !== 'undefined' && embed) return
@@ -727,6 +762,7 @@ export default class Rectangle extends CircuitElement {
     /**
      * @memberof Rectangle
      * function to draw element with permanent light yellow background
+     * @returns {void}
      */
     customDraw() {
         var ctx = simulationArea.context
@@ -765,6 +801,7 @@ export default class Rectangle extends CircuitElement {
     /**
      * @memberof Rectangle
      * function to reset or (internally) set size
+     * @returns {void}
      */
     setSize() {
         this.elementWidth = this.cols * 10
