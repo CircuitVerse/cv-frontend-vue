@@ -131,6 +131,24 @@ export function deleteCurrentCircuit(
         for (var id in scope.verilogMetadata.subCircuitScopeIds)
             delete scopeList[id]
     }
+
+    // Remove SubCircuit instances that reference the circuit being deleted
+    for (const parentScopeId in scopeList) {
+        const parentScope = scopeList[parentScopeId]
+
+        if (parentScope.id === scope.id || !parentScope.SubCircuit) {
+            continue
+        }
+
+        for (let i = parentScope.SubCircuit.length - 1; i >= 0; i--) {
+            const subCircuit = parentScope.SubCircuit[i]
+
+            if (String(subCircuit.id) === String(scope.id)) {
+                subCircuit.cleanDelete()
+            }
+        }
+    }
+
     const index = circuit_list.findIndex(
         (circuit: any) => circuit.id === scope.id
     )
