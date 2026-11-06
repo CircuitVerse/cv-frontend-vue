@@ -159,7 +159,7 @@ describe('Verilog export', () => {
         const code = verilog.exportVerilog(globalScope);
         const module = code.slice(code.indexOf('module Main'));
 
-        expect(module).toContain(`assign ${adder.carryOut.verilogLabel} = (${a.label} + ${b.label}) >> 1;`);
+        expect(module).toContain(`assign ${adder.carryOut.verilogLabel} = ({1'b0, ${a.label}} + ${b.label}) >> 1;`);
         expect(module).not.toContain('{,');
         expect(module).not.toContain(', }');
     });
