@@ -145,6 +145,12 @@ export function deleteCurrentCircuit(
 
             if (String(subCircuit.id) === String(scope.id)) {
                 subCircuit.cleanDelete()
+
+                // Invalidate cached copies of the parent circuit
+                parentScope.timeStamp = Math.max(
+                    Date.now(),
+                    parentScope.timeStamp + 1
+                )
             }
         }
     }
