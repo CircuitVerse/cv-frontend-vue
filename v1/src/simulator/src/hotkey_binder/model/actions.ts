@@ -1,6 +1,6 @@
 /* eslint-disable import/no-cycle */
 import { defaultKeys } from "../defaultKeys";
-import { addShortcut } from "./addShortcut";
+import { addShortcut, ActionType } from "./addShortcut";
 import { updateHTML } from "../view/panel.ui";
 import { simulationArea } from "../../simulationArea";
 import { scheduleUpdate, wireToBeCheckedSet, updateCanvasSet } from "../../engine";
@@ -46,7 +46,7 @@ const getDefaultKeys = (): KeyMap => {
 const bindKeys = (keys: KeyMap, mode: "user" | "default"): void => {
   Object.entries(keys).forEach(([pref, key]) => {
     const normalizedKey = key.split(" ").join("");
-    addShortcut(normalizedKey, pref);
+    addShortcut(normalizedKey, pref as ActionType);
   });
   updateHTML(mode);
 };

@@ -443,11 +443,11 @@ export default class Scope {
    * Checks if this circuit contains directly or indirectly scope with id
    * Recursive nature
    */
-  checkDependency(id: number) {
-    if (id === this.id) return true;
+  checkDependency(id: number | string) {
+    if (`${this.id}` === `${id}`) return true;
     if (this.SubCircuit) {
       for (let i = 0; i < this.SubCircuit.length; i++) {
-        if (this.SubCircuit[i].id === id) return true;
+        if (`${this.SubCircuit[i].id}` === `${id}`) return true;
       }
     }
     if (this.SubCircuit) {
