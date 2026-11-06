@@ -524,6 +524,9 @@ export default class Rectangle extends CircuitElement {
      * @returns {void}
      */
     onLostPointerCapture() {
+        if (e && this.activePointerId !== null && this.activePointerId !== undefined && e.pointerId !== undefined && e.pointerId !== this.activePointerId) {
+            return
+        }
         if (this.resizing) {
             this.stopResize()
         }
