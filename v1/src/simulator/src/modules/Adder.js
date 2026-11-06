@@ -88,10 +88,17 @@ export default class Adder extends CircuitElement {
     }
 
     generateVerilog() {
-        if (this.carryIn.verilogLabel) {
-            return `assign ${this.sum.verilogLabel} = ${this.inpA.verilogLabel} + ${this.inpB.verilogLabel} + ${this.carryIn.verilogLabel};`
+        const cin = this.carryIn.verilogLabel ? ` + ${this.carryIn.verilogLabel}` : ''
+
+        if (this.carryOut.verilogLabel && this.sum.verilogLabel) {
+            return `assign {${this.carryOut.verilogLabel}, ${this.sum.verilogLabel}} = ${this.inpA.verilogLabel} + ${this.inpB.verilogLabel}${cin};`
         }
-        return `assign ${this.sum.verilogLabel} = ${this.inpA.verilogLabel} + ${this.inpB.verilogLabel};`
+
+        if (this.carryOut.verilogLabel) {
+            return `assign ${this.carryOut.verilogLabel} = (${this.inpA.verilogLabel} + ${this.inpB.verilogLabel}${cin}) >> ${this.bitWidth};`
+        }
+
+        return `assign ${this.sum.verilogLabel} = ${this.inpA.verilogLabel} + ${this.inpB.verilogLabel}${cin};`
     }
 }
 

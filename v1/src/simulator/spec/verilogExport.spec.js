@@ -5,6 +5,7 @@ import Output from '../src/modules/Output';
 import AndGate from '../src/modules/AndGate';
 import XorGate from '../src/modules/XorGate';
 import NotGate from '../src/modules/NotGate';
+import Adder from '../src/modules/Adder';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import { createRouter, createWebHistory } from 'vue-router';
@@ -105,5 +106,61 @@ describe('Verilog export', () => {
         expect(module).toContain(`assign ${usedAnd.output1.verilogLabel} = ${a.label} & ${b.label};`);
         expect(module).toContain(`assign ${out.label} = ${usedAnd.output1.verilogLabel};`);
         expect(module.match(/assign /g)).toHaveLength(2);
+    });
+
+    test('exports Adder with both sum and carryOut connected', () => {
+        const a = new Input(0, 0, globalScope, 'RIGHT', 1);
+        const b = new Input(0, 50, globalScope, 'RIGHT', 1);
+        const adder = new Adder(200, 50, globalScope, 'RIGHT', 1);
+        const outSum = new Output(300, 50, globalScope, 'LEFT', 1);
+        const outCout = new Output(300, 100, globalScope, 'LEFT', 1);
+
+        a.output1.connect(adder.inpA);
+        b.output1.connect(adder.inpB);
+        adder.sum.connect(outSum.inp1);
+        adder.carryOut.connect(outCout.inp1);
+
+        const code = verilog.exportVerilog(globalScope);
+        const module = code.slice(code.indexOf('module Main'));
+
+        expect(module).toContain(`assign {${adder.carryOut.verilogLabel}, ${adder.sum.verilogLabel}} = ${a.label} + ${b.label};`);
+        expect(module).not.toContain('{,');
+        expect(module).not.toContain(', }');
+    });
+
+    test('exports Adder with only sum connected without trailing comma', () => {
+        const a = new Input(0, 0, globalScope, 'RIGHT', 1);
+        const b = new Input(0, 50, globalScope, 'RIGHT', 1);
+        const adder = new Adder(200, 50, globalScope, 'RIGHT', 1);
+        const outSum = new Output(300, 50, globalScope, 'LEFT', 1);
+
+        a.output1.connect(adder.inpA);
+        b.output1.connect(adder.inpB);
+        adder.sum.connect(outSum.inp1);
+
+        const code = verilog.exportVerilog(globalScope);
+        const module = code.slice(code.indexOf('module Main'));
+
+        expect(module).toContain(`assign ${adder.sum.verilogLabel} = ${a.label} + ${b.label};`);
+        expect(module).not.toContain('{,');
+        expect(module).not.toContain(', }');
+    });
+
+    test('exports Adder with only carryOut connected without leading comma', () => {
+        const a = new Input(0, 0, globalScope, 'RIGHT', 1);
+        const b = new Input(0, 50, globalScope, 'RIGHT', 1);
+        const adder = new Adder(200, 50, globalScope, 'RIGHT', 1);
+        const outCout = new Output(300, 100, globalScope, 'LEFT', 1);
+
+        a.output1.connect(adder.inpA);
+        b.output1.connect(adder.inpB);
+        adder.carryOut.connect(outCout.inp1);
+
+        const code = verilog.exportVerilog(globalScope);
+        const module = code.slice(code.indexOf('module Main'));
+
+        expect(module).toContain(`assign ${adder.carryOut.verilogLabel} = (${a.label} + ${b.label}) >> 1;`);
+        expect(module).not.toContain('{,');
+        expect(module).not.toContain(', }');
     });
 });
