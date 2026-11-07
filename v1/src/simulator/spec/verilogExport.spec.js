@@ -5,6 +5,7 @@ import Output from '../src/modules/Output';
 import AndGate from '../src/modules/AndGate';
 import XorGate from '../src/modules/XorGate';
 import NotGate from '../src/modules/NotGate';
+import Splitter from '../src/modules/Splitter';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import { createRouter, createWebHistory } from 'vue-router';
@@ -105,5 +106,22 @@ describe('Verilog export', () => {
         expect(module).toContain(`assign ${usedAnd.output1.verilogLabel} = ${a.label} & ${b.label};`);
         expect(module).toContain(`assign ${out.label} = ${usedAnd.output1.verilogLabel};`);
         expect(module.match(/assign /g)).toHaveLength(2);
+    });
+
+    test('exports Splitter correctly without redundant outer loop', () => {
+        const inp = new Input(0, 0, globalScope, 'RIGHT', 4);
+        const splitter = new Splitter(100, 0, globalScope, 'RIGHT', 4, [1, 1, 1, 1]);
+        const out0 = new Output(200, 0, globalScope, 'LEFT', 1);
+        const out1 = new Output(200, 50, globalScope, 'LEFT', 1);
+
+        inp.output1.connect(splitter.inp1);
+        splitter.outputs[0].connect(out0.inp1);
+        splitter.outputs[1].connect(out1.inp1);
+
+        const code = verilog.exportVerilog(globalScope);
+        const module = code.slice(code.indexOf('module Main'));
+
+        expect(module).toContain(`assign ${out0.label} = ${inp.label}[0];`);
+        expect(module).toContain(`assign ${out1.label} = ${inp.label}[1];`);
     });
 });
