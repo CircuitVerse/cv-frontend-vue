@@ -270,32 +270,33 @@ export default class Splitter extends CircuitElement {
 
         // Splitter
         this.isSplitter = true
-        for (var j = 0; j < this.outputs.length; j++) {
-            var bitCount = 0
-            var inpLabel = this.inp1.verilogLabel
-            // Already Split Regex
-            var re = /^(.*)\[(\d*):(\d*)\]$/
-            if (re.test(inpLabel)) {
-                var matches = inpLabel.match(re)
-                inpLabel = matches[1]
-                bitCount = parseInt(matches[3])
+        var bitCount = 0
+        var inpLabel = this.inp1.verilogLabel
+        // Already Split Regex
+        var re = /^(.*)\[(\d*):(\d*)\]$/
+        if (re.test(inpLabel)) {
+            var matches = inpLabel.match(re)
+            inpLabel = matches[1]
+            bitCount = parseInt(matches[3])
+        }
+        for (var i = 0; i < this.splitCount; i++) {
+            var label
+            if (this.bitWidthSplit[i] > 1) {
+                label =
+                    inpLabel +
+                    '[' +
+                    (bitCount + this.bitWidthSplit[i] - 1) +
+                    ':' +
+                    bitCount +
+                    ']'
+            } else {
+                label = inpLabel + '[' + bitCount + ']'
             }
-            for (var i = 0; i < this.splitCount; i++) {
-                if (this.bitWidthSplit[i] > 1)
-                    var label =
-                        inpLabel +
-                        '[' +
-                        (bitCount + this.bitWidthSplit[i] - 1) +
-                        ':' +
-                        bitCount +
-                        ']'
-                else var label = inpLabel + '[' + bitCount + ']'
-                if (this.outputs[i].verilogLabel != label) {
-                    this.outputs[i].verilogLabel = label
-                    this.scope.stack.push(this.outputs[i])
-                }
-                bitCount += this.bitWidthSplit[i]
+            if (this.outputs[i].verilogLabel != label) {
+                this.outputs[i].verilogLabel = label
+                this.scope.stack.push(this.outputs[i])
             }
+            bitCount += this.bitWidthSplit[i]
         }
     }
     //added to generate Splitter INPUTS
