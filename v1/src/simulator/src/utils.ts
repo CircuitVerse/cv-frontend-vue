@@ -33,9 +33,9 @@ export function generateId() {
   return id;
 }
 
-// To strip tags from input
+// To strip tags from input and remove CSS selector special characters
 export function stripTags(string = "") {
-  return string.replace(/(<([^>]+)>)/gi, "").trim();
+  return string.replace(/(<([^>]+)>)/gi, "").replace(/[^a-zA-Z0-9\s,_-]/g, "").replace(/\s+/g, " ").trim();
 }
 
 export function clockTick() {
