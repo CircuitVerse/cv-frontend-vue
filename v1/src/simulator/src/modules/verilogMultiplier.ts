@@ -90,6 +90,11 @@ export default class verilogMultiplier extends CircuitElement {
     this.product.value = (product << (32 - this.outputBitWidth)) >>> (32 - this.outputBitWidth);
     simulationArea.simulationQueue.add(this.product as QueueObject);
   }
+  generateVerilog(): string {
+    const a = this.inpA.verilogLabel || "0";
+    const b = this.inpB.verilogLabel || "0";
+    return `assign ${this.product.verilogLabel} = ${a} * ${b};`;
+  }
 }
 
 /**

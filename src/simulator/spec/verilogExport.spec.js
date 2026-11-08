@@ -5,6 +5,11 @@ import Output from '../src/modules/Output';
 import AndGate from '../src/modules/AndGate';
 import XorGate from '../src/modules/XorGate';
 import NotGate from '../src/modules/NotGate';
+import verilogMultiplier from '../src/modules/verilogMultiplier';
+import verilogDivider from '../src/modules/verilogDivider';
+import verilogPower from '../src/modules/verilogPower';
+import verilogShiftLeft from '../src/modules/verilogShiftLeft';
+import verilogShiftRight from '../src/modules/verilogShiftRight';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import { createRouter, createWebHistory } from 'vue-router';
@@ -105,5 +110,66 @@ describe('Verilog export', () => {
         expect(module).toContain(`assign ${usedAnd.output1.verilogLabel} = ${a.label} & ${b.label};`);
         expect(module).toContain(`assign ${out.label} = ${usedAnd.output1.verilogLabel};`);
         expect(module.match(/assign /g)).toHaveLength(2);
+    });
+
+    it('correctly exports arithmetic modules using native continuous assignments', () => {
+        setup();
+        const a = new Input(0, 0, globalScope, 'RIGHT', 4);
+        const b = new Input(0, 50, globalScope, 'RIGHT', 4);
+        a.label = 'a';
+        b.label = 'b';
+
+        const mult = new verilogMultiplier(100, 0, globalScope, 'RIGHT', 4, 8);
+        const outMult = new Output(200, 0, globalScope, 'LEFT', 8);
+        outMult.label = 'out_mult';
+        a.output1.connect(mult.inpA);
+        b.output1.connect(mult.inpB);
+        mult.product.connect(outMult.inp1);
+
+        const div = new verilogDivider(100, 100, globalScope, 'RIGHT', 4, 4);
+        const outQuot = new Output(200, 100, globalScope, 'LEFT', 4);
+        const outRem = new Output(200, 150, globalScope, 'LEFT', 4);
+        outQuot.label = 'out_quot';
+        outRem.label = 'out_rem';
+        a.output1.connect(div.inpA);
+        b.output1.connect(div.inpB);
+        div.quotient.connect(outQuot.inp1);
+        div.remainder.connect(outRem.inp1);
+
+        const pow = new verilogPower(100, 200, globalScope, 'RIGHT', 4, 8);
+        const outPow = new Output(200, 200, globalScope, 'LEFT', 8);
+        outPow.label = 'out_pow';
+        a.output1.connect(pow.inpA);
+        b.output1.connect(pow.inpB);
+        pow.answer.connect(outPow.inp1);
+
+        const shl = new verilogShiftLeft(100, 300, globalScope, 'RIGHT', 4, 4);
+        const outShl = new Output(200, 300, globalScope, 'LEFT', 4);
+        outShl.label = 'out_shl';
+        a.output1.connect(shl.inp1);
+        b.output1.connect(shl.shiftInp);
+        shl.output1.connect(outShl.inp1);
+
+        const shr = new verilogShiftRight(100, 400, globalScope, 'RIGHT', 4, 4);
+        const outShr = new Output(200, 400, globalScope, 'LEFT', 4);
+        outShr.label = 'out_shr';
+        a.output1.connect(shr.inp1);
+        b.output1.connect(shr.shiftInp);
+        shr.output1.connect(outShr.inp1);
+
+        const code = verilog.exportVerilog(globalScope);
+        const module = code.slice(code.indexOf('module Main'));
+
+        expect(module).toContain(`assign ${mult.product.verilogLabel} = ${a.label} * ${b.label};`);
+        expect(module).toContain(`assign ${div.quotient.verilogLabel} = ${a.label} / ${b.label};`);
+        expect(module).toContain(`assign ${div.remainder.verilogLabel} = ${a.label} % ${b.label};`);
+        expect(module).toContain(`assign ${pow.answer.verilogLabel} = ${a.label} ** ${b.label};`);
+        expect(module).toContain(`assign ${shl.output1.verilogLabel} = ${a.label} << ${b.label};`);
+        expect(module).toContain(`assign ${shr.output1.verilogLabel} = ${a.label} >> ${b.label};`);
+        expect(module).not.toContain('verilogMultiplier verilogMultiplier');
+        expect(module).not.toContain('verilogDivider verilogDivider');
+        expect(module).not.toContain('verilogPower verilogPower');
+        expect(module).not.toContain('verilogShiftLeft verilogShiftLeft');
+        expect(module).not.toContain('verilogShiftRight verilogShiftRight');
     });
 });

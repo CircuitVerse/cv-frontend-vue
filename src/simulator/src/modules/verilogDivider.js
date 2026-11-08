@@ -122,6 +122,20 @@ export default class verilogDivider extends CircuitElement {
         simulationArea.simulationQueue.add(this.quotient)
         simulationArea.simulationQueue.add(this.remainder)
     }
+
+    generateVerilog() {
+        const a = this.inpA.verilogLabel || '0'
+        const b = this.inpB.verilogLabel || '1'
+        let res = ''
+        if (this.quotient.verilogLabel) {
+            res += `assign ${this.quotient.verilogLabel} = ${a} / ${b};`
+        }
+        if (this.remainder.verilogLabel) {
+            if (res.length !== 0) res += '\n  '
+            res += `assign ${this.remainder.verilogLabel} = ${a} % ${b};`
+        }
+        return res
+    }
 }
 
 /**
