@@ -7,6 +7,7 @@ import { checkIfBackup, scheduleBackup } from '../src/data/backupCircuit';
 import undo from '../src/data/undo';
 import redo from '../src/data/redo';
 import save from '../src/data/save';
+import { paste } from '../src/events';
 import {
     clearProject,
     newProject,
@@ -176,5 +177,15 @@ describe('data dir working', () => {
             document.querySelectorAll('input[name="imgType"]')
         ).map((input) => input.value);
         expect(formats).toEqual(['png', 'jpeg', 'svg']);
+    });
+
+    test('paste gracefully handles non-JSON or invalid clipboard data without throwing', () => {
+        expect(() => paste(undefined)).not.toThrow();
+        expect(() => paste(null)).not.toThrow();
+        expect(() => paste('')).not.toThrow();
+        expect(() => paste('undefined')).not.toThrow();
+        expect(() => paste('Hello World, this is not JSON')).not.toThrow();
+        expect(() => paste('{"someKey": "someValue"}')).not.toThrow();
+        expect(() => paste('12345')).not.toThrow();
     });
 });
