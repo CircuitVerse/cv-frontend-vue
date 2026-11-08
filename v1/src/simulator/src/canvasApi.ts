@@ -115,7 +115,7 @@ export function fitToSelection(selected: any[]) {
 // Function used to change the zoom level wrt to a point
 // fn to change scale (zoom) - It also shifts origin so that the position
 // of the object in focus doesn't change
-export function changeScale(delta: number, xx: any, yy: any, method: number = 1) {
+export function changeScale(delta: number, xx?: any, yy?: any, method: number = 1) {
   // method = 3/2 - Zoom wrt center of screen
   // method = 1 - Zoom wrt position of mouse
   // Otherwise zoom wrt to selected object
@@ -190,14 +190,17 @@ export function dots(dots = true, transparentBackground = false, force = false) 
   }
 
   if (dots) {
+    const radius = scale / 10;
     backgroundCtx.fillStyle = colors["dot_fill"];
+    backgroundCtx.beginPath();
     for (let i = 0; i < canvasWidth; i += scale) {
       for (let j = 0; j < canvasHeight; j += scale) {
-        backgroundCtx.beginPath();
-        backgroundCtx.arc(i, j, scale / 10, 0, Math.PI * 2);
-        backgroundCtx.fill();
+        backgroundCtx.moveTo(i + radius, j);
+        backgroundCtx.arc(i, j, radius, 0, Math.PI * 2);
       }
     }
+    backgroundCtx.fill();
+    backgroundCtx.beginPath();
   }
 
   backgroundCtx.strokeStyle = colors["canvas_stroke"];
