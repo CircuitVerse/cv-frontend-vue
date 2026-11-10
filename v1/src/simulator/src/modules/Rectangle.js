@@ -523,7 +523,7 @@ export default class Rectangle extends CircuitElement {
      * Handles lost pointer capture event to cleanly terminate active resize session.
      * @returns {void}
      */
-    onLostPointerCapture() {
+    onLostPointerCapture(e) {
         if (e && this.activePointerId !== null && this.activePointerId !== undefined && e.pointerId !== undefined && e.pointerId !== this.activePointerId) {
             return
         }
