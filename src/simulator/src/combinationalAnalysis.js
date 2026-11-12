@@ -14,6 +14,7 @@ import { stripTags } from './utils';
 import { simulationArea } from './simulationArea';
 import { findDimensions } from './canvasApi';
 import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore'
+import { confirmSingleOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
 
 export const performCombinationalAnalysis = (inputNameList, outputNameList, booleanNameExpression, scope = globalScope) => {
     if(!inputNameList || !outputNameList || !booleanNameExpression) {
@@ -56,8 +57,8 @@ export const performCombinationalAnalysis = (inputNameList, outputNameList, bool
     }
 };
 
-export const GenerateCircuit = (outputListNamesInteger, inputListNames, output, outputListNames, scope = globalScope) => {
-    var data = generateBooleanTableData(outputListNamesInteger);
+export const GenerateCircuit = (outputListNamesInteger, inputListNames, output, outputListNames, tableBody, startCol, scope = globalScope) => {
+    var data = generateBooleanTableData(outputListNamesInteger, tableBody, startCol);
     // passing the hash values to avoid spaces being passed which is causing a problem
     var minimizedCircuit = [];
     let inputCount = inputListNames.length;
@@ -90,7 +91,7 @@ export const GenerateCircuit = (outputListNamesInteger, inputListNames, output, 
     }
 };
 
-function generateBooleanTableData(outputListNames) {
+function generateBooleanTableData(outputListNames, tableBody, startCol) {
     var data = {};
     for (var i = 0; i < outputListNames.length; i++) {
         data[outputListNames[i]] = {
@@ -98,9 +99,11 @@ function generateBooleanTableData(outputListNames) {
             1: [],
             0: [],
         };
-        var rows = $(`.${outputListNames[i]}`);
-        for (let j = 0; j < rows.length; j++) {
-            data[outputListNames[i]][rows[j].innerHTML].push(rows[j].id);
+        for (var j = 0; j < tableBody.length; j++) {
+            var val = tableBody[j][startCol + i];
+            if (data[outputListNames[i]][val] !== undefined) {
+                data[outputListNames[i]][val].push(j);
+            }
         }
     }
     return data;
@@ -241,7 +244,7 @@ function drawCombinationalAnalysis(combinationalData, inputList, outputListNames
 export function solveBooleanFunction(inputListNames, booleanExpression) {
    let i
    let j
-   output.value = []
+   let output = []
 
    if (
        booleanExpression.match(
@@ -283,7 +286,7 @@ export function solveBooleanFunction(inputListNames, booleanExpression) {
            )
        }
 
-       output.value[i] = solve(equation)
+       output[i] = solve(equation)
    }
    // generates solution for the truth table of booleanexpression
    function solve(equation) {
@@ -325,6 +328,8 @@ export function solveBooleanFunction(inputListNames, booleanExpression) {
            return ''
        }
    }
+
+   return output
 }
 
 export function createCombinationalAnalysisPrompt(scope = globalScope) {

@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "useDefineForClassFields": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "jsx": "preserve",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "lib": ["esnext", "dom"],
+    "skipLibCheck": true,
+    "baseUrl": "./",
+    "paths": {
+      "#/*": ["./v1/src/*"],
+      "@/*": ["./v1/src/components/*"]
+    },
+    "allowJs": true,
+    "checkJs": false,
+    "noEmit": true,
+    "types": ["vite/client", "node", "jquery"]
+  },
+  "include": [
+    "v1/src/simulator/src/*.ts",
+    "v1/src/simulator/src/globals.d.ts",
+    "v1/src/env.d.ts"
+  ]
+}

@@ -12,7 +12,7 @@
 
 <script setup lang="ts">
 import simulator from './simulator.vue'
-import { onBeforeMount, ref, onMounted } from 'vue'
+import { onBeforeMount, ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '#/store/authStore'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
@@ -93,7 +93,12 @@ onBeforeMount(() => {
 })
 
 onMounted(() => {
+    checkShowSidebar()
     window.addEventListener('resize', checkShowSidebar)
+})
+
+onBeforeUnmount(() => {
+    window.removeEventListener('resize', checkShowSidebar)
 })
 function checkShowSidebar() {
     simulatorMobileStore.showMobileView = window.innerWidth < simulatorMobileStore.minWidthToShowMobile ? true : false

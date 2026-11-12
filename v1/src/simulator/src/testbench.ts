@@ -50,7 +50,7 @@ export class TestbenchData {
 
   groupNext() {
     const newCase = new TestbenchData(this.testData, this.currentGroup, 0);
-    const _groupCount = newCase.testData.groups.length;
+    const groupCount = newCase.testData.groups.length;
     let caseCount = 0;
     if (newCase.testData.groups[this.currentGroup].inputs[0]) {
       caseCount = newCase.testData.groups[this.currentGroup].inputs[0].values.length;
@@ -125,8 +125,8 @@ export class TestbenchData {
  * Checks if all the labels in the test data are unique. Called by validate()
  */
 function checkDistinctIdentifiersData(data: TestData) {
-  const inputIdentifiersData = data.groups[0].inputs.map((input) => input.label);
-  const outputIdentifiersData = data.groups[0].outputs.map((output) => output.label);
+  const inputIdentifiersData = data.groups[0].inputs.map((input) => input.label.trim());
+  const outputIdentifiersData = data.groups[0].outputs.map((output) => output.label.trim());
   const identifiersData = inputIdentifiersData.concat(outputIdentifiersData);
 
   return new Set(identifiersData).size === identifiersData.length;
@@ -136,13 +136,13 @@ function checkDistinctIdentifiersData(data: TestData) {
  * Checks if all the input/output labels in the scope are unique. Called by validate()
  * TODO: Replace with identifiers
  */
-function checkDistinctIdentifiersScope(scope) {
-  const inputIdentifiersScope = scope.Input.map((input) => input.label);
-  const outputIdentifiersScope = scope.Output.map((output) => output.label);
+function checkDistinctIdentifiersScope(scope: any) {
+  const inputIdentifiersScope = scope.Input.map((input: any) => input.label.trim());
+  const outputIdentifiersScope = scope.Output.map((output: any) => output.label.trim());
   let identifiersScope = inputIdentifiersScope.concat(outputIdentifiersScope);
 
   // Remove identifiers which have not been set yet (ie. empty strings)
-  identifiersScope = identifiersScope.filter((identifer) => identifer != "");
+  identifiersScope = identifiersScope.filter((identifer: any) => identifer != "");
 
   return new Set(identifiersScope).size === identifiersScope.length;
 }
@@ -151,24 +151,24 @@ function checkDistinctIdentifiersScope(scope) {
  * Validates presence and bitwidths of test inputs in the circuit.
  * Called by validate()
  */
-function validateInputs(data: TestData, scope) {
+function validateInputs(data: TestData, scope: any) {
   const invalids: Invalids[] = [];
 
   data.groups[0].inputs.forEach((dataInput) => {
     const matchInput = scope.Input.find(
-      (simulatorInput) => simulatorInput.label === dataInput.label,
+      (simulatorInput: any) => simulatorInput.label.trim() === dataInput.label.trim(),
     );
 
     if (matchInput === undefined) {
       invalids.push({
         type: VALIDATION_ERRORS.NOTPRESENT,
-        identifier: dataInput.label,
+        identifier: dataInput.label.trim(),
         message: "Input is not present in the circuit",
       });
     } else if (matchInput.bitWidth !== dataInput.bitWidth) {
       invalids.push({
         type: VALIDATION_ERRORS.WRONGBITWIDTH,
-        identifier: dataInput.label,
+        identifier: dataInput.label.trim(),
         extraInfo: {
           element: matchInput,
           expectedBitWidth: dataInput.bitWidth,
@@ -193,24 +193,24 @@ interface Invalids {
  * Validates presence and bitwidths of test outputs in the circuit.
  * Called by validate()
  */
-function validateOutputs(data: TestData, scope) {
+function validateOutputs(data: TestData, scope: any) {
   const invalids: Invalids[] = [];
 
   data.groups[0].outputs.forEach((dataOutput) => {
     const matchOutput = scope.Output.find(
-      (simulatorOutput) => simulatorOutput.label === dataOutput.label,
+      (simulatorOutput: any) => simulatorOutput.label.trim() === dataOutput.label.trim(),
     );
 
     if (matchOutput === undefined) {
       invalids.push({
         type: VALIDATION_ERRORS.NOTPRESENT,
-        identifier: dataOutput.label,
+        identifier: dataOutput.label.trim(),
         message: "Output is not present in the circuit",
       });
     } else if (matchOutput.bitWidth !== dataOutput.bitWidth) {
       invalids.push({
         type: VALIDATION_ERRORS.WRONGBITWIDTH,
-        identifier: dataOutput.label,
+        identifier: dataOutput.label.trim(),
         extraInfo: {
           element: matchOutput,
           expectedBitWidth: dataOutput.bitWidth,
@@ -227,7 +227,7 @@ function validateOutputs(data: TestData, scope) {
 /**
  * Validate if all inputs and output elements are present with correct bitwidths
  */
-function validate(data: TestData, scope) {
+function validate(data: TestData, scope: any) {
   let invalids = [];
 
   // Check for duplicate identifiers
@@ -254,13 +254,13 @@ function validate(data: TestData, scope) {
   const inputsValid = validateInputs(data, scope);
   const outputsValid = validateOutputs(data, scope);
 
-  invalids = inputsValid.ok ? invalids : invalids.concat(inputsValid.invalids);
-  invalids = outputsValid.ok ? invalids : invalids.concat(outputsValid.invalids);
+  invalids = inputsValid.ok ? invalids : invalids.concat(inputsValid.invalids ?? []);
+  invalids = outputsValid.ok ? invalids : invalids.concat(outputsValid.invalids ?? []);
 
   // Validate presence of reset if test is sequential
   if (data.type === "seq") {
     const resetPresent = scope.Input.some(
-      (simulatorReset) =>
+      (simulatorReset: any) =>
         simulatorReset.label === "RST" &&
         simulatorReset.bitWidth === 1 &&
         simulatorReset.objectType === "Input",
@@ -282,25 +282,25 @@ function validate(data: TestData, scope) {
 /**
  * Returns object of scope inputs and outputs keyed by their labels
  */
-function bindIO(data: TestData, scope) {
+function bindIO(data: TestData, scope: any) {
   const inputs: { [key: string]: any } = {};
   const outputs: { [key: string]: any } = {};
   let reset;
 
   data.groups[0].inputs.forEach((dataInput) => {
-    inputs[dataInput.label] = scope.Input.find(
-      (simulatorInput) => simulatorInput.label === dataInput.label,
+    inputs[dataInput.label.trim()] = scope.Input.find(
+      (simulatorInput: any) => simulatorInput.label.trim() === dataInput.label.trim(),
     );
   });
 
   data.groups[0].outputs.forEach((dataOutput) => {
-    outputs[dataOutput.label] = scope.Output.find(
-      (simulatorOutput) => simulatorOutput.label === dataOutput.label,
+    outputs[dataOutput.label.trim()] = scope.Output.find(
+      (simulatorOutput: any) => simulatorOutput.label.trim() === dataOutput.label.trim(),
     );
   });
 
   if (data.type === "seq") {
-    reset = scope.Input.find((simulatorOutput) => simulatorOutput.label === "RST");
+    reset = scope.Input.find((simulatorOutput: any) => simulatorOutput.label.trim() === "RST");
   }
 
   return { inputs, outputs, reset };
@@ -310,9 +310,9 @@ function bindIO(data: TestData, scope) {
  * Set and propogate the input values according to the testcase.
  * Called by runSingle() and runAll()
  */
-function setInputValues(inputs, group, caseIndex: number, scope) {
-  group.inputs.forEach((input) => {
-    inputs[input.label].state = parseInt(input.values[caseIndex], 2);
+function setInputValues(inputs: any, group: any, caseIndex: number, scope: any) {
+  group.inputs.forEach((input: any) => {
+    inputs[input.label.trim()].state = parseInt(input.values[caseIndex], 2);
   });
 
   // Propagate inputs
@@ -342,14 +342,14 @@ function dec2bin(dec: number | undefined, bitWidth = undefined) {
 /**
  * Gets Output values as a Map with keys as output name and value as output state
  */
-function getOutputValues(data: TestData, outputs) {
+function getOutputValues(data: TestData, outputs: any) {
   const values = new Map();
 
   data.groups[0].outputs.forEach((dataOutput) => {
     // Using node value because output state only changes on rendering
-    const resultValue = outputs[dataOutput.label].nodeList[0].value;
-    const resultBW = outputs[dataOutput.label].nodeList[0].bitWidth;
-    values.set(dataOutput.label, dec2bin(resultValue, resultBW));
+    const resultValue = outputs[dataOutput.label.trim()].nodeList[0].value;
+    const resultBW = outputs[dataOutput.label.trim()].nodeList[0].bitWidth;
+    values.set(dataOutput.label.trim(), dec2bin(resultValue, resultBW));
   });
 
   return values;
@@ -389,6 +389,7 @@ export function runTestBench(
     }
 
     testBenchStore.testbenchData = tempTestbenchData;
+    if (scope) scope.testbenchData = tempTestbenchData;
 
     return;
   }
@@ -396,6 +397,58 @@ export function runTestBench(
   if (runContext === CONTEXT.CONTEXT_ASSIGNMENTS) {
     // Not implemented
   }
+}
+
+export function emptyTestbenchData(): TestBenchData {
+  return {
+    testData: {
+      type: "",
+      title: "",
+      groups: [{ label: "Group 1", inputs: [], outputs: [], n: 0 }],
+    },
+    currentGroup: 0,
+    currentCase: 0,
+  };
+}
+
+/**
+ * Syncs the testbench panel with the testbench data saved on a scope.
+ */
+export function syncTestbenchWithScope(scope = globalScope) {
+  const testBenchStore = useTestBenchStore();
+  const savedData = scope?.testbenchData?.testData;
+
+  if (!savedData || !savedData.groups || savedData.groups.length === 0) {
+    testBenchStore.testbenchData = emptyTestbenchData();
+    testBenchStore.showTestbenchUI = false;
+    return;
+  }
+
+  const groupCount = savedData.groups.length;
+  let currentGroup = scope.testbenchData.currentGroup ?? 0;
+  let currentCase = scope.testbenchData.currentCase ?? 0;
+  if (!Number.isInteger(currentGroup) || currentGroup < 0 || currentGroup >= groupCount) {
+    currentGroup = 0;
+  }
+  if (!Number.isInteger(currentCase) || currentCase < 0) {
+    currentCase = 0;
+  }
+
+  const tempTestbenchData = new TestbenchData(savedData, currentGroup, currentCase);
+
+  if (!tempTestbenchData.goToFirstValidGroup()) {
+    testBenchStore.testbenchData = emptyTestbenchData();
+    testBenchStore.showTestbenchUI = false;
+    return;
+  }
+
+  if (!tempTestbenchData.isCaseValid()) {
+    tempTestbenchData.currentCase = 0;
+  }
+
+  scope.testbenchData = tempTestbenchData;
+  testBenchStore.testbenchData = tempTestbenchData;
+  testBenchStore.showTestbenchUI = true;
 }
 
 interface Results {
@@ -435,7 +488,7 @@ export function runAll(data: TestData, scope = globalScope) {
 
       caseResult.forEach((_, outName) => {
         // TODO: find() is not the best idea because of O(n)
-        const output = group.outputs.find((dataOutput) => dataOutput.label === outName);
+        const output = group.outputs.find((dataOutput) => dataOutput.label.trim() === outName);
         output?.results?.push(caseResult.get(outName));
 
         if (output?.values[case_i] !== caseResult.get(outName)) casePassed = false;
@@ -463,7 +516,7 @@ export function runAll(data: TestData, scope = globalScope) {
 /**
  * Runs single combinational test
  */
-function runSingleCombinational(testbenchData: TestBenchData, scope) {
+function runSingleCombinational(testbenchData: TestBenchData, scope: any) {
   const data = testbenchData.testData;
   const groupIndex = testbenchData.currentGroup;
   const caseIndex = testbenchData.currentCase;
@@ -487,7 +540,7 @@ function runSingleCombinational(testbenchData: TestBenchData, scope) {
  * Runs single sequential test and all tests above it in the group
  * Used in MANUAL mode
  */
-function runSingleSequential(testbenchData: TestBenchData, scope) {
+function runSingleSequential(testbenchData: TestBenchData, scope: any) {
   const data = testbenchData.testData;
   const groupIndex = testbenchData.currentGroup;
   const caseIndex = testbenchData.currentCase;
@@ -543,7 +596,7 @@ export function openCreator(type: openCreatorType) {
  * Set the current test case result on the UI
  */
 
-function setUIResult(testbenchData: TestBenchData, result) {
+function setUIResult(testbenchData: TestBenchData, result: any) {
   const testBenchStore = useTestBenchStore();
   const data = testbenchData.testData;
   const groupIndex = testbenchData.currentGroup;
@@ -559,7 +612,7 @@ function setUIResult(testbenchData: TestBenchData, result) {
   for (const output of result.keys()) {
     const resultValue = result.get(output);
     const outputData = data.groups[groupIndex].outputs.find(
-      (dataOutput) => dataOutput.label === output,
+      (dataOutput) => dataOutput.label.trim() === output,
     );
 
     const expectedValue = outputData ? outputData.values[caseIndex] : undefined;
@@ -680,6 +733,7 @@ export const buttonListenerFunctions = {
         currentCase: 0,
       };
       useTestBenchStore().showTestbenchUI = false;
+      if (globalScope) globalScope.testbenchData = undefined;
     }
   },
 
@@ -700,7 +754,7 @@ export const buttonListenerFunctions = {
 /**
  * Runs single test
  */
-function runSingleTest(testbenchData: TestBenchData, scope) {
+function runSingleTest(testbenchData: TestBenchData, scope: any) {
   const data = testbenchData.testData;
 
   let result;

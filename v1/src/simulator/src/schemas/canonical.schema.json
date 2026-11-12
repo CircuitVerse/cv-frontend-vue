@@ -1,0 +1,386 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CircuitVerse Canonical Project",
+  "$ref": "#/$defs/CanonicalProject",
+  "$defs": {
+    "Direction": {
+      "type": "string",
+      "enum": ["LEFT", "RIGHT", "UP", "DOWN"]
+    },
+    "ComponentType": {
+      "type": "string",
+      "enum": [
+        "Input",
+        "Output",
+        "NotGate",
+        "OrGate",
+        "AndGate",
+        "NorGate",
+        "NandGate",
+        "XorGate",
+        "XnorGate",
+        "SevenSegDisplay",
+        "SixteenSegDisplay",
+        "HexDisplay",
+        "Multiplexer",
+        "BitSelector",
+        "Splitter",
+        "Power",
+        "Ground",
+        "ConstantVal",
+        "ControlledInverter",
+        "TriState",
+        "Adder",
+        "verilogMultiplier",
+        "verilogDivider",
+        "verilogPower",
+        "verilogShiftLeft",
+        "TwoComplement",
+        "verilogShiftRight",
+        "Rom",
+        "RAM",
+        "verilogRAM",
+        "EEPROM",
+        "TflipFlop",
+        "JKflipFlop",
+        "SRflipFlop",
+        "DflipFlop",
+        "TTY",
+        "Keyboard",
+        "Clock",
+        "DigitalLed",
+        "Stepper",
+        "VariableLed",
+        "RGBLed",
+        "SquareRGBLed",
+        "RGBLedMatrix",
+        "Button",
+        "Demultiplexer",
+        "Buffer",
+        "SubCircuit",
+        "Flag",
+        "MSB",
+        "LSB",
+        "PriorityEncoder",
+        "Tunnel",
+        "ALU",
+        "Decoder",
+        "Random",
+        "Counter",
+        "Dlatch",
+        "TB_Input",
+        "TB_Output",
+        "ForceGate"
+      ]
+    },
+    "AnnotationType": {
+      "type": "string",
+      "enum": ["Text", "Rectangle", "Arrow", "ImageAnnotation"]
+    },
+    "BitWidth": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 32
+    },
+    "NonNegativeInteger": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 4294967295
+    },
+    "NonNegativeNumber": {
+      "type": "number",
+      "minimum": 0
+    },
+    "FiniteNumber": {
+      "type": "number"
+    },
+    "Point": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y"],
+      "properties": {
+        "x": { "$ref": "#/$defs/FiniteNumber" },
+        "y": { "$ref": "#/$defs/FiniteNumber" }
+      }
+    },
+    "ScopeId": {
+      "type": "string",
+      "pattern": "^[1-9][0-9]{0,11}$"
+    },
+    "ComponentId": {
+      "type": "string",
+      "pattern": "^[A-Za-z]+(?:_[A-Za-z]+)*_[0-9]+$"
+    },
+    "NetId": {
+      "type": "string",
+      "pattern": "^net_(?:0|[1-9][0-9]*)$"
+    },
+    "PortName": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9]*(?:_[0-9]+)?$"
+    },
+    "PortReference": {
+      "type": "string",
+      "pattern": "^[A-Za-z]+(?:_[A-Za-z]+)*_[0-9]+\\.[A-Za-z][A-Za-z0-9]*(?:_[0-9]+)?$"
+    },
+    "CanonicalJsonValue": {
+      "oneOf": [
+        { "type": "null" },
+        { "type": "boolean" },
+        { "$ref": "#/$defs/FiniteNumber" },
+        { "type": "string" },
+        {
+          "type": "array",
+          "items": { "$ref": "#/$defs/CanonicalJsonValue" }
+        },
+        {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/CanonicalJsonValue" }
+        }
+      ]
+    },
+    "ComponentProperties": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["propagationDelay"],
+      "properties": {
+        "constructorParamaters": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/CanonicalJsonValue" }
+        },
+        "propagationDelay": { "$ref": "#/$defs/NonNegativeNumber" }
+      }
+    },
+    "CanonicalComponent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "bitWidth", "properties"],
+      "properties": {
+        "id": { "$ref": "#/$defs/ComponentId" },
+        "type": { "$ref": "#/$defs/ComponentType" },
+        "label": { "type": "string" },
+        "bitWidth": { "$ref": "#/$defs/BitWidth" },
+        "properties": { "$ref": "#/$defs/ComponentProperties" },
+        "defaultState": { "$ref": "#/$defs/NonNegativeInteger" }
+      }
+    },
+    "CanonicalNet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "bitWidth", "connections"],
+      "properties": {
+        "id": { "$ref": "#/$defs/NetId" },
+        "bitWidth": { "$ref": "#/$defs/BitWidth" },
+        "connections": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/PortReference" }
+        }
+      }
+    },
+    "RoutingEndpoint": {
+      "oneOf": [{ "$ref": "#/$defs/NonNegativeInteger" }, { "$ref": "#/$defs/PortReference" }]
+    },
+    "RoutingConnection": {
+      "type": "array",
+      "prefixItems": [{ "$ref": "#/$defs/RoutingEndpoint" }, { "$ref": "#/$defs/RoutingEndpoint" }],
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "IntermediateNet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nodes", "connections"],
+      "properties": {
+        "nodes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Point" }
+        },
+        "connections": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/RoutingConnection" }
+        }
+      }
+    },
+    "SubcircuitMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["showInSubcircuit", "showLabelInSubcircuit", "labelDirection", "x", "y"],
+      "properties": {
+        "showInSubcircuit": { "type": "boolean" },
+        "showLabelInSubcircuit": { "type": "boolean" },
+        "labelDirection": { "$ref": "#/$defs/Direction" },
+        "x": { "$ref": "#/$defs/FiniteNumber" },
+        "y": { "$ref": "#/$defs/FiniteNumber" }
+      }
+    },
+    "CanonicalComponentPosition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y", "labelDirection"],
+      "properties": {
+        "x": { "$ref": "#/$defs/FiniteNumber" },
+        "y": { "$ref": "#/$defs/FiniteNumber" },
+        "labelDirection": { "$ref": "#/$defs/Direction" },
+        "portPositions": {
+          "type": "object",
+          "propertyNames": { "$ref": "#/$defs/PortName" },
+          "additionalProperties": { "$ref": "#/$defs/Point" }
+        },
+        "subcircuitMetadata": { "$ref": "#/$defs/SubcircuitMetadata" }
+      }
+    },
+    "SubcircuitSymbol": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["width", "height", "titleX", "titleY", "titleEnabled"],
+      "properties": {
+        "width": { "type": "number", "minimum": 0 },
+        "height": { "type": "number", "minimum": 0 },
+        "titleX": { "$ref": "#/$defs/FiniteNumber" },
+        "titleY": { "$ref": "#/$defs/FiniteNumber" },
+        "titleEnabled": { "type": "boolean" }
+      }
+    },
+    "CanonicalAnnotation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "x", "y", "labelDirection", "propagationDelay", "constructorParamaters"],
+      "properties": {
+        "type": { "$ref": "#/$defs/AnnotationType" },
+        "label": { "type": "string" },
+        "x": { "$ref": "#/$defs/FiniteNumber" },
+        "y": { "$ref": "#/$defs/FiniteNumber" },
+        "labelDirection": { "$ref": "#/$defs/Direction" },
+        "propagationDelay": { "$ref": "#/$defs/NonNegativeNumber" },
+        "constructorParamaters": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/CanonicalJsonValue" }
+        }
+      }
+    },
+    "CanonicalLayout": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["subcircuitSymbol"],
+      "properties": {
+        "intermediateNodes": {
+          "type": "object",
+          "propertyNames": { "$ref": "#/$defs/NetId" },
+          "additionalProperties": { "$ref": "#/$defs/IntermediateNet" }
+        },
+        "annotations": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/CanonicalAnnotation" }
+        },
+        "subcircuitSymbol": { "$ref": "#/$defs/SubcircuitSymbol" }
+      },
+      "patternProperties": {
+        "^[A-Za-z]+(?:_[A-Za-z]+)*_[0-9]+$": {
+          "$ref": "#/$defs/CanonicalComponentPosition"
+        }
+      }
+    },
+    "ScopeProjectMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "restrictedElementsUsed"],
+      "properties": {
+        "name": { "type": "string" },
+        "restrictedElementsUsed": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ComponentType" }
+        }
+      }
+    },
+    "VerilogMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["isVerilogCircuit", "isMainCircuit", "code", "subCircuitScopeIds"],
+      "properties": {
+        "isVerilogCircuit": { "type": "boolean" },
+        "isMainCircuit": { "type": "boolean" },
+        "code": { "type": "string" },
+        "subCircuitScopeIds": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ScopeId" }
+        }
+      }
+    },
+    "CanonicalScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canonicalHash", "projectMetadata", "netlist", "verilogMetadata"],
+      "properties": {
+        "canonicalHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "projectMetadata": { "$ref": "#/$defs/ScopeProjectMetadata" },
+        "netlist": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["components", "nets"],
+          "properties": {
+            "components": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/CanonicalComponent" }
+            },
+            "nets": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/CanonicalNet" }
+            }
+          }
+        },
+        "layout": { "$ref": "#/$defs/CanonicalLayout" },
+        "visual": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "canvas": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["scale", "ox", "oy"],
+              "properties": {
+                "scale": { "type": "number", "exclusiveMinimum": 0 },
+                "ox": { "$ref": "#/$defs/FiniteNumber" },
+                "oy": { "$ref": "#/$defs/FiniteNumber" }
+              }
+            }
+          }
+        },
+        "verilogMetadata": { "$ref": "#/$defs/VerilogMetadata" }
+      }
+    },
+    "ProjectMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "timePeriod", "clockEnabled", "focussedCircuit", "orderedTabs"],
+      "properties": {
+        "name": { "type": "string" },
+        "timePeriod": { "type": "number", "minimum": 50 },
+        "clockEnabled": { "type": "boolean" },
+        "focussedCircuit": { "$ref": "#/$defs/ScopeId" },
+        "orderedTabs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/ScopeId" }
+        }
+      }
+    },
+    "CanonicalProject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["formatVersion", "canonicalHash", "projectMetadata", "circuits"],
+      "properties": {
+        "formatVersion": { "const": "v1" },
+        "canonicalHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "projectMetadata": { "$ref": "#/$defs/ProjectMetadata" },
+        "circuits": {
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": { "$ref": "#/$defs/ScopeId" },
+          "additionalProperties": { "$ref": "#/$defs/CanonicalScope" }
+        }
+      }
+    }
+  }
+}

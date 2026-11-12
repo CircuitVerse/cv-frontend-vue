@@ -1,0 +1,260 @@
+{
+  "subcircuits": {},
+  "devices": {
+    "dev0": {
+      "type": "Input",
+      "net": "a",
+      "order": 0,
+      "bits": 1
+    },
+    "dev1": {
+      "type": "Input",
+      "net": "b",
+      "order": 1,
+      "bits": 1
+    },
+    "dev2": {
+      "type": "Input",
+      "net": "cin",
+      "order": 2,
+      "bits": 1
+    },
+    "dev3": {
+      "type": "Output",
+      "net": "sum",
+      "order": 3,
+      "bits": 1
+    },
+    "dev4": {
+      "type": "Output",
+      "net": "cout",
+      "order": 4,
+      "bits": 1
+    },
+    "dev5": {
+      "label": "$add$input.v:2$1",
+      "type": "Addition",
+      "hide_label": true,
+      "source_positions": [
+        {
+          "name": "input.v",
+          "from": {
+            "line": 2,
+            "column": 26
+          },
+          "to": {
+            "line": 2,
+            "column": 31
+          }
+        }
+      ],
+      "bits": {
+        "in1": 1,
+        "in2": 1,
+        "out": 2
+      },
+      "signed": {
+        "in1": false,
+        "in2": false
+      }
+    },
+    "dev6": {
+      "label": "$add$input.v:2$2",
+      "type": "Addition",
+      "hide_label": true,
+      "source_positions": [
+        {
+          "name": "input.v",
+          "from": {
+            "line": 2,
+            "column": 26
+          },
+          "to": {
+            "line": 2,
+            "column": 37
+          }
+        }
+      ],
+      "bits": {
+        "in1": 2,
+        "in2": 1,
+        "out": 2
+      },
+      "signed": {
+        "in1": false,
+        "in2": false
+      }
+    },
+    "dev7": {
+      "type": "BusSlice",
+      "slice": {
+        "first": 0,
+        "count": 1,
+        "total": 2
+      }
+    },
+    "dev8": {
+      "type": "BusSlice",
+      "slice": {
+        "first": 1,
+        "count": 1,
+        "total": 2
+      }
+    }
+  },
+  "connectors": [
+    {
+      "to": {
+        "id": "dev5",
+        "port": "in1"
+      },
+      "from": {
+        "id": "dev0",
+        "port": "out"
+      },
+      "name": "a",
+      "source_positions": [
+        {
+          "name": "input.v",
+          "from": {
+            "line": 1,
+            "column": 25
+          },
+          "to": {
+            "line": 1,
+            "column": 26
+          }
+        }
+      ]
+    },
+    {
+      "to": {
+        "id": "dev5",
+        "port": "in2"
+      },
+      "from": {
+        "id": "dev1",
+        "port": "out"
+      },
+      "name": "b",
+      "source_positions": [
+        {
+          "name": "input.v",
+          "from": {
+            "line": 1,
+            "column": 34
+          },
+          "to": {
+            "line": 1,
+            "column": 35
+          }
+        }
+      ]
+    },
+    {
+      "to": {
+        "id": "dev6",
+        "port": "in2"
+      },
+      "from": {
+        "id": "dev2",
+        "port": "out"
+      },
+      "name": "cin",
+      "source_positions": [
+        {
+          "name": "input.v",
+          "from": {
+            "line": 1,
+            "column": 43
+          },
+          "to": {
+            "line": 1,
+            "column": 46
+          }
+        }
+      ]
+    },
+    {
+      "to": {
+        "id": "dev3",
+        "port": "in"
+      },
+      "from": {
+        "id": "dev7",
+        "port": "out"
+      },
+      "name": "sum",
+      "source_positions": [
+        {
+          "name": "input.v",
+          "from": {
+            "line": 1,
+            "column": 55
+          },
+          "to": {
+            "line": 1,
+            "column": 58
+          }
+        }
+      ]
+    },
+    {
+      "to": {
+        "id": "dev4",
+        "port": "in"
+      },
+      "from": {
+        "id": "dev8",
+        "port": "out"
+      },
+      "name": "cout",
+      "source_positions": [
+        {
+          "name": "input.v",
+          "from": {
+            "line": 1,
+            "column": 67
+          },
+          "to": {
+            "line": 1,
+            "column": 71
+          }
+        }
+      ]
+    },
+    {
+      "to": {
+        "id": "dev6",
+        "port": "in1"
+      },
+      "from": {
+        "id": "dev5",
+        "port": "out"
+      },
+      "source_positions": []
+    },
+    {
+      "to": {
+        "id": "dev7",
+        "port": "in"
+      },
+      "from": {
+        "id": "dev6",
+        "port": "out"
+      },
+      "source_positions": []
+    },
+    {
+      "to": {
+        "id": "dev8",
+        "port": "in"
+      },
+      "from": {
+        "id": "dev6",
+        "port": "out"
+      },
+      "source_positions": []
+    }
+  ]
+}

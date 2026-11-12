@@ -1,0 +1,66 @@
+name: Publish Packages
+
+on:
+    release:
+        types: [published]
+    workflow_dispatch:
+        inputs:
+            package_version:
+                description: 'Base version x.y.z (e.g. 0.3.2) - publishes v0 as 0.y.z and v1 as 1.y.z-alpha. Defaults to package.json version.'
+                required: false
+
+permissions:
+    contents: read
+    packages: write
+
+jobs:
+    publish:
+        name: Publish simulator packages (v0 & v1)
+        runs-on: ubuntu-latest
+        timeout-minutes: 20
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '22'
+                  cache: 'npm'
+                  registry-url: 'https://npm.pkg.github.com'
+                  scope: '@circuitverse'
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Build simulator (v0 & v1)
+              run: npm run build
+
+            - name: Determine package version
+              id: version
+              run: |
+                  if [ -n "${{ github.event.inputs.package_version }}" ]; then
+                    echo "version=${{ github.event.inputs.package_version }}" >> "$GITHUB_OUTPUT"
+                  elif [ "${{ github.event_name }}" = "release" ]; then
+                    echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+                  else
+                    echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+                  fi
+
+            - name: Prepare packages
+              run: node scripts/prepare-packages.js
+              env:
+                  PACKAGE_VERSION: ${{ steps.version.outputs.version }}
+
+            - name: Publish v0 package (v0.x.y)
+              run: npm publish
+              working-directory: packages/simulator-v0
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Publish v1 package (v1.x.y-alpha)
+              run: npm publish --tag alpha
+              working-directory: packages/simulator-v1
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

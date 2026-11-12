@@ -1,0 +1,5078 @@
+{
+  "name": "ELEVATOR",
+  "timePeriod": 700,
+  "clockEnabled": true,
+  "projectId": "oE0jclA1qtRaoF97ILWr",
+  "focussedCircuit": 36951674770,
+  "orderedTabs": [
+    "36951674770",
+    "36353349397",
+    "40099144944",
+    "36356845389",
+    "33429552106",
+    "57889817360"
+  ],
+  "scopes": [
+    {
+      "layout": { "width": 100, "height": 160, "title_x": 50, "title_y": 13, "titleEnabled": true },
+      "verilogMetadata": {
+        "isVerilogCircuit": false,
+        "isMainCircuit": false,
+        "code": "// Write Some Verilog Code Here!",
+        "subCircuitScopeIds": []
+      },
+      "allNodes": [
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [1] },
+        { "x": 200, "y": 220, "type": 2, "bitWidth": 1, "label": "", "connections": [0, 2, 18] },
+        { "x": 220, "y": 220, "type": 2, "bitWidth": 1, "label": "", "connections": [1, 3] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [2] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [30] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [6] },
+        { "x": 240, "y": 220, "type": 2, "bitWidth": 1, "label": "", "connections": [5, 7, 48] },
+        { "x": 260, "y": 220, "type": 2, "bitWidth": 1, "label": "", "connections": [6, 8] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [7] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [17] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [11] },
+        { "x": 280, "y": 220, "type": 2, "bitWidth": 1, "label": "", "connections": [10, 12, 15] },
+        { "x": 300, "y": 220, "type": 2, "bitWidth": 1, "label": "", "connections": [11, 13] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [12] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [62] },
+        { "x": 280, "y": 300, "type": 2, "bitWidth": 1, "label": "", "connections": [11, 61, 16] },
+        { "x": 10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [15] },
+        { "x": 260, "y": 340, "type": 2, "bitWidth": 1, "label": "", "connections": [9, 31, 22] },
+        { "x": 200, "y": 380, "type": 2, "bitWidth": 1, "label": "", "connections": [1, 33, 24] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [23] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [25] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [26] },
+        { "x": 400, "y": 340, "type": 2, "bitWidth": 1, "label": "", "connections": [17, 23] },
+        { "x": 400, "y": 350, "type": 2, "bitWidth": 1, "label": "", "connections": [19, 22] },
+        { "x": 400, "y": 380, "type": 2, "bitWidth": 1, "label": "", "connections": [18, 25] },
+        { "x": 400, "y": 370, "type": 2, "bitWidth": 1, "label": "", "connections": [20, 24] },
+        { "x": 10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [21] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [30] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [31] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [32] },
+        { "x": 220, "y": 410, "type": 2, "bitWidth": 1, "label": "", "connections": [4, 27, 47] },
+        { "x": 260, "y": 430, "type": 2, "bitWidth": 1, "label": "", "connections": [17, 28, 35] },
+        { "x": 10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [29] },
+        { "x": 200, "y": 470, "type": 2, "bitWidth": 1, "label": "", "connections": [18, 38, 34] },
+        { "x": 10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [33] },
+        { "x": 260, "y": 510, "type": 2, "bitWidth": 1, "label": "", "connections": [31, 37, 36] },
+        { "x": 10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [35] },
+        { "x": 260, "y": 550, "type": 2, "bitWidth": 1, "label": "", "connections": [35, 60, 42] },
+        { "x": 200, "y": 590, "type": 2, "bitWidth": 1, "label": "", "connections": [33, 57, 44] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [43] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [45] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [46] },
+        { "x": 400, "y": 550, "type": 2, "bitWidth": 1, "label": "", "connections": [37, 43] },
+        { "x": 400, "y": 560, "type": 2, "bitWidth": 1, "label": "", "connections": [39, 42] },
+        { "x": 400, "y": 590, "type": 2, "bitWidth": 1, "label": "", "connections": [38, 45] },
+        { "x": 400, "y": 580, "type": 2, "bitWidth": 1, "label": "", "connections": [40, 44] },
+        { "x": 10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [41] },
+        { "x": 220, "y": 630, "type": 2, "bitWidth": 1, "label": "", "connections": [30, 58, 52] },
+        { "x": 240, "y": 670, "type": 2, "bitWidth": 1, "label": "", "connections": [6, 59, 54] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [53] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [55] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [56] },
+        { "x": 400, "y": 630, "type": 2, "bitWidth": 1, "label": "", "connections": [47, 53] },
+        { "x": 400, "y": 640, "type": 2, "bitWidth": 1, "label": "", "connections": [49, 52] },
+        { "x": 400, "y": 670, "type": 2, "bitWidth": 1, "label": "", "connections": [48, 55] },
+        { "x": 400, "y": 660, "type": 2, "bitWidth": 1, "label": "", "connections": [50, 54] },
+        { "x": 10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [51] },
+        { "x": 200, "y": 710, "type": 2, "bitWidth": 1, "label": "", "connections": [38] },
+        { "x": 220, "y": 710, "type": 2, "bitWidth": 1, "label": "", "connections": [47] },
+        { "x": 240, "y": 710, "type": 2, "bitWidth": 1, "label": "", "connections": [48] },
+        { "x": 260, "y": 710, "type": 2, "bitWidth": 1, "label": "", "connections": [37] },
+        { "x": 280, "y": 710, "type": 2, "bitWidth": 1, "label": "", "connections": [15] },
+        { "x": 300, "y": 710, "type": 2, "bitWidth": 1, "label": "", "connections": [14] }
+      ],
+      "id": 36353349397,
+      "name": "CURRENT/SELECTED FLOOR DISPLAY",
+      "Input": [
+        {
+          "x": 200,
+          "y": 200,
+          "objectType": "Input",
+          "label": "d1",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 0 },
+            "values": { "state": 0 },
+            "constructorParamaters": ["DOWN", 1, { "x": 0, "y": 20, "id": "CYeXZL98ezTVe68u4CXq" }]
+          }
+        },
+        {
+          "x": 240,
+          "y": 200,
+          "objectType": "Input",
+          "label": "d2",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 5 },
+            "values": { "state": 0 },
+            "constructorParamaters": ["DOWN", 1, { "x": 0, "y": 40, "id": "CafD0sttcnl8HjKelX2k" }]
+          }
+        }
+      ],
+      "Output": [
+        {
+          "x": 510,
+          "y": 300,
+          "objectType": "Output",
+          "label": "TR",
+          "direction": "LEFT",
+          "labelDirection": "RIGHT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "inp1": 16 },
+            "constructorParamaters": [
+              "LEFT",
+              1,
+              { "x": 100, "y": 20, "id": "CBh7phmK7oC1q0RfOQ67" }
+            ]
+          }
+        },
+        {
+          "x": 510,
+          "y": 360,
+          "objectType": "Output",
+          "label": "T",
+          "direction": "LEFT",
+          "labelDirection": "RIGHT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "inp1": 26 },
+            "constructorParamaters": [
+              "LEFT",
+              1,
+              { "x": 100, "y": 40, "id": "VORo1DYtD0Xbu3btqCue" }
+            ]
+          }
+        },
+        {
+          "x": 510,
+          "y": 420,
+          "objectType": "Output",
+          "label": "TL",
+          "direction": "LEFT",
+          "labelDirection": "RIGHT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "inp1": 32 },
+            "constructorParamaters": [
+              "LEFT",
+              1,
+              { "x": 100, "y": 60, "id": "T0dUK9SwWy3G7jBtPQ5J" }
+            ]
+          }
+        },
+        {
+          "x": 510,
+          "y": 470,
+          "objectType": "Output",
+          "label": "M",
+          "direction": "LEFT",
+          "labelDirection": "RIGHT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "inp1": 34 },
+            "constructorParamaters": [
+              "LEFT",
+              1,
+              { "x": 100, "y": 80, "id": "x7Y0vLLb2MyUUCQeueV2" }
+            ]
+          }
+        },
+        {
+          "x": 510,
+          "y": 510,
+          "objectType": "Output",
+          "label": "BL",
+          "direction": "LEFT",
+          "labelDirection": "RIGHT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "inp1": 36 },
+            "constructorParamaters": [
+              "LEFT",
+              1,
+              { "x": 100, "y": 100, "id": "9SNAcsiU59MkDHaVqqUT" }
+            ]
+          }
+        },
+        {
+          "x": 510,
+          "y": 570,
+          "objectType": "Output",
+          "label": "B",
+          "direction": "LEFT",
+          "labelDirection": "RIGHT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "inp1": 46 },
+            "constructorParamaters": [
+              "LEFT",
+              1,
+              { "x": 100, "y": 120, "id": "vWtdhsFvPwhacC4B2s5V" }
+            ]
+          }
+        },
+        {
+          "x": 510,
+          "y": 650,
+          "objectType": "Output",
+          "label": "BR",
+          "direction": "LEFT",
+          "labelDirection": "RIGHT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "inp1": 56 },
+            "constructorParamaters": [
+              "LEFT",
+              1,
+              { "x": 100, "y": 140, "id": "1fSOBebpSnJuYPoqUsP5" }
+            ]
+          }
+        }
+      ],
+      "NotGate": [
+        {
+          "x": 220,
+          "y": 240,
+          "objectType": "NotGate",
+          "label": "",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["DOWN", 1],
+            "nodes": { "output1": 4, "inp1": 3 }
+          }
+        },
+        {
+          "x": 260,
+          "y": 240,
+          "objectType": "NotGate",
+          "label": "",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["DOWN", 1],
+            "nodes": { "output1": 9, "inp1": 8 }
+          }
+        },
+        {
+          "x": 300,
+          "y": 240,
+          "objectType": "NotGate",
+          "label": "",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["DOWN", 1],
+            "nodes": { "output1": 14, "inp1": 13 }
+          }
+        }
+      ],
+      "OrGate": [
+        {
+          "x": 450,
+          "y": 360,
+          "objectType": "OrGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 2, 1],
+            "nodes": { "inp": [19, 20], "output1": 21 }
+          }
+        },
+        {
+          "x": 450,
+          "y": 570,
+          "objectType": "OrGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 2, 1],
+            "nodes": { "inp": [39, 40], "output1": 41 }
+          }
+        },
+        {
+          "x": 450,
+          "y": 650,
+          "objectType": "OrGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 2, 1],
+            "nodes": { "inp": [49, 50], "output1": 51 }
+          }
+        }
+      ],
+      "AndGate": [
+        {
+          "x": 360,
+          "y": 420,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 2, 1],
+            "nodes": { "inp": [27, 28], "output1": 29 }
+          }
+        }
+      ],
+      "ConstantVal": [
+        {
+          "x": 280,
+          "y": 200,
+          "objectType": "ConstantVal",
+          "label": "C",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 0,
+          "customData": { "nodes": { "output1": 10 }, "constructorParamaters": ["DOWN", 1, "1"] }
+        }
+      ],
+      "restrictedCircuitElementsUsed": [],
+      "nodes": [
+        1, 2, 6, 7, 11, 12, 15, 17, 18, 22, 23, 24, 25, 30, 31, 33, 35, 37, 38, 42, 43, 44, 45, 47,
+        48, 52, 53, 54, 55, 57, 58, 59, 60, 61, 62
+      ]
+    },
+    {
+      "layout": { "width": 100, "height": 160, "title_x": 50, "title_y": 13, "titleEnabled": true },
+      "verilogMetadata": {
+        "isVerilogCircuit": false,
+        "isMainCircuit": false,
+        "code": "// Write Some Verilog Code Here!",
+        "subCircuitScopeIds": []
+      },
+      "allNodes": [
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [1] },
+        { "x": -390, "y": -1350, "type": 2, "bitWidth": 1, "label": "", "connections": [0, 2, 94] },
+        { "x": -370, "y": -1350, "type": 2, "bitWidth": 1, "label": "", "connections": [1, 3] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [2] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [41] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [6] },
+        { "x": -350, "y": -1350, "type": 2, "bitWidth": 1, "label": "", "connections": [5, 7, 74] },
+        { "x": -330, "y": -1350, "type": 2, "bitWidth": 1, "label": "", "connections": [6, 8] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [7] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [42] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [11] },
+        {
+          "x": -310,
+          "y": -1350,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [10, 12, 65]
+        },
+        { "x": -290, "y": -1350, "type": 2, "bitWidth": 1, "label": "", "connections": [11, 13] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [12] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [53] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [16] },
+        {
+          "x": -270,
+          "y": -1350,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [15, 17, 85]
+        },
+        { "x": -250, "y": -1350, "type": 2, "bitWidth": 1, "label": "", "connections": [16, 18] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [17] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [43] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [21] },
+        {
+          "x": -230,
+          "y": -1350,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [20, 22, 55]
+        },
+        { "x": -210, "y": -1350, "type": 2, "bitWidth": 1, "label": "", "connections": [21, 23] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [22] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [44] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [26] },
+        {
+          "x": -190,
+          "y": -1350,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [25, 27, 45]
+        },
+        { "x": -170, "y": -1350, "type": 2, "bitWidth": 1, "label": "", "connections": [26, 28] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [27] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [56] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [31] },
+        {
+          "x": -150,
+          "y": -1350,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [30, 32, 509]
+        },
+        { "x": -130, "y": -1350, "type": 2, "bitWidth": 1, "label": "", "connections": [31, 33] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [32] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [510] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [41] },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [42] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [43] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [44] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [45] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [130] },
+        {
+          "x": -370,
+          "y": -1280,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [4, 35, 52]
+        },
+        {
+          "x": -330,
+          "y": -1290,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [9, 36, 64]
+        },
+        {
+          "x": -250,
+          "y": -1270,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [19, 37, 54]
+        },
+        {
+          "x": -210,
+          "y": -1260,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [24, 38, 66]
+        },
+        {
+          "x": -190,
+          "y": -1250,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [26, 39, 67]
+        },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [52] },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [53] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [54] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [55] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [56] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [134] },
+        {
+          "x": -370,
+          "y": -1200,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [41, 46, 63]
+        },
+        {
+          "x": -290,
+          "y": -1210,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [14, 47, 75]
+        },
+        {
+          "x": -250,
+          "y": -1190,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [43, 48, 107]
+        },
+        {
+          "x": -230,
+          "y": -1180,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [21, 49, 76]
+        },
+        {
+          "x": -170,
+          "y": -1170,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [29, 50, 87]
+        },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [63] },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [64] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [65] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [66] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [67] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [138] },
+        {
+          "x": -370,
+          "y": -1120,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [52, 57, 73]
+        },
+        {
+          "x": -330,
+          "y": -1130,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [42, 58, 95]
+        },
+        {
+          "x": -310,
+          "y": -1110,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [11, 59, 164]
+        },
+        {
+          "x": -210,
+          "y": -1100,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [44, 60, 156]
+        },
+        {
+          "x": -190,
+          "y": -1090,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [45, 61, 98]
+        },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [73] },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [74] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [75] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [76] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [142] },
+        {
+          "x": -370,
+          "y": -1040,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [63, 68, 83]
+        },
+        {
+          "x": -350,
+          "y": -1050,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [6, 69, 84]
+        },
+        {
+          "x": -290,
+          "y": -1020,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [53, 70, 96]
+        },
+        {
+          "x": -230,
+          "y": -1010,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [55, 71, 86]
+        },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [83] },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [84] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [85] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [86] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [87] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [144] },
+        {
+          "x": -370,
+          "y": -970,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [73, 77, 153]
+        },
+        {
+          "x": -350,
+          "y": -980,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [74, 78, 116]
+        },
+        {
+          "x": -270,
+          "y": -960,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [16, 79, 118]
+        },
+        {
+          "x": -230,
+          "y": -950,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [76, 80, 97]
+        },
+        {
+          "x": -170,
+          "y": -940,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [56, 81, 120]
+        },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [94] },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [95] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [96] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [97] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [98] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [140] },
+        {
+          "x": -390,
+          "y": -890,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [1, 88, 105]
+        },
+        {
+          "x": -330,
+          "y": -900,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [64, 89, 106]
+        },
+        {
+          "x": -290,
+          "y": -880,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [75, 90, 117]
+        },
+        {
+          "x": -230,
+          "y": -870,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [86, 91, 108]
+        },
+        {
+          "x": -190,
+          "y": -860,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [67, 92, 109]
+        },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [105] },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [106] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [107] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [108] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [109] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [136] },
+        {
+          "x": -390,
+          "y": -810,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [94, 99, 173]
+        },
+        {
+          "x": -330,
+          "y": -820,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [95, 100, 174]
+        },
+        {
+          "x": -250,
+          "y": -800,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [54, 101, 175]
+        },
+        {
+          "x": -230,
+          "y": -790,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [97, 102, 119]
+        },
+        {
+          "x": -190,
+          "y": -780,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [98, 103, 177]
+        },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [116] },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [117] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [118] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [119] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [120] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [132] },
+        {
+          "x": -350,
+          "y": -730,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [84, 110, 154]
+        },
+        {
+          "x": -290,
+          "y": -740,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [96, 111, 194]
+        },
+        {
+          "x": -270,
+          "y": -720,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [85, 112, 155]
+        },
+        {
+          "x": -230,
+          "y": -710,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [108, 113, 196]
+        },
+        {
+          "x": -170,
+          "y": -700,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [87, 114, 157]
+        },
+        { "x": -10, "y": -40, "type": 0, "bitWidth": 1, "label": "", "connections": [131] },
+        { "x": -10, "y": -30, "type": 0, "bitWidth": 1, "label": "", "connections": [135] },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [139] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [143] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [145] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [141] },
+        { "x": -10, "y": 30, "type": 0, "bitWidth": 1, "label": "", "connections": [137] },
+        { "x": -10, "y": 40, "type": 0, "bitWidth": 1, "label": "", "connections": [133] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [146] },
+        { "x": 0, "y": -1270, "type": 2, "bitWidth": 1, "label": "", "connections": [40, 131] },
+        { "x": 0, "y": -1030, "type": 2, "bitWidth": 1, "label": "", "connections": [121, 130] },
+        { "x": 0, "y": -720, "type": 2, "bitWidth": 1, "label": "", "connections": [115, 133] },
+        { "x": 0, "y": -950, "type": 2, "bitWidth": 1, "label": "", "connections": [128, 132] },
+        { "x": -10, "y": -1190, "type": 2, "bitWidth": 1, "label": "", "connections": [51, 135] },
+        { "x": -10, "y": -1020, "type": 2, "bitWidth": 1, "label": "", "connections": [122, 134] },
+        { "x": -10, "y": -800, "type": 2, "bitWidth": 1, "label": "", "connections": [104, 137] },
+        { "x": -10, "y": -960, "type": 2, "bitWidth": 1, "label": "", "connections": [127, 136] },
+        { "x": -20, "y": -1110, "type": 2, "bitWidth": 1, "label": "", "connections": [62, 139] },
+        { "x": -20, "y": -1010, "type": 2, "bitWidth": 1, "label": "", "connections": [123, 138] },
+        { "x": -20, "y": -880, "type": 2, "bitWidth": 1, "label": "", "connections": [93, 141] },
+        { "x": -20, "y": -970, "type": 2, "bitWidth": 1, "label": "", "connections": [126, 140] },
+        { "x": -30, "y": -1030, "type": 2, "bitWidth": 1, "label": "", "connections": [72, 143] },
+        { "x": -30, "y": -1000, "type": 2, "bitWidth": 1, "label": "", "connections": [124, 142] },
+        { "x": -30, "y": -960, "type": 2, "bitWidth": 1, "label": "", "connections": [82, 145] },
+        { "x": -30, "y": -980, "type": 2, "bitWidth": 1, "label": "", "connections": [125, 144] },
+        { "x": 10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [129] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [153] },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [154] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [155] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [156] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [157] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [216] },
+        {
+          "x": -370,
+          "y": -650,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [83, 147, 235]
+        },
+        {
+          "x": -350,
+          "y": -660,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [116, 148, 163]
+        },
+        {
+          "x": -270,
+          "y": -640,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [118, 149, 207]
+        },
+        {
+          "x": -210,
+          "y": -630,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [66, 150, 165]
+        },
+        {
+          "x": -170,
+          "y": -620,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [120, 151, 166]
+        },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [163] },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [164] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [165] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [166] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [220] },
+        {
+          "x": -350,
+          "y": -570,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [154, 158, 193]
+        },
+        {
+          "x": -310,
+          "y": -580,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [65, 159, 183]
+        },
+        {
+          "x": -210,
+          "y": -550,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [156, 160, 176]
+        },
+        {
+          "x": -170,
+          "y": -540,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [157, 161, 197]
+        },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [173] },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [174] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [175] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [176] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [177] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [224] },
+        {
+          "x": -390,
+          "y": -500,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [105, 167, 182]
+        },
+        {
+          "x": -330,
+          "y": -510,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [106, 168, 236]
+        },
+        {
+          "x": -250,
+          "y": -490,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [107, 169, 195]
+        },
+        {
+          "x": -210,
+          "y": -480,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [165, 170, 184]
+        },
+        {
+          "x": -190,
+          "y": -470,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [109, 171, 239]
+        },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [182] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [183] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [184] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [226] },
+        {
+          "x": -390,
+          "y": -420,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [173, 178, 192]
+        },
+        {
+          "x": -310,
+          "y": -410,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [164, 179, 206]
+        },
+        {
+          "x": -210,
+          "y": -400,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [176, 180, 284]
+        },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [192] },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [193] },
+        { "x": -10, "y": -30, "type": 0, "bitWidth": 1, "label": "", "connections": [194] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [195] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [196] },
+        { "x": -10, "y": 30, "type": 0, "bitWidth": 1, "label": "", "connections": [197] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [222] },
+        {
+          "x": -390,
+          "y": -360,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [182, 185, 204]
+        },
+        {
+          "x": -350,
+          "y": -370,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [163, 186, 205]
+        },
+        {
+          "x": -290,
+          "y": -380,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [117, 187, 237]
+        },
+        {
+          "x": -250,
+          "y": -340,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [175, 188, 259]
+        },
+        {
+          "x": -230,
+          "y": -330,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [119, 189, 238]
+        },
+        {
+          "x": -170,
+          "y": -320,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [166, 190, 208]
+        },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [204] },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [205] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [206] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [207] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [208] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [218] },
+        {
+          "x": -390,
+          "y": -270,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [192, 198, 280]
+        },
+        {
+          "x": -350,
+          "y": -280,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [193, 199, 281]
+        },
+        {
+          "x": -310,
+          "y": -260,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [183, 200, 269]
+        },
+        {
+          "x": -270,
+          "y": -250,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [155, 201, 249]
+        },
+        {
+          "x": -170,
+          "y": -240,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [197, 202, 313]
+        },
+        { "x": -10, "y": -30, "type": 0, "bitWidth": 1, "label": "", "connections": [217] },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [221] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [225] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [227] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [223] },
+        { "x": -10, "y": 30, "type": 0, "bitWidth": 1, "label": "", "connections": [219] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [228] },
+        { "x": -10, "y": -640, "type": 2, "bitWidth": 1, "label": "", "connections": [152, 217] },
+        { "x": -10, "y": -480, "type": 2, "bitWidth": 1, "label": "", "connections": [209, 216] },
+        { "x": -10, "y": -260, "type": 2, "bitWidth": 1, "label": "", "connections": [203, 219] },
+        { "x": -10, "y": -420, "type": 2, "bitWidth": 1, "label": "", "connections": [214, 218] },
+        { "x": -20, "y": -560, "type": 2, "bitWidth": 1, "label": "", "connections": [162, 221] },
+        { "x": -20, "y": -470, "type": 2, "bitWidth": 1, "label": "", "connections": [210, 220] },
+        { "x": -20, "y": -350, "type": 2, "bitWidth": 1, "label": "", "connections": [191, 223] },
+        { "x": -20, "y": -430, "type": 2, "bitWidth": 1, "label": "", "connections": [213, 222] },
+        { "x": -30, "y": -490, "type": 2, "bitWidth": 1, "label": "", "connections": [172, 225] },
+        { "x": -30, "y": -460, "type": 2, "bitWidth": 1, "label": "", "connections": [211, 224] },
+        { "x": -30, "y": -410, "type": 2, "bitWidth": 1, "label": "", "connections": [181, 227] },
+        { "x": -30, "y": -440, "type": 2, "bitWidth": 1, "label": "", "connections": [212, 226] },
+        { "x": 10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [215] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [235] },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [236] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [237] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [238] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [239] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [292] },
+        {
+          "x": -370,
+          "y": -190,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [153, 229, 246]
+        },
+        {
+          "x": -330,
+          "y": -200,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [174, 230, 247]
+        },
+        {
+          "x": -290,
+          "y": -180,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [194, 231, 248]
+        },
+        {
+          "x": -230,
+          "y": -170,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [196, 232, 250]
+        },
+        {
+          "x": -190,
+          "y": -160,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [177, 233, 261]
+        },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [246] },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [247] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [248] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [249] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [250] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [296] },
+        {
+          "x": -370,
+          "y": -110,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [235, 240, 257]
+        },
+        {
+          "x": -330,
+          "y": -120,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [236, 241, 258]
+        },
+        {
+          "x": -290,
+          "y": -100,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [237, 242, 282]
+        },
+        {
+          "x": -270,
+          "y": -90,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [207, 243, 311]
+        },
+        {
+          "x": -230,
+          "y": -80,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [238, 244, 260]
+        },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [257] },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [258] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [259] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [260] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [261] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [288] },
+        {
+          "x": -370,
+          "y": -30,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [246, 251, 268]
+        },
+        {
+          "x": -330,
+          "y": -40,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [247, 252, 309]
+        },
+        {
+          "x": -250,
+          "y": -20,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [195, 253, 270]
+        },
+        {
+          "x": -230,
+          "y": -10,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [250, 254, 271]
+        },
+        {
+          "x": -190,
+          "y": 0,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [239, 255, 272]
+        },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [268] },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [269] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [270] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [271] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [272] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [298] },
+        {
+          "x": -370,
+          "y": 50,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [257, 262, 308]
+        },
+        {
+          "x": -310,
+          "y": 40,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [206, 263, 310]
+        },
+        {
+          "x": -250,
+          "y": 60,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [259, 264, 283]
+        },
+        {
+          "x": -230,
+          "y": 70,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [260, 265, 312]
+        },
+        {
+          "x": -190,
+          "y": 80,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [261, 266, 285]
+        },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [280] },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [281] },
+        { "x": -10, "y": -30, "type": 0, "bitWidth": 1, "label": "", "connections": [282] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [283] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [284] },
+        { "x": -10, "y": 30, "type": 0, "bitWidth": 1, "label": "", "connections": [285] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [294] },
+        {
+          "x": -390,
+          "y": 130,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [204, 273, 320]
+        },
+        {
+          "x": -350,
+          "y": 120,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [205, 274, 348]
+        },
+        {
+          "x": -290,
+          "y": 110,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [248, 275, 321]
+        },
+        {
+          "x": -250,
+          "y": 150,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [270, 276, 402]
+        },
+        {
+          "x": -210,
+          "y": 160,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [184, 277, 323]
+        },
+        {
+          "x": -190,
+          "y": 170,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [272, 278, 350]
+        },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [293] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [297] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [256] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [299] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [295] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [300] },
+        { "x": -20, "y": -180, "type": 2, "bitWidth": 1, "label": "", "connections": [234, 293] },
+        { "x": -20, "y": -40, "type": 2, "bitWidth": 1, "label": "", "connections": [286, 292] },
+        { "x": -20, "y": 140, "type": 2, "bitWidth": 1, "label": "", "connections": [279, 295] },
+        { "x": -20, "y": 0, "type": 2, "bitWidth": 1, "label": "", "connections": [290, 294] },
+        { "x": -30, "y": -100, "type": 2, "bitWidth": 1, "label": "", "connections": [245, 297] },
+        { "x": -30, "y": -30, "type": 2, "bitWidth": 1, "label": "", "connections": [287, 296] },
+        { "x": -30, "y": 60, "type": 2, "bitWidth": 1, "label": "", "connections": [267, 299] },
+        { "x": -30, "y": -10, "type": 2, "bitWidth": 1, "label": "", "connections": [289, 298] },
+        { "x": 10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [291] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [308] },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [309] },
+        { "x": -10, "y": -30, "type": 0, "bitWidth": 1, "label": "", "connections": [310] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [311] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [312] },
+        { "x": -10, "y": 30, "type": 0, "bitWidth": 1, "label": "", "connections": [313] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [328] },
+        {
+          "x": -370,
+          "y": 220,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [268, 301, 338]
+        },
+        {
+          "x": -330,
+          "y": 210,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [258, 302, 339]
+        },
+        {
+          "x": -310,
+          "y": 200,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [269, 303, 401]
+        },
+        {
+          "x": -270,
+          "y": 240,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [249, 304, 322]
+        },
+        {
+          "x": -230,
+          "y": 250,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [271, 305, 358]
+        },
+        {
+          "x": -170,
+          "y": 260,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [208, 306, 324]
+        },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [320] },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [321] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [322] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [323] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [324] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [330] },
+        {
+          "x": -390,
+          "y": 310,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [280, 314, 356]
+        },
+        {
+          "x": -290,
+          "y": 300,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [282, 315, 390]
+        },
+        {
+          "x": -270,
+          "y": 320,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [311, 316, 391]
+        },
+        {
+          "x": -210,
+          "y": 330,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [284, 317, 340]
+        },
+        {
+          "x": -170,
+          "y": 340,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [313, 318, 341]
+        },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [329] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [331] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [332] },
+        { "x": -30, "y": 230, "type": 2, "bitWidth": 1, "label": "", "connections": [307, 329] },
+        { "x": -30, "y": 270, "type": 2, "bitWidth": 1, "label": "", "connections": [325, 328] },
+        { "x": -30, "y": 320, "type": 2, "bitWidth": 1, "label": "", "connections": [319, 331] },
+        { "x": -30, "y": 290, "type": 2, "bitWidth": 1, "label": "", "connections": [326, 330] },
+        { "x": 10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [327] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [338] },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [339] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [340] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [341] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [374] },
+        {
+          "x": -370,
+          "y": 390,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [308, 333, 347]
+        },
+        {
+          "x": -330,
+          "y": 380,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [309, 334, 357]
+        },
+        {
+          "x": -210,
+          "y": 410,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [323, 335, 349]
+        },
+        {
+          "x": -170,
+          "y": 420,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [324, 336, 359]
+        },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [347] },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [348] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [349] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [350] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [378] },
+        {
+          "x": -370,
+          "y": 460,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [338, 342, 400]
+        },
+        {
+          "x": -350,
+          "y": 450,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [281, 343, 366]
+        },
+        {
+          "x": -210,
+          "y": 480,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [340, 344, 392]
+        },
+        {
+          "x": -190,
+          "y": 490,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [285, 345, 368]
+        },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [356] },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [357] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [358] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [359] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [380] },
+        {
+          "x": -390,
+          "y": 530,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [320, 351, 365]
+        },
+        {
+          "x": -330,
+          "y": 520,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [339, 352, 389]
+        },
+        {
+          "x": -230,
+          "y": 550,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [312, 353, 367]
+        },
+        {
+          "x": -170,
+          "y": 560,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [341, 354, 404]
+        },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [365] },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [366] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [367] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [368] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [376] },
+        {
+          "x": -390,
+          "y": 600,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [356, 360, 433]
+        },
+        {
+          "x": -350,
+          "y": 590,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [348, 361, 422]
+        },
+        {
+          "x": -230,
+          "y": 620,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [358, 362, 403]
+        },
+        {
+          "x": -190,
+          "y": 630,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [350, 363, 393]
+        },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [375] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [379] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [381] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [377] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [382] },
+        { "x": -20, "y": 400, "type": 2, "bitWidth": 1, "label": "", "connections": [337, 375] },
+        { "x": -20, "y": 490, "type": 2, "bitWidth": 1, "label": "", "connections": [369, 374] },
+        { "x": -20, "y": 610, "type": 2, "bitWidth": 1, "label": "", "connections": [364, 377] },
+        { "x": -20, "y": 530, "type": 2, "bitWidth": 1, "label": "", "connections": [372, 376] },
+        { "x": -30, "y": 470, "type": 2, "bitWidth": 1, "label": "", "connections": [346, 379] },
+        { "x": -30, "y": 500, "type": 2, "bitWidth": 1, "label": "", "connections": [370, 378] },
+        { "x": -30, "y": 540, "type": 2, "bitWidth": 1, "label": "", "connections": [355, 381] },
+        { "x": -30, "y": 520, "type": 2, "bitWidth": 1, "label": "", "connections": [371, 380] },
+        { "x": 10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [373] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [389] },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [390] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [391] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [392] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [393] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [480] },
+        {
+          "x": -330,
+          "y": 670,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [357, 383, 444]
+        },
+        {
+          "x": -290,
+          "y": 660,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [321, 384, 423]
+        },
+        {
+          "x": -270,
+          "y": 680,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [322, 385, 413]
+        },
+        {
+          "x": -210,
+          "y": 690,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [349, 386, 425]
+        },
+        {
+          "x": -190,
+          "y": 700,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [368, 387, 415]
+        },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [400] },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [401] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [402] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [403] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [404] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [484] },
+        {
+          "x": -370,
+          "y": 750,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [347, 394, 411]
+        },
+        {
+          "x": -310,
+          "y": 740,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [310, 395, 412]
+        },
+        {
+          "x": -250,
+          "y": 760,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [283, 396, 424]
+        },
+        {
+          "x": -230,
+          "y": 770,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [367, 397, 414]
+        },
+        {
+          "x": -170,
+          "y": 780,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [359, 398, 426]
+        },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [411] },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [412] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [413] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [414] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [415] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [488] },
+        {
+          "x": -370,
+          "y": 830,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [400, 405, 498]
+        },
+        {
+          "x": -310,
+          "y": 820,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [401, 406, 445]
+        },
+        {
+          "x": -270,
+          "y": 840,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [391, 407, 446]
+        },
+        {
+          "x": -230,
+          "y": 850,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [403, 408, 447]
+        },
+        {
+          "x": -190,
+          "y": 860,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [393, 409, 448]
+        },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [422] },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [423] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [424] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [425] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [426] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [492] },
+        {
+          "x": -350,
+          "y": 910,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [366, 416, 466]
+        },
+        {
+          "x": -290,
+          "y": 900,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [390, 417, 434]
+        },
+        {
+          "x": -250,
+          "y": 920,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [402, 418, 435]
+        },
+        {
+          "x": -210,
+          "y": 930,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [392, 419, 436]
+        },
+        {
+          "x": -170,
+          "y": 940,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [404, 420, 437]
+        },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [433] },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [434] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [435] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [436] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [437] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [494] },
+        {
+          "x": -390,
+          "y": 990,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [365, 427, 455]
+        },
+        {
+          "x": -290,
+          "y": 980,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [423, 428, 456]
+        },
+        {
+          "x": -250,
+          "y": 1000,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [424, 429, 468]
+        },
+        {
+          "x": -210,
+          "y": 1010,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [425, 430, 458]
+        },
+        {
+          "x": -170,
+          "y": 1020,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [426, 431, 470]
+        },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [444] },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [445] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [446] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [447] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [448] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [490] },
+        {
+          "x": -330,
+          "y": 1070,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [389, 438, 500]
+        },
+        {
+          "x": -310,
+          "y": 1060,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [412, 439, 467]
+        },
+        {
+          "x": -270,
+          "y": 1080,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [413, 440, 457]
+        },
+        {
+          "x": -230,
+          "y": 1090,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [414, 441, 469]
+        },
+        {
+          "x": -190,
+          "y": 1100,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [415, 442, 459]
+        },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [455] },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [456] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [457] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [458] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [459] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [486] },
+        {
+          "x": -390,
+          "y": 1150,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [433, 449, 497]
+        },
+        {
+          "x": -290,
+          "y": 1140,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [434, 450, 502]
+        },
+        {
+          "x": -270,
+          "y": 1160,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [446, 451, 503]
+        },
+        {
+          "x": -210,
+          "y": 1170,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [436, 452, 506]
+        },
+        {
+          "x": -190,
+          "y": 1180,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [448, 453, 507]
+        },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [466] },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [467] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [468] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [469] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [470] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [482] },
+        {
+          "x": -350,
+          "y": 1230,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [422, 460, 499]
+        },
+        {
+          "x": -310,
+          "y": 1220,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [445, 461, 501]
+        },
+        {
+          "x": -250,
+          "y": 1240,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [435, 462, 504]
+        },
+        {
+          "x": -230,
+          "y": 1250,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [447, 463, 505]
+        },
+        {
+          "x": -170,
+          "y": 1260,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [437, 464, 508]
+        },
+        { "x": -10, "y": -40, "type": 0, "bitWidth": 1, "label": "", "connections": [481] },
+        { "x": -10, "y": -30, "type": 0, "bitWidth": 1, "label": "", "connections": [485] },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [489] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [493] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [495] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [491] },
+        { "x": -10, "y": 30, "type": 0, "bitWidth": 1, "label": "", "connections": [487] },
+        { "x": -10, "y": 40, "type": 0, "bitWidth": 1, "label": "", "connections": [483] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [496] },
+        { "x": 0, "y": 680, "type": 2, "bitWidth": 1, "label": "", "connections": [388, 481] },
+        { "x": 0, "y": 920, "type": 2, "bitWidth": 1, "label": "", "connections": [471, 480] },
+        { "x": 0, "y": 1240, "type": 2, "bitWidth": 1, "label": "", "connections": [465, 483] },
+        { "x": 0, "y": 1000, "type": 2, "bitWidth": 1, "label": "", "connections": [478, 482] },
+        { "x": -10, "y": 760, "type": 2, "bitWidth": 1, "label": "", "connections": [399, 485] },
+        { "x": -10, "y": 930, "type": 2, "bitWidth": 1, "label": "", "connections": [472, 484] },
+        { "x": -10, "y": 1160, "type": 2, "bitWidth": 1, "label": "", "connections": [454, 487] },
+        { "x": -10, "y": 990, "type": 2, "bitWidth": 1, "label": "", "connections": [477, 486] },
+        { "x": -20, "y": 840, "type": 2, "bitWidth": 1, "label": "", "connections": [410, 489] },
+        { "x": -20, "y": 940, "type": 2, "bitWidth": 1, "label": "", "connections": [473, 488] },
+        { "x": -20, "y": 1080, "type": 2, "bitWidth": 1, "label": "", "connections": [443, 491] },
+        { "x": -20, "y": 980, "type": 2, "bitWidth": 1, "label": "", "connections": [476, 490] },
+        { "x": -30, "y": 920, "type": 2, "bitWidth": 1, "label": "", "connections": [421, 493] },
+        { "x": -30, "y": 950, "type": 2, "bitWidth": 1, "label": "", "connections": [474, 492] },
+        { "x": -30, "y": 1000, "type": 2, "bitWidth": 1, "label": "", "connections": [432, 495] },
+        { "x": -30, "y": 970, "type": 2, "bitWidth": 1, "label": "", "connections": [475, 494] },
+        { "x": 10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [479] },
+        { "x": -390, "y": 1320, "type": 2, "bitWidth": 1, "label": "", "connections": [455] },
+        { "x": -370, "y": 1320, "type": 2, "bitWidth": 1, "label": "", "connections": [411] },
+        { "x": -350, "y": 1320, "type": 2, "bitWidth": 1, "label": "", "connections": [466] },
+        { "x": -330, "y": 1320, "type": 2, "bitWidth": 1, "label": "", "connections": [444] },
+        { "x": -310, "y": 1320, "type": 2, "bitWidth": 1, "label": "", "connections": [467] },
+        { "x": -290, "y": 1320, "type": 2, "bitWidth": 1, "label": "", "connections": [456] },
+        { "x": -270, "y": 1320, "type": 2, "bitWidth": 1, "label": "", "connections": [457] },
+        { "x": -250, "y": 1320, "type": 2, "bitWidth": 1, "label": "", "connections": [468] },
+        { "x": -230, "y": 1320, "type": 2, "bitWidth": 1, "label": "", "connections": [469] },
+        { "x": -210, "y": 1320, "type": 2, "bitWidth": 1, "label": "", "connections": [458] },
+        { "x": -190, "y": 1320, "type": 2, "bitWidth": 1, "label": "", "connections": [459] },
+        { "x": -170, "y": 1320, "type": 2, "bitWidth": 1, "label": "", "connections": [470] },
+        { "x": -150, "y": 1320, "type": 2, "bitWidth": 1, "label": "", "connections": [31] },
+        { "x": -130, "y": 1320, "type": 2, "bitWidth": 1, "label": "", "connections": [34] }
+      ],
+      "id": 40099144944,
+      "name": "LIFT LOGIC",
+      "Input": [
+        {
+          "x": -390,
+          "y": -1370,
+          "objectType": "Input",
+          "label": "A",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 0 },
+            "values": { "state": 0 },
+            "constructorParamaters": ["DOWN", 1, { "x": 0, "y": 120, "id": "NULlkbIpHK0glZz6S2i9" }]
+          }
+        },
+        {
+          "x": -350,
+          "y": -1370,
+          "objectType": "Input",
+          "label": "B",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 5 },
+            "values": { "state": 0 },
+            "constructorParamaters": ["DOWN", 1, { "x": 0, "y": 20, "id": "pwP05MRdoCiGJgzRhyuU" }]
+          }
+        },
+        {
+          "x": -310,
+          "y": -1370,
+          "objectType": "Input",
+          "label": "C",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 10 },
+            "values": { "state": 0 },
+            "constructorParamaters": ["DOWN", 1, { "x": 0, "y": 40, "id": "MoMeGULMCxtavUvmMCxT" }]
+          }
+        },
+        {
+          "x": -270,
+          "y": -1370,
+          "objectType": "Input",
+          "label": "D",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 15 },
+            "values": { "state": 0 },
+            "constructorParamaters": ["DOWN", 1, { "x": 0, "y": 60, "id": "8mDKWO3jNdntz96DdNY5" }]
+          }
+        },
+        {
+          "x": -230,
+          "y": -1370,
+          "objectType": "Input",
+          "label": "E",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 20 },
+            "values": { "state": 0 },
+            "constructorParamaters": ["DOWN", 1, { "x": 0, "y": 80, "id": "9pl2lfK82WA32yU0W8xC" }]
+          }
+        },
+        {
+          "x": -190,
+          "y": -1370,
+          "objectType": "Input",
+          "label": "F",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 25 },
+            "values": { "state": 0 },
+            "constructorParamaters": ["DOWN", 1, { "x": 0, "y": 100, "id": "QkzRQ8U80IfGNrA44A9H" }]
+          }
+        }
+      ],
+      "Output": [
+        {
+          "x": 110,
+          "y": -990,
+          "objectType": "Output",
+          "label": "L11",
+          "direction": "LEFT",
+          "labelDirection": "RIGHT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "inp1": 146 },
+            "constructorParamaters": [
+              "LEFT",
+              1,
+              { "x": 100, "y": 40, "id": "vWGRUEaTTuqOUKiYYGDe" }
+            ]
+          }
+        },
+        {
+          "x": 110,
+          "y": -450,
+          "objectType": "Output",
+          "label": "L10",
+          "direction": "LEFT",
+          "labelDirection": "RIGHT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "inp1": 228 },
+            "constructorParamaters": [
+              "LEFT",
+              1,
+              { "x": 100, "y": 20, "id": "fXmqRcTAsZJyralQqWDJ" }
+            ]
+          }
+        },
+        {
+          "x": 110,
+          "y": -20,
+          "objectType": "Output",
+          "label": "L21",
+          "direction": "LEFT",
+          "labelDirection": "RIGHT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "inp1": 300 },
+            "constructorParamaters": [
+              "LEFT",
+              1,
+              { "x": 100, "y": 140, "id": "UWnuIa7JDqjo9KL5e7m1" }
+            ]
+          }
+        },
+        {
+          "x": 110,
+          "y": 280,
+          "objectType": "Output",
+          "label": "L20",
+          "direction": "LEFT",
+          "labelDirection": "RIGHT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "inp1": 332 },
+            "constructorParamaters": [
+              "LEFT",
+              1,
+              { "x": 100, "y": 60, "id": "ygOg0kLi73IvRSrZSFkp" }
+            ]
+          }
+        },
+        {
+          "x": 110,
+          "y": 510,
+          "objectType": "Output",
+          "label": "D1",
+          "direction": "LEFT",
+          "labelDirection": "RIGHT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "inp1": 382 },
+            "constructorParamaters": [
+              "LEFT",
+              1,
+              { "x": 100, "y": 80, "id": "xx6IoNInhHUb7fWXMUqL" }
+            ]
+          }
+        },
+        {
+          "x": 110,
+          "y": 960,
+          "objectType": "Output",
+          "label": "D2",
+          "direction": "LEFT",
+          "labelDirection": "RIGHT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "inp1": 496 },
+            "constructorParamaters": [
+              "LEFT",
+              1,
+              { "x": 100, "y": 100, "id": "KhhvMylctKhq4gvqgTYz" }
+            ]
+          }
+        }
+      ],
+      "NotGate": [
+        {
+          "x": -370,
+          "y": -1330,
+          "objectType": "NotGate",
+          "label": "",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["DOWN", 1],
+            "nodes": { "output1": 4, "inp1": 3 }
+          }
+        },
+        {
+          "x": -330,
+          "y": -1330,
+          "objectType": "NotGate",
+          "label": "",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["DOWN", 1],
+            "nodes": { "output1": 9, "inp1": 8 }
+          }
+        },
+        {
+          "x": -290,
+          "y": -1330,
+          "objectType": "NotGate",
+          "label": "",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["DOWN", 1],
+            "nodes": { "output1": 14, "inp1": 13 }
+          }
+        },
+        {
+          "x": -250,
+          "y": -1330,
+          "objectType": "NotGate",
+          "label": "",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["DOWN", 1],
+            "nodes": { "output1": 19, "inp1": 18 }
+          }
+        },
+        {
+          "x": -210,
+          "y": -1330,
+          "objectType": "NotGate",
+          "label": "",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["DOWN", 1],
+            "nodes": { "output1": 24, "inp1": 23 }
+          }
+        },
+        {
+          "x": -170,
+          "y": -1330,
+          "objectType": "NotGate",
+          "label": "",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["DOWN", 1],
+            "nodes": { "output1": 29, "inp1": 28 }
+          }
+        },
+        {
+          "x": -130,
+          "y": -1330,
+          "objectType": "NotGate",
+          "label": "",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["DOWN", 1],
+            "nodes": { "output1": 34, "inp1": 33 }
+          }
+        }
+      ],
+      "OrGate": [
+        {
+          "x": 50,
+          "y": -990,
+          "objectType": "OrGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 8, 1],
+            "nodes": { "inp": [121, 122, 123, 124, 125, 126, 127, 128], "output1": 129 }
+          }
+        },
+        {
+          "x": 50,
+          "y": -450,
+          "objectType": "OrGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 6, 1],
+            "nodes": { "inp": [209, 210, 211, 212, 213, 214], "output1": 215 }
+          }
+        },
+        {
+          "x": 50,
+          "y": -20,
+          "objectType": "OrGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 5, 1],
+            "nodes": { "inp": [286, 287, 288, 289, 290], "output1": 291 }
+          }
+        },
+        {
+          "x": 50,
+          "y": 280,
+          "objectType": "OrGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 2, 1],
+            "nodes": { "inp": [325, 326], "output1": 327 }
+          }
+        },
+        {
+          "x": 50,
+          "y": 510,
+          "objectType": "OrGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 4, 1],
+            "nodes": { "inp": [369, 370, 371, 372], "output1": 373 }
+          }
+        },
+        {
+          "x": 50,
+          "y": 960,
+          "objectType": "OrGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 8, 1],
+            "nodes": { "inp": [471, 472, 473, 474, 475, 476, 477, 478], "output1": 479 }
+          }
+        }
+      ],
+      "AndGate": [
+        {
+          "x": -70,
+          "y": -1270,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 5, 1],
+            "nodes": { "inp": [35, 36, 37, 38, 39], "output1": 40 }
+          }
+        },
+        {
+          "x": -70,
+          "y": -1190,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 5, 1],
+            "nodes": { "inp": [46, 47, 48, 49, 50], "output1": 51 }
+          }
+        },
+        {
+          "x": -70,
+          "y": -1110,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 5, 1],
+            "nodes": { "inp": [57, 58, 59, 60, 61], "output1": 62 }
+          }
+        },
+        {
+          "x": -70,
+          "y": -1030,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 4, 1],
+            "nodes": { "inp": [68, 69, 70, 71], "output1": 72 }
+          }
+        },
+        {
+          "x": -70,
+          "y": -960,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 5, 1],
+            "nodes": { "inp": [77, 78, 79, 80, 81], "output1": 82 }
+          }
+        },
+        {
+          "x": -70,
+          "y": -880,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 5, 1],
+            "nodes": { "inp": [88, 89, 90, 91, 92], "output1": 93 }
+          }
+        },
+        {
+          "x": -70,
+          "y": -800,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 5, 1],
+            "nodes": { "inp": [99, 100, 101, 102, 103], "output1": 104 }
+          }
+        },
+        {
+          "x": -70,
+          "y": -720,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 5, 1],
+            "nodes": { "inp": [110, 111, 112, 113, 114], "output1": 115 }
+          }
+        },
+        {
+          "x": -70,
+          "y": -640,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 5, 1],
+            "nodes": { "inp": [147, 148, 149, 150, 151], "output1": 152 }
+          }
+        },
+        {
+          "x": -70,
+          "y": -560,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 4, 1],
+            "nodes": { "inp": [158, 159, 160, 161], "output1": 162 }
+          }
+        },
+        {
+          "x": -70,
+          "y": -490,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 5, 1],
+            "nodes": { "inp": [167, 168, 169, 170, 171], "output1": 172 }
+          }
+        },
+        {
+          "x": -70,
+          "y": -410,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 3, 1],
+            "nodes": { "inp": [178, 179, 180], "output1": 181 }
+          }
+        },
+        {
+          "x": -70,
+          "y": -350,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 6, 1],
+            "nodes": { "inp": [185, 186, 187, 188, 189, 190], "output1": 191 }
+          }
+        },
+        {
+          "x": -70,
+          "y": -260,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 5, 1],
+            "nodes": { "inp": [198, 199, 200, 201, 202], "output1": 203 }
+          }
+        },
+        {
+          "x": -70,
+          "y": -180,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 5, 1],
+            "nodes": { "inp": [229, 230, 231, 232, 233], "output1": 234 }
+          }
+        },
+        {
+          "x": -70,
+          "y": -100,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 5, 1],
+            "nodes": { "inp": [240, 241, 242, 243, 244], "output1": 245 }
+          }
+        },
+        {
+          "x": -70,
+          "y": -20,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 5, 1],
+            "nodes": { "inp": [251, 252, 253, 254, 255], "output1": 256 }
+          }
+        },
+        {
+          "x": -70,
+          "y": 60,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 5, 1],
+            "nodes": { "inp": [262, 263, 264, 265, 266], "output1": 267 }
+          }
+        },
+        {
+          "x": -70,
+          "y": 140,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 6, 1],
+            "nodes": { "inp": [273, 274, 275, 276, 277, 278], "output1": 279 }
+          }
+        },
+        {
+          "x": -70,
+          "y": 230,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 6, 1],
+            "nodes": { "inp": [301, 302, 303, 304, 305, 306], "output1": 307 }
+          }
+        },
+        {
+          "x": -70,
+          "y": 320,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 5, 1],
+            "nodes": { "inp": [314, 315, 316, 317, 318], "output1": 319 }
+          }
+        },
+        {
+          "x": -70,
+          "y": 400,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 4, 1],
+            "nodes": { "inp": [333, 334, 335, 336], "output1": 337 }
+          }
+        },
+        {
+          "x": -70,
+          "y": 470,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 4, 1],
+            "nodes": { "inp": [342, 343, 344, 345], "output1": 346 }
+          }
+        },
+        {
+          "x": -70,
+          "y": 540,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 4, 1],
+            "nodes": { "inp": [351, 352, 353, 354], "output1": 355 }
+          }
+        },
+        {
+          "x": -70,
+          "y": 610,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 4, 1],
+            "nodes": { "inp": [360, 361, 362, 363], "output1": 364 }
+          }
+        },
+        {
+          "x": -70,
+          "y": 680,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 5, 1],
+            "nodes": { "inp": [383, 384, 385, 386, 387], "output1": 388 }
+          }
+        },
+        {
+          "x": -70,
+          "y": 760,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 5, 1],
+            "nodes": { "inp": [394, 395, 396, 397, 398], "output1": 399 }
+          }
+        },
+        {
+          "x": -70,
+          "y": 840,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 5, 1],
+            "nodes": { "inp": [405, 406, 407, 408, 409], "output1": 410 }
+          }
+        },
+        {
+          "x": -70,
+          "y": 920,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 5, 1],
+            "nodes": { "inp": [416, 417, 418, 419, 420], "output1": 421 }
+          }
+        },
+        {
+          "x": -70,
+          "y": 1000,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 5, 1],
+            "nodes": { "inp": [427, 428, 429, 430, 431], "output1": 432 }
+          }
+        },
+        {
+          "x": -70,
+          "y": 1080,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 5, 1],
+            "nodes": { "inp": [438, 439, 440, 441, 442], "output1": 443 }
+          }
+        },
+        {
+          "x": -70,
+          "y": 1160,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 5, 1],
+            "nodes": { "inp": [449, 450, 451, 452, 453], "output1": 454 }
+          }
+        },
+        {
+          "x": -70,
+          "y": 1240,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 5, 1],
+            "nodes": { "inp": [460, 461, 462, 463, 464], "output1": 465 }
+          }
+        }
+      ],
+      "ConstantVal": [
+        {
+          "x": -150,
+          "y": -1370,
+          "objectType": "ConstantVal",
+          "label": "C",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 0,
+          "customData": { "nodes": { "output1": 30 }, "constructorParamaters": ["DOWN", 1, "1"] }
+        }
+      ],
+      "restrictedCircuitElementsUsed": [],
+      "nodes": [
+        1, 2, 6, 7, 11, 12, 16, 17, 21, 22, 26, 27, 31, 32, 41, 42, 43, 44, 45, 52, 53, 54, 55, 56,
+        63, 64, 65, 66, 67, 73, 74, 75, 76, 83, 84, 85, 86, 87, 94, 95, 96, 97, 98, 105, 106, 107,
+        108, 109, 116, 117, 118, 119, 120, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140,
+        141, 142, 143, 144, 145, 153, 154, 155, 156, 157, 163, 164, 165, 166, 173, 174, 175, 176,
+        177, 182, 183, 184, 192, 193, 194, 195, 196, 197, 204, 205, 206, 207, 208, 216, 217, 218,
+        219, 220, 221, 222, 223, 224, 225, 226, 227, 235, 236, 237, 238, 239, 246, 247, 248, 249,
+        250, 257, 258, 259, 260, 261, 268, 269, 270, 271, 272, 280, 281, 282, 283, 284, 285, 292,
+        293, 294, 295, 296, 297, 298, 299, 308, 309, 310, 311, 312, 313, 320, 321, 322, 323, 324,
+        328, 329, 330, 331, 338, 339, 340, 341, 347, 348, 349, 350, 356, 357, 358, 359, 365, 366,
+        367, 368, 374, 375, 376, 377, 378, 379, 380, 381, 389, 390, 391, 392, 393, 400, 401, 402,
+        403, 404, 411, 412, 413, 414, 415, 422, 423, 424, 425, 426, 433, 434, 435, 436, 437, 444,
+        445, 446, 447, 448, 455, 456, 457, 458, 459, 466, 467, 468, 469, 470, 480, 481, 482, 483,
+        484, 485, 486, 487, 488, 489, 490, 491, 492, 493, 494, 495, 497, 498, 499, 500, 501, 502,
+        503, 504, 505, 506, 507, 508, 509, 510
+      ]
+    },
+    {
+      "layout": { "width": 100, "height": 100, "title_x": 50, "title_y": 13, "titleEnabled": true },
+      "verilogMetadata": {
+        "isVerilogCircuit": false,
+        "isMainCircuit": false,
+        "code": "// Write Some Verilog Code Here!",
+        "subCircuitScopeIds": []
+      },
+      "allNodes": [
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [1] },
+        { "x": 200, "y": 220, "type": 2, "bitWidth": 1, "label": "", "connections": [0, 2, 43] },
+        { "x": 220, "y": 220, "type": 2, "bitWidth": 1, "label": "", "connections": [1, 3] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [2] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [33] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [6] },
+        { "x": 240, "y": 220, "type": 2, "bitWidth": 1, "label": "", "connections": [5, 7, 38] },
+        { "x": 260, "y": 220, "type": 2, "bitWidth": 1, "label": "", "connections": [6, 8] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [7] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [28] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [11] },
+        { "x": 280, "y": 220, "type": 2, "bitWidth": 1, "label": "", "connections": [10, 12, 34] },
+        { "x": 300, "y": 220, "type": 2, "bitWidth": 1, "label": "", "connections": [11, 13] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [12] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [44] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [16] },
+        { "x": 320, "y": 220, "type": 2, "bitWidth": 1, "label": "", "connections": [15, 17, 29] },
+        { "x": 340, "y": 220, "type": 2, "bitWidth": 1, "label": "", "connections": [16, 18] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [17] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [39] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [21] },
+        { "x": 360, "y": 220, "type": 2, "bitWidth": 1, "label": "", "connections": [20, 22, 67] },
+        { "x": 380, "y": 220, "type": 2, "bitWidth": 1, "label": "", "connections": [21, 23] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [22] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [68] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [28] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [29] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [50] },
+        { "x": 260, "y": 290, "type": 2, "bitWidth": 1, "label": "", "connections": [9, 25, 62] },
+        { "x": 320, "y": 310, "type": 2, "bitWidth": 1, "label": "", "connections": [16, 26, 65] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [33] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [34] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [54] },
+        { "x": 220, "y": 340, "type": 2, "bitWidth": 1, "label": "", "connections": [4, 30, 60] },
+        { "x": 280, "y": 360, "type": 2, "bitWidth": 1, "label": "", "connections": [11, 31, 63] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [38] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [39] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [56] },
+        { "x": 240, "y": 390, "type": 2, "bitWidth": 1, "label": "", "connections": [6, 35, 61] },
+        { "x": 340, "y": 410, "type": 2, "bitWidth": 1, "label": "", "connections": [19, 36, 66] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [43] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [44] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [52] },
+        { "x": 200, "y": 440, "type": 2, "bitWidth": 1, "label": "", "connections": [1, 40, 59] },
+        { "x": 300, "y": 460, "type": 2, "bitWidth": 1, "label": "", "connections": [14, 41, 64] },
+        { "x": -10, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [51] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [55] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [57] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [53] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [58] },
+        { "x": 490, "y": 300, "type": 2, "bitWidth": 1, "label": "", "connections": [27, 51] },
+        { "x": 490, "y": 360, "type": 2, "bitWidth": 1, "label": "", "connections": [45, 50] },
+        { "x": 490, "y": 450, "type": 2, "bitWidth": 1, "label": "", "connections": [42, 53] },
+        { "x": 490, "y": 400, "type": 2, "bitWidth": 1, "label": "", "connections": [48, 52] },
+        { "x": 480, "y": 350, "type": 2, "bitWidth": 1, "label": "", "connections": [32, 55] },
+        { "x": 480, "y": 370, "type": 2, "bitWidth": 1, "label": "", "connections": [46, 54] },
+        { "x": 480, "y": 400, "type": 2, "bitWidth": 1, "label": "", "connections": [37, 57] },
+        { "x": 480, "y": 390, "type": 2, "bitWidth": 1, "label": "", "connections": [47, 56] },
+        { "x": 10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [49] },
+        { "x": 200, "y": 500, "type": 2, "bitWidth": 1, "label": "", "connections": [43] },
+        { "x": 220, "y": 500, "type": 2, "bitWidth": 1, "label": "", "connections": [33] },
+        { "x": 240, "y": 500, "type": 2, "bitWidth": 1, "label": "", "connections": [38] },
+        { "x": 260, "y": 500, "type": 2, "bitWidth": 1, "label": "", "connections": [28] },
+        { "x": 280, "y": 500, "type": 2, "bitWidth": 1, "label": "", "connections": [34] },
+        { "x": 300, "y": 500, "type": 2, "bitWidth": 1, "label": "", "connections": [44] },
+        { "x": 320, "y": 500, "type": 2, "bitWidth": 1, "label": "", "connections": [29] },
+        { "x": 340, "y": 500, "type": 2, "bitWidth": 1, "label": "", "connections": [39] },
+        { "x": 360, "y": 500, "type": 2, "bitWidth": 1, "label": "", "connections": [21] },
+        { "x": 380, "y": 500, "type": 2, "bitWidth": 1, "label": "", "connections": [24] }
+      ],
+      "id": 33429552106,
+      "name": "FLOOR MATCH",
+      "Input": [
+        {
+          "x": 200,
+          "y": 200,
+          "objectType": "Input",
+          "label": "A",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 0 },
+            "values": { "state": 0 },
+            "constructorParamaters": ["DOWN", 1, { "x": 0, "y": 20, "id": "DccJfAc12Qz4ISP0UQEP" }]
+          }
+        },
+        {
+          "x": 240,
+          "y": 200,
+          "objectType": "Input",
+          "label": "B",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 5 },
+            "values": { "state": 0 },
+            "constructorParamaters": ["DOWN", 1, { "x": 0, "y": 40, "id": "q4phQ3WHqDNi97VMW0nV" }]
+          }
+        },
+        {
+          "x": 280,
+          "y": 200,
+          "objectType": "Input",
+          "label": "C",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 10 },
+            "values": { "state": 0 },
+            "constructorParamaters": ["DOWN", 1, { "x": 0, "y": 60, "id": "QwEKAofg096SmN26Vu0j" }]
+          }
+        },
+        {
+          "x": 320,
+          "y": 200,
+          "objectType": "Input",
+          "label": "D",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 15 },
+            "values": { "state": 0 },
+            "constructorParamaters": ["DOWN", 1, { "x": 0, "y": 80, "id": "44Qj2A9hUS63MSj2m9YS" }]
+          }
+        }
+      ],
+      "Output": [
+        {
+          "x": 600,
+          "y": 380,
+          "objectType": "Output",
+          "label": "x",
+          "direction": "LEFT",
+          "labelDirection": "RIGHT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "inp1": 58 },
+            "constructorParamaters": [
+              "LEFT",
+              1,
+              { "x": 100, "y": 20, "id": "sMXIis808sKBV3q29uWy" }
+            ]
+          }
+        }
+      ],
+      "NotGate": [
+        {
+          "x": 220,
+          "y": 240,
+          "objectType": "NotGate",
+          "label": "",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["DOWN", 1],
+            "nodes": { "output1": 4, "inp1": 3 }
+          }
+        },
+        {
+          "x": 260,
+          "y": 240,
+          "objectType": "NotGate",
+          "label": "",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["DOWN", 1],
+            "nodes": { "output1": 9, "inp1": 8 }
+          }
+        },
+        {
+          "x": 300,
+          "y": 240,
+          "objectType": "NotGate",
+          "label": "",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["DOWN", 1],
+            "nodes": { "output1": 14, "inp1": 13 }
+          }
+        },
+        {
+          "x": 340,
+          "y": 240,
+          "objectType": "NotGate",
+          "label": "",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["DOWN", 1],
+            "nodes": { "output1": 19, "inp1": 18 }
+          }
+        },
+        {
+          "x": 380,
+          "y": 240,
+          "objectType": "NotGate",
+          "label": "",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["DOWN", 1],
+            "nodes": { "output1": 24, "inp1": 23 }
+          }
+        }
+      ],
+      "OrGate": [
+        {
+          "x": 540,
+          "y": 380,
+          "objectType": "OrGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 4, 1],
+            "nodes": { "inp": [45, 46, 47, 48], "output1": 49 }
+          }
+        }
+      ],
+      "AndGate": [
+        {
+          "x": 440,
+          "y": 300,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 2, 1],
+            "nodes": { "inp": [25, 26], "output1": 27 }
+          }
+        },
+        {
+          "x": 440,
+          "y": 350,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 2, 1],
+            "nodes": { "inp": [30, 31], "output1": 32 }
+          }
+        },
+        {
+          "x": 440,
+          "y": 400,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 2, 1],
+            "nodes": { "inp": [35, 36], "output1": 37 }
+          }
+        },
+        {
+          "x": 440,
+          "y": 450,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 2, 1],
+            "nodes": { "inp": [40, 41], "output1": 42 }
+          }
+        }
+      ],
+      "ConstantVal": [
+        {
+          "x": 360,
+          "y": 200,
+          "objectType": "ConstantVal",
+          "label": "_C_",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 0,
+          "customData": { "nodes": { "output1": 20 }, "constructorParamaters": ["DOWN", 1, "1"] }
+        }
+      ],
+      "restrictedCircuitElementsUsed": [],
+      "nodes": [
+        1, 2, 6, 7, 11, 12, 16, 17, 21, 22, 28, 29, 33, 34, 38, 39, 43, 44, 50, 51, 52, 53, 54, 55,
+        56, 57, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68
+      ]
+    },
+    {
+      "layout": { "width": 100, "height": 120, "title_x": 50, "title_y": 13, "titleEnabled": true },
+      "verilogMetadata": {
+        "isVerilogCircuit": false,
+        "isMainCircuit": false,
+        "code": "// Write Some Verilog Code Here!",
+        "subCircuitScopeIds": []
+      },
+      "allNodes": [
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [32] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [29] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [24] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [31] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [35] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [26] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [25] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [27] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [17] },
+        { "x": -20, "y": 10, "type": 0, "bitWidth": 1, "label": "Clock", "connections": [37] },
+        { "x": -20, "y": -10, "type": 0, "bitWidth": 1, "label": "T", "connections": [23] },
+        { "x": 20, "y": -10, "type": 1, "bitWidth": 1, "label": "Q", "connections": [28] },
+        { "x": 20, "y": 10, "type": 1, "bitWidth": 1, "label": "Q Inverse", "connections": [30] },
+        {
+          "x": 10,
+          "y": 20,
+          "type": 0,
+          "bitWidth": 1,
+          "label": "Asynchronous Reset",
+          "connections": []
+        },
+        { "x": 0, "y": 20, "type": 0, "bitWidth": 1, "label": "Preset", "connections": [] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "Enable", "connections": [72] },
+        { "x": -20, "y": 10, "type": 0, "bitWidth": 1, "label": "Clock", "connections": [40] },
+        { "x": -20, "y": -10, "type": 0, "bitWidth": 1, "label": "T", "connections": [8] },
+        { "x": 20, "y": -10, "type": 1, "bitWidth": 1, "label": "Q", "connections": [44] },
+        { "x": 20, "y": 10, "type": 1, "bitWidth": 1, "label": "Q Inverse", "connections": [] },
+        {
+          "x": 10,
+          "y": 20,
+          "type": 0,
+          "bitWidth": 1,
+          "label": "Asynchronous Reset",
+          "connections": []
+        },
+        { "x": 0, "y": 20, "type": 0, "bitWidth": 1, "label": "Preset", "connections": [] },
+        { "x": -10, "y": 20, "type": 0, "bitWidth": 1, "label": "Enable", "connections": [63] },
+        { "x": 0, "y": 10, "type": 1, "bitWidth": 1, "label": "", "connections": [10] },
+        { "x": 650, "y": 60, "type": 2, "bitWidth": 1, "label": "", "connections": [2, 25] },
+        { "x": 650, "y": 100, "type": 2, "bitWidth": 1, "label": "", "connections": [6, 24] },
+        { "x": 650, "y": 170, "type": 2, "bitWidth": 1, "label": "", "connections": [5, 27] },
+        { "x": 650, "y": 120, "type": 2, "bitWidth": 1, "label": "", "connections": [7, 26] },
+        { "x": 520, "y": 100, "type": 2, "bitWidth": 1, "label": "", "connections": [11, 29] },
+        { "x": 520, "y": 70, "type": 2, "bitWidth": 1, "label": "", "connections": [1, 28, 42] },
+        { "x": 530, "y": 120, "type": 2, "bitWidth": 1, "label": "", "connections": [12, 31] },
+        { "x": 530, "y": 160, "type": 2, "bitWidth": 1, "label": "", "connections": [3, 30] },
+        { "x": 240, "y": 50, "type": 2, "bitWidth": 1, "label": "", "connections": [0, 33, 74] },
+        { "x": 240, "y": 180, "type": 2, "bitWidth": 1, "label": "", "connections": [32, 34] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [33] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [4] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [37] },
+        { "x": 220, "y": 120, "type": 2, "bitWidth": 1, "label": "", "connections": [9, 36, 38] },
+        { "x": 220, "y": 220, "type": 2, "bitWidth": 1, "label": "", "connections": [37, 39] },
+        { "x": 760, "y": 220, "type": 2, "bitWidth": 1, "label": "", "connections": [38, 40] },
+        { "x": 760, "y": 130, "type": 2, "bitWidth": 1, "label": "", "connections": [16, 39] },
+        { "x": 10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [45] },
+        { "x": 520, "y": -50, "type": 2, "bitWidth": 1, "label": "", "connections": [29, 46] },
+        { "x": 10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [55] },
+        { "x": 1060, "y": 110, "type": 2, "bitWidth": 1, "label": "", "connections": [18, 45, 52] },
+        { "x": 1060, "y": 50, "type": 2, "bitWidth": 1, "label": "", "connections": [41, 44] },
+        { "x": 1080, "y": -50, "type": 2, "bitWidth": 1, "label": "", "connections": [42, 55] },
+        { "x": 100, "y": 20, "type": 1, "bitWidth": 1, "label": "", "connections": [64] },
+        { "x": 0, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [54] },
+        { "x": 0, "y": 40, "type": 0, "bitWidth": 1, "label": "", "connections": [59] },
+        { "x": 0, "y": 60, "type": 0, "bitWidth": 1, "label": "", "connections": [60] },
+        { "x": 0, "y": 80, "type": 0, "bitWidth": 1, "label": "", "connections": [61] },
+        { "x": 1060, "y": 330, "type": 2, "bitWidth": 1, "label": "", "connections": [44, 53] },
+        { "x": 380, "y": 330, "type": 2, "bitWidth": 1, "label": "", "connections": [52, 54] },
+        { "x": 380, "y": 380, "type": 2, "bitWidth": 1, "label": "", "connections": [48, 53] },
+        { "x": 1080, "y": -30, "type": 2, "bitWidth": 1, "label": "", "connections": [43, 46, 56] },
+        { "x": 1030, "y": -30, "type": 2, "bitWidth": 1, "label": "", "connections": [55, 57] },
+        { "x": 1030, "y": 320, "type": 2, "bitWidth": 1, "label": "", "connections": [56, 58] },
+        { "x": 370, "y": 320, "type": 2, "bitWidth": 1, "label": "", "connections": [57, 59] },
+        { "x": 370, "y": 400, "type": 2, "bitWidth": 1, "label": "", "connections": [49, 58] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [50] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [51] },
+        { "x": 410, "y": 260, "type": 2, "bitWidth": 1, "label": "", "connections": [69, 72] },
+        { "x": 940, "y": 260, "type": 2, "bitWidth": 1, "label": "", "connections": [22, 69] },
+        { "x": 670, "y": 380, "type": 2, "bitWidth": 1, "label": "", "connections": [47, 70] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [67] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [71] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [65] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [69] },
+        { "x": 760, "y": 260, "type": 2, "bitWidth": 1, "label": "", "connections": [62, 63, 68] },
+        { "x": 670, "y": 410, "type": 2, "bitWidth": 1, "label": "", "connections": [64, 71] },
+        { "x": 750, "y": 410, "type": 2, "bitWidth": 1, "label": "", "connections": [66, 70] },
+        { "x": 410, "y": 200, "type": 2, "bitWidth": 1, "label": "", "connections": [15, 62, 73] },
+        { "x": 10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [72] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [32] }
+      ],
+      "id": 36356845389,
+      "name": "UP/DOWN COUNTER",
+      "Input": [
+        {
+          "x": 340,
+          "y": 420,
+          "objectType": "Input",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 60 },
+            "values": { "state": 1 },
+            "constructorParamaters": ["RIGHT", 1, { "x": 0, "y": 40, "id": "jB3rAU3ghlwTLwXJIXbH" }]
+          }
+        },
+        {
+          "x": 340,
+          "y": 440,
+          "objectType": "Input",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 61 },
+            "values": { "state": 1 },
+            "constructorParamaters": ["RIGHT", 1, { "x": 0, "y": 60, "id": "JUBi2uk17nxPzBX3oq37" }]
+          }
+        },
+        {
+          "x": 770,
+          "y": 430,
+          "objectType": "Input",
+          "label": "enable",
+          "direction": "UP",
+          "labelDirection": "DOWN",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 65 },
+            "values": { "state": 1 },
+            "constructorParamaters": ["UP", 1, { "x": 0, "y": 80, "id": "vJrWcBgs4Cfxyt04AwWb" }]
+          }
+        }
+      ],
+      "Output": [
+        {
+          "x": 1090,
+          "y": 50,
+          "objectType": "Output",
+          "label": "",
+          "direction": "LEFT",
+          "labelDirection": "RIGHT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "inp1": 41 },
+            "constructorParamaters": [
+              "LEFT",
+              1,
+              { "x": 100, "y": 20, "id": "D9gtj10GQDxkPYCp1zEi" }
+            ]
+          }
+        },
+        {
+          "x": 1090,
+          "y": -10,
+          "objectType": "Output",
+          "label": "",
+          "direction": "LEFT",
+          "labelDirection": "RIGHT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "inp1": 43 },
+            "constructorParamaters": [
+              "LEFT",
+              1,
+              { "x": 100, "y": 40, "id": "Ub61qVudjVidTuhc71v3" }
+            ]
+          }
+        },
+        {
+          "x": 470,
+          "y": 200,
+          "objectType": "Output",
+          "label": "",
+          "direction": "LEFT",
+          "labelDirection": "RIGHT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "inp1": 73 },
+            "constructorParamaters": [
+              "LEFT",
+              1,
+              { "x": 100, "y": 60, "id": "1gW1DMkunwgTH1s85d5X" }
+            ]
+          }
+        }
+      ],
+      "NotGate": [
+        {
+          "x": 350,
+          "y": 180,
+          "objectType": "NotGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 1],
+            "nodes": { "output1": 35, "inp1": 34 }
+          }
+        }
+      ],
+      "OrGate": [
+        {
+          "x": 700,
+          "y": 110,
+          "objectType": "OrGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 2, 1],
+            "nodes": { "inp": [6, 7], "output1": 8 }
+          }
+        },
+        {
+          "x": 760,
+          "y": 370,
+          "objectType": "OrGate",
+          "label": "",
+          "direction": "UP",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["UP", 2, 1],
+            "nodes": { "inp": [66, 67], "output1": 68 }
+          }
+        }
+      ],
+      "AndGate": [
+        {
+          "x": 590,
+          "y": 60,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 2, 1],
+            "nodes": { "inp": [0, 1], "output1": 2 }
+          }
+        },
+        {
+          "x": 590,
+          "y": 170,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 2, 1],
+            "nodes": { "inp": [3, 4], "output1": 5 }
+          }
+        }
+      ],
+      "Power": [
+        {
+          "x": 290,
+          "y": 90,
+          "objectType": "Power",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": { "nodes": { "output1": 23 }, "constructorParamaters": [1] }
+        }
+      ],
+      "ConstantVal": [
+        {
+          "x": 170,
+          "y": 50,
+          "objectType": "ConstantVal",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": { "nodes": { "output1": 74 }, "constructorParamaters": ["RIGHT", 1, "1"] }
+        }
+      ],
+      "TflipFlop": [
+        {
+          "x": 420,
+          "y": 110,
+          "objectType": "TflipFlop",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "nodes": {
+              "clockInp": 9,
+              "dInp": 10,
+              "qOutput": 11,
+              "qInvOutput": 12,
+              "reset": 13,
+              "preset": 14,
+              "en": 15
+            },
+            "constructorParamaters": ["RIGHT", 1]
+          }
+        },
+        {
+          "x": 950,
+          "y": 120,
+          "objectType": "TflipFlop",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "nodes": {
+              "clockInp": 16,
+              "dInp": 17,
+              "qOutput": 18,
+              "qInvOutput": 19,
+              "reset": 20,
+              "preset": 21,
+              "en": 22
+            },
+            "constructorParamaters": ["RIGHT", 1]
+          }
+        }
+      ],
+      "Clock": [
+        {
+          "x": 90,
+          "y": 120,
+          "objectType": "Clock",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": { "nodes": { "output1": 36 }, "constructorParamaters": ["RIGHT"] }
+        }
+      ],
+      "SubCircuit": [
+        {
+          "x": 460,
+          "y": 360,
+          "id": "33429552106",
+          "label": "",
+          "labelDirection": "LEFT",
+          "inputNodes": [48, 49, 50, 51],
+          "outputNodes": [47],
+          "version": "2.0"
+        }
+      ],
+      "restrictedCircuitElementsUsed": [],
+      "nodes": [
+        24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 37, 38, 39, 40, 42, 44, 45, 46, 52, 53, 54, 55, 56,
+        57, 58, 59, 62, 63, 64, 69, 70, 71, 72
+      ]
+    },
+    {
+      "layout": { "width": 100, "height": 80, "title_x": 50, "title_y": 13, "titleEnabled": true },
+      "verilogMetadata": {
+        "isVerilogCircuit": false,
+        "isMainCircuit": false,
+        "code": "// Write Some Verilog Code Here!",
+        "subCircuitScopeIds": []
+      },
+      "allNodes": [
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [1] },
+        { "x": 200, "y": 220, "type": 2, "bitWidth": 1, "label": "", "connections": [0, 2, 23] },
+        { "x": 220, "y": 220, "type": 2, "bitWidth": 1, "label": "", "connections": [1, 3] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [2] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [33] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [6] },
+        { "x": 240, "y": 220, "type": 2, "bitWidth": 1, "label": "", "connections": [5, 7, 29] },
+        { "x": 260, "y": 220, "type": 2, "bitWidth": 1, "label": "", "connections": [6, 8] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [7] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [35] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [11] },
+        { "x": 280, "y": 220, "type": 2, "bitWidth": 1, "label": "", "connections": [10, 12, 24] },
+        { "x": 300, "y": 220, "type": 2, "bitWidth": 1, "label": "", "connections": [11, 13] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [12] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [37] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [16] },
+        { "x": 320, "y": 220, "type": 2, "bitWidth": 1, "label": "", "connections": [15, 17, 38] },
+        { "x": 340, "y": 220, "type": 2, "bitWidth": 1, "label": "", "connections": [16, 18] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [17] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [39] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [23] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [24] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [25] },
+        { "x": 200, "y": 290, "type": 2, "bitWidth": 1, "label": "", "connections": [1, 20, 32] },
+        { "x": 280, "y": 310, "type": 2, "bitWidth": 1, "label": "", "connections": [11, 21, 30] },
+        { "x": 10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [22] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [29] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [30] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [31] },
+        { "x": 240, "y": 340, "type": 2, "bitWidth": 1, "label": "", "connections": [6, 26, 34] },
+        { "x": 280, "y": 360, "type": 2, "bitWidth": 1, "label": "", "connections": [24, 27, 36] },
+        { "x": 10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [28] },
+        { "x": 200, "y": 400, "type": 2, "bitWidth": 1, "label": "", "connections": [23] },
+        { "x": 220, "y": 400, "type": 2, "bitWidth": 1, "label": "", "connections": [4] },
+        { "x": 240, "y": 400, "type": 2, "bitWidth": 1, "label": "", "connections": [29] },
+        { "x": 260, "y": 400, "type": 2, "bitWidth": 1, "label": "", "connections": [9] },
+        { "x": 280, "y": 400, "type": 2, "bitWidth": 1, "label": "", "connections": [30] },
+        { "x": 300, "y": 400, "type": 2, "bitWidth": 1, "label": "", "connections": [14] },
+        { "x": 320, "y": 400, "type": 2, "bitWidth": 1, "label": "", "connections": [16] },
+        { "x": 340, "y": 400, "type": 2, "bitWidth": 1, "label": "", "connections": [19] }
+      ],
+      "id": 57889817360,
+      "name": "DOOR",
+      "Input": [
+        {
+          "x": 200,
+          "y": 200,
+          "objectType": "Input",
+          "label": "L1",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 0 },
+            "values": { "state": 0 },
+            "constructorParamaters": ["DOWN", 1, { "x": 0, "y": 20, "id": "1fVGvRn0gPYqQG8RrEyL" }]
+          }
+        },
+        {
+          "x": 240,
+          "y": 200,
+          "objectType": "Input",
+          "label": "L2",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 5 },
+            "values": { "state": 0 },
+            "constructorParamaters": ["DOWN", 1, { "x": 0, "y": 40, "id": "Dy1RcRHkFn9uKUrwnQGc" }]
+          }
+        },
+        {
+          "x": 280,
+          "y": 200,
+          "objectType": "Input",
+          "label": "E",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 10 },
+            "values": { "state": 0 },
+            "constructorParamaters": ["DOWN", 1, { "x": 0, "y": 60, "id": "tPzYxnZSxr6NpcFPL7Dj" }]
+          }
+        }
+      ],
+      "Output": [
+        {
+          "x": 540,
+          "y": 300,
+          "objectType": "Output",
+          "label": "X",
+          "direction": "LEFT",
+          "labelDirection": "RIGHT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "inp1": 25 },
+            "constructorParamaters": [
+              "LEFT",
+              1,
+              { "x": 100, "y": 20, "id": "BNSk1o7WCfENTxTexEJp" }
+            ]
+          }
+        },
+        {
+          "x": 540,
+          "y": 350,
+          "objectType": "Output",
+          "label": "Y",
+          "direction": "LEFT",
+          "labelDirection": "RIGHT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "inp1": 31 },
+            "constructorParamaters": [
+              "LEFT",
+              1,
+              { "x": 100, "y": 40, "id": "hiA5mL22NaO9GnnG7mCB" }
+            ]
+          }
+        }
+      ],
+      "NotGate": [
+        {
+          "x": 220,
+          "y": 240,
+          "objectType": "NotGate",
+          "label": "",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["DOWN", 1],
+            "nodes": { "output1": 4, "inp1": 3 }
+          }
+        },
+        {
+          "x": 260,
+          "y": 240,
+          "objectType": "NotGate",
+          "label": "",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["DOWN", 1],
+            "nodes": { "output1": 9, "inp1": 8 }
+          }
+        },
+        {
+          "x": 300,
+          "y": 240,
+          "objectType": "NotGate",
+          "label": "",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["DOWN", 1],
+            "nodes": { "output1": 14, "inp1": 13 }
+          }
+        },
+        {
+          "x": 340,
+          "y": 240,
+          "objectType": "NotGate",
+          "label": "",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["DOWN", 1],
+            "nodes": { "output1": 19, "inp1": 18 }
+          }
+        }
+      ],
+      "AndGate": [
+        {
+          "x": 400,
+          "y": 300,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 2, 1],
+            "nodes": { "inp": [20, 21], "output1": 22 }
+          }
+        },
+        {
+          "x": 400,
+          "y": 350,
+          "objectType": "AndGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 2, 1],
+            "nodes": { "inp": [26, 27], "output1": 28 }
+          }
+        }
+      ],
+      "ConstantVal": [
+        {
+          "x": 320,
+          "y": 200,
+          "objectType": "ConstantVal",
+          "label": "_C_",
+          "direction": "DOWN",
+          "labelDirection": "UP",
+          "propagationDelay": 0,
+          "customData": { "nodes": { "output1": 15 }, "constructorParamaters": ["DOWN", 1, "1"] }
+        }
+      ],
+      "restrictedCircuitElementsUsed": [],
+      "nodes": [1, 2, 6, 7, 11, 12, 16, 17, 23, 24, 29, 30, 32, 33, 34, 35, 36, 37, 38, 39]
+    },
+    {
+      "layout": { "width": 100, "height": 320, "title_x": 50, "title_y": 13, "titleEnabled": true },
+      "verilogMetadata": {
+        "isVerilogCircuit": false,
+        "isMainCircuit": false,
+        "code": "// Write Some Verilog Code Here!",
+        "subCircuitScopeIds": []
+      },
+      "allNodes": [
+        { "x": 100, "y": 20, "type": 1, "bitWidth": 1, "label": "", "connections": [185] },
+        { "x": 100, "y": 40, "type": 1, "bitWidth": 1, "label": "", "connections": [186] },
+        { "x": 100, "y": 60, "type": 1, "bitWidth": 1, "label": "", "connections": [187] },
+        { "x": 100, "y": 80, "type": 1, "bitWidth": 1, "label": "", "connections": [188] },
+        { "x": 100, "y": 100, "type": 1, "bitWidth": 1, "label": "", "connections": [182] },
+        { "x": 100, "y": 120, "type": 1, "bitWidth": 1, "label": "", "connections": [179] },
+        { "x": 100, "y": 140, "type": 1, "bitWidth": 1, "label": "", "connections": [177] },
+        { "x": 0, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [175] },
+        { "x": 0, "y": 40, "type": 0, "bitWidth": 1, "label": "", "connections": [21] },
+        { "x": -10, "y": -30, "type": 0, "bitWidth": 1, "label": "", "connections": [16] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [17] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [18] },
+        { "x": -10, "y": 30, "type": 0, "bitWidth": 1, "label": "", "connections": [19] },
+        { "x": 30, "y": -10, "type": 1, "bitWidth": 1, "label": "", "connections": [20] },
+        { "x": 30, "y": 10, "type": 1, "bitWidth": 1, "label": "", "connections": [174] },
+        { "x": 10, "y": 50, "type": 1, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [9] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [10] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [11] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [12] },
+        {
+          "x": -240,
+          "y": -160,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [13, 21, 115]
+        },
+        { "x": -240, "y": -40, "type": 2, "bitWidth": 1, "label": "", "connections": [8, 20] },
+        { "x": -20, "y": -50, "type": 0, "bitWidth": 1, "label": "", "connections": [38] },
+        { "x": -10, "y": -50, "type": 0, "bitWidth": 1, "label": "", "connections": [36] },
+        { "x": 10, "y": -50, "type": 0, "bitWidth": 1, "label": "", "connections": [34] },
+        { "x": 20, "y": -50, "type": 0, "bitWidth": 1, "label": "", "connections": [32] },
+        { "x": -20, "y": 50, "type": 0, "bitWidth": 1, "label": "", "connections": [184] },
+        { "x": -10, "y": 50, "type": 0, "bitWidth": 1, "label": "", "connections": [181] },
+        { "x": 10, "y": 50, "type": 0, "bitWidth": 1, "label": "", "connections": [30] },
+        { "x": 20, "y": 50, "type": 0, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": 260, "y": 110, "type": 2, "bitWidth": 1, "label": "", "connections": [28, 178] },
+        { "x": -50, "y": -90, "type": 2, "bitWidth": 1, "label": "", "connections": [32, 185] },
+        { "x": 270, "y": -90, "type": 2, "bitWidth": 1, "label": "", "connections": [25, 31] },
+        { "x": -40, "y": -80, "type": 2, "bitWidth": 1, "label": "", "connections": [34, 186] },
+        { "x": 260, "y": -80, "type": 2, "bitWidth": 1, "label": "", "connections": [24, 33] },
+        { "x": -30, "y": -70, "type": 2, "bitWidth": 1, "label": "", "connections": [36, 187] },
+        { "x": 240, "y": -70, "type": 2, "bitWidth": 1, "label": "", "connections": [23, 35] },
+        { "x": -20, "y": -60, "type": 2, "bitWidth": 1, "label": "", "connections": [38, 188] },
+        { "x": 230, "y": -60, "type": 2, "bitWidth": 1, "label": "", "connections": [22, 37] },
+        { "x": -40, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [254] },
+        { "x": -40, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [260] },
+        { "x": -40, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [259] },
+        { "x": -20, "y": -50, "type": 0, "bitWidth": 1, "label": "", "connections": [80] },
+        { "x": -10, "y": -50, "type": 0, "bitWidth": 1, "label": "", "connections": [77] },
+        { "x": 10, "y": -50, "type": 0, "bitWidth": 1, "label": "", "connections": [74] },
+        { "x": 20, "y": -50, "type": 0, "bitWidth": 1, "label": "", "connections": [71] },
+        { "x": -20, "y": 50, "type": 0, "bitWidth": 1, "label": "", "connections": [292] },
+        { "x": -10, "y": 50, "type": 0, "bitWidth": 1, "label": "", "connections": [291] },
+        { "x": 10, "y": 50, "type": 0, "bitWidth": 1, "label": "", "connections": [189] },
+        { "x": 20, "y": 50, "type": 0, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": 100, "y": 20, "type": 1, "bitWidth": 1, "label": "", "connections": [69] },
+        { "x": 100, "y": 40, "type": 1, "bitWidth": 1, "label": "", "connections": [72] },
+        { "x": 100, "y": 60, "type": 1, "bitWidth": 1, "label": "", "connections": [75] },
+        { "x": 100, "y": 80, "type": 1, "bitWidth": 1, "label": "", "connections": [78] },
+        { "x": 100, "y": 100, "type": 1, "bitWidth": 1, "label": "", "connections": [68] },
+        { "x": 100, "y": 120, "type": 1, "bitWidth": 1, "label": "", "connections": [67] },
+        { "x": 100, "y": 140, "type": 1, "bitWidth": 1, "label": "", "connections": [66] },
+        { "x": 0, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [88] },
+        { "x": 0, "y": 40, "type": 0, "bitWidth": 1, "label": "", "connections": [159] },
+        { "x": -10, "y": -30, "type": 0, "bitWidth": 1, "label": "", "connections": [81] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [82] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [83] },
+        { "x": -10, "y": 30, "type": 0, "bitWidth": 1, "label": "", "connections": [84] },
+        { "x": 30, "y": -10, "type": 1, "bitWidth": 1, "label": "", "connections": [176] },
+        { "x": 30, "y": 10, "type": 1, "bitWidth": 1, "label": "", "connections": [85] },
+        { "x": 10, "y": 50, "type": 1, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": 700, "y": 80, "type": 2, "bitWidth": 1, "label": "", "connections": [56, 289] },
+        { "x": 710, "y": 60, "type": 2, "bitWidth": 1, "label": "", "connections": [55, 290] },
+        { "x": 720, "y": 40, "type": 2, "bitWidth": 1, "label": "", "connections": [54, 293] },
+        { "x": 700, "y": -40, "type": 2, "bitWidth": 1, "label": "", "connections": [50, 70] },
+        { "x": 700, "y": -80, "type": 2, "bitWidth": 1, "label": "", "connections": [69, 71] },
+        { "x": 390, "y": -80, "type": 2, "bitWidth": 1, "label": "", "connections": [45, 70] },
+        { "x": 710, "y": -20, "type": 2, "bitWidth": 1, "label": "", "connections": [51, 73] },
+        { "x": 710, "y": -90, "type": 2, "bitWidth": 1, "label": "", "connections": [72, 74] },
+        { "x": 380, "y": -90, "type": 2, "bitWidth": 1, "label": "", "connections": [44, 73] },
+        { "x": 720, "y": 0, "type": 2, "bitWidth": 1, "label": "", "connections": [52, 76] },
+        { "x": 720, "y": -100, "type": 2, "bitWidth": 1, "label": "", "connections": [75, 77] },
+        { "x": 360, "y": -100, "type": 2, "bitWidth": 1, "label": "", "connections": [43, 76] },
+        { "x": 730, "y": 20, "type": 2, "bitWidth": 1, "label": "", "connections": [53, 79] },
+        { "x": 730, "y": -110, "type": 2, "bitWidth": 1, "label": "", "connections": [78, 80] },
+        { "x": 350, "y": -110, "type": 2, "bitWidth": 1, "label": "", "connections": [42, 79] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [59] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [60] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [61] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [62] },
+        { "x": 1030, "y": -140, "type": 2, "bitWidth": 1, "label": "", "connections": [64, 86] },
+        { "x": 1030, "y": -390, "type": 2, "bitWidth": 1, "label": "", "connections": [85, 160] },
+        { "x": 570, "y": -390, "type": 2, "bitWidth": 1, "label": "", "connections": [88, 160] },
+        { "x": 570, "y": -40, "type": 2, "bitWidth": 1, "label": "", "connections": [57, 87] },
+        { "x": 560, "y": -380, "type": 2, "bitWidth": 1, "label": "", "connections": [159, 119] },
+        { "x": -40, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [251] },
+        { "x": -40, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [277] },
+        { "x": 100, "y": 40, "type": 1, "bitWidth": 1, "label": "", "connections": [109] },
+        { "x": 100, "y": 20, "type": 1, "bitWidth": 1, "label": "", "connections": [108] },
+        { "x": 100, "y": 140, "type": 1, "bitWidth": 1, "label": "", "connections": [113] },
+        { "x": 100, "y": 60, "type": 1, "bitWidth": 1, "label": "", "connections": [111] },
+        { "x": 100, "y": 80, "type": 1, "bitWidth": 1, "label": "", "connections": [107] },
+        { "x": 100, "y": 100, "type": 1, "bitWidth": 1, "label": "", "connections": [105] },
+        { "x": 0, "y": 120, "type": 0, "bitWidth": 1, "label": "", "connections": [169] },
+        { "x": 0, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [115] },
+        { "x": 0, "y": 40, "type": 0, "bitWidth": 1, "label": "", "connections": [118] },
+        { "x": 0, "y": 60, "type": 0, "bitWidth": 1, "label": "", "connections": [162] },
+        { "x": 0, "y": 80, "type": 0, "bitWidth": 1, "label": "", "connections": [122] },
+        { "x": 0, "y": 100, "type": 0, "bitWidth": 1, "label": "", "connections": [121] },
+        { "x": -40, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [264] },
+        { "x": 390, "y": -340, "type": 2, "bitWidth": 1, "label": "", "connections": [97, 283] },
+        { "x": 310, "y": -280, "type": 2, "bitWidth": 1, "label": "", "connections": [172, 283] },
+        { "x": 400, "y": -360, "type": 2, "bitWidth": 1, "label": "", "connections": [96, 284] },
+        { "x": 390, "y": -420, "type": 2, "bitWidth": 1, "label": "", "connections": [93, 163] },
+        { "x": 400, "y": -400, "type": 2, "bitWidth": 1, "label": "", "connections": [92, 164] },
+        { "x": 230, "y": -480, "type": 2, "bitWidth": 1, "label": "", "connections": [164, 264] },
+        { "x": 430, "y": -380, "type": 2, "bitWidth": 1, "label": "", "connections": [95, 259] },
+        { "x": 430, "y": -140, "type": 2, "bitWidth": 1, "label": "", "connections": [259, 261] },
+        { "x": 440, "y": -300, "type": 2, "bitWidth": 1, "label": "", "connections": [94, 260] },
+        { "x": 220, "y": -490, "type": 2, "bitWidth": 1, "label": "", "connections": [163, 254] },
+        { "x": -240, "y": -420, "type": 2, "bitWidth": 1, "label": "", "connections": [20, 99] },
+        { "x": 650, "y": -540, "type": 2, "bitWidth": 1, "label": "", "connections": [117, 160] },
+        { "x": 120, "y": -540, "type": 2, "bitWidth": 1, "label": "", "connections": [116, 118] },
+        { "x": 120, "y": -400, "type": 2, "bitWidth": 1, "label": "", "connections": [100, 117] },
+        {
+          "x": 640,
+          "y": -380,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [89, 120, 173]
+        },
+        { "x": 640, "y": -550, "type": 2, "bitWidth": 1, "label": "", "connections": [119, 161] },
+        { "x": 260, "y": -340, "type": 2, "bitWidth": 1, "label": "", "connections": [103, 296] },
+        { "x": 240, "y": -360, "type": 2, "bitWidth": 1, "label": "", "connections": [102, 202] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": 100, "y": 20, "type": 1, "bitWidth": 1, "label": "", "connections": [135] },
+        { "x": 100, "y": 40, "type": 1, "bitWidth": 1, "label": "", "connections": [136] },
+        { "x": 100, "y": 20, "type": 1, "bitWidth": 1, "label": "", "connections": [147] },
+        { "x": 100, "y": 40, "type": 1, "bitWidth": 1, "label": "", "connections": [148] },
+        { "x": 100, "y": 60, "type": 1, "bitWidth": 1, "label": "", "connections": [149] },
+        { "x": 100, "y": 80, "type": 1, "bitWidth": 1, "label": "", "connections": [137] },
+        { "x": 100, "y": 100, "type": 1, "bitWidth": 1, "label": "", "connections": [150] },
+        { "x": 100, "y": 120, "type": 1, "bitWidth": 1, "label": "", "connections": [153] },
+        { "x": 100, "y": 140, "type": 1, "bitWidth": 1, "label": "", "connections": [156] },
+        { "x": 0, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [146] },
+        { "x": 0, "y": 40, "type": 0, "bitWidth": 1, "label": "", "connections": [145] },
+        { "x": -40, "y": 240, "type": 2, "bitWidth": 1, "label": "", "connections": [124, 240] },
+        { "x": -50, "y": 260, "type": 2, "bitWidth": 1, "label": "", "connections": [125, 236] },
+        { "x": -20, "y": -50, "type": 0, "bitWidth": 1, "label": "", "connections": [129] },
+        { "x": -10, "y": -50, "type": 0, "bitWidth": 1, "label": "", "connections": [149] },
+        { "x": 10, "y": -50, "type": 0, "bitWidth": 1, "label": "", "connections": [148] },
+        { "x": 20, "y": -50, "type": 0, "bitWidth": 1, "label": "", "connections": [147] },
+        { "x": -20, "y": 50, "type": 0, "bitWidth": 1, "label": "", "connections": [152] },
+        { "x": -10, "y": 50, "type": 0, "bitWidth": 1, "label": "", "connections": [155] },
+        { "x": 10, "y": 50, "type": 0, "bitWidth": 1, "label": "", "connections": [158] },
+        { "x": 20, "y": 50, "type": 0, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": -50, "y": 350, "type": 2, "bitWidth": 1, "label": "", "connections": [134, 236] },
+        { "x": -40, "y": 330, "type": 2, "bitWidth": 1, "label": "", "connections": [133, 240] },
+        { "x": 350, "y": 330, "type": 2, "bitWidth": 1, "label": "", "connections": [126, 140] },
+        { "x": 340, "y": 350, "type": 2, "bitWidth": 1, "label": "", "connections": [127, 139] },
+        { "x": 320, "y": 370, "type": 2, "bitWidth": 1, "label": "", "connections": [128, 138] },
+        { "x": 280, "y": 410, "type": 2, "bitWidth": 1, "label": "", "connections": [130, 151] },
+        { "x": 280, "y": 510, "type": 2, "bitWidth": 1, "label": "", "connections": [150, 152] },
+        { "x": 310, "y": 510, "type": 2, "bitWidth": 1, "label": "", "connections": [141, 151] },
+        { "x": 270, "y": 430, "type": 2, "bitWidth": 1, "label": "", "connections": [131, 154] },
+        { "x": 270, "y": 530, "type": 2, "bitWidth": 1, "label": "", "connections": [153, 155] },
+        { "x": 320, "y": 530, "type": 2, "bitWidth": 1, "label": "", "connections": [142, 154] },
+        { "x": 250, "y": 450, "type": 2, "bitWidth": 1, "label": "", "connections": [132, 157] },
+        { "x": 250, "y": 540, "type": 2, "bitWidth": 1, "label": "", "connections": [156, 158] },
+        { "x": 340, "y": 540, "type": 2, "bitWidth": 1, "label": "", "connections": [143, 157] },
+        { "x": 560, "y": -20, "type": 2, "bitWidth": 1, "label": "", "connections": [58, 89] },
+        {
+          "x": 650,
+          "y": -390,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [86, 87, 116]
+        },
+        { "x": 110, "y": -550, "type": 2, "bitWidth": 1, "label": "", "connections": [120, 162] },
+        { "x": 110, "y": -380, "type": 2, "bitWidth": 1, "label": "", "connections": [101, 161] },
+        { "x": 390, "y": -490, "type": 2, "bitWidth": 1, "label": "", "connections": [108, 114] },
+        { "x": 400, "y": -480, "type": 2, "bitWidth": 1, "label": "", "connections": [109, 110] },
+        { "x": -230, "y": -410, "type": 2, "bitWidth": 1, "label": "", "connections": [166, 174] },
+        { "x": 100, "y": -410, "type": 2, "bitWidth": 1, "label": "", "connections": [165, 167] },
+        { "x": 100, "y": -370, "type": 2, "bitWidth": 1, "label": "", "connections": [166, 168] },
+        { "x": 210, "y": -370, "type": 2, "bitWidth": 1, "label": "", "connections": [167, 169] },
+        { "x": 210, "y": -320, "type": 2, "bitWidth": 1, "label": "", "connections": [98, 168] },
+        { "x": 300, "y": -270, "type": 2, "bitWidth": 1, "label": "", "connections": [171, 284] },
+        { "x": 300, "y": 260, "type": 2, "bitWidth": 1, "label": "", "connections": [170, 248] },
+        { "x": 310, "y": 260, "type": 2, "bitWidth": 1, "label": "", "connections": [106, 274] },
+        { "x": 1020, "y": -380, "type": 2, "bitWidth": 1, "label": "", "connections": [119, 176] },
+        {
+          "x": -230,
+          "y": -140,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [14, 165, 175]
+        },
+        { "x": -230, "y": -60, "type": 2, "bitWidth": 1, "label": "", "connections": [7, 174] },
+        { "x": 1020, "y": -160, "type": 2, "bitWidth": 1, "label": "", "connections": [63, 173] },
+        { "x": -40, "y": 60, "type": 2, "bitWidth": 1, "label": "", "connections": [6, 178] },
+        { "x": -40, "y": 110, "type": 2, "bitWidth": 1, "label": "", "connections": [30, 177] },
+        { "x": -30, "y": 40, "type": 2, "bitWidth": 1, "label": "", "connections": [5, 180] },
+        { "x": -30, "y": 100, "type": 2, "bitWidth": 1, "label": "", "connections": [179, 181] },
+        { "x": 240, "y": 100, "type": 2, "bitWidth": 1, "label": "", "connections": [27, 180] },
+        { "x": -20, "y": 20, "type": 2, "bitWidth": 1, "label": "", "connections": [4, 183] },
+        { "x": -20, "y": 90, "type": 2, "bitWidth": 1, "label": "", "connections": [182, 184] },
+        { "x": 230, "y": 90, "type": 2, "bitWidth": 1, "label": "", "connections": [26, 183] },
+        { "x": -50, "y": -60, "type": 2, "bitWidth": 1, "label": "", "connections": [0, 31] },
+        { "x": -40, "y": -40, "type": 2, "bitWidth": 1, "label": "", "connections": [1, 33] },
+        { "x": -30, "y": -20, "type": 2, "bitWidth": 1, "label": "", "connections": [2, 35] },
+        { "x": -20, "y": 0, "type": 2, "bitWidth": 1, "label": "", "connections": [3, 37] },
+        { "x": 380, "y": 100, "type": 2, "bitWidth": 1, "label": "", "connections": [48, 289] },
+        { "x": 20, "y": -30, "type": 0, "bitWidth": 24, "label": "COLOR", "connections": [228] },
+        {
+          "x": 20,
+          "y": -10,
+          "type": 0,
+          "bitWidth": 2,
+          "label": "ROW (2 bits)",
+          "connections": [235]
+        },
+        {
+          "x": 20,
+          "y": 10,
+          "type": 0,
+          "bitWidth": 0,
+          "label": "COLUMN (0 bits)",
+          "connections": []
+        },
+        { "x": -20, "y": -30, "type": 0, "bitWidth": 1, "label": "R0", "connections": [223] },
+        { "x": -20, "y": -10, "type": 0, "bitWidth": 1, "label": "R1", "connections": [224] },
+        { "x": -20, "y": 10, "type": 0, "bitWidth": 1, "label": "R2", "connections": [225] },
+        { "x": -20, "y": 30, "type": 0, "bitWidth": 1, "label": "R3", "connections": [222] },
+        { "x": 0, "y": 50, "type": 0, "bitWidth": 1, "label": "C0", "connections": [233] },
+        { "x": 0, "y": -50, "type": 0, "bitWidth": 24, "label": "CLR0", "connections": [] },
+        { "x": 0, "y": 40, "type": 0, "bitWidth": 1, "label": "", "connections": [204] },
+        { "x": 0, "y": 60, "type": 0, "bitWidth": 1, "label": "", "connections": [206] },
+        { "x": 0, "y": 80, "type": 0, "bitWidth": 1, "label": "", "connections": [207] },
+        {
+          "x": 240,
+          "y": -570,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [122, 203, 220]
+        },
+        { "x": -420, "y": -570, "type": 2, "bitWidth": 1, "label": "", "connections": [202, 204] },
+        { "x": -420, "y": 260, "type": 2, "bitWidth": 1, "label": "", "connections": [199, 203] },
+        { "x": -430, "y": -580, "type": 2, "bitWidth": 1, "label": "", "connections": [206, 296] },
+        { "x": -430, "y": 280, "type": 2, "bitWidth": 1, "label": "", "connections": [200, 205] },
+        { "x": 30, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [201] },
+        { "x": -10, "y": -30, "type": 0, "bitWidth": 1, "label": "", "connections": [215] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [216] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [217] },
+        { "x": -10, "y": 30, "type": 0, "bitWidth": 1, "label": "", "connections": [218] },
+        { "x": 30, "y": -10, "type": 1, "bitWidth": 1, "label": "", "connections": [219] },
+        { "x": 30, "y": 10, "type": 1, "bitWidth": 1, "label": "", "connections": [220] },
+        { "x": 10, "y": 50, "type": 1, "bitWidth": 1, "label": "", "connections": [] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [208] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [209] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [210] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [211] },
+        { "x": 260, "y": -660, "type": 2, "bitWidth": 1, "label": "", "connections": [212, 296] },
+        { "x": 240, "y": -640, "type": 2, "bitWidth": 1, "label": "", "connections": [202, 213] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [222] },
+        {
+          "x": 740,
+          "y": 430,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [196, 221, 225, 232]
+        },
+        { "x": 740, "y": 370, "type": 2, "bitWidth": 1, "label": "", "connections": [193, 224] },
+        {
+          "x": 740,
+          "y": 390,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [194, 223, 225]
+        },
+        {
+          "x": 740,
+          "y": 410,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [195, 222, 224]
+        },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 24, "label": "", "connections": [230] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 24, "label": "", "connections": [231] },
+        { "x": 10, "y": 0, "type": 1, "bitWidth": 24, "label": "", "connections": [190] },
+        {
+          "x": 0,
+          "y": 20,
+          "type": 0,
+          "bitWidth": 1,
+          "label": "Control Signal",
+          "connections": [234]
+        },
+        { "x": 240, "y": 0, "type": 1, "bitWidth": 24, "label": "", "connections": [226] },
+        { "x": 240, "y": 0, "type": 1, "bitWidth": 24, "label": "", "connections": [227] },
+        { "x": 740, "y": 470, "type": 2, "bitWidth": 1, "label": "", "connections": [222, 233] },
+        {
+          "x": 790,
+          "y": 470,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [197, 232, 234]
+        },
+        { "x": 940, "y": 470, "type": 2, "bitWidth": 1, "label": "", "connections": [229, 233] },
+        { "x": 840, "y": 390, "type": 2, "bitWidth": 2, "label": "", "connections": [191, 241] },
+        {
+          "x": -50,
+          "y": 280,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [136, 145, 238]
+        },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 2, "label": "", "connections": [242] },
+        { "x": 20, "y": -20, "type": 0, "bitWidth": 1, "label": "", "connections": [236] },
+        { "x": 20, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [240] },
+        {
+          "x": -40,
+          "y": 300,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [135, 146, 239]
+        },
+        { "x": 840, "y": 310, "type": 2, "bitWidth": 2, "label": "", "connections": [235, 243] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 2, "label": "", "connections": [237] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 2, "label": "", "connections": [241] },
+        { "x": 100, "y": 60, "type": 1, "bitWidth": 1, "label": "", "connections": [245] },
+        { "x": -60, "y": 280, "type": 2, "bitWidth": 1, "label": "", "connections": [244, 246] },
+        { "x": -60, "y": 270, "type": 2, "bitWidth": 1, "label": "", "connections": [245, 252] },
+        { "x": 790, "y": 270, "type": 2, "bitWidth": 1, "label": "", "connections": [253, 273] },
+        { "x": 240, "y": 260, "type": 2, "bitWidth": 1, "label": "", "connections": [171, 250] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [282] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [248] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [90] },
+        { "x": -10, "y": 0, "type": 0, "bitWidth": 1, "label": "", "connections": [246] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [247] },
+        {
+          "x": 220,
+          "y": -190,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [39, 114, 295]
+        },
+        { "x": 230, "y": -130, "type": 2, "bitWidth": 1, "label": "", "connections": [256, 264] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [255] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [295] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [285] },
+        {
+          "x": 430,
+          "y": -180,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [41, 111, 112]
+        },
+        {
+          "x": 440,
+          "y": -180,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [40, 113, 286]
+        },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [112] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [286] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [265] },
+        {
+          "x": 230,
+          "y": -190,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [104, 110, 255]
+        },
+        { "x": 320, "y": -130, "type": 2, "bitWidth": 1, "label": "", "connections": [263, 266] },
+        { "x": 320, "y": 150, "type": 2, "bitWidth": 1, "label": "", "connections": [265, 287] },
+        { "x": 100, "y": 20, "type": 1, "bitWidth": 1, "label": "", "connections": [280] },
+        { "x": 100, "y": 40, "type": 1, "bitWidth": 1, "label": "", "connections": [278] },
+        { "x": 0, "y": 20, "type": 0, "bitWidth": 1, "label": "", "connections": [294, 272] },
+        { "x": 0, "y": 40, "type": 0, "bitWidth": 1, "label": "", "connections": [288] },
+        { "x": 0, "y": 60, "type": 0, "bitWidth": 1, "label": "", "connections": [273] },
+        { "x": 290, "y": 140, "type": 2, "bitWidth": 1, "label": "", "connections": [269, 285] },
+        { "x": 790, "y": 180, "type": 2, "bitWidth": 1, "label": "", "connections": [247, 271] },
+        { "x": 400, "y": 260, "type": 2, "bitWidth": 1, "label": "", "connections": [172, 275] },
+        { "x": -10, "y": -10, "type": 0, "bitWidth": 1, "label": "", "connections": [274] },
+        { "x": -10, "y": 10, "type": 0, "bitWidth": 1, "label": "", "connections": [279] },
+        { "x": 20, "y": 0, "type": 1, "bitWidth": 1, "label": "", "connections": [91] },
+        { "x": 900, "y": 250, "type": 2, "bitWidth": 1, "label": "", "connections": [268, 279] },
+        { "x": 420, "y": 250, "type": 2, "bitWidth": 1, "label": "", "connections": [276, 278] },
+        { "x": 920, "y": 140, "type": 2, "bitWidth": 1, "label": "", "connections": [267, 281] },
+        { "x": 920, "y": 240, "type": 2, "bitWidth": 1, "label": "", "connections": [280, 282] },
+        { "x": 220, "y": 240, "type": 2, "bitWidth": 1, "label": "", "connections": [249, 281] },
+        { "x": 390, "y": -280, "type": 2, "bitWidth": 1, "label": "", "connections": [105, 106] },
+        { "x": 400, "y": -270, "type": 2, "bitWidth": 1, "label": "", "connections": [107, 170] },
+        { "x": 290, "y": -120, "type": 2, "bitWidth": 1, "label": "", "connections": [258, 272] },
+        { "x": 440, "y": -120, "type": 2, "bitWidth": 1, "label": "", "connections": [260, 262] },
+        { "x": 790, "y": 150, "type": 2, "bitWidth": 1, "label": "", "connections": [266, 288] },
+        { "x": 790, "y": 160, "type": 2, "bitWidth": 1, "label": "", "connections": [270, 287] },
+        { "x": 700, "y": 100, "type": 2, "bitWidth": 1, "label": "", "connections": [66, 189] },
+        { "x": 710, "y": 110, "type": 2, "bitWidth": 1, "label": "", "connections": [67, 291] },
+        { "x": 360, "y": 110, "type": 2, "bitWidth": 1, "label": "", "connections": [47, 290] },
+        { "x": 350, "y": 120, "type": 2, "bitWidth": 1, "label": "", "connections": [46, 293] },
+        { "x": 720, "y": 120, "type": 2, "bitWidth": 1, "label": "", "connections": [68, 292] },
+        { "x": 800, "y": 130, "type": 2, "bitWidth": 1, "label": "", "connections": [269] },
+        { "x": 220, "y": -110, "type": 2, "bitWidth": 1, "label": "", "connections": [254, 257] },
+        {
+          "x": 260,
+          "y": -580,
+          "type": 2,
+          "bitWidth": 1,
+          "label": "",
+          "connections": [121, 205, 219]
+        }
+      ],
+      "id": 36951674770,
+      "name": "ELEVATOR",
+      "Input": [
+        {
+          "x": -370,
+          "y": -180,
+          "objectType": "Input",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 16 },
+            "values": { "state": 0 },
+            "constructorParamaters": ["RIGHT", 1, { "x": 0, "y": 20, "id": "GtKRftfx3LYWMEtpXrKO" }]
+          }
+        },
+        {
+          "x": -370,
+          "y": -160,
+          "objectType": "Input",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 17 },
+            "values": { "state": 1 },
+            "constructorParamaters": ["RIGHT", 1, { "x": 0, "y": 40, "id": "Gyg0HDtXVphUqDi6xUov" }]
+          }
+        },
+        {
+          "x": -370,
+          "y": -140,
+          "objectType": "Input",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 18 },
+            "values": { "state": 0 },
+            "constructorParamaters": ["RIGHT", 1, { "x": 0, "y": 60, "id": "H5i2ADexTur5ynEW2bC1" }]
+          }
+        },
+        {
+          "x": -370,
+          "y": -120,
+          "objectType": "Input",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 19 },
+            "values": { "state": 0 },
+            "constructorParamaters": ["RIGHT", 1, { "x": 0, "y": 80, "id": "q9x4p4aI93QFIjhyaOWn" }]
+          }
+        },
+        {
+          "x": 810,
+          "y": -180,
+          "objectType": "Input",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 81 },
+            "values": { "state": 0 },
+            "constructorParamaters": [
+              "RIGHT",
+              1,
+              { "x": 0, "y": 100, "id": "GuMdpp13BWVSIJifyjNw" }
+            ]
+          }
+        },
+        {
+          "x": 810,
+          "y": -160,
+          "objectType": "Input",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 82 },
+            "values": { "state": 0 },
+            "constructorParamaters": [
+              "RIGHT",
+              1,
+              { "x": 0, "y": 120, "id": "jsEw95ZaMcxkSnJC93bf" }
+            ]
+          }
+        },
+        {
+          "x": 810,
+          "y": -140,
+          "objectType": "Input",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 83 },
+            "values": { "state": 1 },
+            "constructorParamaters": [
+              "RIGHT",
+              1,
+              { "x": 0, "y": 140, "id": "MXCkRr1vkV0vrMWPBhut" }
+            ]
+          }
+        },
+        {
+          "x": 810,
+          "y": -120,
+          "objectType": "Input",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 84 },
+            "values": { "state": 0 },
+            "constructorParamaters": [
+              "RIGHT",
+              1,
+              { "x": 0, "y": 160, "id": "E9nAOdODHQrlKppVd9nM" }
+            ]
+          }
+        },
+        {
+          "x": -230,
+          "y": 240,
+          "objectType": "Input",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 123 },
+            "values": { "state": 1 },
+            "constructorParamaters": [
+              "RIGHT",
+              1,
+              { "x": 0, "y": 220, "id": "YLACkOq5XjWHyLhVsdXV" }
+            ]
+          }
+        },
+        {
+          "x": 130,
+          "y": -680,
+          "objectType": "Input",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 215 },
+            "values": { "state": 1 },
+            "constructorParamaters": [
+              "RIGHT",
+              1,
+              { "x": 0, "y": 240, "id": "EAj17sgqVXJ0I4CZTyIZ" }
+            ]
+          }
+        },
+        {
+          "x": 130,
+          "y": -660,
+          "objectType": "Input",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 216 },
+            "values": { "state": 0 },
+            "constructorParamaters": [
+              "RIGHT",
+              1,
+              { "x": 0, "y": 260, "id": "0IrOGNcWl8Qpi0rGWL1m" }
+            ]
+          }
+        },
+        {
+          "x": 130,
+          "y": -640,
+          "objectType": "Input",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 217 },
+            "values": { "state": 0 },
+            "constructorParamaters": [
+              "RIGHT",
+              1,
+              { "x": 0, "y": 280, "id": "kR1EowuR8j9P0HEfbnwb" }
+            ]
+          }
+        },
+        {
+          "x": 130,
+          "y": -620,
+          "objectType": "Input",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 218 },
+            "values": { "state": 1 },
+            "constructorParamaters": [
+              "RIGHT",
+              1,
+              { "x": 0, "y": 300, "id": "qsE9RckySIGC1T1j1O3E" }
+            ]
+          }
+        },
+        {
+          "x": 1240,
+          "y": 360,
+          "objectType": "Input",
+          "label": "",
+          "direction": "LEFT",
+          "labelDirection": "RIGHT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 230 },
+            "values": { "state": 16646656 },
+            "constructorParamaters": [
+              "LEFT",
+              24,
+              { "x": 0, "y": 180, "id": "FyPozppkG5ycxGmM6ARr" }
+            ]
+          }
+        },
+        {
+          "x": 1240,
+          "y": 380,
+          "objectType": "Input",
+          "label": "",
+          "direction": "LEFT",
+          "labelDirection": "RIGHT",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 231 },
+            "values": { "state": 0 },
+            "constructorParamaters": [
+              "LEFT",
+              24,
+              { "x": 0, "y": 200, "id": "6GQpKLMLDq5OLUI6usZr" }
+            ]
+          }
+        }
+      ],
+      "NotGate": [
+        {
+          "x": 590,
+          "y": 310,
+          "objectType": "NotGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 2],
+            "nodes": { "output1": 243, "inp1": 242 }
+          }
+        },
+        {
+          "x": 50,
+          "y": 270,
+          "objectType": "NotGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 1],
+            "nodes": { "output1": 253, "inp1": 252 }
+          }
+        }
+      ],
+      "OrGate": [
+        {
+          "x": 230,
+          "y": 210,
+          "objectType": "OrGate",
+          "label": "",
+          "direction": "UP",
+          "labelDirection": "UP",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["UP", 2, 1],
+            "nodes": { "inp": [249, 250], "output1": 251 }
+          }
+        },
+        {
+          "x": 250,
+          "y": -120,
+          "objectType": "OrGate",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["RIGHT", 2, 1],
+            "nodes": { "inp": [256, 257], "output1": 258 }
+          }
+        },
+        {
+          "x": 390,
+          "y": -130,
+          "objectType": "OrGate",
+          "label": "",
+          "direction": "LEFT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["LEFT", 2, 1],
+            "nodes": { "inp": [261, 262], "output1": 263 }
+          }
+        },
+        {
+          "x": 410,
+          "y": 210,
+          "objectType": "OrGate",
+          "label": "",
+          "direction": "UP",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["UP", 2, 1],
+            "nodes": { "inp": [275, 276], "output1": 277 }
+          }
+        }
+      ],
+      "SevenSegDisplay": [
+        {
+          "x": 250,
+          "y": 10,
+          "objectType": "SevenSegDisplay",
+          "label": "CURRENT FLOOR OF LIFT 1  ",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["Red"],
+            "nodes": { "g": 22, "f": 23, "a": 24, "b": 25, "d": 27, "e": 26, "c": 28, "dot": 29 }
+          },
+          "subcircuitMetadata": {
+            "showInSubcircuit": false,
+            "showLabelInSubcircuit": true,
+            "labelDirection": "LEFT",
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "x": 370,
+          "y": 10,
+          "objectType": "SevenSegDisplay",
+          "label": "CURRENT FLOOR OF LIFT 2",
+          "direction": "RIGHT",
+          "labelDirection": "RIGHT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["Red"],
+            "nodes": { "g": 42, "f": 43, "a": 44, "b": 45, "d": 47, "e": 46, "c": 48, "dot": 49 }
+          },
+          "subcircuitMetadata": {
+            "showInSubcircuit": false,
+            "showLabelInSubcircuit": true,
+            "labelDirection": "LEFT",
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "x": 330,
+          "y": 440,
+          "objectType": "SevenSegDisplay",
+          "label": "LIFT MOVEMENT TO REQUIRED FLOOR",
+          "direction": "RIGHT",
+          "labelDirection": "RIGHT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["Red"],
+            "nodes": {
+              "g": 137,
+              "f": 138,
+              "a": 139,
+              "b": 140,
+              "d": 142,
+              "e": 141,
+              "c": 143,
+              "dot": 144
+            }
+          },
+          "subcircuitMetadata": {
+            "showInSubcircuit": false,
+            "showLabelInSubcircuit": true,
+            "labelDirection": "LEFT",
+            "x": 0,
+            "y": 0
+          }
+        }
+      ],
+      "Multiplexer": [
+        {
+          "x": 940,
+          "y": 370,
+          "objectType": "Multiplexer",
+          "label": "",
+          "direction": "LEFT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["LEFT", 24, 1],
+            "nodes": { "inp": [226, 227], "output1": 228, "controlSignalInput": 229 }
+          }
+        }
+      ],
+      "Splitter": [
+        {
+          "x": 500,
+          "y": 300,
+          "objectType": "Splitter",
+          "label": "",
+          "direction": "LEFT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["LEFT", 2, [1, 1]],
+            "nodes": { "outputs": [238, 239], "inp1": 237 }
+          }
+        }
+      ],
+      "Clock": [
+        {
+          "x": 690,
+          "y": 430,
+          "objectType": "Clock",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 0,
+          "customData": { "nodes": { "output1": 221 }, "constructorParamaters": ["RIGHT"] }
+        }
+      ],
+      "DigitalLed": [
+        {
+          "x": 190,
+          "y": -230,
+          "objectType": "DigitalLed",
+          "label": "DOWN",
+          "direction": "UP",
+          "labelDirection": "UP",
+          "propagationDelay": 10,
+          "customData": { "constructorParamaters": ["BLUE"], "nodes": { "inp1": 39 } },
+          "subcircuitMetadata": {
+            "showInSubcircuit": false,
+            "showLabelInSubcircuit": true,
+            "labelDirection": "DOWN",
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "x": 470,
+          "y": -220,
+          "objectType": "DigitalLed",
+          "label": "UP",
+          "direction": "UP",
+          "labelDirection": "UP",
+          "propagationDelay": 10,
+          "customData": { "constructorParamaters": ["PURPLE"], "nodes": { "inp1": 40 } },
+          "subcircuitMetadata": {
+            "showInSubcircuit": false,
+            "showLabelInSubcircuit": true,
+            "labelDirection": "DOWN",
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "x": 410,
+          "y": -220,
+          "objectType": "DigitalLed",
+          "label": "DOWN",
+          "direction": "UP",
+          "labelDirection": "UP",
+          "propagationDelay": 10,
+          "customData": { "constructorParamaters": ["BLUE"], "nodes": { "inp1": 41 } },
+          "subcircuitMetadata": {
+            "showInSubcircuit": false,
+            "showLabelInSubcircuit": true,
+            "labelDirection": "DOWN",
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "x": 230,
+          "y": 160,
+          "objectType": "DigitalLed",
+          "label": "DOOR 1",
+          "direction": "UP",
+          "labelDirection": "UP",
+          "propagationDelay": 10,
+          "customData": { "constructorParamaters": ["RED"], "nodes": { "inp1": 90 } },
+          "subcircuitMetadata": {
+            "showInSubcircuit": false,
+            "showLabelInSubcircuit": true,
+            "labelDirection": "DOWN",
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "x": 410,
+          "y": 160,
+          "objectType": "DigitalLed",
+          "label": "DOOR 2",
+          "direction": "UP",
+          "labelDirection": "UP",
+          "propagationDelay": 10,
+          "customData": { "constructorParamaters": ["RED"], "nodes": { "inp1": 91 } },
+          "subcircuitMetadata": {
+            "showInSubcircuit": false,
+            "showLabelInSubcircuit": true,
+            "labelDirection": "DOWN",
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "x": 260,
+          "y": -230,
+          "objectType": "DigitalLed",
+          "label": "UP",
+          "direction": "UP",
+          "labelDirection": "UP",
+          "propagationDelay": 10,
+          "customData": { "constructorParamaters": ["PURPLE"], "nodes": { "inp1": 104 } },
+          "subcircuitMetadata": {
+            "showInSubcircuit": false,
+            "showLabelInSubcircuit": true,
+            "labelDirection": "DOWN",
+            "x": 0,
+            "y": 0
+          }
+        }
+      ],
+      "RGBLedMatrix": [
+        {
+          "x": 790,
+          "y": 400,
+          "objectType": "RGBLedMatrix",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "UP",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": [
+              {
+                "rows": 4,
+                "columns": 1,
+                "ledSize": 2,
+                "showGrid": true,
+                "colors": [[0], [0], [0], [0]]
+              }
+            ],
+            "nodes": {
+              "rowEnableNodes": [193, 194, 195, 196],
+              "columnEnableNodes": [197],
+              "columnColorNodes": [198],
+              "colorNode": 190,
+              "rowNode": 191,
+              "columnNode": 192
+            }
+          }
+        }
+      ],
+      "Button": [
+        {
+          "x": -310,
+          "y": 300,
+          "objectType": "Button",
+          "label": "reset button",
+          "direction": "RIGHT",
+          "labelDirection": "DOWN",
+          "propagationDelay": 0,
+          "customData": {
+            "nodes": { "output1": 207 },
+            "values": { "state": 0 },
+            "constructorParamaters": ["RIGHT", 1]
+          },
+          "subcircuitMetadata": {
+            "showInSubcircuit": false,
+            "showLabelInSubcircuit": true,
+            "labelDirection": "LEFT",
+            "x": 0,
+            "y": 0
+          }
+        }
+      ],
+      "SubCircuit": [
+        {
+          "x": -160,
+          "y": -80,
+          "id": "36353349397",
+          "label": "",
+          "labelDirection": "LEFT",
+          "inputNodes": [7, 8],
+          "outputNodes": [0, 1, 2, 3, 4, 5, 6],
+          "version": "2.0"
+        },
+        {
+          "x": 590,
+          "y": -60,
+          "id": "36353349397",
+          "label": "",
+          "labelDirection": "RIGHT",
+          "inputNodes": [57, 58],
+          "outputNodes": [50, 51, 52, 53, 54, 55, 56],
+          "version": "2.0"
+        },
+        {
+          "x": 280,
+          "y": -440,
+          "id": "40099144944",
+          "label": "",
+          "labelDirection": "LEFT",
+          "inputNodes": [98, 99, 100, 101, 102, 103],
+          "outputNodes": [92, 93, 94, 95, 96, 97],
+          "version": "2.0"
+        },
+        {
+          "x": -170,
+          "y": 220,
+          "id": "36356845389",
+          "label": "",
+          "labelDirection": "LEFT",
+          "inputNodes": [199, 200, 201],
+          "outputNodes": [124, 125, 244],
+          "version": "2.0"
+        },
+        {
+          "x": 20,
+          "y": 310,
+          "id": "36353349397",
+          "label": "",
+          "labelDirection": "LEFT",
+          "inputNodes": [133, 134],
+          "outputNodes": [126, 127, 128, 129, 130, 131, 132],
+          "version": "2.0"
+        },
+        {
+          "x": 800,
+          "y": 120,
+          "id": "57889817360",
+          "label": "",
+          "labelDirection": "LEFT",
+          "inputNodes": [269, 270, 271],
+          "outputNodes": [267, 268],
+          "version": "2.0"
+        }
+      ],
+      "PriorityEncoder": [
+        {
+          "x": -320,
+          "y": -150,
+          "objectType": "PriorityEncoder",
+          "label": "CURRENT FLOOR OF LIFT 1",
+          "direction": "RIGHT",
+          "labelDirection": "DOWN",
+          "propagationDelay": 10,
+          "customData": {
+            "nodes": { "inp1": [9, 10, 11, 12], "output1": [13, 14], "enable": 15 },
+            "constructorParamaters": ["RIGHT", 2]
+          }
+        },
+        {
+          "x": 860,
+          "y": -150,
+          "objectType": "PriorityEncoder",
+          "label": "CURRENT FLOOR OF LIFT 2",
+          "direction": "RIGHT",
+          "labelDirection": "DOWN",
+          "propagationDelay": 10,
+          "customData": {
+            "nodes": { "inp1": [59, 60, 61, 62], "output1": [63, 64], "enable": 65 },
+            "constructorParamaters": ["RIGHT", 2]
+          }
+        },
+        {
+          "x": 170,
+          "y": -650,
+          "objectType": "PriorityEncoder",
+          "label": "REQUIRED FLOOR",
+          "direction": "RIGHT",
+          "labelDirection": "UP",
+          "propagationDelay": 10,
+          "customData": {
+            "nodes": { "inp1": [208, 209, 210, 211], "output1": [212, 213], "enable": 214 },
+            "constructorParamaters": ["RIGHT", 2]
+          }
+        }
+      ],
+      "Text": [
+        {
+          "x": -1030,
+          "y": -150,
+          "objectType": "Text",
+          "label": "select the floor on which you want your lift1 to be on",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["select the floor on which you want your lift1 to be on", 20]
+          }
+        },
+        {
+          "x": 1140,
+          "y": -130,
+          "objectType": "Text",
+          "label": "select the floor on which you want your lift2 to be on",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": ["select the floor on which you want your lift2 to be on", 20]
+          }
+        },
+        {
+          "x": 30,
+          "y": -830,
+          "objectType": "Text",
+          "label": "the floor on which the lift will go",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": { "constructorParamaters": ["the floor on which the lift will go", 20] }
+        },
+        {
+          "x": 700,
+          "y": 570,
+          "objectType": "Text",
+          "label": "digital representation of the lift",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": { "constructorParamaters": ["digital representation of the lift", 20] }
+        },
+        {
+          "x": 760,
+          "y": -600,
+          "objectType": "Text",
+          "label": "UP : indicates motion of that particular lift in upward direction\n\nDOWN: indicates motion of that particular lift in downward direction\n\nDOOR: represents whether door is open or closed for that particular lift",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": {
+            "constructorParamaters": [
+              "UP : indicates motion of that particular lift in upward direction\n\nDOWN: indicates motion of that particular lift in downward direction\n\nDOOR: represents whether door is open or closed for that particular lift",
+              32
+            ]
+          }
+        },
+        {
+          "x": 250,
+          "y": 650,
+          "objectType": "Text",
+          "label": "MOTION OF THE LIFT",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": { "constructorParamaters": ["MOTION OF THE LIFT", 20] }
+        }
+      ],
+      "Arrow": [
+        {
+          "x": -480,
+          "y": -150,
+          "objectType": "Arrow",
+          "label": "",
+          "direction": "RIGHT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": { "constructorParamaters": ["RIGHT"] }
+        },
+        {
+          "x": 1080,
+          "y": -130,
+          "objectType": "Arrow",
+          "label": "",
+          "direction": "LEFT",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": { "constructorParamaters": ["LEFT"] }
+        },
+        {
+          "x": 170,
+          "y": -760,
+          "objectType": "Arrow",
+          "label": "",
+          "direction": "DOWN",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": { "constructorParamaters": ["DOWN"] }
+        },
+        {
+          "x": 790,
+          "y": 510,
+          "objectType": "Arrow",
+          "label": "",
+          "direction": "UP",
+          "labelDirection": "LEFT",
+          "propagationDelay": 10,
+          "customData": { "constructorParamaters": ["UP"] }
+        },
+        {
+          "x": 330,
+          "y": 590,
+          "objectType": "Arrow",
+          "label": "",
+          "direction": "UP",
+          "labelDirection": "UP",
+          "propagationDelay": 10,
+          "customData": { "constructorParamaters": ["UP"] }
+        }
+      ],
+      "ImageAnnotation": [
+        {
+          "x": -50,
+          "y": -280,
+          "objectType": "ImageAnnotation",
+          "label": "LIFT1",
+          "direction": "RIGHT",
+          "labelDirection": "DOWN",
+          "propagationDelay": 10,
+          "customData": { "constructorParamaters": [15, 18, "https://i.imgur.com/Rof6DRN.jpg"] }
+        },
+        {
+          "x": 710,
+          "y": -280,
+          "objectType": "ImageAnnotation",
+          "label": "LIFT 2",
+          "direction": "RIGHT",
+          "labelDirection": "RIGHT",
+          "propagationDelay": 10,
+          "customData": { "constructorParamaters": [15, 18, "https://i.imgur.com/OxOj8id.jpg"] }
+        }
+      ],
+      "restrictedCircuitElementsUsed": [],
+      "nodes": [
+        20, 21, 30, 31, 32, 33, 34, 35, 36, 37, 38, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77,
+        78, 79, 80, 85, 86, 87, 88, 89, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116,
+        117, 118, 119, 120, 121, 122, 135, 136, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154,
+        155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172,
+        173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 202,
+        203, 204, 205, 206, 219, 220, 222, 223, 224, 225, 232, 233, 234, 235, 236, 240, 241, 245,
+        246, 247, 248, 254, 255, 259, 260, 264, 265, 266, 272, 273, 274, 278, 279, 280, 281, 282,
+        283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296
+      ]
+    }
+  ]
+}
