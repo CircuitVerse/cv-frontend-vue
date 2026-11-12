@@ -109,36 +109,20 @@ export default class SRflipFlop extends CircuitElement {
 
     static moduleVerilog() {
         return `
-module SRflipFlop(q,q_inv,s,r,clk,rst,pre,en);
-    output reg q,q_inv;
-    input wire s,r,clk,rst,pre,en;
-    
-    always @(posedge clk) begin
-        if (rst) begin
-            if (pre) begin
-                q     <= 1'b1;
-                q_inv <= 1'b0;
-            end else begin
-                q     <= 1'b0;
-                q_inv <= 1'b1;
-            end
-        end else if (en) begin
-            if (s && !r) begin
-                q     <= 1'b1;
-                q_inv <= 1'b0;
-            end else if (!s && r) begin
-                q     <= 1'b0;
-                q_inv <= 1'b1;
-            end else if (!s && !r) begin
-                q     <= q;     // hold state
-                q_inv <= q_inv;
-            end else begin
-                // Invalid condition: S = 1, R = 1 , the ideal output should be X(invalid state) but in this circuit model the state remains unchanged
-                q     <= q;
-                q_inv <= q_inv;
-            end
-        end
+module SRflipFlop(q, q_inv, r, s, rst, pre, en);
+    output reg q;
+    output wire q_inv;
+    input wire r, s, rst, pre, en;
+
+    // SR flip flop in the simulator is level sensitive, it has no clock node
+    always @(*) begin
+        if (rst)
+            q = pre;
+        else if (en && (s ^ r))
+            q = s;
     end
+
+    assign q_inv = ~q;
 endmodule
     `
     }

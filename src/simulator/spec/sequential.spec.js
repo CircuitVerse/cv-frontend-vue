@@ -126,7 +126,9 @@ describe('Simulator Sequential Element Testing', () => {
             ),
         ].filter((name) => !VERILOG_KEYWORDS.has(name));
 
-        expect(instantiated).toContain('JKflipFlop');
+        expect(instantiated).toEqual(
+            expect.arrayContaining(['Dlatch', 'JKflipFlop', 'SRflipFlop'])
+        );
         expect(instantiated.filter((name) => !defined.has(name))).toEqual([]);
     });
 
