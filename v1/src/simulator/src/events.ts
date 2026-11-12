@@ -21,9 +21,17 @@ import { moduleList, updateOrder } from "./metadata";
  * @category events
  */
 export function paste(copyData: string): void {
-  if (copyData === "undefined") return;
-  const data = JSON.parse(copyData);
-  if (!data.logixClipBoardData) return;
+  if (!copyData || copyData === "undefined") return;
+
+  let data;
+  try {
+    data = JSON.parse(copyData);
+  } catch {
+    // Plain text, HTML or an empty clipboard is not CircuitVerse data.
+    return;
+  }
+
+  if (!data || !data.logixClipBoardData || !Array.isArray(data.scopes)) return;
 
   const currentScopeId = globalScope.id;
   for (let i = 0; i < data.scopes.length; i++) {
