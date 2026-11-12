@@ -161,8 +161,8 @@ describe('Verilog export', () => {
         const module = code.slice(code.indexOf('module Main'));
 
         expect(module).toContain(`assign ${mult.product.verilogLabel} = ${a.label} * ${b.label};`);
-        expect(module).toContain(`assign ${div.quotient.verilogLabel} = ${a.label} / ${b.label};`);
-        expect(module).toContain(`assign ${div.remainder.verilogLabel} = ${a.label} % ${b.label};`);
+        expect(module).toContain(`assign ${div.quotient.verilogLabel} = (${b.label} != 0) ? (${a.label} / ${b.label}) : 4'd0;`);
+        expect(module).toContain(`assign ${div.remainder.verilogLabel} = (${b.label} != 0) ? (${a.label} % ${b.label}) : 4'd0;`);
         expect(module).toContain(`assign ${pow.answer.verilogLabel} = ${a.label} ** ${b.label};`);
         expect(module).toContain(`assign ${shl.output1.verilogLabel} = ${a.label} << ${b.label};`);
         expect(module).toContain(`assign ${shr.output1.verilogLabel} = ${a.label} >> ${b.label};`);
@@ -173,20 +173,48 @@ describe('Verilog export', () => {
         expect(module).not.toContain('verilogShiftRight verilogShiftRight');
     });
 
-    it('uses sized zero literals for disconnected arithmetic inputs', () => {
+    it('uses sized zero literals for disconnected arithmetic inputs across all modules', () => {
         setup();
         const a = new Input(0, 0, globalScope, 'RIGHT', 4);
         a.label = 'a';
 
+        const mult = new verilogMultiplier(100, 0, globalScope, 'RIGHT', 4, 8);
+        const outMult = new Output(200, 0, globalScope, 'LEFT', 8);
+        outMult.label = 'out_mult_disc';
+        a.output1.connect(mult.inpA);
+        mult.product.connect(outMult.inp1);
+
         const div = new verilogDivider(100, 100, globalScope, 'RIGHT', 4, 4);
         const outQuot = new Output(200, 100, globalScope, 'LEFT', 4);
-        outQuot.label = 'out_quot';
+        outQuot.label = 'out_quot_disc';
         a.output1.connect(div.inpA);
         div.quotient.connect(outQuot.inp1);
+
+        const pow = new verilogPower(100, 200, globalScope, 'RIGHT', 4, 8);
+        const outPow = new Output(200, 200, globalScope, 'LEFT', 8);
+        outPow.label = 'out_pow_disc';
+        a.output1.connect(pow.inpA);
+        pow.answer.connect(outPow.inp1);
+
+        const shl = new verilogShiftLeft(100, 300, globalScope, 'RIGHT', 4, 4);
+        const outShl = new Output(200, 300, globalScope, 'LEFT', 4);
+        outShl.label = 'out_shl_disc';
+        a.output1.connect(shl.inp1);
+        shl.output1.connect(outShl.inp1);
+
+        const shr = new verilogShiftRight(100, 400, globalScope, 'RIGHT', 4, 4);
+        const outShr = new Output(200, 400, globalScope, 'LEFT', 4);
+        outShr.label = 'out_shr_disc';
+        a.output1.connect(shr.inp1);
+        shr.output1.connect(outShr.inp1);
 
         const code = verilog.exportVerilog(globalScope);
         const module = code.slice(code.indexOf('module Main'));
 
-        expect(module).toContain(`assign ${div.quotient.verilogLabel} = ${a.label} / 4'd0;`);
+        expect(module).toContain(`assign ${mult.product.verilogLabel} = ${a.label} * 4'd0;`);
+        expect(module).toContain(`assign ${div.quotient.verilogLabel} = (4'd0 != 0) ? (${a.label} / 4'd0) : 4'd0;`);
+        expect(module).toContain(`assign ${pow.answer.verilogLabel} = ${a.label} ** 4'd0;`);
+        expect(module).toContain(`assign ${shl.output1.verilogLabel} = ${a.label} << 4'd0;`);
+        expect(module).toContain(`assign ${shr.output1.verilogLabel} = ${a.label} >> 4'd0;`);
     });
 });
