@@ -138,14 +138,24 @@ export default class SubCircuit extends CircuitElement implements ICircuitElemen
       this.label = this.savedData.label || "";
       this.labelDirection = this.savedData.labelDirection || "RIGHT";
       for (let i = 0; i < this.savedData.inputNodes.length; i++) {
-        this.inputNodes.push(this.scope.allNodes[this.savedData.inputNodes[i]]);
-        this.inputNodes[i].parent = this;
-        this.inputNodes[i].layout_id = subcircuitScope.Input[i]?.layoutProperties.id;
+        const idx = this.savedData.inputNodes[i];
+        if (!Number.isInteger(idx) || idx < 0 || idx >= this.scope.allNodes.length) {
+          continue;
+        }
+        this.inputNodes.push(this.scope.allNodes[idx]);
+        this.inputNodes[this.inputNodes.length - 1].parent = this;
+        this.inputNodes[this.inputNodes.length - 1].layout_id =
+          subcircuitScope.Input[i]?.layoutProperties.id;
       }
       for (let i = 0; i < this.savedData.outputNodes.length; i++) {
-        this.outputNodes.push(this.scope.allNodes[this.savedData.outputNodes[i]]);
-        this.outputNodes[i].parent = this;
-        this.outputNodes[i].layout_id = subcircuitScope.Output[i]?.layoutProperties.id;
+        const idx = this.savedData.outputNodes[i];
+        if (!Number.isInteger(idx) || idx < 0 || idx >= this.scope.allNodes.length) {
+          continue;
+        }
+        this.outputNodes.push(this.scope.allNodes[idx]);
+        this.outputNodes[this.outputNodes.length - 1].parent = this;
+        this.outputNodes[this.outputNodes.length - 1].layout_id =
+          subcircuitScope.Output[i]?.layoutProperties.id;
       }
       if (this.version == "1.0") {
         // For backward compatibility
@@ -277,6 +287,9 @@ export default class SubCircuit extends CircuitElement implements ICircuitElemen
    */
   reset(): void {
     this.removeConnections();
+
+    this.inputNodes = this.inputNodes.filter((node) => node != undefined);
+    this.outputNodes = this.outputNodes.filter((node) => node != undefined);
 
     const subcircuitScope = scopeList[this.id];
 

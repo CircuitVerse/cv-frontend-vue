@@ -498,8 +498,7 @@ export function update(scope: Scope | any = globalScope, updateEverything: boole
   simulationArea.hover = undefined;
   // Update wires
   if (wireToBeChecked || updateEverything) {
-    if (wireToBeChecked === 2)
-      wireToBeChecked = 0; // this required due to timing issues
+    if (wireToBeChecked === 2) wireToBeChecked = 0; // this required due to timing issues
     else wireToBeChecked++;
     // WHY IS THIS REQUIRED ???? we are checking inside wire ALSO
     // Idea: we can just call length again instead of doing it during loop.

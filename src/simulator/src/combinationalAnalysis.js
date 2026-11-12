@@ -314,19 +314,20 @@ export function solveBooleanFunction(inputListNames, booleanExpression) {
                    equation.substring(i + 1, equation.length)
            }
        }
-       try {
-           const safeEval = eval
-           const answer = safeEval(equation)
-           if (answer == 0) {
-               return 0
+       equation = equation.replace(/ /g, '')
+       if (!/^[01+*]+$/.test(equation)) return ''
+       const orTerms = equation.split('+')
+       for (const term of orTerms) {
+           if (term === '') return ''
+           for (const factor of term.split('*')) {
+               if (factor !== '0' && factor !== '1') return ''
            }
-           if (answer > 0) {
-               return 1
-           }
-           return ''
-       } catch (e) {
-           return ''
        }
+       return orTerms.some((term) =>
+           term.split('*').every((factor) => factor === '1')
+       )
+           ? 1
+           : 0
    }
 
    return output

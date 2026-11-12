@@ -1423,6 +1423,7 @@ input:checked + .slider:before {
     border-collapse: collapse;
     font-size: 0.9em;
     min-width: 400px;
+    margin: 0 auto;
 }
 
 .content-table tr th {
@@ -1440,13 +1441,14 @@ input:checked + .slider:before {
 .content-table tbody tr {
     text-align: center;
     display: flex;
+    justify-content: center;
     margin-bottom: 4px;
 }
 
 .content-table tbody {
     display: table-row-group;
     overflow: auto !important;
-    margin-left: 52px;
+    margin: 0 auto;
 }
 
 .output {
