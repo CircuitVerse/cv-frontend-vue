@@ -88,6 +88,12 @@ export default class verilogPower extends CircuitElement {
             (32 - this.outputBitWidth)
         simulationArea.simulationQueue.add(this.answer)
     }
+
+    generateVerilog() {
+        const a = this.inpA.verilogLabel || `${this.inpA.bitWidth}'d0`
+        const b = this.inpB.verilogLabel || `${this.inpB.bitWidth}'d0`
+        return `assign ${this.answer.verilogLabel} = ${a} ** ${b};`
+    }
 }
 
 /**

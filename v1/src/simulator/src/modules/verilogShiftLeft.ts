@@ -90,6 +90,12 @@ export default class verilogShiftLeft extends CircuitElement {
     this.output1.value = (output1 << (32 - this.outputBitWidth)) >>> (32 - this.outputBitWidth);
     simulationArea.simulationQueue.add(this.output1 as QueueObject);
   }
+
+  generateVerilog(): string {
+    const a = this.inp1.verilogLabel || `${this.inp1.bitWidth}'d0`;
+    const shift = this.shiftInp.verilogLabel || `${this.shiftInp.bitWidth}'d0`;
+    return `assign ${this.output1.verilogLabel} = ${a} << ${shift};`;
+  }
 }
 
 /**
