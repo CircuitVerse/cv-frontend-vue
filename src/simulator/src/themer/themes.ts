@@ -58,7 +58,7 @@ export const defaultCustomTheme: Record<string, string> = {
  * Loads custom theme settings from localStorage with fallback to default custom theme.
  * @returns An object containing custom theme CSS variables.
  */
-function getCustomTheme(): Record<string, string> {
+export function getCustomTheme(): Record<string, string> {
   try {
     const customTheme = localStorage.getItem("Custom Theme");
     if (!customTheme) {
