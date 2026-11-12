@@ -157,6 +157,7 @@ function recordEdit(action) {
 function undo() {
     const action = undoStack.value.pop()
     if (!action) return
+    if (!tableBody.value[action.rowIndex]) return
 
     tableBody.value[action.rowIndex][action.colIndex] = action.prevValue
     redoStack.value.push(action)
@@ -165,6 +166,7 @@ function undo() {
 function redo() {
     const action = redoStack.value.pop()
     if (!action) return
+    if (!tableBody.value[action.rowIndex]) return
 
     tableBody.value[action.rowIndex][action.colIndex] = action.nextValue
     undoStack.value.push(action)
@@ -306,6 +308,8 @@ function createLogicTable() {
 }
 
 function createBooleanPrompt(inputList, outputList, scope = globalScope) {
+    undoStack.value = []
+    redoStack.value = []
     inputListNames.value =
         inputList || prompt('Enter inputs separated by commas').split(',')
     outputListNames.value =
