@@ -92,8 +92,8 @@ export default class verilogShiftLeft extends CircuitElement {
     }
 
     generateVerilog() {
-        const a = this.inp1.verilogLabel || '0'
-        const shift = this.shiftInp.verilogLabel || '0'
+        const a = this.inp1.verilogLabel || `${this.inp1.bitWidth}'d0`
+        const shift = this.shiftInp.verilogLabel || `${this.shiftInp.bitWidth}'d0`
         return `assign ${this.output1.verilogLabel} = ${a} << ${shift};`
     }
 }

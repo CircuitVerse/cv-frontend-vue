@@ -124,8 +124,8 @@ export default class verilogDivider extends CircuitElement {
     }
 
     generateVerilog() {
-        const a = this.inpA.verilogLabel || '0'
-        const b = this.inpB.verilogLabel || '1'
+        const a = this.inpA.verilogLabel || `${this.inpA.bitWidth}'d0`
+        const b = this.inpB.verilogLabel || `${this.inpB.bitWidth}'d0`
         let res = ''
         if (this.quotient.verilogLabel) {
             res += `assign ${this.quotient.verilogLabel} = ${a} / ${b};`

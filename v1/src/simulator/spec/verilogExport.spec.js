@@ -172,4 +172,21 @@ describe('Verilog export', () => {
         expect(module).not.toContain('verilogShiftLeft verilogShiftLeft');
         expect(module).not.toContain('verilogShiftRight verilogShiftRight');
     });
+
+    it('uses sized zero literals for disconnected arithmetic inputs', () => {
+        setup();
+        const a = new Input(0, 0, globalScope, 'RIGHT', 4);
+        a.label = 'a';
+
+        const div = new verilogDivider(100, 100, globalScope, 'RIGHT', 4, 4);
+        const outQuot = new Output(200, 100, globalScope, 'LEFT', 4);
+        outQuot.label = 'out_quot';
+        a.output1.connect(div.inpA);
+        div.quotient.connect(outQuot.inp1);
+
+        const code = verilog.exportVerilog(globalScope);
+        const module = code.slice(code.indexOf('module Main'));
+
+        expect(module).toContain(`assign ${div.quotient.verilogLabel} = ${a.label} / 4'd0;`);
+    });
 });
