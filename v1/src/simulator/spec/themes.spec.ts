@@ -261,9 +261,7 @@ describe("Theme subsystem and dialog", () => {
     expect(document.documentElement.style.getPropertyValue("--primary")).toBe(
       themeOptions["Default Theme"]["--primary"],
     );
-    expect(themeOptions["Custom Theme"]["--primary"]).toBe(
-      defaultCustomTheme["--primary"],
-    );
+    expect(themeOptions["Custom Theme"]["--primary"]).toBe(defaultCustomTheme["--primary"]);
   });
 
   it("updates CSS variables on the first Apply in Custom Theme", async () => {
