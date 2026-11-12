@@ -2,6 +2,7 @@ import CircuitElement from '../circuitElement'
 import Node, { findNode, dec2bin } from '../node'
 import { simulationArea } from '../simulationArea'
 import { correctWidth, rect, fillText } from '../canvasApi'
+import { generateNodeName } from '../verilogHelpers'
 /**
  * @class
  * PriorityEncoder
@@ -211,7 +212,22 @@ export default class PriorityEncoder extends CircuitElement {
 
     generateVerilog() {
         PriorityEncoder.selSizes.add(this.bitWidth)
-        return CircuitElement.prototype.generateVerilog.call(this)
+        const selector = generateNodeName({ parent: this, label: 'sel' }, 0, 1)
+        this.scope.verilogWireList[this.bitWidth].push(selector)
+
+        const valid = this.enable.connections.length ? this.enable.verilogLabel : ''
+        const ports = [`.sel(${selector})`, `.ze(${valid})`]
+        this.inp1.forEach((node, index) => {
+            ports.push(`.in${index}(${node.verilogLabel})`)
+        })
+
+        let output = `${this.verilogBaseType()} ${this.verilogLabel}(${ports.join(', ')});`
+        this.output1.forEach((node, index) => {
+            if (node.connections.length) {
+                output += `\n  assign ${node.verilogLabel} = ${selector}[${index}];`
+            }
+        })
+        return output
     }
 
     static moduleVerilog() {
