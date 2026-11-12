@@ -5,6 +5,7 @@ import Output from '../src/modules/Output';
 import AndGate from '../src/modules/AndGate';
 import XorGate from '../src/modules/XorGate';
 import NotGate from '../src/modules/NotGate';
+import PriorityEncoder from '../src/modules/PriorityEncoder';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import { createRouter, createWebHistory } from 'vue-router';
@@ -105,5 +106,30 @@ describe('Verilog export', () => {
         expect(module).toContain(`assign ${usedAnd.output1.verilogLabel} = ${a.label} & ${b.label};`);
         expect(module).toContain(`assign ${out.label} = ${usedAnd.output1.verilogLabel};`);
         expect(module.match(/assign /g)).toHaveLength(2);
+    });
+
+    test.each([1, 2, 3])('exports every PriorityEncoder input in descending priority for %i output bits', (bitWidth) => {
+        PriorityEncoder.resetVerilog();
+        PriorityEncoder.selSizes.add(bitWidth);
+
+        const code = PriorityEncoder.moduleVerilog();
+        const branches = [...code.matchAll(/\bif \(in(\d+)\)\s+sel = (\d+);/g)]
+            .map((match) => [Number(match[1]), Number(match[2])]);
+        const inputCount = 2 ** bitWidth;
+
+        expect(branches).toEqual(Array.from({ length: inputCount }, (_, index) => {
+            const input = inputCount - 1 - index;
+            return [input, input];
+        }));
+    });
+
+    test('exports an active-high PriorityEncoder valid output', () => {
+        PriorityEncoder.resetVerilog();
+        PriorityEncoder.selSizes.add(2);
+
+        const code = PriorityEncoder.moduleVerilog();
+
+        expect(code).toMatch(/ze = 1;\s+if \(in3\)/);
+        expect(code).toMatch(/else\s+ze = 0;/);
     });
 });
