@@ -4,6 +4,51 @@ import { nextTick } from "vue";
 import { createPinia, setActivePinia } from "pinia";
 import vuetify from "#/plugins/vuetify";
 
+vi.hoisted(() => {
+  class MockStorage implements Storage {
+    private store: Record<string, string> = {};
+
+    get length(): number {
+      return Object.keys(this.store).length;
+    }
+
+    clear(): void {
+      this.store = {};
+    }
+
+    getItem(key: string): string | null {
+      return this.store[key] ?? null;
+    }
+
+    key(index: number): string | null {
+      return Object.keys(this.store)[index] ?? null;
+    }
+
+    removeItem(key: string): void {
+      delete this.store[key];
+    }
+
+    setItem(key: string, value: string): void {
+      this.store[key] = String(value);
+    }
+  }
+
+  const storage = new MockStorage();
+  if (typeof window !== "undefined") {
+    Object.defineProperty(window, "localStorage", {
+      value: storage,
+      writable: true,
+      configurable: true,
+    });
+  }
+  Object.defineProperty(globalThis, "localStorage", {
+    value: storage,
+    writable: true,
+    configurable: true,
+  });
+  return storage;
+});
+
 vi.mock("codemirror", () => ({
   default: { fromTextArea: vi.fn(() => ({ setValue: vi.fn() })) },
   fromTextArea: vi.fn(() => ({ setValue: vi.fn() })),
@@ -19,51 +64,6 @@ vi.mock("#/simulator/src/themer/themer", async (importOriginal) => {
     ...actual,
     updateBG: vi.fn(),
   };
-});
-
-/**
- * In-memory MockStorage implementation for Vitest environments.
- */
-class MockStorage implements Storage {
-  private store: Record<string, string> = {};
-
-  get length(): number {
-    return Object.keys(this.store).length;
-  }
-
-  clear(): void {
-    this.store = {};
-  }
-
-  getItem(key: string): string | null {
-    return this.store[key] ?? null;
-  }
-
-  key(index: number): string | null {
-    return Object.keys(this.store)[index] ?? null;
-  }
-
-  removeItem(key: string): void {
-    delete this.store[key];
-  }
-
-  setItem(key: string, value: string): void {
-    this.store[key] = String(value);
-  }
-}
-
-const mockStorage = new MockStorage();
-if (typeof window !== "undefined") {
-  Object.defineProperty(window, "localStorage", {
-    value: mockStorage,
-    writable: true,
-    configurable: true,
-  });
-}
-Object.defineProperty(globalThis, "localStorage", {
-  value: mockStorage,
-  writable: true,
-  configurable: true,
 });
 
 import themeOptions, { defaultCustomTheme } from "../src/themer/themes";
@@ -177,7 +177,22 @@ describe("Theme subsystem and dialog", () => {
     }
   });
 
-  it("reverts preview to applied theme when dialog is closed without applying", async () => {
+  it("checks the Default Theme dot initially", async () => {
+    localStorage.setItem("theme", "Default Theme");
+    await openAndMountDialog();
+
+    const defaultRadio = document.body.querySelector(
+      'input[value="Default Theme"]',
+    ) as HTMLInputElement | null;
+    const nightSkyRadio = document.body.querySelector(
+      'input[value="Night Sky"]',
+    ) as HTMLInputElement | null;
+
+    expect(defaultRadio?.checked).toBe(true);
+    expect(nightSkyRadio?.checked).toBe(false);
+  });
+
+  it("returns the dot and CSS variables to the applied theme after closing without Apply", async () => {
     localStorage.setItem("theme", "Default Theme");
     await openAndMountDialog();
 
@@ -189,6 +204,7 @@ describe("Theme subsystem and dialog", () => {
       nightSkyRadio.click();
       nightSkyRadio.dispatchEvent(new Event("change"));
       await nextTick();
+      expect(nightSkyRadio.checked).toBe(true);
     }
 
     const closeBtn = document.body.querySelector(".dialogClose") as HTMLButtonElement | null;
@@ -198,6 +214,89 @@ describe("Theme subsystem and dialog", () => {
       await nextTick();
     }
 
-    expect(localStorage.getItem("theme")).toBe("Default Theme");
+    await openAndMountDialog();
+    const defaultRadio = document.body.querySelector(
+      'input[value="Default Theme"]',
+    ) as HTMLInputElement | null;
+    const nightSkyRadioAfter = document.body.querySelector(
+      'input[value="Night Sky"]',
+    ) as HTMLInputElement | null;
+
+    expect(defaultRadio?.checked).toBe(true);
+    expect(nightSkyRadioAfter?.checked).toBe(false);
+    expect(document.documentElement.style.getPropertyValue("--primary")).toBe(
+      themeOptions["Default Theme"]["--primary"],
+    );
+  });
+
+  it("keeps the saved theme and CSS when closing Custom Theme without Apply", async () => {
+    localStorage.setItem("theme", "Default Theme");
+    await openAndMountDialog();
+
+    const buttons = Array.from(document.body.querySelectorAll("button"));
+    const customThemeBtn = buttons.find((btn) => btn.textContent?.includes("Custom Theme"));
+    expect(customThemeBtn).toBeDefined();
+    if (customThemeBtn) {
+      customThemeBtn.click();
+      await nextTick();
+    }
+
+    const primaryInput = document.body.querySelector(
+      'input[name="Primary"]',
+    ) as HTMLInputElement | null;
+    expect(primaryInput).not.toBeNull();
+    if (primaryInput) {
+      primaryInput.value = "#abcdef";
+      primaryInput.dispatchEvent(new Event("input"));
+      await nextTick();
+    }
+
+    const closeBtn = document.body.querySelector(".dialogClose") as HTMLButtonElement | null;
+    expect(closeBtn).not.toBeNull();
+    if (closeBtn) {
+      closeBtn.click();
+      await nextTick();
+    }
+
+    expect(document.documentElement.style.getPropertyValue("--primary")).toBe(
+      themeOptions["Default Theme"]["--primary"],
+    );
+    expect(themeOptions["Custom Theme"]["--primary"]).toBe(
+      defaultCustomTheme["--primary"],
+    );
+  });
+
+  it("updates CSS variables on the first Apply in Custom Theme", async () => {
+    localStorage.setItem("theme", "Default Theme");
+    await openAndMountDialog();
+
+    const buttons = Array.from(document.body.querySelectorAll("button"));
+    const customThemeBtn = buttons.find((btn) => btn.textContent?.includes("Custom Theme"));
+    expect(customThemeBtn).toBeDefined();
+    if (customThemeBtn) {
+      customThemeBtn.click();
+      await nextTick();
+    }
+
+    const primaryInput = document.body.querySelector(
+      'input[name="Primary"]',
+    ) as HTMLInputElement | null;
+    expect(primaryInput).not.toBeNull();
+    if (primaryInput) {
+      primaryInput.value = "#abcdef";
+      primaryInput.dispatchEvent(new Event("input"));
+      await nextTick();
+    }
+
+    const applyButtons = Array.from(document.body.querySelectorAll("button"));
+    const applyBtn = applyButtons.find((btn) => btn.textContent?.includes("Apply Theme"));
+    expect(applyBtn).toBeDefined();
+    if (applyBtn) {
+      applyBtn.click();
+      await nextTick();
+    }
+
+    expect(localStorage.getItem("theme")).toBe("Custom Theme");
+    expect(document.documentElement.style.getPropertyValue("--primary")).toBe("#abcdef");
   });
 });
