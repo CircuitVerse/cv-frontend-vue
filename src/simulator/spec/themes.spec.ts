@@ -67,6 +67,7 @@ vi.mock("#/simulator/src/themer/themer", async (importOriginal) => {
 });
 
 import themeOptions, { defaultCustomTheme } from "../src/themer/themes";
+import { updateThemeForStyle } from "../src/themer/themer";
 import { CreateAbstraction } from "../src/themer/customThemeAbstraction";
 import ApplyThemes from "#/components/DialogBox/Themes/ApplyThemes.vue";
 import { useState } from "#/store/SimulatorStore/state";
@@ -177,7 +178,7 @@ describe("Theme subsystem and dialog", () => {
     }
   });
 
-  it("checks the Default Theme dot initially", async () => {
+  it("selects Default Theme dot after picking another theme and then Default", async () => {
     localStorage.setItem("theme", "Default Theme");
     await openAndMountDialog();
 
@@ -188,8 +189,27 @@ describe("Theme subsystem and dialog", () => {
       'input[value="Night Sky"]',
     ) as HTMLInputElement | null;
 
-    expect(defaultRadio?.checked).toBe(true);
-    expect(nightSkyRadio?.checked).toBe(false);
+    expect(defaultRadio).not.toBeNull();
+    expect(nightSkyRadio).not.toBeNull();
+
+    // 1. Pick another theme (Night Sky)
+    nightSkyRadio!.click();
+    nightSkyRadio!.dispatchEvent(new Event("change"));
+    await nextTick();
+
+    expect(nightSkyRadio!.checked).toBe(true);
+    expect(defaultRadio!.checked).toBe(false);
+
+    // 2. Pick Default Theme again
+    defaultRadio!.click();
+    defaultRadio!.dispatchEvent(new Event("change"));
+    await nextTick();
+
+    expect(defaultRadio!.checked).toBe(true);
+    expect(nightSkyRadio!.checked).toBe(false);
+    expect(document.documentElement.style.getPropertyValue("--primary")).toBe(
+      themeOptions["Default Theme"]["--primary"],
+    );
   });
 
   it("returns the dot and CSS variables to the applied theme after closing without Apply", async () => {
@@ -213,6 +233,8 @@ describe("Theme subsystem and dialog", () => {
       closeBtn.click();
       await nextTick();
     }
+
+    expect(localStorage.getItem("theme")).toBe("Default Theme");
 
     await openAndMountDialog();
     const defaultRadio = document.body.querySelector(
@@ -258,14 +280,20 @@ describe("Theme subsystem and dialog", () => {
       await nextTick();
     }
 
+    expect(localStorage.getItem("theme")).toBe("Default Theme");
     expect(document.documentElement.style.getPropertyValue("--primary")).toBe(
       themeOptions["Default Theme"]["--primary"],
     );
     expect(themeOptions["Custom Theme"]["--primary"]).toBe(defaultCustomTheme["--primary"]);
   });
 
-  it("updates CSS variables on the first Apply in Custom Theme", async () => {
-    localStorage.setItem("theme", "Default Theme");
+  it("updates CSS variables on the first Apply in Custom Theme when a preset was applied first", async () => {
+    localStorage.setItem("theme", "Night Sky");
+    updateThemeForStyle("Night Sky");
+    expect(document.documentElement.style.getPropertyValue("--primary")).toBe(
+      themeOptions["Night Sky"]["--primary"],
+    );
+
     await openAndMountDialog();
 
     const buttons = Array.from(document.body.querySelectorAll("button"));
@@ -273,16 +301,6 @@ describe("Theme subsystem and dialog", () => {
     expect(customThemeBtn).toBeDefined();
     if (customThemeBtn) {
       customThemeBtn.click();
-      await nextTick();
-    }
-
-    const primaryInput = document.body.querySelector(
-      'input[name="Primary"]',
-    ) as HTMLInputElement | null;
-    expect(primaryInput).not.toBeNull();
-    if (primaryInput) {
-      primaryInput.value = "#abcdef";
-      primaryInput.dispatchEvent(new Event("input"));
       await nextTick();
     }
 
@@ -295,6 +313,8 @@ describe("Theme subsystem and dialog", () => {
     }
 
     expect(localStorage.getItem("theme")).toBe("Custom Theme");
-    expect(document.documentElement.style.getPropertyValue("--primary")).toBe("#abcdef");
+    expect(document.documentElement.style.getPropertyValue("--primary")).toBe(
+      defaultCustomTheme["--primary"],
+    );
   });
 });
