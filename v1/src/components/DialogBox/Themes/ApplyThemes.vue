@@ -198,7 +198,7 @@ function changeCustomTheme(e: InputEvent) {
 
 function applyTheme() {
     if (iscustomTheme.value == false) {
-        if (selectedTheme.value) {
+        if (themes.value.includes(selectedTheme.value)) {
             localStorage.removeItem('Custom Theme')
             localStorage.setItem('theme', selectedTheme.value)
         }
