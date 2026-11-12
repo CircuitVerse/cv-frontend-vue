@@ -36,6 +36,7 @@ import { provideCircuitName } from "#/components/helpers/promptComponent/PromptC
 import { deleteCurrentCircuit } from "#/components/helpers/deleteCircuit/DeleteCircuit.vue";
 import { useSimulatorMobileStore } from "#/store/simulatorMobileStore";
 import { inputList, moduleList } from "./metadata";
+import { syncTestbenchWithScope } from "./testbench";
 
 export const circuitProperty = {
   toggleLayoutMode,
@@ -102,6 +103,7 @@ export function switchCircuit(id: string) {
       name: globalScope.name,
     };
   }
+  syncTestbenchWithScope(globalScope);
   updateSimulationSet(true);
   updateSubcircuitSet(true);
   forceResetNodesSet(true);
@@ -264,6 +266,7 @@ export function newCircuit(
     }
     dots(false);
   }
+  syncTestbenchWithScope(scope);
   return scope;
 }
 
@@ -440,11 +443,11 @@ export default class Scope {
    * Checks if this circuit contains directly or indirectly scope with id
    * Recursive nature
    */
-  checkDependency(id: number) {
-    if (id === this.id) return true;
+  checkDependency(id: number | string) {
+    if (`${this.id}` === `${id}`) return true;
     if (this.SubCircuit) {
       for (let i = 0; i < this.SubCircuit.length; i++) {
-        if (this.SubCircuit[i].id === id) return true;
+        if (`${this.SubCircuit[i].id}` === `${id}`) return true;
       }
     }
     if (this.SubCircuit) {

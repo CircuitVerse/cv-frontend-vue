@@ -35,6 +35,9 @@ export interface SimulationArea {
   mouseDownY: number;
   mouseRawX: number;
   mouseRawY: number;
+  /** Unsnapped (fractional) canvas coordinates of the pointer, set by panMove. */
+  mouseXf?: number;
+  mouseYf?: number;
   mouseDownRawX: number;
   mouseDownRawY: number;
   simulationQueue: EventQueue;

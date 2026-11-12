@@ -1,3 +1,5 @@
+import "./globalVariables";
+
 import { createApp } from "vue";
 import App from "./App.vue";
 import vuetify from "./plugins/vuetify";
@@ -8,14 +10,14 @@ import i18n from "./locales/i18n";
 
 import "bootstrap";
 
-import "./globalVariables";
-
 import "./styles/css/main.stylesheet.css";
 import "../../node_modules/bootstrap/scss/bootstrap.scss";
 import "./styles/color_theme.scss";
 import "./styles/simulator.scss";
 import "./styles/tutorials.scss";
-import "@fortawesome/fontawesome-free/css/all.css";
+import "@fortawesome/fontawesome-free/css/fontawesome.css";
+import "@fortawesome/fontawesome-free/css/solid.css";
+import "@fortawesome/fontawesome-free/css/v4-shims.css";
 
 loadFonts();
 

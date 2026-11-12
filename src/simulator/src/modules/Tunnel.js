@@ -342,7 +342,7 @@ Tunnel.prototype.overrideDirectionRotation = true
  */
 Tunnel.prototype.mutableProperties = {
     identifier: {
-        name: 'Debug Flag identifier',
+        name: 'Tunnel identifier',
         type: 'text',
         maxlength: '5',
         func: 'setIdentifier',
