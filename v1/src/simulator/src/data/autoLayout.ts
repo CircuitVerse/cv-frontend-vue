@@ -431,12 +431,7 @@ function removeCollinearNodes(routing: IntermediateNet): void {
           routing.connections = routing.connections.filter(
             (_, index) => !links.some((link) => link.index === index),
           );
-          addConnection(
-            routing,
-            new Set(),
-            other[0],
-            other[1],
-          );
+          addConnection(routing, new Set(), other[0], other[1]);
           routing.nodes.splice(nodeIndex, 1);
           routing.connections = routing.connections.map(([source, target]) => [
             typeof source === "number" && source > nodeIndex ? source - 1 : source,
