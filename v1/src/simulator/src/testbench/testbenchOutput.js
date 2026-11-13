@@ -23,7 +23,7 @@ export default class TB_Output extends CircuitElement {
     constructor(x, y, scope = globalScope, dir = 'RIGHT', identifier) {
         super(x, y, scope, dir, 1)
         this.objectType = 'TB_Output'
-        this.scope.TB_Output.push(this)
+        /* this is done in this.baseSetup() now */
         this.setIdentifier(identifier || 'Test1')
         this.inputs = []
         this.testBenchInput = undefined
