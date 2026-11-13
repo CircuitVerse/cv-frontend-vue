@@ -14,6 +14,7 @@ import { generateId } from "./utils";
 import { simulationArea } from "./simulationArea";
 import { TestbenchData } from "#/simulator/src/testbench";
 import { moduleList, updateOrder } from "./metadata";
+import { isValidClipboardData } from "./clipboardValidation";
 
 /**
  * Helper function to paste
@@ -31,7 +32,9 @@ export function paste(copyData: string): void {
     return;
   }
 
-  if (!data || !data.logixClipBoardData || !Array.isArray(data.scopes)) return;
+  // Validate everything up front, before newCircuit()/switchCircuit() or
+  // loadScope() can modify the simulator, so bad data never half-applies.
+  if (!isValidClipboardData(data)) return;
 
   const currentScopeId = globalScope.id;
   for (let i = 0; i < data.scopes.length; i++) {
