@@ -224,7 +224,8 @@ export default class PriorityEncoder extends CircuitElement {
         let output = `${this.verilogBaseType()} ${this.verilogLabel}(${ports.join(', ')});`
         this.output1.forEach((node, index) => {
             if (node.connections.length) {
-                output += `\n  assign ${node.verilogLabel} = ${selector}[${index}];`
+                const selectedBit = this.bitWidth === 1 ? selector : `${selector}[${index}]`
+                output += `\n  assign ${node.verilogLabel} = ${selectedBit};`
             }
         })
         return output

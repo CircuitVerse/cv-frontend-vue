@@ -179,6 +179,13 @@ describe('Verilog export', () => {
         expect(code).toMatch(/else\s+ze = 0;/);
     });
 
+    test('uses the scalar selector directly for a two-input PriorityEncoder', () => {
+        const code = exportPriorityEncoder(1);
+
+        expect(code).toContain('assign encoder_out_0 = encoder_sel;');
+        expect(code).not.toContain('encoder_sel[');
+    });
+
     test.each([1, 2, 3, 4])('compiles and proves complete PriorityEncoder exports for %i output bits', async (bitWidth) => {
         const code = exportPriorityEncoder(bitWidth);
         const inputCount = 2 ** bitWidth;
