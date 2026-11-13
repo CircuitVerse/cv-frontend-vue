@@ -151,15 +151,12 @@ describe("Theme subsystem and dialog", () => {
 
     await openAndMountDialog();
 
-    const nightSkyRadio = document.body.querySelector(
-      'input[value="Night Sky"]',
-    ) as HTMLInputElement | null;
-    expect(nightSkyRadio).not.toBeNull();
-    if (nightSkyRadio) {
-      nightSkyRadio.click();
-      nightSkyRadio.dispatchEvent(new Event("change"));
-      await nextTick();
-    }
+    const nightSkyCard = document.body.querySelector(
+      '[id="Night Sky"] .themeSel',
+    ) as HTMLElement | null;
+    expect(nightSkyCard).not.toBeNull();
+    nightSkyCard?.click();
+    await nextTick();
 
     const buttons = Array.from(document.body.querySelectorAll("button"));
     const applyBtn = buttons.find((btn) => btn.textContent?.includes("Apply Theme"));
