@@ -5,6 +5,9 @@ import Output from '../src/modules/Output';
 import AndGate from '../src/modules/AndGate';
 import XorGate from '../src/modules/XorGate';
 import NotGate from '../src/modules/NotGate';
+import PriorityEncoder from '../src/modules/PriorityEncoder';
+import Scope, { scopeList } from '../src/circuit';
+import { runYosys } from '@yowasp/yosys';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import { createRouter, createWebHistory } from 'vue-router';
@@ -24,6 +27,50 @@ vi.mock('codemirror', async (importOriginal) => {
 vi.mock('codemirror-editor-vue3', () => ({
     defineSimpleMode: vi.fn(),
 }));
+
+function exportPriorityEncoder(bitWidth, connectedBits, connectValid = true, label = 'encoder') {
+    const scope = new Scope('EncoderExport');
+    scopeList[scope.id] = scope;
+
+    try {
+        const encoder = new PriorityEncoder(100, 100, scope, 'RIGHT', bitWidth);
+        encoder.label = label;
+        encoder.inp1.forEach((node, index) => {
+            const input = new Input(0, index * 20, scope, 'RIGHT', 1);
+            input.label = `in${index}`;
+            input.output1.connect(node);
+        });
+
+        encoder.output1.forEach((node, index) => {
+            if (connectedBits && !connectedBits.includes(index)) return;
+            const output = new Output(200, index * 20, scope, 'LEFT', 1);
+            output.label = `bit${index}`;
+            node.connect(output.inp1);
+        });
+
+        if (connectValid) {
+            const output = new Output(200, 100, scope, 'LEFT', 1);
+            output.label = 'valid';
+            encoder.enable.connect(output.inp1);
+        }
+
+        return verilog.exportVerilog(scope);
+    } finally {
+        delete scopeList[scope.id];
+    }
+}
+
+async function checkVerilog(code, commands) {
+    const logs = [];
+    const capture = (bytes) => {
+        if (bytes) logs.push(new TextDecoder().decode(bytes));
+    };
+    await runYosys(['-p', `read_verilog input.v; ${commands}`], { 'input.v': code }, {
+        stdout: capture,
+        stderr: capture,
+    });
+    return logs.join('');
+}
 
 describe('Verilog export', () => {
     let pinia;
@@ -106,4 +153,81 @@ describe('Verilog export', () => {
         expect(module).toContain(`assign ${out.label} = ${usedAnd.output1.verilogLabel};`);
         expect(module.match(/assign /g)).toHaveLength(2);
     });
+
+    test.each([1, 2, 3])('exports every PriorityEncoder input in descending priority for %i output bits', (bitWidth) => {
+        PriorityEncoder.resetVerilog();
+        PriorityEncoder.selSizes.add(bitWidth);
+
+        const code = PriorityEncoder.moduleVerilog();
+        const branches = [...code.matchAll(/\bif \(in(\d+)\)\s+sel = (\d+);/g)]
+            .map((match) => [Number(match[1]), Number(match[2])]);
+        const inputCount = 2 ** bitWidth;
+
+        expect(branches).toEqual(Array.from({ length: inputCount }, (_, index) => {
+            const input = inputCount - 1 - index;
+            return [input, input];
+        }));
+    });
+
+    test('exports an active-high PriorityEncoder valid output', () => {
+        PriorityEncoder.resetVerilog();
+        PriorityEncoder.selSizes.add(2);
+
+        const code = PriorityEncoder.moduleVerilog();
+
+        expect(code).toMatch(/ze = 1;\s+if \(in3\)/);
+        expect(code).toMatch(/else\s+ze = 0;/);
+    });
+
+    test('uses the scalar selector directly for a two-input PriorityEncoder', () => {
+        const code = exportPriorityEncoder(1);
+
+        expect(code).toContain('assign encoder_out_0 = encoder_sel;');
+        expect(code).not.toContain('encoder_sel[');
+    });
+
+    test.each([1, 2, 3, 4])('compiles and proves complete PriorityEncoder exports for %i output bits', async (bitWidth) => {
+        const code = exportPriorityEncoder(bitWidth);
+        const inputCount = 2 ** bitWidth;
+        const inputs = Array.from({ length: inputCount }, (_, index) => `in${index}`);
+        const ports = inputs.map((name) => `.${name}(${name})`);
+        for (let index = 0; index < bitWidth; index++) {
+            ports.push(`.bit${index}(selected[${index}])`);
+        }
+        ports.push('.valid(valid)');
+        const expected = [...inputs].reverse().map((name, index) =>
+            `${name} ? ${bitWidth}'d${inputCount - 1 - index} : `
+        ).join('') + `${bitWidth}'d0`;
+        const proof = `
+module check(input ${inputs.join(', ')}, output ok);
+    wire [${bitWidth - 1}:0] selected;
+    wire valid;
+    EncoderExport dut(${ports.join(', ')});
+    assign ok = (selected == (${expected})) && (valid == (|{${inputs.join(', ')}}));
+endmodule
+`;
+        const logs = await checkVerilog(code + proof,
+            'prep -top check; flatten; sat -verify -prove ok 1');
+
+        expect(logs).toContain('SUCCESS!');
+    }, 60000);
+
+    test.each([
+        { bits: [0], valid: true },
+        { bits: [1], valid: true },
+        { bits: [], valid: true },
+        { bits: [0, 1], valid: false },
+        { bits: [], valid: false },
+    ])('compiles PriorityEncoder exports with connected bits $bits and valid $valid', async ({ bits, valid }) => {
+        const code = exportPriorityEncoder(2, bits, valid);
+
+        await checkVerilog(code, 'hierarchy -check -top EncoderExport; proc; check -assert');
+        expect(code).not.toContain('undefined');
+    }, 60000);
+
+    test('compiles PriorityEncoder exports with an escaped instance label', async () => {
+        const code = exportPriorityEncoder(2, undefined, true, 'encoder-test');
+
+        await checkVerilog(code, 'hierarchy -check -top EncoderExport; proc; check -assert');
+    }, 60000);
 });
