@@ -160,7 +160,7 @@ const getMacDefaultKeys = (): KeyMap => {
 export const warnOverride = (
   combo: string,
   target: HTMLElement,
-  warning: HTMLInputElement,
+  warning: HTMLInputElement | { value: string },
 ): void => {
   const preferenceChildren = document.getElementById("preference")?.children;
   if (!preferenceChildren) return;
