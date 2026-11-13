@@ -392,6 +392,9 @@ input[type='text']:focus {
 
 .draggable-panel-css .panel-body {
     padding-top: 10px;
+    max-height: calc(100vh - 160px);
+    overflow-y: auto;
+    scrollbar-width: thin; 
 }
 
 .draggable-panel-css .panel {
@@ -401,9 +404,7 @@ input[type='text']:focus {
     margin-bottom: 0em;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    max-height: 185px;
     border-radius: 2px;
-    overflow: auto;
 }
 
 .ui-accordion-header {
