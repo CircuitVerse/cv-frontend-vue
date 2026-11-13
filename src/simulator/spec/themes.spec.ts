@@ -193,16 +193,22 @@ describe("Theme subsystem and dialog", () => {
     expect(nightSkyRadio).not.toBeNull();
 
     // 1. Pick another theme (Night Sky)
-    nightSkyRadio!.click();
-    nightSkyRadio!.dispatchEvent(new Event("change"));
+    const nightSkyCard = document.body.querySelector(
+      '[id="Night Sky"] .themeSel',
+    ) as HTMLElement | null;
+    expect(nightSkyCard).not.toBeNull();
+    nightSkyCard?.click();
     await nextTick();
 
     expect(nightSkyRadio!.checked).toBe(true);
     expect(defaultRadio!.checked).toBe(false);
 
     // 2. Pick Default Theme again
-    defaultRadio!.click();
-    defaultRadio!.dispatchEvent(new Event("change"));
+    const defaultCard = document.body.querySelector(
+      '[id="Default Theme"] .themeSel',
+    ) as HTMLElement | null;
+    expect(defaultCard).not.toBeNull();
+    defaultCard?.click();
     await nextTick();
 
     expect(defaultRadio!.checked).toBe(true);
@@ -220,12 +226,13 @@ describe("Theme subsystem and dialog", () => {
       'input[value="Night Sky"]',
     ) as HTMLInputElement | null;
     expect(nightSkyRadio).not.toBeNull();
-    if (nightSkyRadio) {
-      nightSkyRadio.click();
-      nightSkyRadio.dispatchEvent(new Event("change"));
-      await nextTick();
-      expect(nightSkyRadio.checked).toBe(true);
-    }
+    const nightSkyCard = document.body.querySelector(
+      '[id="Night Sky"] .themeSel',
+    ) as HTMLElement | null;
+    expect(nightSkyCard).not.toBeNull();
+    nightSkyCard?.click();
+    await nextTick();
+    expect(nightSkyRadio?.checked).toBe(true);
 
     const closeBtn = document.body.querySelector(".dialogClose") as HTMLButtonElement | null;
     expect(closeBtn).not.toBeNull();
