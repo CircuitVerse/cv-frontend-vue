@@ -88,7 +88,8 @@ function getImgUrl(elementName: string) {
   width: 220px;
   font: inherit;
   display: none;
-  top: 90px;
+  top: calc(var(--tabs-height, 30px) + 60px);
   left: 10px;
+  transition: top 0.2s ease-in-out;
 }
 </style>
