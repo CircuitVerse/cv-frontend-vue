@@ -18,11 +18,9 @@
             <UserMenu class="useMenuBtn" />
         </div>
     </nav>
-    <QuickButton v-if="!simulatorMobileStore.showMobileView" />
 </template>
 
 <script lang="ts" setup>
-import QuickButton from '@/Navbar/QuickButton/QuickButton.vue'
 import NavbarLinks from '@/Navbar/NavbarLinks/NavbarLinks.vue'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 
