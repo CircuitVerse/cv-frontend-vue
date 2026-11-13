@@ -286,7 +286,7 @@ export default class RAM extends CircuitElement {
         var oldData = this.data
         try {
             var ramSize = 1 << this.addressWidth
-            var maxNumber = 1 << this.bitWidth
+            var maxNumber = 2 ** this.bitWidth
             this.clearData()
 
             data = data.split(/[, \n\t]/)
