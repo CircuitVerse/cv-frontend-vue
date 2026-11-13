@@ -87,6 +87,58 @@ const malformedPayloads = [
         { logixClipBoardData: true, scopes: [validScope] },
     ],
     ['scopes that is not an array', { logixClipBoardData: true, scopes: {}, allNodes: [] }],
+    [
+        'a root layout that is a string',
+        { logixClipBoardData: true, scopes: [], allNodes: [], layout: 'bad' },
+    ],
+    [
+        'a scope layout that is a string',
+        {
+            logixClipBoardData: true,
+            scopes: [{ id: 'bad-layout', name: 'Bad', allNodes: [], layout: 'bad' }],
+            allNodes: [],
+        },
+    ],
+    [
+        'a scope name that is empty after stripping tags',
+        {
+            logixClipBoardData: true,
+            scopes: [validScope, { id: 'tags-only', name: '<b></b>', allNodes: [] }],
+            allNodes: [],
+        },
+    ],
+    [
+        'a whitespace-only scope name',
+        {
+            logixClipBoardData: true,
+            scopes: [{ id: 'blank', name: '   ', allNodes: [] }],
+            allNodes: [],
+        },
+    ],
+    [
+        'a null entry in the root allNodes',
+        { logixClipBoardData: true, scopes: [validScope], allNodes: [null] },
+    ],
+    [
+        'a null entry in a scope allNodes',
+        {
+            logixClipBoardData: true,
+            scopes: [validScope, { id: 'null-node', name: 'N', allNodes: [null] }],
+            allNodes: [],
+        },
+    ],
+    [
+        'a null entry in a root module list',
+        { logixClipBoardData: true, scopes: [validScope], allNodes: [], Input: [null] },
+    ],
+    [
+        'a null entry in a scope module list',
+        {
+            logixClipBoardData: true,
+            scopes: [validScope, { id: 'null-mod', name: 'M', allNodes: [], Input: [null] }],
+            allNodes: [],
+        },
+    ],
 ]
 
 describe('paste() with malformed but valid JSON', () => {
@@ -133,6 +185,24 @@ describe('isValidClipboardData()', () => {
                 allNodes: [],
             })
         ).toBe(false)
+    })
+
+    test('returns true for valid layout objects and names containing tags', () => {
+        expect(
+            isValidClipboardData({
+                logixClipBoardData: true,
+                scopes: [
+                    {
+                        id: 1,
+                        name: '<b>Main</b>',
+                        allNodes: [{ x: 100, y: 20, type: 1, bitWidth: 1, label: '', connections: [] }],
+                        layout: { width: 100, height: 40, title_x: 50, title_y: 13, titleEnabled: true },
+                    },
+                ],
+                allNodes: [],
+                layout: { width: 100, height: 40, title_x: 50, title_y: 13, titleEnabled: true },
+            })
+        ).toBe(true)
     })
 
     test('returns true for a well-formed payload', () => {

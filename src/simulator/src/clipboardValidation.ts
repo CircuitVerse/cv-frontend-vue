@@ -1,4 +1,5 @@
 import { moduleList } from "./metadata";
+import { stripTags } from "./utils";
 
 const isPlainObject = (value: unknown): value is Record<string, any> =>
   typeof value === "object" && value !== null && !Array.isArray(value);
@@ -9,22 +10,39 @@ const isPlainObject = (value: unknown): value is Record<string, any> =>
  */
 function hasLoadableShape(payload: unknown): boolean {
   if (!isPlainObject(payload)) return false;
-  // loadScope() calls data.allNodes.map() unguarded.
+  // loadScope() calls data.allNodes.map() unguarded, and loadNode() reads
+  // properties of every entry.
   if (!Array.isArray(payload.allNodes)) return false;
-  // loadScope() iterates data[moduleName].length for every module that is
-  // present, so a present-but-not-array module would be loaded as garbage.
-  return moduleList.every((name) => payload[name] === undefined || Array.isArray(payload[name]));
+  if (!payload.allNodes.every(isPlainObject)) return false;
+  // loadScope() writes scope.layout.titleEnabled, which throws if layout
+  // is a string, number or boolean.
+  if (payload.layout !== undefined && !isPlainObject(payload.layout)) {
+    return false;
+  }
+  // loadScope() iterates data[moduleName] for every module that is present,
+  // and loadModule()/loadSubCircuit() read properties of every entry.
+  return moduleList.every((name) => {
+    const entries = payload[name];
+    if (entries === undefined) return true;
+    return Array.isArray(entries) && entries.every(isPlainObject);
+  });
 }
 
 function isValidScope(scope: unknown): boolean {
   if (!hasLoadableShape(scope)) return false;
   const s = scope as Record<string, any>;
-  // Scope ids are numbers when the simulator creates them (see the Scope
-  // constructor in circuit.ts) and may be strings in saved data.
-  const idIsString = typeof s.id === "string" && s.id !== "";
-  const idIsNumber = typeof s.id === "number" && Number.isFinite(s.id);
-  if (!idIsString && !idIsNumber) return false;
-  if (s.name !== undefined && typeof s.name !== "string") return false;
+  // Scope ids are numbers for circuits created in the simulator
+  // (see the Scope constructor) but may be strings for imported ones.
+  const idIsValid =
+    (typeof s.id === "string" && s.id !== "") ||
+    (typeof s.id === "number" && Number.isFinite(s.id));
+  if (!idIsValid) return false;
+  if (s.name !== undefined) {
+    if (typeof s.name !== "string") return false;
+    // newCircuit() strips tags and returns undefined for an empty name,
+    // which would make loadScope() throw after earlier scopes were created.
+    if (!stripTags(s.name)) return false;
+  }
   return true;
 }
 
