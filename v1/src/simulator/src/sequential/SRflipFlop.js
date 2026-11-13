@@ -114,11 +114,15 @@ module SRflipFlop(q, q_inv, r, s, rst, pre, en);
     output wire q_inv;
     input wire r, s, rst, pre, en;
 
-    // SR flip flop in the simulator is level sensitive, it has no clock node
+    // the element has no clock, and resolve() reads an unconnected preset as 0
+    // and an unconnected enable as enabled, so match that here
+    wire pre_in = (pre === 1'b1);
+    wire en_in = (en === 1'b0) ? 1'b0 : 1'b1;
+
     always @(*) begin
         if (rst)
-            q = pre;
-        else if (en && (s ^ r))
+            q = pre_in;
+        else if (en_in && (s ^ r))
             q = s;
     end
 
