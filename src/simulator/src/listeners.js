@@ -497,6 +497,8 @@ export default function startListeners() {
                         e.key.toString() == 'Enter'
                     ) {
                         simulationArea.lastSelected.keyDown(e.key.toString())
+                        updateSimulationSet(true)
+                        scheduleUpdate(1)
                         e.cancelBubble = true
                         e.returnValue = false
 
@@ -515,6 +517,8 @@ export default function startListeners() {
                 ) {
                     if (e.key.toString().length == 1) {
                         simulationArea.lastSelected.keyDown2(e.key.toString())
+                        updateSimulationSet(true)
+                        scheduleUpdate(1)
                         return
                     }
                 }
@@ -528,6 +532,8 @@ export default function startListeners() {
                         e.key.toString() != 'Delete'
                     ) {
                         simulationArea.lastSelected.keyDown3(e.key.toString())
+                        updateSimulationSet(true)
+                        scheduleUpdate(1)
                         return
                     }
                 }
