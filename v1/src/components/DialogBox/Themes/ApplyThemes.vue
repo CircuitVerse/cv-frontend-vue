@@ -74,6 +74,7 @@
                                     value="theme"
                                     name="theme"
                                     :checked="theme == selectedTheme"
+                                    @change="changeTheme(theme)"
                                 />
                                 <label :for="theme.replace(' ', '')">{{
                                     theme
@@ -160,14 +161,14 @@ import { confirmSingleOption } from '#/utils/confirm'
 const themes = ref([''])
 const customThemes = ref<((keyof typeof customThemesList)[]) | undefined>(undefined);
 const customThemesList: Themes = reactive({})
-const selectedTheme = ref('default-theme')
+const selectedTheme = ref('Default Theme')
 const iscustomTheme = ref(false)
 const selectedThemeRef = ref<string | null>(null)
 
 onMounted(() => {
     SimulatorState.dialogBox.theme_dialog = false
-    selectedTheme.value = localStorage.getItem('theme') ?? 'default-theme'
-    selectedThemeRef.value = localStorage.getItem('theme')
+    selectedTheme.value = localStorage.getItem('theme') ?? 'Default Theme'
+    selectedThemeRef.value = localStorage.getItem('theme') ?? 'Default Theme'
     themes.value = Object.keys(themeOptions)
     themes.value.splice(-1, 1)
     const customTheme = CreateAbstraction(themeOptions['Custom Theme'])
@@ -283,18 +284,20 @@ function exportCustomTheme() {
 function closeThemeDialog() {
     SimulatorState.dialogBox.theme_dialog = false
     setTimeout(() => (iscustomTheme.value = false), 1000)
-    updateThemeForStyle(localStorage.getItem('theme'))
+    selectedTheme.value = selectedThemeRef.value ?? 'Default Theme'
+    updateThemeForStyle(localStorage.getItem('theme') ?? 'Default Theme')
     updateBG()
 }
 function closeCustomThemeDialog() {
     SimulatorState.dialogBox.theme_dialog = false
     setTimeout(() => (iscustomTheme.value = false), 1000)
+    selectedTheme.value = selectedThemeRef.value ?? 'Default Theme'
     const customTheme = localStorage.getItem('Custom Theme')
     if (customTheme) {
         themeOptions['Custom Theme'] = JSON.parse(customTheme) || themeOptions['Default Theme'] // hack for closing dialog box without saving
     }
     // Rollback to previous theme
-    updateThemeForStyle(localStorage.getItem('theme'))
+    updateThemeForStyle(localStorage.getItem('theme') ?? 'Default Theme')
     updateBG()
 }
 </script>
