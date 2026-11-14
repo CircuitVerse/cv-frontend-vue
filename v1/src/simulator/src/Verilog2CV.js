@@ -8,6 +8,7 @@ import { computeLayout, computePortLayout } from './synthesis/circuitLayout.js';
 import { isTauri } from '@tauri-apps/api/core'
 import SubCircuit from './subcircuit'
 import { simulationArea } from './simulationArea'
+import { getToken } from '#/utils/auth'
 import CodeMirror from 'codemirror/lib/codemirror.js'
 import 'codemirror/lib/codemirror.css'
 
@@ -288,6 +289,8 @@ function serverSynthesis(verilogCode) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+            Authorization: `Token ${getToken('cvt')}`,
         },
         body: JSON.stringify({ code: verilogCode }),
     }).then((response) => {
