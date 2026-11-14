@@ -25,6 +25,8 @@ type SelectedLike = {
   keyDown?: (key: string) => void;
   keyDown2?: (key: string) => void;
   keyDown3?: (key: string) => void;
+  newElement?: boolean;
+  delete: () => void;
   objectType?: string;
   bitWidth?: number;
   newBitWidth?: (width: number) => void;
@@ -195,6 +197,9 @@ export function handleSimulatorKeyDown(e: KeyboardEvent): void {
 
   // deselect all Shortcut
   if (e.keyCode == 27) {
+    if (lastSelected?.newElement) {
+      lastSelected.delete();
+    }
     simulationArea.multipleObjectSelections = [];
     simulationArea.lastSelected = undefined;
     e.preventDefault();
