@@ -48,18 +48,24 @@ export class TestbenchData {
     return false;
   }
 
+  /**
+   * A group with no inputs (as `removeTestButton` constructs) has nothing at
+   * `inputs[0]` to read a case count from — treat it as zero cases rather
+   * than dereferencing.
+   */
+  private static caseCountOf(group: TestData["groups"][number]): number {
+    return group.inputs[0] ? group.inputs[0].values.length : 0;
+  }
+
   groupNext() {
     const newCase = new TestbenchData(this.testData, this.currentGroup, 0);
     const groupCount = newCase.testData.groups.length;
-    let caseCount = 0;
-    if (newCase.testData.groups[this.currentGroup].inputs[0]) {
-      caseCount = newCase.testData.groups[this.currentGroup].inputs[0].values.length;
-    }
+    let caseCount = TestbenchData.caseCountOf(newCase.testData.groups[this.currentGroup]);
 
     while (caseCount === 0 || this.currentGroup === newCase.currentGroup) {
       newCase.currentGroup++;
       if (newCase.currentGroup >= groupCount) return false;
-      caseCount = newCase.testData.groups[newCase.currentGroup].inputs[0].values.length;
+      caseCount = TestbenchData.caseCountOf(newCase.testData.groups[newCase.currentGroup]);
     }
 
     this.currentGroup = newCase.currentGroup;
@@ -69,13 +75,12 @@ export class TestbenchData {
 
   groupPrev() {
     const newCase = new TestbenchData(this.testData, this.currentGroup, 0);
-    const _groupCount = newCase.testData.groups.length;
-    let caseCount = newCase.testData.groups[newCase.currentGroup].inputs[0].values.length;
+    let caseCount = TestbenchData.caseCountOf(newCase.testData.groups[newCase.currentGroup]);
 
     while (caseCount === 0 || this.currentGroup === newCase.currentGroup) {
       newCase.currentGroup--;
       if (newCase.currentGroup < 0) return false;
-      caseCount = newCase.testData.groups[newCase.currentGroup].inputs[0].values.length;
+      caseCount = TestbenchData.caseCountOf(newCase.testData.groups[newCase.currentGroup]);
     }
 
     this.currentGroup = newCase.currentGroup;
