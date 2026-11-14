@@ -99,6 +99,4 @@ export default class verilogShiftLeft extends CircuitElement {
  * @category modules
  */
 verilogShiftLeft.prototype.tooltipText = "verilogShiftLeft ToolTip : Performs addition of numbers.";
-verilogShiftLeft.prototype.helplink =
-  "https://docs.circuitverse.org/#/miscellaneous?id=verilogShiftLeft";
 verilogShiftLeft.prototype.objectType = "verilogShiftLeft";

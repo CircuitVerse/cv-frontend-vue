@@ -162,5 +162,5 @@ NandGate.prototype.changeInputSize = changeInputSize
  */
 NandGate.prototype.verilogType = 'nand'
 NandGate.prototype.helplink =
-    'https://docs.circuitverse.org/#/chapter4/4gates?id=nand-gate'
+    'https://docs.circuitverse.org/chapter4/chapter4-gates#nand-gate'
 NandGate.prototype.objectType = 'NandGate'

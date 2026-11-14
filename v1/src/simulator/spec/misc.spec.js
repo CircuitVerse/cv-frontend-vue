@@ -1,5 +1,6 @@
 import { setup } from '../src/setup';
 import load from '../src/data/load';
+import modules from '../src/modules';
 import circuitData from './circuits/misc-circuitdata.json';
 import testData from './testData/misc-testdata.json';
 import { runAll } from '../src/testbench';
@@ -77,6 +78,16 @@ describe('Simulator Misc-Elements Testing', () => {
 
     test('load circuitData', () => {
         expect(() => load(circuitData)).not.toThrow();
+    });
+
+    test('element help links point at the current docs site', () => {
+        const stale = Object.keys(modules).filter((name) =>
+            modules[name].prototype?.helplink?.includes(
+                'docs.circuitverse.org/#/'
+            )
+        );
+
+        expect(stale).toEqual([]);
     });
 
     test('ALU working', () => {

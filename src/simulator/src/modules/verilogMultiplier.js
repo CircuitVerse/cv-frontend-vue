@@ -98,6 +98,4 @@ export default class verilogMultiplier extends CircuitElement {
  */
 verilogMultiplier.prototype.tooltipText =
     'verilogMultiplier ToolTip : Performs addition of numbers.'
-verilogMultiplier.prototype.helplink =
-    'https://docs.circuitverse.org/#/miscellaneous?id=verilogMultiplier'
 verilogMultiplier.prototype.objectType = 'verilogMultiplier'
