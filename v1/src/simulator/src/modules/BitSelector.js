@@ -151,7 +151,7 @@ export default class BitSelector extends CircuitElement {
  * @category modules
  */
 BitSelector.prototype.tooltipText =
-    'BitSelector ToolTip : Divides input bits into several equal-sized groups.'
+    'BitSelector ToolTip : Outputs the single bit of the input picked by the select line.'
 BitSelector.prototype.helplink =
     'https://docs.circuitverse.org/#/chapter4/5muxandplex?id=bitselector'
 
