@@ -1,5 +1,18 @@
-export function sanitizeLabel(name) {
-    var temp = name
+/**
+ * Minimal interface for nodes consumed by Verilog name-generation helpers.
+ * Covers the subset of properties accessed in this file; a full `Node` type
+ * will replace this once `node.js` is migrated to TypeScript.
+ */
+interface VerilogNode {
+    verilogLabel: string;
+    label: string;
+    parent: {
+        verilogLabel: string;
+    };
+}
+
+export function sanitizeLabel(name: string): string {
+    let temp = name
     // if there is a space anywhere but the last place
     // replace spaces by "_"
     // last space is required for escaped id
@@ -19,10 +32,10 @@ export function sanitizeLabel(name) {
     return temp
 }
 
-export function generateNodeName(node, currentCount, totalCount) {
+export function generateNodeName(node: VerilogNode, currentCount: number, totalCount: number): string {
     if (node.verilogLabel) return node.verilogLabel
-    var parentVerilogLabel = node.parent.verilogLabel
-    var nodeName
+    const parentVerilogLabel = node.parent.verilogLabel
+    let nodeName: string
     if (node.label) {
         nodeName = sanitizeLabel(node.label)
     } else {
