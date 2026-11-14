@@ -135,6 +135,7 @@ export function handleSimulatorKeyDown(e: KeyboardEvent): void {
       e.key.toString() == "Enter"
     ) {
       lastSelected.keyDown(e.key.toString());
+      updateSimulationSet(true);
       e.cancelBubble = true;
       e.returnValue = false;
 
@@ -150,6 +151,7 @@ export function handleSimulatorKeyDown(e: KeyboardEvent): void {
   if (lastSelected && lastSelected.keyDown2) {
     if (e.key.toString().length == 1) {
       lastSelected.keyDown2(e.key.toString());
+      updateSimulationSet(true);
       return;
     }
   }
@@ -157,6 +159,7 @@ export function handleSimulatorKeyDown(e: KeyboardEvent): void {
   if (lastSelected && lastSelected.keyDown3) {
     if (e.key.toString() != "Backspace" && e.key.toString() != "Delete") {
       lastSelected.keyDown3(e.key.toString());
+      updateSimulationSet(true);
       return;
     }
   }
