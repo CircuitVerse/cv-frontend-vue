@@ -296,7 +296,11 @@ export function renderCanvas(scope: Scope) {
     ctx.stroke();
     ctx.fill();
   }
-  if (simulationArea.hover !== undefined) {
+  if (simulationArea.isResizingRectangle) {
+    simulationArea.canvas.style.cursor = simulationArea.resizeCursor || "default";
+  } else if (simulationArea.resizeCursor) {
+    simulationArea.canvas.style.cursor = simulationArea.resizeCursor;
+  } else if (simulationArea.hover !== undefined) {
     simulationArea.canvas.style.cursor = "pointer";
   } else if (simulationArea.mouseDown) {
     simulationArea.canvas.style.cursor = "grabbing";

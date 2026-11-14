@@ -22,6 +22,7 @@
         :min="valueMin"
         :max="valueMax"
         :value="localValue"
+        @input="onNativeInput"
         @change="onNativeChange"
       />
       <div class="input-group-append">
@@ -71,6 +72,14 @@ function clamp(value: number): number {
   return Math.min(Math.max(value, isNaN(min) ? -Infinity : min), isNaN(max) ? Infinity : max)
 }
 
+function getCurrentValue(): number {
+  if (inputRef.value) {
+    const raw = parseInt(inputRef.value.value, 10)
+    if (!isNaN(raw)) return raw
+  }
+  return localValue.value
+}
+
 function commitValue(value: number) {
   localValue.value = value
   emit('update:propertyValue', value)
@@ -84,12 +93,19 @@ function commitValue(value: number) {
 
 function increaseValue() {
   const step = parseInt(props.stepSize, 10) || 1
-  commitValue(clamp(localValue.value + step))
+  commitValue(clamp(getCurrentValue() + step))
 }
 
 function decreaseValue() {
   const step = parseInt(props.stepSize, 10) || 1
-  commitValue(clamp(localValue.value - step))
+  commitValue(clamp(getCurrentValue() - step))
+}
+
+function onNativeInput(event: Event) {
+  const raw = parseInt((event.target as HTMLInputElement).value, 10)
+  if (!isNaN(raw)) {
+    localValue.value = raw
+  }
 }
 
 function onNativeChange(event: Event) {
