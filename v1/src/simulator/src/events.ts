@@ -21,9 +21,27 @@ import { moduleList, updateOrder } from "./metadata";
  * @category events
  */
 export function paste(copyData: string): void {
-  if (copyData === "undefined") return;
-  const data = JSON.parse(copyData);
-  if (!data.logixClipBoardData) return;
+  if (!copyData || copyData === "undefined") return;
+
+  let data: {
+    logixClipBoardData?: boolean;
+    scopes?: Array<any>;
+    [key: string]: any;
+  };
+  try {
+    data = JSON.parse(copyData);
+  } catch {
+    return;
+  }
+
+  if (
+    !data ||
+    typeof data !== "object" ||
+    !data.logixClipBoardData ||
+    !Array.isArray(data.scopes)
+  ) {
+    return;
+  }
 
   const currentScopeId = globalScope.id;
   for (let i = 0; i < data.scopes.length; i++) {
