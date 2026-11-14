@@ -32,14 +32,6 @@ export default class SRflipFlop extends CircuitElement {
         this.state = 0
     }
 
-    newBitWidth(bitWidth) {
-        this.bitWidth = bitWidth
-        this.dInp.bitWidth = bitWidth
-        this.qOutput.bitWidth = bitWidth
-        this.qInvOutput.bitWidth = bitWidth
-        this.preset.bitWidth = bitWidth
-    }
-
     /**
      * @memberof SRflipFlop
      * always resolvable

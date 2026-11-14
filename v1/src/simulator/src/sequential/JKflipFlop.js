@@ -51,14 +51,6 @@ export default class JKflipFlop extends CircuitElement {
         return false
     }
 
-    newBitWidth(bitWidth) {
-        this.bitWidth = bitWidth
-        this.dInp.bitWidth = bitWidth
-        this.qOutput.bitWidth = bitWidth
-        this.qInvOutput.bitWidth = bitWidth
-        this.preset.bitWidth = bitWidth
-    }
-
     /**
      * @memberof JKflipFlop
      * Edge triggered master slave JK flip flop is resolved by
