@@ -330,7 +330,6 @@ export default class CircuitElement {
         }
 
         if (simulationArea.mouseDown && this.clicked) {
-            this.drag()
             if (
                 !simulationArea.shiftDown &&
                 simulationArea.multipleObjectSelections.includes(this)
@@ -342,11 +341,12 @@ export default class CircuitElement {
                 ) {
                     simulationArea.multipleObjectSelections[i].drag()
                 }
+            } else {
+                this.drag()
             }
 
             update |= true
         } else if (simulationArea.mouseDown && !simulationArea.selected) {
-            this.startDragging()
             if (
                 !simulationArea.shiftDown &&
                 simulationArea.multipleObjectSelections.includes(this)
@@ -358,6 +358,8 @@ export default class CircuitElement {
                 ) {
                     simulationArea.multipleObjectSelections[i].startDragging()
                 }
+            } else {
+                this.startDragging()
             }
             simulationArea.selected = this.clicked = this.hover
 
