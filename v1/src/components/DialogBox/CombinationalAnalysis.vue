@@ -1,5 +1,6 @@
 <template>
     <messageBox
+        ref="messageBoxRef"
         v-model="SimulatorState.dialogBox.combinationalanalysis_dialog"
         class="messageBox"
         :button-list="buttonArr"
@@ -26,6 +27,8 @@ import { stripTags } from '#/simulator/src/utils'
 import { useState } from '#/store/SimulatorStore/state'
 import messageBox from '@/MessageBox/messageBox.vue'
 import { ref, onMounted } from 'vue'
+
+const messageBoxRef = ref<InstanceType<typeof messageBox> | null>(null)
 
 /* imports from combinationalAnalysis.js */
 import { GenerateCircuit, solveBooleanFunction } from '#/simulator/src/combinationalAnalysis'
@@ -198,7 +201,6 @@ function createLogicTable() {
         outputList.length > 0 &&
         booleanInputVariables.length == 0
     ) {
-        // $(this).dialog('close')
         SimulatorState.dialogBox.combinationalanalysis_dialog = false
         output.value = null
         createBooleanPrompt(inputList, outputList)
@@ -207,7 +209,6 @@ function createLogicTable() {
         inputList.length == 0 &&
         outputList.length == 0
     ) {
-        // $(this).dialog('close')
         SimulatorState.dialogBox.combinationalanalysis_dialog = false
         output.value = solveBooleanFunction(booleanInputVariables, booleanExpression)
         if (output.value != null) {
@@ -317,7 +318,11 @@ function createBooleanPrompt(inputList, outputList, scope = globalScope) {
 }
 
 function printBooleanTable() {
-    const textElem = $('.messageBox .v-card-text')[0]
+    const cardText = messageBoxRef.value?.cardTextRef as any
+    const textElem =
+        cardText?.$el ??
+        cardText ??
+        document.querySelector('.messageBox .v-card-text')
     if (!textElem) return false
 
     var sTable = textElem.innerHTML
