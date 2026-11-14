@@ -498,7 +498,6 @@ export default function startListeners() {
                     ) {
                         simulationArea.lastSelected.keyDown(e.key.toString())
                         updateSimulationSet(true)
-                        scheduleUpdate(1)
                         e.cancelBubble = true
                         e.returnValue = false
 
@@ -518,7 +517,6 @@ export default function startListeners() {
                     if (e.key.toString().length == 1) {
                         simulationArea.lastSelected.keyDown2(e.key.toString())
                         updateSimulationSet(true)
-                        scheduleUpdate(1)
                         return
                     }
                 }
@@ -533,7 +531,6 @@ export default function startListeners() {
                     ) {
                         simulationArea.lastSelected.keyDown3(e.key.toString())
                         updateSimulationSet(true)
-                        scheduleUpdate(1)
                         return
                     }
                 }
