@@ -78,7 +78,9 @@ export default class ConstantVal extends CircuitElement {
      * updates state using a prompt when dbl clicked
      */
     dblclick() {
-        this.state = prompt('Re enter the value') || '0'
+        const state = prompt('Re enter the value')
+        if (state === null) return
+        this.state = state || '0'
         this.newBitWidth(this.state.toString().length)
     }
 
