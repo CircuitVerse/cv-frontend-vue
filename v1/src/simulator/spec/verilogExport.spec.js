@@ -5,6 +5,7 @@ import Output from '../src/modules/Output';
 import AndGate from '../src/modules/AndGate';
 import XorGate from '../src/modules/XorGate';
 import NotGate from '../src/modules/NotGate';
+import Splitter from '../src/modules/Splitter';
 import PriorityEncoder from '../src/modules/PriorityEncoder';
 import Decoder from '../src/modules/Decoder';
 import Scope, { scopeList } from '../src/circuit';
@@ -295,4 +296,47 @@ endmodule
 
         await checkVerilog(code, 'hierarchy -check -top EncoderExport; proc; check -assert');
     }, 60000);
+
+    test('exports Splitter correctly without redundant outer loop', () => {
+        const inp = new Input(0, 0, globalScope, 'RIGHT', 4);
+        const splitter = new Splitter(100, 0, globalScope, 'RIGHT', 4, [1, 1, 1, 1]);
+        const out0 = new Output(200, 0, globalScope, 'LEFT', 1);
+        const out1 = new Output(200, 50, globalScope, 'LEFT', 1);
+        const out2 = new Output(200, 100, globalScope, 'LEFT', 1);
+        const out3 = new Output(200, 150, globalScope, 'LEFT', 1);
+
+        inp.output1.connect(splitter.inp1);
+        splitter.outputs[0].connect(out0.inp1);
+        splitter.outputs[1].connect(out1.inp1);
+        splitter.outputs[2].connect(out2.inp1);
+        splitter.outputs[3].connect(out3.inp1);
+
+        const code = verilog.exportVerilog(globalScope);
+        const module = code.slice(code.indexOf('module Main'));
+
+        expect(module).toContain(`assign ${out0.label} = ${inp.label}[0];`);
+        expect(module).toContain(`assign ${out1.label} = ${inp.label}[1];`);
+        expect(module).toContain(`assign ${out2.label} = ${inp.label}[2];`);
+        expect(module).toContain(`assign ${out3.label} = ${inp.label}[3];`);
+    });
+
+    test('exports Splitter with mixed-width configuration correctly', () => {
+        const inp = new Input(0, 200, globalScope, 'RIGHT', 4);
+        const splitter = new Splitter(100, 200, globalScope, 'RIGHT', 4, [2, 1, 1]);
+        const out0 = new Output(200, 200, globalScope, 'LEFT', 2);
+        const out1 = new Output(200, 250, globalScope, 'LEFT', 1);
+        const out2 = new Output(200, 300, globalScope, 'LEFT', 1);
+
+        inp.output1.connect(splitter.inp1);
+        splitter.outputs[0].connect(out0.inp1);
+        splitter.outputs[1].connect(out1.inp1);
+        splitter.outputs[2].connect(out2.inp1);
+
+        const code = verilog.exportVerilog(globalScope);
+        const module = code.slice(code.indexOf('module Main'));
+
+        expect(module).toContain(`assign ${out0.label} = ${inp.label}[1:0];`);
+        expect(module).toContain(`assign ${out1.label} = ${inp.label}[2];`);
+        expect(module).toContain(`assign ${out2.label} = ${inp.label}[3];`);
+    });
 });
