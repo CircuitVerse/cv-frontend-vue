@@ -77,6 +77,11 @@ const addMissingKeys = (userK: KeyMap, defaultK: KeyMap): boolean => {
 
   for (const key of Object.keys(defaultK)) {
     if (!Object.hasOwn(userK, key)) {
+      const normalizedDefault = defaultK[key].replaceAll(" ", "");
+      const alreadyAssigned = Object.values(userK).some(
+        (value) => value.replaceAll(" ", "") === normalizedDefault,
+      );
+      if (alreadyAssigned) continue;
       userK[key] = defaultK[key];
       hasChanges = true;
     }

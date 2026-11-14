@@ -485,7 +485,9 @@ function computeImportOrder(circuits: Record<string, CanonicalScope>): number[] 
   return topologicalOrder;
 }
 
-export async function importCanonical(project: unknown): Promise<ImportResult> {
+export async function importCanonical(
+  project: unknown,
+): Promise<ImportResult> {
   const results: ImportResult = { success: false, imported: 0, errors: [] };
 
   const validation = validateCanonicalJson(project);

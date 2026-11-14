@@ -66,4 +66,3 @@ export default function startListeners() {
 
 import { ZoomIn, ZoomOut } from './commands/zoom';
 export { ZoomIn, ZoomOut };
-
