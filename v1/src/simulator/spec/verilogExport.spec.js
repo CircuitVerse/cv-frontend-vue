@@ -6,6 +6,7 @@ import AndGate from '../src/modules/AndGate';
 import XorGate from '../src/modules/XorGate';
 import NotGate from '../src/modules/NotGate';
 import PriorityEncoder from '../src/modules/PriorityEncoder';
+import Decoder from '../src/modules/Decoder';
 import Scope, { scopeList } from '../src/circuit';
 import { runYosys } from '@yowasp/yosys';
 import { createPinia, setActivePinia } from 'pinia';
@@ -53,6 +54,30 @@ function exportPriorityEncoder(bitWidth, connectedBits, connectValid = true, lab
             output.label = 'valid';
             encoder.enable.connect(output.inp1);
         }
+
+        return verilog.exportVerilog(scope);
+    } finally {
+        delete scopeList[scope.id];
+    }
+}
+
+function exportDecoder(bitWidth, connectedOutputs, label = 'decoder') {
+    const scope = new Scope('DecoderExport');
+    scopeList[scope.id] = scope;
+
+    try {
+        const decoder = new Decoder(200, 100, scope, 'LEFT', bitWidth);
+        decoder.label = label;
+        const input = new Input(300, 100, scope, 'LEFT', bitWidth);
+        input.label = 'sel';
+        input.output1.connect(decoder.input);
+
+        decoder.output1.forEach((node, index) => {
+            if (connectedOutputs && !connectedOutputs.includes(index)) return;
+            const output = new Output(100, index * 20, scope, 'RIGHT', 1);
+            output.label = `out${index}`;
+            node.connect(output.inp1);
+        });
 
         return verilog.exportVerilog(scope);
     } finally {
@@ -223,6 +248,46 @@ endmodule
 
         await checkVerilog(code, 'hierarchy -check -top EncoderExport; proc; check -assert');
         expect(code).not.toContain('undefined');
+    }, 60000);
+
+    test.each([1, 2, 3, 4])('compiles and proves complete Decoder exports for %i input bits', async (bitWidth) => {
+        const code = exportDecoder(bitWidth);
+        const outputCount = 2 ** bitWidth;
+        const ports = Array.from({ length: outputCount }, (_, index) =>
+            `.out${index}(decoded[${index}])`
+        );
+        ports.push('.sel(sel)');
+        const proof = `
+module check(input [${bitWidth - 1}:0] sel, output ok);
+    wire [${outputCount - 1}:0] decoded;
+    DecoderExport dut(${ports.join(', ')});
+    assign ok = decoded == (${outputCount}'b1 << sel);
+endmodule
+`;
+
+        expect(code).not.toMatch(/Decoder\d+\s*#\s*\(/);
+        const logs = await checkVerilog(code + proof,
+            'prep -top check; flatten; memory_map; opt; sat -verify -prove ok 1');
+
+        expect(logs).toContain('SUCCESS!');
+    }, 60000);
+
+    test.each([
+        { connectedOutputs: [0] },
+        { connectedOutputs: [3] },
+        { connectedOutputs: [0, 3] },
+        { connectedOutputs: [] },
+    ])('compiles Decoder exports with connected outputs $connectedOutputs', async ({ connectedOutputs }) => {
+        const code = exportDecoder(2, connectedOutputs);
+
+        await checkVerilog(code, 'hierarchy -check -top DecoderExport; proc; check -assert');
+        expect(code).not.toContain('undefined');
+    }, 60000);
+
+    test('compiles Decoder exports with an escaped instance label', async () => {
+        const code = exportDecoder(2, undefined, 'decoder-test');
+
+        await checkVerilog(code, 'hierarchy -check -top DecoderExport; proc; check -assert');
     }, 60000);
 
     test('compiles PriorityEncoder exports with an escaped instance label', async () => {
