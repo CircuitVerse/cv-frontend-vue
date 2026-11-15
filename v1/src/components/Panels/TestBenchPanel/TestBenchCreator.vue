@@ -222,8 +222,20 @@ const groups = reactive<Group[]>([
   }
 ]);
 
+const loadFromStore = () => {
+    const { title, type } = testBenchStore.testbenchData.testData;
+    if (title) testTitle.value = title;
+    if (type) testType.value = type;
+};
+
+watch(() => testBenchStore.showTestBenchCreator, (open) => {
+    if (open) loadFromStore();
+});
+
 watch(() => testBenchStore.testbenchData.testData.groups, () => {
     const { groups: newGroups } = testBenchStore.testbenchData.testData;
+
+    loadFromStore();
 
     const values = newGroups.map(group => ({
         title: group.label,

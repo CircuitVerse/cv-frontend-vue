@@ -7,7 +7,8 @@ import { layoutModeGet } from './layoutMode'
 import {
     scheduleUpdate,
     wireToBeCheckedSet,
-    updateCanvasSet
+    updateCanvasSet,
+    updateSimulationSet,
 } from './engine'
 import { simulationArea } from './simulationArea'
 import logixFunction from './data'
@@ -187,6 +188,7 @@ export function objectPropertyAttributeUpdate() {
     checkValidBitWidth()
     scheduleUpdate()
     updateCanvasSet(true)
+    updateSimulationSet(true)
     wireToBeCheckedSet(1)
     let { value } = this
     if (this.type === 'number') {
@@ -203,6 +205,7 @@ export function objectPropertyAttributeCheckedUpdate() {
     if (this.name === 'toggleLabelInLayoutMode') return // Hack to prevent toggleLabelInLayoutMode from toggling twice
     scheduleUpdate()
     updateCanvasSet(true)
+    updateSimulationSet(true)
     wireToBeCheckedSet(1)
     if (simulationArea.lastSelected && simulationArea.lastSelected[this.name]) {
         simulationArea.lastSelected[this.name](this.value)

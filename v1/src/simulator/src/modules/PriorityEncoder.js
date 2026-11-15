@@ -2,6 +2,7 @@ import CircuitElement from '../circuitElement'
 import Node, { findNode, dec2bin } from '../node'
 import { simulationArea } from '../simulationArea'
 import { correctWidth, rect, fillText } from '../canvasApi'
+import { generateNodeName } from '../verilogHelpers'
 /**
  * @class
  * PriorityEncoder
@@ -211,7 +212,23 @@ export default class PriorityEncoder extends CircuitElement {
 
     generateVerilog() {
         PriorityEncoder.selSizes.add(this.bitWidth)
-        return CircuitElement.prototype.generateVerilog.call(this)
+        const selector = generateNodeName({ parent: this, label: 'sel' }, 0, 1)
+        this.scope.verilogWireList[this.bitWidth].push(selector)
+
+        const valid = this.enable.connections.length ? this.enable.verilogLabel : ''
+        const ports = [`.sel(${selector})`, `.ze(${valid})`]
+        this.inp1.forEach((node, index) => {
+            ports.push(`.in${index}(${node.verilogLabel})`)
+        })
+
+        let output = `${this.verilogBaseType()} ${this.verilogLabel}(${ports.join(', ')});`
+        this.output1.forEach((node, index) => {
+            if (node.connections.length) {
+                const selectedBit = this.bitWidth === 1 ? selector : `${selector}[${index}]`
+                output += `\n  assign ${node.verilogLabel} = ${selectedBit};`
+            }
+        })
+        return output
     }
 
     static moduleVerilog() {
@@ -239,15 +256,15 @@ export default class PriorityEncoder extends CircuitElement {
 
             output += '  always @ (*) begin\n'
             output += '    sel = 0;\n'
-            output += '    ze = 0;\n'
+            output += '    ze = 1;\n'
             output += '    if (in' + (numInput - 1) + ')\n'
             output += '      sel = ' + (numInput - 1) + ';\n'
-            for (var j = numInput - 2; j <= 0; j++) {
+            for (var j = numInput - 2; j >= 0; j--) {
                 output += '    else if (in' + j + ')\n'
                 output += '      sel = ' + j + ';\n'
             }
             output += '    else\n'
-            output += '      ze = 1;\n'
+            output += '      ze = 0;\n'
             output += '  end\n'
             output += 'endmodule\n'
         }

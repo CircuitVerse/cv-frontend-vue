@@ -11,7 +11,7 @@ import { setupUI } from './ux'
 import startMainListeners from './listeners'
 import { newCircuit } from './circuit'
 import load from './data/load'
-import save from './data/save'
+import save, { setProjectName } from './data/save'
 import { showTourGuide } from './tutorials'
 import setupModules from './moduleSetup'
 import 'codemirror/lib/codemirror.css'
@@ -162,6 +162,27 @@ async function fetchProjectData(projectId) {
         )
         if (response.ok) {
             const data = await response.json()
+            if (!data) {
+                const projectResponse = await fetch(
+                    `/api/v1/projects/${projectId}`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            Accept: 'application/json',
+                            Authorization: `Token ${getToken('cvt')}`,
+                        },
+                    }
+                )
+                if (projectResponse.ok) {
+                    const projectData = await projectResponse.json()
+                    const name = projectData?.data?.attributes?.name
+                    if (name) {
+                        setProjectName(name)
+                    }
+                }
+                fadeOutLoadingIcons()
+                return
+            }
             const simulatorVersion = data.simulatorVersion  
             const projectName = data.name
             if(!simulatorVersion){                 
