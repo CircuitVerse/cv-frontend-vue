@@ -27,6 +27,7 @@ function handleCanvasPointerDown(e) {
     const selected = simulationArea.lastSelected
     if (!selected || !(selected instanceof Rectangle)) return
     if (selected.scope !== globalScope || selected.newElement) return
+    if (!selected.isSingleSelected()) return
 
     const coords = selected.getEventCoordinates(e)
     const handle = selected.getHandleAt(coords.xf, coords.yf)
@@ -91,6 +92,7 @@ export default class Rectangle extends CircuitElement {
         this.activeHandle = null
         this.activePointerId = null
         this.resizeSession = null
+        this.hasSetCursor = false
 
         // Bound listener references for active resize session only
         this.onPointerMove = this.onPointerMove.bind(this)
@@ -108,8 +110,9 @@ export default class Rectangle extends CircuitElement {
         if (this.resizing) {
             this.stopResize()
         }
-        if (simulationArea.resizeCursor) {
+        if (this.hasSetCursor || simulationArea.resizeCursor) {
             simulationArea.resizeCursor = ''
+            this.hasSetCursor = false
             if (simulationArea.canvas) {
                 simulationArea.canvas.style.cursor = 'default'
             }
@@ -125,8 +128,9 @@ export default class Rectangle extends CircuitElement {
         if (this.resizing) {
             this.stopResize()
         }
-        if (simulationArea.resizeCursor) {
+        if (this.hasSetCursor || simulationArea.resizeCursor) {
             simulationArea.resizeCursor = ''
+            this.hasSetCursor = false
             if (simulationArea.canvas) {
                 simulationArea.canvas.style.cursor = 'default'
             }
@@ -269,6 +273,8 @@ export default class Rectangle extends CircuitElement {
         if (typeof embed !== 'undefined' && embed) return
         if (this.scope !== globalScope || this.resizing) return
 
+        scheduleBackup(this.scope || globalScope)
+
         const initialCoords = startCoords ? { ...startCoords } : {
             x: this.x,
             y: this.y,
@@ -289,6 +295,8 @@ export default class Rectangle extends CircuitElement {
             origY: this.y,
             origCols: this.cols,
             origRows: this.rows,
+            origWidth: this.elementWidth,
+            origHeight: this.elementHeight,
             fixedLeft: this.x,
             fixedTop: this.y,
             fixedRight: this.x + this.elementWidth,
@@ -374,6 +382,7 @@ export default class Rectangle extends CircuitElement {
         this.activeHandle = null
         this.activePointerId = null
         this.resizeSession = null
+        this.hasSetCursor = false
 
         // Reset global engine flags so standard cursor management resumes cleanly
         simulationArea.isResizingRectangle = false
@@ -412,11 +421,21 @@ export default class Rectangle extends CircuitElement {
     resize() {
         if (!this.resizing || !this.resizeSession) return
 
-        const { handle, fixedLeft, fixedTop, fixedRight, fixedBottom, latestCoords } = this.resizeSession
-        if (!latestCoords) return
+        const {
+            handle,
+            origWidth,
+            origHeight,
+            fixedLeft,
+            fixedTop,
+            fixedRight,
+            fixedBottom,
+            startCoords,
+            latestCoords,
+        } = this.resizeSession
+        if (!latestCoords || !startCoords) return
 
-        const mouseX = latestCoords.x
-        const mouseY = latestCoords.y
+        const deltaX = latestCoords.xf - startCoords.xf
+        const deltaY = latestCoords.yf - startCoords.yf
 
         let newX = this.x
         let newY = this.y
@@ -425,22 +444,22 @@ export default class Rectangle extends CircuitElement {
 
         // Horizontal resizing
         if (handle === 'top-left' || handle === 'left' || handle === 'bottom-left') {
-            const targetWidth = fixedRight - mouseX
+            const targetWidth = origWidth - deltaX
             newCols = Math.max(5, Math.min(1000, Math.round(targetWidth / 10)))
             newX = fixedRight - newCols * 10
         } else if (handle === 'top-right' || handle === 'right' || handle === 'bottom-right') {
-            const targetWidth = mouseX - fixedLeft
+            const targetWidth = origWidth + deltaX
             newCols = Math.max(5, Math.min(1000, Math.round(targetWidth / 10)))
             newX = fixedLeft
         }
 
         // Vertical resizing
         if (handle === 'top-left' || handle === 'top' || handle === 'top-right') {
-            const targetHeight = fixedBottom - mouseY
+            const targetHeight = origHeight - deltaY
             newRows = Math.max(5, Math.min(1000, Math.round(targetHeight / 10)))
             newY = fixedBottom - newRows * 10
         } else if (handle === 'bottom-left' || handle === 'bottom' || handle === 'bottom-right') {
-            const targetHeight = mouseY - fixedTop
+            const targetHeight = origHeight + deltaY
             newRows = Math.max(5, Math.min(1000, Math.round(targetHeight / 10)))
             newY = fixedTop
         }
@@ -541,12 +560,7 @@ export default class Rectangle extends CircuitElement {
         // Bypass hover checks during resize drag so engine does not reset cursor
         if (this.resizing) return true
 
-        const isSingleSelected =
-            simulationArea.lastSelected === this &&
-            (!simulationArea.multipleObjectSelections ||
-                simulationArea.multipleObjectSelections.length === 0)
-
-        if (isSingleSelected) {
+        if (this.isSingleSelected()) {
             const mouseXf = simulationArea.mouseXf
             const mouseYf = simulationArea.mouseYf
             if (mouseXf !== undefined && mouseYf !== undefined) {
@@ -571,7 +585,7 @@ export default class Rectangle extends CircuitElement {
         if (this.scope !== globalScope || this.resizing) return
 
         const handle = this.getHandleAt(simulationArea.mouseXf, simulationArea.mouseYf)
-        if (handle && simulationArea.lastSelected === this) {
+        if (handle && this.isSingleSelected()) {
             const startCoords = {
                 x: simulationArea.mouseX,
                 y: simulationArea.mouseY,
@@ -634,10 +648,7 @@ export default class Rectangle extends CircuitElement {
             return true
         }
 
-        const isSingleSelected =
-            simulationArea.lastSelected === this &&
-            (!simulationArea.multipleObjectSelections ||
-                simulationArea.multipleObjectSelections.length === 0)
+        const isSingleSelected = this.isSingleSelected()
 
         // Hover cursor management when selected and hovering over handles
         if (isSingleSelected && simulationArea.canvas && !simulationArea.isResizingRectangle) {
@@ -646,11 +657,14 @@ export default class Rectangle extends CircuitElement {
                 const cursor = this.getCursorForHandle(handle)
                 simulationArea.resizeCursor = cursor
                 simulationArea.canvas.style.cursor = cursor
-            } else if (simulationArea.resizeCursor) {
+                this.hasSetCursor = true
+            } else if (this.hasSetCursor) {
                 simulationArea.resizeCursor = ''
+                this.hasSetCursor = false
             }
-        } else if (!isSingleSelected && simulationArea.resizeCursor && !simulationArea.isResizingRectangle) {
+        } else if (this.hasSetCursor && !simulationArea.isResizingRectangle) {
             simulationArea.resizeCursor = ''
+            this.hasSetCursor = false
         }
 
         return super.update()
@@ -793,10 +807,7 @@ export default class Rectangle extends CircuitElement {
         const w = this.elementWidth
         const h = this.elementHeight
 
-        const isSingleSelected =
-            simulationArea.lastSelected === this &&
-            (!simulationArea.multipleObjectSelections ||
-                simulationArea.multipleObjectSelections.length === 0)
+        const isSingleSelected = this.isSingleSelected()
         const isSelected =
             isSingleSelected ||
             (simulationArea.multipleObjectSelections &&
@@ -838,6 +849,18 @@ export default class Rectangle extends CircuitElement {
         this.leftDimensionX = 0
         this.rightDimensionX = this.elementWidth
         this.downDimensionY = this.elementHeight
+    }
+
+    /**
+     * Check if this rectangle is the sole active selection.
+     * @returns {boolean}
+     */
+    isSingleSelected() {
+        return (
+            simulationArea.lastSelected === this &&
+            (!simulationArea.multipleObjectSelections ||
+                simulationArea.multipleObjectSelections.length === 0)
+        )
     }
 }
 

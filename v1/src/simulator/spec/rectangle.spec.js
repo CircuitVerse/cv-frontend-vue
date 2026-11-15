@@ -112,26 +112,26 @@ describe('Rectangle annotation tests (v1)', () => {
         expect(rect.rows).toBe(25)
     })
 
-    test('stopResize() calls scheduleBackup once when size changed, and not when size did not change', () => {
+    test('stopResize() records post-drag snapshot when size changed, and skips when unchanged', () => {
         const rect = new Rectangle(100, 100, scope, 15, 20)
         simulationArea.lastSelected = rect
 
-        // Gesture 1: Drag to change size
+        // Gesture 1: Drag to change size (pre-drag snapshot in startResize + post-drag in stopResize)
         rect.startResize('bottom-right', 1, { x: 300, y: 250, xf: 300, yf: 250 })
         rect.resizeSession.latestCoords = { x: 350, y: 300, xf: 350, yf: 300 }
         rect.resize()
 
         rect.stopResize()
-        expect(backupCircuit.scheduleBackup).toHaveBeenCalledTimes(1)
+        expect(backupCircuit.scheduleBackup).toHaveBeenCalledTimes(2)
         expect(rect.resizing).toBe(false)
         expect(rect.resizeSession).toBeNull()
 
         backupCircuit.scheduleBackup.mockClear()
 
-        // Gesture 2: Click on handle without moving (no size change)
+        // Gesture 2: Click on handle without moving (pre-drag snapshot in startResize, skipped in stopResize)
         rect.startResize('bottom-right', 1, { x: 350, y: 300, xf: 350, yf: 300 })
         rect.stopResize()
-        expect(backupCircuit.scheduleBackup).not.toHaveBeenCalled()
+        expect(backupCircuit.scheduleBackup).toHaveBeenCalledTimes(1)
         expect(rect.resizing).toBe(false)
         expect(rect.resizeSession).toBeNull()
     })
@@ -532,12 +532,12 @@ describe('Rectangle annotation tests (v1)', () => {
         rect.resizeSession.latestCoords = { x: 350, y: 300, xf: 350, yf: 300 }
         rect.resize()
         rect.stopResize()
-        expect(backupCircuit.scheduleBackup).toHaveBeenCalledTimes(1)
+        expect(backupCircuit.scheduleBackup).toHaveBeenCalledTimes(2)
 
         backupCircuit.scheduleBackup.mockClear()
         rect.startResize('bottom-right', 1, { x: 350, y: 300, xf: 350, yf: 300 })
         rect.stopResize()
-        expect(backupCircuit.scheduleBackup).not.toHaveBeenCalled()
+        expect(backupCircuit.scheduleBackup).toHaveBeenCalledTimes(1)
     })
 
     // --- Scenario 12: Cursor & highlight stability ---
@@ -766,5 +766,77 @@ describe('Rectangle annotation tests (v1)', () => {
         expect(rect.rows).toBe(25)
         expect(rect.elementWidth).toBe(300)
         expect(rect.elementHeight).toBe(250)
+    })
+
+    // --- Scenario 22: Stationary click offset preservation ---
+    test('scenario 22: stationary click at an offset from edge preserves dimensions without snap jump', () => {
+        const rect = new Rectangle(100, 100, scope, 15, 20) // right edge at 300, bottom edge at 250
+        simulationArea.lastSelected = rect
+
+        // Click right handle at offset x = 310 (within 12px threshold of 300)
+        rect.startResize('right', 1, { x: 310, y: 175, xf: 310, yf: 175 })
+        rect.stopResize()
+
+        expect(rect.cols).toBe(20)
+        expect(rect.rows).toBe(15)
+        expect(rect.x).toBe(100)
+        expect(rect.y).toBe(100)
+
+        // Click top-left handle at offset x = 92, y = 92
+        rect.startResize('top-left', 1, { x: 92, y: 92, xf: 92, yf: 92 })
+        rect.stopResize()
+
+        expect(rect.cols).toBe(20)
+        expect(rect.rows).toBe(15)
+        expect(rect.x).toBe(100)
+        expect(rect.y).toBe(100)
+    })
+
+    // --- Scenario 23: Multi-selection suppresses resize dispatch ---
+    test('scenario 23: multi-selection excludes resize dispatch and handle hover', () => {
+        const rect1 = new Rectangle(100, 100, scope, 15, 20)
+        const rect2 = new Rectangle(400, 100, scope, 15, 20)
+        simulationArea.multipleObjectSelections = [rect1, rect2]
+        simulationArea.lastSelected = rect1
+
+        expect(rect1.isSingleSelected()).toBe(false)
+
+        // Position mouse at top-left handle of rect1
+        simulationArea.mouseXf = 100
+        simulationArea.mouseYf = 100
+        simulationArea.mouseX = 100
+        simulationArea.mouseY = 100
+
+        // startDragging should NOT start resize during multi-selection
+        rect1.startDragging()
+        expect(rect1.resizing).toBe(false)
+        expect(rect1.resizeSession).toBeNull()
+
+        // isHover does not claim handle hover during multi-selection
+        simulationArea.mouseXf = 95
+        simulationArea.mouseYf = 95
+        expect(rect1.isHover()).toBe(false)
+    })
+
+    // --- Scenario 24: Unselected rectangle does not clear selected rectangle cursor ---
+    test('scenario 24: unselected rectangle does not clear selected rectangle hover cursor', () => {
+        const rectA = new Rectangle(100, 100, scope, 15, 20)
+        const rectB = new Rectangle(400, 100, scope, 15, 20)
+        simulationArea.lastSelected = rectA
+        simulationArea.multipleObjectSelections = []
+
+        // Hover over rectA right handle (300, 175)
+        simulationArea.mouseXf = 300
+        simulationArea.mouseYf = 175
+
+        // rectA updates and sets cursor
+        rectA.update()
+        expect(simulationArea.resizeCursor).toBe('ew-resize')
+        expect(rectA.hasSetCursor).toBe(true)
+
+        // rectB (unselected) updates in the same pass: must NOT wipe out rectA cursor
+        rectB.update()
+        expect(simulationArea.resizeCursor).toBe('ew-resize')
+        expect(rectB.hasSetCursor).toBe(false)
     })
 })
