@@ -22,7 +22,7 @@ describe('EventQueue scheduling with an explicit delay of 0', () => {
         const queue = new EventQueue(10);
         const obj = makeObj(10);
 
-        queue.add(obj, undefined);
+        queue.add(obj);
 
         expect(obj.queueProperties.time).toBe(10);
     });
@@ -34,5 +34,18 @@ describe('EventQueue scheduling with an explicit delay of 0', () => {
         queue.add(obj, 5);
 
         expect(obj.queueProperties.time).toBe(5);
+    });
+
+    test('rescheduling an object already in the queue keeps an explicit delay of 0', () => {
+        const queue = new EventQueue(10);
+        const obj = makeObj(10);
+
+        queue.time = 10;
+        queue.add(obj, 0);
+        expect(obj.queueProperties.time).toBe(10);
+
+        queue.time = 20;
+        queue.add(obj, 0);
+        expect(obj.queueProperties.time).toBe(20);
     });
 });
