@@ -839,4 +839,15 @@ describe('Rectangle annotation tests (v1)', () => {
         expect(simulationArea.resizeCursor).toBe('ew-resize')
         expect(rectB.hasSetCursor).toBe(false)
     })
+
+    // --- Scenario 25: Scope replacement cursor cleanup ---
+    test('scenario 25: clears orphaned resizeCursor when selected rectangle belongs to a discarded scope', () => {
+        const rect = new Rectangle(100, 100, scope, 15, 20)
+        simulationArea.resizeCursor = 'ew-resize'
+        // Simulate a discarded scope from undo/redo/project-reload
+        simulationArea.lastSelected = { scope: { id: 'discarded-scope' } }
+
+        rect.update()
+        expect(simulationArea.resizeCursor).toBe('')
+    })
 })

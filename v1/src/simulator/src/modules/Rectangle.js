@@ -667,6 +667,18 @@ export default class Rectangle extends CircuitElement {
             this.hasSetCursor = false
         }
 
+        // Clean up orphaned resizeCursor if selected element belongs to a discarded scope (e.g. after undo/redo)
+        if (!simulationArea.isResizingRectangle && simulationArea.resizeCursor) {
+            if (
+                !simulationArea.lastSelected ||
+                simulationArea.lastSelected.scope !== globalScope ||
+                !(simulationArea.lastSelected instanceof Rectangle)
+            ) {
+                simulationArea.resizeCursor = ''
+                this.hasSetCursor = false
+            }
+        }
+
         return super.update()
     }
 
