@@ -71,7 +71,6 @@ import { updateThemeForStyle } from "../src/themer/themer";
 import { CreateAbstraction } from "../src/themer/customThemeAbstraction";
 import ApplyThemes from "#/components/DialogBox/Themes/ApplyThemes.vue";
 import { useState } from "#/store/SimulatorStore/state";
-
 describe("Theme subsystem and dialog", () => {
   let pinia: ReturnType<typeof createPinia>;
 
@@ -254,7 +253,6 @@ describe("Theme subsystem and dialog", () => {
       themeOptions["Default Theme"]["--primary"],
     );
   });
-
   it("keeps the saved theme and CSS when closing Custom Theme without Apply", async () => {
     localStorage.setItem("theme", "Default Theme");
     await openAndMountDialog();
@@ -366,7 +364,6 @@ describe("getCustomTheme validation", () => {
     expect(() => CreateAbstraction(theme)).not.toThrow();
     expect(CreateAbstraction(theme).Primary?.color).toBe(defaultCustomTheme["--primary"]);
   });
-
   it("falls back per key for invalid color strings and non-string values", () => {
     localStorage.setItem(
       "Custom Theme",

@@ -53,7 +53,6 @@ export const defaultCustomTheme: Record<string, string> = {
   "--output-rect": "#0000ff",
   "--table-head-dark": "#3d3d3d",
 };
-
 /**
  * A saved custom-theme value is valid only when it is a color string the
  * theme engine can use: #rrggbb, #rrggbbaa, or rgba(...). Anything else
@@ -154,7 +153,7 @@ const themes: Themes = {
     "--output-rect": "#0000ff",
     "--table-head-dark": "#3d3d3d",
   },
-  "Night Sky": {
+    "Night Sky": {
     "--text-navbar--alt": "#ffffff",
     "--br-secondary": "#665627",
     "--cus-radio_label": "#0F111A",
@@ -262,7 +261,7 @@ const themes: Themes = {
     "--disable": "#656565",
     "--table-head-dark": "#ffffff",
   },
-  "G&W": {
+    "G&W": {
     "--text-navbar--alt": "#000000",
     "--br-secondary": "#6B6B6B",
     "--cus-radio_label": "#6B6B6B",
@@ -372,7 +371,7 @@ const themes: Themes = {
     "--disable": "#262626",
     "--table-head-dark": "#000000",
   },
-  "Color Blind": {
+    "Color Blind": {
     "--text-navbar--alt": "#000000",
     "--br-secondary": "#e2dad1",
     "--cus-radio_label": "#2e2b21",
