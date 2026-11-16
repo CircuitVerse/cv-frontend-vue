@@ -1,20 +1,20 @@
 import { Themes } from "./themer.types";
 
 export const defaultCustomTheme: Record<string, string> = {
-  "--text-navbar--alt": "#000000",
+  "--text-navbar--alt": "#000",
   "--br-secondary": "#7d7d7d",
   "--br-circuit-cur": "#ffffff",
   "--cus-radio_label": "#656565",
   "--primary": "#454545",
   "--text-lite": "#ffffff",
-  "--text-dark": "#000000",
+  "--text-dark": "#000",
   "--text-panel": "#ffffff",
   "--bg-navbar": "#454545",
   "--qp-br-tl": "#333333",
   "--qp-br-rd": "#535353",
   "--qp-box-shadow-1": "#3b3b3b",
   "--qp-box-shadow-2": "#4f4f4f",
-  "--bg-circuit": "#dddddd",
+  "--bg-circuit": "#ddd",
   "--br-circuit": "#454545",
   "--br-primary": "#ffffff",
   "--bg-primary-moz": "#454545e6",
@@ -23,7 +23,7 @@ export const defaultCustomTheme: Record<string, string> = {
   "--bg-icons": "#7d7d7d",
   "--bg-text": "#cacaca",
   "--bg-secondary": "#bbbbbb",
-  "--canvas-stroke": "#eeeeee",
+  "--canvas-stroke": "#eee",
   "--canvas-fill": "#ffffff",
   "--context-text": "#ffffff",
   "--bg-toggle-btn-primary": "#42b983",
@@ -31,13 +31,13 @@ export const defaultCustomTheme: Record<string, string> = {
   "--btn-danger": "#dc5656",
   "--btn-danger-darken": "#b03662",
   "--disable": "#6c8b93",
-  "--cus-btn-hov--bg": "#dddddd",
-  "--cus-btn-hov-text": "#000000",
+  "--cus-btn-hov--bg": "#ddd",
+  "--cus-btn-hov-text": "#000",
   "--node": "#008000",
-  "--stroke": "#000000",
+  "--stroke": "#000",
   "--fill": "#ffffff",
   "--hover-and-sel": "#ffff20cc",
-  "--wire-draw": "#000000",
+  "--wire-draw": "#000",
   "--wire-cnt": "#008000",
   "--wire-pow": "#90ee90",
   "--wire-sel": "#0000ff",
@@ -46,10 +46,10 @@ export const defaultCustomTheme: Record<string, string> = {
   "--mini-map-stroke": "#006400",
   "--input-text": "#008000",
   "--secondary-stroke": "#ff0000",
-  "--text": "#000000",
-  "--wire-norm": "#000000",
+  "--text": "#000",
+  "--wire-norm": "#000",
   "--node-norm": "#008000",
-  "--splitter": "#000000",
+  "--splitter": "#000",
   "--output-rect": "#0000ff",
   "--table-head-dark": "#3d3d3d",
 };
@@ -138,7 +138,7 @@ const themes: Themes = {
     "--br-secondary": "#665627",
     "--cus-radio_label": "#0F111A",
     "--primary": "#0F111A", //header bg, panels bg
-    "--text-lite": "#ffffff", //normal state text
+    "--text-lite": "#FFFFFF", //normal state text
     "--text-dark": "#ffffff", //text state on hover, on drop down menu , context menu
     "--text-panel": "#ffffff",
     "--bg-navbar": "#0F111A",
@@ -406,8 +406,7 @@ const themes: Themes = {
     "--disable": "#956c6a",
     "--table-head-dark": "#2e2b21",
   },
-"Custom Theme": getCustomTheme(),
-
+  "Custom Theme": getCustomTheme(),
 };
 
 export default themes;
