@@ -1,20 +1,20 @@
 import { Themes } from "./themer.types";
 
 export const defaultCustomTheme: Record<string, string> = {
-  "--text-navbar--alt": "#000",
+  "--text-navbar--alt": "#000000",
   "--br-secondary": "#7d7d7d",
   "--br-circuit-cur": "#ffffff",
   "--cus-radio_label": "#656565",
   "--primary": "#454545",
   "--text-lite": "#ffffff",
-  "--text-dark": "#000",
+  "--text-dark": "#000000",
   "--text-panel": "#ffffff",
   "--bg-navbar": "#454545",
   "--qp-br-tl": "#333333",
   "--qp-br-rd": "#535353",
   "--qp-box-shadow-1": "#3b3b3b",
   "--qp-box-shadow-2": "#4f4f4f",
-  "--bg-circuit": "#ddd",
+  "--bg-circuit": "#dddddd",
   "--br-circuit": "#454545",
   "--br-primary": "#ffffff",
   "--bg-primary-moz": "#454545e6",
@@ -23,7 +23,7 @@ export const defaultCustomTheme: Record<string, string> = {
   "--bg-icons": "#7d7d7d",
   "--bg-text": "#cacaca",
   "--bg-secondary": "#bbbbbb",
-  "--canvas-stroke": "#eee",
+  "--canvas-stroke": "#eeeeee",
   "--canvas-fill": "#ffffff",
   "--context-text": "#ffffff",
   "--bg-toggle-btn-primary": "#42b983",
@@ -31,13 +31,13 @@ export const defaultCustomTheme: Record<string, string> = {
   "--btn-danger": "#dc5656",
   "--btn-danger-darken": "#b03662",
   "--disable": "#6c8b93",
-  "--cus-btn-hov--bg": "#ddd",
-  "--cus-btn-hov-text": "#000",
+  "--cus-btn-hov--bg": "#dddddd",
+  "--cus-btn-hov-text": "#000000",
   "--node": "#008000",
-  "--stroke": "#000",
+  "--stroke": "#000000",
   "--fill": "#ffffff",
   "--hover-and-sel": "#ffff20cc",
-  "--wire-draw": "#000",
+  "--wire-draw": "#000000",
   "--wire-cnt": "#008000",
   "--wire-pow": "#90ee90",
   "--wire-sel": "#0000ff",
@@ -46,37 +46,58 @@ export const defaultCustomTheme: Record<string, string> = {
   "--mini-map-stroke": "#006400",
   "--input-text": "#008000",
   "--secondary-stroke": "#ff0000",
-  "--text": "#000",
-  "--wire-norm": "#000",
+  "--text": "#000000",
+  "--wire-norm": "#000000",
   "--node-norm": "#008000",
-  "--splitter": "#000",
+  "--splitter": "#000000",
   "--output-rect": "#0000ff",
   "--table-head-dark": "#3d3d3d",
 };
 
 /**
+ * A saved custom-theme value is valid only when it is a color string the
+ * theme engine can use: #rrggbb, #rrggbbaa, or rgba(...). Anything else
+ * (named colors, shorthand hex, numbers, null) falls back to the default
+ * for that key, so a partial or corrupt saved theme can never leave a
+ * field undefined.
+ */
+function isValidThemeColor(value: string): boolean {
+  return (
+    /^#[0-9a-fA-F]{6}$/.test(value) ||
+    /^#[0-9a-fA-F]{8}$/.test(value) ||
+    /^rgba\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*(?:0|1|0?\.\d+)\s*\)$/.test(value)
+  );
+}
+
+/**
  * Loads custom theme settings from localStorage with fallback to default custom theme.
+ * Each saved key is validated against `defaultCustomTheme`: a saved value is
+ * used only when it is a valid color string, otherwise the default value for
+ * that key is kept. Unknown saved keys are ignored.
  * @returns An object containing custom theme CSS variables.
  */
 export function getCustomTheme(): Record<string, string> {
+  const theme = { ...defaultCustomTheme };
   try {
     const customTheme = localStorage.getItem("Custom Theme");
     if (!customTheme) {
-      return { ...defaultCustomTheme };
+      return theme;
     }
-    const parsed = JSON.parse(customTheme);
-    if (
-      parsed &&
-      typeof parsed === "object" &&
-      !Array.isArray(parsed) &&
-      Object.keys(parsed).length > 0
-    ) {
-      return parsed;
+    const parsed: unknown = JSON.parse(customTheme);
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+      return theme;
+    }
+    const saved = parsed as Record<string, unknown>;
+    for (const key of Object.keys(defaultCustomTheme)) {
+      const value = saved[key];
+      if (typeof value === "string" && isValidThemeColor(value)) {
+        theme[key] = value;
+      }
     }
   } catch {
     // Storage unavailable or malformed JSON: use the default custom theme
   }
-  return { ...defaultCustomTheme };
+  return theme;
 }
 
 const themes: Themes = {
