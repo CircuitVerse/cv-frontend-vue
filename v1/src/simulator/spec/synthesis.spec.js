@@ -158,6 +158,22 @@ describe('Circuit Auto-Layout (computeLayout)', () => {
         const positions = computeLayout(circuit)
         expect(Object.keys(positions)).toHaveLength(2)
     })
+
+    test('handles device IDs that match JavaScript object properties', () => {
+        const circuit = {
+            devices: {
+                ['constructor']: { type: 'Input' },
+                ['toString']: { type: 'Output' }
+            },
+            connectors: []
+        }
+
+        const positions = computeLayout(circuit)
+
+        expect(Object.keys(positions).sort()).toEqual(['constructor', 'toString'])
+        expect(positions['constructor']).toBeDefined()
+        expect(positions['toString']).toBeDefined()
+    })
 })
 
 describe('Verilog Port Layout (computePortLayout)', () => {

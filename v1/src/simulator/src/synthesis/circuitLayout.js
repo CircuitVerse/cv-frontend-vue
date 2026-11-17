@@ -36,10 +36,10 @@ var PORT_LAYOUT_BOTTOM_PADDING = 20;
 var PORT_LAYOUT_TITLE_Y = 13;
 function assignLayersWithCycles(deviceIds, successors) {
     var index = 0
-    var indices = {}
-    var lowLinks = {}
+    var indices = Object.create(null)
+    var lowLinks = Object.create(null)
     var stack = []
-    var onStack = {}
+    var onStack = Object.create(null)
     var components = []
     function strongConnect(node) {
         indices[node] = index
@@ -78,7 +78,7 @@ function assignLayersWithCycles(deviceIds, successors) {
             strongConnect(deviceIds[i])
         }
     }
-    var componentOf = {}
+    var componentOf = Object.create(null)
 
     for (var c = 0; c < components.length; c++) {
         for (var n = 0; n < components[c].length; n++) {
@@ -137,7 +137,7 @@ function assignLayersWithCycles(deviceIds, successors) {
         }
     }
 
-    var layerOf = {}
+    var layerOf = Object.create(null)
 
     for (var node of deviceIds) {
         layerOf[node] = componentLayer[componentOf[node]]
@@ -188,7 +188,7 @@ export function computeLayout(circuitJSON) {
 
         // Build adjacency lists
         // Build adjacency lists
-        var successors = {}
+        var successors = Object.create(null)
         for (var i = 0; i < deviceIds.length; i++) {
             successors[deviceIds[i]] = []
         }
@@ -218,7 +218,7 @@ if (circuitJSON.connectors) {
         }
 
         // Assign positions: x by layer, y by position within layer
-        var positions = {}
+        var positions = Object.create(null)
         var layerNums = Object.keys(layers).map(Number).sort(function (a, b) { return a - b })
 
         for (var li = 0; li < layerNums.length; li++) {
