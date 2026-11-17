@@ -514,6 +514,8 @@ export default class Scope {
 
     if (!zoomIn) {
       this.scale = Math.min(this.scale, DPR);
+    } else {
+      this.scale = Math.min(this.scale, 4 * DPR);
     }
     this.scale = Math.max(this.scale, DPR / 10);
 
