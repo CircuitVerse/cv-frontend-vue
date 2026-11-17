@@ -1,4 +1,4 @@
-import { projectSavedSet } from './project'
+import { projectSavedSet, bumpSaveRevision } from './project'
 import { moduleList, updateOrder } from '../metadata'
 
 /* eslint-disable no-param-reassign */
@@ -79,6 +79,7 @@ export function scheduleBackup(scope = globalScope) {
         scope.history = []
         scope.timeStamp = new Date().getTime()
         projectSavedSet(false)
+        bumpSaveRevision()
     }
 
     return backup

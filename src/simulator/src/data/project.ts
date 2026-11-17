@@ -125,6 +125,9 @@ export function openOffline() {
  * @category data
  */
 let projectSaved = true;
+let saveRevision = 0;
+export function getSaveRevision() { return saveRevision; }
+export function bumpSaveRevision() { saveRevision++; }
 export function projectSavedSet(param: boolean) {
   projectSaved = param;
 }

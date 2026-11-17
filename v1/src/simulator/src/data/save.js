@@ -6,7 +6,7 @@ import { backUp } from './backupCircuit'
 import { simulationArea } from '../simulationArea'
 import { backgroundArea } from '../backgroundArea'
 import { findDimensions } from '../canvasApi'
-import { projectSavedSet } from './project'
+import { projectSavedSet, getSaveRevision } from './project'
 import { colors } from '../themer/themer'
 import { layoutModeGet, toggleLayoutMode } from '../layoutMode'
 import { verilogModeGet } from '../Verilog2CV'
@@ -361,9 +361,8 @@ async function generateImageForOnline() {
 export default async function save() {
     if (layoutModeGet()) toggleLayoutMode()
 
-    projectSavedSet(true)
-
     const data = await generateSaveData()
+    const savedRevision = getSaveRevision()
     if (data instanceof Error) return
     let loadingIcon = document.querySelector('.loadingIcon');
     loadingIcon.style.transition = 'opacity 0.5s linear';
@@ -442,6 +441,7 @@ export default async function save() {
         })
             .then((response) => {
                 if (response.ok) {
+                    if (getSaveRevision() === savedRevision) projectSavedSet(true)
                     showMessage(
                         `We have Created a new project: ${projectName} in our servers.`
                     )
@@ -455,10 +455,19 @@ export default async function save() {
                     responseJson.then((data) => {
                         openUpdateProjectDetail(data)
                     })
+                } else {
+                    showMessage("There was an error, we couldn't save to our servers")
+                    let loadingIcon = document.querySelector('.loadingIcon')
+                    loadingIcon.style.transition = 'opacity 0.2s'
+                    loadingIcon.style.opacity = '0'
                 }
             })
             .catch((error) => {
                 console.error('Error:', error)
+                showMessage("There was an error, we couldn't save to our servers")
+                let loadingIcon = document.querySelector('.loadingIcon')
+                loadingIcon.style.transition = 'opacity 0.2s'
+                loadingIcon.style.opacity = '0'
             })
     } else {
         // updates project - this part needs to be improved and optimised
@@ -510,6 +519,7 @@ export default async function save() {
         })
             .then((response) => {
                 if (response.ok) {
+                    if (getSaveRevision() === savedRevision) projectSavedSet(true)
                     showMessage(
                         `We have saved your project: ${projectName} in our servers.`
                     )
@@ -525,6 +535,10 @@ export default async function save() {
             })
             .catch((error) => {
                 console.error('Error:', error)
+                showMessage("There was an error, we couldn't save to our servers")
+                let loadingIcon = document.querySelector('.loadingIcon')
+                loadingIcon.style.transition = 'opacity 0.2s'
+                loadingIcon.style.opacity = '0'
             })
     }
 
