@@ -81,6 +81,28 @@ describe('Circuit Auto-Layout (computeLayout)', () => {
         expect(positions.gate.x).toBeLessThan(positions.output.x)
     })
 
+        test('keeps downstream devices in separate layers after a feedback loop', () => {
+        const circuit = {
+            devices: {
+                A: { type: 'Input' },
+                B: { type: 'And' },
+                C: { type: 'Or' },
+                D: { type: 'Output' }
+            },
+            connectors: [
+                { from: { id: 'A', port: 'out' }, to: { id: 'B', port: 'in1' } },
+                { from: { id: 'B', port: 'out' }, to: { id: 'A', port: 'in' } },
+                { from: { id: 'B', port: 'out' }, to: { id: 'C', port: 'in1' } },
+                { from: { id: 'C', port: 'out' }, to: { id: 'D', port: 'in' } }
+            ]
+        }
+        const positions = computeLayout(circuit)
+
+        expect(positions.B.x).toBe(positions.A.x)
+        expect(positions.C.x).toBeGreaterThan(positions.A.x)
+        expect(positions.D.x).toBeGreaterThan(positions.C.x)
+    })
+
     test('produces non-overlapping positions', () => {
         // 4 devices — verify no two share the same (x, y)
         const circuit = {

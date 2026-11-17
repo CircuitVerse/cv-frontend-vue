@@ -34,7 +34,117 @@ var PORT_LAYOUT_START_Y = 30;
 var PORT_LAYOUT_GAP = 20;
 var PORT_LAYOUT_BOTTOM_PADDING = 20;
 var PORT_LAYOUT_TITLE_Y = 13;
+function assignLayersWithCycles(deviceIds, successors) {
+    var index = 0
+    var indices = {}
+    var lowLinks = {}
+    var stack = []
+    var onStack = {}
+    var components = []
+    function strongConnect(node) {
+        indices[node] = index
+        lowLinks[node] = index
+        index++
 
+        stack.push(node)
+        onStack[node] = true
+        var neighbors = successors[node] || []
+
+        for (var i = 0; i < neighbors.length; i++) {
+            var next = neighbors[i]
+
+            if (indices[next] === undefined) {
+                strongConnect(next)
+                lowLinks[node] = Math.min(lowLinks[node], lowLinks[next])
+            } else if (onStack[next]) {
+                lowLinks[node] = Math.min(lowLinks[node], indices[next])
+            }
+        }
+        if (lowLinks[node] === indices[node]) {
+            var component = []
+            var current
+
+            do {
+                current = stack.pop()
+                onStack[current] = false
+                component.push(current)
+            } while (current !== node)
+
+            components.push(component)
+        }
+    }
+    for (var i = 0; i < deviceIds.length; i++) {
+        if (indices[deviceIds[i]] === undefined) {
+            strongConnect(deviceIds[i])
+        }
+    }
+    var componentOf = {}
+
+    for (var c = 0; c < components.length; c++) {
+        for (var n = 0; n < components[c].length; n++) {
+            componentOf[components[c][n]] = c
+        }
+    }
+
+    var componentSuccessors = {}
+    var componentInDegree = {}
+
+    for (var c = 0; c < components.length; c++) {
+        componentSuccessors[c] = []
+        componentInDegree[c] = 0
+    }
+
+    for (var node of deviceIds) {
+        var fromComponent = componentOf[node]
+
+        for (var next of successors[node] || []) {
+            var toComponent = componentOf[next]
+
+            if (
+                fromComponent !== toComponent &&
+                !componentSuccessors[fromComponent].includes(toComponent)
+            ) {
+                componentSuccessors[fromComponent].push(toComponent)
+                componentInDegree[toComponent]++
+            }
+        }
+    }
+
+    var queue = []
+    var componentLayer = {}
+
+    for (var c = 0; c < components.length; c++) {
+        if (componentInDegree[c] === 0) {
+            queue.push(c)
+            componentLayer[c] = 0
+        }
+    }
+
+    while (queue.length > 0) {
+        var current = queue.shift()
+
+        for (var next of componentSuccessors[current]) {
+            componentLayer[next] = Math.max(
+                componentLayer[next] || 0,
+                componentLayer[current] + 1,
+            )
+
+            componentInDegree[next]--
+
+            if (componentInDegree[next] === 0) {
+                queue.push(next)
+            }
+        }
+    }
+
+    var layerOf = {}
+
+    for (var node of deviceIds) {
+        layerOf[node] = componentLayer[componentOf[node]]
+    }
+
+    return layerOf
+}
 // Compute subcircuit shell port layout
 export function computePortLayout(inputCount, outputCount) {
     var inputs = Math.max(0, inputCount || 0);
@@ -77,59 +187,26 @@ export function computeLayout(circuitJSON) {
         var deviceIds = Object.keys(circuitJSON.devices)
 
         // Build adjacency lists
+        // Build adjacency lists
         var successors = {}
-        var inDegree = {}
         for (var i = 0; i < deviceIds.length; i++) {
             successors[deviceIds[i]] = []
-            inDegree[deviceIds[i]] = 0
         }
 
-        if (circuitJSON.connectors) {
-            for (var j = 0; j < circuitJSON.connectors.length; j++) {
-                var conn = circuitJSON.connectors[j]
-                var fromId = conn.from.id
-                var toId = conn.to.id
-                if (successors[fromId] !== undefined && inDegree[toId] !== undefined) {
-                    successors[fromId].push(toId)
-                    inDegree[toId]++
-                }
-            }
-        }
+if (circuitJSON.connectors) {
+    for (var j = 0; j < circuitJSON.connectors.length; j++) {
+        var conn = circuitJSON.connectors[j]
+        var fromId = conn.from.id
+        var toId = conn.to.id
 
-        // Topological sort using Kahn's algorithm to assign layers
-        var queue = []
-        var layerOf = {}
-        for (var k = 0; k < deviceIds.length; k++) {
-            if (inDegree[deviceIds[k]] === 0) {
-                queue.push(deviceIds[k])
-                layerOf[deviceIds[k]] = 0
-            }
+        if (successors[fromId] !== undefined && successors[toId] !== undefined) {
+            successors[fromId].push(toId)
         }
+    }
+}
 
-        var sorted = []
-        while (queue.length > 0) {
-            var node = queue.shift()
-            sorted.push(node)
-            var succs = successors[node]
-            for (var s = 0; s < succs.length; s++) {
-                var next = succs[s]
-                var nextLayer = (layerOf[node] || 0) + 1
-                if (layerOf[next] === undefined || nextLayer > layerOf[next]) {
-                    layerOf[next] = nextLayer
-                }
-                inDegree[next]--
-                if (inDegree[next] === 0) {
-                    queue.push(next)
-                }
-            }
-        }
-
-        // Handle any nodes not reached (cycles or disconnected)
-        for (var m = 0; m < deviceIds.length; m++) {
-            if (layerOf[deviceIds[m]] === undefined) {
-                layerOf[deviceIds[m]] = 0
-            }
-        }
+        // Assign layers using cycle-aware topological sorting
+        var layerOf = assignLayersWithCycles(deviceIds, successors)
 
         // Group devices by layer
         var layers = {}
