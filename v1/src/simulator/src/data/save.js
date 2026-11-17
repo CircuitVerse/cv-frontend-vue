@@ -454,6 +454,11 @@ export default async function save() {
                     responseJson.then((data) => {
                         openUpdateProjectDetail(data)
                     })
+                } else {
+                    showMessage("There was an error, we couldn't save to our servers")
+                    let loadingIcon = document.querySelector('.loadingIcon')
+                    loadingIcon.style.transition = 'opacity 0.2s'
+                    loadingIcon.style.opacity = '0'
                 }
             })
             .catch((error) => {
