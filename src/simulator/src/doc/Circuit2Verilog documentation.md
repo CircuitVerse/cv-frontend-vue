@@ -9,7 +9,7 @@
 
 ## Introduction
 
-This module generates a structural Verilog netlist given a CircuitVerse circuit graph. It generates functional structural Verilog code for combinational circuits and basic subcircuit hierarchies. Support for sequential elements, complex subcircuits, and custom behavioral constructs remains experimental and may require manual adjustments to the exported netlist.
+This module generates a structural Verilog netlist given a CircuitVerse circuit graph. It generates functional structural Verilog code for basic combinational circuits and basic subcircuit hierarchies. However, exports may require manual adjustments: input or node labels conflicting with Verilog reserved keywords (such as `module`) are not automatically escaped and produce invalid Verilog syntax, and circuits with unconnected optional ports will generate warnings in the output. Support for sequential elements, complex subcircuits, and custom behavioral constructs remains experimental and may require manual adjustments to the exported netlist.
 
 ## Algorithm
 

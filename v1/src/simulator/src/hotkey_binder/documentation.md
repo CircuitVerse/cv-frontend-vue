@@ -7,7 +7,7 @@ The hotkey binder manages keyboard shortcut registration, customization, and key
 The module consists of the following components:
 
 - **`model/shortcuts.plugin.ts`**: Core shortcut manager. Exports the `shortcut` object with:
-  - `add(shortcut_combination: string, callback: (e: KeyboardEvent) => void, opt?: ShortcutOptions)`: Registers a shortcut. Supported formats include a single key, modifier (`ctrl`, `alt`, `shift`, `meta`), or modifier + key combination (e.g., `Ctrl + S`).
+  - `add(shortcut_combination: string, callback: (e: KeyboardEvent) => void, opt?: ShortcutOptions)`: Registers a shortcut. Supported formats include a single key, modifier (`ctrl`, `alt`, `shift`, `meta`), or modifier + key combination (e.g., `Ctrl+S`).
   - `remove(shortcut_combination: string)`: Unregisters a specific shortcut.
   - `removeAll()`: Removes all registered shortcuts.
 - **`defaultKeys.ts`**: Exports `defaultKeys` (of type `DefaultKeysType`), mapping action names to their default key combinations. This is the single source of truth for default shortcuts.
