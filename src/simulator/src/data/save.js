@@ -441,7 +441,10 @@ export default async function save() {
         })
             .then((response) => {
                 if (response.ok) {
-                    if (getSaveRevision() === savedRevision) projectSavedSet(true)
+                    if (getSaveRevision() === savedRevision) {
+                        projectSavedSet(true)
+                        localStorage.removeItem('recover')
+                    }
                     showMessage(
                         `We have Created a new project: ${projectName} in our servers.`
                     )
@@ -450,7 +453,6 @@ export default async function save() {
                     loadingIcon.style.transition = 'opacity 0.2s';
                     loadingIcon.style.opacity = '0';
 
-                    localStorage.removeItem('recover')
                     const responseJson = response.json()
                     responseJson.then((data) => {
                         UpdateProjectDetail(data)
@@ -519,11 +521,13 @@ export default async function save() {
         })
             .then((response) => {
                 if (response.ok) {
-                    if (getSaveRevision() === savedRevision) projectSavedSet(true)
+                    if (getSaveRevision() === savedRevision) {
+                        projectSavedSet(true)
+                        localStorage.removeItem('recover')
+                    }
                     showMessage(
                         `We have saved your project: ${projectName} in our servers.`
                     )
-                    localStorage.removeItem('recover')
                 } else {
                     showMessage(
                         "There was an error, we couldn't save to our servers"
