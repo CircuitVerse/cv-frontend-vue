@@ -457,19 +457,10 @@ export default async function save() {
                     responseJson.then((data) => {
                         UpdateProjectDetail(data)
                     })
-                } else {
-                    showMessage("There was an error, we couldn't save to our servers")
-                    let loadingIcon = document.querySelector('.loadingIcon')
-                    loadingIcon.style.transition = 'opacity 0.2s'
-                    loadingIcon.style.opacity = '0'
                 }
             })
             .catch((error) => {
                 console.error('Error:', error)
-                showMessage("There was an error, we couldn't save to our servers")
-                let loadingIcon = document.querySelector('.loadingIcon')
-                loadingIcon.style.transition = 'opacity 0.2s'
-                loadingIcon.style.opacity = '0'
             })
     } else {
         // updates project - this part needs to be improved and optimised
@@ -539,10 +530,6 @@ export default async function save() {
             })
             .catch((error) => {
                 console.error('Error:', error)
-                showMessage("There was an error, we couldn't save to our servers")
-                let loadingIcon = document.querySelector('.loadingIcon')
-                loadingIcon.style.transition = 'opacity 0.2s'
-                loadingIcon.style.opacity = '0'
             })
     }
 
