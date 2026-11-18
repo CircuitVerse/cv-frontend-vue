@@ -4,6 +4,7 @@ import Scope, { scopeList } from "../circuit";
 import { loadScope } from "./load";
 import { updateRestrictedElementsInScope } from "../restrictedElementDiv";
 import { forceResetNodesSet } from "../engine";
+import { bumpSaveRevision, projectSavedSet } from "./project";
 
 // Declare global variables
 declare let globalScope: Scope;
@@ -30,6 +31,8 @@ export default function undo(scope: Scope = globalScope): void {
   if (!tempScope) return;
 
   updateGlobalScope(tempScope, ox, oy, scale);
+  bumpSaveRevision();
+  projectSavedSet(false);
   forceResetNodesSet(true);
   updateRestrictedElementsInScope();
 }

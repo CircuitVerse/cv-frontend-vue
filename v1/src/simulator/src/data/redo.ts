@@ -4,6 +4,7 @@ import Scope, { scopeList } from "../circuit";
 import { loadScope } from "./load";
 import { updateRestrictedElementsInScope } from "../restrictedElementDiv";
 import { forceResetNodesSet } from "../engine";
+import { bumpSaveRevision, projectSavedSet } from "./project";
 
 // Extend the Scope type to include missing properties
 interface ExtendedScope extends Scope {
@@ -69,6 +70,8 @@ export default function redo(scope: ExtendedScope = globalScope): void {
   globalScope.scale = backupScale;
 
   (window as any).loading = false;
+  bumpSaveRevision();
+  projectSavedSet(false);
   forceResetNodesSet(true);
 
   // Update restricted elements
