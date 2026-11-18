@@ -74,7 +74,7 @@ git push origin forgot-password#44
 
 - `🌟 feature` — new features/enhancements
 - `🐞 bug` — errors in existing code
-- `JS to TS migration` — JavaScript-to-TypeScript conversion work (mostly in `v1/`)
+- `JS to TS migration` — JavaScript-to-TypeScript conversion work (mostly in `v1/`). See `migration-issues-drafts/` for beginner-sized TS migration task drafts.
 - `documentation` — docs improvements
 
 ## How to Claim Issues

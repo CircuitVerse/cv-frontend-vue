@@ -5,15 +5,13 @@
 1. James H - J Yeh, Ph.D.
 2. Satvik Ramaprasad
 
+**Source files:** `src/simulator/src/Verilog2CV.js` (Verilog to circuit synthesis) and `src/simulator/src/verilog.js` (circuit to structural Verilog netlist generation). Both files are `.js` only; there are no `.ts` counterparts.
+
 ## Introduction
 
-This is an experimental module that generates Verilog netlist (structural
-Verilog) given the circuit. Currently, the module generates fully functional
-Verilog code for basic circuits. For a complex circuit, additional (manual) work
-may need to be done in order to make it work. We are continuously improving this
-module to work with more and more complex circuits.
+This module generates a structural Verilog netlist given a CircuitVerse circuit graph. It generates functional structural Verilog code for combinational circuits and basic subcircuit hierarchies. Support for sequential elements, complex subcircuits, and custom behavioral constructs remains experimental and may require manual adjustments to the exported netlist.
 
-# Algorithm
+## Algorithm
 
 The basic algorithm is fairly straightforward. We have the circuit graph in
 memory. We just need to convert this graph into Verilog netlist. It is done by
@@ -36,7 +34,7 @@ done on an individual sub-circuit (scope).
 2. `exportVerilogScope()` - DFS(1) on Sub Circuits Dependency Graph
     1. Set Verilog Labels for all elements
     2. `generateHeader()` - Generates Module Header
-    3. `generateOutputList()` - Output Output List
+    3. `generateOutputList()` - Generates Output List
     4. `generateInputList()` - Generates Input List
     5. `processGraph()` - DFS(2) on individual subcircuit/scope
         1. DFS starts from inputs
@@ -49,22 +47,22 @@ done on an individual sub-circuit (scope).
 **Verilog Module Functions:**
 
 1. `verilog.exportVerilog()` - Entry point
-1. `verilog.exportVerilogScope()` - Recursive DFS function on subcircuit graph
-1. `verilog.processGraph()` - Iterative DFS function on subcircuit scope
-1. `verilog.resetLabels()` - Resets labels in scope
-1. `verilog.setLabels()` - Sets labels in scope
-1. `verilog.generateHeader()` - Generates Verilog Module Header
-1. `verilog.generateInputList()` - Generates Verilog Module Input List
-1. `verilog.generateOutputList()` - Generates Verilog Module Output List
-1. `sanitizeLabel()` - Sanitizes label for node/wire
-1. `verilog.generateNodeName()` - Helper function to resolve node/wire name
+2. `verilog.exportVerilogScope()` - Recursive DFS function on subcircuit graph
+3. `verilog.processGraph()` - Iterative DFS function on subcircuit scope
+4. `verilog.resetLabels()` - Resets labels in scope
+5. `verilog.setLabels()` - Sets labels in scope
+6. `verilog.generateHeader()` - Generates Verilog Module Header
+7. `verilog.generateInputList()` - Generates Verilog Module Input List
+8. `verilog.generateOutputList()` - Generates Verilog Module Output List
+9. `sanitizeLabel()` - Sanitizes label for node/wire
+10. `verilog.generateNodeName()` - Helper function to resolve node/wire name
 
 **CircuitElement Functions:**
 
 These functions can be overridden by derived classes.
 
 1. `CircuitElement.prototype.processVerilog()` - Graph algorithm to resolve Verilog wire labels
-1. `CircuitElement.prototype.verilogName()` - Generate Verilog name
-1. `CircuitElement.prototype.generateVerilog()` - Generate final Verilog code
-1. `CircuitElement.prototype.verilogType` - Verilog type name
-1. `CircuitElement.moduleVerilog` - Custom module Verilog for elements
+2. `CircuitElement.prototype.verilogName()` - Generate Verilog name
+3. `CircuitElement.prototype.generateVerilog()` - Generate final Verilog code
+4. `CircuitElement.prototype.verilogType` - Verilog type name
+5. `CircuitElement.moduleVerilog` - Custom module Verilog for elements
