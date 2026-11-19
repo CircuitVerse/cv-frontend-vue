@@ -9,6 +9,7 @@ import PriorityEncoder from '../src/modules/PriorityEncoder';
 import Decoder from '../src/modules/Decoder';
 import LSB from '../src/modules/LSB';
 import MSB from '../src/modules/MSB';
+import Counter from '../src/modules/Counter';
 import Scope, { scopeList } from '../src/circuit';
 import { runYosys } from '@yowasp/yosys';
 import { createPinia, setActivePinia } from 'pinia';
@@ -112,6 +113,51 @@ function exportBitDetector(Element, bitWidth, connectPosition = true, connectVal
     }
 }
 
+function exportCounter(bitWidth, maximum) {
+    const scope = new Scope('CounterExport');
+    scopeList[scope.id] = scope;
+
+    try {
+        const counter = new Counter(100, 100, scope, bitWidth);
+        for (const [name, node, width] of [
+            ['max', counter.maxValue, bitWidth],
+            ['clk', counter.clock, 1],
+            ['rst', counter.reset, 1],
+        ]) {
+            const input = new Input(0, 0, scope, 'RIGHT', width);
+            input.label = name;
+            input.output1.connect(node);
+        }
+        for (const [name, node, width] of [
+            ['count', counter.output, bitWidth],
+            ['zero', counter.zero, 1],
+        ]) {
+            const output = new Output(200, 0, scope, 'LEFT', width);
+            output.label = name;
+            node.connect(output.inp1);
+        }
+
+        // Hold reset across clock edges, count through wraparound, then reset again.
+        const inputs = [
+            [0, 1], [1, 1], [0, 1], [0, 0],
+            [1, 0], [0, 0], [1, 0], [0, 0],
+            [1, 0], [0, 0], [1, 0], [0, 0],
+            [1, 0], [0, 1], [1, 1], [0, 1],
+        ];
+        const samples = inputs.map(([clock, reset]) => {
+            counter.maxValue.value = maximum;
+            counter.clock.value = clock;
+            counter.reset.value = reset;
+            counter.resolve();
+            return { clock, reset, count: counter.output.value, zero: counter.zero.value };
+        });
+
+        return { code: verilog.exportVerilog(scope), samples };
+    } finally {
+        delete scopeList[scope.id];
+    }
+}
+
 async function checkVerilog(code, commands) {
     const logs = [];
     const capture = (bytes) => {
@@ -208,6 +254,31 @@ describe('Verilog export', () => {
         expect(module).toContain(`assign ${usedAnd.output1.verilogLabel} = ${a.label} & ${b.label};`);
         expect(module).toContain(`assign ${out.label} = ${usedAnd.output1.verilogLabel};`);
         expect(module.match(/assign /g)).toHaveLength(2);
+    });
+
+    describe.each([1, 2, 8])('%i-bit Counter export', (bitWidth) => {
+        test.each([0, Math.min(3, 2 ** bitWidth - 1)])('matches simulator clock, reset and wraparound behavior with maximum %i', async (maximum) => {
+            const { code, samples } = exportCounter(bitWidth, maximum);
+            const proof = `
+module check(input [${bitWidth - 1}:0] max, expected_count,
+             input clk, rst, expected_zero, output ok);
+    wire [${bitWidth - 1}:0] count;
+    wire zero;
+    CounterExport dut(.max(max), .clk(clk), .rst(rst), .count(count), .zero(zero));
+    assign ok = (count == expected_count) && (zero == expected_zero);
+endmodule
+`;
+            const constraints = samples.map((sample, index) => {
+                const step = index + 1;
+                return `-set-at ${step} clk ${sample.clock} -set-at ${step} rst ${sample.reset} ` +
+                    `-set-at ${step} expected_count ${sample.count} -set-at ${step} expected_zero ${sample.zero}`;
+            }).join(' ');
+            const logs = await checkVerilog(code + proof,
+                `prep -top check; flatten; clk2fflogic; opt; sat -seq ${samples.length} ` +
+                `-set max ${maximum} ${constraints} -verify -prove ok 1`);
+
+            expect(logs).toContain('SUCCESS!');
+        }, 60000);
     });
 
     test.each([1, 2, 3])('exports every PriorityEncoder input in descending priority for %i output bits', (bitWidth) => {

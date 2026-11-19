@@ -160,8 +160,8 @@ export default class Counter extends CircuitElement {
       initial
         val = 0;
     
-      always @ (val)
-        if (val == 0)
+      always @ (*)
+        if (clk && val == 0)
           zero = 1;
         else
           zero = 0;
