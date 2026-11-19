@@ -9,6 +9,7 @@ import { showMessage, showError, generateId } from "../utils";
 import { checkIfBackup, backUp } from "./backupCircuit";
 import { simulationArea } from "../simulationArea";
 import { generateSaveData, getProjectName, setProjectName } from "./save";
+import { update, updateSubcircuitSet } from "../engine";
 import load from "./load";
 import { SimulatorStore } from "#/store/SimulatorStore/SimulatorStore";
 import { confirmOption } from "#/utils/confirm";
@@ -184,9 +185,31 @@ window.onbeforeunload = function (e?: BeforeUnloadEvent) {
       scopes: [],
     };
 
+    // Save scopes in dependency-first order (subcircuits before parents),
+    // mirroring the topological traversal in generateSaveData, so that
+    // recovery loading resolves subcircuit references correctly.
+    const dependencyList: { [key: string]: string[] } = {};
+    const completed: { [key: string]: boolean } = {};
+
     // eslint-disable-next-line no-restricted-syntax
     for (const id in scopeList) {
+      dependencyList[id] = scopeList[id].getDependencies();
+    }
+
+    function saveScope(id: string) {
+      if (completed[id]) return;
+      for (let i = 0; i < dependencyList[id].length; i++) {
+        saveScope(dependencyList[id][i]);
+      }
+      completed[id] = true;
+      updateSubcircuitSet(true);
+      update(scopeList[id], true);
       data.scopes.push(backUp(scopeList[id]));
+    }
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const id in scopeList) {
+      saveScope(id);
     }
 
     localStorage.setItem("recover", JSON.stringify(data));

@@ -13,6 +13,7 @@ import {
     recoverProject,
     saveOffline,
     openOffline,
+    projectSavedSet,
 } from '../src/data/project';
 import createSaveAsImgPrompt from '../src/data/saveImage';
 import { nextTick } from 'vue';
@@ -155,8 +156,9 @@ describe('data dir working', () => {
     });
 
     test('onbeforeunload saves recovery data synchronously and sets returnValue', () => {
-        global.projectSaved = false;
+        projectSavedSet(false);
         global.embed = false;
+        localStorage.removeItem('recover');
         const event = {
             preventDefault: vi.fn(),
             returnValue: undefined,
