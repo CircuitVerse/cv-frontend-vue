@@ -160,15 +160,27 @@ describe('Verilog export', () => {
         const danglingAnd = new AndGate(100, 0, globalScope, 'RIGHT', 2, 1);
         a.output1.connect(danglingAnd.inp[0]);
         b.output1.connect(danglingAnd.inp[1]);
-        const danglingXor = new XorGate(100, 100, globalScope, 'RIGHT', 2, 1);
+        const danglingXor = new XorGate(100, 50, globalScope, 'RIGHT', 2, 1);
         a.output1.connect(danglingXor.inp[0]);
         b.output1.connect(danglingXor.inp[1]);
-        const danglingNot = new NotGate(100, 200, globalScope, 'RIGHT', 1);
+        const danglingNot = new NotGate(100, 100, globalScope, 'RIGHT', 1);
         a.output1.connect(danglingNot.inp1);
+        const danglingOr = new OrGate(100, 150, globalScope, 'RIGHT', 2, 1);
+        a.output1.connect(danglingOr.inp[0]);
+        b.output1.connect(danglingOr.inp[1]);
+        const danglingNand = new NandGate(100, 200, globalScope, 'RIGHT', 2, 1);
+        a.output1.connect(danglingNand.inp[0]);
+        b.output1.connect(danglingNand.inp[1]);
+        const danglingNor = new NorGate(100, 250, globalScope, 'RIGHT', 2, 1);
+        a.output1.connect(danglingNor.inp[0]);
+        b.output1.connect(danglingNor.inp[1]);
+        const danglingXnor = new XnorGate(100, 300, globalScope, 'RIGHT', 2, 1);
+        a.output1.connect(danglingXnor.inp[0]);
+        b.output1.connect(danglingXnor.inp[1]);
 
         // Fully connected path that must still be exported
-        const usedAnd = new AndGate(100, 300, globalScope, 'RIGHT', 2, 1);
-        const out = new Output(200, 300, globalScope, 'LEFT', 1);
+        const usedAnd = new AndGate(100, 350, globalScope, 'RIGHT', 2, 1);
+        const out = new Output(200, 350, globalScope, 'LEFT', 1);
         a.output1.connect(usedAnd.inp[0]);
         b.output1.connect(usedAnd.inp[1]);
         usedAnd.output1.connect(out.inp1);

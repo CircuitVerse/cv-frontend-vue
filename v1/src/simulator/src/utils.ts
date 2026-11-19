@@ -17,6 +17,8 @@ import type { ICircuitElement, CircuitNode } from "./types/circuitElement.types"
 
 type VerilogNode = CircuitNode & { verilogLabel?: string };
 
+const NODE_INPUT = 0;
+
 window.globalScope = undefined;
 window.lightMode = false; // To be deprecated
 window.projectId = undefined;
