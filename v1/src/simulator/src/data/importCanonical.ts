@@ -229,6 +229,48 @@ function resolveRoutingEndpoint(
   return resolvePortNode(endpoint, instanceMap);
 }
 
+/** Restores one net's intermediate routing nodes and connections. */
+export function restoreIntermediateRouting(
+  scope: Scope,
+  net: CanonicalNet,
+  routing: IntermediateNet,
+  instanceMap: Map<string, ComponentInstance>,
+): string[] {
+  const errors: string[] = [];
+  const junctionNodes = routing.nodes.map(
+    (point) => Reflect.construct(Node, [point.x, point.y, 2, scope.root, net.bitWidth]) as Node,
+  );
+
+  for (const [firstEndpoint, secondEndpoint] of routing.connections) {
+    const firstNode = resolveRoutingEndpoint(firstEndpoint, junctionNodes, instanceMap);
+    if (!firstNode) {
+      errors.push(
+        `Routing for net "${net.id}" cannot resolve first endpoint ${routingEndpointLabel(firstEndpoint)}`,
+      );
+      continue;
+    }
+
+    const secondNode = resolveRoutingEndpoint(secondEndpoint, junctionNodes, instanceMap);
+    if (!secondNode) {
+      errors.push(
+        `Routing for net "${net.id}" cannot resolve second endpoint ${routingEndpointLabel(secondEndpoint)}`,
+      );
+      continue;
+    }
+
+    try {
+      firstNode.connect(secondNode);
+    } catch {
+      errors.push(
+        `Routing connection failed for net "${net.id}" ` +
+          `(${routingEndpointLabel(firstEndpoint)} ↔ ${routingEndpointLabel(secondEndpoint)})`,
+      );
+    }
+  }
+
+  return errors;
+}
+
 /** Wires simple nets as port chains; explicit routing is always authoritative when present. */
 function wireComponents(
   instanceMap: Map<string, ComponentInstance>,
@@ -303,46 +345,12 @@ function restoreIntermediateNodes(
   const netMap = new Map(nets.map((net) => [net.id, net]));
 
   for (const [netId, routing] of Object.entries(intermediateNodes)) {
-    const { nodes: junctionPoints } = routing;
-    const net = netMap.get(netId)!;
-    const junctionNodes: Node[] = [];
-
-    for (let i = 0; i < junctionPoints.length; i++) {
-      const point = junctionPoints[i];
-      // node.js makes TypeScript infer bitWidth as undefined even though its JSDoc and runtime accept a number.
-      const node = Reflect.construct(Node, [point.x, point.y, 2, scope.root, net.bitWidth]) as Node;
-      junctionNodes.push(node);
+    const net = netMap.get(netId);
+    if (!net) {
+      errors.push(`Routing references unknown net "${netId}"`);
+      continue;
     }
-
-    const { connections } = routing;
-    for (let i = 0; i < connections.length; i++) {
-      const [firstEndpoint, secondEndpoint] = connections[i];
-
-      const firstNode = resolveRoutingEndpoint(firstEndpoint, junctionNodes, instanceMap);
-      if (!firstNode) {
-        errors.push(
-          `Routing for net "${netId}" cannot resolve first endpoint ${routingEndpointLabel(firstEndpoint)}`,
-        );
-        continue;
-      }
-
-      const secondNode = resolveRoutingEndpoint(secondEndpoint, junctionNodes, instanceMap);
-      if (!secondNode) {
-        errors.push(
-          `Routing for net "${netId}" cannot resolve second endpoint ${routingEndpointLabel(secondEndpoint)}`,
-        );
-        continue;
-      }
-
-      try {
-        firstNode.connect(secondNode);
-      } catch {
-        errors.push(
-          `Routing connection failed for net "${netId}" ` +
-            `(${routingEndpointLabel(firstEndpoint)} ↔ ${routingEndpointLabel(secondEndpoint)})`,
-        );
-      }
-    }
+    errors.push(...restoreIntermediateRouting(scope, net, routing, instanceMap));
   }
   return errors;
 }
@@ -485,9 +493,7 @@ function computeImportOrder(circuits: Record<string, CanonicalScope>): number[] 
   return topologicalOrder;
 }
 
-export async function importCanonical(
-  project: unknown,
-): Promise<ImportResult> {
+export async function importCanonical(project: unknown): Promise<ImportResult> {
   const results: ImportResult = { success: false, imported: 0, errors: [] };
 
   const validation = validateCanonicalJson(project);
