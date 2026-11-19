@@ -154,6 +154,22 @@ describe('data dir working', () => {
         expect(() => recoverProject()).not.toThrow();
     });
 
+    test('onbeforeunload saves recovery data synchronously and sets returnValue', () => {
+        global.projectSaved = false;
+        global.embed = false;
+        const event = {
+            preventDefault: vi.fn(),
+            returnValue: undefined,
+        };
+        window.onbeforeunload(event);
+        expect(event.preventDefault).toHaveBeenCalled();
+        expect(event.returnValue).toBe('');
+        const recovery = localStorage.getItem('recover');
+        expect(recovery).toBeTruthy();
+        const parsed = JSON.parse(recovery);
+        expect(parsed.scopes).toBeDefined();
+    });
+
     test('SaveOffline working', () => {
         expect(() => saveOffline()).not.toThrow();
     });

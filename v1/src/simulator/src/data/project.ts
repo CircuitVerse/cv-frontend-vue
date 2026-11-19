@@ -6,7 +6,8 @@
 /* eslint-disable no-alert */
 import { resetScopeList, scopeList, newCircuit } from "../circuit";
 import { showMessage, showError, generateId } from "../utils";
-import { checkIfBackup } from "./backupCircuit";
+import { checkIfBackup, backUp } from "./backupCircuit";
+import { simulationArea } from "../simulationArea";
 import { generateSaveData, getProjectName, setProjectName } from "./save";
 import load from "./load";
 import { SimulatorStore } from "#/store/SimulatorStore/SimulatorStore";
@@ -163,22 +164,43 @@ function checkToSave() {
  * Prompt user to save data if unsaved
  * @category data
  */
-window.onbeforeunload = async function () {
+window.onbeforeunload = function (e?: BeforeUnloadEvent) {
   if (projectSaved || embed) return;
 
   if (!checkToSave()) return;
 
-  alert(
-    "You have unsaved changes on this page. Do you want to leave this page and discard your changes or stay on this page?",
-  );
-  // await confirmSingleOption(
-  //     'You have unsaved changes on this page. Do you want to leave this page and discard your changes or stay on this page?'
-  // )
-  const data = await generateSaveData("Untitled");
-  const stringData = JSON.stringify(data);
-  localStorage.setItem("recover", stringData);
+  try {
+    const data: {
+      name: string;
+      timePeriod: number;
+      clockEnabled: boolean;
+      focussedCircuit: string | number | undefined;
+      scopes: unknown[];
+    } = {
+      name: getProjectName() || "Untitled",
+      timePeriod: simulationArea.timePeriod,
+      clockEnabled: simulationArea.clockEnabled,
+      focussedCircuit: globalScope?.id,
+      scopes: [],
+    };
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const id in scopeList) {
+      data.scopes.push(backUp(scopeList[id]));
+    }
+
+    localStorage.setItem("recover", JSON.stringify(data));
+  } catch (error) {
+    // Continue unload prompt even if localStorage quota fails
+  }
+
+  if (e) {
+    e.preventDefault();
+    // eslint-disable-next-line no-param-reassign
+    e.returnValue = "";
+  }
   // eslint-disable-next-line consistent-return
-  return "Are u sure u want to leave? Any unsaved changes may not be recoverable";
+  return "";
 };
 
 /**
