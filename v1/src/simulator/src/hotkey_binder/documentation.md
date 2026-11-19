@@ -30,10 +30,12 @@ To register a new shortcut action:
 ### 2. Removing a Shortcut Action
 1. Remove the action entry from `defaultKeys` in `defaultKeys.ts`.
 2. Remove the corresponding `case` from the switch statement in `model/addShortcut.ts`.
+3. Remove the action's union member from `ActionType` in `model/actions.ts` so TypeScript flags any remaining callers at compile time.
 
 ### 3. Adding Key Restrictions
 To prevent a key combination from being assigned (e.g. system or browser reserved hotkeys):
 - Edit the `restrictedKeys` array inside `checkRestricted()` in `model/utils.ts`.
+- **macOS note:** `checkRestricted()` automatically maps every `Ctrl`-prefixed entry to `Meta` on macOS. Adding `Ctrl + Q` to `restrictedKeys` will therefore restrict `Meta + Q` on macOS, not `Ctrl + Q`. To restrict the actual `Ctrl` combination on macOS, a code change to the mapping logic in `checkRestricted()` is required.
 
 ### 4. Persistence
 Custom shortcuts and default hotkeys are persisted via `localStorage`:
