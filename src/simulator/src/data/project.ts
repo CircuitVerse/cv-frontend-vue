@@ -195,9 +195,10 @@ window.onbeforeunload = function (e?: BeforeUnloadEvent) {
     }
 
     function saveScope(id: string) {
-      if (completed[id]) return;
-      for (let i = 0; i < dependencyList[id].length; i++) {
-        saveScope(dependencyList[id][i]);
+      if (!scopeList[id] || completed[id]) return;
+      const deps = dependencyList[id] || [];
+      for (let i = 0; i < deps.length; i++) {
+        saveScope(deps[i]);
       }
       completed[id] = true;
       updateSubcircuitSet(true);
@@ -211,7 +212,7 @@ window.onbeforeunload = function (e?: BeforeUnloadEvent) {
     }
 
     localStorage.setItem("recover", JSON.stringify(data));
-  } catch (error) {
+  } catch {
     // Continue unload prompt even if localStorage quota fails
   }
 
