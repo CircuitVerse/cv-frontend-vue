@@ -170,6 +170,7 @@ describe('data dir working', () => {
         expect(recovery).toBeTruthy();
         const parsed = JSON.parse(recovery);
         expect(parsed.scopes).toBeDefined();
+        expect(parsed.orderedTabs).toBeDefined();
     });
 
     test('SaveOffline working', () => {

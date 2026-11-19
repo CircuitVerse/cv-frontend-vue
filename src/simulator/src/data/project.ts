@@ -7,7 +7,7 @@ import { resetScopeList, scopeList, newCircuit } from "../circuit";
 import { showMessage, showError, generateId } from "../utils";
 import { checkIfBackup, backUp } from "./backupCircuit";
 import { simulationArea } from "../simulationArea";
-import { generateSaveData, getProjectName, setProjectName } from "./save";
+import { generateSaveData, getProjectName, setProjectName, getTabsOrder } from "./save";
 import { update, updateSubcircuitSet } from "../engine";
 import load from "./load";
 import { SimulatorStore } from "#/store/SimulatorStore/SimulatorStore";
@@ -174,12 +174,20 @@ window.onbeforeunload = function (e?: BeforeUnloadEvent) {
       timePeriod: number;
       clockEnabled: boolean;
       focussedCircuit: string | number | undefined;
+      orderedTabs: string[];
       scopes: unknown[];
     } = {
       name: getProjectName() || "Untitled",
       timePeriod: simulationArea.timePeriod,
       clockEnabled: simulationArea.clockEnabled,
       focussedCircuit: globalScope?.id,
+      orderedTabs: (() => {
+        try {
+          return getTabsOrder() || [];
+        } catch {
+          return [];
+        }
+      })(),
       scopes: [],
     };
 
