@@ -5,6 +5,10 @@ import Output from '../src/modules/Output';
 import AndGate from '../src/modules/AndGate';
 import XorGate from '../src/modules/XorGate';
 import NotGate from '../src/modules/NotGate';
+import OrGate from '../src/modules/OrGate';
+import NandGate from '../src/modules/NandGate';
+import NorGate from '../src/modules/NorGate';
+import XnorGate from '../src/modules/XnorGate';
 import PriorityEncoder from '../src/modules/PriorityEncoder';
 import Decoder from '../src/modules/Decoder';
 import Scope, { scopeList } from '../src/circuit';
@@ -177,6 +181,46 @@ describe('Verilog export', () => {
         expect(module).toContain(`assign ${usedAnd.output1.verilogLabel} = ${a.label} & ${b.label};`);
         expect(module).toContain(`assign ${out.label} = ${usedAnd.output1.verilogLabel};`);
         expect(module.match(/assign /g)).toHaveLength(2);
+    });
+
+    test('exports Verilog correctly for all primitive gates using gateGenerateVerilog', () => {
+        const scope = new Scope('GateExport');
+        scopeList[scope.id] = scope;
+
+        try {
+            const inA = new Input(0, 0, scope, 'RIGHT', 1);
+            inA.label = 'a';
+            const inB = new Input(0, 50, scope, 'RIGHT', 1);
+            inB.label = 'b';
+
+            const andGate = new AndGate(100, 0, scope, 'RIGHT', 2, 1);
+            const orGate = new OrGate(100, 50, scope, 'RIGHT', 2, 1);
+            const nandGate = new NandGate(100, 100, scope, 'RIGHT', 2, 1);
+            const norGate = new NorGate(100, 150, scope, 'RIGHT', 2, 1);
+            const xorGate = new XorGate(100, 200, scope, 'RIGHT', 2, 1);
+            const xnorGate = new XnorGate(100, 250, scope, 'RIGHT', 2, 1);
+
+            const gates = [andGate, orGate, nandGate, norGate, xorGate, xnorGate];
+            gates.forEach((gate, idx) => {
+                inA.output1.connect(gate.inp[0]);
+                inB.output1.connect(gate.inp[1]);
+                const out = new Output(200, idx * 50, scope, 'LEFT', 1);
+                out.label = `out_${idx}`;
+                gate.output1.connect(out.inp1);
+            });
+
+            const code = verilog.exportVerilog(scope);
+            const module = code.slice(code.indexOf('module GateExport'));
+
+            expect(module).toContain(`assign ${andGate.output1.verilogLabel} = a & b;`);
+            expect(module).toContain(`assign ${orGate.output1.verilogLabel} = a | b;`);
+            expect(module).toContain(`assign ${nandGate.output1.verilogLabel} = ~(a & b);`);
+            expect(module).toContain(`assign ${norGate.output1.verilogLabel} = ~(a | b);`);
+            expect(module).toContain(`assign ${xorGate.output1.verilogLabel} = a ^ b;`);
+            expect(module).toContain(`assign ${xnorGate.output1.verilogLabel} = ~(a ^ b);`);
+        } finally {
+            delete scopeList[scope.id];
+        }
     });
 
     test.each([1, 2, 3])('exports every PriorityEncoder input in descending priority for %i output bits', (bitWidth) => {

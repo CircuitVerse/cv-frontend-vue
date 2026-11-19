@@ -111,7 +111,7 @@ export default class OrGate extends CircuitElement implements ICircuitElement {
   }
 
   generateVerilog(): string {
-    return gateGenerateVerilog.call(this, "|");
+    return gateGenerateVerilog(this, "|");
   }
 }
 

@@ -111,8 +111,8 @@ export default class XnorGate extends CircuitElement implements ICircuitElement 
     ctx.stroke();
   }
 
-  generateVerilog() {
-    return gateGenerateVerilog.call(this, "^", true);
+  generateVerilog(): string {
+    return gateGenerateVerilog(this, "^", true);
   }
 }
 

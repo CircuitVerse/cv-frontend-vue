@@ -128,7 +128,7 @@ export default class NandGate extends CircuitElement {
     }
 
     generateVerilog() {
-        return gateGenerateVerilog.call(this, '&', true)
+        return gateGenerateVerilog(this, '&', true)
     }
 }
 
