@@ -1,4 +1,4 @@
-## Circuit2Verilog Module
+# Circuit2Verilog Module
 
 **Primary Contributors:**
 
