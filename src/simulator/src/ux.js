@@ -45,7 +45,7 @@ var ctxPos = {
     y: 0,
     visible: false,
 }
-let isFullViewActive = false
+export let isFullViewActive = false
 let prevMobileState = null
 // FUNCTION TO SHOW AND HIDE CONTEXT MENU
 function hideContextMenu() {
@@ -283,7 +283,7 @@ export function deleteSelected() {
         if (
             !(
                 simulationArea.multipleObjectSelections[i].objectType ===
-                    'Node' &&
+                'Node' &&
                 simulationArea.multipleObjectSelections[i].type !== 2
             )
         )
@@ -435,7 +435,7 @@ export function exitFullView() {
 
     // Mobile Components - Restore previous state
     const simulatorMobileStore = toRefs(useSimulatorMobileStore())
-    
+
     // ✅ RESTORE PREVIOUS STATE
     if (prevMobileState) {
         simulatorMobileStore.showElementsPanel.value = prevMobileState.showElementsPanel
@@ -453,7 +453,7 @@ export function exitFullView() {
 export function fullView() {
     // Prevent multiple calls
     if (isFullViewActive) return
-    
+
     const app = document.querySelector('#app')
     if (!app) return
 
@@ -478,7 +478,7 @@ export function fullView() {
 
     // Mobile Components - Save previous state before hiding
     const simulatorMobileStore = toRefs(useSimulatorMobileStore())
-    
+
     // ✅ SAVE PREVIOUS STATE
     prevMobileState = {
         showElementsPanel: simulatorMobileStore.showElementsPanel.value,
