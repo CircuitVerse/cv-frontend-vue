@@ -1,29 +1,28 @@
 <template>
   <v-card class="avatar-menu" flat>
     <v-layout>
-      <teleport to="body">
-        <v-navigation-drawer
-          v-model="drawer"
-          location="right"
-          class="userMenu"
-          temporary
-          width="270"
-        >
-          <div class="close-parent">
-            <v-btn
-              size="x-small"
-              icon
-              class="dialogClose"
-              @click="drawer = false"
-              variant="text"
-              color="white"
-            >
-              <v-icon icon="mdi-close" size="large"></v-icon>
-            </v-btn>
-          </div>
+      <v-navigation-drawer
+        v-model="drawer"
+        location="right"
+        class="userMenu"
+        temporary
+        width="270"
+      >
+        <div class="close-parent">
+          <v-btn
+            size="x-small"
+            icon
+            class="dialogClose"
+            @click="drawer = false"
+            variant="text"
+            color="white"
+          >
+            <v-icon icon="mdi-close" size="large"></v-icon>
+          </v-btn>
+        </div>
 
-          <v-list-item
-            class="list-item-avatar"
+        <v-list-item
+          class="list-item-avatar"
           :prepend-avatar="authStore.getUserAvatar"
           :prepend-icon="
             authStore.getUserAvatar === 'default' ? 'mdi-account-circle-outline' : undefined
@@ -116,7 +115,6 @@
           ></v-list-item>
         </template>
       </v-navigation-drawer>
-      </teleport>
 
       <v-main>
         <v-btn

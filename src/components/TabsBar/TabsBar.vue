@@ -319,9 +319,18 @@ function isEmbed(): boolean {
 #tabsBar {
     padding-right: 50px;
     position: relative;
-    overflow: hidden;
+    overflow-x: hidden;
     padding-bottom: 2.5px;
     z-index: 1;
+}
+
+#tabsBar::-webkit-scrollbar {
+    width: 4px;
+}
+
+#tabsBar::-webkit-scrollbar-thumb {
+    background-color: var(--br-circuit);
+    border-radius: 2px;
 }
 
 #tabsBar.embed-tabbar {
@@ -368,11 +377,15 @@ function isEmbed(): boolean {
 .maxHeightStyle {
     height: 30px;
     max-height: 30px;
+    overflow-y: hidden;
 }
 
 .minHeightStyle {
     height: auto;
     min-height: 30px;
+    max-height: 80px;
+    overflow-y: auto;
+    scrollbar-width: thin;
 }
 
 .toolbarButton {
