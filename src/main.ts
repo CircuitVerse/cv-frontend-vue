@@ -1,3 +1,5 @@
+import "./globalVariables";
+
 import { createApp } from "vue";
 import App from "./App.vue";
 import vuetify from "./plugins/vuetify";
@@ -7,8 +9,6 @@ import { loadFonts } from "./plugins/webfontloader";
 import i18n from "./locales/i18n";
 
 import "bootstrap";
-
-import "./globalVariables";
 
 import "./styles/css/main.stylesheet.css";
 import "../node_modules/bootstrap/scss/bootstrap.scss";
