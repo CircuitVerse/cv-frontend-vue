@@ -95,7 +95,7 @@ export function uniq(a: any[]) {
 export function gateGenerateVerilog(
   element: Pick<ICircuitElement, "nodeList">,
   gate: string,
-  invert = false
+  invert = false,
 ): string {
   const inputs: VerilogNode[] = [];
   const outputs: (VerilogNode | "")[] = [];
@@ -104,15 +104,19 @@ export function gateGenerateVerilog(
     const node = element.nodeList[i] as VerilogNode;
     if (node.type === NODE_INPUT) {
       inputs.push(node);
+    } else if (node.connections.length > 0) {
+      outputs.push(node);
     } else {
-      if (node.connections.length > 0) outputs.push(node);
-      else outputs.push(""); // Don't create a wire
+      outputs.push(""); // Don't create a wire
     }
   }
 
   let res = "assign ";
-  if (outputs.length === 1) res += (outputs[0] as VerilogNode).verilogLabel;
-  else res += `{${(outputs as VerilogNode[]).map((x) => x.verilogLabel).join(", ")}}`;
+  if (outputs.length === 1) {
+    res += (outputs[0] as VerilogNode).verilogLabel;
+  } else {
+    res += `{${(outputs as VerilogNode[]).map((x) => x.verilogLabel).join(", ")}}`;
+  }
 
   res += " = ";
 
@@ -120,7 +124,7 @@ export function gateGenerateVerilog(
   if (invert) {
     res += `~(${inputParams});`;
   } else {
-    res += inputParams + ";";
+    res += `${inputParams};`;
   }
   return res;
 }
