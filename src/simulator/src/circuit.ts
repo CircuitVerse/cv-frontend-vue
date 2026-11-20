@@ -496,9 +496,9 @@ export default class Scope {
   /**
    * Function which centers the circuit to the correct zoom level
    */
-  centerFocus(zoomIn = true, maxScale = 4 * DPR) {
+  centerFocus(zoomIn = true, maxScale = 4 * DPR, useExistingBounds = false) {
     if (layoutModeGet()) return;
-    findDimensions(this);
+    if (!useExistingBounds) findDimensions(this);
 
     var ytoolbarOffset = embed ? 0 : 60 * DPR; // Some part ofcanvas is hidden behind the toolbar
 
