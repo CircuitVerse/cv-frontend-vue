@@ -1,0 +1,38 @@
+name: circuitverse-simulator
+version: '0.0.1'
+title: CircuitVerse Simulator
+summary: Digital logic circuit simulator
+description: |
+  CircuitVerse is a free, open-source digital logic circuit simulator.
+  Build, simulate, and share combinational and sequential circuits with
+  an intuitive drag-and-drop interface. Features include combinational
+  analysis, Verilog export, hex-bin-dec converter, and more.
+license: MIT
+icon: snap/gui/icon.png
+contact: support@circuitverse.org
+issues: https://github.com/CircuitVerse/CircuitVerse/issues
+source-code: https://github.com/CircuitVerse/CircuitVerse
+website: https://circuitverse.org
+
+base: core22
+grade: stable
+confinement: classic
+
+architectures:
+  - build-on: amd64
+
+apps:
+  circuitverse-simulator:
+    command: usr/bin/circuitverse-simulator
+    desktop: usr/share/applications/circuitverse-simulator.desktop
+
+parts:
+  circuitverse:
+    plugin: dump
+    source: snap-build/
+    organize:
+      CircuitVerse: usr/bin/circuitverse-simulator
+      circuitverse-simulator.desktop: usr/share/applications/circuitverse-simulator.desktop
+    stage:
+      - usr/bin/circuitverse-simulator
+      - usr/share/applications/circuitverse-simulator.desktop
