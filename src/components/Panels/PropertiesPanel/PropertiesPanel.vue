@@ -11,16 +11,25 @@
 <script lang="ts" setup>
 import ModuleProperty from '#/components/Panels/PropertiesPanel/ModuleProperty/ModuleProperty.vue'
 import LayoutProperty from '#/components/Panels/PropertiesPanel/LayoutProperty/LayoutProperty.vue'
-import { toRaw, onMounted } from 'vue'
+import { toRaw, onMounted, onUnmounted } from 'vue'
 import { showPropertiesPanel } from './PropertiesPanel';
 import { usePropertiesPanelStore } from '#/store/propertiesPanelStore';
 import { setupPanelListeners } from '#/simulator/src/ux';
 
 const propertiesPanelStore = usePropertiesPanelStore();
 
+let propertiesPanelInterval: ReturnType<typeof setInterval> | null = null
+
 onMounted(() => {
     // checks for which type of properties panel to show
-    setInterval(showPropertiesPanel, 100)
+    propertiesPanelInterval = setInterval(showPropertiesPanel, 100)
     setupPanelListeners('#moduleProperty')
+})
+
+onUnmounted(() => {
+    if (propertiesPanelInterval) {
+        clearInterval(propertiesPanelInterval)
+        propertiesPanelInterval = null
+    }
 })
 </script>
