@@ -4,6 +4,7 @@
 interface Node {
   bitWidth: number;
   value: number | undefined;
+  highlighted?: boolean;
 }
 
 /**
