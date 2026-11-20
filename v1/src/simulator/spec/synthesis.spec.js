@@ -161,6 +161,7 @@ describe('Circuit Auto-Layout (computeLayout)', () => {
     test('handles device IDs that match JavaScript object properties', () => {
         const circuit = {
             devices: {
+                ['__proto__']: { type: 'And' },
                 ['constructor']: { type: 'Input' },
                 ['toString']: { type: 'Output' }
             },
@@ -169,7 +170,12 @@ describe('Circuit Auto-Layout (computeLayout)', () => {
 
         const positions = computeLayout(circuit)
 
-        expect(Object.keys(positions).sort()).toEqual(['constructor', 'toString'])
+        expect(Object.keys(positions).sort()).toEqual([
+            '__proto__',
+            'constructor',
+            'toString',
+        ])
+        expect(positions['__proto__']).toBeDefined()
         expect(positions['constructor']).toBeDefined()
         expect(positions['toString']).toBeDefined()
     })

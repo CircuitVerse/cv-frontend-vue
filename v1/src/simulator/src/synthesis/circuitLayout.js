@@ -129,7 +129,7 @@ function assignLayersWithCycles(deviceIds, successors) {
     var componentInDegree = {}
 
     for (var c = 0; c < components.length; c++) {
-        componentSuccessors[c] = []
+        componentSuccessors[c] = new Set()
         componentInDegree[c] = 0
     }
 
@@ -141,9 +141,9 @@ function assignLayersWithCycles(deviceIds, successors) {
 
             if (
                 fromComponent !== toComponent &&
-                !componentSuccessors[fromComponent].includes(toComponent)
+                !componentSuccessors[fromComponent].has(toComponent)
             ) {
-                componentSuccessors[fromComponent].push(toComponent)
+                componentSuccessors[fromComponent].add(toComponent)
                 componentInDegree[toComponent]++
             }
         }
@@ -159,8 +159,11 @@ function assignLayersWithCycles(deviceIds, successors) {
         }
     }
 
-    while (queue.length > 0) {
-        var current = queue.shift()
+    var queueIndex = 0
+
+    while (queueIndex < queue.length) {
+        var current = queue[queueIndex]
+        queueIndex++
 
         for (var next of componentSuccessors[current]) {
             componentLayer[next] = Math.max(
