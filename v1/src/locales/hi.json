@@ -8,6 +8,7 @@
         "undo": "पूर्ववत् करें",
         "report_issue": "मामले की रिपोर्ट करें",
         "restricted_elements_used": "प्रतिबंधित एलिमेंट्स जिनका इस्तेमाल किया गया:",
+        "restricted_element_notice": "मेंटर ने इस एलिमेंट पर रोक लगा दी है। इसके इस्तेमाल से आपके मार्क्स कट सकते हैं।",
         "made_with_circuitverse": "सर्किटवर्स में बनाया गया",
         "layout": {
             "layout_elements": "लेआउट एलिमेंट्स",

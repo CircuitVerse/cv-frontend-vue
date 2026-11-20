@@ -9,7 +9,6 @@
 // Most Listeners are stored here
 import { tempBuffer } from './layoutMode'
 import { simulationArea } from './simulationArea'
-import { hideRestricted, showRestricted } from './restrictedElementDiv';
 import { setupTimingListeners } from './plotArea'
 
 // Canvas pointer input now lives in commands/pointer.ts and is bound by
@@ -48,16 +47,6 @@ export default function startListeners() {
             this.parentElement.removeChild(this);
         }
     });
-
-    restrictedElements.forEach((element) => {
-        $(`#${element}`).mouseover(() => {
-            showRestricted()
-        })
-
-        $(`#${element}`).mouseout(() => {
-            hideRestricted()
-        })
-    })
 
     if (!embed) {
         setupTimingListeners()
