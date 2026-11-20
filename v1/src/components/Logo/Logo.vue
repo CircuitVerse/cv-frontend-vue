@@ -1,22 +1,17 @@
 <template>
-    <a href="/">
-        <span :class="cvlogo"></span>
-    </a>
+  <a href="/">
+    <span :class="cvlogo"></span>
+  </a>
 </template>
 
-<script>
-export default {
-    name: 'Logo',
-    props: {
-        cvlogo: {
-            type: String,
-            default: 'logo',
-        },
-    },
-    data() {
-        return {}
-    },
+<script setup lang="ts">
+interface Props {
+  cvlogo?: string;
 }
+
+withDefaults(defineProps<Props>(), {
+  cvlogo: "logo",
+});
 </script>
 
 <style scoped>
