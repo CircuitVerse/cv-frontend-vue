@@ -196,12 +196,14 @@ export default function startListeners() {
         if (simulationArea.lastSelected && simulationArea.lastSelected.keyDown) {
             if (e.key.toString().length == 1 || e.key.toString() == 'Backspace') {
                 simulationArea.lastSelected.keyDown(e.key.toString());
+                updateSimulationSet(true);
                 return;
             }
         }
         if (simulationArea.lastSelected && simulationArea.lastSelected.keyDown2) {
             if (e.key.toString().length == 1) {
                 simulationArea.lastSelected.keyDown2(e.key.toString());
+                updateSimulationSet(true);
                 return;
             }
         }
@@ -222,6 +224,8 @@ export default function startListeners() {
         scheduleUpdate(2);
         if (simulationArea.lastSelected && simulationArea.lastSelected.dblclick !== undefined) {
             simulationArea.lastSelected.dblclick();
+            updateSimulationSet(true);
+            updateCanvasSet(true);
         }
     });
     function MouseScroll(event) {
