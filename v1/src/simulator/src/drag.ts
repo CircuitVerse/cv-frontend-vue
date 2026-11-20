@@ -5,10 +5,7 @@ interface Position {
   y: number;
 }
 
-function pinElementPosition(
-  element: HTMLElement,
-  positions: WeakMap<HTMLElement, Position>,
-): void {
+function pinElementPosition(element: HTMLElement, positions: WeakMap<HTMLElement, Position>): void {
   if (!positions.has(element)) {
     const rect = element.getBoundingClientRect();
     element.style.top = `${rect.top}px`;
