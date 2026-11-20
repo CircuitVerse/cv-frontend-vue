@@ -7,6 +7,10 @@ import XorGate from '../src/modules/XorGate';
 import NotGate from '../src/modules/NotGate';
 import Splitter from '../src/modules/Splitter';
 import PriorityEncoder from '../src/modules/PriorityEncoder';
+import Decoder from '../src/modules/Decoder';
+import LSB from '../src/modules/LSB';
+import MSB from '../src/modules/MSB';
+import BitSelector from '../src/modules/BitSelector';
 import Scope, { scopeList } from '../src/circuit';
 import { runYosys } from '@yowasp/yosys';
 import { createPinia, setActivePinia } from 'pinia';
@@ -61,15 +65,94 @@ function exportPriorityEncoder(bitWidth, connectedBits, connectValid = true, lab
     }
 }
 
+function exportDecoder(bitWidth, connectedOutputs, label = 'decoder') {
+    const scope = new Scope('DecoderExport');
+    scopeList[scope.id] = scope;
+
+    try {
+        const decoder = new Decoder(200, 100, scope, 'LEFT', bitWidth);
+        decoder.label = label;
+        const input = new Input(300, 100, scope, 'LEFT', bitWidth);
+        input.label = 'sel';
+        input.output1.connect(decoder.input);
+
+        decoder.output1.forEach((node, index) => {
+            if (connectedOutputs && !connectedOutputs.includes(index)) return;
+            const output = new Output(100, index * 20, scope, 'RIGHT', 1);
+            output.label = `out${index}`;
+            node.connect(output.inp1);
+        });
+
+        return verilog.exportVerilog(scope);
+    } finally {
+        delete scopeList[scope.id];
+    }
+}
+
+function exportBitDetector(Element, bitWidth, connectPosition = true, connectValid = true) {
+    const scope = new Scope('DetectorExport');
+    scopeList[scope.id] = scope;
+
+    try {
+        const detector = new Element(100, 100, scope, 'RIGHT', bitWidth);
+        const input = new Input(0, 100, scope, 'RIGHT', bitWidth);
+        input.label = 'data';
+        input.output1.connect(detector.inp1);
+        if (connectPosition) {
+            const output = new Output(200, 100, scope, 'LEFT', bitWidth);
+            output.label = 'position';
+            detector.output1.connect(output.inp1);
+        }
+        if (connectValid) {
+            const output = new Output(200, 120, scope, 'LEFT', 1);
+            output.label = 'valid';
+            detector.enable.connect(output.inp1);
+        }
+        return verilog.exportVerilog(scope);
+    } finally {
+        delete scopeList[scope.id];
+    }
+}
+
+function exportBitSelector(bitWidth, data, index) {
+    const scope = new Scope('BitSelectorExport');
+    scopeList[scope.id] = scope;
+
+    try {
+        const selector = new BitSelector(100, 100, scope, 'RIGHT', bitWidth, 32);
+        const input = new Input(0, 100, scope, 'RIGHT', bitWidth);
+        input.label = 'data';
+        input.output1.connect(selector.inp1);
+        const select = new Input(100, 200, scope, 'UP', 32);
+        select.label = 'index';
+        select.output1.connect(selector.bitSelectorInp);
+        const output = new Output(200, 100, scope, 'LEFT', 1);
+        output.label = 'selected';
+        selector.output1.connect(output.inp1);
+
+        selector.inp1.value = data;
+        selector.bitSelectorInp.value = index;
+        selector.resolve();
+
+        return { code: verilog.exportVerilog(scope), selected: selector.output1.value };
+    } finally {
+        delete scopeList[scope.id];
+    }
+}
+
 async function checkVerilog(code, commands) {
     const logs = [];
     const capture = (bytes) => {
         if (bytes) logs.push(new TextDecoder().decode(bytes));
     };
-    await runYosys(['-p', `read_verilog input.v; ${commands}`], { 'input.v': code }, {
-        stdout: capture,
-        stderr: capture,
-    });
+    try {
+        await runYosys(['-p', `read_verilog input.v; ${commands}`], { 'input.v': code }, {
+            stdout: capture,
+            stderr: capture,
+        });
+    } catch (error) {
+        throw new Error(logs.join(''), { cause: error });
+    }
     return logs.join('');
 }
 
@@ -155,6 +238,44 @@ describe('Verilog export', () => {
         expect(module.match(/assign /g)).toHaveLength(2);
     });
 
+    describe('BitSelector index bounds', () => {
+        test.each([
+            [1, 1, 0, 1],
+            [8, 1, 0, 1],
+            [8, 128, 7, 1],
+            [8, 1, 7, 0],
+            [32, 2147483648, 31, 1],
+            [32, 2147483648, 0, 0],
+            [8, 255, 8, 0],
+            [32, 1, 32, 0],
+            [8, 1, 32, 0],
+            [8, 2, 33, 0],
+            [32, 2, 33, 0],
+            [32, 2147483648, 63, 0],
+            [32, 2147483648, 4294967295, 0],
+        ])('matches Verilog for width %i, data %i, index %i and output %i', async (bitWidth, data, index, expected) => {
+            const { code, selected } = exportBitSelector(bitWidth, data, index);
+
+            expect(selected).toBe(expected);
+            const logs = await checkVerilog(code,
+                `prep -top BitSelectorExport; flatten; sat -set data ${bitWidth}'h${data.toString(16)} ` +
+                `-set index 32'h${index.toString(16)} -verify -prove selected ${expected}`);
+            expect(logs).toContain('SUCCESS!');
+        }, 60000);
+
+        test('clears a previously high output for an invalid index and recovers for a valid index', () => {
+            const scope = new Scope('BitSelectorTransitions');
+            const selector = new BitSelector(100, 100, scope, 'RIGHT', 8, 6);
+            selector.inp1.value = 1;
+
+            for (const [index, expected] of [[0, 1], [32, 0], [0, 1]]) {
+                selector.bitSelectorInp.value = index;
+                selector.resolve();
+                expect(selector.output1.value).toBe(expected);
+            }
+        });
+    });
+
     test.each([1, 2, 3])('exports every PriorityEncoder input in descending priority for %i output bits', (bitWidth) => {
         PriorityEncoder.resetVerilog();
         PriorityEncoder.selSizes.add(bitWidth);
@@ -226,11 +347,90 @@ endmodule
         expect(code).not.toContain('undefined');
     }, 60000);
 
+    test.each([1, 2, 3, 4])('compiles and proves complete Decoder exports for %i input bits', async (bitWidth) => {
+        const code = exportDecoder(bitWidth);
+        const outputCount = 2 ** bitWidth;
+        const ports = Array.from({ length: outputCount }, (_, index) =>
+            `.out${index}(decoded[${index}])`
+        );
+        ports.push('.sel(sel)');
+        const proof = `
+module check(input [${bitWidth - 1}:0] sel, output ok);
+    wire [${outputCount - 1}:0] decoded;
+    DecoderExport dut(${ports.join(', ')});
+    assign ok = decoded == (${outputCount}'b1 << sel);
+endmodule
+`;
+
+        expect(code).not.toMatch(/Decoder\d+\s*#\s*\(/);
+        const logs = await checkVerilog(code + proof,
+            'prep -top check; flatten; memory_map; opt; sat -verify -prove ok 1');
+
+        expect(logs).toContain('SUCCESS!');
+    }, 60000);
+
+    test.each([
+        { connectedOutputs: [0] },
+        { connectedOutputs: [3] },
+        { connectedOutputs: [0, 3] },
+        { connectedOutputs: [] },
+    ])('compiles Decoder exports with connected outputs $connectedOutputs', async ({ connectedOutputs }) => {
+        const code = exportDecoder(2, connectedOutputs);
+
+        await checkVerilog(code, 'hierarchy -check -top DecoderExport; proc; check -assert');
+        expect(code).not.toContain('undefined');
+    }, 60000);
+
+    test('compiles Decoder exports with an escaped instance label', async () => {
+        const code = exportDecoder(2, undefined, 'decoder-test');
+
+        await checkVerilog(code, 'hierarchy -check -top DecoderExport; proc; check -assert');
+    }, 60000);
+
     test('compiles PriorityEncoder exports with an escaped instance label', async () => {
         const code = exportPriorityEncoder(2, undefined, true, 'encoder-test');
 
         await checkVerilog(code, 'hierarchy -check -top EncoderExport; proc; check -assert');
     }, 60000);
+
+    describe.each([['LSB', LSB], ['MSB', MSB]])('%s detector export', (name, Element) => {
+        test.each([1, 4, 32])('proves position and valid outputs for every %i-bit input', async (bitWidth) => {
+            const code = exportBitDetector(Element, bitWidth);
+            const loop = name === 'MSB'
+                ? `i = 0; i < ${bitWidth}; i = i + 1`
+                : `i = ${bitWidth - 1}; i >= 0; i = i - 1`;
+            const proof = `
+module check(input [${bitWidth - 1}:0] data, output ok);
+    wire [${bitWidth - 1}:0] position;
+    wire valid;
+    reg [${bitWidth - 1}:0] expected;
+    integer i;
+    always @* begin
+        expected = 0;
+        for (${loop})
+            if (data[i]) expected = i;
+    end
+    DetectorExport dut(.data(data), .position(position), .valid(valid));
+    assign ok = (position == expected) && (valid == (|data));
+endmodule
+`;
+            const logs = await checkVerilog(code + proof,
+                'prep -top check; flatten; sat -verify -prove ok 1');
+
+            expect(logs).toContain('SUCCESS!');
+        }, 60000);
+
+        test.each([
+            [true, false],
+            [false, true],
+            [false, false],
+        ])('compiles with position connected: %s, valid connected: %s', async (position, valid) => {
+            const code = exportBitDetector(Element, 4, position, valid);
+
+            await checkVerilog(code, 'hierarchy -check -top DetectorExport; proc; check -assert');
+            expect(code).not.toContain('undefined');
+        }, 60000);
+    });
 
     test('exports Splitter correctly without redundant outer loop', () => {
         const inp = new Input(0, 0, globalScope, 'RIGHT', 4);
