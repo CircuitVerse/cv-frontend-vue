@@ -147,10 +147,7 @@ function updatePreference(e: MouseEvent) {
     document.getElementById('edit')!.style.border = 'none'
     document.getElementById('edit')!.style.display = 'block'
     document.getElementById('edit')!.focus()
-    ;[, targetPref.value] = e.target!.closest('div')!.children as [
-        HTMLSpanElement,
-        HTMLSpanElement
-    ]
+    targetPref.value = (e.target as HTMLElement).closest('div')!.children[1] as HTMLSpanElement
 }
 
 function updateEdit(e: KeyboardEvent) {
