@@ -4,6 +4,7 @@ const mocks = vi.hoisted(() => ({
     scheduleUpdate: vi.fn(),
     wireToBeCheckedSet: vi.fn(),
     updateCanvasSet: vi.fn(),
+    updateSimulationSet: vi.fn(),
     changeCircuitName: vi.fn(),
 }));
 
@@ -15,6 +16,7 @@ vi.mock('../src/engine', () => ({
     scheduleUpdate: mocks.scheduleUpdate,
     wireToBeCheckedSet: mocks.wireToBeCheckedSet,
     updateCanvasSet: mocks.updateCanvasSet,
+    updateSimulationSet: mocks.updateSimulationSet,
 }));
 
 vi.mock('../src/simulationArea', () => ({
