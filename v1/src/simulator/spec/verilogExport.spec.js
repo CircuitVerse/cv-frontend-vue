@@ -5,6 +5,7 @@ import Output from '../src/modules/Output';
 import AndGate from '../src/modules/AndGate';
 import XorGate from '../src/modules/XorGate';
 import NotGate from '../src/modules/NotGate';
+import SquareRGBLed from '../src/modules/SquareRGBLed';
 import PriorityEncoder from '../src/modules/PriorityEncoder';
 import Decoder from '../src/modules/Decoder';
 import LSB from '../src/modules/LSB';
@@ -501,4 +502,37 @@ endmodule
         }, 60000);
     });
 
+    test('exports SquareRGBLed without infinite recursion', () => {
+        const r = new Input(0, 0, globalScope, 'RIGHT', 8);
+        const g = new Input(0, 50, globalScope, 'RIGHT', 8);
+        const b = new Input(0, 100, globalScope, 'RIGHT', 8);
+        const led = new SquareRGBLed(200, 50, globalScope, 'UP');
+
+        r.output1.connect(led.inp1);
+        g.output1.connect(led.inp2);
+        b.output1.connect(led.inp3);
+
+        const code = verilog.exportVerilog(globalScope);
+        const module = code.slice(code.indexOf('module Main'));
+
+        expect(module).toContain('SquareRGBLed:');
+        expect(module).toContain(
+            `$display("SquareRGBLed:{${led.inp1.verilogLabel},${led.inp2.verilogLabel},${led.inp3.verilogLabel}} = {%d,%d,%d}", ${led.inp1.verilogLabel}, ${led.inp2.verilogLabel}, ${led.inp3.verilogLabel});`
+        );
+    });
+
+    test('exports SquareRGBLed with default 8\'b0 for unconnected inputs', () => {
+        const r = new Input(0, 0, globalScope, 'RIGHT', 8);
+        const led = new SquareRGBLed(200, 50, globalScope, 'UP');
+
+        r.output1.connect(led.inp1);
+
+        const code = verilog.exportVerilog(globalScope);
+        const module = code.slice(code.indexOf('module Main'));
+
+        expect(module).toContain('SquareRGBLed:');
+        expect(module).toContain(
+            `$display("SquareRGBLed:{${led.inp1.verilogLabel},8'b0,8'b0} = {%d,%d,%d}", ${led.inp1.verilogLabel}, 8'b0, 8'b0);`
+        );
+    });
 });
