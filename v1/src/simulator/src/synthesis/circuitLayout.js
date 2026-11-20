@@ -41,43 +41,82 @@ function assignLayersWithCycles(deviceIds, successors) {
     var stack = []
     var onStack = Object.create(null)
     var components = []
-    function strongConnect(node) {
-        indices[node] = index
-        lowLinks[node] = index
+    var dfsStack = []
+
+    for (var i = 0; i < deviceIds.length; i++) {
+        var startNode = deviceIds[i]
+
+        if (indices[startNode] !== undefined) {
+            continue
+        }
+
+        indices[startNode] = index
+        lowLinks[startNode] = index
         index++
 
-        stack.push(node)
-        onStack[node] = true
-        var neighbors = successors[node] || []
+        stack.push(startNode)
+        onStack[startNode] = true
 
-        for (var i = 0; i < neighbors.length; i++) {
-            var next = neighbors[i]
+        dfsStack.push({
+            node: startNode,
+            nextNeighborIndex: 0,
+        })
 
-            if (indices[next] === undefined) {
-                strongConnect(next)
-                lowLinks[node] = Math.min(lowLinks[node], lowLinks[next])
-            } else if (onStack[next]) {
-                lowLinks[node] = Math.min(lowLinks[node], indices[next])
+        while (dfsStack.length > 0) {
+            var frame = dfsStack[dfsStack.length - 1]
+            var node = frame.node
+            var neighbors = successors[node] || []
+
+            if (frame.nextNeighborIndex < neighbors.length) {
+                var next = neighbors[frame.nextNeighborIndex]
+                frame.nextNeighborIndex++
+
+                if (indices[next] === undefined) {
+                    indices[next] = index
+                    lowLinks[next] = index
+                    index++
+
+                    stack.push(next)
+                    onStack[next] = true
+
+                    dfsStack.push({
+                        node: next,
+                        nextNeighborIndex: 0,
+                    })
+                } else if (onStack[next]) {
+                    lowLinks[node] = Math.min(
+                        lowLinks[node],
+                        indices[next]
+                    )
+                }
+            } else {
+                if (lowLinks[node] === indices[node]) {
+                    var component = []
+                    var current
+
+                    do {
+                        current = stack.pop()
+                        onStack[current] = false
+                        component.push(current)
+                    } while (current !== node)
+
+                    components.push(component)
+                }
+
+                dfsStack.pop()
+
+                if (dfsStack.length > 0) {
+                    var parent = dfsStack[dfsStack.length - 1].node
+
+                    lowLinks[parent] = Math.min(
+                        lowLinks[parent],
+                        lowLinks[node]
+                    )
+                }
             }
         }
-        if (lowLinks[node] === indices[node]) {
-            var component = []
-            var current
-
-            do {
-                current = stack.pop()
-                onStack[current] = false
-                component.push(current)
-            } while (current !== node)
-
-            components.push(component)
-        }
     }
-    for (var i = 0; i < deviceIds.length; i++) {
-        if (indices[deviceIds[i]] === undefined) {
-            strongConnect(deviceIds[i])
-        }
-    }
+
     var componentOf = Object.create(null)
 
     for (var c = 0; c < components.length; c++) {
@@ -187,23 +226,22 @@ export function computeLayout(circuitJSON) {
         var deviceIds = Object.keys(circuitJSON.devices)
 
         // Build adjacency lists
-        // Build adjacency lists
         var successors = Object.create(null)
         for (var i = 0; i < deviceIds.length; i++) {
             successors[deviceIds[i]] = []
         }
 
-if (circuitJSON.connectors) {
-    for (var j = 0; j < circuitJSON.connectors.length; j++) {
-        var conn = circuitJSON.connectors[j]
-        var fromId = conn.from.id
-        var toId = conn.to.id
+        if (circuitJSON.connectors) {
+            for (var j = 0; j < circuitJSON.connectors.length; j++) {
+                var conn = circuitJSON.connectors[j]
+                var fromId = conn.from.id
+                var toId = conn.to.id
 
-        if (successors[fromId] !== undefined && successors[toId] !== undefined) {
-            successors[fromId].push(toId)
+                if (successors[fromId] !== undefined && successors[toId] !== undefined) {
+                    successors[fromId].push(toId)
+                }
+            }
         }
-    }
-}
 
         // Assign layers using cycle-aware topological sorting
         var layerOf = assignLayersWithCycles(deviceIds, successors)

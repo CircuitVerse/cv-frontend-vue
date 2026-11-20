@@ -4,7 +4,6 @@ import { parseYosysOutput } from '../src/synthesis/vfsGuard.js';
 import { extractYosysError } from '../src/synthesis/errorParser.js';
 
 // Tests for the client-side Verilog synthesis module.
-
 describe('Circuit Auto-Layout (computeLayout)', () => {
 
     test('returns empty object for empty circuit', () => {
@@ -81,7 +80,7 @@ describe('Circuit Auto-Layout (computeLayout)', () => {
         expect(positions.gate.x).toBeLessThan(positions.output.x)
     })
 
-        test('keeps downstream devices in separate layers after a feedback loop', () => {
+    test('keeps downstream devices in separate layers after a feedback loop', () => {
         const circuit = {
             devices: {
                 A: { type: 'Input' },
@@ -173,6 +172,33 @@ describe('Circuit Auto-Layout (computeLayout)', () => {
         expect(Object.keys(positions).sort()).toEqual(['constructor', 'toString'])
         expect(positions['constructor']).toBeDefined()
         expect(positions['toString']).toBeDefined()
+    })
+
+    test('handles large circuits without stack overflow', () => {
+        const deviceCount = 10000
+        const devices = {}
+        const connectors = []
+
+        for (let i = 0; i < deviceCount; i++) {
+            devices[`device${i}`] = { type: 'And' }
+
+            if (i > 0) {
+                connectors.push({
+                    from: { id: `device${i - 1}`, port: 'out' },
+                    to: { id: `device${i}`, port: 'in1' },
+                })
+            }
+        }
+
+        const positions = computeLayout({ devices, connectors })
+
+        expect(Object.keys(positions)).toHaveLength(deviceCount)
+
+        for (let i = 0; i < deviceCount; i++) {
+            expect(positions[`device${i}`]).toBeDefined()
+            expect(Number.isFinite(positions[`device${i}`].x)).toBe(true)
+            expect(Number.isFinite(positions[`device${i}`].y)).toBe(true)
+        }
     })
 })
 
