@@ -473,7 +473,17 @@ export function runAll(data: TestData, scope = globalScope) {
 
   data.groups.forEach((group) => {
     // for (const output of group.outputs) output.results = [];
-    group.outputs.forEach((output) => (output.results = []));
+    const outputMap = new Map();
+    group.outputs.forEach((output) => {
+      output.results = [];
+
+      // Preserve the first output record for each label.
+      // An imported CSV can give group 0 only one row for a repeated output name
+      // and give a later group both rows.
+      if (!outputMap.has(output.label.trim())) {
+        outputMap.set(output.label.trim(), output);
+      }
+    });
     for (let case_i = 0; case_i < group.n; case_i++) {
       totalCases++;
       // Set and propagate the inputs
@@ -486,12 +496,11 @@ export function runAll(data: TestData, scope = globalScope) {
 
       let casePassed = true; // Tracks if current case passed or failed
 
-      caseResult.forEach((_, outName) => {
-        // TODO: find() is not the best idea because of O(n)
-        const output = group.outputs.find((dataOutput) => dataOutput.label.trim() === outName);
-        output?.results?.push(caseResult.get(outName));
+      caseResult.forEach((outValue, outName) => {
+        const output = outputMap.get(outName);
+        output?.results?.push(outValue);
 
-        if (output?.values[case_i] !== caseResult.get(outName)) casePassed = false;
+        if (output?.values[case_i] !== outValue) casePassed = false;
       });
 
       // If current case passed, then increment passedCases
