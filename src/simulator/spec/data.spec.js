@@ -13,6 +13,7 @@ import {
     recoverProject,
     saveOffline,
     openOffline,
+    projectSavedSet,
 } from '../src/data/project';
 import createSaveAsImgPrompt from '../src/data/saveImage';
 import { nextTick } from 'vue';
@@ -152,6 +153,24 @@ describe('data dir working', () => {
     test('recover Project working', () => {
         localStorage.setItem('recover', JSON.stringify(gatesCircuitData));
         expect(() => recoverProject()).not.toThrow();
+    });
+
+    test('onbeforeunload saves recovery data synchronously and sets returnValue', () => {
+        projectSavedSet(false);
+        global.embed = false;
+        localStorage.removeItem('recover');
+        const event = {
+            preventDefault: vi.fn(),
+            returnValue: undefined,
+        };
+        window.onbeforeunload(event);
+        expect(event.preventDefault).toHaveBeenCalled();
+        expect(event.returnValue).toBe('');
+        const recovery = localStorage.getItem('recover');
+        expect(recovery).toBeTruthy();
+        const parsed = JSON.parse(recovery);
+        expect(parsed.scopes).toBeDefined();
+        expect(parsed.orderedTabs).toBeDefined();
     });
 
     test('SaveOffline working', () => {
