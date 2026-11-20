@@ -20,6 +20,10 @@ import i18n from '#/locales/i18n';
 import { routes } from '#/router';
 import vuetify from '#/plugins/vuetify';
 import simulator from '#/pages/simulator.vue';
+import { execFileSync } from 'node:child_process';
+import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 vi.mock('codemirror', async (importOriginal) => {
     const actual = await importOriginal();
@@ -201,6 +205,21 @@ async function checkVerilog(code, commands) {
     return logs.join('');
 }
 
+function simulateVerilog(code) {
+    const directory = mkdtempSync(join(tmpdir(), 'cv-counter-'));
+    try {
+        const source = join(directory, 'counter.v');
+        const executable = join(directory, 'counter.vvp');
+        writeFileSync(source, code);
+        execFileSync('iverilog', ['-g2012', '-s', 'tb', '-o', executable, source], { encoding: 'utf8', timeout: 10000 });
+        return execFileSync('vvp', [executable], { encoding: 'utf8', timeout: 10000 });
+    } catch (error) {
+        throw new Error([error.message, error.stdout, error.stderr].filter(Boolean).join('\n'), { cause: error });
+    } finally {
+        rmSync(directory, { recursive: true, force: true });
+    }
+}
+
 describe('Verilog export', () => {
     let pinia;
     let router;
@@ -306,6 +325,140 @@ endmodule
 
             expect(logs).toContain('SUCCESS!');
         }, 60000);
+    });
+
+    describe('Counter event timing in Icarus', () => {
+        test.each([
+            [1, 0, false], [1, 1, false], [2, 0, false], [2, 3, false],
+            [8, 0, false], [8, 3, false], [32, 0, false], [32, 3, false],
+            [2, 3, true],
+        ])('clocks three chained %i-bit counters once per wrap with maximum %i (floating: %s)', (bitWidth, maximum, floating) => {
+            const { code } = exportCounter(bitWidth, maximum);
+            const maximumInput = floating ? `${bitWidth}'bz` : `${bitWidth}'d${maximum}`;
+            const bench = `
+module tb;
+    reg clk = 0, rst = 1;
+    wire [${bitWidth - 1}:0] a, b, c;
+    wire za, zb, zc;
+    integer cycle, pulses_a = 0, pulses_b = 0;
+    CounterExport first(.max(${maximumInput}), .clk(clk), .rst(rst), .count(a), .zero(za));
+    CounterExport second(.max(${maximumInput}), .clk(za), .rst(rst), .count(b), .zero(zb));
+    CounterExport third(.max(${maximumInput}), .clk(zb), .rst(rst), .count(c), .zero(zc));
+    always @(posedge za) if (!rst) begin
+        pulses_a = pulses_a + 1;
+        if (a !== 0) $fatal(1, "Zero rose before the first counter updated");
+    end
+    always @(posedge zb) if (!rst) begin
+        pulses_b = pulses_b + 1;
+        if (b !== 0) $fatal(1, "Zero rose before the second counter updated");
+    end
+    initial begin
+        #2;
+        if (a !== 0 || b !== 0 || c !== 0 || za !== 0 || zb !== 0 || zc !== 0)
+            $fatal(1, "Incorrect startup while reset is held with a low clock");
+        rst = 0;
+        #2;
+        for (cycle = 1; cycle <= 32; cycle = cycle + 1) begin
+            clk = 1;
+            #2;
+            if (a !== cycle % ${maximum + 1} ||
+                b !== (cycle / ${maximum + 1}) % ${maximum + 1} ||
+                c !== (cycle / ${((maximum + 1) ** 2)}) % ${maximum + 1})
+                $fatal(1, "Extra or missing chained clock edge at cycle %0d: %0d %0d %0d", cycle, a, b, c);
+            if (pulses_a !== cycle / ${maximum + 1} || pulses_b !== cycle / ${((maximum + 1) ** 2)})
+                $fatal(1, "Extra or missing Zero pulse at cycle %0d", cycle);
+            if (za !== (a == 0) || zb !== ((b == 0) && za) || zc !== ((c == 0) && zb))
+                $fatal(1, "Incorrect settled Zero output");
+            clk = 0;
+            #2;
+            if (za !== 0 || zb !== 0 || zc !== 0) $fatal(1, "Zero did not clear on the falling edge");
+        end
+        $display("PASS chained counters");
+        $finish;
+    end
+endmodule
+`;
+            expect(simulateVerilog(code + bench)).toContain('PASS chained counters');
+        });
+
+        test('emits one Zero edge at unsigned 32-bit overflow', () => {
+            const bench = `
+module tb;
+    reg clk = 0, rst = 1;
+    wire [31:0] count;
+    wire zero;
+    integer pulses = 0;
+    Counter #(.WIDTH(32)) dut(count, zero, 32'hffffffff, clk, rst);
+    always @(posedge zero) begin
+        pulses = pulses + 1;
+        if (count !== 0) $fatal(1, "Zero rose before the 32-bit counter updated");
+    end
+    initial begin
+        #2; rst = 0;
+        // Start near overflow instead of simulating four billion clock edges.
+        dut.val = 32'hfffffffe;
+        #2; clk = 1;
+        #2;
+        if (count !== 32'hffffffff || zero !== 0 || pulses !== 0) $fatal(1, "Incorrect maximum value");
+        clk = 0; #2; clk = 1;
+        #2;
+        if (count !== 0 || zero !== 1 || pulses !== 1) $fatal(1, "Incorrect overflow pulse");
+        clk = 0; #2; clk = 1;
+        #2;
+        if (count !== 1 || zero !== 0 || pulses !== 1) $fatal(1, "Extra pulse when leaving zero");
+        $display("PASS 32-bit overflow");
+        $finish;
+    end
+endmodule
+`;
+            expect(simulateVerilog(Counter.moduleVerilog() + bench)).toContain('PASS 32-bit overflow');
+        });
+
+        test.each([0, 1])('handles startup and asynchronous reset with initial clock %i', (initialClock) => {
+            const { code } = exportCounter(2, 3);
+            const bench = `
+module tb;
+    reg clk = ${initialClock}, rst = 1;
+    wire [1:0] count;
+    wire zero;
+    integer pulses = 0;
+    CounterExport dut(.max(2'd3), .clk(clk), .rst(rst), .count(count), .zero(zero));
+    always @(posedge zero) pulses = pulses + 1;
+    task check(input [1:0] expected_count, input expected_zero, input integer expected_pulses);
+        begin
+            #2;
+            if (count !== expected_count || zero !== expected_zero || pulses !== expected_pulses)
+                $fatal(1, "Reset/clock mismatch: count=%0d zero=%b pulses=%0d", count, zero, pulses);
+        end
+    endtask
+    initial begin
+        check(0, ${initialClock}, ${initialClock});
+        clk = 0; check(0, 0, ${initialClock});
+        clk = 1; check(0, 1, ${initialClock + 1});
+        rst = 0; check(0, 1, ${initialClock + 1});
+        clk = 0; check(0, 0, ${initialClock + 1});
+        clk = 1; check(1, 0, ${initialClock + 1});
+        rst = 1; check(0, 1, ${initialClock + 2});
+        clk = 0; check(0, 0, ${initialClock + 2});
+        rst = 0; check(0, 0, ${initialClock + 2});
+        clk = 1; check(1, 0, ${initialClock + 2});
+        clk = 0; check(1, 0, ${initialClock + 2});
+        rst = 1; check(0, 0, ${initialClock + 2});
+        rst = 0; check(0, 0, ${initialClock + 2});
+        clk = 1; rst = 1; check(0, 1, ${initialClock + 3});
+        rst = 0; check(0, 1, ${initialClock + 3});
+        clk = 0; check(0, 0, ${initialClock + 3});
+        clk = 1; check(1, 0, ${initialClock + 3});
+        clk = 0; rst = 1; check(0, 0, ${initialClock + 3});
+        rst = 0; check(0, 0, ${initialClock + 3});
+        clk = 1; check(1, 0, ${initialClock + 3});
+        $display("PASS reset timing");
+        $finish;
+    end
+endmodule
+`;
+            expect(simulateVerilog(code + bench)).toContain('PASS reset timing');
+        });
     });
 
     describe('BitSelector index bounds', () => {

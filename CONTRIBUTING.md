@@ -109,6 +109,12 @@ npm run format:check     # oxfmt formatting check (fix with npm run format)
 
 Continuous Integration runs the same checks (`lint:ci`, `lint:v1:ci`, `fmt:check`, `test:src:ci`, `test:v1:ci`), so a green local run means a green PR.
 
+The Verilog export regression tests require Icarus Verilog (`iverilog` and
+`vvp`) on your `PATH`. Install it with `brew install icarus-verilog` on macOS
+or `sudo apt-get install iverilog` on Ubuntu/Debian. CI installs it before
+running both simulator test suites. These tests use event-driven simulation
+to catch transient clock pulses that settled-state synthesis proofs miss.
+
 ## TypeScript Migration Guidelines (v1)
 
 A large part of `v1/src/simulator` is still JavaScript. When picking up a `JS to TS migration` issue:

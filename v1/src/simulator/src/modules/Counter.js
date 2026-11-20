@@ -156,12 +156,19 @@ export default class Counter extends CircuitElement {
       output reg zero;
       input [WIDTH-1:0] max;
       input clk, rst;
+      reg settled_clk;
     
       initial
         val = 0;
     
+      // Observe the clock after nonblocking count updates have settled.
+      // This prevents a false Zero edge when the old count was zero.
+      // Count initialization also samples clocks that start high.
+      always @ (clk or val)
+        settled_clk <= clk;
+
       always @ (*)
-        if (clk && val == 0)
+        if (settled_clk && val == 0)
           zero = 1;
         else
           zero = 0;
