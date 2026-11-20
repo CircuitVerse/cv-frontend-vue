@@ -62,6 +62,9 @@ export default class CircuitElement {
         this.labelDirection = oppositeDirection[dir]
         this.orientationFixed = true
         this.fixedBitWidth = false
+        // Type-only declaration, the default lives on the prototype (or a subclass)
+        /** @type {number} */
+        this.propagationDelay
 
         scheduleUpdate()
 
@@ -155,7 +158,7 @@ export default class CircuitElement {
     /**
      * To generate JSON-safe data that can be loaded
      * @memberof CircuitElement
-     * @return {object} - the data to be saved
+     * @return {import('./types/circuitElement.types').SavedCircuitElement} - the data to be saved
      */
     saveObject() {
         var data = {
