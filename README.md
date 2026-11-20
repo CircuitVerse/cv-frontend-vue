@@ -28,6 +28,16 @@ On Windows, make sure the following are enabled **before cloning the repository*
    After enabling the above, re-clone the repository to ensure symlinks are created correctly.
 
 
+## Dev Container
+This repository includes a [dev container](https://containers.dev) configuration for GitHub Codespaces and VS Code's "Reopen in Container". It builds a Node 22 image matching CI and installs dependencies automatically.
+
+- **GitHub Codespaces**: Code → Codespaces → Create codespace.
+- **VS Code locally**: open the repository and run **Dev Containers: Reopen in Container** (requires the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) and Docker). Port 4000 is forwarded automatically.
+
+Once the container is ready, run `npm run dev` as usual.
+
+The [Windows symlink prerequisite](#windows-users-important) above still applies when using "Reopen in Container" locally: the container mounts your existing checkout, so a symlink that is broken on the host is still broken inside the container. Container setup detects this and prints a warning rather than silently rewriting files in your checkout; re-clone with the prerequisites enabled if you see it.
+
 ## Development & Versions
 This repository supports multiple versions of the simulator.
 - **v0**: Stable production version.
