@@ -20,17 +20,6 @@ import { usePromptStore } from '#/store/promptStore'
 import { useState } from '#/store/SimulatorStore/state'
 import MessageBox from '#/components/MessageBox/messageBox.vue'
 
-type SimulatorStateType = {
-    activeCircuit: {
-        id: string | number
-        name: string
-    }
-    circuit_list: Array<Object>
-    dialogBox: {
-        delete_circuit: boolean
-    }
-}
-
 type CircuitItem = {
     id: string | number
     name: string
@@ -47,7 +36,7 @@ function clearMessageBoxFields(): void {
 }
 
 export function closeCircuit(circuitItem: CircuitItem): void {
-    const SimulatorState = <SimulatorStateType>useState()
+    const SimulatorState = useState()
     const promptStore = usePromptStore()
 
     clearMessageBoxFields()
@@ -114,7 +103,7 @@ export function closeCircuit(circuitItem: CircuitItem): void {
 export function deleteCurrentCircuit(
     scopeId: string | number = globalScope.id ?? useState().activeCircuit?.id
 ) {
-    const SimulatorState = <SimulatorStateType>useState()
+    const SimulatorState = useState()
     const circuit_list = SimulatorState.circuit_list
     let scope = scopeList[scopeId]
     if (scope == undefined)
@@ -130,7 +119,7 @@ export function deleteCurrentCircuit(
     )
     circuit_list.splice(index, 1)
     delete scopeList[scope.id]
-    if (scope.id == globalScope.id ?? SimulatorState.activeCircuit?.id) {
+    if (scope.id == (globalScope.id ?? SimulatorState.activeCircuit?.id)) {
         switchCircuit(Object.keys(scopeList)[0])
     }
     showMessage('Circuit was successfully closed')
