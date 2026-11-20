@@ -25,29 +25,29 @@ export function findDimensions(scope: any = globalScope) {
           simulationArea.maxHeight = obj.absY();
         }
         if (obj.objectType !== "Node") {
-          if (obj.y - obj.upDimensionY < simulationArea.minHeight) {
+          if (obj.y - obj.upDimensionY < simulationArea.minHeight!) {
             simulationArea.minHeight = obj.y - obj.upDimensionY;
           }
-          if (obj.y + obj.downDimensionY > simulationArea.maxHeight) {
+          if (obj.y + obj.downDimensionY > simulationArea.maxHeight!) {
             simulationArea.maxHeight = obj.y + obj.downDimensionY;
           }
-          if (obj.x - obj.leftDimensionX < simulationArea.minWidth) {
+          if (obj.x - obj.leftDimensionX < simulationArea.minWidth!) {
             simulationArea.minWidth = obj.x - obj.leftDimensionX;
           }
-          if (obj.x + obj.rightDimensionX > simulationArea.maxWidth) {
+          if (obj.x + obj.rightDimensionX > simulationArea.maxWidth!) {
             simulationArea.maxWidth = obj.x + obj.rightDimensionX;
           }
         } else {
-          if (obj.absY() < simulationArea.minHeight) {
+          if (obj.absY() < simulationArea.minHeight!) {
             simulationArea.minHeight = obj.absY();
           }
-          if (obj.absY() > simulationArea.maxHeight) {
+          if (obj.absY() > simulationArea.maxHeight!) {
             simulationArea.maxHeight = obj.absY();
           }
-          if (obj.absX() < simulationArea.minWidth) {
+          if (obj.absX() < simulationArea.minWidth!) {
             simulationArea.minWidth = obj.absX();
           }
-          if (obj.absX() > simulationArea.maxWidth) {
+          if (obj.absX() > simulationArea.maxWidth!) {
             simulationArea.maxWidth = obj.absX();
           }
         }
@@ -169,7 +169,7 @@ export function dots(dots = true, transparentBackground = false, force = false) 
   const oy = globalScope.oy % scale; // offset
 
   const backgroundCtx = backgroundArea.context;
-  if (!backgroundCtx) return;
+  if (!backgroundCtx || !backgroundArea.canvas) return;
 
   const canvasWidth = backgroundArea.canvas.width; // max X distance
   const canvasHeight = backgroundArea.canvas.height; // max Y distance
