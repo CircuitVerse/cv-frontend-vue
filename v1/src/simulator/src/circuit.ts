@@ -496,7 +496,7 @@ export default class Scope {
   /**
    * Function which centers the circuit to the correct zoom level
    */
-  centerFocus(zoomIn = true, maxScale = 4 * DPR, useExistingBounds = false) {
+  centerFocus(zoomIn = true, maxScale = Infinity, useExistingBounds = false) {
     if (layoutModeGet()) return;
     if (!useExistingBounds) findDimensions(this);
 
