@@ -31,11 +31,6 @@ jobs:
             - name: Install dependencies
               run: npm ci
 
-            - name: Install Icarus Verilog
-              run: |
-                  sudo apt-get update
-                  sudo apt-get install -y iverilog
-
             - name: Run tests (src)
               run: npm run test:src:ci
 
@@ -56,11 +51,6 @@ jobs:
 
             - name: Install dependencies
               run: npm ci
-
-            - name: Install Icarus Verilog
-              run: |
-                  sudo apt-get update
-                  sudo apt-get install -y iverilog
 
             - name: Run tests (v1)
               run: npm run test:v1:ci
