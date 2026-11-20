@@ -296,12 +296,14 @@ export function renderCanvas(scope: Scope) {
     ctx.stroke();
     ctx.fill();
   }
-  if (simulationArea.hover !== undefined) {
-    simulationArea.canvas.style.cursor = "pointer";
-  } else if (simulationArea.mouseDown) {
-    simulationArea.canvas.style.cursor = "grabbing";
-  } else {
-    simulationArea.canvas.style.cursor = "default";
+  const newCursor =
+    simulationArea.hover !== undefined
+      ? "pointer"
+      : simulationArea.mouseDown
+        ? "grabbing"
+        : "default";
+  if (simulationArea.canvas.style.cursor !== newCursor) {
+    simulationArea.canvas.style.cursor = newCursor;
   }
 }
 
