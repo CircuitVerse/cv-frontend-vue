@@ -66,12 +66,11 @@ vi.mock("#/simulator/src/themer/themer", async (importOriginal) => {
   };
 });
 
-import themeOptions, { defaultCustomTheme } from "../src/themer/themes";
+import themeOptions, { defaultCustomTheme, getCustomTheme } from "../src/themer/themes";
 import { updateThemeForStyle } from "../src/themer/themer";
 import { CreateAbstraction } from "../src/themer/customThemeAbstraction";
 import ApplyThemes from "#/components/DialogBox/Themes/ApplyThemes.vue";
 import { useState } from "#/store/SimulatorStore/state";
-
 describe("Theme subsystem and dialog", () => {
   let pinia: ReturnType<typeof createPinia>;
 
@@ -254,7 +253,6 @@ describe("Theme subsystem and dialog", () => {
       themeOptions["Default Theme"]["--primary"],
     );
   });
-
   it("keeps the saved theme and CSS when closing Custom Theme without Apply", async () => {
     localStorage.setItem("theme", "Default Theme");
     await openAndMountDialog();
@@ -320,5 +318,106 @@ describe("Theme subsystem and dialog", () => {
     expect(document.documentElement.style.getPropertyValue("--primary")).toBe(
       defaultCustomTheme["--primary"],
     );
+  });
+});
+
+describe("getCustomTheme validation", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it("returns the default theme when nothing is saved", () => {
+    expect(getCustomTheme()).toEqual(defaultCustomTheme);
+  });
+
+  it("falls back to the default theme on malformed JSON", () => {
+    localStorage.setItem("Custom Theme", "{invalid-json-string");
+    expect(getCustomTheme()).toEqual(defaultCustomTheme);
+  });
+
+  it("falls back to the default theme for an empty object", () => {
+    localStorage.setItem("Custom Theme", "{}");
+    expect(getCustomTheme()).toEqual(defaultCustomTheme);
+  });
+
+  it("falls back to the default theme for an array", () => {
+    localStorage.setItem("Custom Theme", '["#123456"]');
+    expect(getCustomTheme()).toEqual(defaultCustomTheme);
+  });
+
+  it.each(["null", '"#123456"', "42", "true"])(
+    "falls back to the default theme for non-object JSON %s",
+    (saved) => {
+      localStorage.setItem("Custom Theme", saved);
+      expect(getCustomTheme()).toEqual(defaultCustomTheme);
+    },
+  );
+
+  it("fills missing keys from the default theme for a partial saved theme", () => {
+    localStorage.setItem("Custom Theme", JSON.stringify({ "--bg-navbar": "#123456" }));
+    const theme = getCustomTheme();
+    expect(theme["--bg-navbar"]).toBe("#123456");
+    expect(theme["--primary"]).toBe(defaultCustomTheme["--primary"]);
+    expect(theme["--canvas-fill"]).toBe(defaultCustomTheme["--canvas-fill"]);
+    // No field is left undefined, so CreateAbstraction gets a color for every key.
+    expect(Object.values(theme).every((value) => typeof value === "string")).toBe(true);
+    expect(() => CreateAbstraction(theme)).not.toThrow();
+    expect(CreateAbstraction(theme).Primary?.color).toBe(defaultCustomTheme["--primary"]);
+  });
+  it("falls back per key for invalid color strings and non-string values", () => {
+    localStorage.setItem(
+      "Custom Theme",
+      JSON.stringify({
+        "--primary": "red",
+        "--bg-navbar": "#12",
+        "--canvas-fill": 123,
+        "--text": null,
+        "--bg-tabs": "#abcdef",
+      }),
+    );
+    const theme = getCustomTheme();
+    expect(theme["--primary"]).toBe(defaultCustomTheme["--primary"]);
+    expect(theme["--bg-navbar"]).toBe(defaultCustomTheme["--bg-navbar"]);
+    expect(theme["--canvas-fill"]).toBe(defaultCustomTheme["--canvas-fill"]);
+    expect(theme["--text"]).toBe(defaultCustomTheme["--text"]);
+    expect(theme["--bg-tabs"]).toBe("#abcdef");
+  });
+
+  it("keeps valid saved values, including 8-digit hex and rgba", () => {
+    localStorage.setItem(
+      "Custom Theme",
+      JSON.stringify({
+        ...defaultCustomTheme,
+        "--primary": "#abcdef",
+        "--bg-primary-moz": "#454545e6",
+        "--bg-primary-chr": "rgba(46, 43, 33, 1)",
+      }),
+    );
+    const theme = getCustomTheme();
+    expect(theme["--primary"]).toBe("#abcdef");
+    expect(theme["--bg-primary-moz"]).toBe("#454545e6");
+    expect(theme["--bg-primary-chr"]).toBe("rgba(46, 43, 33, 1)");
+  });
+
+  it("ignores unknown saved keys", () => {
+    localStorage.setItem(
+      "Custom Theme",
+      JSON.stringify({ "--unknown-key": "#123456", "--primary": "#abcdef" }),
+    );
+    const theme = getCustomTheme();
+    expect(theme).not.toHaveProperty("--unknown-key");
+    expect(theme["--primary"]).toBe("#abcdef");
+  });
+
+  it("every built-in theme color is #rrggbb, except intentionally rgba or 8-digit hex", () => {
+    const colorPattern = /^(?:#[0-9a-fA-F]{6}|#[0-9a-fA-F]{8}|rgba\(.+\)|hsla?\(.+\))$/;
+    for (const [themeName, theme] of Object.entries(themeOptions)) {
+      for (const [key, value] of Object.entries(theme)) {
+        expect(value, `${themeName} ${key}`).toMatch(colorPattern);
+      }
+    }
+    for (const [key, value] of Object.entries(defaultCustomTheme)) {
+      expect(value, `defaultCustomTheme ${key}`).toMatch(colorPattern);
+    }
   });
 });
