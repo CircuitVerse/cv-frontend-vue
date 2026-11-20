@@ -192,6 +192,10 @@ export default class Decoder extends CircuitElement {
         return this.verilogName() + this.output1.length
     }
 
+    verilogParametrizedType() {
+        return this.verilogBaseType()
+    }
+
     //this code to generate Verilog
     generateVerilog() {
         Decoder.selSizes.add(this.bitWidth)

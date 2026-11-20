@@ -122,7 +122,20 @@ export default class LSB extends CircuitElement {
         ctx.fill()
     }
     generateVerilog() {
-        return `assign ${this.output1.verilogLabel} = (${this.enable.verilogLabel}!=0) ? ${this.inp1.verilogLabel}[0] : 0;`
+        const assignments = []
+        const input = this.inp1.verilogLabel
+        if (this.output1.connections.length) {
+            let position = `${this.bitWidth}'d0`
+            for (let i = this.bitWidth - 1; i >= 0; i--) {
+                const bit = this.bitWidth === 1 ? input : `${input}[${i}]`
+                position = `${bit} ? ${this.bitWidth}'d${i} : (${position})`
+            }
+            assignments.push(`assign ${this.output1.verilogLabel} = ${position};`)
+        }
+        if (this.enable.connections.length) {
+            assignments.push(`assign ${this.enable.verilogLabel} = |${input};`)
+        }
+        return assignments.join('\n  ')
     }
 }
 
