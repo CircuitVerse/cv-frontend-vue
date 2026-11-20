@@ -60,16 +60,14 @@ export function dragging(targetEl: HTMLElement, DragEl: HTMLElement): void {
     },
     modifiers: [
       interact.modifiers.restrictRect({
-        restriction: () => {
-          const navbar =
-            document.querySelector(".navbar") ||
-            document.querySelector("nav") ||
-            document.querySelector(".header");
-          const topOffset = navbar ? navbar.getBoundingClientRect().bottom : 46;
+        restriction: (_x, _y, interaction) => {
+          const navbar = document.querySelector(".navbar");
+          const topOffset = navbar ? navbar.getBoundingClientRect().bottom : 0;
+          const panelHeight = (interaction?.element as HTMLElement)?.offsetHeight ?? 0;
           return {
             top: topOffset + window.scrollY,
             left: window.scrollX,
-            bottom: window.innerHeight + window.scrollY,
+            bottom: Math.max(window.innerHeight, topOffset + panelHeight) + window.scrollY,
             right: window.innerWidth + window.scrollX,
           };
         },
