@@ -50,7 +50,6 @@ export function ExportProject() {
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useState } from '#/store/SimulatorStore/state'
 import { useProjectStore } from '#/store/projectStore'
 import { canonicaliseProject } from '#/simulator/src/data/canonical'
 import { copyToClipboard, downloadFile, showMessage } from '#/simulator/src/utils'
