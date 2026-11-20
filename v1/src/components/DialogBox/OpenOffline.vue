@@ -10,9 +10,7 @@
                     size="x-small"
                     icon
                     class="dialogClose"
-                    @click="
-                        SimulatorState.dialogBox.open_project_dialog = false
-                    "
+                    @click="closeDialog"
                 >
                     <v-icon>mdi-close</v-icon>
                 </v-btn>
@@ -31,10 +29,10 @@
                         {{ projectName }}<span></span>
                         <i
                             class="fa fa-trash deleteOfflineProject"
-                            @click="deleteOfflineProject(projectId.toString())"
+                            @click.stop.prevent="deleteOfflineProject(projectId.toString())"
                         ></i>
                     </label>
-                    <p v-if="JSON.stringify(projectList) == '{}'">
+                    <p v-if="Object.keys(projectList).length === 0">
                         Looks like no circuit has been saved yet. Create a new
                         one and save it!
                     </p>
@@ -42,7 +40,8 @@
             </v-card-text>
             <v-card-actions>
                 <v-btn
-                    v-if="JSON.stringify(projectList) != '{}'"
+                    v-if="Object.keys(projectList).length > 0"
+                    :disabled="!selectedProjectId"
                     class="messageBtn"
                     block
                     @click="openProjectOffline()"
@@ -88,7 +87,8 @@
 <script lang="ts" setup>
 import load from '#/simulator/src/data/load'
 import { useState } from '#/store/SimulatorStore/state'
-import { onMounted, onUpdated, ref } from '@vue/runtime-core'
+import { confirmOption } from '#/utils/confirm'
+import { onMounted, ref, watch } from 'vue'
 const SimulatorState = useState()
 const projectList = ref<{ [key: string]: string }>({})
 const selectedProjectId = ref<string | null>(null)
@@ -99,45 +99,84 @@ onMounted(() => {
     SimulatorState.dialogBox.open_project_dialog = false
 })
 
-onUpdated(() => {
-    const data = localStorage.getItem('projectList')
-    projectList.value = data ? JSON.parse(data) : {}
-})
+watch(
+    () => SimulatorState.dialogBox.open_project_dialog,
+    (isOpen) => {
+        if (isOpen) {
+            selectedProjectId.value = null
+            try {
+                const data = localStorage.getItem('projectList')
+                const parsed = data ? JSON.parse(data) : {}
+                projectList.value =
+                    parsed && typeof parsed === 'object' && !Array.isArray(parsed)
+                        ? parsed
+                        : {}
+            } catch {
+                projectList.value = {}
+            }
+        }
+    }
+)
 
-function deleteOfflineProject(id: string) {
+function closeDialog() {
+    selectedProjectId.value = null
+    SimulatorState.dialogBox.open_project_dialog = false
+}
+
+async function deleteOfflineProject(id: string) {
+    const projName = projectList.value[id] || 'this project'
+    if (!(await confirmOption(`Are you sure you want to delete "${projName}"?`))) {
+        return
+    }
     localStorage.removeItem(id)
     const data = localStorage.getItem('projectList')
-    const temp = data ? JSON.parse(data) : {}
+    let temp: { [key: string]: string } = {}
+    try {
+        const parsed = data ? JSON.parse(data) : {}
+        temp =
+            parsed && typeof parsed === 'object' && !Array.isArray(parsed)
+                ? parsed
+                : {}
+    } catch {
+        temp = {}
+    }
     delete temp[id]
     projectList.value = temp
     localStorage.setItem('projectList', JSON.stringify(temp))
+    if (selectedProjectId.value === id) {
+        selectedProjectId.value = null
+    }
 }
 
 function openProjectOffline() {
-    SimulatorState.dialogBox.open_project_dialog = false
     if (!selectedProjectId.value) return
     const projectData = localStorage.getItem(selectedProjectId.value)
     
     if (projectData) {
-        const parsedData = JSON.parse(projectData)
-        const simulatorVersion = parsedData.simulatorVersion
-        projectName = parsedData.name
-        
-        // Handle version mismatch logic
-        if (!simulatorVersion) {
-            // If no version, proceed directly
-            targetVersion.value = "Legacy"
-            SimulatorState.dialogBox.version_mismatch_dialog = true           
-        } else if (simulatorVersion && simulatorVersion != "v1") {
-            // Set the targetVersion and show the version mismatch dialog
-            targetVersion.value = simulatorVersion
-            SimulatorState.dialogBox.version_mismatch_dialog = true
-        } else {
-            // For other cases, proceed normally
-            load(parsedData)
-            window.projectId = selectedProjectId.value
+        try {
+            const parsedData = JSON.parse(projectData)
+            const simulatorVersion = parsedData.simulatorVersion
+            projectName = parsedData.name
+            
+            // Handle version mismatch logic
+            if (!simulatorVersion) {
+                // If no version, proceed directly
+                targetVersion.value = "Legacy"
+                SimulatorState.dialogBox.version_mismatch_dialog = true           
+            } else if (simulatorVersion && simulatorVersion != "v1") {
+                // Set the targetVersion and show the version mismatch dialog
+                targetVersion.value = simulatorVersion
+                SimulatorState.dialogBox.version_mismatch_dialog = true
+            } else {
+                // For other cases, proceed normally
+                load(parsedData)
+                window.projectId = selectedProjectId.value
+            }
+        } catch (e) {
+            console.error('Failed to load project:', e)
         }
     }
+    closeDialog()
 }
 
 function confirmOpenProject() {
@@ -155,7 +194,7 @@ function cancelOpenProject() {
 }
 
 function OpenImportProjectDialog() {
-    SimulatorState.dialogBox.open_project_dialog = false
+    closeDialog()
     SimulatorState.dialogBox.import_project_dialog = true
 }
 </script>
