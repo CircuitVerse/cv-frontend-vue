@@ -10,8 +10,6 @@ export default class LayoutBuffer {
   layout: {
     width: number;
     height: number;
-    x: number;
-    y: number;
     title_x: number;
     title_y: number;
     titleEnabled: boolean;
