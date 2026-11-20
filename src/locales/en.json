@@ -165,11 +165,8 @@
                 "save": "Save"
             },
             "report_issue": {
-                "describe_issue": "Describe your issue:",
-                "email": "Email",
-                "optional": " [Optional]",
-                "report_btn": "Report",
-                "cancel_btn": "Cancel",
+                "forum_message": "If you're facing any issues or would like to share feedback, please reach out to support{'@'}circuitverse.org or start a thread on our forum.",
+                "forum_btn": "Go to Forum",
                 "close_btn": "Close"
             },
             "testbench": {

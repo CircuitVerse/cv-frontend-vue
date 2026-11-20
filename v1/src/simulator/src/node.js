@@ -148,6 +148,9 @@ var uniqueIdCounter = 10
  * @category node
  */
 export default class Node {
+    /**
+     * @param {number=} bitWidth
+     */
     constructor(x, y, type, parent, bitWidth = undefined, label = '') {
         // Should never raise, but just in case
         if (isNaN(x) || isNaN(y)) {

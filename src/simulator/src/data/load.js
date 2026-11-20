@@ -214,7 +214,9 @@ export default function load(data) {
     const { circuit_list } = toRefs(simulatorStore)
 
     if (!data) {
-        setProjectName(__projectName)
+        if (typeof __projectName !== 'undefined') {
+            setProjectName(__projectName)
+        }
         return
     }
 

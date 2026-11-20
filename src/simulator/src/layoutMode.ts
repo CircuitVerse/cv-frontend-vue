@@ -15,6 +15,7 @@ import { showMessage } from "./utils";
 import { verilogModeSet } from "./Verilog2CV";
 import { useLayoutStore } from "#/store/layoutStore";
 import { useSimulatorMobileStore } from "#/store/simulatorMobileStore";
+import { usePropertiesPanelStore } from "#/store/propertiesPanelStore";
 import { toRefs } from "vue";
 import { circuitElementList } from "./metadata";
 
@@ -113,11 +114,13 @@ export function renderLayout(scope = globalScope) {
     if (!tempBuffer.Input[i].label) continue;
     info = determineLabel(tempBuffer.Input[i].x, tempBuffer.Input[i].y, scope);
     [ctx.textAlign] = info;
+    const xOffset = typeof info[1] === "number" ? info[1] : parseInt(info[1] as string);
+    const yOffset = typeof info[2] === "number" ? info[2] : parseInt(info[2] as string);
     fillText(
       ctx,
       tempBuffer.Input[i].label,
-      tempBuffer.Input[i].x + typeof info[1] === "number" ? info[1] : parseInt(info[1] as string),
-      tempBuffer.Input[i].y + typeof info[2] === "number" ? info[2] : parseInt(info[2] as string),
+      tempBuffer.Input[i].x + xOffset,
+      tempBuffer.Input[i].y + yOffset,
       12,
     );
   }
@@ -125,11 +128,13 @@ export function renderLayout(scope = globalScope) {
     if (!tempBuffer.Output[i].label) continue;
     info = determineLabel(tempBuffer.Output[i].x, tempBuffer.Output[i].y, scope);
     [ctx.textAlign] = info;
+    const xOffset = typeof info[1] === "number" ? info[1] : parseInt(info[1] as string);
+    const yOffset = typeof info[2] === "number" ? info[2] : parseInt(info[2] as string);
     fillText(
       ctx,
       tempBuffer.Output[i].label,
-      tempBuffer.Output[i].x + typeof info[1] === "number" ? info[1] : parseInt(info[1] as string),
-      tempBuffer.Output[i].y + typeof info[2] === "number" ? info[2] : parseInt(info[2] as string),
+      tempBuffer.Output[i].x + xOffset,
+      tempBuffer.Output[i].y + yOffset,
       12,
     );
   }
@@ -403,12 +408,14 @@ export function saveLayout() {
 export function toggleLayoutMode() {
   const layoutStore = toRefs(useLayoutStore());
   const simulatorMobileStore = toRefs(useSimulatorMobileStore());
+  const propertiesPanelStore = toRefs(usePropertiesPanelStore());
   prevPropertyObjSet(undefined);
   $(".objectPropertyAttribute").unbind("change keyup paste click");
 
   if (layoutModeGet()) {
     layoutModeSet(false);
     layoutStore.layoutMode.value = false;
+    propertiesPanelStore.titleEnable.value = globalScope.layout.titleEnabled;
     globalScope.centerFocus(false);
     if (globalScope.verilogMetadata.isVerilogCircuit) {
       verilogModeSet(true);
@@ -427,6 +434,7 @@ export function toggleLayoutMode() {
     globalScope.scale = DPR * 1.3;
     dots();
     tempBuffer = new LayoutBuffer();
+    propertiesPanelStore.titleEnable.value = tempBuffer.layout.titleEnabled;
   }
   update(globalScope, true);
   scheduleUpdate();
