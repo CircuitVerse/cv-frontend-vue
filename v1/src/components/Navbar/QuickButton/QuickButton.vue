@@ -55,12 +55,23 @@
         <i style="color: #ddd" class="fas fa-expand-arrows-alt"></i>
       </button>
     </div>
+    <div>
+      <button
+        id="quick-btn-beautify"
+        type="button"
+        class="quick-btn-beautify"
+        title="Beautify Circuit (Ctrl+Shift+B)"
+        :aria-label="t('simulator.nav.tools.beautify_circuit')"
+        @click="beautifyCircuitAction"
+      >✨</button>
+    </div>
     <ZoomControls />
   </div>
   <div id="exitView"></div>
 </template>
 
 <script lang="ts" setup>
+import { useI18n } from "vue-i18n";
 import ZoomControls from "./ZoomControls.vue";
 import {
   saveOnline,
@@ -71,7 +82,10 @@ import {
   undoit,
   redoit,
   view,
+  beautifyCircuitAction,
 } from "./QuickButton";
+
+const { t } = useI18n();
 
 function dragover(): void {
   const quickBtn: HTMLElement | null = document.querySelector(".quick-btn");
@@ -181,6 +195,22 @@ function dragover(): void {
 
 .quick-btn-view {
   color: white;
+}
+
+.quick-btn-beautify {
+  background: transparent;
+  border: none;
+  color: #f0e68c;
+  font-size: 16px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0 2px;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.quick-btn-beautify:hover {
+  transform: scale(1.25) rotate(-10deg);
+  filter: brightness(1.3);
 }
 
 .zoom-slider {

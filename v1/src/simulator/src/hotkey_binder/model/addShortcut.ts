@@ -37,7 +37,8 @@ export type ActionType =
   | "Move Element Left"
   | "Move Element Right"
   | "Hotkey Preference"
-  | "Open Documentation";
+  | "Open Documentation"
+  | "Beautify Circuit";
 
 export const addShortcut = (
   keys: string,
@@ -112,6 +113,9 @@ export const addShortcut = (
       break;
     case "Open Documentation":
       callback = openDocumentation;
+      break;
+    case "Beautify Circuit":
+      callback = logixFunction.beautifyCircuit;
       break;
     default:
       callback = () => console.error("No shortcut found..");
