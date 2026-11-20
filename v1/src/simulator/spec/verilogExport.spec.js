@@ -10,6 +10,7 @@ import Decoder from '../src/modules/Decoder';
 import LSB from '../src/modules/LSB';
 import MSB from '../src/modules/MSB';
 import Counter from '../src/modules/Counter';
+import BitSelector from '../src/modules/BitSelector';
 import Scope, { scopeList } from '../src/circuit';
 import { runYosys } from '@yowasp/yosys';
 import { createPinia, setActivePinia } from 'pinia';
@@ -158,6 +159,32 @@ function exportCounter(bitWidth, maximum) {
     }
 }
 
+function exportBitSelector(bitWidth, data, index) {
+    const scope = new Scope('BitSelectorExport');
+    scopeList[scope.id] = scope;
+
+    try {
+        const selector = new BitSelector(100, 100, scope, 'RIGHT', bitWidth, 32);
+        const input = new Input(0, 100, scope, 'RIGHT', bitWidth);
+        input.label = 'data';
+        input.output1.connect(selector.inp1);
+        const select = new Input(100, 200, scope, 'UP', 32);
+        select.label = 'index';
+        select.output1.connect(selector.bitSelectorInp);
+        const output = new Output(200, 100, scope, 'LEFT', 1);
+        output.label = 'selected';
+        selector.output1.connect(output.inp1);
+
+        selector.inp1.value = data;
+        selector.bitSelectorInp.value = index;
+        selector.resolve();
+
+        return { code: verilog.exportVerilog(scope), selected: selector.output1.value };
+    } finally {
+        delete scopeList[scope.id];
+    }
+}
+
 async function checkVerilog(code, commands) {
     const logs = [];
     const capture = (bytes) => {
@@ -279,6 +306,44 @@ endmodule
 
             expect(logs).toContain('SUCCESS!');
         }, 60000);
+    });
+
+    describe('BitSelector index bounds', () => {
+        test.each([
+            [1, 1, 0, 1],
+            [8, 1, 0, 1],
+            [8, 128, 7, 1],
+            [8, 1, 7, 0],
+            [32, 2147483648, 31, 1],
+            [32, 2147483648, 0, 0],
+            [8, 255, 8, 0],
+            [32, 1, 32, 0],
+            [8, 1, 32, 0],
+            [8, 2, 33, 0],
+            [32, 2, 33, 0],
+            [32, 2147483648, 63, 0],
+            [32, 2147483648, 4294967295, 0],
+        ])('matches Verilog for width %i, data %i, index %i and output %i', async (bitWidth, data, index, expected) => {
+            const { code, selected } = exportBitSelector(bitWidth, data, index);
+
+            expect(selected).toBe(expected);
+            const logs = await checkVerilog(code,
+                `prep -top BitSelectorExport; flatten; sat -set data ${bitWidth}'h${data.toString(16)} ` +
+                `-set index 32'h${index.toString(16)} -verify -prove selected ${expected}`);
+            expect(logs).toContain('SUCCESS!');
+        }, 60000);
+
+        test('clears a previously high output for an invalid index and recovers for a valid index', () => {
+            const scope = new Scope('BitSelectorTransitions');
+            const selector = new BitSelector(100, 100, scope, 'RIGHT', 8, 6);
+            selector.inp1.value = 1;
+
+            for (const [index, expected] of [[0, 1], [32, 0], [0, 1]]) {
+                selector.bitSelectorInp.value = index;
+                selector.resolve();
+                expect(selector.output1.value).toBe(expected);
+            }
+        });
     });
 
     test.each([1, 2, 3])('exports every PriorityEncoder input in descending priority for %i output bits', (bitWidth) => {
