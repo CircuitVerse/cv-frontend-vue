@@ -7,6 +7,7 @@ import { checkIfBackup, scheduleBackup } from '../src/data/backupCircuit';
 import undo from '../src/data/undo';
 import redo from '../src/data/redo';
 import { scopeList } from '../src/circuit';
+import { errorDetectedGet, errorDetectedSet, play } from '../src/engine';
 import save from '../src/data/save';
 import {
     clearProject,
@@ -205,6 +206,48 @@ describe('data dir working', () => {
         } finally {
             errorLog.mockRestore();
             window.loading = false;
+        }
+    });
+
+    test.each([
+        ['undo', false],
+        ['redo', false],
+        ['undo', true],
+        ['redo', true],
+    ])('%s preserves engine error state %s after a partial restore fails', (action, previousError) => {
+        load(decoderCircuitData);
+        const validBackup = scheduleBackup();
+        const invalidData = JSON.parse(validBackup);
+        invalidData.SubCircuit = [{ x: 0, y: 0, id: 'missing-restore-scope' }];
+        const invalidBackup = JSON.stringify(invalidData);
+        const originalScope = globalScope;
+        originalScope.backups = action === 'undo'
+            ? [invalidBackup, validBackup]
+            : [validBackup];
+        originalScope.history = action === 'redo' ? [invalidBackup] : [];
+        const backups = [...originalScope.backups];
+        const history = [...originalScope.history];
+        const originalError = errorDetectedGet();
+        const errorLog = vi.spyOn(console, 'error').mockImplementation(() => {});
+        errorDetectedSet(previousError);
+
+        try {
+            expect(() => (action === 'undo' ? undo : redo)()).not.toThrow();
+            expect(errorLog).toHaveBeenCalledOnce();
+            expect(globalScope).toBe(originalScope);
+            expect(originalScope.backups).toEqual(backups);
+            expect(originalScope.history).toEqual(history);
+            expect(window.loading).toBe(false);
+            expect(errorDetectedGet()).toBe(previousError);
+
+            // A rejected backup must not stop the active circuit from simulating.
+            const input = originalScope.Input[0];
+            input.output1.value = undefined;
+            play(originalScope, true);
+            expect(input.output1.value).toBe(previousError ? undefined : input.state);
+        } finally {
+            errorLog.mockRestore();
+            errorDetectedSet(originalError);
         }
     });
 

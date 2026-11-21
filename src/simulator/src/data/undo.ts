@@ -3,7 +3,7 @@ import { layoutModeGet } from "../layoutMode";
 import Scope, { scopeList } from "../circuit";
 import { loadScope } from "./load";
 import { updateRestrictedElementsInScope } from "../restrictedElementDiv";
-import { forceResetNodesSet } from "../engine";
+import { errorDetectedGet, errorDetectedSet, forceResetNodesSet } from "../engine";
 
 // Declare global variables
 declare let globalScope: Scope;
@@ -17,6 +17,7 @@ declare let loading: boolean;
 export default function undo(scope: Scope = globalScope): void {
   if (layoutModeGet() || scope.backups.length < 2) return;
 
+  const previousError = errorDetectedGet();
   const { ox, oy, scale } = saveGlobalScopePosition();
   resetGlobalScopePosition();
 
@@ -29,7 +30,10 @@ export default function undo(scope: Scope = globalScope): void {
     globalScope.oy = oy;
     loading = false;
   }
-  if (!tempScope) return;
+  if (!tempScope) {
+    errorDetectedSet(previousError);
+    return;
+  }
 
   const undoData = popLastBackup(scope)!;
   scope.history.push(undoData);
