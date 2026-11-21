@@ -275,6 +275,11 @@ export function setupBitConvertor() {
   });
   $("#bcdInput").on("keyup", function () {
     var input = $("#bcdInput").val();
+    // An empty field is "nothing typed yet". Every sibling handler reaches
+    // that state as NaN (parseInt("") is NaN) and setBaseValues ignores NaN,
+    // leaving the other fields alone. Without this guard the empty string
+    // falls through with num still 0 and rewrites every field to zero.
+    if (input.length === 0) return setBaseValues(NaN);
     var num = 0;
     while (input.length % 4 !== 0) {
       input = "0" + input;
