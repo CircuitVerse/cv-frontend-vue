@@ -184,22 +184,31 @@ function checkValidBitWidth() {
     }
 }
 
-export function objectPropertyAttributeUpdate() {
+
+export function objectPropertyAttributeUpdate(event) {
+    if (this.name === 'changeCircuitName' && event.type !== 'change') {
+        return
+    }
+
     checkValidBitWidth()
     scheduleUpdate()
     updateCanvasSet(true)
     updateSimulationSet(true)
     wireToBeCheckedSet(1)
+
     let { value } = this
+
     if (this.type === 'number') {
         value = parseFloat(value)
     }
+
     if (simulationArea.lastSelected && simulationArea.lastSelected[this.name]) {
         simulationArea.lastSelected[this.name](value)
     } else {
         circuitProperty[this.name](value)
     }
 }
+
 
 export function objectPropertyAttributeCheckedUpdate() {
     if (this.name === 'toggleLabelInLayoutMode') return // Hack to prevent toggleLabelInLayoutMode from toggling twice
