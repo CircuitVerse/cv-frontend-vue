@@ -1,5 +1,6 @@
 import { describe, test, expect, vi, beforeAll } from 'vitest';
 import { setup } from '../src/setup';
+import Scope, { scopeList } from '../src/circuit';
 import load from '../src/data/load';
 import gatesCircuitData from './circuits/gates-circuitdata.json';
 import decoderCircuitData from './circuits/Decoders-plexers-circuitdata.json';
@@ -172,6 +173,76 @@ describe('data dir working', () => {
         expect(Array.isArray(parsed.scopes)).toBe(true);
         expect(parsed.scopes.length).toBeGreaterThan(0);
         expect(Array.isArray(parsed.orderedTabs)).toBe(true);
+    });
+
+    test('onbeforeunload preserves original tab order separately from dependency-first scope serialization', () => {
+        projectSavedSet(false);
+        global.embed = false;
+        localStorage.removeItem('recover');
+
+        const previousScopeList = { ...scopeList };
+        const previousGlobalScope = global.globalScope;
+
+        const mainScope = new Scope('Main', 'Main');
+        const childScope = new Scope('Child', 'Child');
+
+        mainScope.SubCircuit = [{
+            id: childScope.id,
+            removeConnections: () => {},
+            makeConnections: () => {},
+            saveObject: () => ({ id: childScope.id }),
+            reset: () => {},
+            update: () => false,
+        }];
+
+        childScope.Input = [{
+            saveObject: () => ({ layoutProperties: { x: 0, y: 0 } }),
+            update: () => false,
+        }];
+
+        for (const id in scopeList) delete scopeList[id];
+        scopeList[mainScope.id] = mainScope;
+        scopeList[childScope.id] = childScope;
+        global.globalScope = mainScope;
+
+        let tabsBar = document.getElementById('tabsBar');
+        let cleanupTabsBar = false;
+        if (!tabsBar) {
+            tabsBar = document.createElement('div');
+            tabsBar.id = 'tabsBar';
+            document.body.appendChild(tabsBar);
+            cleanupTabsBar = true;
+        }
+        const previousTabsBarHtml = tabsBar.innerHTML;
+        tabsBar.innerHTML = `<div><div id="${mainScope.id}"></div><div id="${childScope.id}"></div></div>`;
+
+        try {
+            const event = {
+                preventDefault: vi.fn(),
+                returnValue: undefined,
+            };
+
+            window.onbeforeunload(event);
+
+            expect(event.preventDefault).toHaveBeenCalled();
+            expect(event.returnValue).toBe('');
+
+            const recovery = localStorage.getItem('recover');
+            expect(recovery).toBeTruthy();
+            const parsed = JSON.parse(recovery);
+
+            expect(parsed.orderedTabs).toEqual(['Main', 'Child']);
+            expect(parsed.scopes.map((s) => s.id)).toEqual(['Child', 'Main']);
+            expect(parsed.scopes.map((s) => s.name)).toEqual(['Child', 'Main']);
+        } finally {
+            tabsBar.innerHTML = previousTabsBarHtml;
+            if (cleanupTabsBar) {
+                tabsBar.remove();
+            }
+            for (const id in scopeList) delete scopeList[id];
+            Object.assign(scopeList, previousScopeList);
+            global.globalScope = previousGlobalScope;
+        }
     });
 
     test('SaveOffline working', () => {
