@@ -21,13 +21,18 @@ export default function undo(scope: Scope = globalScope): void {
   resetGlobalScopePosition();
 
   (window as any).loading = true;
-  const undoData = popLastBackup(scope);
-  if (!undoData) return;
-
-  scope.history.push(undoData);
-
-  const tempScope = createTempScope(scope);
+  let tempScope: Scope | undefined;
+  try {
+    tempScope = createTempScope(scope);
+  } finally {
+    globalScope.ox = ox;
+    globalScope.oy = oy;
+    (window as any).loading = false;
+  }
   if (!tempScope) return;
+
+  const undoData = popLastBackup(scope)!;
+  scope.history.push(undoData);
 
   updateGlobalScope(tempScope, ox, oy, scale);
   forceResetNodesSet(true);
@@ -52,24 +57,21 @@ function popLastBackup(scope: Scope): string | undefined {
 }
 
 function createTempScope(scope: Scope): Scope | undefined {
-  const tempScope = new Scope(scope.name);
-  if (scope.backups.length === 0) return tempScope;
-
   try {
-    loadScope(tempScope, JSON.parse(scope.backups[scope.backups.length - 1]));
+    const tempScope = new Scope(scope.name);
+    loadScope(tempScope, JSON.parse(scope.backups[scope.backups.length - 2]));
+
+    tempScope.backups = scope.backups;
+    tempScope.history = scope.history;
+    tempScope.id = scope.id;
+    tempScope.name = scope.name;
+    tempScope.testbenchData = scope.testbenchData;
+
+    return tempScope;
   } catch (error) {
-    console.error("Failed to parse backup data:", error);
-    (window as any).loading = false;
+    console.error("Failed to restore undo backup:", error);
     return undefined;
   }
-
-  tempScope.backups = scope.backups;
-  tempScope.history = scope.history;
-  tempScope.id = scope.id;
-  tempScope.name = scope.name;
-  tempScope.testbenchData = scope.testbenchData;
-
-  return tempScope;
 }
 
 function updateGlobalScope(tempScope: Scope, ox: number, oy: number, scale: number) {
