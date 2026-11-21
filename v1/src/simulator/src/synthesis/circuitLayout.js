@@ -34,7 +34,159 @@ var PORT_LAYOUT_START_Y = 30;
 var PORT_LAYOUT_GAP = 20;
 var PORT_LAYOUT_BOTTOM_PADDING = 20;
 var PORT_LAYOUT_TITLE_Y = 13;
+function assignLayersWithCycles(deviceIds, successors) {
+    var index = 0
+    var indices = Object.create(null)
+    var lowLinks = Object.create(null)
+    var stack = []
+    var onStack = Object.create(null)
+    var components = []
+    var dfsStack = []
 
+    for (var i = 0; i < deviceIds.length; i++) {
+        var startNode = deviceIds[i]
+
+        if (indices[startNode] !== undefined) {
+            continue
+        }
+
+        indices[startNode] = index
+        lowLinks[startNode] = index
+        index++
+
+        stack.push(startNode)
+        onStack[startNode] = true
+
+        dfsStack.push({
+            node: startNode,
+            nextNeighborIndex: 0,
+        })
+
+        while (dfsStack.length > 0) {
+            var frame = dfsStack[dfsStack.length - 1]
+            var node = frame.node
+            var neighbors = successors[node] || []
+
+            if (frame.nextNeighborIndex < neighbors.length) {
+                var next = neighbors[frame.nextNeighborIndex]
+                frame.nextNeighborIndex++
+
+                if (indices[next] === undefined) {
+                    indices[next] = index
+                    lowLinks[next] = index
+                    index++
+
+                    stack.push(next)
+                    onStack[next] = true
+
+                    dfsStack.push({
+                        node: next,
+                        nextNeighborIndex: 0,
+                    })
+                } else if (onStack[next]) {
+                    lowLinks[node] = Math.min(
+                        lowLinks[node],
+                        indices[next]
+                    )
+                }
+            } else {
+                if (lowLinks[node] === indices[node]) {
+                    var component = []
+                    var current
+
+                    do {
+                        current = stack.pop()
+                        onStack[current] = false
+                        component.push(current)
+                    } while (current !== node)
+
+                    components.push(component)
+                }
+
+                dfsStack.pop()
+
+                if (dfsStack.length > 0) {
+                    var parent = dfsStack[dfsStack.length - 1].node
+
+                    lowLinks[parent] = Math.min(
+                        lowLinks[parent],
+                        lowLinks[node]
+                    )
+                }
+            }
+        }
+    }
+
+    var componentOf = Object.create(null)
+
+    for (var c = 0; c < components.length; c++) {
+        for (var n = 0; n < components[c].length; n++) {
+            componentOf[components[c][n]] = c
+        }
+    }
+
+    var componentSuccessors = {}
+    var componentInDegree = {}
+
+    for (var c = 0; c < components.length; c++) {
+        componentSuccessors[c] = new Set()
+        componentInDegree[c] = 0
+    }
+
+    for (var node of deviceIds) {
+        var fromComponent = componentOf[node]
+
+        for (var next of successors[node] || []) {
+            var toComponent = componentOf[next]
+
+            if (
+                fromComponent !== toComponent &&
+                !componentSuccessors[fromComponent].has(toComponent)
+            ) {
+                componentSuccessors[fromComponent].add(toComponent)
+                componentInDegree[toComponent]++
+            }
+        }
+    }
+
+    var queue = []
+    var componentLayer = {}
+
+    for (var c = 0; c < components.length; c++) {
+        if (componentInDegree[c] === 0) {
+            queue.push(c)
+            componentLayer[c] = 0
+        }
+    }
+
+    var queueIndex = 0
+
+    while (queueIndex < queue.length) {
+        var current = queue[queueIndex]
+        queueIndex++
+
+        for (var next of componentSuccessors[current]) {
+            componentLayer[next] = Math.max(
+                componentLayer[next] || 0,
+                componentLayer[current] + 1,
+            )
+
+            componentInDegree[next]--
+
+            if (componentInDegree[next] === 0) {
+                queue.push(next)
+            }
+        }
+    }
+
+    var layerOf = Object.create(null)
+
+    for (var node of deviceIds) {
+        layerOf[node] = componentLayer[componentOf[node]]
+    }
+
+    return layerOf
+}
 // Compute subcircuit shell port layout
 export function computePortLayout(inputCount, outputCount) {
     var inputs = Math.max(0, inputCount || 0);
@@ -77,11 +229,9 @@ export function computeLayout(circuitJSON) {
         var deviceIds = Object.keys(circuitJSON.devices)
 
         // Build adjacency lists
-        var successors = {}
-        var inDegree = {}
+        var successors = Object.create(null)
         for (var i = 0; i < deviceIds.length; i++) {
             successors[deviceIds[i]] = []
-            inDegree[deviceIds[i]] = 0
         }
 
         if (circuitJSON.connectors) {
@@ -89,47 +239,15 @@ export function computeLayout(circuitJSON) {
                 var conn = circuitJSON.connectors[j]
                 var fromId = conn.from.id
                 var toId = conn.to.id
-                if (successors[fromId] !== undefined && inDegree[toId] !== undefined) {
+
+                if (successors[fromId] !== undefined && successors[toId] !== undefined) {
                     successors[fromId].push(toId)
-                    inDegree[toId]++
                 }
             }
         }
 
-        // Topological sort using Kahn's algorithm to assign layers
-        var queue = []
-        var layerOf = {}
-        for (var k = 0; k < deviceIds.length; k++) {
-            if (inDegree[deviceIds[k]] === 0) {
-                queue.push(deviceIds[k])
-                layerOf[deviceIds[k]] = 0
-            }
-        }
-
-        var sorted = []
-        while (queue.length > 0) {
-            var node = queue.shift()
-            sorted.push(node)
-            var succs = successors[node]
-            for (var s = 0; s < succs.length; s++) {
-                var next = succs[s]
-                var nextLayer = (layerOf[node] || 0) + 1
-                if (layerOf[next] === undefined || nextLayer > layerOf[next]) {
-                    layerOf[next] = nextLayer
-                }
-                inDegree[next]--
-                if (inDegree[next] === 0) {
-                    queue.push(next)
-                }
-            }
-        }
-
-        // Handle any nodes not reached (cycles or disconnected)
-        for (var m = 0; m < deviceIds.length; m++) {
-            if (layerOf[deviceIds[m]] === undefined) {
-                layerOf[deviceIds[m]] = 0
-            }
-        }
+        // Assign layers using cycle-aware topological sorting
+        var layerOf = assignLayersWithCycles(deviceIds, successors)
 
         // Group devices by layer
         var layers = {}
@@ -141,7 +259,7 @@ export function computeLayout(circuitJSON) {
         }
 
         // Assign positions: x by layer, y by position within layer
-        var positions = {}
+        var positions = Object.create(null)
         var layerNums = Object.keys(layers).map(Number).sort(function (a, b) { return a - b })
 
         for (var li = 0; li < layerNums.length; li++) {
