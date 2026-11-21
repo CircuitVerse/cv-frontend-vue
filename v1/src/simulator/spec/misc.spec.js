@@ -4,6 +4,7 @@ import circuitData from './circuits/misc-circuitdata.json';
 import testData from './testData/misc-testdata.json';
 import { runAll } from '../src/testbench';
 import Splitter from '../src/modules/Splitter';
+import Flag from '../src/modules/Flag';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import { createRouter, createWebHistory } from 'vue-router';
@@ -102,6 +103,20 @@ describe('Simulator Misc-Elements Testing', () => {
     test('Tunnel working', () => {
         const result = runAll(testData.Tunnel);
         expect(result.summary.passed).toBe(2);
+    });
+
+    test('Flag box size follows an identifier restored by a load', () => {
+        const flag = new Flag(100, 100, globalScope, 'RIGHT', 1);
+
+        flag.setIdentifier('carry');
+        expect(flag.xSize).toBe(0);
+
+        // load puts saved values straight onto the object, without setIdentifier
+        flag.identifier = 'A';
+        expect(flag.xSize).toBe(20);
+
+        flag.identifier = 'Qo';
+        expect(flag.xSize).toBe(10);
     });
 
     test("2's Compliment working", () => {
