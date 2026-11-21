@@ -25,15 +25,19 @@ export const useVerilogFilesStore = defineStore("verilogFilesStore", () => {
   const activeFileName = ref<string | null>(DEFAULT_VERILOG_FILE_NAME);
   const entryFileName = ref<string | null>(DEFAULT_VERILOG_FILE_NAME);
 
-  const activeFile = computed<VerilogFile | null>(
-    () =>
-      files.value.find((file) => file.name === activeFileName.value) ?? null,
-  );
+  const activeFile = computed<Readonly<VerilogFile> | null>(() => {
+    const file = files.value.find(
+      (candidate) => candidate.name === activeFileName.value,
+    );
+    return file ? readonly(file) : null;
+  });
 
-  const entryFile = computed<VerilogFile | null>(
-    () =>
-      files.value.find((file) => file.name === entryFileName.value) ?? null,
-  );
+  const entryFile = computed<Readonly<VerilogFile> | null>(() => {
+    const file = files.value.find(
+      (candidate) => candidate.name === entryFileName.value,
+    );
+    return file ? readonly(file) : null;
+  });
 
   const activeContent = computed(() => activeFile.value?.content ?? "");
 
@@ -65,6 +69,9 @@ export const useVerilogFilesStore = defineStore("verilogFilesStore", () => {
     if (files.value.length <= 1) {
       return;
     }
+    if (entryFileName.value === name) {
+      return;
+    }
     const index = files.value.findIndex((file) => file.name === name);
     if (index === -1) {
       return;
@@ -72,9 +79,6 @@ export const useVerilogFilesStore = defineStore("verilogFilesStore", () => {
     files.value.splice(index, 1);
     if (activeFileName.value === name) {
       activeFileName.value = files.value[0]?.name ?? null;
-    }
-    if (entryFileName.value === name) {
-      entryFileName.value = files.value[0]?.name ?? null;
     }
   }
 
@@ -110,6 +114,22 @@ export const useVerilogFilesStore = defineStore("verilogFilesStore", () => {
     entryFileName.value = name;
   }
 
+  function initializeFromFiles(
+    filesMap: Record<string, string>,
+    entryName?: string,
+  ): void {
+    const entries = Object.entries(filesMap);
+    if (entries.length === 0) {
+      return;
+    }
+    files.value = entries.map(([name, content]) => ({ name, content }));
+    activeFileName.value = entries[0]?.[0] ?? null;
+    entryFileName.value =
+      entryName && files.value.some((file) => file.name === entryName)
+        ? entryName
+        : activeFileName.value;
+  }
+
   function reset(): void {
     files.value = createDefaultFiles();
     activeFileName.value = DEFAULT_VERILOG_FILE_NAME;
@@ -131,6 +151,7 @@ export const useVerilogFilesStore = defineStore("verilogFilesStore", () => {
     setFileContent,
     getActiveFileContent,
     initializeFromSingleFile,
+    initializeFromFiles,
     reset,
   };
 });

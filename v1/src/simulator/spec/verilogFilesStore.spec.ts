@@ -76,7 +76,7 @@ describe("useVerilogFilesStore", () => {
     ]);
   });
 
-  test("deleteFile refuses the last file and moves active/entry", () => {
+  test("deleteFile refuses the last file and the entry file, and moves the active pointer", () => {
     const store = useVerilogFilesStore();
 
     store.deleteFile("main.v");
@@ -89,7 +89,19 @@ describe("useVerilogFilesStore", () => {
     store.setEntryFile("helper.v");
     store.deleteFile("helper.v");
 
+    expect(store.files).toHaveLength(2);
+    expect(store.files.map((file) => file.name)).toEqual([
+      "main.v",
+      "helper.v",
+    ]);
+    expect(store.activeFileName).toBe("helper.v");
+    expect(store.entryFileName).toBe("helper.v");
+
+    store.setEntryFile("main.v");
+    store.deleteFile("helper.v");
+
     expect(store.files).toHaveLength(1);
+    expect(store.files[0]?.name).toBe("main.v");
     expect(store.activeFileName).toBe("main.v");
     expect(store.entryFileName).toBe("main.v");
   });
@@ -126,6 +138,72 @@ describe("useVerilogFilesStore", () => {
     expect(store.files[0]?.name).toBe("top.v");
     expect(store.activeFileName).toBe("top.v");
     expect(store.entryFileName).toBe("top.v");
+  });
+
+  test("initializeFromFiles loads a full files map", () => {
+    const store = useVerilogFilesStore();
+
+    store.initializeFromFiles({
+      "top.v": "module top; endmodule",
+      "helper.v": "module helper; endmodule",
+    });
+
+    expect(store.files).toHaveLength(2);
+    expect(store.files.map((file) => file.name)).toEqual([
+      "top.v",
+      "helper.v",
+    ]);
+    expect(store.files[1]?.content).toBe("module helper; endmodule");
+    expect(store.activeFileName).toBe("top.v");
+    expect(store.entryFileName).toBe("top.v");
+    expect(store.activeContent).toBe("module top; endmodule");
+
+    store.initializeFromFiles(
+      {
+        "top.v": "module top; endmodule",
+        "helper.v": "module helper; endmodule",
+      },
+      "helper.v",
+    );
+
+    expect(store.activeFileName).toBe("top.v");
+    expect(store.entryFileName).toBe("helper.v");
+
+    store.initializeFromFiles({});
+
+    expect(store.files).toHaveLength(2);
+    expect(store.activeFileName).toBe("top.v");
+    expect(store.entryFileName).toBe("helper.v");
+  });
+
+  test("activeFile and entryFile are readonly", () => {
+    const store = useVerilogFilesStore();
+
+    store.addFile("helper.v", "module helper; endmodule");
+    store.setActiveFile("helper.v");
+    store.setEntryFile("helper.v");
+
+    try {
+      (store.activeFile as { name: string }).name = "hacked.v";
+    } catch {
+      // Assigning to a readonly proxy throws in strict mode; either way the name must not change.
+    }
+    try {
+      (store.entryFile as { content: string }).content =
+        "module hacked; endmodule";
+    } catch {
+      // See above.
+    }
+
+    expect(store.activeFile?.name).toBe("helper.v");
+    expect(store.entryFile?.name).toBe("helper.v");
+    expect(store.files.map((file) => file.name)).toEqual([
+      "main.v",
+      "helper.v",
+    ]);
+    expect(store.activeFileName).toBe("helper.v");
+    expect(store.entryFileName).toBe("helper.v");
+    expect(store.activeContent).toBe("module helper; endmodule");
   });
 
   test("reset restores the defaults", () => {
