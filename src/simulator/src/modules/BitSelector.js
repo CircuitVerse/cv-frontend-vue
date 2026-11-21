@@ -92,11 +92,16 @@ export default class BitSelector extends CircuitElement {
      * resolve output values based on inputData
      */
     resolve() {
-        this.output1.value = extractBits(
-            this.inp1.value,
-            this.bitSelectorInp.value + 1,
-            this.bitSelectorInp.value + 1
-        ) // (this.inp1.value^(1<<this.bitSelectorInp.value))==(1<<this.bitSelectorInp.value);
+        // JavaScript shifts wrap modulo 32, so reject indices outside the input width first.
+        if (this.bitSelectorInp.value >= this.bitWidth) {
+            this.output1.value = 0
+        } else {
+            this.output1.value = extractBits(
+                this.inp1.value,
+                this.bitSelectorInp.value + 1,
+                this.bitSelectorInp.value + 1
+            ) // (this.inp1.value^(1<<this.bitSelectorInp.value))==(1<<this.bitSelectorInp.value);
+        }
         simulationArea.simulationQueue.add(this.output1)
     }
 
