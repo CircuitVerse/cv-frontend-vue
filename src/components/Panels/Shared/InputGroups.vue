@@ -21,6 +21,7 @@
         :min="valueMin"
         :max="valueMax"
         :value="propertyValue"
+        @change="clampValue"
       />
       <div class="input-group-append">
         <button
@@ -47,6 +48,22 @@ const props = defineProps({
   propertyInputName: { type: String, default: "Property_Input_Name" },
   propertyInputId: { type: String, default: "Property_Input_Id" },
 });
+
+// a typed value can sit outside the range the element accepts, so pull it back
+function clampValue(event) {
+  const ele = event.target;
+  const value = parseInt(ele.value, 10);
+  if (isNaN(value)) return;
+  const min = parseInt(props.valueMin, 10);
+  const max = parseInt(props.valueMax, 10);
+  const clamped = Math.min(
+    Math.max(value, isNaN(min) ? -Infinity : min),
+    isNaN(max) ? Infinity : max
+  );
+  if (clamped === value) return;
+  ele.value = clamped;
+  ele.dispatchEvent(new Event("change"));
+}
 
 // can be modified if required
 function increaseValue() {
