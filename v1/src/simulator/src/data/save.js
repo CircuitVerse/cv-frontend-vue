@@ -339,7 +339,7 @@ async function generateImageForOnline() {
     }
 
     // Center circuits
-    globalScope.centerFocus(true, Infinity)
+    globalScope.centerFocus()
 
     // Ensure image is approximately 700 x 440
     const resolution = Math.min(
