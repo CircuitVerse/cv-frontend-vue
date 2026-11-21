@@ -206,6 +206,26 @@ describe("useVerilogFilesStore", () => {
     expect(store.activeContent).toBe("module helper; endmodule");
   });
 
+  test("$patch can replace state (Pinia hydration must not be readonly)", () => {
+    const store = useVerilogFilesStore();
+
+    store.addFile("helper.v", "module helper; endmodule");
+
+    // State restoration, e.g. after adding helper.v: $patch must be able to
+    // replace the file list. With readonly() state refs this silently no-ops.
+    store.$patch({
+      files: [{ name: "main.v", content: "restored" }],
+    });
+
+    expect(store.files).toHaveLength(1);
+    expect(store.files[0]?.name).toBe("main.v");
+    expect(store.files[0]?.content).toBe("restored");
+
+    store.$patch({ activeFileName: "main.v", entryFileName: "main.v" });
+    expect(store.activeFileName).toBe("main.v");
+    expect(store.entryFileName).toBe("main.v");
+  });
+
   test("reset restores the defaults", () => {
     const store = useVerilogFilesStore();
 

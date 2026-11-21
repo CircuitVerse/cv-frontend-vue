@@ -136,10 +136,15 @@ export const useVerilogFilesStore = defineStore("verilogFilesStore", () => {
     entryFileName.value = DEFAULT_VERILOG_FILE_NAME;
   }
 
+  // NOTE: these three refs are returned writable on purpose. Pinia registers
+  // every ref returned by a setup store as state, and $patch / hydration
+  // writes through them (Pinia 3.0.4). Wrapping them in readonly() silently
+  // drops those writes, so state restoration breaks. Consumers must use the
+  // actions below; activeFile / entryFile stay readonly views.
   return {
-    files: readonly(files),
-    activeFileName: readonly(activeFileName),
-    entryFileName: readonly(entryFileName),
+    files,
+    activeFileName,
+    entryFileName,
     activeFile,
     entryFile,
     activeContent,
