@@ -106,6 +106,30 @@ export default class SRflipFlop extends CircuitElement {
         this.state ? fillText(ctx, this.state.toString(16), xx, yy + 10) : fillText(ctx, '0', xx, yy + 10);
         ctx.fill()
     }
+
+    static moduleVerilog() {
+        return `
+module SRflipFlop(q, q_inv, r, s, rst, pre, en);
+    output reg q;
+    output wire q_inv;
+    input wire r, s, rst, pre, en;
+
+    // the element has no clock, and resolve() reads an unconnected preset as 0
+    // and an unconnected enable as enabled, so match that here
+    wire pre_in = (pre === 1'b1);
+    wire en_in = (en === 1'b0) ? 1'b0 : 1'b1;
+
+    always @(*) begin
+        if (rst)
+            q = pre_in;
+        else if (en_in && (s ^ r))
+            q = s;
+    end
+
+    assign q_inv = ~q;
+endmodule
+    `
+    }
 }
 
 SRflipFlop.prototype.tooltipText = 'SR FlipFlop ToolTip : SR FlipFlop Selected.'
