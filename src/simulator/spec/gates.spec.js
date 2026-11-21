@@ -1,4 +1,6 @@
 import { setup } from '../src/setup';
+import { simulationArea } from '../src/simulationArea';
+import { createElement } from '#/components/Panels/ElementsPanel/ElementsPanel';
 import load from '../src/data/load';
 import circuitData from './circuits/gates-circuitdata.json';
 import testData from './testData/gates-testdata.json';
@@ -111,5 +113,47 @@ describe('Simulator Gates Working', () => {
     test('XOR gate working', () => {
         const result = runAll(testData.xorGate);
         expect(result.summary.passed).toBe(4);
+    });
+
+    test.each(['Decoder', 'AndGate'])('Escape cancels pending %s placement', (elementName) => {
+        const previousCount = globalScope[elementName].length;
+        createElement(elementName);
+        const pendingElement = simulationArea.lastSelected;
+
+        expect(pendingElement.newElement).toBe(true);
+
+        window.dispatchEvent(new KeyboardEvent('keydown', {
+            key: 'Escape',
+            keyCode: 27,
+            bubbles: true,
+            cancelable: true,
+        }));
+
+        expect(globalScope[elementName]).not.toContain(pendingElement);
+        expect(globalScope[elementName]).toHaveLength(previousCount);
+        expect(simulationArea.lastSelected).toBeUndefined();
+    });
+
+    test('normal placement remains after Escape deselects it', () => {
+        createElement('Decoder');
+        const decoder = simulationArea.lastSelected;
+
+        simulationArea.mouseDown = true;
+        decoder.update();
+        simulationArea.mouseDown = false;
+
+        expect(decoder.newElement).toBe(false);
+        expect(globalScope.Decoder).toContain(decoder);
+
+        window.dispatchEvent(new KeyboardEvent('keydown', {
+            key: 'Escape',
+            keyCode: 27,
+            bubbles: true,
+            cancelable: true,
+        }));
+
+        expect(globalScope.Decoder).toContain(decoder);
+        expect(simulationArea.lastSelected).toBeUndefined();
+        decoder.delete();
     });
 });
