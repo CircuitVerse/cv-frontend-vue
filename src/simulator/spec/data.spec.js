@@ -169,8 +169,9 @@ describe('data dir working', () => {
         const recovery = localStorage.getItem('recover');
         expect(recovery).toBeTruthy();
         const parsed = JSON.parse(recovery);
-        expect(parsed.scopes).toBeDefined();
-        expect(parsed.orderedTabs).toBeDefined();
+        expect(Array.isArray(parsed.scopes)).toBe(true);
+        expect(parsed.scopes.length).toBeGreaterThan(0);
+        expect(Array.isArray(parsed.orderedTabs)).toBe(true);
     });
 
     test('SaveOffline working', () => {

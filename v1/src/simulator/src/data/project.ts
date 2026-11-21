@@ -204,7 +204,7 @@ window.onbeforeunload = function (e?: BeforeUnloadEvent) {
       dependencyList[id] = scopeList[id].getDependencies();
     }
 
-    function saveScope(id: string) {
+    const saveScope = (id: string) => {
       if (!scopeList[id] || completed[id]) return;
       const deps = dependencyList[id] || [];
       for (let i = 0; i < deps.length; i++) {
@@ -214,7 +214,7 @@ window.onbeforeunload = function (e?: BeforeUnloadEvent) {
       updateSubcircuitSet(true);
       update(scopeList[id], true);
       data.scopes.push(backUp(scopeList[id]));
-    }
+    };
 
     // eslint-disable-next-line no-restricted-syntax
     for (const id in scopeList) {
