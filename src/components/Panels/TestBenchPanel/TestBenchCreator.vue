@@ -224,8 +224,8 @@ const groups = reactive<Group[]>([
 
 const loadFromStore = () => {
     const { title, type } = testBenchStore.testbenchData.testData;
-    if (title) testTitle.value = title;
-    if (type) testType.value = type;
+    testTitle.value = title || t('simulator.panel_body.testbench_creator.untitled');
+    testType.value = type || 'comb';
 };
 
 watch(() => testBenchStore.showTestBenchCreator, (open) => {
