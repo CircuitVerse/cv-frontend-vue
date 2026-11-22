@@ -66,7 +66,7 @@ export function resetScopeList() {
  * Changes UI tab etc
  * Sets flags to make updates, resets most of the things
  */
-export function switchCircuit(id: string) {
+export function switchCircuit(id: string | number) {
   // TODO: fix tomorrow
   const simulatorStore = SimulatorStore();
   const { circuit_list } = toRefs(simulatorStore);
@@ -83,7 +83,7 @@ export function switchCircuit(id: string) {
 
   // globalScope.fixLayout();
   scheduleBackup();
-  if (id === globalScope.id) return;
+  if (scopeList[id] === globalScope) return;
   // $(`.circuits`).removeClass('current')
   circuit_list.value.forEach((circuit) => (circuit.focussed ? (circuit.focussed = false) : null));
   simulationArea.lastSelected = undefined;
@@ -330,9 +330,9 @@ export default class Scope {
   SubCircuit!: any[];
   Clock!: any[];
   [key: string]: any;
-  constructor(name = "localScope", id = undefined) {
+  constructor(name = "localScope", id?: string | number) {
     this.restrictedCircuitElementsUsed = [];
-    this.id = id || Math.floor(Math.random() * 100000000000 + 1);
+    this.id = id ?? Math.floor(Math.random() * 100000000000 + 1);
     this.CircuitElement = [];
     this.name = name;
 
