@@ -66,10 +66,14 @@ export default class Keyboard extends CircuitElement {
     changeBufferSize(size) {
         if (size == undefined || size < 20 || size > 100) return
         if (this.bufferSize == size) return
-        var obj = new Keyboard(this.x, this.y, this.scope, size)
-        this.delete()
-        simulationArea.lastSelected = obj
-        return obj
+        // Resize in place so the existing nodes, and the wires on them, are kept
+        this.bufferSize = size
+        if (this.buffer.length > size) this.buffer = this.buffer.slice(-size)
+        this.elementWidth = Math.max(80, Math.ceil(size / 2) * 20)
+        this.setWidth(this.elementWidth / 2)
+        // Only the clock pin sits on the left edge, which moves with the width
+        this.clockInp.x = this.clockInp.leftx = -this.elementWidth / 2
+        return this
     }
 
     /**
