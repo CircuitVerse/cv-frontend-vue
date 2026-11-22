@@ -221,6 +221,15 @@ describe("useVerilogFilesStore", () => {
     expect(store.files[0]?.name).toBe("main.v");
     expect(store.files[0]?.content).toBe("restored");
 
+    // Point both pointers away from main.v first: patching them back to
+    // main.v below must actually move them, or the assertions would pass
+    // even if the pointer writes were ignored.
+    store.addFile("helper.v", "module helper; endmodule");
+    store.setActiveFile("helper.v");
+    store.setEntryFile("helper.v");
+    expect(store.activeFileName).toBe("helper.v");
+    expect(store.entryFileName).toBe("helper.v");
+
     store.$patch({ activeFileName: "main.v", entryFileName: "main.v" });
     expect(store.activeFileName).toBe("main.v");
     expect(store.entryFileName).toBe("main.v");
