@@ -389,6 +389,7 @@ export function runTestBench(
     }
 
     testBenchStore.testbenchData = tempTestbenchData;
+    testBenchStore.resultValues = [];
     if (scope) scope.testbenchData = tempTestbenchData;
 
     return;
@@ -421,6 +422,7 @@ export function syncTestbenchWithScope(scope = globalScope) {
   if (!savedData || !savedData.groups || savedData.groups.length === 0) {
     testBenchStore.testbenchData = emptyTestbenchData();
     testBenchStore.showTestbenchUI = false;
+    testBenchStore.resultValues = [];
     return;
   }
 
@@ -439,6 +441,7 @@ export function syncTestbenchWithScope(scope = globalScope) {
   if (!tempTestbenchData.goToFirstValidGroup()) {
     testBenchStore.testbenchData = emptyTestbenchData();
     testBenchStore.showTestbenchUI = false;
+    testBenchStore.resultValues = [];
     return;
   }
 
@@ -448,6 +451,7 @@ export function syncTestbenchWithScope(scope = globalScope) {
 
   scope.testbenchData = tempTestbenchData;
   testBenchStore.testbenchData = tempTestbenchData;
+  testBenchStore.resultValues = [];
   testBenchStore.showTestbenchUI = true;
 }
 
@@ -718,6 +722,7 @@ export const buttonListenerFunctions = {
     if (await confirmOption("Are you sure you want to remove the test from the circuit?")) {
       useTestBenchStore().testbenchData = emptyTestbenchData();
       useTestBenchStore().showTestbenchUI = false;
+      useTestBenchStore().resultValues = [];
       if (globalScope) globalScope.testbenchData = undefined;
     }
   },
