@@ -9,6 +9,7 @@ import i18n from '#/locales/i18n';
 import vuetify from '#/plugins/vuetify';
 import { routes } from '#/router';
 import { useProjectStore } from '#/store/projectStore';
+import { increment, decrement } from '#/components/Navbar/QuickButton/QuickButton';
 
 const confirmSingleOptionMock = vi.fn();
 vi.mock('#/components/helpers/confirmComponent/ConfirmComponent.vue', async (importOriginal) => {
@@ -183,5 +184,42 @@ describe('setup regression tests', () => {
         const savedData = await generateSaveData();
         const savedName = typeof savedData === 'string' ? JSON.parse(savedData).name : savedData.name;
         expect(savedName).toBe('Student/Assignment 1');
+    });
+
+    test('zoom increment and decrement buttons keep slider in sync with canvas scale and prevent double zoom', () => {
+        $(document).off('input change', '#customRange1');
+        setup();
+        const slider = document.getElementById('customRange1');
+        expect(slider).not.toBeNull();
+
+        // Default slider value from zoomSliderListeners is 5
+        expect(slider.value).toBe('5');
+        const initialScale = globalScope.scale;
+
+        // Increment moves slider from 5 to 6 and increases scale by 0.1
+        increment();
+        expect(slider.value).toBe('6');
+        expect(globalScope.scale).toBeCloseTo(initialScale + 0.1, 5);
+
+        // Decrement moves slider back from 6 to 5 and restores scale
+        decrement();
+        expect(slider.value).toBe('5');
+        expect(globalScope.scale).toBeCloseTo(initialScale, 5);
+
+        // Lower bound clamp (0)
+        slider.value = '0';
+        slider.dispatchEvent(new Event('change', { bubbles: true }));
+        const scaleAtZero = globalScope.scale;
+        decrement();
+        expect(slider.value).toBe('0');
+        expect(globalScope.scale).toBe(scaleAtZero);
+
+        // Upper bound clamp (45)
+        slider.value = '45';
+        slider.dispatchEvent(new Event('change', { bubbles: true }));
+        const scaleAtMax = globalScope.scale;
+        increment();
+        expect(slider.value).toBe('45');
+        expect(globalScope.scale).toBe(scaleAtMax);
     });
 });

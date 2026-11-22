@@ -30,8 +30,28 @@ export function view(): void {
   fullView();
 }
 export function decrement(): void {
-  ZoomOut();
+  const slider = document.getElementById("customRange1") as HTMLInputElement | null;
+  if (!slider) {
+    ZoomOut();
+    return;
+  }
+  const val = parseInt(slider.value, 10);
+  if (val > 0) {
+    slider.value = String(val - 1);
+    // Drive the slider's change handler to keep curLevel and canvas scale in sync
+    slider.dispatchEvent(new Event("change", { bubbles: true }));
+  }
 }
 export function increment(): void {
-  ZoomIn();
+  const slider = document.getElementById("customRange1") as HTMLInputElement | null;
+  if (!slider) {
+    ZoomIn();
+    return;
+  }
+  const val = parseInt(slider.value, 10);
+  if (val < 45) {
+    slider.value = String(val + 1);
+    // Drive the slider's change handler to keep curLevel and canvas scale in sync
+    slider.dispatchEvent(new Event("change", { bubbles: true }));
+  }
 }
