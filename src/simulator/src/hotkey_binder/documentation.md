@@ -30,7 +30,7 @@ To register a new shortcut action:
 ### 2. Removing a Shortcut Action
 1. Remove the action entry from `defaultKeys` in `defaultKeys.ts`.
 2. Remove the corresponding `case` from the switch statement in `model/addShortcut.ts`.
-3. Remove the action's union member from `ActionType` in `model/addShortcut.ts` so TypeScript flags any remaining callers at compile time.
+3. Remove the action's union member from `ActionType` in `model/addShortcut.ts`. TypeScript flags remaining literal callers that use the removed name. It does not flag dynamic names read from `userKeys` or `defaultKeys` in `bindKeys` (`model/actions.ts`). Search for those names manually.
 
 ### 3. Adding Key Restrictions
 To prevent a key combination from being assigned (e.g. system or browser reserved hotkeys):
