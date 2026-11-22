@@ -160,19 +160,40 @@ describe('data dir working', () => {
         projectSavedSet(false);
         global.embed = false;
         localStorage.removeItem('recover');
-        const event = {
-            preventDefault: vi.fn(),
-            returnValue: undefined,
-        };
-        window.onbeforeunload(event);
-        expect(event.preventDefault).toHaveBeenCalled();
-        expect(event.returnValue).toBe('');
-        const recovery = localStorage.getItem('recover');
-        expect(recovery).toBeTruthy();
-        const parsed = JSON.parse(recovery);
-        expect(Array.isArray(parsed.scopes)).toBe(true);
-        expect(parsed.scopes.length).toBeGreaterThan(0);
-        expect(Array.isArray(parsed.orderedTabs)).toBe(true);
+
+        const previousScopeList = { ...scopeList };
+        const previousGlobalScope = global.globalScope;
+
+        const testScope = new Scope('Main', 'Main');
+        testScope.Input = [{
+            saveObject: () => ({ layoutProperties: { x: 0, y: 0 } }),
+            update: () => false,
+        }];
+
+        for (const id in scopeList) delete scopeList[id];
+        scopeList[testScope.id] = testScope;
+        global.globalScope = testScope;
+
+        try {
+            const event = {
+                preventDefault: vi.fn(),
+                returnValue: undefined,
+            };
+            window.onbeforeunload(event);
+            expect(event.preventDefault).toHaveBeenCalled();
+            expect(event.returnValue).toBe('');
+            const recovery = localStorage.getItem('recover');
+            expect(recovery).toBeTruthy();
+            const parsed = JSON.parse(recovery);
+            expect(Array.isArray(parsed.scopes)).toBe(true);
+            expect(parsed.scopes.length).toBeGreaterThan(0);
+            expect(Array.isArray(parsed.orderedTabs)).toBe(true);
+            expect(parsed.scopes.some((s) => s.id === testScope.id)).toBe(true);
+        } finally {
+            for (const id in scopeList) delete scopeList[id];
+            Object.assign(scopeList, previousScopeList);
+            global.globalScope = previousGlobalScope;
+        }
     });
 
     test('onbeforeunload preserves original tab order separately from dependency-first scope serialization', () => {
