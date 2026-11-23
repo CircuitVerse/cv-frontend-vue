@@ -138,7 +138,7 @@ export async function saveOffline() {
   const data = await generateSaveData("");
   if (data instanceof Error) return;
   if (!projectId) projectId = generateId();
-  localStorage.setItem(projectId, data);
+  localStorage.setItem(projectId, JSON.stringify(data));
   const projectList = localStorage.getItem("projectList");
   const temp = projectList ? JSON.parse(projectList) : {};
   temp[projectId] = getProjectName();
@@ -184,8 +184,8 @@ window.onbeforeunload = async function () {
 /**
  * Function to clear project
  */
-export async function clearProject() {
-  if (await confirmOption("Would you like to clear the project?")) {
+export async function clearProject(skipConfirm = false) {
+  if (skipConfirm || (await confirmOption("Would you like to clear the project?"))) {
     globalScope = undefined;
     resetScopeList();
     // $('.circuits').remove()
@@ -204,11 +204,10 @@ export async function newProject(verify: boolean) {
     !checkToSave() ||
     (await confirmOption("What you like to start a new project? Any unsaved changes will be lost."))
   ) {
-    clearProject();
+    await clearProject(true);
     localStorage.removeItem("recover");
-    const baseUrl =
-      window.location.origin !== "null" ? window.location.origin : "http://localhost:4000";
-    window.location.assign(`${baseUrl}/simulatorvue/`);
+    window.onbeforeunload = null;
+    window.location.assign("/simulatorvue/");
 
     setProjectName(undefined);
     projectId = generateId();
