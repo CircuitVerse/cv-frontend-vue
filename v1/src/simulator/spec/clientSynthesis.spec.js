@@ -39,6 +39,7 @@ class MockWorker {
 
 describe('synthesizeVerilog timeout guard', () => {
     let synthesizeVerilog
+    let validateVerilog
     let mockWorkerInstance
 
     beforeEach(async () => {
@@ -56,6 +57,7 @@ describe('synthesizeVerilog timeout guard', () => {
 
         const mod = await import('../src/synthesis/clientSynthesis.js')
         synthesizeVerilog = mod.synthesizeVerilog
+        validateVerilog = mod.validateVerilog
     })
 
     afterEach(() => {
@@ -207,6 +209,7 @@ describe('synthesizeVerilog timeout guard', () => {
 
 describe('Worker lifecycle: recycle after N runs', () => {
     let synthesizeVerilog
+    let validateVerilog
     let mockWorkerInstance
     let allWorkers
 
@@ -226,6 +229,7 @@ describe('Worker lifecycle: recycle after N runs', () => {
 
         const mod = await import('../src/synthesis/clientSynthesis.js')
         synthesizeVerilog = mod.synthesizeVerilog
+        validateVerilog = mod.validateVerilog
     })
 
     afterEach(() => {
@@ -295,5 +299,47 @@ describe('Worker lifecycle: recycle after N runs', () => {
         await runOneSynthesis()
         expect(mockWorkerInstance).toBe(firstWorker)
         expect(firstWorker.terminate).not.toHaveBeenCalled()
+    })
+
+    //  validateVerilog (linting) tests
+
+    test('validateVerilog posts lint message and resolves on success', async () => {
+        const promise = validateVerilog('module m; endmodule')
+
+        expect(mockWorkerInstance).not.toBeNull()
+        expect(mockWorkerInstance.postMessage).toHaveBeenCalledWith({
+            type: 'lint',
+            code: 'module m; endmodule',
+            id: expect.any(Number),
+        })
+
+        const sentId = mockWorkerInstance.postMessage.mock.calls[0][0].id
+        mockWorkerInstance._postBack({
+            type: 'result',
+            data: { valid: true, message: 'Syntax Valid & Synthesizable' },
+            id: sentId,
+        })
+
+        const result = await promise
+        expect(result).toEqual({ valid: true, message: 'Syntax Valid & Synthesizable' })
+    })
+
+    test('validateVerilog rejects immediately on empty code', async () => {
+        await expect(validateVerilog('')).rejects.toThrow('Verilog code cannot be empty')
+        await expect(validateVerilog('   \n  ')).rejects.toThrow('Verilog code cannot be empty')
+        expect(mockWorkerInstance).toBeNull()
+    })
+
+    test('validateVerilog rejects on validation syntax error from worker', async () => {
+        const promise = validateVerilog('module m broken')
+
+        const sentId = mockWorkerInstance.postMessage.mock.calls[0][0].id
+        mockWorkerInstance._postBack({
+            type: 'error',
+            message: "Syntax error on line 1: unexpected 'broken'",
+            id: sentId,
+        })
+
+        await expect(promise).rejects.toThrow("Syntax error on line 1: unexpected 'broken'")
     })
 })

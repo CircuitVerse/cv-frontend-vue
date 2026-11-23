@@ -17,13 +17,17 @@ function maybeRecycleWorker(currentWorker) {
     }
 }
 
-// abort + reset the worker if synthesis runs longer (default 30s).
-export function synthesizeVerilog(verilogCode, onProgress, options = {}) {
+function runWorkerTask(type, verilogCode, onProgress, options = {}) {
     var timeoutMs = options.timeoutMs ?? DEFAULT_SYNTHESIS_TIMEOUT_MS
 
     return new Promise((resolve, reject) => {
+        if (!verilogCode || !verilogCode.trim()) {
+            reject(new Error('Verilog code cannot be empty'))
+            return
+        }
+
         if (busy) {
-            reject(new Error('A Verilog synthesis is already in progress'))
+            reject(new Error('A Verilog task is already in progress'))
             return
         }
 
@@ -86,18 +90,29 @@ export function synthesizeVerilog(verilogCode, onProgress, options = {}) {
             currentWorker.terminate()
             if (worker === currentWorker) worker = null
             runCount = 0
+            var opName = type === 'lint' ? 'Verilog validation' : 'Verilog synthesis'
             var error = new Error(
-                'Verilog synthesis timed out after ' + (timeoutMs / 1000) + ' seconds'
+                opName + ' timed out after ' + (timeoutMs / 1000) + ' seconds'
             )
             error.name = 'SynthesisTimeoutError'
             reject(error)
         }, timeoutMs)
 
         try {
-            currentWorker.postMessage({ type: 'synthesize', code: verilogCode, id: id })
+            currentWorker.postMessage({ type, code: verilogCode, id: id })
         } catch (err) {
             cleanup()
             reject(new Error('Failed to send code to synthesis worker: ' + err.message))
         }
     })
+}
+
+// abort + reset the worker if synthesis runs longer (default 30s).
+export function synthesizeVerilog(verilogCode, onProgress, options = {}) {
+    return runWorkerTask('synthesize', verilogCode, onProgress, options)
+}
+
+// In-browser WebAssembly linting & syntax verification via YoWASP Yosys
+export function validateVerilog(verilogCode, onProgress, options = {}) {
+    return runWorkerTask('lint', verilogCode, onProgress, options)
 }

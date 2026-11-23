@@ -10,7 +10,7 @@ var wasmReady = false
 
 self.onmessage = async function (e) {
     var { type, code, id } = e.data
-    if (type !== 'synthesize') return
+    if (type !== 'synthesize' && type !== 'lint') return
 
     var stderrLines = []
 
@@ -19,6 +19,39 @@ self.onmessage = async function (e) {
             self.postMessage({ type: 'progress', message: 'Loading Yosys WASM engine...', id })
             await runYosys([], {}, { print: silentPrint, printErr: silentPrint })
             wasmReady = true
+        }
+
+        if (type === 'lint') {
+            self.postMessage({ type: 'progress', message: 'Validating Verilog syntax...', id })
+
+            var origLog = console.log
+            var origError = console.error
+            console.log = function (...args) { stderrLines.push(args.map(String).join(' ')) }
+            console.error = function (...args) { stderrLines.push(args.map(String).join(' ')) }
+
+            try {
+                await runYosys(
+                    [
+                        '-p',
+                        'read_verilog -sv input.v; hierarchy -auto-top -check',
+                    ],
+                    { 'input.v': code },
+                    { print: silentPrint, printErr: function (msg) { stderrLines.push(String(msg)) } }
+                )
+            } finally {
+                console.log = origLog
+                console.error = origError
+            }
+
+            self.postMessage({
+                type: 'result',
+                data: {
+                    valid: true,
+                    message: 'Syntax Valid & Synthesizable',
+                },
+                id,
+            })
+            return
         }
 
         self.postMessage({ type: 'progress', message: 'Running Yosys synthesis...', id })
@@ -50,7 +83,7 @@ self.onmessage = async function (e) {
 
         self.postMessage({ type: 'result', data: digitalJsCircuit, id })
     } catch (error) {
-        var message = extractYosysError(stderrLines) || error.message || 'Synthesis failed'
+        var message = extractYosysError(stderrLines) || error.message || (type === 'lint' ? 'Validation failed' : 'Synthesis failed')
         self.postMessage({ type: 'error', message: message, id })
     }
 }
