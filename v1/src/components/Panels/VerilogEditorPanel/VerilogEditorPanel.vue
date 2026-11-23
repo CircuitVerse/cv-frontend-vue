@@ -26,6 +26,15 @@
                         {{ $t('simulator.panel_body.verilog_module.save_code') }}
                     </button>
                     <button
+                        class="largeButton btn btn-xs custom-btn--primary validate-btn"
+                        :disabled="isValidating"
+                        @click="handleValidateCode"
+                    >
+                        <i v-if="isValidating" class="fas fa-spinner fa-spin"></i>
+                        <i v-else class="fas fa-check-circle"></i>
+                        {{ isValidating ? 'Validating...' : 'Validate Code' }}
+                    </button>
+                    <button
                         class="largeButton btn btn-xs custom-btn--secondary"
                         @click="toggleTerminal"
                     >
@@ -81,13 +90,25 @@ import {
     saveVerilogCode,
     resetVerilogCode,
     applyVerilogTheme,
+    validateCurrentVerilogCode,
 } from '#/simulator/src/Verilog2CV';
 import PanelHeader from '../Shared/PanelHeader.vue';
 import VerilogTerminal from './VerilogTerminal.vue';
-import { watch } from 'vue';
+import { ref, watch } from 'vue';
 import { useVerilogStore } from '#/store/verilogStore';
 
 const verilogStore = useVerilogStore();
+const isValidating = ref(false);
+
+const handleValidateCode = async () => {
+    if (isValidating.value) return;
+    isValidating.value = true;
+    try {
+        await validateCurrentVerilogCode();
+    } finally {
+        isValidating.value = false;
+    }
+};
 
 const toggleTerminal = () => {
     verilogStore.toggleTerminal();

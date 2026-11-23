@@ -3,7 +3,7 @@ import {
     switchCircuit,
     changeCircuitName,
 } from './circuit'
-import { synthesizeVerilog } from './synthesis/clientSynthesis.js'
+import { synthesizeVerilog, validateVerilog } from './synthesis/clientSynthesis.js'
 import { computeLayout, computePortLayout } from './synthesis/circuitLayout.js';
 import { isTauri } from '@tauri-apps/api/core'
 import SubCircuit from './subcircuit'
@@ -66,6 +66,30 @@ export function saveVerilogCode() {
     var code = editor.getValue()
     globalScope.verilogMetadata.code = code
     generateVerilogCircuit(code)
+}
+
+export async function validateCurrentVerilogCode() {
+    clearVerilogOutput()
+    var code = editor ? editor.getValue() : globalScope.verilogMetadata.code
+    const verilogStore = getVerilogStore()
+    verilogStore.showTerminal()
+
+    setVerilogOutput('Validating Verilog syntax with Yosys WASM...', 'info')
+
+    try {
+        const result = await validateVerilog(code, (progress) => {
+            setVerilogOutput(progress, 'info')
+        })
+        const msg = result?.message || 'Syntax Valid & Synthesizable'
+        setVerilogOutput(msg, 'success')
+        showMessage(msg)
+        return { valid: true }
+    } catch (err) {
+        const msg = err.message || 'Validation failed'
+        setVerilogOutput(msg, 'error')
+        showError(msg)
+        return { valid: false, error: msg }
+    }
 }
 
 export function applyVerilogTheme(theme) {
