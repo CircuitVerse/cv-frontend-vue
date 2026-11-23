@@ -3,7 +3,7 @@
 import { runYosys } from '@yowasp/yosys'
 import { yosys2digitaljs } from 'yosys2digitaljs/core'
 import { parseYosysOutput } from './vfsGuard.js'
-import { extractYosysError } from './errorParser.js'
+import { extractYosysErrorDetails } from './errorParser.js'
 
 var silentPrint = () => {}
 var wasmReady = false
@@ -83,7 +83,9 @@ self.onmessage = async function (e) {
 
         self.postMessage({ type: 'result', data: digitalJsCircuit, id })
     } catch (error) {
-        var message = extractYosysError(stderrLines) || error.message || (type === 'lint' ? 'Validation failed' : 'Synthesis failed')
-        self.postMessage({ type: 'error', message: message, id })
+        var details = extractYosysErrorDetails(stderrLines)
+        var message = details ? details.message : (error.message || (type === 'lint' ? 'Validation failed' : 'Synthesis failed'))
+        var errorLine = details ? details.line : 1
+        self.postMessage({ type: 'error', message: message, line: errorLine, id })
     }
 }

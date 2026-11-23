@@ -62,7 +62,9 @@ function runWorkerTask(type, verilogCode, onProgress, options = {}) {
                 case 'error':
                     cleanup()
                     maybeRecycleWorker(currentWorker)
-                    reject(new Error(e.data.message))
+                    var err = new Error(e.data.message)
+                    if (e.data.line) err.line = e.data.line
+                    reject(err)
                     break
             }
         }

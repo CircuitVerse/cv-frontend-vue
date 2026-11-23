@@ -32,6 +32,8 @@ import 'codemirror/addon/edit/closebrackets.js'
 import 'codemirror/addon/hint/anyword-hint.js'
 import 'codemirror/addon/hint/show-hint.js'
 import 'codemirror/addon/display/autorefresh.js'
+import 'codemirror/addon/lint/lint.js'
+import 'codemirror/addon/lint/lint.css'
 import { showError, showMessage } from './utils'
 import { showProperties } from './ux'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
@@ -398,6 +400,33 @@ export function setupCodeMirrorEnvironment() {
         cm.showHint({ hint: CodeMirror.hint.anyword })
     }
 
+    CodeMirror.registerHelper('lint', 'verilog', async function (text, options, cm) {
+        if (!text || !text.trim() || text.trim().startsWith('// Write Some Verilog')) {
+            return []
+        }
+
+        try {
+            await validateVerilog(text)
+            return []
+        } catch (err) {
+            var line = err.line ? Math.max(0, err.line - 1) : 0
+            var lineCount = cm ? cm.lineCount() : 1
+            if (line >= lineCount) line = lineCount - 1
+            var lineText = cm ? cm.getLine(line) || '' : ''
+            var from = CodeMirror.Pos(line, 0)
+            var to = CodeMirror.Pos(line, Math.max(1, lineText.length))
+
+            return [
+                {
+                    from: from,
+                    to: to,
+                    message: err.message || 'Verilog syntax error',
+                    severity: 'error',
+                },
+            ]
+        }
+    })
+
     editor = CodeMirror.fromTextArea(myTextarea, {
         mode: 'verilog',
         autoRefresh: true,
@@ -407,6 +436,11 @@ export function setupCodeMirrorEnvironment() {
         smartIndent: true,
         indentWithTabs: true,
         extraKeys: { 'Ctrl-Space': 'autocomplete' },
+        gutters: ['CodeMirror-linenumbers', 'CodeMirror-lint-markers'],
+        lint: {
+            delay: 600,
+            tooltips: true,
+        },
     })
 
     if (!localStorage.getItem('verilog-theme')) {

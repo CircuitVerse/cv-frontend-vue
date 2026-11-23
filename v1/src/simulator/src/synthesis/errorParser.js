@@ -71,6 +71,11 @@ function humanize(line, detail) {
 }
 
 export function extractYosysError(stderrLines) {
+    var details = extractYosysErrorDetails(stderrLines)
+    return details ? details.message : null
+}
+
+export function extractYosysErrorDetails(stderrLines) {
     if (!stderrLines || !stderrLines.length) return null
 
     for (var i = stderrLines.length - 1; i >= 0; i--) {
@@ -78,11 +83,17 @@ export function extractYosysError(stderrLines) {
         if (typeof line !== 'string') continue
         var match = line.match(/input\.v:(\d+):\s*ERROR:\s*(.+)/)
         if (match) {
-            return humanize(match[1], match[2])
+            return {
+                line: parseInt(match[1], 10),
+                message: humanize(match[1], match[2]),
+            }
         }
         if (line.indexOf('ERROR:') !== -1) {
             var raw = line.replace(/^.*?ERROR:\s*/, '')
-            return replaceTokens(raw)
+            return {
+                line: 1,
+                message: replaceTokens(raw),
+            }
         }
     }
     return null

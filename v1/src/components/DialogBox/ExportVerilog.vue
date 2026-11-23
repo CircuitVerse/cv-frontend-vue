@@ -84,6 +84,8 @@ import 'codemirror/mode/verilog/verilog.js'
 // theme
 import 'codemirror/theme/dracula.css'
 import 'codemirror/theme/eclipse.css'
+import 'codemirror/addon/lint/lint.js'
+import 'codemirror/addon/lint/lint.css'
 import { verilog } from '#/simulator/src/verilog'
 import {
     copyToClipboard,
@@ -126,6 +128,11 @@ onMounted(() => {
         smartIndent: true,
         indentWithTabs: true,
         extraKeys: { 'Ctrl-Space': 'autocomplete' },
+        gutters: ['CodeMirror-linenumbers', 'CodeMirror-lint-markers'],
+        lint: {
+            delay: 600,
+            tooltips: true,
+        },
     }
 })
 
