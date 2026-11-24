@@ -87,6 +87,18 @@ export default class Splitter extends CircuitElement {
 
     /**
      * @memberof Splitter
+     * function to change bitwidth of the element
+     * the outputs keep the widths given by the split
+     * @param {number} bitWidth - new bitwidth
+     */
+    newBitWidth(bitWidth) {
+        if (bitWidth < 1) return
+        this.bitWidth = bitWidth
+        this.inp1.bitWidth = bitWidth
+    }
+
+    /**
+     * @memberof Splitter
      * fn to remove proporgation delay.
      * @return {JSON}
      */

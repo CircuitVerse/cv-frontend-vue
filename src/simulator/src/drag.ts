@@ -5,6 +5,15 @@ interface Position {
   y: number;
 }
 
+function pinElementPosition(element: HTMLElement, positions: WeakMap<HTMLElement, Position>): void {
+  if (!positions.has(element)) {
+    const rect = element.getBoundingClientRect();
+    element.style.top = `${rect.top}px`;
+    element.style.bottom = "auto";
+    positions.set(element, { x: 0, y: 0 });
+  }
+}
+
 function updatePosition(
   element: HTMLElement,
   dx: number,
@@ -13,10 +22,8 @@ function updatePosition(
 ): void {
   if (!element) return; // Check if the element is valid
 
-  // If the element does not exist in the positions WeakMap, create it
-  if (!positions.has(element)) {
-    positions.set(element, { x: 0, y: 0 });
-  }
+  // If the element does not exist in the positions WeakMap, pin its current top position
+  pinElementPosition(element, positions);
 
   // Update the element's x and y position
   const currentPosition = positions.get(element);
@@ -53,9 +60,18 @@ export function dragging(targetEl: HTMLElement, DragEl: HTMLElement): void {
     allowFrom: targetEl,
     // Set up event listeners for the draggable element
     listeners: {
+      start(event) {
+        const el = event.target as HTMLElement;
+        pinElementPosition(el, positions);
+        el.style.transition = "none";
+      },
       // Update the element's position when the move event is triggered
       move(event) {
         updatePosition(event.target as HTMLElement, event.dx, event.dy, positions);
+      },
+      end(event) {
+        const el = event.target as HTMLElement;
+        el.style.transition = "";
       },
     },
     modifiers: [

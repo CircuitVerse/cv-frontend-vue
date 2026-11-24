@@ -95,6 +95,7 @@ export default class Wire {
   }
 
   draw(): void {
+    if (!simulationArea.context) return;
     drawLine(
       simulationArea.context,
       this.node1.absX(),
@@ -222,10 +223,10 @@ export default class Wire {
     return this.checkAndCreateNode(
       this.node1.absY(),
       this.y1,
-      () => new Node(this.node1.absX(), this.y1, 2, this.scope.root),
+      () => new Node(this.node2.absX(), this.node1.absY(), 2, this.scope.root),
       this.node2.absY(),
       this.y2,
-      () => new Node(this.node2.absX(), this.y2, 2, this.scope.root),
+      () => new Node(this.node1.absX(), this.node2.absY(), 2, this.scope.root),
     );
   }
 
@@ -233,10 +234,10 @@ export default class Wire {
     return this.checkAndCreateNode(
       this.node1.absX(),
       this.x1,
-      () => new Node(this.x1, this.node1.absY(), 2, this.scope.root),
+      () => new Node(this.node1.absX(), this.node2.absY(), 2, this.scope.root),
       this.node2.absX(),
       this.x2,
-      () => new Node(this.x2, this.node2.absY(), 2, this.scope.root),
+      () => new Node(this.node2.absX(), this.node1.absY(), 2, this.scope.root),
     );
   }
 

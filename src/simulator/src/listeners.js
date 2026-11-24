@@ -80,14 +80,15 @@ export function getSelectedElements() {
 }
 
 /**
- *
- * @param {event} e
- * function for double click or double tap
+ * Handles double click or double tap on the simulation canvas.
+ * @param {Event} e - originating event
+ * @category listeners
  */
 function onDoubleClickorTap(e) {
     updateCanvasSet(true);
     if (simulationArea.lastSelected && simulationArea.lastSelected.dblclick !== undefined) {
         simulationArea.lastSelected.dblclick();
+        updateSimulationSet(true);
     } else if (!simulationArea.shiftDown) {
         simulationArea.multipleObjectSelections = [];
     }
@@ -419,13 +420,7 @@ export default function startListeners() {
 
             if (listenToSimulator) {
                 // If mouse is focusing on input element, then override any action
-                if (
-                    document.activeElement.tagName == 'INPUT' ||
-                    simulationArea.mouseRawX < 0 ||
-                    simulationArea.mouseRawY < 0 ||
-                    simulationArea.mouseRawX > width ||
-                    simulationArea.mouseRawY > height
-                ) {
+                if (document.activeElement.tagName == 'INPUT') {
                     return
                 }
                 // HACK TO REMOVE FOCUS ON PROPERTIES
@@ -443,48 +438,54 @@ export default function startListeners() {
                     simulationArea.controlDown = true
                 }
 
-                // zoom in (+)
-                if (
-                    (simulationArea.controlDown &&
-                        (e.keyCode == 187 || e.keyCode == 171)) ||
-                    e.keyCode == 107
-                ) {
-                    e.preventDefault()
-                    ZoomIn()
-                }
-                // zoom out (-)
-                if (
-                    (simulationArea.controlDown &&
-                        (e.keyCode == 189 || e.keyCode == 173)) ||
-                    e.keyCode == 109
-                ) {
-                    e.preventDefault()
-                    ZoomOut()
-                }
-                
-                // Fit view to selection (F)
-                // Recomputes viewport bounds using selected elements only.
-                // Falls back to Reset View if no selection exists.
-                if (e.key === 'f' || e.key === 'F') {
-                    e.preventDefault()
-                    fitToSelection(getSelectedElements())
-                    updateCanvasSet(true)
-                    gridUpdateSet(true)
-                    scheduleUpdate(1)
-                    return
-               }
-
-                if (
-                    simulationArea.mouseRawX < 0 ||
-                    simulationArea.mouseRawY < 0 ||
-                    simulationArea.mouseRawX > width ||
-                    simulationArea.mouseRawY > height
-                )
-                    return
-
                 scheduleUpdate(1)
                 updateCanvasSet(true)
                 wireToBeCheckedSet(1)
+
+                if (
+                    !(
+                        simulationArea.mouseRawX < 0 ||
+                        simulationArea.mouseRawY < 0 ||
+                        simulationArea.mouseRawX > width ||
+                        simulationArea.mouseRawY > height
+                    )
+                ) {
+                    // zoom in (+)
+                    if (
+                        (simulationArea.controlDown &&
+                            (e.keyCode == 187 || e.keyCode == 171)) ||
+                        e.keyCode == 107
+                    ) {
+                        e.preventDefault()
+                        ZoomIn()
+                    }
+                    // zoom out (-)
+                    if (
+                        (simulationArea.controlDown &&
+                            (e.keyCode == 189 || e.keyCode == 173)) ||
+                        e.keyCode == 109
+                    ) {
+                        e.preventDefault()
+                        ZoomOut()
+                    }
+
+                    // Fit view to selection (F)
+                    // Guard: skip this shortcut if a component is actively handling keyboard input
+                    if (
+                        (e.key === 'f' || e.key === 'F') &&
+                        !(
+                            simulationArea.lastSelected &&
+                            simulationArea.lastSelected.keyDown
+                        )
+                    ) {
+                        e.preventDefault()
+                        fitToSelection(getSelectedElements())
+                        updateCanvasSet(true)
+                        gridUpdateSet(true)
+                        scheduleUpdate(1)
+                        return
+                    }
+                }
 
                 if (
                     simulationArea.lastSelected &&
@@ -496,6 +497,7 @@ export default function startListeners() {
                         e.key.toString() == 'Enter'
                     ) {
                         simulationArea.lastSelected.keyDown(e.key.toString())
+                        updateSimulationSet(true)
                         e.cancelBubble = true
                         e.returnValue = false
 
@@ -514,6 +516,7 @@ export default function startListeners() {
                 ) {
                     if (e.key.toString().length == 1) {
                         simulationArea.lastSelected.keyDown2(e.key.toString())
+                        updateSimulationSet(true)
                         return
                     }
                 }
@@ -527,9 +530,18 @@ export default function startListeners() {
                         e.key.toString() != 'Delete'
                     ) {
                         simulationArea.lastSelected.keyDown3(e.key.toString())
+                        updateSimulationSet(true)
                         return
                     }
                 }
+
+                if (
+                    simulationArea.mouseRawX < 0 ||
+                    simulationArea.mouseRawY < 0 ||
+                    simulationArea.mouseRawX > width ||
+                    simulationArea.mouseRawY > height
+                )
+                    return
 
                 if (e.keyCode == 16) {
                     simulationArea.shiftDown = true
@@ -748,7 +760,14 @@ export default function startListeners() {
     }
 }
 
+/**
+ * Adjusts the maximum width of tabs in the tabs bar based on current window
+ * and sidebar dimensions to prevent layout overflow.
+ * @category listeners
+ */
 function resizeTabs() {
+    const $ = window.$
+    if (!$ || !$('body').length) return
     const $windowsize = $('body').width()
     const $sideBarsize = $('.side').width()
     const $maxwidth = $windowsize - $sideBarsize
