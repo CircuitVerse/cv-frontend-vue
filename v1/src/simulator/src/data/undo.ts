@@ -63,9 +63,7 @@ function popLastBackup(scope: Scope): string | undefined {
 function createTempScope(scope: Scope): Scope | undefined {
   try {
     const tempScope = new Scope(scope.name);
-    if (!loadScope(tempScope, JSON.parse(scope.backups[scope.backups.length - 2]))) {
-      throw new Error("Backup contains a subcircuit that could not be loaded");
-    }
+    loadScope(tempScope, JSON.parse(scope.backups[scope.backups.length - 2]));
 
     tempScope.backups = scope.backups;
     tempScope.history = scope.history;

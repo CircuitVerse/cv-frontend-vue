@@ -29,9 +29,8 @@ import { circuitElementList, subCircuitInputList } from "./metadata";
  * @param scope - The scope to load into
  * @category subcircuit
  */
-export function loadSubCircuit(savedData: any, scope: any): boolean {
-  const subcircuit = new SubCircuit(savedData.x, savedData.y, scope, savedData.id, savedData);
-  return !subcircuit.loadFailed;
+export function loadSubCircuit(savedData: any, scope: any): void {
+  new SubCircuit(savedData.x, savedData.y, scope, savedData.id, savedData);
 }
 
 /**
@@ -57,7 +56,6 @@ type SubCircuitNode = Node & { layout_id?: string };
  * @category subcircuit
  */
 export default class SubCircuit extends CircuitElement implements ICircuitElement {
-  loadFailed = false;
   declare propagationDelay: number;
   declare tooltipText: string;
   declare helplink: string;
@@ -106,11 +104,9 @@ export default class SubCircuit extends CircuitElement implements ICircuitElemen
     // Error handing
     if (subcircuitScope == undefined) {
       // if no such scope for subcircuit exists
-      this.loadFailed = true;
       showError(`SubCircuit : ${(savedData && savedData.title) || this.id} Not found`);
     } else if (!checkIfBackup(subcircuitScope)) {
       // if there is no input/output nodes there will be no backup
-      this.loadFailed = true;
       showError(
         `SubCircuit : ${
           (savedData && savedData.title) || subcircuitScope.name
@@ -118,7 +114,6 @@ export default class SubCircuit extends CircuitElement implements ICircuitElemen
       );
     } else if (subcircuitScope.checkDependency(scope.id)) {
       // check for cyclic dependency
-      this.loadFailed = true;
       showError("Cyclic Circuit Error");
     }
     // Error handling, cleanup
@@ -234,7 +229,7 @@ export default class SubCircuit extends CircuitElement implements ICircuitElemen
    */
   buildCircuit(): void {
     const subcircuitScope = scopeList[this.id];
-    this.loadFailed = !loadScope(this.localScope, this.data) || this.loadFailed;
+    loadScope(this.localScope, this.data);
     this.localScope.name = this.data.name;
     this.lastUpdated = this.localScope.timeStamp;
     updateSimulationSet(true);

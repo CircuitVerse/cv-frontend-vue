@@ -1,12 +1,12 @@
 import { describe, test, expect, vi, beforeAll } from 'vitest';
 import { setup } from '../src/setup';
-import load, { loadScope } from '../src/data/load';
+import load from '../src/data/load';
 import gatesCircuitData from './circuits/gates-circuitdata.json';
 import decoderCircuitData from './circuits/Decoders-plexers-circuitdata.json';
 import { checkIfBackup, scheduleBackup } from '../src/data/backupCircuit';
 import undo from '../src/data/undo';
 import redo from '../src/data/redo';
-import Scope, { scopeList } from '../src/circuit';
+import { scopeList } from '../src/circuit';
 import { errorDetectedGet, errorDetectedSet, play } from '../src/engine';
 import save from '../src/data/save';
 import {
@@ -248,59 +248,6 @@ describe('data dir working', () => {
         } finally {
             errorLog.mockRestore();
             errorDetectedSet(originalError);
-        }
-    });
-
-    test.each(['undo', 'redo'])('%s rejects a missing subcircuit with node arrays', (action) => {
-        load(decoderCircuitData);
-        const validBackup = scheduleBackup();
-        const invalidData = JSON.parse(validBackup);
-        invalidData.SubCircuit = [{
-            x: 0, y: 0, id: 'missing-restore-scope', inputNodes: [], outputNodes: [],
-        }];
-        const originalScope = globalScope;
-        const invalidBackup = JSON.stringify(invalidData);
-        originalScope.backups = action === 'undo' ? [invalidBackup, validBackup] : [validBackup];
-        originalScope.history = action === 'redo' ? [invalidBackup] : [];
-        originalScope.ox = 125;
-        originalScope.oy = -75;
-        originalScope.scale = 2;
-        const backups = [...originalScope.backups];
-        const history = [...originalScope.history];
-        const previousError = errorDetectedGet();
-        const errorLog = vi.spyOn(console, 'error').mockImplementation(() => {});
-
-        try {
-            // The loader must explicitly report errors that do not throw.
-            expect(loadScope(new Scope('Rejected backup'), invalidData)).toBe(false);
-            for (const existingError of [false, true]) {
-                errorDetectedSet(existingError);
-                expect(() => (action === 'undo' ? undo : redo)()).not.toThrow();
-                expect(globalScope).toBe(originalScope);
-                expect(scopeList[originalScope.id]).toBe(originalScope);
-                expect(originalScope.backups).toEqual(backups);
-                expect(originalScope.history).toEqual(history);
-                expect([globalScope.ox, globalScope.oy, globalScope.scale]).toEqual([125, -75, 2]);
-                expect(window.loading).toBe(false);
-                expect(errorDetectedGet()).toBe(existingError);
-            }
-            errorDetectedSet(false);
-            const input = originalScope.Input[0];
-            input.output1.value = undefined;
-            play(originalScope, true);
-            expect(input.output1.value).toBe(input.state);
-
-            // A valid restore must still succeed when the error flag is already set.
-            if (action === 'undo') originalScope.backups[0] = validBackup;
-            else originalScope.history[0] = validBackup;
-            errorDetectedSet(true);
-            expect(() => (action === 'undo' ? undo : redo)()).not.toThrow();
-            expect(globalScope).not.toBe(originalScope);
-            expect(globalScope.backups).toHaveLength(action === 'undo' ? 1 : 2);
-            expect(globalScope.history).toHaveLength(action === 'undo' ? 1 : 0);
-        } finally {
-            errorLog.mockRestore();
-            errorDetectedSet(previousError);
         }
     });
 

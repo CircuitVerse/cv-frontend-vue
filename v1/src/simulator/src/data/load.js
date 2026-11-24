@@ -110,13 +110,11 @@ function removeBugNodes(scope = globalScope) {
 
 /**
  * Function to load a full circuit
- * @returns {boolean} Whether all subcircuits loaded successfully
  * @param {Scope} scope
  * @param {Object} data
  * @category data
  */
 export function loadScope(scope, data) {
-    let loaded = true
     const ML = moduleList.slice() // Module List copy
     scope.restrictedCircuitElementsUsed = data.restrictedCircuitElementsUsed
 
@@ -133,7 +131,7 @@ export function loadScope(scope, data) {
             if (ML[i] === 'SubCircuit') {
                 // Load subcircuits differently
                 for (let j = 0; j < data[ML[i]].length; j++) {
-                    if (!loadSubCircuit(data[ML[i]][j], scope)) loaded = false
+                    loadSubCircuit(data[ML[i]][j], scope)
                 }
             } else {
                 // Load everything else similarly
@@ -201,7 +199,6 @@ export function loadScope(scope, data) {
     if (scope.layout.titleEnabled === undefined) {
         scope.layout.titleEnabled = true
     }
-    return loaded
 }
 
 // Function to load project from data
