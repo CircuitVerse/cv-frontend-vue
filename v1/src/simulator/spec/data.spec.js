@@ -168,6 +168,7 @@ describe('data dir working', () => {
         testScope.Input = [{
             saveObject: () => ({ layoutProperties: { x: 0, y: 0 } }),
             update: () => false,
+            draw: () => {},
         }];
 
         for (const id in scopeList) delete scopeList[id];
@@ -214,11 +215,13 @@ describe('data dir working', () => {
             saveObject: () => ({ id: childScope.id }),
             reset: () => {},
             update: () => false,
+            draw: () => {},
         }];
 
         childScope.Input = [{
             saveObject: () => ({ layoutProperties: { x: 0, y: 0 } }),
             update: () => false,
+            draw: () => {},
         }];
 
         for (const id in scopeList) delete scopeList[id];
