@@ -24,6 +24,7 @@ import { paste } from '../../simulator/src/events'
 import { deleteSelected } from '../../simulator/src/ux'
 import { createNewCircuitScope } from '../../simulator/src/circuit'
 import logixFunction from '../../simulator/src/data'
+import { syncZoomSlider } from '../../simulator/src/listeners'
 
 export default {
     name: 'ContextMenu',
@@ -80,6 +81,7 @@ export default {
                 logixFunction.createSubCircuitPrompt()
             } else if (id == 7) {
                 globalScope.centerFocus(false)
+                syncZoomSlider()
             }
         },
     },

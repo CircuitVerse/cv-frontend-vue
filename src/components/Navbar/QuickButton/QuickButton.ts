@@ -3,7 +3,7 @@ import { deleteSelected } from "#/simulator/src/ux";
 import undo from "#/simulator/src/data/undo";
 import redo from "#/simulator/src/data/redo";
 import { fullView } from "#/simulator/src/ux";
-import { ZoomIn, ZoomOut } from "#/simulator/src/listeners";
+import { ZoomIn, ZoomOut, syncZoomSlider } from "#/simulator/src/listeners";
 
 export function saveOnline(): void {
   logixFunction.save();
@@ -19,6 +19,7 @@ export function createSaveAsImgPrompt(): void {
 }
 export function zoomToFit(): void {
   globalScope.centerFocus(false);
+  syncZoomSlider();
 }
 export function undoit(): void {
   undo();

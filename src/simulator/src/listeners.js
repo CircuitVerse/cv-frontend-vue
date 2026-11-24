@@ -795,11 +795,34 @@ export function ZoomIn() {
 export function ZoomOut() {
     handleZoom(-1);
 }
+
+let curLevel = 5;
+
+/**
+ * Synchronizes the zoom slider UI and internal level with current canvas scale
+ * without triggering a canvas rescale.
+ */
+export function syncZoomSlider() {
+    const slider = document.getElementById('customRange1');
+    if (!slider || layoutModeGet()) return;
+    const dpr = window.DPR || window.devicePixelRatio || 1;
+    const computedLevel = Math.max(
+        0,
+        Math.min(45, Math.round(5 + (globalScope.scale - dpr) * 10))
+    );
+    slider.value = computedLevel;
+    curLevel = computedLevel;
+}
+
 function zoomSliderListeners() {
-    document.getElementById("customRange1").value = 5;
-    document.getElementById('simulationArea').addEventListener('DOMMouseScroll', zoomSliderScroll);
-    document.getElementById('simulationArea').addEventListener('mousewheel', zoomSliderScroll);
-    let curLevel = document.getElementById("customRange1").value;
+    const slider = document.getElementById("customRange1");
+    if (slider) slider.value = 5;
+    const simArea = document.getElementById('simulationArea');
+    if (simArea) {
+        simArea.addEventListener('DOMMouseScroll', zoomSliderScroll);
+        simArea.addEventListener('mousewheel', zoomSliderScroll);
+    }
+    curLevel = slider ? slider.value : 5;
     $(document).on('input change', '#customRange1', function (e) {
         const newValue = $(this).val();
         const changeInScale = newValue - curLevel;
