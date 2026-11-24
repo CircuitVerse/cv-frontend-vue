@@ -51,7 +51,9 @@ export default function redo(scope: ExtendedScope = globalScope): void {
   // Load the scope data
   try {
     tempScope = new Scope(scope.name) as ExtendedScope;
-    loadScope(tempScope, JSON.parse(redoData));
+    if (!loadScope(tempScope, JSON.parse(redoData))) {
+      throw new Error("Backup contains a subcircuit that could not be loaded");
+    }
   } catch (error) {
     errorDetectedSet(previousError);
     console.error("Failed to restore redo backup:", error);

@@ -28,8 +28,9 @@ import { circuitElementList, subCircuitInputList } from "./metadata";
  * @param scope - The scope to load into
  * @category subcircuit
  */
-export function loadSubCircuit(savedData: any, scope: any): void {
-  new SubCircuit(savedData.x, savedData.y, scope, savedData.id, savedData);
+export function loadSubCircuit(savedData: any, scope: any): boolean {
+  const subcircuit = new SubCircuit(savedData.x, savedData.y, scope, savedData.id, savedData);
+  return !subcircuit.loadFailed;
 }
 
 /**
@@ -52,6 +53,7 @@ export function createSubCircuitPrompt(scope = globalScope): void {
  * @category subcircuit
  */
 export default class SubCircuit extends CircuitElement {
+  loadFailed = false;
   id: string;
   directionFixed: boolean;
   fixedBitWidth: boolean;
@@ -95,9 +97,11 @@ export default class SubCircuit extends CircuitElement {
     // Error handing
     if (subcircuitScope == undefined) {
       // if no such scope for subcircuit exists
+      this.loadFailed = true;
       showError(`SubCircuit : ${(savedData && savedData.title) || this.id} Not found`);
     } else if (!checkIfBackup(subcircuitScope)) {
       // if there is no input/output nodes there will be no backup
+      this.loadFailed = true;
       showError(
         `SubCircuit : ${
           (savedData && savedData.title) || subcircuitScope.name
@@ -105,6 +109,7 @@ export default class SubCircuit extends CircuitElement {
       );
     } else if (subcircuitScope.checkDependency(scope.id)) {
       // check for cyclic dependency
+      this.loadFailed = true;
       showError("Cyclic Circuit Error");
     }
     // Error handling, cleanup
@@ -220,7 +225,7 @@ export default class SubCircuit extends CircuitElement {
    */
   buildCircuit(): void {
     const subcircuitScope = scopeList[this.id];
-    loadScope(this.localScope, this.data);
+    this.loadFailed = !loadScope(this.localScope, this.data) || this.loadFailed;
     this.localScope.name = this.data.name;
     this.lastUpdated = this.localScope.timeStamp;
     updateSimulationSet(true);
