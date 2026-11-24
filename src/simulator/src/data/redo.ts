@@ -3,7 +3,7 @@ import { layoutModeGet } from "../layoutMode";
 import Scope, { scopeList } from "../circuit";
 import { loadScope } from "./load";
 import { updateRestrictedElementsInScope } from "../restrictedElementDiv";
-import { forceResetNodesSet } from "../engine";
+import { errorDetectedGet, errorDetectedSet, forceResetNodesSet } from "../engine";
 
 // Extend the Scope type to include missing properties
 interface ExtendedScope extends Scope {
@@ -30,6 +30,8 @@ export default function redo(scope: ExtendedScope = globalScope): void {
   if (layoutModeGet()) return;
   if (scope.history.length === 0) return;
 
+  const previousError = errorDetectedGet();
+
   // Store the current view state
   const backupOx: number = globalScope.ox;
   const backupOy: number = globalScope.oy;
@@ -40,15 +42,28 @@ export default function redo(scope: ExtendedScope = globalScope): void {
   globalScope.oy = 0;
 
   // Create a temporary scope
-  const tempScope: ExtendedScope = new Scope(scope.name) as ExtendedScope;
+  let tempScope: ExtendedScope;
   loading = true;
 
-  // Get the redo data and update history
-  const redoData: string = scope.history.pop()!;
-  scope.backups.push(redoData);
+  // Get the redo data and update history only after loading succeeds.
+  const redoData = scope.history[scope.history.length - 1];
 
   // Load the scope data
-  loadScope(tempScope, JSON.parse(redoData));
+  try {
+    tempScope = new Scope(scope.name) as ExtendedScope;
+    loadScope(tempScope, JSON.parse(redoData));
+  } catch (error) {
+    errorDetectedSet(previousError);
+    console.error("Failed to restore redo backup:", error);
+    return;
+  } finally {
+    globalScope.ox = backupOx;
+    globalScope.oy = backupOy;
+    loading = false;
+  }
+
+  scope.history.pop();
+  scope.backups.push(redoData);
 
   // Transfer persistent properties
   tempScope.backups = scope.backups;

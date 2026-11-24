@@ -6,6 +6,8 @@ import decoderCircuitData from './circuits/Decoders-plexers-circuitdata.json';
 import { checkIfBackup, scheduleBackup } from '../src/data/backupCircuit';
 import undo from '../src/data/undo';
 import redo from '../src/data/redo';
+import { scopeList } from '../src/circuit';
+import { errorDetectedGet, errorDetectedSet, play } from '../src/engine';
 import save from '../src/data/save';
 import {
     clearProject,
@@ -133,6 +135,119 @@ describe('data dir working', () => {
                 history: globalScope.history.length + i,
             };
             expect(afterRedo).toEqual(beforeRedo);
+        }
+    });
+
+    test('undo and redo restore input state while preserving the view', () => {
+        load(decoderCircuitData);
+        scheduleBackup();
+        const originalState = globalScope.Input[0].state;
+        globalScope.Input[0].state = originalState === 1 ? 0 : 1;
+        const editedState = globalScope.Input[0].state;
+        scheduleBackup();
+        globalScope.ox = 125;
+        globalScope.oy = -75;
+        globalScope.scale = 2;
+
+        undo();
+        expect(globalScope.Input[0].state).toBe(originalState);
+        expect([globalScope.ox, globalScope.oy, globalScope.scale]).toEqual([125, -75, 2]);
+        expect(window.loading).toBe(false);
+
+        redo();
+        expect(globalScope.Input[0].state).toBe(editedState);
+        expect([globalScope.ox, globalScope.oy, globalScope.scale]).toEqual([125, -75, 2]);
+        expect(window.loading).toBe(false);
+    });
+
+    test.each([
+        ['undo', '{invalid json'],
+        ['undo', '{"allNodes":[{}]}'],
+        ['redo', '{invalid json'],
+        ['redo', '{"allNodes":[{}]}'],
+    ])('%s preserves circuit and history when restoring %s fails', (action, invalidBackup) => {
+        load(decoderCircuitData);
+        const validBackup = scheduleBackup();
+        const originalScope = globalScope;
+        originalScope.ox = 125;
+        originalScope.oy = -75;
+        originalScope.scale = 2;
+        originalScope.backups = action === 'undo'
+            ? [invalidBackup, validBackup]
+            : [validBackup];
+        originalScope.history = action === 'redo' ? [invalidBackup] : [];
+        const backups = [...originalScope.backups];
+        const history = [...originalScope.history];
+        const allNodes = [...originalScope.allNodes];
+        const restore = action === 'undo' ? undo : redo;
+        const errorLog = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+        try {
+            expect(() => restore()).not.toThrow();
+            expect(errorLog).toHaveBeenCalledOnce();
+            expect(globalScope).toBe(originalScope);
+            expect(scopeList[originalScope.id]).toBe(originalScope);
+            expect(originalScope.backups).toEqual(backups);
+            expect(originalScope.history).toEqual(history);
+            expect(originalScope.allNodes).toEqual(allNodes);
+            expect([globalScope.ox, globalScope.oy, globalScope.scale]).toEqual([125, -75, 2]);
+            expect(window.loading).toBe(false);
+
+            // A failed restore must not prevent a later valid undo or redo.
+            if (action === 'undo') originalScope.backups[0] = validBackup;
+            else originalScope.history[0] = validBackup;
+            expect(() => restore()).not.toThrow();
+            expect(globalScope).not.toBe(originalScope);
+            expect(scopeList[originalScope.id]).toBe(globalScope);
+            expect(globalScope.backups).toHaveLength(action === 'undo' ? 1 : 2);
+            expect(globalScope.history).toHaveLength(action === 'undo' ? 1 : 0);
+            expect([globalScope.ox, globalScope.oy, globalScope.scale]).toEqual([125, -75, 2]);
+            expect(window.loading).toBe(false);
+        } finally {
+            errorLog.mockRestore();
+            window.loading = false;
+        }
+    });
+
+    test.each([
+        ['undo', false],
+        ['redo', false],
+        ['undo', true],
+        ['redo', true],
+    ])('%s preserves engine error state %s after a partial restore fails', (action, previousError) => {
+        load(decoderCircuitData);
+        const validBackup = scheduleBackup();
+        const invalidData = JSON.parse(validBackup);
+        invalidData.SubCircuit = [{ x: 0, y: 0, id: 'missing-restore-scope' }];
+        const invalidBackup = JSON.stringify(invalidData);
+        const originalScope = globalScope;
+        originalScope.backups = action === 'undo'
+            ? [invalidBackup, validBackup]
+            : [validBackup];
+        originalScope.history = action === 'redo' ? [invalidBackup] : [];
+        const backups = [...originalScope.backups];
+        const history = [...originalScope.history];
+        const originalError = errorDetectedGet();
+        const errorLog = vi.spyOn(console, 'error').mockImplementation(() => {});
+        errorDetectedSet(previousError);
+
+        try {
+            expect(() => (action === 'undo' ? undo : redo)()).not.toThrow();
+            expect(errorLog).toHaveBeenCalledOnce();
+            expect(globalScope).toBe(originalScope);
+            expect(originalScope.backups).toEqual(backups);
+            expect(originalScope.history).toEqual(history);
+            expect(window.loading).toBe(false);
+            expect(errorDetectedGet()).toBe(previousError);
+
+            // A rejected backup must not stop the active circuit from simulating.
+            const input = originalScope.Input[0];
+            input.output1.value = undefined;
+            play(originalScope, true);
+            expect(input.output1.value).toBe(previousError ? undefined : input.state);
+        } finally {
+            errorLog.mockRestore();
+            errorDetectedSet(originalError);
         }
     });
 
