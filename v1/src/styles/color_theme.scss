@@ -465,7 +465,8 @@ select {
 
 .content-table tr th {
     background-color: var(--primary);
-    color: var(--text-lite);
+    color: var(--text-panel);
+    border: 1px solid var(--br-secondary);
 }
 
 .content-table th,
