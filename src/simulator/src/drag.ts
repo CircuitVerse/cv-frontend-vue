@@ -74,11 +74,19 @@ export function dragging(targetEl: HTMLElement, DragEl: HTMLElement): void {
         el.style.transition = "";
       },
     },
-    // Set up modifiers to apply constraints to the draggable element
     modifiers: [
       interact.modifiers.restrictRect({
-        // Restrict the draggable element within its parent container
-        restriction: "body",
+        restriction: (_x, _y, interaction) => {
+          const navbar = document.querySelector(".navbar");
+          const topOffset = navbar ? navbar.getBoundingClientRect().bottom : 0;
+          const panelHeight = (interaction?.element as HTMLElement)?.offsetHeight ?? 0;
+          return {
+            top: topOffset + window.scrollY,
+            left: window.scrollX,
+            bottom: Math.max(window.innerHeight, topOffset + panelHeight) + window.scrollY,
+            right: window.innerWidth + window.scrollX,
+          };
+        },
       }),
     ],
   });
