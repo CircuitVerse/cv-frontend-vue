@@ -184,7 +184,6 @@ function checkValidBitWidth() {
     }
 }
 
-
 export function objectPropertyAttributeUpdate(event) {
     if (this.name === 'changeCircuitName' && event.type !== 'change') {
         return
@@ -208,7 +207,6 @@ export function objectPropertyAttributeUpdate(event) {
         circuitProperty[this.name](value)
     }
 }
-
 
 export function objectPropertyAttributeCheckedUpdate() {
     if (this.name === 'toggleLabelInLayoutMode') return // Hack to prevent toggleLabelInLayoutMode from toggling twice
