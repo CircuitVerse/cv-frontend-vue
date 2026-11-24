@@ -67,6 +67,9 @@ export function showMessage(mes: string) {
   prevShowMessage = mes;
 
   useActions().showMessage(mes, "success");
+  setTimeout(() => {
+    if (prevShowMessage === mes) prevShowMessage = undefined;
+  }, 2500);
 }
 
 export function distance(x1: number, y1: number, x2: number, y2: number) {

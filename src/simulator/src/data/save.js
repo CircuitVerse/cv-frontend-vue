@@ -361,8 +361,6 @@ async function generateImageForOnline() {
 export default async function save() {
     if (layoutModeGet()) toggleLayoutMode()
 
-    projectSavedSet(true)
-
     const data = await generateSaveData()
     if (data instanceof Error) return
     let loadingIcon = document.querySelector('.loadingIcon');
@@ -442,6 +440,7 @@ export default async function save() {
         })
             .then((response) => {
                 if (response.ok) {
+                    projectSavedSet(true)
                     showMessage(
                         `We have Created a new project: ${projectName} in our servers.`
                     )
@@ -455,10 +454,19 @@ export default async function save() {
                     responseJson.then((data) => {
                         UpdateProjectDetail(data)
                     })
+                } else {
+                    showMessage("There was an error, we couldn't save to our servers")
+                    let loadingIcon = document.querySelector('.loadingIcon')
+                    loadingIcon.style.transition = 'opacity 0.2s'
+                    loadingIcon.style.opacity = '0'
                 }
             })
             .catch((error) => {
                 console.error('Error:', error)
+                showMessage("There was an error, we couldn't save to our servers")
+                let loadingIcon = document.querySelector('.loadingIcon')
+                loadingIcon.style.transition = 'opacity 0.2s'
+                loadingIcon.style.opacity = '0'
             })
     } else {
         // updates project - this part needs to be improved and optimised
@@ -510,6 +518,7 @@ export default async function save() {
         })
             .then((response) => {
                 if (response.ok) {
+                    projectSavedSet(true)
                     showMessage(
                         `We have saved your project: ${projectName} in our servers.`
                     )
@@ -525,6 +534,10 @@ export default async function save() {
             })
             .catch((error) => {
                 console.error('Error:', error)
+                showMessage("There was an error, we couldn't save to our servers")
+                let loadingIcon = document.querySelector('.loadingIcon')
+                loadingIcon.style.transition = 'opacity 0.2s'
+                loadingIcon.style.opacity = '0'
             })
     }
 
