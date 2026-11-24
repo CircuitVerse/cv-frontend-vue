@@ -133,10 +133,23 @@ function toggleFullscreen() {
     isFullscreen.value = !isFullscreen.value
 }
 
+// Stay in the simulator after the first save instead of reloading the page.
+// Setting logixProjectId makes the next save update this project rather than
+// create a new one, and the URL now points at the project's edit page.
+function stayInEditor() {
+    const projectId = promptStore.getProjectId
+    ;(window as any).logixProjectId = projectId
+    window.history.replaceState(
+        window.history.state,
+        '',
+        `/users/${useAuthStore().getUserId}/projects/${projectId}/simulator/edit`
+    )
+}
+
 function updateProjectButton(selectedOption: string) {
     promptStore.UpdateProjectDetail.activate = false
     if (selectedOption == 'cancel') {
-        window.location.href = `/simulator/edit/${promptStore.getProjectId}`
+        stayInEditor()
     }
     if (selectedOption == 'openEditPage') {
         window.location.href = `/users/${useAuthStore().getUserId}/projects/${
@@ -188,7 +201,7 @@ async function successPrompt() {
             promptStore.getProjectId
         }`
     } else {
-        window.location.href = `/simulatorvue/edit/${promptStore.getProjectId}`
+        stayInEditor()
     }
 }
 
