@@ -1,51 +1,53 @@
 <template>
-    <div
-        id="tabsBar"
-        class="noSelect pointerCursor"
-        :class="[embedClass(), showMaxHeight ? 'maxHeightStyle' : 'minHeightStyle']"
-    >
-        <draggable
-            :key="updateCount"
-            :item-key="updateCount.toString()"
-            v-model="SimulatorState.circuit_list"
-            class="list-group"
-            tag="transition-group"
-            :component-data="{
-                tag: 'div',
-                type: 'transition-group',
-                name: !drag ? 'flip-list' : null,
-            }"
-            v-bind="dragOptions"
-            @start="drag = true"
-            @end="drag = false"
+    <div class="tabsbar-wrapper" :class="embedClass()">
+        <div
+            id="tabsBar"
+            class="noSelect pointerCursor"
+            :class="[embedClass(), showMaxHeight ? 'maxHeightStyle' : 'minHeightStyle']"
         >
-            <template #item="{ element }">
-                <div
-                    :id="element.id"
-                    :key="element.id"
-                    style=""
-                    class="circuits toolbarButton"
-                    :class="tabsbarClasses(element)"
-                    draggable="true"
-                    @click="switchCircuit(element.id)"
-                >
-                    <span class="circuitName noSelect" @mousedown="circuitNameClicked">
-                        {{ truncateString(element.name, 18) }}
-                    </span>
-                    <span
-                        v-if="!isEmbed()"
+            <draggable
+                :key="updateCount"
+                :item-key="updateCount.toString()"
+                v-model="SimulatorState.circuit_list"
+                class="list-group"
+                tag="transition-group"
+                :component-data="{
+                    tag: 'div',
+                    type: 'transition-group',
+                    name: !drag ? 'flip-list' : null,
+                }"
+                v-bind="dragOptions"
+                @start="drag = true"
+                @end="drag = false"
+            >
+                <template #item="{ element }">
+                    <div
                         :id="element.id"
-                        class="tabsCloseButton"
-                        @click.stop="closeCircuit(element)"
+                        :key="element.id"
+                        style=""
+                        class="circuits toolbarButton"
+                        :class="tabsbarClasses(element)"
+                        draggable="true"
+                        @click="switchCircuit(element.id)"
                     >
-                        <v-icon class="tabsbar-close">mdi-close</v-icon>
-                    </span>
-                </div>
-            </template>
-        </draggable>
-        <button v-if="!isEmbed()" @click="createNewCircuitScope()">
-            &#43;
-        </button>
+                        <span class="circuitName noSelect" @mousedown="circuitNameClicked">
+                            {{ truncateString(element.name, 18) }}
+                        </span>
+                        <span
+                            v-if="!isEmbed()"
+                            :id="element.id"
+                            class="tabsCloseButton"
+                            @click.stop="closeCircuit(element)"
+                        >
+                            <v-icon class="tabsbar-close">mdi-close</v-icon>
+                        </span>
+                    </div>
+                </template>
+            </draggable>
+            <button v-if="!isEmbed()" @click="createNewCircuitScope()">
+                &#43;
+            </button>
+        </div>
         <button class="tabsbar-toggle" @click="toggleHeight">
             <i :class="showMaxHeight ? 'fa fa-chevron-down' : 'fa fa-chevron-up'"></i>
         </button>
@@ -68,7 +70,7 @@
 <script lang="ts" setup>
 import draggable from 'vuedraggable'
 import { showMessage, truncateString } from '#/simulator/src/utils'
-import { ref, Ref } from 'vue'
+import { ref, Ref, onMounted, onUnmounted, nextTick } from 'vue'
 import {
     createNewCircuitScope,
     // deleteCurrentCircuit,
@@ -87,9 +89,46 @@ const updateCount: Ref<number> = ref(0)
 
 const showMaxHeight = ref(false)
 
+let resizeObserver: ResizeObserver | null = null
+
+function updateTabsHeight() {
+    const tabsBarEl = document.getElementById('tabsBar')
+    if (tabsBarEl) {
+        const height = tabsBarEl.offsetHeight
+        if (height > 0) {
+            document.documentElement.style.setProperty('--tabs-height', `${height}px`)
+        }
+    }
+}
+
 function toggleHeight() {
     showMaxHeight.value = !showMaxHeight.value
+    nextTick(() => {
+        updateTabsHeight()
+    })
 }
+
+onMounted(() => {
+    updateTabsHeight()
+    const tabsBarEl = document.getElementById('tabsBar')
+    if (tabsBarEl && typeof ResizeObserver !== 'undefined') {
+        resizeObserver = new ResizeObserver((entries) => {
+            for (const entry of entries) {
+                const height = entry.borderBoxSize?.[0]?.blockSize ?? tabsBarEl.offsetHeight
+                if (height > 0) {
+                    document.documentElement.style.setProperty('--tabs-height', `${height}px`)
+                }
+            }
+        })
+        resizeObserver.observe(tabsBarEl)
+    }
+})
+
+onUnmounted(() => {
+    resizeObserver?.disconnect()
+    resizeObserver = null
+    document.documentElement.style.removeProperty('--tabs-height')
+})
 
 // const persistentShow: Ref<boolean> = ref(false)
 // const messageVal: Ref<string> = ref('')
@@ -279,12 +318,26 @@ function isEmbed(): boolean {
 </script>
 
 <style scoped>
+.tabsbar-wrapper {
+    position: relative;
+    width: 100%;
+}
+
 #tabsBar {
     padding-right: 50px;
     position: relative;
-    overflow: hidden;
+    overflow-x: hidden;
     padding-bottom: 2.5px;
     z-index: 1;
+}
+
+#tabsBar::-webkit-scrollbar {
+    width: 4px;
+}
+
+#tabsBar::-webkit-scrollbar-thumb {
+    background-color: var(--br-circuit);
+    border-radius: 2px;
 }
 
 #tabsBar.embed-tabbar {
@@ -313,13 +366,15 @@ function isEmbed(): boolean {
     width: 20px;
 }
 
-#tabsBar.embed-tabbar button {
+#tabsBar.embed-tabbar button,
+.embed-tabbar .tabsbar-toggle {
     color: var(--text-panel);
     background-color: var(--primary);
     border: 1px solid var(--br-circuit-cur);
 }
 
-#tabsBar.embed-tabbar button:hover {
+#tabsBar.embed-tabbar button:hover,
+.embed-tabbar .tabsbar-toggle:hover {
     color: var(--text-panel);
     border: 1px solid var(--br-circuit-cur);
 }
@@ -331,11 +386,15 @@ function isEmbed(): boolean {
 .maxHeightStyle {
     height: 30px;
     max-height: 30px;
+    overflow-y: hidden;
 }
 
 .minHeightStyle {
     height: auto;
     min-height: 30px;
+    max-height: 80px;
+    overflow-y: auto;
+    scrollbar-width: thin;
 }
 
 .toolbarButton {
@@ -346,6 +405,10 @@ function isEmbed(): boolean {
     position: absolute;
     right: 2.5px;
     top: 2.5px;
+    font-size: 1rem;
+    height: 20px;
+    width: 20px;
+    z-index: 2;
 
     display: flex;
     justify-content: center;

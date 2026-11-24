@@ -4,7 +4,6 @@ import { parseYosysOutput } from '../src/synthesis/vfsGuard.js';
 import { extractYosysError } from '../src/synthesis/errorParser.js';
 
 // Tests for the client-side Verilog synthesis module.
-
 describe('Circuit Auto-Layout (computeLayout)', () => {
 
     test('returns empty object for empty circuit', () => {
@@ -81,6 +80,28 @@ describe('Circuit Auto-Layout (computeLayout)', () => {
         expect(positions.gate.x).toBeLessThan(positions.output.x)
     })
 
+    test('keeps downstream devices in separate layers after a feedback loop', () => {
+        const circuit = {
+            devices: {
+                A: { type: 'Input' },
+                B: { type: 'And' },
+                C: { type: 'Or' },
+                D: { type: 'Output' }
+            },
+            connectors: [
+                { from: { id: 'A', port: 'out' }, to: { id: 'B', port: 'in1' } },
+                { from: { id: 'B', port: 'out' }, to: { id: 'A', port: 'in' } },
+                { from: { id: 'B', port: 'out' }, to: { id: 'C', port: 'in1' } },
+                { from: { id: 'C', port: 'out' }, to: { id: 'D', port: 'in' } }
+            ]
+        }
+        const positions = computeLayout(circuit)
+
+        expect(positions.B.x).toBe(positions.A.x)
+        expect(positions.C.x).toBeGreaterThan(positions.A.x)
+        expect(positions.D.x).toBeGreaterThan(positions.C.x)
+    })
+
     test('produces non-overlapping positions', () => {
         // 4 devices — verify no two share the same (x, y)
         const circuit = {
@@ -135,6 +156,55 @@ describe('Circuit Auto-Layout (computeLayout)', () => {
         // Should not throw — uses DEFAULT_SIZE fallback
         const positions = computeLayout(circuit)
         expect(Object.keys(positions)).toHaveLength(2)
+    })
+
+    test('handles device IDs that match JavaScript object properties', () => {
+        const circuit = {
+            devices: {
+                ['__proto__']: { type: 'And' },
+                ['constructor']: { type: 'Input' },
+                ['toString']: { type: 'Output' }
+            },
+            connectors: []
+        }
+
+        const positions = computeLayout(circuit)
+
+        expect(Object.keys(positions).sort()).toEqual([
+            '__proto__',
+            'constructor',
+            'toString',
+        ])
+        expect(positions['__proto__']).toBeDefined()
+        expect(positions['constructor']).toBeDefined()
+        expect(positions['toString']).toBeDefined()
+    })
+
+    test('handles large circuits without stack overflow', () => {
+        const deviceCount = 10000
+        const devices = {}
+        const connectors = []
+
+        for (let i = 0; i < deviceCount; i++) {
+            devices[`device${i}`] = { type: 'And' }
+
+            if (i > 0) {
+                connectors.push({
+                    from: { id: `device${i - 1}`, port: 'out' },
+                    to: { id: `device${i}`, port: 'in1' },
+                })
+            }
+        }
+
+        const positions = computeLayout({ devices, connectors })
+
+        expect(Object.keys(positions)).toHaveLength(deviceCount)
+
+        for (let i = 0; i < deviceCount; i++) {
+            expect(positions[`device${i}`]).toBeDefined()
+            expect(Number.isFinite(positions[`device${i}`].x)).toBe(true)
+            expect(Number.isFinite(positions[`device${i}`].y)).toBe(true)
+        }
     })
 })
 
