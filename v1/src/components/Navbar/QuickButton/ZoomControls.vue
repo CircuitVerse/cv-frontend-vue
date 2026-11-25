@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="zoom-slider">
     <button class="zoom-slider-decrement" @click="decrement">-</button>
     <input
@@ -16,33 +16,23 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { onMounted, onUnmounted } from "vue";
 import { changeScale } from "../../../simulator/src/canvasApi";
 import { updateCanvasSet, gridUpdateSet } from "../../../simulator/src/engine";
-
-const zoomLevel = ref(5);
-let curLevel = 5;
+import {
+  zoomLevel,
+  getCurLevel,
+  setCurLevel,
+  increment,
+  decrement,
+} from "../../../simulator/src/commands/zoom";
 
 const onSliderChange = () => {
-  const changeInScale = zoomLevel.value - curLevel;
+  const changeInScale = zoomLevel.value - getCurLevel();
   updateCanvasSet(true);
   changeScale(changeInScale * 0.1, "zoomButton", "zoomButton", 3);
   gridUpdateSet(true);
-  curLevel = zoomLevel.value;
-};
-
-const decrement = () => {
-  if (zoomLevel.value > 0) {
-    zoomLevel.value--;
-    onSliderChange();
-  }
-};
-
-const increment = () => {
-  if (zoomLevel.value < 45) {
-    zoomLevel.value++;
-    onSliderChange();
-  }
+  setCurLevel(zoomLevel.value);
 };
 
 // Sync UI slider if user zooms canvas with mouse wheel
@@ -52,7 +42,7 @@ const handleWheel = (e: WheelEvent | any) => {
   const directionY = Math.sign(deltaY);
   if (directionY > 0 && zoomLevel.value < 45) zoomLevel.value++;
   else if (directionY < 0 && zoomLevel.value > 0) zoomLevel.value--;
-  curLevel = zoomLevel.value;
+  setCurLevel(zoomLevel.value);
 };
 
 onMounted(() => {
