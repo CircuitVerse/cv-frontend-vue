@@ -130,4 +130,36 @@ describe('TestBenchCreator', () => {
         expect(groups[0].inputs[0].values).toEqual([]);
         expect(groups[1].inputs[0].values).toEqual(['0']);
     });
+
+    test('keeps saved values when only the first group is empty', async () => {
+        const wrapper = mount(TestBenchCreator, {
+            global: { plugins: [pinia, i18n, vuetify] },
+        });
+        const store = useTestBenchStore();
+        const sent = vi.spyOn(store, 'sendData').mockImplementation(() => {});
+
+        // e.g. from a CSV import: Group 1 has no columns, Group 2 has saved values
+        store.testbenchData.testData.groups = [
+            { label: 'Group 1', inputs: [], outputs: [], n: 0 },
+            {
+                label: 'Group 2',
+                inputs: [{ label: 'A', bitWidth: 4, values: ['1', '0'] }],
+                outputs: [{ label: 'Y', bitWidth: 2, values: ['0', '1'] }],
+                n: 2,
+            },
+        ];
+        await nextTick();
+
+        expect(wrapper.vm.inputsName).toEqual(['A']);
+        expect(wrapper.vm.outputsName).toEqual(['Y']);
+        expect(wrapper.vm.inputsBandWidth).toEqual([4]);
+        expect(wrapper.vm.outputsBandWidth).toEqual([2]);
+        expect(wrapper.vm.groups[1].inputs).toEqual([['1', '0']]);
+        expect(wrapper.vm.groups[1].outputs).toEqual([['0', '1']]);
+
+        wrapper.vm.sendData();
+        const { groups } = sent.mock.calls[0][0];
+        expect(groups[1].inputs).toEqual([{ label: 'A', bitWidth: 4, values: ['1', '0'] }]);
+        expect(groups[1].outputs).toEqual([{ label: 'Y', bitWidth: 2, values: ['0', '1'] }]);
+    });
 });
