@@ -246,11 +246,12 @@ watch(() => testBenchStore.testbenchData.testData.groups, () => {
 
     groups.splice(0, groups.length, ...values);
 
-    // An empty test (no inputs and no outputs) gets the default inp1/out1 columns
-    const hasColumns = newGroups[0] && (newGroups[0].inputs.length > 0 || newGroups[0].outputs.length > 0);
+    // Column names and widths come from the first group that has columns.
+    // Only an empty test (no group has any columns) gets the default inp1/out1 columns.
+    const columnSource = newGroups.find(group => group.inputs.length > 0 || group.outputs.length > 0);
 
-    if (hasColumns) {
-        const { inputs, outputs } = newGroups[0];
+    if (columnSource) {
+        const { inputs, outputs } = columnSource;
 
         inputsBandWidth.value.splice(0, inputsBandWidth.value.length, ...inputs.map(input => input.bitWidth));
         outputsBandWidth.value.splice(0, outputsBandWidth.value.length, ...outputs.map(output => output.bitWidth));
