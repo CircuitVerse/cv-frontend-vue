@@ -789,12 +789,23 @@ async function sha256(text: string): Promise<string> {
   return hashArray.map((byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
-// Put the below line in the console to get the json
-// await (await import('/simulatorvue/v1/src/simulator/src/data/canonical.ts')).canonicaliseScope(globalScope)
-export async function canonicaliseScope(
+/**
+ * Canonicalizes a scope into canonical JSON and returns the authoritative
+ * mapping between canonical component IDs and live component instances.
+ * Used by partial circuit beautification to guarantee exact component identity.
+ *
+ * @param scope - Circuit scope to canonicalize.
+ * @param childHashes - Precomputed canonical hashes of subcircuits.
+ * @returns Canonical scope data and the bidirectional instance maps.
+ */
+export async function canonicaliseScopeWithInstanceMap(
   scope: Scope,
   childHashes?: Map<number, string>,
-): Promise<CanonicalScope> {
+): Promise<{
+  canonicalScope: CanonicalScope;
+  instanceMap: Map<string, ComponentInstance>;
+  instanceToId: Map<ComponentInstance, string>;
+}> {
   const allNodes: Node[] = scope.allNodes!;
   const nodeIndexMap = indexNodes(allNodes);
   const { uf, netMap } = discoverNets(allNodes, nodeIndexMap);
@@ -803,6 +814,14 @@ export async function canonicaliseScope(
   const structuralData = buildStructuralComponentData(components, childHashes);
   canonicalSort(components, structuralData);
   assignComponentIds(components);
+
+  const instanceMap = new Map<string, ComponentInstance>();
+  const instanceToId = new Map<ComponentInstance, string>();
+  for (const comp of components) {
+    const inst = comp._instance;
+    instanceMap.set(comp.id, inst);
+    instanceToId.set(inst, comp.id);
+  }
 
   const portRoots = attachComponentPorts(components, netMap);
   const { nets, finalNetIds } = buildCanonicalNets(netMap, portRoots);
@@ -842,7 +861,7 @@ export async function canonicaliseScope(
     restrictedElementsUsed: [...scope.restrictedCircuitElementsUsed],
   };
 
-  return {
+  const canonicalScope: CanonicalScope = {
     canonicalHash,
     projectMetadata,
     netlist,
@@ -850,6 +869,23 @@ export async function canonicaliseScope(
     visual,
     verilogMetadata,
   };
+
+  return { canonicalScope, instanceMap, instanceToId };
+}
+
+/**
+ * Canonicalizes a scope into a deterministic canonical JSON representation.
+ *
+ * @param scope - Circuit scope to canonicalize.
+ * @param childHashes - Precomputed canonical hashes of subcircuits.
+ * @returns CanonicalScope object representing the scope.
+ */
+export async function canonicaliseScope(
+  scope: Scope,
+  childHashes?: Map<number, string>,
+): Promise<CanonicalScope> {
+  const result = await canonicaliseScopeWithInstanceMap(scope, childHashes);
+  return result.canonicalScope;
 }
 
 export function khansAlgorithm(

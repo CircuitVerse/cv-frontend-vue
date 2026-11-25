@@ -29,4 +29,5 @@ export const defaultKeys: DefaultKeysType = {
   "Move Element Right": "Shift + Right",
   "Hotkey Preference": "F8",
   "Open Documentation": "F1",
+  "Beautify Circuit": "Ctrl + Shift + B",
 };
