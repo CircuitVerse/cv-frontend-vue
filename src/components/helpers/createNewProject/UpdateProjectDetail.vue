@@ -112,6 +112,7 @@ export const UpdateProjectDetail = (data: dataType) => {
 
 <script lang="ts" setup>
 const promptStore = usePromptStore()
+const projectStore = useProjectStore()
 const isFullscreen = ref(false)
 const projectTypes = ref(['Public', 'Private', 'Limited access'])
 const buttonList = ref([
@@ -133,17 +134,23 @@ function toggleFullscreen() {
     isFullscreen.value = !isFullscreen.value
 }
 
-// Reload the project's simulator edit page. This fixes the 404 (the old URL
-// /simulatorvue/edit/<id> doesn't exist) and reloads the saved project from the
-// server, so a renamed project keeps its new name on the next save.
-function reloadEditor() {
-    window.location.href = `/users/${useAuthStore().getUserId}/projects/${promptStore.getProjectId}/simulator/edit`
+// Close the dialog and stay in the simulator without reloading the page (#1378).
+// logixProjectId makes the next save update this project instead of creating a
+// duplicate, and the URL is updated to the project's edit page.
+function stayInEditor() {
+    const projectId = promptStore.getProjectId
+    ;(window as any).logixProjectId = projectId
+    window.history.replaceState(
+        window.history.state,
+        '',
+        `/users/${useAuthStore().getUserId}/projects/${projectId}/simulator/edit`
+    )
 }
 
 function updateProjectButton(selectedOption: string) {
     promptStore.UpdateProjectDetail.activate = false
     if (selectedOption == 'cancel') {
-        reloadEditor()
+        stayInEditor()
     }
     if (selectedOption == 'openEditPage') {
         window.location.href = `/users/${useAuthStore().getUserId}/projects/${
@@ -195,7 +202,10 @@ async function successPrompt() {
             promptStore.getProjectId
         }`
     } else {
-        reloadEditor()
+        // The update just saved the new name to the server, but save() reads the
+        // name from projectStore, so sync it here or the next save reverts it.
+        projectStore.setProjectName(promptStore.getProjectName)
+        stayInEditor()
     }
 }
 
