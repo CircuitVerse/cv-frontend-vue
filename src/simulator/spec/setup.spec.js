@@ -12,6 +12,7 @@ import { useProjectStore } from '#/store/projectStore';
 import { increment, decrement, zoomToFit } from '#/components/Navbar/QuickButton/QuickButton';
 import { syncZoomSlider } from '../src/listeners';
 import { layoutModeSet } from '../src/layoutMode';
+import { simulationArea } from '../src/simulationArea';
 
 const confirmSingleOptionMock = vi.fn();
 vi.mock('#/components/helpers/confirmComponent/ConfirmComponent.vue', async (importOriginal) => {
@@ -225,6 +226,99 @@ describe('setup regression tests', () => {
         increment();
         expect(slider.value).toBe('45');
         expect(globalScope.scale).toBe(scaleAtMax);
+    });
+
+    test('increment and decrement keep curLevel in sync so subsequent slider drag does not jump', () => {
+        // Guards against slider drift: ensures button clicks update curLevel so next manual drag has no scale jump
+        $(document).off('input change', '#customRange1');
+        setup();
+        const slider = document.getElementById('customRange1');
+
+        // Click increment 3 times (5 -> 8)
+        increment();
+        increment();
+        increment();
+        expect(slider.value).toBe('8');
+        const scaleAtEight = globalScope.scale;
+
+        // Drag slider by exactly 1 step from 8 to 9
+        slider.value = '9';
+        slider.dispatchEvent(new Event('change', { bubbles: true }));
+
+        // Assert scale changed by exactly 0.1 relative to level 8, not jumping from initial 5
+        expect(globalScope.scale).toBeCloseTo(scaleAtEight + 0.1, 5);
+    });
+
+    test('increment and decrement fall back cleanly to ZoomIn and ZoomOut when slider is absent', () => {
+        // Guards fallback path: ensures absence of #customRange1 falls back to ZoomIn/ZoomOut without throwing
+        global.DPR = 1;
+        window.DPR = 1;
+        setup();
+        simulationArea.mouseX = 100;
+        simulationArea.mouseY = 100;
+        const sliders = Array.from(document.querySelectorAll('#customRange1'));
+        const parents = sliders.map((s) => ({ slider: s, parent: s.parentElement }));
+        sliders.forEach((s) => s.remove());
+
+        try {
+            const initialScale = globalScope.scale;
+            expect(() => increment()).not.toThrow();
+            expect(globalScope.scale).toBeCloseTo(initialScale + 0.1, 5);
+
+            expect(() => decrement()).not.toThrow();
+            expect(globalScope.scale).toBeCloseTo(initialScale, 5);
+        } finally {
+            parents.forEach(({ slider, parent }) => {
+                if (parent && slider && !document.body.contains(slider)) {
+                    parent.appendChild(slider);
+                }
+            });
+        }
+    });
+
+    test('increment and decrement dispatch change event with bubbles true to reach delegated listener', () => {
+        // Guards event bubbling: verifies change event bubbles up to $(document) delegated listener
+        $(document).off('input change', '#customRange1');
+        setup();
+        const slider = document.getElementById('customRange1');
+        let capturedEvent = null;
+
+        const originalDispatch = slider.dispatchEvent.bind(slider);
+        slider.dispatchEvent = vi.fn((event) => {
+            capturedEvent = event;
+            return originalDispatch(event);
+        });
+
+        try {
+            increment();
+            expect(capturedEvent).not.toBeNull();
+            expect(capturedEvent.type).toBe('change');
+            expect(capturedEvent.bubbles).toBe(true);
+        } finally {
+            slider.dispatchEvent = originalDispatch;
+        }
+    });
+
+    test('repeated increment and decrement calls are symmetric across multiple steps', () => {
+        // Guards zoom symmetry: verifies 4 increments followed by 4 decrements restores initial scale precisely
+        $(document).off('input change', '#customRange1');
+        setup();
+        const slider = document.getElementById('customRange1');
+        const initialScale = globalScope.scale;
+
+        increment();
+        increment();
+        increment();
+        increment();
+        expect(slider.value).toBe('9');
+        expect(globalScope.scale).toBeCloseTo(initialScale + 0.4, 5);
+
+        decrement();
+        decrement();
+        decrement();
+        decrement();
+        expect(slider.value).toBe('5');
+        expect(globalScope.scale).toBeCloseTo(initialScale, 5);
     });
 
     test('zoomToFit syncs slider to new scale and matches centerFocus alone with no double zoom', () => {
