@@ -245,7 +245,10 @@ watch(() => testBenchStore.testbenchData.testData.groups, () => {
 
     groups.splice(0, groups.length, ...values);
 
-    if (newGroups[0]) {
+    // An empty test (no inputs and no outputs) gets the default inp1/out1 columns
+    const hasColumns = newGroups[0] && (newGroups[0].inputs.length > 0 || newGroups[0].outputs.length > 0);
+
+    if (hasColumns) {
         const { inputs, outputs } = newGroups[0];
 
         inputsBandWidth.value.splice(0, inputsBandWidth.value.length, ...inputs.map(input => input.bitWidth));
