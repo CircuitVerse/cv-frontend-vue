@@ -818,7 +818,7 @@ function zoomSliderListeners() {
     const slider = document.getElementById("customRange1");
     if (slider) slider.value = 5;
     const simArea = document.getElementById('simulationArea');
-    if (simArea) {
+    if (simArea && slider) {
         simArea.addEventListener('DOMMouseScroll', zoomSliderScroll);
         simArea.addEventListener('mousewheel', zoomSliderScroll);
     }
@@ -832,19 +832,21 @@ function zoomSliderListeners() {
         curLevel = newValue;
     });
     function zoomSliderScroll(e) {
-        let zoomLevel = document.getElementById("customRange1").value;
+        const sliderElement = document.getElementById("customRange1");
+        if (!sliderElement) return;
+        let zoomLevel = sliderElement.value;
         const deltaY = e.wheelDelta ? e.wheelDelta : -e.detail;
         const directionY = deltaY > 0 ? 1 : -1;
         if (directionY > 0) zoomLevel++
         else zoomLevel--
         if (zoomLevel >= 45) {
             zoomLevel = 45;
-            document.getElementById("customRange1").value = 45;
+            sliderElement.value = 45;
         } else if (zoomLevel <= 0) {
             zoomLevel = 0;
-            document.getElementById("customRange1").value = 0;
+            sliderElement.value = 0;
         } else {
-            document.getElementById("customRange1").value = zoomLevel;
+            sliderElement.value = zoomLevel;
             curLevel = zoomLevel;
         }
     }

@@ -267,6 +267,11 @@ describe('setup regression tests', () => {
 
             expect(() => decrement()).not.toThrow();
             expect(globalScope.scale).toBeCloseTo(initialScale, 5);
+
+            expect(() => {
+                const simArea = document.getElementById('simulationArea');
+                simArea?.dispatchEvent(new Event('mousewheel'));
+            }).not.toThrow();
         } finally {
             parents.forEach(({ slider, parent }) => {
                 if (parent && slider && !document.body.contains(slider)) {
