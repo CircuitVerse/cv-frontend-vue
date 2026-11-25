@@ -455,8 +455,11 @@ describe('setup regression tests', () => {
         layoutModeSet(true);
 
         try {
-            // Act: zoomToFit while layout mode is active
+            // Act: zoomToFit and syncZoomSlider while layout mode is active
             zoomToFit();
+            expect(slider.value).toBe('10');
+
+            syncZoomSlider();
 
             // Assert: slider remains unchanged because layout mode returns early
             expect(slider.value).toBe('10');
@@ -505,14 +508,22 @@ describe('setup regression tests', () => {
         // Guards redraw scheduling: ensures delegated slider change calls scheduleUpdate when clock is paused
         $(document).off('input change', '#customRange1');
         setup();
+        const slider = document.getElementById('customRange1');
         const scheduleSpy = vi.spyOn(engine, 'scheduleUpdate');
 
         try {
             increment();
+            expect(slider.value).toBe('6');
             expect(scheduleSpy).toHaveBeenCalledTimes(1);
 
             decrement();
+            expect(slider.value).toBe('5');
             expect(scheduleSpy).toHaveBeenCalledTimes(2);
+
+            // Directly exercise the delegated #customRange1 change handler
+            slider.value = '7';
+            slider.dispatchEvent(new Event('change', { bubbles: true }));
+            expect(scheduleSpy).toHaveBeenCalledTimes(3);
         } finally {
             scheduleSpy.mockRestore();
         }
