@@ -111,23 +111,17 @@ function toggleFullscreen() {
     isFullscreen.value = !isFullscreen.value
 }
 
-// Stay in the simulator after the first save instead of reloading the page.
-// Setting logixProjectId makes the next save update this project rather than
-// create a new one, and the URL now points at the project's edit page.
-function stayInEditor() {
-    const projectId = promptStore.getProjectId
-    ;(window as any).logixProjectId = projectId
-    window.history.replaceState(
-        window.history.state,
-        '',
-        `/users/${useAuthStore().getUserId}/projects/${projectId}/simulator/edit`
-    )
+// Reload the project's simulator edit page. This fixes the 404 (the old URL
+// /simulatorvue/edit/<id> doesn't exist) and reloads the saved project from the
+// server, so a renamed project keeps its new name on the next save.
+function reloadEditor() {
+    window.location.href = `/users/${useAuthStore().getUserId}/projects/${promptStore.getProjectId}/simulator/edit`
 }
 
 function updateProjectButton(selectedOption: string) {
     promptStore.UpdateProjectDetail.activate = false
     if (selectedOption == 'cancel') {
-        stayInEditor()
+        reloadEditor()
     }
     if (selectedOption == 'openEditPage') {
         window.location.href = `/users/${useAuthStore().getUserId}/projects/${
@@ -179,7 +173,7 @@ async function successPrompt() {
             promptStore.getProjectId
         }`
     } else {
-        stayInEditor()
+        reloadEditor()
     }
 }
 
