@@ -194,13 +194,10 @@ export function objectPropertyAttributeUpdate(event) {
     updateCanvasSet(true)
     updateSimulationSet(true)
     wireToBeCheckedSet(1)
-
     let { value } = this
-
     if (this.type === 'number') {
         value = parseFloat(value)
     }
-
     if (simulationArea.lastSelected && simulationArea.lastSelected[this.name]) {
         simulationArea.lastSelected[this.name](value)
     } else {
