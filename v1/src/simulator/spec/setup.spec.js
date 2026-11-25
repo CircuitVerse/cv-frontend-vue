@@ -303,5 +303,24 @@ describe('setup regression tests (v1)', () => {
             layoutModeSet(false);
         }
     });
+
+    test('syncZoomSlider uses DPR baseline 1 in lightMode even when window.DPR is 2', () => {
+        // Guards lightMode baseline: ensures fitted scale 1 on 2x display maps to level 5 instead of clamping to 0
+        setup();
+        const originalDPR = window.DPR;
+        const originalLightMode = window.lightMode;
+        window.DPR = 2;
+        window.lightMode = true;
+
+        try {
+            globalScope.scale = 1.0;
+            syncZoomSlider();
+            expect(zoomLevel.value).toBe(5);
+            expect(getCurLevel()).toBe(5);
+        } finally {
+            window.DPR = originalDPR;
+            window.lightMode = originalLightMode;
+        }
+    });
 });
 

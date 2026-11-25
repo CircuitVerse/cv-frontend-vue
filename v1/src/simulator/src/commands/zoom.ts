@@ -20,8 +20,9 @@ export function setCurLevel(value: number): void {
  */
 export function syncZoomSlider(): void {
   if (layoutModeGet()) return;
-  const dpr = (window as any).DPR || window.devicePixelRatio || 1;
-  const scale = (window as any).globalScope?.scale ?? dpr;
+  const rawDpr = typeof DPR === "number" ? DPR : window.devicePixelRatio || 1;
+  const dpr = typeof lightMode !== "undefined" && lightMode ? 1 : rawDpr;
+  const scale = typeof globalScope !== "undefined" ? globalScope.scale : dpr;
   const computedLevel = Math.max(0, Math.min(45, Math.round(5 + (scale - dpr) * 10)));
   zoomLevel.value = computedLevel;
   curLevel = computedLevel;

@@ -13,6 +13,7 @@ import { increment, decrement, zoomToFit } from '#/components/Navbar/QuickButton
 import { syncZoomSlider } from '../src/listeners';
 import { layoutModeSet } from '../src/layoutMode';
 import { simulationArea } from '../src/simulationArea';
+import * as engine from '../src/engine';
 
 const confirmSingleOptionMock = vi.fn();
 vi.mock('#/components/helpers/confirmComponent/ConfirmComponent.vue', async (importOriginal) => {
@@ -461,6 +462,59 @@ describe('setup regression tests', () => {
             expect(slider.value).toBe('10');
         } finally {
             layoutModeSet(false);
+        }
+    });
+
+    test('zoomSliderScroll updates curLevel at endpoints 0 and 45 so subsequent button click zooms', () => {
+        // Guards endpoint wheel sync: ensures curLevel updates at 0 and 45 so next + or - click applies nonzero delta
+        $(document).off('input change', '#customRange1');
+        setup();
+        const slider = document.getElementById('customRange1');
+        const simArea = document.getElementById('simulationArea');
+
+        // Wheel down from level 1 to lower endpoint 0
+        slider.value = '1';
+        slider.dispatchEvent(new Event('change', { bubbles: true }));
+        const wheelDown = new Event('mousewheel');
+        wheelDown.wheelDelta = -120;
+        simArea.dispatchEvent(wheelDown);
+        expect(slider.value).toBe('0');
+        const scaleAfterWheelDown = globalScope.scale;
+
+        // Next increment must advance from 0 to 1 and increase scale by +0.1 relative to post-wheel scale
+        increment();
+        expect(slider.value).toBe('1');
+        expect(globalScope.scale).toBeCloseTo(scaleAfterWheelDown + 0.1, 5);
+
+        // Wheel up at upper endpoint 45
+        slider.value = '45';
+        slider.dispatchEvent(new Event('change', { bubbles: true }));
+        const wheelUp = new Event('mousewheel');
+        wheelUp.wheelDelta = 120;
+        simArea.dispatchEvent(wheelUp);
+        expect(slider.value).toBe('45');
+        const scaleAfterWheelUp = globalScope.scale;
+
+        // Next decrement must step from 45 to 44 and update scale by -0.1 (within 4*DPR clamp)
+        decrement();
+        expect(slider.value).toBe('44');
+        expect(globalScope.scale).toBeCloseTo(Math.min(4 * (window.DPR || 1), scaleAfterWheelUp - 0.1), 5);
+    });
+
+    test('increment and decrement schedule a canvas redraw via delegated change handler', () => {
+        // Guards redraw scheduling: ensures delegated slider change calls scheduleUpdate when clock is paused
+        $(document).off('input change', '#customRange1');
+        setup();
+        const scheduleSpy = vi.spyOn(engine, 'scheduleUpdate');
+
+        try {
+            increment();
+            expect(scheduleSpy).toHaveBeenCalledTimes(1);
+
+            decrement();
+            expect(scheduleSpy).toHaveBeenCalledTimes(2);
+        } finally {
+            scheduleSpy.mockRestore();
         }
     });
 });

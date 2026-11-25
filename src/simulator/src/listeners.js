@@ -830,6 +830,7 @@ function zoomSliderListeners() {
         changeScale(changeInScale * 0.1, 'zoomButton', 'zoomButton', 3)
         gridUpdateSet(true);
         curLevel = newValue;
+        scheduleUpdate();
     });
     function zoomSliderScroll(e) {
         const sliderElement = document.getElementById("customRange1");
@@ -841,14 +842,11 @@ function zoomSliderListeners() {
         else zoomLevel--
         if (zoomLevel >= 45) {
             zoomLevel = 45;
-            sliderElement.value = 45;
         } else if (zoomLevel <= 0) {
             zoomLevel = 0;
-            sliderElement.value = 0;
-        } else {
-            sliderElement.value = zoomLevel;
-            curLevel = zoomLevel;
         }
+        sliderElement.value = zoomLevel;
+        curLevel = zoomLevel;
     }
     function sliderZoomButton(direction) {
         const zoomSlider = $('#customRange1');
