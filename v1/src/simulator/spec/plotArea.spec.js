@@ -77,6 +77,41 @@ describe('plotArea generateCSV testing', () => {
         expect(csv).toBe(expected);
     });
 
+    test('out-of-order timestamps after a clock-period change keep every value', () => {
+        // Changing the clock period mid-run can record a timestamp earlier than the
+        // previous sample. Every recorded value must still appear at its own time,
+        // not be dropped by the forward cursor.
+        global.globalScope.Flag = [
+            { identifier: 'SIG', plotValues: [[0, 0], [1.5, 1], [1.3, 2], [1.6, 3]] },
+        ];
+
+        const csv = plotArea.generateCSV();
+        const expected = [
+            'Time,SIG',
+            '0,0',
+            '1.3,2',
+            '1.5,1',
+            '1.6,3',
+        ].join('\n');
+        expect(csv).toBe(expected);
+    });
+
+    test('two samples at the same timestamp keep the latest and do not stall', () => {
+        // A signal that changes twice at the same time must not break later values.
+        global.globalScope.Flag = [
+            { identifier: 'SIG', plotValues: [[0, 0], [5, 1], [5, 0], [10, 1]] },
+        ];
+
+        const csv = plotArea.generateCSV();
+        const expected = [
+            'Time,SIG',
+            '0,0',
+            '5,0',
+            '10,1',
+        ].join('\n');
+        expect(csv).toBe(expected);
+    });
+
     test('escaping commas in names', () => {
         global.globalScope.Flag = [
             { identifier: 'A,B', plotValues: [[0, 1]] },

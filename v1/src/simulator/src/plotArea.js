@@ -147,7 +147,8 @@ const plotArea = {
 
             const path = await join(downloadsDirectory, `waveform-${random}.png`);
 
-            await writeFile({ path, contents: new Uint8Array(arrayBuffer) });
+            // plugin-fs v2 signature is writeFile(path, data)
+            await writeFile(path, new Uint8Array(arrayBuffer));
         } catch (error) {
             console.error('Error during download:', error);
         }
@@ -188,6 +189,11 @@ const plotArea = {
         }
         csvRows.push(header.join(','))
 
+        // plotValues can be out of order if the clock period changed mid-run, and
+        // the cursor below assumes ascending time. Sort a copy (never mutate the
+        // live history) so every recorded value is emitted at its own timestamp.
+        var sortedValues = flags.map((flag) => flag.plotValues.slice().sort((a, b) => a[0] - b[0]))
+
         var lastValues = new Array(flags.length).fill(undefined)
         var flagIndices = new Array(flags.length).fill(0)
 
@@ -196,13 +202,17 @@ const plotArea = {
             var row = [escapeCSV(currentTime)]
 
             for (var i = 0; i < flags.length; i++) {
-                var plotValues = flags[i].plotValues
+                var plotValues = sortedValues[i]
                 var currentIndex = flagIndices[i]
 
-                if (currentIndex < plotValues.length && plotValues[currentIndex][0] === currentTime) {
+                // Consume every sample at or before this timestamp, keeping the most
+                // recent value. Using a loop (not a single match) also handles two
+                // samples recorded at the same time without stalling the cursor.
+                while (currentIndex < plotValues.length && plotValues[currentIndex][0] <= currentTime) {
                     lastValues[i] = plotValues[currentIndex][1]
-                    flagIndices[i]++
+                    currentIndex++
                 }
+                flagIndices[i] = currentIndex
 
                 var val = lastValues[i] !== undefined ? lastValues[i] : ''
                 row.push(escapeCSV(val))
@@ -234,8 +244,10 @@ const plotArea = {
             const encoder = new TextEncoder()
             const arrayBuffer = encoder.encode(csvContent)
             const downloadsDirectory = await downloadDir()
-            const path = await join(downloadsDirectory, 'waveform.csv')
-            await writeFile({ path, contents: new Uint8Array(arrayBuffer) })
+            const random = Math.random().toString(36).substring(7)
+            const path = await join(downloadsDirectory, `waveform-${random}.csv`)
+            // plugin-fs v2 signature is writeFile(path, data); encode() returns a Uint8Array
+            await writeFile(path, arrayBuffer)
         } catch (error) {
             console.error('Error during CSV download:', error)
         }
