@@ -10,6 +10,8 @@ import i18n from '#/locales/i18n';
 import { routes } from '#/router';
 import vuetify from '#/plugins/vuetify';
 import simulator from '#/pages/simulator.vue';
+import modules from '../src/modules';
+import { play } from '../src/engine';
 
 vi.mock('codemirror', async (importOriginal) => {
     const actual = await importOriginal();
@@ -72,6 +74,44 @@ describe('Simulator Sequential Element Testing', () => {
         });
 
         setup();
+
+    });
+    
+    function buildJKCircuit() {
+        const J = new modules.Input(0, 0, globalScope, 'RIGHT', 1);
+        const K = new modules.Input(0, 40, globalScope, 'RIGHT', 1);
+        const clock = new modules.Input(0, 80, globalScope, 'RIGHT', 1);
+        const jk = new modules.JKflipFlop(200, 40, globalScope);
+        J.output1.connect(jk.J);
+        K.output1.connect(jk.K);
+        clock.output1.connect(jk.clockInp);
+        return { J, K, clock, jk };
+    }
+
+    function driveJK(ff, j, k, clk) {
+        ff.J.state = j;
+        ff.K.state = k;
+        ff.clock.state = clk;
+        play(globalScope);
+    }
+
+    test('JK Flip Flop holds state when J=0 and K=0', () => {
+        const ff = buildJKCircuit();
+        // J goes high while the clock is low, then back to 0 before the edge.
+        driveJK(ff, 0, 0, 0);
+        driveJK(ff, 1, 0, 0);
+        driveJK(ff, 0, 0, 0);
+        // Rising edge with J=K=0 must hold, not latch the stale value.
+        driveJK(ff, 0, 0, 1);
+        expect(ff.jk.qOutput.value).toBe(0);
+    });
+
+    test('JK Flip Flop still toggles when J=1 and K=1', () => {
+        const ff = buildJKCircuit();
+        driveJK(ff, 0, 0, 0); // Q = 0
+        driveJK(ff, 1, 1, 0);
+        driveJK(ff, 1, 1, 1); // rising edge toggles 0 -> 1
+        expect(ff.jk.qOutput.value).toBe(1);
     });
 
     test('load circuitData', () => {
