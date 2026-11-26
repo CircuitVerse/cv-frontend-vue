@@ -1,5 +1,6 @@
 import { describe, test, expect, vi, beforeAll } from 'vitest';
 import { setup } from '../src/setup';
+import Scope, { scopeList } from '../src/circuit';
 import load from '../src/data/load';
 import gatesCircuitData from './circuits/gates-circuitdata.json';
 import decoderCircuitData from './circuits/Decoders-plexers-circuitdata.json';
@@ -15,6 +16,7 @@ import {
     recoverProject,
     saveOffline,
     openOffline,
+    projectSavedSet,
 } from '../src/data/project';
 import createSaveAsImgPrompt from '../src/data/saveImage';
 import { nextTick } from 'vue';
@@ -267,6 +269,119 @@ describe('data dir working', () => {
     test('recover Project working', () => {
         localStorage.setItem('recover', JSON.stringify(gatesCircuitData));
         expect(() => recoverProject()).not.toThrow();
+    });
+
+    test('onbeforeunload saves recovery data synchronously and sets returnValue', () => {
+        projectSavedSet(false);
+        global.embed = false;
+        localStorage.removeItem('recover');
+
+        const previousScopeList = { ...scopeList };
+        const previousGlobalScope = global.globalScope;
+
+        const testScope = new Scope('Main', 'Main');
+        testScope.Input = [{
+            saveObject: () => ({ layoutProperties: { x: 0, y: 0 } }),
+            update: () => false,
+            draw: () => {},
+        }];
+
+        for (const id in scopeList) delete scopeList[id];
+        scopeList[testScope.id] = testScope;
+        global.globalScope = testScope;
+
+        try {
+            const event = {
+                preventDefault: vi.fn(),
+                returnValue: undefined,
+            };
+            window.onbeforeunload(event);
+            expect(event.preventDefault).toHaveBeenCalled();
+            expect(event.returnValue).toBe('');
+            const recovery = localStorage.getItem('recover');
+            expect(recovery).toBeTruthy();
+            const parsed = JSON.parse(recovery);
+            expect(Array.isArray(parsed.scopes)).toBe(true);
+            expect(parsed.scopes.length).toBeGreaterThan(0);
+            expect(Array.isArray(parsed.orderedTabs)).toBe(true);
+            expect(parsed.scopes.some((s) => s.id === testScope.id)).toBe(true);
+        } finally {
+            for (const id in scopeList) delete scopeList[id];
+            Object.assign(scopeList, previousScopeList);
+            global.globalScope = previousGlobalScope;
+        }
+    });
+
+    test('onbeforeunload preserves original tab order separately from dependency-first scope serialization', () => {
+        projectSavedSet(false);
+        global.embed = false;
+        localStorage.removeItem('recover');
+
+        const previousScopeList = { ...scopeList };
+        const previousGlobalScope = global.globalScope;
+
+        const mainScope = new Scope('Main', 'Main');
+        const childScope = new Scope('Child', 'Child');
+
+        mainScope.SubCircuit = [{
+            id: childScope.id,
+            removeConnections: () => {},
+            makeConnections: () => {},
+            saveObject: () => ({ id: childScope.id }),
+            reset: () => {},
+            update: () => false,
+            draw: () => {},
+        }];
+
+        childScope.Input = [{
+            saveObject: () => ({ layoutProperties: { x: 0, y: 0 } }),
+            update: () => false,
+            draw: () => {},
+        }];
+
+        for (const id in scopeList) delete scopeList[id];
+        scopeList[mainScope.id] = mainScope;
+        scopeList[childScope.id] = childScope;
+        global.globalScope = mainScope;
+
+        let tabsBar = document.getElementById('tabsBar');
+        let cleanupTabsBar = false;
+        if (!tabsBar) {
+            tabsBar = document.createElement('div');
+            tabsBar.id = 'tabsBar';
+            document.body.appendChild(tabsBar);
+            cleanupTabsBar = true;
+        }
+        const previousTabsBarHtml = tabsBar.innerHTML;
+        tabsBar.innerHTML = `<div><div id="${mainScope.id}"></div><div id="${childScope.id}"></div></div>`;
+
+        try {
+            const event = {
+                preventDefault: vi.fn(),
+                returnValue: undefined,
+            };
+
+            window.onbeforeunload(event);
+
+            expect(event.preventDefault).toHaveBeenCalled();
+            expect(event.returnValue).toBe('');
+
+            const recovery = localStorage.getItem('recover');
+            expect(recovery).toBeTruthy();
+            const parsed = JSON.parse(recovery);
+
+            expect(parsed.orderedTabs).toEqual(['Main', 'Child']);
+            expect(parsed.scopes.map((s) => s.id)).toEqual(['Child', 'Main']);
+            expect(parsed.scopes.map((s) => s.name)).toEqual(['Child', 'Main']);
+        } finally {
+            tabsBar.innerHTML = previousTabsBarHtml;
+            if (cleanupTabsBar) {
+                tabsBar.remove();
+            }
+            for (const id in scopeList) delete scopeList[id];
+            Object.assign(scopeList, previousScopeList);
+            global.globalScope = previousGlobalScope;
+        }
     });
 
     test('SaveOffline working', () => {
