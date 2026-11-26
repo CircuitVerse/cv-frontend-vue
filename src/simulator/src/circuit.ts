@@ -66,7 +66,7 @@ export function resetScopeList() {
  * Changes UI tab etc
  * Sets flags to make updates, resets most of the things
  */
-export function switchCircuit(id: string) {
+export function switchCircuit(id: string | number) {
   // TODO: fix tomorrow
   const simulatorStore = SimulatorStore();
   const { circuit_list } = toRefs(simulatorStore);
@@ -83,7 +83,7 @@ export function switchCircuit(id: string) {
 
   // globalScope.fixLayout();
   scheduleBackup();
-  if (id === globalScope.id) return;
+  if (id == globalScope.id) return;
   // $(`.circuits`).removeClass('current')
   circuit_list.value.forEach((circuit) => (circuit.focussed ? (circuit.focussed = false) : null));
   simulationArea.lastSelected = undefined;
@@ -96,7 +96,7 @@ export function switchCircuit(id: string) {
   }
   if (globalScope.isVisible()) {
     // $(`#${id}`).addClass('current')
-    const index = circuit_list.value.findIndex((circuit) => circuit.id === id);
+    const index = circuit_list.value.findIndex((circuit) => circuit.id == id);
     if (index === -1) return;
     circuit_list.value[index].focussed = true;
     activeCircuit.value = {
@@ -280,9 +280,11 @@ export function changeCircuitName(name: string, id = globalScope.id) {
   name = name || "Untitled";
   name = stripTags(name);
   scopeList[id].name = name;
-  const index = circuit_list.value.findIndex((circuit) => circuit.id === id);
-  circuit_list.value[index].name = name;
-  if (activeCircuit.value && activeCircuit.value.id === id) {
+  const index = circuit_list.value.findIndex((circuit) => circuit.id == id);
+  if (index !== -1) {
+    circuit_list.value[index].name = name;
+  }
+  if (activeCircuit.value && activeCircuit.value.id == id) {
     activeCircuit.value = { id, name };
   }
 }
@@ -443,11 +445,11 @@ export default class Scope {
    * Checks if this circuit contains directly or indirectly scope with id
    * Recursive nature
    */
-  checkDependency(id: number) {
-    if (id === this.id) return true;
+  checkDependency(id: number | string) {
+    if (id == this.id) return true;
     if (this.SubCircuit) {
       for (let i = 0; i < this.SubCircuit.length; i++) {
-        if (this.SubCircuit[i].id === id) return true;
+        if (this.SubCircuit[i].id == id) return true;
       }
     }
     if (this.SubCircuit) {
