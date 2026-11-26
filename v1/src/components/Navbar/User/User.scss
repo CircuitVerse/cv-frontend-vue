@@ -1,14 +1,17 @@
-.userMenu {
+.userMenu,
+.locale-menu .v-list {
   background: rgba(0, 0, 0, 0.8) !important;
   backdrop-filter: blur(10px);
   color: white !important;
 }
 
-.userMenu .v-list-item {
+.userMenu .v-list-item,
+.locale-menu .v-list-item {
   color: white !important;
 }
 
-.userMenu .v-list-item:hover {
+.userMenu .v-list-item:hover,
+.locale-menu .v-list-item:hover {
   background: rgba(255, 255, 255, 0.1) !important;
 }
 

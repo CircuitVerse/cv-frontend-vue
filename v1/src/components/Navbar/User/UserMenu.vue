@@ -23,7 +23,7 @@
 
         <v-list-item
           class="list-item-avatar"
-          :prepend-avatar="authStore.getUserAvatar"
+          :prepend-avatar="authStore.getUserAvatar === 'default' ? undefined : authStore.getUserAvatar"
           :prepend-icon="
             authStore.getUserAvatar === 'default' ? 'mdi-account-circle-outline' : undefined
           "
@@ -41,8 +41,8 @@
             variant="outlined"
             hide-details
             single-line
-            color="white"
             bg-color="rgba(255, 255, 255, 0.1)"
+            :menu-props="{ contentClass: 'locale-menu' }"
           ></v-select>
         </v-list-item>
 
