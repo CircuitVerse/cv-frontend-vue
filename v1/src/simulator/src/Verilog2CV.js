@@ -122,7 +122,13 @@ function clearVerilogOutput() {
 }
 
 export function resetVerilogCode() {
-    editor.setValue(globalScope.verilogMetadata.code)
+    editor.setValue(globalScope.verilogMetadata.code || '')
+    setTimeout(function () {
+        if (editor) {
+            editor.refresh()
+            if (editor.performLint) editor.performLint()
+        }
+    }, 50)
 }
 
 export function hasVerilogCodeChanges() {
@@ -393,6 +399,45 @@ export default function generateVerilogCircuit(
         })
 }
 
+export async function verilogLinter(text, options, cm) {
+    if (!text || !text.trim() || text.trim().startsWith('// Write Some Verilog')) {
+        return []
+    }
+
+    try {
+        await validateVerilog(text, null, { timeoutMs: 60000 })
+        return []
+    } catch (err) {
+        if (err.message && err.message.includes('already in progress')) {
+            return []
+        }
+        var line = (err.line && err.line > 0) ? err.line - 1 : 0
+        var lineCount = cm ? cm.lineCount() : 1
+        if (line >= lineCount) line = lineCount - 1
+        var lineText = cm ? cm.getLine(line) || '' : ''
+        var firstNonWs = lineText.search(/\S/)
+        var fromCh = firstNonWs >= 0 ? firstNonWs : 0
+        var toCh = Math.max(fromCh + 1, lineText.length)
+        var from = CodeMirror.Pos(line, fromCh)
+        var to = CodeMirror.Pos(line, toCh)
+
+        return [
+            {
+                from: from,
+                to: to,
+                message: err.message || 'Verilog syntax error',
+                severity: 'error',
+            },
+        ]
+    }
+}
+
+function verilogLinterAsync(text, updateLinting, options, cm) {
+    verilogLinter(text, options, cm).then(function (annotations) {
+        updateLinting(cm, annotations)
+    })
+}
+
 export function setupCodeMirrorEnvironment() {
     var myTextarea = document.getElementById('codeTextArea')
 
@@ -400,32 +445,7 @@ export function setupCodeMirrorEnvironment() {
         cm.showHint({ hint: CodeMirror.hint.anyword })
     }
 
-    CodeMirror.registerHelper('lint', 'verilog', async function (text, options, cm) {
-        if (!text || !text.trim() || text.trim().startsWith('// Write Some Verilog')) {
-            return []
-        }
-
-        try {
-            await validateVerilog(text)
-            return []
-        } catch (err) {
-            var line = err.line ? Math.max(0, err.line - 1) : 0
-            var lineCount = cm ? cm.lineCount() : 1
-            if (line >= lineCount) line = lineCount - 1
-            var lineText = cm ? cm.getLine(line) || '' : ''
-            var from = CodeMirror.Pos(line, 0)
-            var to = CodeMirror.Pos(line, Math.max(1, lineText.length))
-
-            return [
-                {
-                    from: from,
-                    to: to,
-                    message: err.message || 'Verilog syntax error',
-                    severity: 'error',
-                },
-            ]
-        }
-    })
+    CodeMirror.registerHelper('lint', 'verilog', verilogLinterAsync)
 
     editor = CodeMirror.fromTextArea(myTextarea, {
         mode: 'verilog',
@@ -438,7 +458,9 @@ export function setupCodeMirrorEnvironment() {
         extraKeys: { 'Ctrl-Space': 'autocomplete' },
         gutters: ['CodeMirror-linenumbers', 'CodeMirror-lint-markers'],
         lint: {
-            delay: 600,
+            getAnnotations: verilogLinterAsync,
+            async: true,
+            delay: 400,
             tooltips: true,
         },
     })

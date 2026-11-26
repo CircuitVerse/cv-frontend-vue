@@ -36,7 +36,7 @@ self.onmessage = async function (e) {
                         'read_verilog -sv input.v; hierarchy -auto-top -check',
                     ],
                     { 'input.v': code },
-                    { print: silentPrint, printErr: function (msg) { stderrLines.push(String(msg)) } }
+                    { printLine: function (msg) { stderrLines.push(String(msg)) } }
                 )
             } finally {
                 console.log = origLog
@@ -69,7 +69,7 @@ self.onmessage = async function (e) {
                     'read_verilog input.v; setattr -mod -unset top; hierarchy -auto-top; proc; opt; memory -nomap; wreduce -memx; opt -full; write_json output.json',
                 ],
                 { 'input.v': code },
-                { print: silentPrint, printErr: function (msg) { stderrLines.push(String(msg)) } }
+                { printLine: function (msg) { stderrLines.push(String(msg)) } }
             )
         } finally {
             console.log = origLog

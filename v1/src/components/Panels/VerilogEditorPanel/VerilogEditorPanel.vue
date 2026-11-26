@@ -1,5 +1,6 @@
 <template>
-    <div class="verilog-editor-container">
+    <div class="verilog-editor-root">
+        <div class="verilog-editor-container">
         <div id="code-window" class="code-window">
             <textarea id="codeTextArea"></textarea>
         </div>
@@ -24,15 +25,6 @@
                         @click="saveVerilogCode"
                     >
                         {{ $t('simulator.panel_body.verilog_module.save_code') }}
-                    </button>
-                    <button
-                        class="largeButton btn btn-xs custom-btn--primary validate-btn"
-                        :disabled="isValidating"
-                        @click="handleValidateCode"
-                    >
-                        <i v-if="isValidating" class="fas fa-spinner fa-spin"></i>
-                        <i v-else class="fas fa-check-circle"></i>
-                        {{ isValidating ? 'Validating...' : 'Validate Code' }}
                     </button>
                     <button
                         class="largeButton btn btn-xs custom-btn--secondary"
@@ -80,8 +72,9 @@
                 </div>
             </div>
         </div>
+        </div>
+        <VerilogTerminal />
     </div>
-    <VerilogTerminal />
 </template>
 
 <script lang="ts" setup>
@@ -90,25 +83,13 @@ import {
     saveVerilogCode,
     resetVerilogCode,
     applyVerilogTheme,
-    validateCurrentVerilogCode,
 } from '#/simulator/src/Verilog2CV';
 import PanelHeader from '../Shared/PanelHeader.vue';
 import VerilogTerminal from './VerilogTerminal.vue';
-import { ref, watch } from 'vue';
+import { watch } from 'vue';
 import { useVerilogStore } from '#/store/verilogStore';
 
 const verilogStore = useVerilogStore();
-const isValidating = ref(false);
-
-const handleValidateCode = async () => {
-    if (isValidating.value) return;
-    isValidating.value = true;
-    try {
-        await validateCurrentVerilogCode();
-    } finally {
-        isValidating.value = false;
-    }
-};
 
 const toggleTerminal = () => {
     verilogStore.toggleTerminal();
@@ -168,5 +149,42 @@ watch(() => verilogStore.selectedTheme, (newTheme: string) => {
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
+}
+
+/* VS Code style red wavy underline for errors */
+.CodeMirror-lint-mark-error {
+    text-decoration: underline wavy #ff5252 !important;
+    text-decoration-skip-ink: none !important;
+    text-underline-offset: 3px !important;
+    background: rgba(255, 82, 82, 0.12) !important;
+}
+
+.CodeMirror-lint-marker-error {
+    background: none !important;
+    cursor: pointer !important;
+    display: inline-block !important;
+    width: 16px !important;
+    height: 16px !important;
+    text-align: center !important;
+}
+
+.CodeMirror-lint-marker-error::before {
+    content: "●" !important;
+    font-size: 14px !important;
+    line-height: 16px !important;
+    color: #ff5252 !important;
+    display: block !important;
+}
+
+.CodeMirror-lint-tooltip {
+    background: #1e1e1e !important;
+    color: #f1f1f1 !important;
+    border: 1px solid #ff5252 !important;
+    border-radius: 4px !important;
+    padding: 6px 10px !important;
+    font-family: Consolas, "Courier New", monospace !important;
+    font-size: 12px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    z-index: 999999 !important;
 }
 </style>
