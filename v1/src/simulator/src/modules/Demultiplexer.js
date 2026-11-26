@@ -320,5 +320,5 @@ export default class Demultiplexer extends CircuitElement {
 Demultiplexer.prototype.tooltipText =
     'DeMultiplexer ToolTip : Multiple outputs and a single line input.'
 Demultiplexer.prototype.helplink =
-    'https://docs.circuitverse.org/#/chapter4/5muxandplex?id=demultiplexer'
+    'https://docs.circuitverse.org/chapter4/chapter4-muxandplex#demultiplexer'
 Demultiplexer.prototype.objectType = 'Demultiplexer'

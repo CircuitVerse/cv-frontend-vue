@@ -99,5 +99,4 @@ export default class verilogPower extends CircuitElement {
  * @category modules
  */
 verilogPower.prototype.tooltipText = "verilogPower ToolTip : Performs addition of numbers.";
-verilogPower.prototype.helplink = "https://docs.circuitverse.org/#/miscellaneous?id=verilogPower";
 verilogPower.prototype.objectType = "verilogPower";
