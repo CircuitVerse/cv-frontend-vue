@@ -3,7 +3,7 @@ import {
     switchCircuit,
     changeCircuitName,
 } from './circuit'
-import { synthesizeVerilog } from './synthesis/clientSynthesis.js'
+import { synthesizeVerilog, validateVerilog } from './synthesis/clientSynthesis.js'
 import { computeLayout, computePortLayout } from './synthesis/circuitLayout.js';
 import { isTauri } from '@tauri-apps/api/core'
 import SubCircuit from './subcircuit'
@@ -32,6 +32,8 @@ import 'codemirror/addon/edit/closebrackets.js'
 import 'codemirror/addon/hint/anyword-hint.js'
 import 'codemirror/addon/hint/show-hint.js'
 import 'codemirror/addon/display/autorefresh.js'
+import 'codemirror/addon/lint/lint.js'
+import 'codemirror/addon/lint/lint.css'
 import { showError, showMessage } from './utils'
 import { showProperties } from './ux'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
@@ -68,6 +70,30 @@ export function saveVerilogCode() {
     generateVerilogCircuit(code)
 }
 
+export async function validateCurrentVerilogCode() {
+    clearVerilogOutput()
+    var code = editor ? editor.getValue() : globalScope.verilogMetadata.code
+    const verilogStore = getVerilogStore()
+    verilogStore.showTerminal()
+
+    setVerilogOutput('Validating Verilog syntax with Yosys WASM...', 'info')
+
+    try {
+        const result = await validateVerilog(code, (progress) => {
+            setVerilogOutput(progress, 'info')
+        })
+        const msg = result?.message || 'Syntax Valid & Synthesizable'
+        setVerilogOutput(msg, 'success')
+        showMessage(msg)
+        return { valid: true }
+    } catch (err) {
+        const msg = err.message || 'Validation failed'
+        setVerilogOutput(msg, 'error')
+        showError(msg)
+        return { valid: false, error: msg }
+    }
+}
+
 export function applyVerilogTheme(theme) {
     localStorage.setItem('verilog-theme', theme)
     editor.setOption('theme', theme)
@@ -96,7 +122,13 @@ function clearVerilogOutput() {
 }
 
 export function resetVerilogCode() {
-    editor.setValue(globalScope.verilogMetadata.code)
+    editor.setValue(globalScope.verilogMetadata.code || '')
+    setTimeout(function () {
+        if (editor) {
+            editor.refresh()
+            if (editor.performLint) editor.performLint()
+        }
+    }, 50)
 }
 
 export function hasVerilogCodeChanges() {
@@ -367,12 +399,54 @@ export default function generateVerilogCircuit(
         })
 }
 
+export async function verilogLinter(text, options, cm) {
+    var trimmed = text ? text.trim() : ''
+    if (!trimmed || trimmed === '// Write Some Verilog Code Here!') {
+        return []
+    }
+
+    try {
+        await validateVerilog(text, null, { timeoutMs: 60000 })
+        return []
+    } catch (err) {
+        if (err.message && err.message.includes('already in progress')) {
+            return []
+        }
+        var line = (err.line && err.line > 0) ? err.line - 1 : 0
+        var lineCount = cm ? cm.lineCount() : 1
+        if (line >= lineCount) line = lineCount - 1
+        var lineText = cm ? cm.getLine(line) || '' : ''
+        var firstNonWs = lineText.search(/\S/)
+        var fromCh = firstNonWs >= 0 ? firstNonWs : 0
+        var toCh = Math.max(fromCh + 1, lineText.length)
+        var from = CodeMirror.Pos(line, fromCh)
+        var to = CodeMirror.Pos(line, toCh)
+
+        return [
+            {
+                from: from,
+                to: to,
+                message: err.message || 'Verilog syntax error',
+                severity: 'error',
+            },
+        ]
+    }
+}
+
+function verilogLinterAsync(text, updateLinting, options, cm) {
+    verilogLinter(text, options, cm).then(function (annotations) {
+        updateLinting(cm, annotations)
+    })
+}
+
 export function setupCodeMirrorEnvironment() {
     var myTextarea = document.getElementById('codeTextArea')
 
     CodeMirror.commands.autocomplete = function (cm) {
         cm.showHint({ hint: CodeMirror.hint.anyword })
     }
+
+    CodeMirror.registerHelper('lint', 'verilog', verilogLinterAsync)
 
     editor = CodeMirror.fromTextArea(myTextarea, {
         mode: 'verilog',
@@ -383,6 +457,13 @@ export function setupCodeMirrorEnvironment() {
         smartIndent: true,
         indentWithTabs: true,
         extraKeys: { 'Ctrl-Space': 'autocomplete' },
+        gutters: ['CodeMirror-linenumbers', 'CodeMirror-lint-markers'],
+        lint: {
+            getAnnotations: verilogLinterAsync,
+            async: true,
+            delay: 400,
+            tooltips: true,
+        },
     })
 
     if (!localStorage.getItem('verilog-theme')) {
