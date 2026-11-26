@@ -42,6 +42,7 @@
             hide-details
             single-line
             bg-color="rgba(255, 255, 255, 0.1)"
+            :menu-props="{ contentClass: 'locale-menu' }"
           ></v-select>
         </v-list-item>
 
