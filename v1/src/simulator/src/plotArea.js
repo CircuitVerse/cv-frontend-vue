@@ -147,9 +147,109 @@ const plotArea = {
 
             const path = await join(downloadsDirectory, `waveform-${random}.png`);
 
-            await writeFile({ path, contents: new Uint8Array(arrayBuffer) });
+            // plugin-fs v2 signature is writeFile(path, data)
+            await writeFile(path, new Uint8Array(arrayBuffer));
         } catch (error) {
             console.error('Error during download:', error);
+        }
+    },
+    generateCSV() {
+        if (!globalScope || !globalScope.Flag || globalScope.Flag.length === 0) {
+            return ''
+        }
+
+        var escapeCSV = (field) => {
+            if (field === undefined || field === null) return ''
+            var str = String(field)
+            if (/^\s*[=+\-@]/.test(str)) {
+                str = "'" + str
+            }
+            if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
+                str = '"' + str.replace(/"/g, '""') + '"'
+            }
+            return str
+        }
+
+        var flags = globalScope.Flag
+        var timeSet = new Set()
+
+        for (var i = 0; i < flags.length; i++) {
+            var plotValues = flags[i].plotValues
+            for (var j = 0; j < plotValues.length; j++) {
+                timeSet.add(plotValues[j][0])
+            }
+        }
+
+        var times = Array.from(timeSet).sort((a, b) => a - b)
+        var csvRows = []
+
+        var header = [escapeCSV('Time')]
+        for (var i = 0; i < flags.length; i++) {
+            header.push(escapeCSV(flags[i].identifier))
+        }
+        csvRows.push(header.join(','))
+
+        // plotValues can be out of order if the clock period changed mid-run, and
+        // the cursor below assumes ascending time. Sort a copy (never mutate the
+        // live history) so every recorded value is emitted at its own timestamp.
+        var sortedValues = flags.map((flag) => flag.plotValues.slice().sort((a, b) => a[0] - b[0]))
+
+        var lastValues = new Array(flags.length).fill(undefined)
+        var flagIndices = new Array(flags.length).fill(0)
+
+        for (var t = 0; t < times.length; t++) {
+            var currentTime = times[t]
+            var row = [escapeCSV(currentTime)]
+
+            for (var i = 0; i < flags.length; i++) {
+                var plotValues = sortedValues[i]
+                var currentIndex = flagIndices[i]
+
+                // Consume every sample at or before this timestamp, keeping the most
+                // recent value. Using a loop (not a single match) also handles two
+                // samples recorded at the same time without stalling the cursor.
+                while (currentIndex < plotValues.length && plotValues[currentIndex][0] <= currentTime) {
+                    lastValues[i] = plotValues[currentIndex][1]
+                    currentIndex++
+                }
+                flagIndices[i] = currentIndex
+
+                var val = lastValues[i] !== undefined ? lastValues[i] : ''
+                row.push(escapeCSV(val))
+            }
+
+            csvRows.push(row.join(','))
+        }
+
+        return csvRows.join('\n')
+    },
+    downloadAsCSV() {
+        if (isTauri()) {
+            this.downloadCSVDesktop()
+            return
+        }
+
+        var csvContent = this.generateCSV()
+        var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+        var url = URL.createObjectURL(blob)
+        var anchor = document.createElement('a')
+        anchor.href = url
+        anchor.download = 'waveform.csv'
+        anchor.click()
+        URL.revokeObjectURL(url)
+    },
+    async downloadCSVDesktop() {
+        try {
+            const csvContent = this.generateCSV()
+            const encoder = new TextEncoder()
+            const arrayBuffer = encoder.encode(csvContent)
+            const downloadsDirectory = await downloadDir()
+            const random = Math.random().toString(36).substring(7)
+            const path = await join(downloadsDirectory, `waveform-${random}.csv`)
+            // plugin-fs v2 signature is writeFile(path, data); encode() returns a Uint8Array
+            await writeFile(path, arrayBuffer)
+        } catch (error) {
+            console.error('Error during CSV download:', error)
         }
     },
     // update canvas size to use full screen
