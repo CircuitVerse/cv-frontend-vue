@@ -5,6 +5,7 @@ import {
 } from './circuit';
 import SubCircuit from './subcircuit';
 import { simulationArea } from './simulationArea';
+import { getToken } from '#/utils/auth';
 import CodeMirror from 'codemirror/lib/codemirror.js';
 import 'codemirror/lib/codemirror.css';
 
@@ -253,6 +254,8 @@ export default function generateVerilogCircuit(
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+            Authorization: `Token ${getToken('cvt')}`,
         },
         body: JSON.stringify(params),
     })
