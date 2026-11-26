@@ -81,6 +81,8 @@ export default class JKflipFlop extends CircuitElement {
                         this.masterState = 1 ^ this.slaveState
                     } else if (this.J.value ^ this.K.value) {
                         this.masterState = this.J.value
+                    } else {
+                        this.masterState = this.slaveState
                     }
                 }
             } else if (this.clockInp.value != undefined) {
@@ -95,6 +97,8 @@ export default class JKflipFlop extends CircuitElement {
                         this.masterState = 1 ^ this.slaveState
                     } else if (this.J.value ^ this.K.value) {
                         this.masterState = this.J.value
+                    } else {
+                        this.masterState = this.slaveState
                     }
                 }
                 this.prevClockState = this.clockInp.value
