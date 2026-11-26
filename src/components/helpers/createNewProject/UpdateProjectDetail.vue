@@ -112,6 +112,7 @@ export const UpdateProjectDetail = (data: dataType) => {
 
 <script lang="ts" setup>
 const promptStore = usePromptStore()
+const projectStore = useProjectStore()
 const isFullscreen = ref(false)
 const projectTypes = ref(['Public', 'Private', 'Limited access'])
 const buttonList = ref([
@@ -133,10 +134,23 @@ function toggleFullscreen() {
     isFullscreen.value = !isFullscreen.value
 }
 
+// Close the dialog and stay in the simulator without reloading the page (#1378).
+// logixProjectId makes the next save update this project instead of creating a
+// duplicate, and the URL is updated to the project's edit page.
+function stayInEditor() {
+    const projectId = promptStore.getProjectId
+    ;(window as any).logixProjectId = projectId
+    window.history.replaceState(
+        window.history.state,
+        '',
+        `/users/${useAuthStore().getUserId}/projects/${projectId}/simulator/edit`
+    )
+}
+
 function updateProjectButton(selectedOption: string) {
     promptStore.UpdateProjectDetail.activate = false
     if (selectedOption == 'cancel') {
-        window.location.href = `/simulator/edit/${promptStore.getProjectId}`
+        stayInEditor()
     }
     if (selectedOption == 'openEditPage') {
         window.location.href = `/users/${useAuthStore().getUserId}/projects/${
@@ -188,7 +202,10 @@ async function successPrompt() {
             promptStore.getProjectId
         }`
     } else {
-        window.location.href = `/simulatorvue/edit/${promptStore.getProjectId}`
+        // The update just saved the new name to the server, but save() reads the
+        // name from projectStore, so sync it here or the next save reverts it.
+        projectStore.setProjectName(promptStore.getProjectName)
+        stayInEditor()
     }
 }
 

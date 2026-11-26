@@ -5,6 +5,7 @@ import testData from './testData/misc-testdata.json';
 import { runAll } from '../src/testbench';
 import Splitter from '../src/modules/Splitter';
 import verilogMultiplier from '../src/modules/verilogMultiplier';
+import verilogPower from '../src/modules/verilogPower';
 import Scope from '../src/circuit';
 import { simulationArea } from '../src/simulationArea';
 import { createPinia, setActivePinia } from 'pinia';
@@ -189,6 +190,58 @@ describe('Simulator Misc-Elements Testing', () => {
                 simulationArea.simulationQueue.reset();
                 multiplier.resolve();
                 expect(multiplier.product.value).toBeUndefined();
+                expect(simulationArea.simulationQueue.isEmpty()).toBe(true);
+            },
+        );
+    });
+
+    describe('Verilog power precision', () => {
+        afterEach(() => simulationArea.simulationQueue.reset());
+
+        test.each(Array.from({ length: 32 }, (_, index) => index + 1))(
+            'preserves exact power bits for a %i-bit output',
+            (outputBitWidth) => {
+                const power = new verilogPower(100, 100, new Scope('PowerPrecision'), 'RIGHT', 32, outputBitWidth);
+                const pairs = [
+                    [0, 0], [0, 32], [1, 1024], [2, 0], [2, 31], [2, 32],
+                    [3, 33], [3, 34], [3, 40], [3, 200], [3, 1024],
+                    [0xffffffff, 1], [0xffffffff, 2], [0xffffffff, 3],
+                    [0x80000001, 2], [0x80000001, 3],
+                ];
+
+                for (const [base, exponent] of pairs) {
+                    power.inpA.value = base;
+                    power.inpB.value = exponent;
+                    simulationArea.simulationQueue.reset();
+                    power.resolve();
+                    const expected = Number(BigInt.asUintN(outputBitWidth, BigInt(base) ** BigInt(exponent)));
+                    expect(power.answer.value, `${base} ** ${exponent}, ${outputBitWidth}-bit output`).toBe(expected);
+                    expect(simulationArea.simulationQueue.pop()).toBe(power.answer);
+                    expect(simulationArea.simulationQueue.isEmpty()).toBe(true);
+                }
+            },
+        );
+
+        test.each([
+            [0, 0xffffffff, 0], [1, 0xffffffff, 1], [2, 0xffffffff, 0],
+            [0xffffffff, 0xffffffff, 0xffffffff], [0xffffffff, 0xfffffffe, 1],
+        ])('handles the full 32-bit exponent range: %i ** %i', (base, exponent, expected) => {
+            const power = new verilogPower(100, 100, new Scope('LargePower'), 'RIGHT', 32, 32);
+            power.inpA.value = base;
+            power.inpB.value = exponent;
+            power.resolve();
+            expect(power.answer.value).toBe(expected);
+        });
+
+        test.each([[undefined, 1], [1, undefined], [undefined, undefined]])(
+            'does not resolve or enqueue an output with floating inputs %s and %s',
+            (base, exponent) => {
+                const power = new verilogPower(100, 100, new Scope('FloatingPower'), 'RIGHT', 32, 32);
+                power.inpA.value = base;
+                power.inpB.value = exponent;
+                simulationArea.simulationQueue.reset();
+                power.resolve();
+                expect(power.answer.value).toBeUndefined();
                 expect(simulationArea.simulationQueue.isEmpty()).toBe(true);
             },
         );

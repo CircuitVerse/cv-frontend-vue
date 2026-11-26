@@ -6,7 +6,7 @@ on:
     types: [created]
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build-tauri:
@@ -70,6 +70,8 @@ jobs:
           args: ${{ matrix.args }}
 
       - name: Upload Artifacts
+        # Fork pull requests run untrusted code, so their builds are not published as artifacts.
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         uses: actions/upload-artifact@v4
         with:
           name: build-assets-${{ matrix.platform }}-${{ strategy.job-index }}
