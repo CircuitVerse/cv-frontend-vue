@@ -72,7 +72,7 @@ input[type='number']:focus {
     background-color: transparent;
     outline: none;
     border: none;
-    color: white;
+    color: var(--text-panel);
 }
 
 table {
@@ -1822,7 +1822,7 @@ canvas {
     box-sizing: border-box;
     border-radius: 5px;
     border: 1px solid #c5c5c5;
-    color: white;
+    color: var(--text-panel);
     outline: none;
 }
 
@@ -1833,7 +1833,7 @@ canvas {
     box-sizing: border-box;
     border-radius: 5px;
     border: 1px solid #c5c5c5;
-    color: white;
+    color: var(--text-panel);
     outline: none;
 }
 
