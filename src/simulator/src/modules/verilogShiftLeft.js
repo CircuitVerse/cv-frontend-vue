@@ -83,7 +83,8 @@ export default class verilogShiftLeft extends CircuitElement {
         if (this.isResolvable() === false) {
             return
         }
-        const output1 = this.inp1.value << this.shiftInp.value
+        const shift = this.shiftInp.value >>> 0
+        const output1 = shift >= 32 ? 0 : this.inp1.value << shift
 
         this.output1.value =
             (output1 << (32 - this.outputBitWidth)) >>>

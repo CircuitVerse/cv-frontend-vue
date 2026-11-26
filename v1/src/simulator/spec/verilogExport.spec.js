@@ -440,6 +440,46 @@ endmodule`;
         expect(module).toContain(`assign ${shr.output1.verilogLabel} = ${a.label} >> 4'd0;`);
     });
 
+    it('exports arithmetic elements when all inputs are disconnected and output is connected', () => {
+        setup();
+        const mult = new verilogMultiplier(100, 0, globalScope, 'RIGHT', 4, 8);
+        const outMult = new Output(200, 0, globalScope, 'LEFT', 8);
+        outMult.label = 'out_all_disc';
+        mult.product.connect(outMult.inp1);
+
+        const code = verilog.exportVerilog(globalScope);
+        const module = code.slice(code.indexOf('module Main'));
+
+        expect(module).toContain(`assign ${mult.product.verilogLabel} = 4'd0 * 4'd0;`);
+        expect(module).toContain(`assign ${outMult.label} = ${mult.product.verilogLabel};`);
+    });
+
+    it('matches logical right-shift signedness and >=32 shift counts in simulator', () => {
+        setup();
+        const shr32 = new verilogShiftRight(100, 0, globalScope, 'RIGHT', 32, 32);
+        shr32.inp1.value = 0x80000000;
+        shr32.shiftInp.value = 1;
+        shr32.resolve();
+        expect(shr32.output1.value).toBe(0x40000000);
+
+        shr32.inp1.value = 8;
+        shr32.shiftInp.value = 2;
+        shr32.resolve();
+        expect(shr32.output1.value).toBe(2);
+
+        const shr6 = new verilogShiftRight(100, 100, globalScope, 'RIGHT', 6, 6);
+        shr6.inp1.value = 1;
+        shr6.shiftInp.value = 32;
+        shr6.resolve();
+        expect(shr6.output1.value).toBe(0);
+
+        const shl6 = new verilogShiftLeft(100, 200, globalScope, 'RIGHT', 6, 6);
+        shl6.inp1.value = 1;
+        shl6.shiftInp.value = 32;
+        shl6.resolve();
+        expect(shl6.output1.value).toBe(0);
+    });
+
     describe.each([1, 2, 8])('%i-bit Counter export', (bitWidth) => {
         test.each([0, Math.min(3, 2 ** bitWidth - 1)])('matches simulator clock, reset and wraparound behavior with maximum %i', async (maximum) => {
             const { code, samples } = exportCounter(bitWidth, maximum);
