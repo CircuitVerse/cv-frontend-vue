@@ -400,7 +400,8 @@ export default function generateVerilogCircuit(
 }
 
 export async function verilogLinter(text, options, cm) {
-    if (!text || !text.trim() || text.trim().startsWith('// Write Some Verilog')) {
+    var trimmed = text ? text.trim() : ''
+    if (!trimmed || trimmed === '// Write Some Verilog Code Here!') {
         return []
     }
 
