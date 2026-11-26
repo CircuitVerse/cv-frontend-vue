@@ -108,8 +108,8 @@ export function fitToSelection(selected: any[]) {
     return;
   }
 
-  // Let engine handle centering + zoom
-  globalScope.centerFocus(true);
+  // Let engine handle centering + zoom (preserve selection bounds)
+  globalScope.centerFocus(true, 4 * DPR, true);
 }
 
 // Function used to change the zoom level wrt to a point

@@ -4,6 +4,10 @@ import circuitData from './circuits/misc-circuitdata.json';
 import testData from './testData/misc-testdata.json';
 import { runAll } from '../src/testbench';
 import Splitter from '../src/modules/Splitter';
+import verilogMultiplier from '../src/modules/verilogMultiplier';
+import verilogPower from '../src/modules/verilogPower';
+import Scope from '../src/circuit';
+import { simulationArea } from '../src/simulationArea';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import { createRouter, createWebHistory } from 'vue-router';
@@ -137,5 +141,109 @@ describe('Simulator Misc-Elements Testing', () => {
         expect(splitter.bitWidth).toBe(8);
         expect(splitter.inp1.bitWidth).toBe(8);
         expect(splitter.outputs.map((node) => node.bitWidth)).toEqual([1, 3]);
+    });
+
+    describe('Verilog multiplier precision', () => {
+        afterEach(() => simulationArea.simulationQueue.reset());
+
+        test.each(Array.from({ length: 32 }, (_, index) => index + 1))(
+            'preserves exact product bits for %i-bit operands at every output width',
+            (bitWidth) => {
+                const maximum = 2 ** bitWidth - 1;
+                const highBit = 2 ** (bitWidth - 1);
+                const maskInput = (value) => value % (maximum + 1);
+                const pairs = [
+                    [0, 0], [0, maximum], [maximum, 0],
+                    [1, maximum], [maximum, 1], [maximum, maximum],
+                    [maximum, Math.max(0, maximum - 2)],
+                    [highBit, highBit], [highBit - 1, maskInput(highBit + 1)],
+                    [maskInput(0xaaaaaaaa), maskInput(0x55555555)],
+                ];
+                let seed = 0x12345678;
+                for (let index = 0; index < 8; index++) {
+                    seed = (1664525 * seed + 1013904223) >>> 0;
+                    const a = maskInput(seed);
+                    seed = (1664525 * seed + 1013904223) >>> 0;
+                    pairs.push([a, maskInput(seed)]);
+                }
+
+                const scope = new Scope('MultiplierPrecision');
+                for (let outputBitWidth = 1; outputBitWidth <= 32; outputBitWidth++) {
+                    const multiplier = new verilogMultiplier(100, 100, scope, 'RIGHT', bitWidth, outputBitWidth);
+                    for (const [a, b] of pairs) {
+                        multiplier.inpA.value = a;
+                        multiplier.inpB.value = b;
+                        multiplier.resolve();
+                        const expected = Number(BigInt.asUintN(outputBitWidth, BigInt(a) * BigInt(b)));
+                        expect(multiplier.product.value, `${a} * ${b}, ${outputBitWidth}-bit output`).toBe(expected);
+                    }
+                }
+            },
+        );
+
+        test.each([[undefined, 1], [1, undefined], [undefined, undefined]])(
+            'does not resolve or enqueue an output with floating inputs %s and %s',
+            (a, b) => {
+                const multiplier = new verilogMultiplier(100, 100, new Scope('FloatingMultiplier'), 'RIGHT', 32, 32);
+                multiplier.inpA.value = a;
+                multiplier.inpB.value = b;
+                simulationArea.simulationQueue.reset();
+                multiplier.resolve();
+                expect(multiplier.product.value).toBeUndefined();
+                expect(simulationArea.simulationQueue.isEmpty()).toBe(true);
+            },
+        );
+    });
+
+    describe('Verilog power precision', () => {
+        afterEach(() => simulationArea.simulationQueue.reset());
+
+        test.each(Array.from({ length: 32 }, (_, index) => index + 1))(
+            'preserves exact power bits for a %i-bit output',
+            (outputBitWidth) => {
+                const power = new verilogPower(100, 100, new Scope('PowerPrecision'), 'RIGHT', 32, outputBitWidth);
+                const pairs = [
+                    [0, 0], [0, 32], [1, 1024], [2, 0], [2, 31], [2, 32],
+                    [3, 33], [3, 34], [3, 40], [3, 200], [3, 1024],
+                    [0xffffffff, 1], [0xffffffff, 2], [0xffffffff, 3],
+                    [0x80000001, 2], [0x80000001, 3],
+                ];
+
+                for (const [base, exponent] of pairs) {
+                    power.inpA.value = base;
+                    power.inpB.value = exponent;
+                    simulationArea.simulationQueue.reset();
+                    power.resolve();
+                    const expected = Number(BigInt.asUintN(outputBitWidth, BigInt(base) ** BigInt(exponent)));
+                    expect(power.answer.value, `${base} ** ${exponent}, ${outputBitWidth}-bit output`).toBe(expected);
+                    expect(simulationArea.simulationQueue.pop()).toBe(power.answer);
+                    expect(simulationArea.simulationQueue.isEmpty()).toBe(true);
+                }
+            },
+        );
+
+        test.each([
+            [0, 0xffffffff, 0], [1, 0xffffffff, 1], [2, 0xffffffff, 0],
+            [0xffffffff, 0xffffffff, 0xffffffff], [0xffffffff, 0xfffffffe, 1],
+        ])('handles the full 32-bit exponent range: %i ** %i', (base, exponent, expected) => {
+            const power = new verilogPower(100, 100, new Scope('LargePower'), 'RIGHT', 32, 32);
+            power.inpA.value = base;
+            power.inpB.value = exponent;
+            power.resolve();
+            expect(power.answer.value).toBe(expected);
+        });
+
+        test.each([[undefined, 1], [1, undefined], [undefined, undefined]])(
+            'does not resolve or enqueue an output with floating inputs %s and %s',
+            (base, exponent) => {
+                const power = new verilogPower(100, 100, new Scope('FloatingPower'), 'RIGHT', 32, 32);
+                power.inpA.value = base;
+                power.inpB.value = exponent;
+                simulationArea.simulationQueue.reset();
+                power.resolve();
+                expect(power.answer.value).toBeUndefined();
+                expect(simulationArea.simulationQueue.isEmpty()).toBe(true);
+            },
+        );
     });
 });

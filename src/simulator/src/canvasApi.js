@@ -113,8 +113,8 @@ export function fitToSelection(selected) {
         return
     }
 
-    // Let engine handle centering + zoom
-    globalScope.centerFocus(true)
+    // Let engine handle centering + zoom (preserve selection bounds)
+    globalScope.centerFocus(true, 4 * DPR, true)
 }
 
 

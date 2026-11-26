@@ -13,6 +13,9 @@ import Counter from '../src/modules/Counter';
 import BitSelector from '../src/modules/BitSelector';
 import Scope, { scopeList } from '../src/circuit';
 import { runYosys } from '@yowasp/yosys';
+import { yosys2digitaljs } from 'yosys2digitaljs/core';
+import { YosysJSON2CV } from '../src/Verilog2CV';
+import { errorDetectedGet, errorDetectedSet, play } from '../src/engine';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import { createRouter, createWebHistory } from 'vue-router';
@@ -251,6 +254,49 @@ describe('Verilog export', () => {
 
         setup();
     });
+
+    test('simulates compiled 32-bit multiplication without losing product bits', async () => {
+        const code = `module multiplier(input [31:0] a, b, output [31:0] product);
+    assign product = a * b;
+endmodule`;
+        const result = await runYosys(
+            ['-p', 'read_verilog input.v; setattr -mod -unset top; hierarchy -auto-top; proc; opt; memory -nomap; wreduce -memx; opt -full; write_json output.json'],
+            { 'input.v': code },
+            { stdout: () => {}, stderr: () => {} },
+        );
+        const raw = result['output.json'];
+        const netlist = JSON.parse(typeof raw === 'string' ? raw : new TextDecoder().decode(raw));
+        const circuit = yosys2digitaljs(netlist);
+        const previousScope = global.globalScope;
+        const previousError = errorDetectedGet();
+        const scope = new Scope('CompiledMultiplier');
+        scopeList[scope.id] = scope;
+        global.globalScope = scope;
+
+        try {
+            YosysJSON2CV(circuit, scope, 'multiplier', {}, true);
+            expect(scope.verilogMultiplier).toHaveLength(1);
+            const inputA = scope.Input.find(input => input.label === 'a');
+            const inputB = scope.Input.find(input => input.label === 'b');
+            const output = scope.Output.find(element => element.label === 'product');
+            for (const [a, b] of [
+                [0xffffffff, 0xffffffff], [0xffffffff, 0xfffffffd],
+                [0x07ffffff, 0x07ffffff], [0x80000000, 1],
+                [0x80000000, 2], [0, 0xffffffff], [12345, 6789],
+            ]) {
+                inputA.state = a;
+                inputB.state = b;
+                errorDetectedSet(false);
+                play(scope, true);
+                expect(errorDetectedGet()).toBe(false);
+                expect(output.inp1.value, `${a} * ${b}`).toBe(Number(BigInt.asUintN(32, BigInt(a) * BigInt(b))));
+            }
+        } finally {
+            global.globalScope = previousScope;
+            errorDetectedSet(previousError);
+            delete scopeList[scope.id];
+        }
+    }, 60000);
 
     test('skips elements whose outputs are not connected', () => {
         const a = new Input(0, 0, globalScope, 'RIGHT', 1);
