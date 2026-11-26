@@ -80,6 +80,9 @@ export default defineConfig(() => {
         strictMessage: false,
       }),
     ],
+    // Isolate Vite's dependency cache per version so v0 and v1 dev servers can run concurrently
+    // without cache collisions or re-optimization on version switch.
+    cacheDir: fileURLToPath(new URL(`./node_modules/.vite-${version}`, import.meta.url)),
     optimizeDeps: {
       // Vue is excluded from pre-bundling: bundling its esm-bundler runtime
       // alongside vuetify + vue-i18n triggers a runtime
