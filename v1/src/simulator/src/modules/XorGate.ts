@@ -109,8 +109,8 @@ export default class XorGate extends CircuitElement implements ICircuitElement {
     ctx.stroke();
   }
 
-  generateVerilog() {
-    return gateGenerateVerilog.call(this, "^");
+  generateVerilog(): string {
+    return gateGenerateVerilog(this, "^");
   }
 }
 

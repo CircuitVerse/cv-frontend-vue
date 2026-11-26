@@ -142,7 +142,7 @@ export default class NorGate extends CircuitElement {
     }
 
     generateVerilog() {
-        return gateGenerateVerilog.call(this, '|', true)
+        return gateGenerateVerilog(this, '|', true)
     }
 }
 

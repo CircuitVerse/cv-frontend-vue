@@ -13,6 +13,11 @@ import { useActions } from "#/store/SimulatorStore/actions";
 import { writeTextFile } from "@tauri-apps/plugin-fs";
 import { join, downloadDir } from "@tauri-apps/api/path";
 import { isTauri } from "@tauri-apps/api/core";
+import type { ICircuitElement, CircuitNode } from "./types/circuitElement.types";
+
+type VerilogNode = CircuitNode & { verilogLabel?: string };
+
+const NODE_INPUT = 0;
 
 window.globalScope = undefined;
 window.lightMode = false; // To be deprecated
@@ -87,22 +92,31 @@ export function uniq(a: any[]) {
 // Generates final verilog code for each element
 // Gate = &/|/^
 // Invert is true for xNor, Nor, Nand
-export function gateGenerateVerilog(this: any, gate: string, invert = false) {
-  let inputs = [];
-  let outputs = [];
+export function gateGenerateVerilog(
+  element: Pick<ICircuitElement, "nodeList">,
+  gate: string,
+  invert = false,
+): string {
+  const inputs: VerilogNode[] = [];
+  const outputs: (VerilogNode | "")[] = [];
 
-  for (let i = 0; i < this.nodeList.length; i++) {
-    if (this.nodeList[i].type == NODE_INPUT) {
-      inputs.push(this.nodeList[i]);
+  for (let i = 0; i < element.nodeList.length; i++) {
+    const node = element.nodeList[i] as VerilogNode;
+    if (node.type === NODE_INPUT) {
+      inputs.push(node);
+    } else if (node.connections.length > 0) {
+      outputs.push(node);
     } else {
-      if (this.nodeList[i].connections.length > 0) outputs.push(this.nodeList[i]);
-      else outputs.push(""); // Don't create a wire
+      outputs.push(""); // Don't create a wire
     }
   }
 
   let res = "assign ";
-  if (outputs.length == 1) res += outputs[0].verilogLabel;
-  else res += `{${outputs.map((x) => x.verilogLabel).join(", ")}}`;
+  if (outputs.length === 1) {
+    res += (outputs[0] as VerilogNode).verilogLabel;
+  } else {
+    res += `{${(outputs as VerilogNode[]).map((x) => x.verilogLabel).join(", ")}}`;
+  }
 
   res += " = ";
 
@@ -110,7 +124,7 @@ export function gateGenerateVerilog(this: any, gate: string, invert = false) {
   if (invert) {
     res += `~(${inputParams});`;
   } else {
-    res += inputParams + ";";
+    res += `${inputParams};`;
   }
   return res;
 }

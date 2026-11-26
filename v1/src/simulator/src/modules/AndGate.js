@@ -131,7 +131,7 @@ export default class AndGate extends CircuitElement {
     }
 
     generateVerilog() {
-        return gateGenerateVerilog.call(this, '&')
+        return gateGenerateVerilog(this, '&')
     }
 }
 
