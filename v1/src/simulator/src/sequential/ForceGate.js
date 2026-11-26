@@ -18,7 +18,7 @@ export default class ForceGate extends CircuitElement {
         super(x, y, scope, dir, bitWidth)
         this.setDimensions(20, 10)
         this.objectType = 'ForceGate'
-        this.scope.ForceGate.push(this)
+        /* this is done in this.baseSetup() now */
         this.inp1 = new Node(-20, 0, 0, this)
         this.inp2 = new Node(0, 0, 0, this)
         this.output1 = new Node(20, 0, 1, this)
