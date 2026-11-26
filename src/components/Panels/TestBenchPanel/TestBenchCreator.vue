@@ -224,8 +224,9 @@ const groups = reactive<Group[]>([
 
 const loadFromStore = () => {
     const { title, type } = testBenchStore.testbenchData.testData;
-    if (title) testTitle.value = title;
-    if (type) testType.value = type;
+    // A circuit with no test has an empty title and type, so fall back to the defaults
+    testTitle.value = title || t('simulator.panel_body.testbench_creator.untitled');
+    testType.value = type || 'comb';
 };
 
 watch(() => testBenchStore.showTestBenchCreator, (open) => {
@@ -245,8 +246,12 @@ watch(() => testBenchStore.testbenchData.testData.groups, () => {
 
     groups.splice(0, groups.length, ...values);
 
-    if (newGroups[0]) {
-        const { inputs, outputs } = newGroups[0];
+    // Column names and widths come from the first group that has columns.
+    // Only an empty test (no group has any columns) gets the default inp1/out1 columns.
+    const columnSource = newGroups.find(group => group.inputs.length > 0 || group.outputs.length > 0);
+
+    if (columnSource) {
+        const { inputs, outputs } = columnSource;
 
         inputsBandWidth.value.splice(0, inputsBandWidth.value.length, ...inputs.map(input => input.bitWidth));
         outputsBandWidth.value.splice(0, outputsBandWidth.value.length, ...outputs.map(output => output.bitWidth));
@@ -257,6 +262,11 @@ watch(() => testBenchStore.testbenchData.testData.groups, () => {
         outputsBandWidth.value.splice(0, outputsBandWidth.value.length, 1);
         inputsName.value.splice(0, inputsName.value.length, "inp1");
         outputsName.value.splice(0, outputsName.value.length, "out1");
+        // Match the default columns so every group has the same shape as a new group
+        groups.forEach(group => {
+            group.inputs = [[]];
+            group.outputs = [[]];
+        });
     }
 });
 
