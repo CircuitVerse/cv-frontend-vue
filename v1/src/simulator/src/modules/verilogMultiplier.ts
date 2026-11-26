@@ -85,7 +85,8 @@ export default class verilogMultiplier extends CircuitElement {
     if (this.isResolvable() === false) {
       return;
     }
-    const product = this.inpA.value * this.inpB.value;
+    // Keep the low 32 product bits exact before masking to the output width.
+    const product = Math.imul(this.inpA.value, this.inpB.value);
 
     this.product.value = (product << (32 - this.outputBitWidth)) >>> (32 - this.outputBitWidth);
     simulationArea.simulationQueue.add(this.product as QueueObject);
