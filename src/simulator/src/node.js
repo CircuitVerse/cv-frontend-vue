@@ -173,6 +173,8 @@ export default class Node {
             this.bitWidth = bitWidth
         }
         this.label = label
+        /** @type {string} */
+        this.verilogLabel = ''
         this.prevx = undefined
         this.prevy = undefined
         this.leftx = x

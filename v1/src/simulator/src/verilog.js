@@ -327,6 +327,23 @@ export var verilog = {
             }
         }
 
+        // Seed arithmetic elements with connected outputs so elements with all inputs disconnected are still exported
+        var arithmeticTypes = [
+            'verilogMultiplier',
+            'verilogDivider',
+            'verilogPower',
+            'verilogShiftLeft',
+            'verilogShiftRight',
+        ]
+        for (var i = 0; i < arithmeticTypes.length; i++) {
+            var elems = scope[arithmeticTypes[i]] || []
+            for (var j = 0; j < elems.length; j++) {
+                if (!this.hasNoConnectedOutputs(elems[j])) {
+                    scope.stack.push(elems[j])
+                }
+            }
+        }
+
         // Iterative DFS on circuit graph
         while (scope.stack.length) {
             if (errorDetectedGet()) return
