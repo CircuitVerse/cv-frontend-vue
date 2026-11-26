@@ -10,6 +10,8 @@ import i18n from '#/locales/i18n';
 import { routes } from '#/router';
 import vuetify from '#/plugins/vuetify';
 import simulator from '#/pages/simulator.vue';
+import { switchCircuit } from '../src/circuit';
+import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore';
 
 vi.mock('codemirror', async (importOriginal) => {
     const actual = await importOriginal();
@@ -81,5 +83,35 @@ describe('SubCircuit Testing', () => {
     test('subCircuit working', () => {
         const result = runAll(testData.subCircuit);
         expect(result.summary.passed).toBe(8);
+    });
+
+    test('switchCircuit updates tab focus and activeCircuit when called with string id (issue #1552)', () => {
+        const store = SimulatorStore();
+        load(circuitData);
+
+        const initialActiveId = store.activeCircuit.id;
+        const targetCircuit = store.circuit_list.find(c => c.id != initialActiveId);
+        expect(targetCircuit).toBeDefined();
+
+        switchCircuit(String(targetCircuit.id));
+
+        expect(store.activeCircuit.id).toBe(targetCircuit.id);
+        const focused = store.circuit_list.find(c => c.id == targetCircuit.id);
+        expect(focused.focussed).toBe(true);
+    });
+
+    test('double-clicking subcircuit with string id updates activeCircuit and highlights tab (issue #1552)', () => {
+        const store = SimulatorStore();
+        load(circuitData);
+
+        const subcircuit = globalScope.SubCircuit[0];
+        expect(subcircuit).toBeDefined();
+        expect(typeof subcircuit.id).toBe('string');
+
+        subcircuit.dblclick();
+
+        expect(store.activeCircuit.id).toBe(Number(subcircuit.id));
+        const focused = store.circuit_list.find(c => c.id == subcircuit.id);
+        expect(focused.focussed).toBe(true);
     });
 });
