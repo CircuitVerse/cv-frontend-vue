@@ -60,18 +60,20 @@ export const defaultCustomTheme: Record<string, string> = {
  */
 export function getCustomTheme(): Record<string, string> {
   try {
-    const customTheme = localStorage.getItem("Custom Theme");
-    if (!customTheme) {
-      return { ...defaultCustomTheme };
-    }
-    const parsed = JSON.parse(customTheme);
-    if (
-      parsed &&
-      typeof parsed === "object" &&
-      !Array.isArray(parsed) &&
-      Object.keys(parsed).length > 0
-    ) {
-      return parsed;
+    if (typeof localStorage !== "undefined" && typeof localStorage.getItem === "function") {
+      const customTheme = localStorage.getItem("Custom Theme");
+      if (!customTheme) {
+        return { ...defaultCustomTheme };
+      }
+      const parsed = JSON.parse(customTheme);
+      if (
+        parsed &&
+        typeof parsed === "object" &&
+        !Array.isArray(parsed) &&
+        Object.keys(parsed).length > 0
+      ) {
+        return parsed;
+      }
     }
   } catch {
     // Storage unavailable or malformed JSON: use the default custom theme

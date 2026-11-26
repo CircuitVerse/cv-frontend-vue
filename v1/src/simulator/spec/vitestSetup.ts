@@ -28,6 +28,45 @@ if (!global.visualViewport) {
   window.visualViewport = visualViewportMock;
 }
 
+// Node 22+ provides an experimental unconfigured globalThis.localStorage where getItem is not a function.
+// Provide a working mock storage for both window and global in test environments.
+if (
+  typeof window.localStorage?.getItem !== "function" ||
+  typeof (global as any).localStorage?.getItem !== "function"
+) {
+  const createLocalStorageMock = () => {
+    let store: Record<string, string> = {};
+    return {
+      getItem: vi.fn((key: string) => store[key] ?? null),
+      setItem: vi.fn((key: string, value: string) => {
+        store[key] = String(value);
+      }),
+      removeItem: vi.fn((key: string) => {
+        delete store[key];
+      }),
+      clear: vi.fn(() => {
+        store = {};
+      }),
+      key: vi.fn((index: number) => Object.keys(store)[index] ?? null),
+      get length() {
+        return Object.keys(store).length;
+      },
+    };
+  };
+
+  const mockStorage = createLocalStorageMock();
+  Object.defineProperty(window, "localStorage", {
+    value: mockStorage,
+    writable: true,
+    configurable: true,
+  });
+  Object.defineProperty(global, "localStorage", {
+    value: mockStorage,
+    writable: true,
+    configurable: true,
+  });
+}
+
 window.jQuery = jQuery;
 window.$ = jQuery;
 window.restrictedElements = [];

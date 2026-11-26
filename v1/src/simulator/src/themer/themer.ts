@@ -209,9 +209,16 @@ export const updateBG = (): void => dots(true, false, true);
  * Initializes the theme on load.
  */
 const initializeTheme = (): void => {
-  const theme = localStorage.getItem("theme") || "Default Theme";
-  if (!localStorage.getItem("theme")) {
-    localStorage.setItem("theme", theme);
+  let theme = "Default Theme";
+  try {
+    if (typeof localStorage !== "undefined" && typeof localStorage.getItem === "function") {
+      theme = localStorage.getItem("theme") || "Default Theme";
+      if (!localStorage.getItem("theme") && typeof localStorage.setItem === "function") {
+        localStorage.setItem("theme", theme);
+      }
+    }
+  } catch {
+    // Fallback to "Default Theme" if localStorage is unavailable (e.g. Node/Vitest)
   }
   updateThemeForStyle(theme);
 };
