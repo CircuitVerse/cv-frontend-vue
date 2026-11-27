@@ -9,6 +9,7 @@
             v-model="projectStore.project.name"
             :oninput="projectStore.setProjectNameDefined"
             maxlength="60"
+            @blur="onProjnameBlur"
         />
     </p>
 
@@ -121,6 +122,12 @@ const projectStore = useProjectStore()
 const SimulatorState = <SimulatorStateType>useState()
 const circnameInput = ref<HTMLInputElement | null>(null)
 const simulatorMobileStore = useSimulatorMobileStore()
+
+function onProjnameBlur() {
+    if (!(projectStore.project.name ?? '').trim()) {
+        projectStore.project.name = 'Untitled'
+    }
+}
 
 watch(() => SimulatorState.circuit_name_clickable, () => {
     setTimeout(() => {
