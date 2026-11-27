@@ -66,7 +66,7 @@ export function resetScopeList() {
  * Changes UI tab etc
  * Sets flags to make updates, resets most of the things
  */
-export function switchCircuit(id: string) {
+export function switchCircuit(id: string | number) {
   // TODO: fix tomorrow
   const simulatorStore = SimulatorStore();
   const { circuit_list } = toRefs(simulatorStore);
@@ -83,7 +83,7 @@ export function switchCircuit(id: string) {
 
   // globalScope.fixLayout();
   scheduleBackup();
-  if (id === globalScope.id) return;
+  if (String(id) === String(globalScope.id)) return;
   // $(`.circuits`).removeClass('current')
   circuit_list.value.forEach((circuit) => (circuit.focussed ? (circuit.focussed = false) : null));
   simulationArea.lastSelected = undefined;
@@ -96,7 +96,7 @@ export function switchCircuit(id: string) {
   }
   if (globalScope.isVisible()) {
     // $(`#${id}`).addClass('current')
-    const index = circuit_list.value.findIndex((circuit) => circuit.id === id);
+    const index = circuit_list.value.findIndex((circuit) => String(circuit.id) === String(id));
     if (index === -1) return;
     circuit_list.value[index].focussed = true;
     activeCircuit.value = {
