@@ -67,7 +67,7 @@ vi.mock("#/simulator/src/themer/themer", async (importOriginal) => {
 });
 
 import themeOptions, { defaultCustomTheme } from "../src/themer/themes";
-import { updateThemeForStyle } from "../src/themer/themer";
+import { getThemeCardSvg, updateThemeForStyle } from "../src/themer/themer";
 import { CreateAbstraction } from "../src/themer/customThemeAbstraction";
 import ApplyThemes from "#/components/DialogBox/Themes/ApplyThemes.vue";
 import { useState } from "#/store/SimulatorStore/state";
@@ -320,5 +320,12 @@ describe("Theme subsystem and dialog", () => {
     expect(document.documentElement.style.getPropertyValue("--primary")).toBe(
       defaultCustomTheme["--primary"],
     );
+  });
+
+  it("sets .svgNav fill from --bg-tabs in getThemeCardSvg", () => {
+    const svg = getThemeCardSvg("Default Theme");
+    const doc = new DOMParser().parseFromString(svg, "image/svg+xml");
+    const navEl = doc.querySelector(".svgNav");
+    expect(navEl?.getAttribute("fill")).toBe(themeOptions["Default Theme"]["--bg-tabs"]);
   });
 });

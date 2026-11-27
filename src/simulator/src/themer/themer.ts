@@ -97,7 +97,7 @@ export const getThemeCardSvg = (themeName: string): string => {
   };
 
   applyStyles(".svgText", { fill: colors["--text-panel"] || "#000000" });
-  applyStyles(".svgNav", { fill: colors["--bg-tab"], stroke: colors["--br-primary"] });
+  applyStyles(".svgNav", { fill: colors["--bg-tabs"], stroke: colors["--br-primary"] });
   applyStyles(".svgGridBG", { fill: colors["--canvas-fill"] });
   applyStyles(".svgGrid", { fill: colors["--canvas-stroke"] });
   applyStyles(".svgPanel", { fill: colors["--primary"], stroke: colors["--br-primary"] });
