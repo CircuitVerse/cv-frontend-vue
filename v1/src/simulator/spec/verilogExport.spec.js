@@ -547,4 +547,24 @@ endmodule
         }, 60000);
     });
 
+    test('includes VCD waveform dump directives in testbench by default and when enabled', () => {
+        setup();
+        const a = new Input(0, 0, globalScope, 'RIGHT', 1);
+        const out = new Output(100, 0, globalScope, 'LEFT', 1);
+        a.label = 'a';
+        out.label = 'y';
+        a.output1.connect(out.inp1);
+
+        const defaultCode = verilog.exportVerilog();
+        expect(defaultCode).toContain('$dumpfile("dump.vcd");');
+        expect(defaultCode).toContain('$dumpvars(0, TestBench);');
+
+        const enabledCode = verilog.exportVerilog(undefined, { includeVcd: true });
+        expect(enabledCode).toContain('$dumpfile("dump.vcd");');
+        expect(enabledCode).toContain('$dumpvars(0, TestBench);');
+
+        const disabledCode = verilog.exportVerilog(undefined, { includeVcd: false });
+        expect(disabledCode).not.toContain('$dumpfile');
+        expect(disabledCode).not.toContain('$dumpvars');
+    });
 });

@@ -44,7 +44,7 @@ export function setupVerilogExportCodeWindow() {
 export var verilog = {
     // Entry point to verilog generation
     // scope = undefined means export all circuits
-    exportVerilog: function (scope = undefined) {
+    exportVerilog: function (scope = undefined, options = {}) {
         var dependencyList = {}
         // Reset Verilog Element State
         for (var elem in modules) {
@@ -102,7 +102,7 @@ export var verilog = {
         }
 
         var report = this.generateReport(elementTypesUsed) + '\n'
-        var testbench = this.generateTestBenchCode(DUTs)
+        var testbench = this.generateTestBenchCode(DUTs, options)
 
         return report + testbench + output
     },
@@ -150,8 +150,9 @@ export var verilog = {
         output += '*/\n'
         return output
     },
-    generateTestBenchCode: function (DUTs) {
+    generateTestBenchCode: function (DUTs, options = {}) {
         if (DUTs.length == 0) return ''
+        var includeVcd = options.includeVcd !== false
         var output = '// Sample Testbench Code - Uncomment to use\n'
 
         output += '\n/*\n'
@@ -226,6 +227,10 @@ export var verilog = {
         }
 
         output += `${sp(1)}initial begin\n`
+        if (includeVcd) {
+            output += `${sp(2)}$dumpfile("dump.vcd");\n`
+            output += `${sp(2)}$dumpvars(0, TestBench);\n\n`
+        }
 
         // Reset inputs to 0
         for (var inp of inputs) {

@@ -19,22 +19,30 @@
                 <div id="verilog-export-code-window-div" title="Export Verilog">
                     <Codemirror
                         id="verilog-export-code-window"
-                        :value="(code = verilog.exportVerilog())"
+                        :value="code"
                         :options="cmOptions"
                         border
                         :height="300"
                         :width="700"
+                        @change="onCodeChange"
                     />
                 </div>
+                <v-checkbox
+                    v-model="includeVcd"
+                    label="Include VCD waveform dump for GTKWave / EPWave"
+                    density="compact"
+                    hide-details
+                    class="mt-2"
+                />
             </v-card-text>
-            <v-card-actions>
-                <v-btn class="messageBtn" block @click="downloadVerilog()">
+            <v-card-actions style="flex-wrap: wrap; gap: 8px">
+                <v-btn class="messageBtn" @click="downloadVerilog()">
                     Download Verilog File
                 </v-btn>
-                <v-btn class="messageBtn" block @click="copyClipboard()">
+                <v-btn class="messageBtn" @click="copyClipboard()">
                     Copy to Clipboard
                 </v-btn>
-                <v-btn class="messageBtn" block @click="edaPlayground()">
+                <v-btn class="messageBtn" @click="edaPlayground()">
                     Try in EDA Playground
                 </v-btn>
             </v-card-actions>
@@ -43,7 +51,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useState } from '#/store/SimulatorStore/state'
 const SimulatorState = useState()
 import Codemirror from 'codemirror-editor-vue3'
@@ -65,9 +73,34 @@ import {
 import { getProjectName } from '#/simulator/src/data/save'
 const code = ref('')
 const cmOptions = ref({})
+const includeVcd = ref(true)
+
+function refreshExportedCode() {
+    code.value = verilog.exportVerilog(undefined, {
+        includeVcd: includeVcd.value,
+    })
+}
+
+function onCodeChange(newCode: string) {
+    code.value = newCode
+}
+
+watch(
+    () => SimulatorState.dialogBox.exportverilog_dialog,
+    (isOpen) => {
+        if (isOpen) {
+            refreshExportedCode()
+        }
+    }
+)
+
+watch(includeVcd, () => {
+    refreshExportedCode()
+})
+
 onMounted(() => {
     SimulatorState.dialogBox.exportverilog_dialog = false
-    code.value = verilog.exportVerilog()
+    refreshExportedCode()
     cmOptions.value = {
         mode: 'verilog',
         autoRefresh: true,
