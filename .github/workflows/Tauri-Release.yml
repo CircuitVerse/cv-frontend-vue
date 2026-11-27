@@ -31,7 +31,7 @@ jobs:
             release_branch: ${{ steps.bump.outputs.release_branch }}
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v4
+              uses: actions/checkout@v4.4.0
               with:
                   fetch-depth: 0
                   token: ${{ secrets.GITHUB_TOKEN }}
@@ -100,7 +100,7 @@ jobs:
 
             - name: Generate Changelog
               id: changelog
-              uses: TriPSs/conventional-changelog-action@v6
+              uses: TriPSs/conventional-changelog-action@v6.4.0
               with:
                   github-token: ${{ secrets.GITHUB_TOKEN }}
                   skip-on-empty: 'false'
@@ -168,7 +168,7 @@ jobs:
 
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v4
+              uses: actions/checkout@v4.4.0
               with:
                   ref: ${{ needs.version.outputs.release_branch }}
                   fetch-depth: 0
@@ -177,12 +177,12 @@ jobs:
               run: git pull origin ${{ needs.version.outputs.release_branch }}
 
             - name: Setup Node.js
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v4.4.0
               with:
                   node-version: 22
 
             - name: Cache Node.js Dependencies
-              uses: actions/cache@v4
+              uses: actions/cache@v4.3.0
               with:
                   path: ~/.npm
                   key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -224,7 +224,7 @@ jobs:
                   choco install -y wixtoolset nsis webview2-runtime
 
             - name: Cache Rust Dependencies
-              uses: Swatinem/rust-cache@v2
+              uses: Swatinem/rust-cache@v2.9.3
               with:
                   workspaces: './src-tauri'
 
@@ -239,7 +239,7 @@ jobs:
             # Reference: Issue #631
 
             - name: Upload Tauri Build Artifacts
-              uses: actions/upload-artifact@v4
+              uses: actions/upload-artifact@v4.6.2
               with:
                   name: Tauri Build Artifacts (${{ matrix.os }})
                   path: |
@@ -250,7 +250,7 @@ jobs:
         needs: [version, build-tauri]
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v4
+              uses: actions/checkout@v4.4.0
               with:
                   fetch-depth: 0
                   token: ${{ secrets.GITHUB_TOKEN }}
@@ -298,7 +298,7 @@ jobs:
                   git push origin HEAD:"$RELEASE_BRANCH"
 
             - name: Download all build artifacts
-              uses: actions/download-artifact@v4
+              uses: actions/download-artifact@v4.3.0
               with:
                   path: artifacts
 
