@@ -184,7 +184,11 @@ function checkValidBitWidth() {
     }
 }
 
-export function objectPropertyAttributeUpdate() {
+export function objectPropertyAttributeUpdate(event) {
+    if (this.name === 'changeCircuitName' && event.type !== 'change') {
+        return
+    }
+
     checkValidBitWidth()
     scheduleUpdate()
     updateCanvasSet(true)
