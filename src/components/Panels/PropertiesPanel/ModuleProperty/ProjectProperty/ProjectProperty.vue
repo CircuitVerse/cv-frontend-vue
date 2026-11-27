@@ -22,7 +22,9 @@
             type="text"
             autocomplete="off"
             name="changeCircuitName"
-            :value="SimulatorState.activeCircuit?.name"
+            :value="circuitNameDraft"
+            @input="circuitNameDraft = ($event.target as HTMLInputElement).value"
+            @blur="onCircnameBlur"
         />
     </p>
 
@@ -116,10 +118,34 @@ import { closeCircuit } from '#/components/helpers/deleteCircuit/DeleteCircuit.v
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { watch } from 'vue'
 import { ref } from 'vue'
+import { changeCircuitName } from '#/simulator/src/circuit'
 
 const projectStore = useProjectStore()
 const SimulatorState = <SimulatorStateType>useState()
 const circnameInput = ref<HTMLInputElement | null>(null)
+const circuitNameDraft = ref(SimulatorState.activeCircuit?.name ?? '')
+watch(
+    () => SimulatorState.activeCircuit?.id,
+    () => {
+        circuitNameDraft.value = SimulatorState.activeCircuit?.name ?? ''
+    }
+)
+
+watch(
+    () => SimulatorState.activeCircuit?.name,
+    () => {
+        if (document.activeElement?.id !== 'circname') {
+            circuitNameDraft.value = SimulatorState.activeCircuit?.name ?? ''
+        }
+    }
+)
+
+function onCircnameBlur() {
+    if (!circuitNameDraft.value.trim()) {
+        circuitNameDraft.value = 'Untitled'
+        changeCircuitName('Untitled')
+    }
+}
 const simulatorMobileStore = useSimulatorMobileStore()
 
 watch(() => SimulatorState.circuit_name_clickable, () => {
