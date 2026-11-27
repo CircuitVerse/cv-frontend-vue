@@ -274,15 +274,17 @@ export function newCircuit(
 /**
  * Used to change name of a circuit
  */
-export function changeCircuitName(name: string, id = globalScope.id) {
+export function changeCircuitName(name: string, id: string | number = globalScope.id) {
   const simulatorStore = SimulatorStore();
   const { circuit_list, activeCircuit } = toRefs(simulatorStore);
   name = name || "Untitled";
   name = stripTags(name);
   scopeList[id].name = name;
-  const index = circuit_list.value.findIndex((circuit) => circuit.id === id);
-  circuit_list.value[index].name = name;
-  if (activeCircuit.value && activeCircuit.value.id === id) {
+  const index = circuit_list.value.findIndex((circuit) => String(circuit.id) === String(id));
+  if (index !== -1) {
+    circuit_list.value[index].name = name;
+  }
+  if (activeCircuit.value && String(activeCircuit.value.id) === String(id)) {
     activeCircuit.value = { id, name };
   }
 }
@@ -443,11 +445,11 @@ export default class Scope {
    * Checks if this circuit contains directly or indirectly scope with id
    * Recursive nature
    */
-  checkDependency(id: number) {
-    if (id === this.id) return true;
+  checkDependency(id: number | string) {
+    if (String(id) === String(this.id)) return true;
     if (this.SubCircuit) {
       for (let i = 0; i < this.SubCircuit.length; i++) {
-        if (this.SubCircuit[i].id === id) return true;
+        if (String(this.SubCircuit[i].id) === String(id)) return true;
       }
     }
     if (this.SubCircuit) {

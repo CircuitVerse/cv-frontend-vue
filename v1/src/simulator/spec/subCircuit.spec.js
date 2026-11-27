@@ -1,5 +1,7 @@
 import { setup } from '../src/setup';
 import load from '../src/data/load';
+import { scopeList, switchCircuit } from '../src/circuit';
+import { SimulatorStore } from '#/store/SimulatorStore/SimulatorStore';
 import circuitData from './circuits/subCircuit-circuitdata.json';
 import { runAll } from '../src/testbench';
 import testData from './testData/subCircuit-testdata.json';
@@ -81,5 +83,42 @@ describe('SubCircuit Testing', () => {
     test('subCircuit working', () => {
         const result = runAll(testData.subCircuit);
         expect(result.summary.passed).toBe(8);
+    });
+
+    test('switchCircuit highlights tab and updates activeCircuit with string ID against numeric scope ID', () => {
+        load(circuitData);
+        const simulatorStore = SimulatorStore();
+        const subScope = scopeList['98622262167'];
+        subScope.id = 98622262167;
+        const subTab = simulatorStore.circuit_list.find((c) => String(c.id) === '98622262167');
+        expect(subTab).toBeDefined();
+        subTab.id = 98622262167;
+
+        switchCircuit('98622262167');
+
+        expect(subTab.focussed).toBe(true);
+        expect(String(simulatorStore.activeCircuit.id)).toBe('98622262167');
+    });
+
+    test('subcircuit dblclick() highlights tab and updates activeCircuit with string ID against numeric scope ID', () => {
+        load(circuitData);
+        const simulatorStore = SimulatorStore();
+        const mainScope = scopeList['69980799589'];
+        const subScope = scopeList['98622262167'];
+        subScope.id = 98622262167;
+        const subTab = simulatorStore.circuit_list.find((c) => String(c.id) === '98622262167');
+        expect(subTab).toBeDefined();
+        subTab.id = 98622262167;
+
+        const subCircuitEl = mainScope.SubCircuit[0];
+        expect(typeof subCircuitEl.id).toBe('string');
+        expect(mainScope.checkDependency(98622262167)).toBe(true);
+        expect(mainScope.checkDependency('98622262167')).toBe(true);
+
+        subCircuitEl.elementHover = undefined;
+        subCircuitEl.dblclick();
+
+        expect(subTab.focussed).toBe(true);
+        expect(String(simulatorStore.activeCircuit.id)).toBe('98622262167');
     });
 });

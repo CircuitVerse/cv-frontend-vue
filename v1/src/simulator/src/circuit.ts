@@ -274,15 +274,17 @@ export function newCircuit(
 /**
  * Used to change name of a circuit
  */
-export function changeCircuitName(name: string, id = globalScope.id) {
+export function changeCircuitName(name: string, id: string | number = globalScope.id) {
   const simulatorStore = SimulatorStore();
   const { circuit_list, activeCircuit } = toRefs(simulatorStore);
   name = name || "Untitled";
   name = stripTags(name);
   scopeList[id].name = name;
-  const index = circuit_list.value.findIndex((circuit) => circuit.id === id);
-  circuit_list.value[index].name = name;
-  if (activeCircuit.value && activeCircuit.value.id === id) {
+  const index = circuit_list.value.findIndex((circuit) => String(circuit.id) === String(id));
+  if (index !== -1) {
+    circuit_list.value[index].name = name;
+  }
+  if (activeCircuit.value && String(activeCircuit.value.id) === String(id)) {
     activeCircuit.value = { id, name };
   }
 }
