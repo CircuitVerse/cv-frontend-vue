@@ -14,6 +14,7 @@ import { generateId } from "./utils";
 import { simulationArea } from "./simulationArea";
 import { TestbenchData } from "#/simulator/src/testbench";
 import { moduleList, updateOrder } from "./metadata";
+import { isValidClipboardData } from "./clipboardValidation";
 
 /**
  * Helper function to paste
@@ -21,9 +22,19 @@ import { moduleList, updateOrder } from "./metadata";
  * @category events
  */
 export function paste(copyData: string): void {
-  if (copyData === "undefined") return;
-  const data = JSON.parse(copyData);
-  if (!data.logixClipBoardData) return;
+  if (!copyData || copyData === "undefined") return;
+
+  let data;
+  try {
+    data = JSON.parse(copyData);
+  } catch {
+    // Plain text, HTML or an empty clipboard is not CircuitVerse data.
+    return;
+  }
+
+  // Validate everything up front, before newCircuit()/switchCircuit() or
+  // loadScope() can modify the simulator, so bad data never half-applies.
+  if (!isValidClipboardData(data)) return;
 
   const currentScopeId = globalScope.id;
   for (let i = 0; i < data.scopes.length; i++) {
