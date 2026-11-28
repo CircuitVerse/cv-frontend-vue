@@ -82,7 +82,13 @@ export function switchCircuit(id: string | number) {
 
   // globalScope.fixLayout();
   scheduleBackup();
-  if (String(id) === String(globalScope.id)) return;
+  if (String(id) === String(globalScope.id)) {
+    simulationArea.lastSelected = globalScope.root;
+    if (!embed) {
+      showProperties(simulationArea.lastSelected);
+    }
+    return;
+  }
   // $(`.circuits`).removeClass('current')
   circuit_list.value.forEach((circuit) => (circuit.focussed ? (circuit.focussed = false) : null));
   simulationArea.lastSelected = undefined;
