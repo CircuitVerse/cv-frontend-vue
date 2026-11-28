@@ -82,12 +82,7 @@ export function switchCircuit(id: string | number) {
 
   // globalScope.fixLayout();
   scheduleBackup();
-  if (String(id) === String(globalScope.id)) {
-    if (isVerilogCircuit) {
-      resetVerilogCode();
-    }
-    return;
-  }
+  if (String(id) === String(globalScope.id)) return;
   // $(`.circuits`).removeClass('current')
   circuit_list.value.forEach((circuit) => (circuit.focussed ? (circuit.focussed = false) : null));
   simulationArea.lastSelected = undefined;
