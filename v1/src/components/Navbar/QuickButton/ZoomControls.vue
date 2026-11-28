@@ -5,7 +5,7 @@
       type="range"
       class="custom-range"
       min="0"
-      max="45"
+      :max="maxZoomLevel"
       step="1"
       v-model.number="zoomLevel"
       @input="onSliderChange"
@@ -21,6 +21,8 @@ import { changeScale } from "../../../simulator/src/canvasApi";
 import { updateCanvasSet, gridUpdateSet } from "../../../simulator/src/engine";
 import {
   zoomLevel,
+  maxZoomLevel,
+  getMaxZoomLevel,
   getCurLevel,
   setCurLevel,
   increment,
@@ -39,13 +41,16 @@ const onSliderChange = () => {
 const handleWheel = (e: WheelEvent | any) => {
   const deltaY = e.type === "wheel" ? -e.deltaY : -e.detail;
   if (deltaY === 0) return;
+  const maxLevel = getMaxZoomLevel();
+  maxZoomLevel.value = maxLevel;
   const directionY = Math.sign(deltaY);
-  if (directionY > 0 && zoomLevel.value < 45) zoomLevel.value++;
+  if (directionY > 0 && zoomLevel.value < maxLevel) zoomLevel.value++;
   else if (directionY < 0 && zoomLevel.value > 0) zoomLevel.value--;
   setCurLevel(zoomLevel.value);
 };
 
 onMounted(() => {
+  maxZoomLevel.value = getMaxZoomLevel();
   const simArea = document.getElementById("simulationArea");
   if (simArea) {
     simArea.addEventListener("wheel", handleWheel);

@@ -36,8 +36,9 @@ export function decrement(): void {
     ZoomOut();
     return;
   }
+  const min = parseInt(slider.min || "0", 10);
   const val = parseInt(slider.value, 10);
-  if (val > 0) {
+  if (val > min) {
     slider.value = String(val - 1);
     // Drive the slider's change handler to keep curLevel and canvas scale in sync
     slider.dispatchEvent(new Event("change", { bubbles: true }));
@@ -49,8 +50,9 @@ export function increment(): void {
     ZoomIn();
     return;
   }
+  const max = parseInt(slider.max || "45", 10);
   const val = parseInt(slider.value, 10);
-  if (val < 45) {
+  if (val < max) {
     slider.value = String(val + 1);
     // Drive the slider's change handler to keep curLevel and canvas scale in sync
     slider.dispatchEvent(new Event("change", { bubbles: true }));

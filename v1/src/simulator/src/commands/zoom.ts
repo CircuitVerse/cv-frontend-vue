@@ -3,7 +3,17 @@ import { changeScale } from "../canvasApi";
 import { gridUpdateSet, scheduleUpdate, updateCanvasSet } from "../engine";
 import { layoutModeGet } from "../layoutMode";
 
+function getEffectiveDpr(): number {
+  const rawDpr = typeof DPR === "number" ? DPR : window.devicePixelRatio || 1;
+  return typeof lightMode !== "undefined" && lightMode ? 1 : rawDpr;
+}
+
+export function getMaxZoomLevel(dpr: number = getEffectiveDpr()): number {
+  return Math.max(0, Math.round((4 * dpr - 0.5) * 10));
+}
+
 export const zoomLevel = ref(5);
+export const maxZoomLevel = ref(35);
 let curLevel = 5;
 
 export function getCurLevel(): number {
@@ -20,16 +30,19 @@ export function setCurLevel(value: number): void {
  */
 export function syncZoomSlider(): void {
   if (layoutModeGet()) return;
-  const rawDpr = typeof DPR === "number" ? DPR : window.devicePixelRatio || 1;
-  const dpr = typeof lightMode !== "undefined" && lightMode ? 1 : rawDpr;
+  const dpr = getEffectiveDpr();
+  const maxLevel = getMaxZoomLevel(dpr);
+  maxZoomLevel.value = maxLevel;
   const scale = typeof globalScope !== "undefined" ? globalScope.scale : dpr;
-  const computedLevel = Math.max(0, Math.min(45, Math.round(5 + (scale - dpr) * 10)));
+  const computedLevel = Math.max(0, Math.min(maxLevel, Math.round((scale - 0.5) * 10)));
   zoomLevel.value = computedLevel;
   curLevel = computedLevel;
 }
 
 export function increment(): void {
-  if (zoomLevel.value < 45) {
+  const maxLevel = getMaxZoomLevel();
+  maxZoomLevel.value = maxLevel;
+  if (zoomLevel.value < maxLevel) {
     zoomLevel.value++;
     const changeInScale = zoomLevel.value - curLevel;
     updateCanvasSet(true);

@@ -14,9 +14,11 @@ import { changeScale } from '../src/canvasApi';
 import {
     syncZoomSlider,
     zoomLevel,
+    maxZoomLevel,
     getCurLevel,
     setCurLevel,
     increment,
+    decrement,
 } from '../src/commands/zoom';
 import { layoutModeSet } from '../src/layoutMode';
 
@@ -210,8 +212,8 @@ describe('setup regression tests (v1)', () => {
         // Act: run zoomToFit (Fit to Screen)
         zoomToFit();
 
-        // Assert: slider resets to 5 (corresponding to DPR=1) and scale equals centerFocus alone
-        const expectedLevel = Math.max(0, Math.min(45, Math.round(5 + (globalScope.scale - (window.DPR || 1)) * 10)));
+        // Assert: slider resets to 5 (corresponding to scale=1.0) and scale equals centerFocus alone
+        const expectedLevel = Math.max(0, Math.min(35, Math.round((globalScope.scale - 0.5) * 10)));
         expect(zoomLevel.value).toBe(expectedLevel);
         expect(zoomLevel.value).toBe(5);
         expect(globalScope.scale).toBeCloseTo(1, 5);
@@ -241,7 +243,7 @@ describe('setup regression tests (v1)', () => {
         expect(globalScope.scale).toBeCloseTo(scaleAtFit + 0.2, 5);
     });
 
-    test('syncZoomSlider clamps knob within [0, 45] at scale bounds below 0.5 and above maximum', () => {
+    test('syncZoomSlider clamps knob within [0, maxZoomLevel] at scale bounds below 0.5 and above maximum', () => {
         setup();
 
         // Act & Assert: scale below 0.5 clamps knob to 0
@@ -249,10 +251,11 @@ describe('setup regression tests (v1)', () => {
         syncZoomSlider();
         expect(zoomLevel.value).toBe(0);
 
-        // Act & Assert: scale above 4.5 clamps knob to 45
+        // Act & Assert: scale above 4.0 (DPR=1) clamps knob to 35
         globalScope.scale = 6.0;
         syncZoomSlider();
-        expect(zoomLevel.value).toBe(45);
+        expect(maxZoomLevel.value).toBe(35);
+        expect(zoomLevel.value).toBe(35);
     });
 
     test('syncZoomSlider accounts for DPR != 1 correctly', () => {
@@ -261,15 +264,16 @@ describe('setup regression tests (v1)', () => {
         window.DPR = 2;
 
         try {
-            // Act: scale at DPR baseline (2.0)
+            // Act: scale at DPR baseline (2.0) maps to level 15 with max 75
             globalScope.scale = 2.0;
             syncZoomSlider();
-            expect(zoomLevel.value).toBe(5);
+            expect(maxZoomLevel.value).toBe(75);
+            expect(zoomLevel.value).toBe(15);
 
             // Act: scale at 2.3 (3 steps above baseline)
             globalScope.scale = 2.3;
             syncZoomSlider();
-            expect(zoomLevel.value).toBe(8);
+            expect(zoomLevel.value).toBe(18);
         } finally {
             window.DPR = originalDPR;
         }
@@ -320,6 +324,42 @@ describe('setup regression tests (v1)', () => {
         } finally {
             window.DPR = originalDPR;
             window.lightMode = originalLightMode;
+        }
+    });
+
+    test('increment and decrement reach full canvas limits [0.5, 4 * DPR] at DPR = 2 while keeping zoomLevel in sync', () => {
+        // Guards DPR=2 range in v1: ensures buttons and zoomLevel reach 0.5 and 8.0 instead of stopping at 1.5 and 6.0
+        const originalDevicePixelRatio = window.devicePixelRatio;
+        const originalDPR = window.DPR;
+        Object.defineProperty(window, 'devicePixelRatio', { configurable: true, value: 2 });
+
+        try {
+            setup();
+            globalScope.scale = 2.0;
+            syncZoomSlider();
+            expect(maxZoomLevel.value).toBe(75);
+            expect(zoomLevel.value).toBe(15);
+            expect(globalScope.scale).toBeCloseTo(2.0, 5);
+
+            // Decrement 15 times from 2.0 down to 0.5 (level 0)
+            for (let i = 0; i < 15; i++) {
+                decrement();
+            }
+            expect(zoomLevel.value).toBe(0);
+            expect(globalScope.scale).toBeCloseTo(0.5, 5);
+
+            // Increment 75 times from 0.5 up to 8.0 (level 75)
+            for (let i = 0; i < 75; i++) {
+                increment();
+            }
+            expect(zoomLevel.value).toBe(75);
+            expect(globalScope.scale).toBeCloseTo(8.0, 5);
+        } finally {
+            Object.defineProperty(window, 'devicePixelRatio', {
+                configurable: true,
+                value: originalDevicePixelRatio,
+            });
+            window.DPR = originalDPR;
         }
     });
 });

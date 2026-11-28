@@ -220,12 +220,12 @@ describe('setup regression tests', () => {
         expect(slider.value).toBe('0');
         expect(globalScope.scale).toBe(scaleAtZero);
 
-        // Upper bound clamp (45)
-        slider.value = '45';
+        // Upper bound clamp (35 at DPR 1)
+        slider.value = '35';
         slider.dispatchEvent(new Event('change', { bubbles: true }));
         const scaleAtMax = globalScope.scale;
         increment();
-        expect(slider.value).toBe('45');
+        expect(slider.value).toBe('35');
         expect(globalScope.scale).toBe(scaleAtMax);
     });
 
@@ -342,8 +342,8 @@ describe('setup regression tests', () => {
         // Act: run zoomToFit (Fit to Screen)
         zoomToFit();
 
-        // Assert: slider resets to 5 (corresponding to DPR=1) and scale equals centerFocus alone
-        const expectedLevel = Math.max(0, Math.min(45, Math.round(5 + (globalScope.scale - (window.DPR || 1)) * 10)));
+        // Assert: slider resets to 5 (corresponding to scale=1.0) and scale equals centerFocus alone
+        const expectedLevel = Math.max(0, Math.min(35, Math.round((globalScope.scale - 0.5) * 10)));
         expect(slider.value).toBe(String(expectedLevel));
         expect(slider.value).toBe('5');
         expect(globalScope.scale).toBeCloseTo(1, 5);
@@ -373,7 +373,7 @@ describe('setup regression tests', () => {
         expect(globalScope.scale).toBeCloseTo(scaleAtFit + 0.2, 5);
     });
 
-    test('syncZoomSlider clamps knob within [0, 45] at scale bounds below 0.5 and above maximum', () => {
+    test('syncZoomSlider clamps knob within [0, maxLevel] at scale bounds below 0.5 and above maximum', () => {
         // Arrange: setup simulator with slider
         $(document).off('input change', '#customRange1');
         setup();
@@ -384,10 +384,11 @@ describe('setup regression tests', () => {
         syncZoomSlider();
         expect(slider.value).toBe('0');
 
-        // Act & Assert: scale above 4.5 clamps knob to 45
+        // Act & Assert: scale above 4.0 (DPR=1) clamps knob to 35
         globalScope.scale = 6.0;
         syncZoomSlider();
-        expect(slider.value).toBe('45');
+        expect(slider.max).toBe('35');
+        expect(slider.value).toBe('35');
     });
 
     test('syncZoomSlider accounts for DPR != 1 correctly', () => {
@@ -399,15 +400,16 @@ describe('setup regression tests', () => {
         window.DPR = 2;
 
         try {
-            // Act: scale at DPR baseline (2.0)
+            // Act: scale at DPR baseline (2.0) maps to level 15 with max 75
             globalScope.scale = 2.0;
             syncZoomSlider();
-            expect(slider.value).toBe('5');
+            expect(slider.max).toBe('75');
+            expect(slider.value).toBe('15');
 
             // Act: scale at 2.3 (3 steps above baseline)
             globalScope.scale = 2.3;
             syncZoomSlider();
-            expect(slider.value).toBe('8');
+            expect(slider.value).toBe('18');
         } finally {
             window.DPR = originalDPR;
         }
@@ -489,18 +491,18 @@ describe('setup regression tests', () => {
         expect(slider.value).toBe('1');
         expect(globalScope.scale).toBeCloseTo(scaleAfterWheelDown + 0.1, 5);
 
-        // Wheel up at upper endpoint 45
-        slider.value = '45';
+        // Wheel up at upper endpoint (35 at DPR 1)
+        slider.value = '35';
         slider.dispatchEvent(new Event('change', { bubbles: true }));
         const wheelUp = new Event('mousewheel');
         wheelUp.wheelDelta = 120;
         simArea.dispatchEvent(wheelUp);
-        expect(slider.value).toBe('45');
+        expect(slider.value).toBe('35');
         const scaleAfterWheelUp = globalScope.scale;
 
-        // Next decrement must step from 45 to 44 and update scale by -0.1 (within 4*DPR clamp)
+        // Next decrement must step from 35 to 34 and update scale by -0.1 (within 4*DPR clamp)
         decrement();
-        expect(slider.value).toBe('44');
+        expect(slider.value).toBe('34');
         expect(globalScope.scale).toBeCloseTo(Math.min(4 * (window.DPR || 1), scaleAfterWheelUp - 0.1), 5);
     });
 
@@ -526,6 +528,59 @@ describe('setup regression tests', () => {
             expect(scheduleSpy).toHaveBeenCalledTimes(3);
         } finally {
             scheduleSpy.mockRestore();
+        }
+    });
+
+    test('increment and decrement reach full canvas limits [0.5, 4 * DPR] at DPR = 2 while keeping slider in sync', () => {
+        // Guards DPR=2 range: ensures +/- buttons and slider reach 0.5 and 8.0 instead of stopping at 1.5 and 6.0
+        $(document).off('input change', '#customRange1');
+        const originalDevicePixelRatio = window.devicePixelRatio;
+        const originalDPR = window.DPR;
+        Object.defineProperty(window, 'devicePixelRatio', { configurable: true, value: 2 });
+
+        try {
+            setup();
+            globalScope.scale = 2.0;
+            syncZoomSlider();
+            const slider = document.getElementById('customRange1');
+            expect(slider.max).toBe('75');
+            expect(slider.value).toBe('15');
+            expect(globalScope.scale).toBeCloseTo(2.0, 5);
+
+            // Decrement 15 times from 2.0 down to canvas minimum 0.5 (level 0)
+            for (let i = 0; i < 15; i++) {
+                decrement();
+            }
+            expect(slider.value).toBe('0');
+            expect(globalScope.scale).toBeCloseTo(0.5, 5);
+
+            // Extra decrement stays clamped at 0.5
+            decrement();
+            expect(slider.value).toBe('0');
+            expect(globalScope.scale).toBeCloseTo(0.5, 5);
+
+            // Increment 75 times from 0.5 up to canvas maximum 8.0 (level 75)
+            for (let i = 0; i < 75; i++) {
+                increment();
+            }
+            expect(slider.value).toBe('75');
+            expect(globalScope.scale).toBeCloseTo(8.0, 5);
+
+            // Extra increment stays clamped at 8.0
+            increment();
+            expect(slider.value).toBe('75');
+            expect(globalScope.scale).toBeCloseTo(8.0, 5);
+
+            // Slider drag after button zoom steps smoothly by -0.1
+            slider.value = '74';
+            slider.dispatchEvent(new Event('change', { bubbles: true }));
+            expect(globalScope.scale).toBeCloseTo(7.9, 5);
+        } finally {
+            Object.defineProperty(window, 'devicePixelRatio', {
+                configurable: true,
+                value: originalDevicePixelRatio,
+            });
+            window.DPR = originalDPR;
         }
     });
 });

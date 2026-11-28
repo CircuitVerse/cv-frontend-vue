@@ -805,10 +805,13 @@ let curLevel = 5;
 export function syncZoomSlider() {
     const slider = document.getElementById('customRange1');
     if (!slider || layoutModeGet()) return;
-    const dpr = window.DPR || window.devicePixelRatio || 1;
+    const dpr = typeof window.DPR === 'number' ? window.DPR : window.devicePixelRatio || 1;
+    const maxLevel = Math.max(0, Math.round((4 * dpr - 0.5) * 10));
+    slider.min = '0';
+    slider.max = String(maxLevel);
     const computedLevel = Math.max(
         0,
-        Math.min(45, Math.round(5 + (globalScope.scale - dpr) * 10))
+        Math.min(maxLevel, Math.round((globalScope.scale - 0.5) * 10))
     );
     slider.value = computedLevel;
     curLevel = computedLevel;
@@ -816,13 +819,20 @@ export function syncZoomSlider() {
 
 function zoomSliderListeners() {
     const slider = document.getElementById("customRange1");
-    if (slider) slider.value = 5;
+    const dpr = typeof window.DPR === 'number' ? window.DPR : window.devicePixelRatio || 1;
+    const maxLevel = Math.max(0, Math.round((4 * dpr - 0.5) * 10));
+    const defaultLevel = Math.max(0, Math.min(maxLevel, Math.round((dpr - 0.5) * 10)));
+    if (slider) {
+        slider.min = '0';
+        slider.max = String(maxLevel);
+        slider.value = defaultLevel;
+    }
     const simArea = document.getElementById('simulationArea');
     if (simArea && slider) {
         simArea.addEventListener('DOMMouseScroll', zoomSliderScroll);
         simArea.addEventListener('mousewheel', zoomSliderScroll);
     }
-    curLevel = slider ? slider.value : 5;
+    curLevel = slider ? Number(slider.value) : defaultLevel;
     $(document).on('input change', '#customRange1', function (e) {
         const newValue = $(this).val();
         const changeInScale = newValue - curLevel;
@@ -835,13 +845,16 @@ function zoomSliderListeners() {
     function zoomSliderScroll(e) {
         const sliderElement = document.getElementById("customRange1");
         if (!sliderElement) return;
-        let zoomLevel = sliderElement.value;
+        const scrollDpr = typeof window.DPR === 'number' ? window.DPR : window.devicePixelRatio || 1;
+        const scrollMaxLevel = Math.max(0, Math.round((4 * scrollDpr - 0.5) * 10));
+        sliderElement.max = String(scrollMaxLevel);
+        let zoomLevel = Number(sliderElement.value);
         const deltaY = e.wheelDelta ? e.wheelDelta : -e.detail;
         const directionY = deltaY > 0 ? 1 : -1;
         if (directionY > 0) zoomLevel++
         else zoomLevel--
-        if (zoomLevel >= 45) {
-            zoomLevel = 45;
+        if (zoomLevel >= scrollMaxLevel) {
+            zoomLevel = scrollMaxLevel;
         } else if (zoomLevel <= 0) {
             zoomLevel = 0;
         }
