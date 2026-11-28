@@ -798,10 +798,15 @@ export function ZoomOut() {
 
 let curLevel = 5;
 
+function getEffectiveDpr() {
+    const rawDpr = typeof window.DPR === 'number' ? window.DPR : window.devicePixelRatio || 1;
+    return typeof window.lightMode !== 'undefined' && window.lightMode ? 1 : rawDpr;
+}
+
 function syncSliderFromScale() {
     const slider = document.getElementById('customRange1');
     if (!slider) return;
-    const dpr = typeof window.DPR === 'number' ? window.DPR : window.devicePixelRatio || 1;
+    const dpr = getEffectiveDpr();
     const maxLevel = Math.max(0, Math.round((4 * dpr - 0.5) * 10));
     slider.min = '0';
     slider.max = String(maxLevel);
@@ -824,7 +829,7 @@ export function syncZoomSlider() {
 
 function zoomSliderListeners() {
     const slider = document.getElementById("customRange1");
-    const dpr = typeof window.DPR === 'number' ? window.DPR : window.devicePixelRatio || 1;
+    const dpr = getEffectiveDpr();
     const maxLevel = Math.max(0, Math.round((4 * dpr - 0.5) * 10));
     const defaultLevel = Math.max(0, Math.min(maxLevel, Math.round((dpr - 0.5) * 10)));
     if (slider) {

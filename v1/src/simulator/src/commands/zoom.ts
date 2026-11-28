@@ -41,11 +41,14 @@ export function syncZoomSlider(): void {
 
 export function increment(): void {
   syncZoomSlider();
-  const maxLevel = getMaxZoomLevel();
+  const dpr = getEffectiveDpr();
+  const maxLevel = getMaxZoomLevel(dpr);
   maxZoomLevel.value = maxLevel;
-  if (zoomLevel.value < maxLevel) {
-    zoomLevel.value++;
-    const changeInScale = zoomLevel.value - curLevel;
+  const maxScale = 4 * dpr;
+  if (zoomLevel.value < maxLevel || globalScope.scale < maxScale) {
+    const targetLevel = Math.min(maxLevel, zoomLevel.value + 1);
+    const changeInScale = zoomLevel.value < maxLevel ? targetLevel - curLevel : 1;
+    zoomLevel.value = targetLevel;
     updateCanvasSet(true);
     changeScale(changeInScale * 0.1, "zoomButton", "zoomButton", 3);
     gridUpdateSet(true);
@@ -56,9 +59,10 @@ export function increment(): void {
 
 export function decrement(): void {
   syncZoomSlider();
-  if (zoomLevel.value > 0) {
-    zoomLevel.value--;
-    const changeInScale = zoomLevel.value - curLevel;
+  if (zoomLevel.value > 0 || globalScope.scale > 0.5) {
+    const targetLevel = Math.max(0, zoomLevel.value - 1);
+    const changeInScale = zoomLevel.value > 0 ? targetLevel - curLevel : -1;
+    zoomLevel.value = targetLevel;
     updateCanvasSet(true);
     changeScale(changeInScale * 0.1, "zoomButton", "zoomButton", 3);
     gridUpdateSet(true);

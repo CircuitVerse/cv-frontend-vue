@@ -22,6 +22,7 @@ import {
 } from '../src/commands/zoom';
 import { onCanvasWheel } from '../src/commands/pointer';
 import { layoutModeSet } from '../src/layoutMode';
+import { simulationArea } from '../src/simulationArea';
 
 const confirmSingleOptionMock = vi.fn();
 vi.mock('#/utils/confirm', async (importOriginal) => {
@@ -434,6 +435,53 @@ describe('setup regression tests (v1)', () => {
         expect(globalScope.scale).toBeCloseTo(1.1, 5);
         expect(zoomLevel.value).toBe(6);
         expect(getCurLevel()).toBe(6);
+    });
+
+    test('increment and decrement after centerFocus scale around viewport centre, ignoring stale mouse position', () => {
+        // Guards viewport-centre zoom anchor (method 3) in v1: stale mouseX/mouseY must not shift ox/oy
+        setup();
+        window.width = 1000;
+        window.height = 1000;
+        globalScope.centerFocus(false);
+        syncZoomSlider();
+
+        const oxBefore = globalScope.ox;
+        const oyBefore = globalScope.oy;
+        const scaleBefore = globalScope.scale;
+        const expectedCenterX = (window.width / 2 - oxBefore) / scaleBefore;
+        const expectedCenterY = (window.height / 2 - oyBefore) / scaleBefore;
+
+        simulationArea.mouseX = 9999;
+        simulationArea.mouseY = 9999;
+
+        increment();
+        const scaleAfterInc = globalScope.scale;
+        expect(globalScope.ox).toBe(oxBefore - Math.round(expectedCenterX * (scaleAfterInc - scaleBefore)));
+        expect(globalScope.oy).toBe(oyBefore - Math.round(expectedCenterY * (scaleAfterInc - scaleBefore)));
+
+        decrement();
+        expect(globalScope.scale).toBeCloseTo(scaleBefore, 5);
+        expect(globalScope.ox).toBeCloseTo(oxBefore, 0);
+        expect(globalScope.oy).toBeCloseTo(oyBefore, 0);
+    });
+
+    test('increment and decrement complete final step from fractional scales 3.96 and 0.54', () => {
+        // Guards rounded endpoint scales in v1: 3.96 (level 35) reaches 4.0, and 0.54 (level 0) reaches 0.5
+        setup();
+
+        globalScope.scale = 3.96;
+        syncZoomSlider();
+        expect(zoomLevel.value).toBe(35);
+        increment();
+        expect(globalScope.scale).toBeCloseTo(4.0, 5);
+        expect(zoomLevel.value).toBe(35);
+
+        globalScope.scale = 0.54;
+        syncZoomSlider();
+        expect(zoomLevel.value).toBe(0);
+        decrement();
+        expect(globalScope.scale).toBeCloseTo(0.5, 5);
+        expect(zoomLevel.value).toBe(0);
     });
 });
 

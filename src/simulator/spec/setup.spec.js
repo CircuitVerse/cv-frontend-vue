@@ -671,4 +671,79 @@ describe('setup regression tests', () => {
             layoutUpdateSpy.mockRestore();
         }
     });
+
+    test('increment and decrement after centerFocus scale around viewport centre, ignoring stale mouse position', () => {
+        // Guards viewport-centre zoom anchor (method 3): stale mouseX/mouseY must not shift ox/oy
+        $(document).off('input change', '#customRange1');
+        setup();
+        window.width = 1000;
+        window.height = 1000;
+        globalScope.centerFocus(false);
+        syncZoomSlider();
+
+        const oxBefore = globalScope.ox;
+        const oyBefore = globalScope.oy;
+        const scaleBefore = globalScope.scale;
+        const expectedCenterX = (window.width / 2 - oxBefore) / scaleBefore;
+        const expectedCenterY = (window.height / 2 - oyBefore) / scaleBefore;
+
+        // Set extreme stale mouse coordinates
+        simulationArea.mouseX = 9999;
+        simulationArea.mouseY = 9999;
+
+        increment();
+        const scaleAfterInc = globalScope.scale;
+        expect(globalScope.ox).toBe(oxBefore - Math.round(expectedCenterX * (scaleAfterInc - scaleBefore)));
+        expect(globalScope.oy).toBe(oyBefore - Math.round(expectedCenterY * (scaleAfterInc - scaleBefore)));
+
+        decrement();
+        expect(globalScope.scale).toBeCloseTo(scaleBefore, 5);
+        expect(globalScope.ox).toBeCloseTo(oxBefore, 0);
+        expect(globalScope.oy).toBeCloseTo(oyBefore, 0);
+    });
+
+    test('syncZoomSlider and zoomSliderListeners use DPR 1 in lightMode even when window.DPR is 2', () => {
+        // Guards lightMode DPR baseline in v0: slider max must be 35 (not 75) when lightMode forces canvas DPR to 1
+        $(document).off('input change', '#customRange1');
+        const originalDPR = window.DPR;
+        const originalLightMode = window.lightMode;
+        window.DPR = 2;
+        window.lightMode = true;
+
+        try {
+            setup();
+            const slider = document.getElementById('customRange1');
+            expect(slider.max).toBe('35');
+            expect(slider.value).toBe('5');
+
+            globalScope.scale = 4.0;
+            syncZoomSlider();
+            expect(slider.max).toBe('35');
+            expect(slider.value).toBe('35');
+        } finally {
+            window.DPR = originalDPR;
+            window.lightMode = originalLightMode;
+        }
+    });
+
+    test('increment and decrement complete final step from fractional scales 3.96 and 0.54', () => {
+        // Guards rounded endpoint scales: 3.96 (level 35) still reaches 4.0, and 0.54 (level 0) still reaches 0.5
+        $(document).off('input change', '#customRange1');
+        setup();
+        const slider = document.getElementById('customRange1');
+
+        globalScope.scale = 3.96;
+        syncZoomSlider();
+        expect(slider.value).toBe('35');
+        increment();
+        expect(globalScope.scale).toBeCloseTo(4.0, 5);
+        expect(slider.value).toBe('35');
+
+        globalScope.scale = 0.54;
+        syncZoomSlider();
+        expect(slider.value).toBe('0');
+        decrement();
+        expect(globalScope.scale).toBeCloseTo(0.5, 5);
+        expect(slider.value).toBe('0');
+    });
 });
