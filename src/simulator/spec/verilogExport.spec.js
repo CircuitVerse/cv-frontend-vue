@@ -11,6 +11,7 @@ import LSB from '../src/modules/LSB';
 import MSB from '../src/modules/MSB';
 import Counter from '../src/modules/Counter';
 import BitSelector from '../src/modules/BitSelector';
+import ControlledInverter from '../src/modules/ControlledInverter';
 import Scope, { scopeList } from '../src/circuit';
 import { runYosys } from '@yowasp/yosys';
 import { yosys2digitaljs } from 'yosys2digitaljs/core';
@@ -183,6 +184,33 @@ function exportBitSelector(bitWidth, data, index) {
         selector.resolve();
 
         return { code: verilog.exportVerilog(scope), selected: selector.output1.value };
+    } finally {
+        delete scopeList[scope.id];
+    }
+}
+
+function exportControlledInverter(bitWidth) {
+    const scope = new Scope('ControlledInverterExport');
+    scopeList[scope.id] = scope;
+
+    try {
+        const cinv = new ControlledInverter(100, 100, scope, 'RIGHT', bitWidth);
+        const inp = new Input(0, 100, scope, 'RIGHT', bitWidth);
+        inp.label = 'data_in';
+        const enable = new Input(100, 0, scope, 'RIGHT', 1);
+        enable.label = 'en';
+        const out = new Output(200, 100, scope, 'LEFT', bitWidth);
+        out.label = 'data_out';
+
+        inp.output1.connect(cinv.inp1);
+        enable.output1.connect(cinv.state);
+        cinv.output1.connect(out.inp1);
+
+        return {
+            code: verilog.exportVerilog(scope),
+            cinv,
+            out,
+        };
     } finally {
         delete scopeList[scope.id];
     }
@@ -545,6 +573,16 @@ endmodule
             await checkVerilog(code, 'hierarchy -check -top DetectorExport; proc; check -assert');
             expect(code).not.toContain('undefined');
         }, 60000);
+    });
+
+    describe.each([1, 8])('%i-bit ControlledInverter export', (bitWidth) => {
+        test('preserves tri-state high-impedance export when disabled', () => {
+            const { code, cinv, out } = exportControlledInverter(bitWidth);
+            const module = code.slice(code.indexOf('module ControlledInverterExport'));
+
+            expect(module).toContain(`assign ${cinv.output1.verilogLabel} = (${cinv.state.verilogLabel}!=0) ? ~${cinv.inp1.verilogLabel} : ${bitWidth}'b?;`);
+            expect(module).toContain(`assign ${out.label} = ${cinv.output1.verilogLabel};`);
+        });
     });
 
 });
