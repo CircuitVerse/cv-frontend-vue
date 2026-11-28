@@ -19,11 +19,11 @@ export interface SimulationArea {
   prevScale: number;
   oldx: number;
   oldy: number;
-  objectList: ICircuitElement[];
-  maxHeight: number;
-  maxWidth: number;
-  minHeight: number;
-  minWidth: number;
+  objectList: ICircuitElement[] | string[];
+  maxHeight: number | undefined;
+  maxWidth: number | undefined;
+  minHeight: number | undefined;
+  minWidth: number | undefined;
   multipleObjectSelections: SelectableElement[];
   copyList: SelectableElement[];
   shiftDown: boolean;
