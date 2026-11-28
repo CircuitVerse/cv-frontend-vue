@@ -64,6 +64,6 @@ export default function startListeners() {
     }
 }
 
-import { ZoomIn, ZoomOut } from './commands/zoom';
-export { ZoomIn, ZoomOut };
+import { ZoomIn, ZoomOut, syncZoomSlider } from './commands/zoom';
+export { ZoomIn, ZoomOut, syncZoomSlider };
 

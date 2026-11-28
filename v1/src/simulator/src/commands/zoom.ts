@@ -1,5 +1,75 @@
+import { ref } from "vue";
 import { changeScale } from "../canvasApi";
-import { gridUpdateSet, scheduleUpdate } from "../engine";
+import { gridUpdateSet, scheduleUpdate, updateCanvasSet } from "../engine";
+import { layoutModeGet } from "../layoutMode";
+
+function getEffectiveDpr(): number {
+  const rawDpr = typeof DPR === "number" ? DPR : window.devicePixelRatio || 1;
+  return typeof lightMode !== "undefined" && lightMode ? 1 : rawDpr;
+}
+
+export function getMaxZoomLevel(dpr: number = getEffectiveDpr()): number {
+  return Math.max(0, Math.round((4 * dpr - 0.5) * 10));
+}
+
+export const zoomLevel = ref(5);
+export const maxZoomLevel = ref(35);
+let curLevel = 5;
+
+export function getCurLevel(): number {
+  return curLevel;
+}
+
+export function setCurLevel(value: number): void {
+  curLevel = value;
+}
+
+/**
+ * Synchronizes the zoom slider UI and internal level with current canvas scale
+ * without triggering a canvas rescale.
+ */
+export function syncZoomSlider(): void {
+  if (layoutModeGet()) return;
+  const dpr = getEffectiveDpr();
+  const maxLevel = getMaxZoomLevel(dpr);
+  maxZoomLevel.value = maxLevel;
+  const scale = typeof globalScope !== "undefined" ? globalScope.scale : dpr;
+  const computedLevel = Math.max(0, Math.min(maxLevel, Math.round((scale - 0.5) * 10)));
+  zoomLevel.value = computedLevel;
+  curLevel = computedLevel;
+}
+
+export function increment(): void {
+  syncZoomSlider();
+  const dpr = getEffectiveDpr();
+  const maxLevel = getMaxZoomLevel(dpr);
+  maxZoomLevel.value = maxLevel;
+  const maxScale = 4 * dpr;
+  if (zoomLevel.value < maxLevel || globalScope.scale < maxScale) {
+    const targetLevel = Math.min(maxLevel, zoomLevel.value + 1);
+    const changeInScale = zoomLevel.value < maxLevel ? targetLevel - curLevel : 1;
+    zoomLevel.value = targetLevel;
+    updateCanvasSet(true);
+    changeScale(changeInScale * 0.1, "zoomButton", "zoomButton", 3);
+    gridUpdateSet(true);
+    if (layoutModeGet()) curLevel = zoomLevel.value;
+    else syncZoomSlider();
+  }
+}
+
+export function decrement(): void {
+  syncZoomSlider();
+  if (zoomLevel.value > 0 || globalScope.scale > 0.5) {
+    const targetLevel = Math.max(0, zoomLevel.value - 1);
+    const changeInScale = zoomLevel.value > 0 ? targetLevel - curLevel : -1;
+    zoomLevel.value = targetLevel;
+    updateCanvasSet(true);
+    changeScale(changeInScale * 0.1, "zoomButton", "zoomButton", 3);
+    gridUpdateSet(true);
+    if (layoutModeGet()) curLevel = zoomLevel.value;
+    else syncZoomSlider();
+  }
+}
 
 /**
  * Changes zoom level by the given direction.

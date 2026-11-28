@@ -20,6 +20,7 @@ import { paste } from '../../simulator/src/events'
 import { deleteSelected } from '../../simulator/src/ux'
 import { createNewCircuitScope } from '../../simulator/src/circuit'
 import logixFunction from '../../simulator/src/data'
+import { syncZoomSlider } from '../../simulator/src/listeners'
 
 const contextMenuOptions = [
     'Copy',
@@ -55,7 +56,10 @@ function menuItemClicked(index: number) {
         case 4: undo(); break
         case 5: createNewCircuitScope(); break
         case 6: logixFunction.createSubCircuitPrompt(); break
-        case 7: (window as any).globalScope?.centerFocus(false); break
+        case 7:
+            (window as any).globalScope?.centerFocus(false);
+            syncZoomSlider();
+            break;
     }
 }
 

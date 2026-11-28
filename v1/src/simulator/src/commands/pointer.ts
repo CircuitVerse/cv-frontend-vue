@@ -28,7 +28,7 @@ import { removeMiniMap, updatelastMinimapShown } from "../minimap";
 import { layoutModeGet, layoutUpdate } from "../layoutMode";
 import { updateRestrictedElementsList } from "../restrictedElementDiv";
 import { useSimulatorMobileStore } from "#/store/simulatorMobileStore";
-import { zoomBy } from "./zoom";
+import { zoomBy, syncZoomSlider } from "./zoom";
 
 type PointerLikeEvent = MouseEvent | TouchEvent;
 
@@ -384,6 +384,7 @@ export function onCanvasWheel(event: WheelEvent): void {
   }
   const direction = deltaY > 0 ? 1 : -1;
   zoomBy(direction);
+  syncZoomSlider();
   updateCanvasSet(true);
   gridUpdateSet(true);
 

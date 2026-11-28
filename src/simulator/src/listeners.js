@@ -795,35 +795,65 @@ export function ZoomIn() {
 export function ZoomOut() {
     handleZoom(-1);
 }
+
+let curLevel = 5;
+
+function getEffectiveDpr() {
+    const rawDpr = typeof window.DPR === 'number' ? window.DPR : window.devicePixelRatio || 1;
+    return typeof window.lightMode !== 'undefined' && window.lightMode ? 1 : rawDpr;
+}
+
+function syncSliderFromScale() {
+    const slider = document.getElementById('customRange1');
+    if (!slider) return;
+    const dpr = getEffectiveDpr();
+    const maxLevel = Math.max(0, Math.round((4 * dpr - 0.5) * 10));
+    slider.min = '0';
+    slider.max = String(maxLevel);
+    const computedLevel = Math.max(
+        0,
+        Math.min(maxLevel, Math.round((globalScope.scale - 0.5) * 10))
+    );
+    slider.value = computedLevel;
+    curLevel = computedLevel;
+}
+
+/**
+ * Synchronizes the zoom slider UI and internal level with current canvas scale
+ * without triggering a canvas rescale.
+ */
+export function syncZoomSlider() {
+    if (layoutModeGet()) return;
+    syncSliderFromScale();
+}
+
 function zoomSliderListeners() {
-    document.getElementById("customRange1").value = 5;
-    document.getElementById('simulationArea').addEventListener('DOMMouseScroll', zoomSliderScroll);
-    document.getElementById('simulationArea').addEventListener('mousewheel', zoomSliderScroll);
-    let curLevel = document.getElementById("customRange1").value;
+    const slider = document.getElementById("customRange1");
+    const dpr = getEffectiveDpr();
+    const maxLevel = Math.max(0, Math.round((4 * dpr - 0.5) * 10));
+    const defaultLevel = Math.max(0, Math.min(maxLevel, Math.round((dpr - 0.5) * 10)));
+    if (slider) {
+        slider.min = '0';
+        slider.max = String(maxLevel);
+        slider.value = defaultLevel;
+    }
+    const simArea = document.getElementById('simulationArea');
+    if (simArea && slider) {
+        simArea.addEventListener('DOMMouseScroll', zoomSliderScroll);
+        simArea.addEventListener('mousewheel', zoomSliderScroll);
+    }
+    curLevel = slider ? Number(slider.value) : defaultLevel;
     $(document).on('input change', '#customRange1', function (e) {
         const newValue = $(this).val();
         const changeInScale = newValue - curLevel;
         updateCanvasSet(true);
         changeScale(changeInScale * 0.1, 'zoomButton', 'zoomButton', 3)
         gridUpdateSet(true);
-        curLevel = newValue;
+        syncSliderFromScale();
+        scheduleUpdate();
     });
-    function zoomSliderScroll(e) {
-        let zoomLevel = document.getElementById("customRange1").value;
-        const deltaY = e.wheelDelta ? e.wheelDelta : -e.detail;
-        const directionY = deltaY > 0 ? 1 : -1;
-        if (directionY > 0) zoomLevel++
-        else zoomLevel--
-        if (zoomLevel >= 45) {
-            zoomLevel = 45;
-            document.getElementById("customRange1").value = 45;
-        } else if (zoomLevel <= 0) {
-            zoomLevel = 0;
-            document.getElementById("customRange1").value = 0;
-        } else {
-            document.getElementById("customRange1").value = zoomLevel;
-            curLevel = zoomLevel;
-        }
+    function zoomSliderScroll() {
+        syncSliderFromScale();
     }
     function sliderZoomButton(direction) {
         const zoomSlider = $('#customRange1');

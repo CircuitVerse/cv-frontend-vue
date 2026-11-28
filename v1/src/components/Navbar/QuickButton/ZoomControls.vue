@@ -1,11 +1,11 @@
-﻿<template>
+<template>
   <div class="zoom-slider">
     <button class="zoom-slider-decrement" @click="decrement">-</button>
     <input
       type="range"
       class="custom-range"
       min="0"
-      max="45"
+      :max="maxZoomLevel"
       step="1"
       v-model.number="zoomLevel"
       @input="onSliderChange"
@@ -16,59 +16,32 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { onMounted } from "vue";
 import { changeScale } from "../../../simulator/src/canvasApi";
 import { updateCanvasSet, gridUpdateSet } from "../../../simulator/src/engine";
-
-const zoomLevel = ref(5);
-let curLevel = 5;
+import { layoutModeGet } from "../../../simulator/src/layoutMode";
+import {
+  zoomLevel,
+  maxZoomLevel,
+  getMaxZoomLevel,
+  getCurLevel,
+  setCurLevel,
+  syncZoomSlider,
+  increment,
+  decrement,
+} from "../../../simulator/src/commands/zoom";
 
 const onSliderChange = () => {
-  const changeInScale = zoomLevel.value - curLevel;
+  const changeInScale = zoomLevel.value - getCurLevel();
   updateCanvasSet(true);
   changeScale(changeInScale * 0.1, "zoomButton", "zoomButton", 3);
   gridUpdateSet(true);
-  curLevel = zoomLevel.value;
-};
-
-const decrement = () => {
-  if (zoomLevel.value > 0) {
-    zoomLevel.value--;
-    onSliderChange();
-  }
-};
-
-const increment = () => {
-  if (zoomLevel.value < 45) {
-    zoomLevel.value++;
-    onSliderChange();
-  }
-};
-
-// Sync UI slider if user zooms canvas with mouse wheel
-const handleWheel = (e: WheelEvent | any) => {
-  const deltaY = e.type === "wheel" ? -e.deltaY : -e.detail;
-  if (deltaY === 0) return;
-  const directionY = Math.sign(deltaY);
-  if (directionY > 0 && zoomLevel.value < 45) zoomLevel.value++;
-  else if (directionY < 0 && zoomLevel.value > 0) zoomLevel.value--;
-  curLevel = zoomLevel.value;
+  if (layoutModeGet()) setCurLevel(zoomLevel.value);
+  else syncZoomSlider();
 };
 
 onMounted(() => {
-  const simArea = document.getElementById("simulationArea");
-  if (simArea) {
-    simArea.addEventListener("wheel", handleWheel);
-    simArea.addEventListener("DOMMouseScroll", handleWheel);
-  }
-});
-
-onUnmounted(() => {
-  const simArea = document.getElementById("simulationArea");
-  if (simArea) {
-    simArea.removeEventListener("wheel", handleWheel);
-    simArea.removeEventListener("DOMMouseScroll", handleWheel);
-  }
+  maxZoomLevel.value = getMaxZoomLevel();
 });
 </script>
 

@@ -9,6 +9,20 @@ import i18n from '#/locales/i18n';
 import vuetify from '#/plugins/vuetify';
 import { routes } from '#/router';
 import { useProjectStore } from '#/store/projectStore';
+import { zoomToFit } from '#/components/Navbar/QuickButton/QuickButton';
+import { changeScale } from '../src/canvasApi';
+import {
+    syncZoomSlider,
+    zoomLevel,
+    maxZoomLevel,
+    getCurLevel,
+    setCurLevel,
+    increment,
+    decrement,
+} from '../src/commands/zoom';
+import { onCanvasWheel } from '../src/commands/pointer';
+import { layoutModeSet } from '../src/layoutMode';
+import { simulationArea } from '../src/simulationArea';
 
 const confirmSingleOptionMock = vi.fn();
 vi.mock('#/utils/confirm', async (importOriginal) => {
@@ -103,6 +117,9 @@ describe('setup regression tests (v1)', () => {
 
     afterEach(() => {
         window.logixProjectId = 0;
+        layoutModeSet(false);
+        zoomLevel.value = 5;
+        setCurLevel(5);
     });
 
     test('null circuit_data should load cleanly with no error popup', async () => {
@@ -183,6 +200,288 @@ describe('setup regression tests (v1)', () => {
         const savedData = await generateSaveData();
         const savedName = typeof savedData === 'string' ? JSON.parse(savedData).name : savedData.name;
         expect(savedName).toBe('Student/Assignment 1');
+    });
+
+    test('zoomToFit syncs slider to new scale and matches centerFocus alone with no double zoom', () => {
+        // Arrange: initialize simulator with viewport dimensions and zoom in so slider is at 7
+        setup();
+        window.width = 1000;
+        window.height = 1000;
+        increment();
+        increment();
+        expect(zoomLevel.value).toBe(7);
+
+        // Act: run zoomToFit (Fit to Screen)
+        zoomToFit();
+
+        // Assert: slider resets to 5 (corresponding to scale=1.0) and scale equals centerFocus alone
+        const expectedLevel = Math.max(0, Math.min(35, Math.round((globalScope.scale - 0.5) * 10)));
+        expect(zoomLevel.value).toBe(expectedLevel);
+        expect(zoomLevel.value).toBe(5);
+        expect(globalScope.scale).toBeCloseTo(1, 5);
+    });
+
+    test('subsequent slider drag and +/- buttons change scale smoothly with no jump after zoomToFit', () => {
+        // Arrange: zoom in, then zoomToFit so slider and curLevel are synced back to 5
+        setup();
+        window.width = 1000;
+        window.height = 1000;
+        increment();
+        increment();
+        zoomToFit();
+        expect(zoomLevel.value).toBe(5);
+        const scaleAtFit = globalScope.scale;
+
+        // Act & Assert: + button changes scale by exactly +0.1 relative to synced position
+        increment();
+        expect(zoomLevel.value).toBe(6);
+        expect(globalScope.scale).toBeCloseTo(scaleAtFit + 0.1, 5);
+
+        // Act & Assert: moving slider directly by 1 step from 6 to 7 changes scale by +0.1
+        zoomLevel.value = 7;
+        const changeInScale = zoomLevel.value - getCurLevel();
+        changeScale(changeInScale * 0.1, 'zoomButton', 'zoomButton', 3);
+        setCurLevel(zoomLevel.value);
+        expect(globalScope.scale).toBeCloseTo(scaleAtFit + 0.2, 5);
+    });
+
+    test('syncZoomSlider clamps knob within [0, maxZoomLevel] at scale bounds below 0.5 and above maximum', () => {
+        setup();
+
+        // Act & Assert: scale below 0.5 clamps knob to 0
+        globalScope.scale = 0.2;
+        syncZoomSlider();
+        expect(zoomLevel.value).toBe(0);
+
+        // Act & Assert: scale above 4.0 (DPR=1) clamps knob to 35
+        globalScope.scale = 6.0;
+        syncZoomSlider();
+        expect(maxZoomLevel.value).toBe(35);
+        expect(zoomLevel.value).toBe(35);
+    });
+
+    test('syncZoomSlider accounts for DPR != 1 correctly', () => {
+        setup();
+        const originalDPR = window.DPR;
+        window.DPR = 2;
+
+        try {
+            // Act: scale at DPR baseline (2.0) maps to level 15 with max 75
+            globalScope.scale = 2.0;
+            syncZoomSlider();
+            expect(maxZoomLevel.value).toBe(75);
+            expect(zoomLevel.value).toBe(15);
+
+            // Act: scale at 2.3 (3 steps above baseline)
+            globalScope.scale = 2.3;
+            syncZoomSlider();
+            expect(zoomLevel.value).toBe(18);
+        } finally {
+            window.DPR = originalDPR;
+        }
+    });
+
+    test('direct centerFocus call site does not modify the slider', () => {
+        setup();
+        increment();
+        expect(zoomLevel.value).toBe(6);
+
+        // Act: direct centerFocus call from internal callers (e.g. data/load or canvasApi)
+        globalScope.centerFocus(false);
+
+        // Assert: slider remains at 6 because fix is scoped to user zoomToFit action
+        expect(zoomLevel.value).toBe(6);
+    });
+
+    test('layout mode prevents slider update during centerFocus and syncZoomSlider', () => {
+        setup();
+        zoomLevel.value = 10;
+        setCurLevel(10);
+        layoutModeSet(true);
+
+        try {
+            // Act: zoomToFit while layout mode is active
+            zoomToFit();
+
+            // Assert: slider remains unchanged because layout mode returns early
+            expect(zoomLevel.value).toBe(10);
+        } finally {
+            layoutModeSet(false);
+        }
+    });
+
+    test('syncZoomSlider uses DPR baseline 1 in lightMode even when window.DPR is 2', () => {
+        // Guards lightMode baseline: ensures fitted scale 1 on 2x display maps to level 5 instead of clamping to 0
+        setup();
+        const originalDPR = window.DPR;
+        const originalLightMode = window.lightMode;
+        window.DPR = 2;
+        window.lightMode = true;
+
+        try {
+            globalScope.scale = 1.0;
+            syncZoomSlider();
+            expect(zoomLevel.value).toBe(5);
+            expect(getCurLevel()).toBe(5);
+        } finally {
+            window.DPR = originalDPR;
+            window.lightMode = originalLightMode;
+        }
+    });
+
+    test('increment and decrement reach full canvas limits [0.5, 4 * DPR] at DPR = 2 while keeping zoomLevel in sync', () => {
+        // Guards DPR=2 range in v1: ensures buttons and zoomLevel reach 0.5 and 8.0 instead of stopping at 1.5 and 6.0
+        const originalDevicePixelRatio = window.devicePixelRatio;
+        const originalDPR = window.DPR;
+        Object.defineProperty(window, 'devicePixelRatio', { configurable: true, value: 2 });
+
+        try {
+            setup();
+            globalScope.scale = 2.0;
+            syncZoomSlider();
+            expect(maxZoomLevel.value).toBe(75);
+            expect(zoomLevel.value).toBe(15);
+            expect(globalScope.scale).toBeCloseTo(2.0, 5);
+
+            // Decrement 15 times from 2.0 down to 0.5 (level 0)
+            for (let i = 0; i < 15; i++) {
+                decrement();
+            }
+            expect(zoomLevel.value).toBe(0);
+            expect(globalScope.scale).toBeCloseTo(0.5, 5);
+
+            // Increment 75 times from 0.5 up to 8.0 (level 75)
+            for (let i = 0; i < 75; i++) {
+                increment();
+            }
+            expect(zoomLevel.value).toBe(75);
+            expect(globalScope.scale).toBeCloseTo(8.0, 5);
+        } finally {
+            Object.defineProperty(window, 'devicePixelRatio', {
+                configurable: true,
+                value: originalDevicePixelRatio,
+            });
+            window.DPR = originalDPR;
+        }
+    });
+
+    test('setup resets stale module-level zoomLevel to match new scope scale', () => {
+        // Guards stale state across simulator re-entry: setup() must resync zoomLevel from 35 back to 5
+        zoomLevel.value = 35;
+        setCurLevel(35);
+
+        setup();
+
+        expect(globalScope.scale).toBeCloseTo(1.0, 5);
+        expect(zoomLevel.value).toBe(5);
+        expect(getCurLevel()).toBe(5);
+    });
+
+    test('onCanvasWheel at DPR = 2 syncs zoomLevel from canvas scale without drift', () => {
+        // Guards wheel sync at DPR=2 in v1: 0.2 scale delta must advance zoomLevel by 2 steps
+        const originalDevicePixelRatio = window.devicePixelRatio;
+        const originalDPR = window.DPR;
+        Object.defineProperty(window, 'devicePixelRatio', { configurable: true, value: 2 });
+
+        try {
+            setup();
+            globalScope.scale = 2.0;
+            syncZoomSlider();
+            expect(zoomLevel.value).toBe(15);
+
+            const wheelUp = new WheelEvent('wheel', { deltaY: -120, cancelable: true });
+            onCanvasWheel(wheelUp);
+
+            expect(globalScope.scale).toBeCloseTo(2.2, 5);
+            expect(zoomLevel.value).toBe(17);
+            expect(getCurLevel()).toBe(17);
+        } finally {
+            Object.defineProperty(window, 'devicePixelRatio', {
+                configurable: true,
+                value: originalDevicePixelRatio,
+            });
+            window.DPR = originalDPR;
+        }
+    });
+
+    test('reconciles zoomLevel and curLevel after clamped increment from sub-minimum scale 0.2', () => {
+        // Guards clamped step reconciliation in v1: first increment clamps to 0.5 (level 0) so 35 steps reach 4.0
+        setup();
+        globalScope.scale = 0.2;
+        syncZoomSlider();
+        expect(zoomLevel.value).toBe(0);
+
+        increment();
+        expect(globalScope.scale).toBeCloseTo(0.5, 5);
+        expect(zoomLevel.value).toBe(0);
+        expect(getCurLevel()).toBe(0);
+
+        for (let i = 0; i < 35; i++) {
+            increment();
+        }
+        expect(zoomLevel.value).toBe(35);
+        expect(globalScope.scale).toBeCloseTo(4.0, 5);
+    });
+
+    test('increment refreshes stale zoomLevel when active scope scale changed (e.g. circuit switch)', () => {
+        // Guards active-scope switch: stale level 35 from previous circuit must refresh to 5 before bounds check
+        setup();
+        zoomLevel.value = 35;
+        setCurLevel(35);
+        globalScope.scale = 1.0;
+
+        increment();
+
+        expect(globalScope.scale).toBeCloseTo(1.1, 5);
+        expect(zoomLevel.value).toBe(6);
+        expect(getCurLevel()).toBe(6);
+    });
+
+    test('increment and decrement after centerFocus scale around viewport centre, ignoring stale mouse position', () => {
+        // Guards viewport-centre zoom anchor (method 3) in v1: stale mouseX/mouseY must not shift ox/oy
+        setup();
+        window.width = 1000;
+        window.height = 1000;
+        globalScope.centerFocus(false);
+        syncZoomSlider();
+
+        const oxBefore = globalScope.ox;
+        const oyBefore = globalScope.oy;
+        const scaleBefore = globalScope.scale;
+        const expectedCenterX = (window.width / 2 - oxBefore) / scaleBefore;
+        const expectedCenterY = (window.height / 2 - oyBefore) / scaleBefore;
+
+        simulationArea.mouseX = 9999;
+        simulationArea.mouseY = 9999;
+
+        increment();
+        const scaleAfterInc = globalScope.scale;
+        expect(globalScope.ox).toBe(oxBefore - Math.round(expectedCenterX * (scaleAfterInc - scaleBefore)));
+        expect(globalScope.oy).toBe(oyBefore - Math.round(expectedCenterY * (scaleAfterInc - scaleBefore)));
+
+        decrement();
+        expect(globalScope.scale).toBeCloseTo(scaleBefore, 5);
+        expect(globalScope.ox).toBeCloseTo(oxBefore, 0);
+        expect(globalScope.oy).toBeCloseTo(oyBefore, 0);
+    });
+
+    test('increment and decrement complete final step from fractional scales 3.96 and 0.54', () => {
+        // Guards rounded endpoint scales in v1: 3.96 (level 35) reaches 4.0, and 0.54 (level 0) reaches 0.5
+        setup();
+
+        globalScope.scale = 3.96;
+        syncZoomSlider();
+        expect(zoomLevel.value).toBe(35);
+        increment();
+        expect(globalScope.scale).toBeCloseTo(4.0, 5);
+        expect(zoomLevel.value).toBe(35);
+
+        globalScope.scale = 0.54;
+        syncZoomSlider();
+        expect(zoomLevel.value).toBe(0);
+        decrement();
+        expect(globalScope.scale).toBeCloseTo(0.5, 5);
+        expect(zoomLevel.value).toBe(0);
     });
 });
 
