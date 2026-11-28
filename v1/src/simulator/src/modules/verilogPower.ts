@@ -85,7 +85,15 @@ export default class verilogPower extends CircuitElement {
     if (this.isResolvable() === false) {
       return;
     }
-    const answer = Math.pow(this.inpA.value, this.inpB.value);
+    // Repeated squaring keeps the low 32 bits exact without computing the full power.
+    let answer = 1;
+    let base = this.inpA.value;
+    let exponent = this.inpB.value;
+    while (exponent !== 0) {
+      if (exponent & 1) answer = Math.imul(answer, base);
+      base = Math.imul(base, base);
+      exponent >>>= 1;
+    }
 
     this.answer.value = (answer << (32 - this.outputBitWidth)) >>> (32 - this.outputBitWidth);
     simulationArea.simulationQueue.add(this.answer as QueueObject);
