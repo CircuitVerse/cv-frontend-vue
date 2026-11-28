@@ -798,13 +798,9 @@ export function ZoomOut() {
 
 let curLevel = 5;
 
-/**
- * Synchronizes the zoom slider UI and internal level with current canvas scale
- * without triggering a canvas rescale.
- */
-export function syncZoomSlider() {
+function syncSliderFromScale() {
     const slider = document.getElementById('customRange1');
-    if (!slider || layoutModeGet()) return;
+    if (!slider) return;
     const dpr = typeof window.DPR === 'number' ? window.DPR : window.devicePixelRatio || 1;
     const maxLevel = Math.max(0, Math.round((4 * dpr - 0.5) * 10));
     slider.min = '0';
@@ -815,6 +811,15 @@ export function syncZoomSlider() {
     );
     slider.value = computedLevel;
     curLevel = computedLevel;
+}
+
+/**
+ * Synchronizes the zoom slider UI and internal level with current canvas scale
+ * without triggering a canvas rescale.
+ */
+export function syncZoomSlider() {
+    if (layoutModeGet()) return;
+    syncSliderFromScale();
 }
 
 function zoomSliderListeners() {
@@ -839,12 +844,11 @@ function zoomSliderListeners() {
         updateCanvasSet(true);
         changeScale(changeInScale * 0.1, 'zoomButton', 'zoomButton', 3)
         gridUpdateSet(true);
-        if (layoutModeGet()) curLevel = newValue;
-        else syncZoomSlider();
+        syncSliderFromScale();
         scheduleUpdate();
     });
     function zoomSliderScroll() {
-        syncZoomSlider();
+        syncSliderFromScale();
     }
     function sliderZoomButton(direction) {
         const zoomSlider = $('#customRange1');

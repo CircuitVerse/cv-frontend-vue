@@ -40,6 +40,7 @@ export function syncZoomSlider(): void {
 }
 
 export function increment(): void {
+  syncZoomSlider();
   const maxLevel = getMaxZoomLevel();
   maxZoomLevel.value = maxLevel;
   if (zoomLevel.value < maxLevel) {
@@ -54,6 +55,7 @@ export function increment(): void {
 }
 
 export function decrement(): void {
+  syncZoomSlider();
   if (zoomLevel.value > 0) {
     zoomLevel.value--;
     const changeInScale = zoomLevel.value - curLevel;

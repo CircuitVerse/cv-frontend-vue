@@ -421,5 +421,19 @@ describe('setup regression tests (v1)', () => {
         expect(zoomLevel.value).toBe(35);
         expect(globalScope.scale).toBeCloseTo(4.0, 5);
     });
+
+    test('increment refreshes stale zoomLevel when active scope scale changed (e.g. circuit switch)', () => {
+        // Guards active-scope switch: stale level 35 from previous circuit must refresh to 5 before bounds check
+        setup();
+        zoomLevel.value = 35;
+        setCurLevel(35);
+        globalScope.scale = 1.0;
+
+        increment();
+
+        expect(globalScope.scale).toBeCloseTo(1.1, 5);
+        expect(zoomLevel.value).toBe(6);
+        expect(getCurLevel()).toBe(6);
+    });
 });
 

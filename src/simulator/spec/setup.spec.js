@@ -12,6 +12,7 @@ import { useProjectStore } from '#/store/projectStore';
 import { increment, decrement, zoomToFit } from '#/components/Navbar/QuickButton/QuickButton';
 import { syncZoomSlider } from '../src/listeners';
 import { layoutModeSet } from '../src/layoutMode';
+import * as layoutMode from '../src/layoutMode';
 import { simulationArea } from '../src/simulationArea';
 import * as engine from '../src/engine';
 
@@ -636,5 +637,38 @@ describe('setup regression tests', () => {
         }
         expect(slider.value).toBe('35');
         expect(globalScope.scale).toBeCloseTo(4.0, 5);
+    });
+
+    test('wheel zoom in layout mode keeps slider synced so + button still steps from 3.9 to 4.0', () => {
+        // Guards layout-mode wheel zoom: slider must track wheel down from max so + is not blocked at 3.9
+        $(document).off('input change', '#customRange1');
+        const staleSimArea = document.getElementById('simulationArea');
+        if (staleSimArea?.parentNode) {
+            staleSimArea.parentNode.replaceChild(staleSimArea.cloneNode(true), staleSimArea);
+        }
+        setup();
+        const slider = document.getElementById('customRange1');
+        const simArea = document.getElementById('simulationArea');
+        globalScope.scale = 4.0;
+        syncZoomSlider();
+        expect(slider.value).toBe('35');
+
+        const layoutUpdateSpy = vi.spyOn(layoutMode, 'layoutUpdate').mockImplementation(() => {});
+        layoutModeSet(true);
+        try {
+            const wheelDown = new Event('mousewheel');
+            wheelDown.wheelDelta = -120;
+            simArea.dispatchEvent(wheelDown);
+
+            expect(globalScope.scale).toBeCloseTo(3.9, 5);
+            expect(slider.value).toBe('34');
+
+            increment();
+            expect(globalScope.scale).toBeCloseTo(4.0, 5);
+            expect(slider.value).toBe('35');
+        } finally {
+            layoutModeSet(false);
+            layoutUpdateSpy.mockRestore();
+        }
     });
 });
