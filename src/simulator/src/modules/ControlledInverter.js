@@ -108,7 +108,7 @@ export default class ControlledInverter extends CircuitElement {
     }
 
     generateVerilog() {
-        return `assign ${this.output1.verilogLabel} = (${this.state.verilogLabel}!=0) ? ~${this.inp1.verilogLabel} : ${this.inp1.verilogLabel};`
+        return `assign ${this.output1.verilogLabel} = (${this.state.verilogLabel}!=0) ? ~${this.inp1.verilogLabel} : ${this.inp1.bitWidth}'b?;`
     }
 }
 
