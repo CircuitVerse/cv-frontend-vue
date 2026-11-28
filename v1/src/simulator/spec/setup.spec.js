@@ -20,6 +20,7 @@ import {
     increment,
     decrement,
 } from '../src/commands/zoom';
+import { onCanvasWheel } from '../src/commands/pointer';
 import { layoutModeSet } from '../src/layoutMode';
 
 const confirmSingleOptionMock = vi.fn();
@@ -361,6 +362,64 @@ describe('setup regression tests (v1)', () => {
             });
             window.DPR = originalDPR;
         }
+    });
+
+    test('setup resets stale module-level zoomLevel to match new scope scale', () => {
+        // Guards stale state across simulator re-entry: setup() must resync zoomLevel from 35 back to 5
+        zoomLevel.value = 35;
+        setCurLevel(35);
+
+        setup();
+
+        expect(globalScope.scale).toBeCloseTo(1.0, 5);
+        expect(zoomLevel.value).toBe(5);
+        expect(getCurLevel()).toBe(5);
+    });
+
+    test('onCanvasWheel at DPR = 2 syncs zoomLevel from canvas scale without drift', () => {
+        // Guards wheel sync at DPR=2 in v1: 0.2 scale delta must advance zoomLevel by 2 steps
+        const originalDevicePixelRatio = window.devicePixelRatio;
+        const originalDPR = window.DPR;
+        Object.defineProperty(window, 'devicePixelRatio', { configurable: true, value: 2 });
+
+        try {
+            setup();
+            globalScope.scale = 2.0;
+            syncZoomSlider();
+            expect(zoomLevel.value).toBe(15);
+
+            const wheelUp = new WheelEvent('wheel', { deltaY: -120, cancelable: true });
+            onCanvasWheel(wheelUp);
+
+            expect(globalScope.scale).toBeCloseTo(2.2, 5);
+            expect(zoomLevel.value).toBe(17);
+            expect(getCurLevel()).toBe(17);
+        } finally {
+            Object.defineProperty(window, 'devicePixelRatio', {
+                configurable: true,
+                value: originalDevicePixelRatio,
+            });
+            window.DPR = originalDPR;
+        }
+    });
+
+    test('reconciles zoomLevel and curLevel after clamped increment from sub-minimum scale 0.2', () => {
+        // Guards clamped step reconciliation in v1: first increment clamps to 0.5 (level 0) so 35 steps reach 4.0
+        setup();
+        globalScope.scale = 0.2;
+        syncZoomSlider();
+        expect(zoomLevel.value).toBe(0);
+
+        increment();
+        expect(globalScope.scale).toBeCloseTo(0.5, 5);
+        expect(zoomLevel.value).toBe(0);
+        expect(getCurLevel()).toBe(0);
+
+        for (let i = 0; i < 35; i++) {
+            increment();
+        }
+        expect(zoomLevel.value).toBe(35);
+        expect(globalScope.scale).toBeCloseTo(4.0, 5);
     });
 });
 

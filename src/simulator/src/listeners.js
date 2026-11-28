@@ -839,27 +839,12 @@ function zoomSliderListeners() {
         updateCanvasSet(true);
         changeScale(changeInScale * 0.1, 'zoomButton', 'zoomButton', 3)
         gridUpdateSet(true);
-        curLevel = newValue;
+        if (layoutModeGet()) curLevel = newValue;
+        else syncZoomSlider();
         scheduleUpdate();
     });
-    function zoomSliderScroll(e) {
-        const sliderElement = document.getElementById("customRange1");
-        if (!sliderElement) return;
-        const scrollDpr = typeof window.DPR === 'number' ? window.DPR : window.devicePixelRatio || 1;
-        const scrollMaxLevel = Math.max(0, Math.round((4 * scrollDpr - 0.5) * 10));
-        sliderElement.max = String(scrollMaxLevel);
-        let zoomLevel = Number(sliderElement.value);
-        const deltaY = e.wheelDelta ? e.wheelDelta : -e.detail;
-        const directionY = deltaY > 0 ? 1 : -1;
-        if (directionY > 0) zoomLevel++
-        else zoomLevel--
-        if (zoomLevel >= scrollMaxLevel) {
-            zoomLevel = scrollMaxLevel;
-        } else if (zoomLevel <= 0) {
-            zoomLevel = 0;
-        }
-        sliderElement.value = zoomLevel;
-        curLevel = zoomLevel;
+    function zoomSliderScroll() {
+        syncZoomSlider();
     }
     function sliderZoomButton(direction) {
         const zoomSlider = $('#customRange1');

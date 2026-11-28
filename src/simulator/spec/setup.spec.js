@@ -583,4 +583,58 @@ describe('setup regression tests', () => {
             window.DPR = originalDPR;
         }
     });
+
+    test('wheel zoom at DPR = 2 derives slider level from canvas scale without drift', () => {
+        // Guards wheel sync at DPR=2: MouseScroll steps by 0.2 so slider must step by 2 levels, not 1
+        $(document).off('input change', '#customRange1');
+        const originalDevicePixelRatio = window.devicePixelRatio;
+        const originalDPR = window.DPR;
+        Object.defineProperty(window, 'devicePixelRatio', { configurable: true, value: 2 });
+
+        try {
+            const staleSimArea = document.getElementById('simulationArea');
+            if (staleSimArea?.parentNode) {
+                staleSimArea.parentNode.replaceChild(staleSimArea.cloneNode(true), staleSimArea);
+            }
+            setup();
+            globalScope.scale = 2.0;
+            syncZoomSlider();
+            const slider = document.getElementById('customRange1');
+            const simArea = document.getElementById('simulationArea');
+            expect(slider.value).toBe('15');
+
+            const wheelUp = new Event('mousewheel');
+            wheelUp.wheelDelta = 120;
+            simArea.dispatchEvent(wheelUp);
+
+            expect(globalScope.scale).toBeCloseTo(2.2, 5);
+            expect(slider.value).toBe('17');
+        } finally {
+            Object.defineProperty(window, 'devicePixelRatio', {
+                configurable: true,
+                value: originalDevicePixelRatio,
+            });
+            window.DPR = originalDPR;
+        }
+    });
+
+    test('reconciles slider after clamped increment from sub-minimum fitted scale 0.2', () => {
+        // Guards clamped step reconciliation: first increment from 0.2 clamps to 0.5 (level 0) so 35 steps reach 4.0
+        $(document).off('input change', '#customRange1');
+        setup();
+        const slider = document.getElementById('customRange1');
+        globalScope.scale = 0.2;
+        syncZoomSlider();
+        expect(slider.value).toBe('0');
+
+        increment();
+        expect(globalScope.scale).toBeCloseTo(0.5, 5);
+        expect(slider.value).toBe('0');
+
+        for (let i = 0; i < 35; i++) {
+            increment();
+        }
+        expect(slider.value).toBe('35');
+        expect(globalScope.scale).toBeCloseTo(4.0, 5);
+    });
 });

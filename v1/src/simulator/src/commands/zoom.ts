@@ -48,7 +48,8 @@ export function increment(): void {
     updateCanvasSet(true);
     changeScale(changeInScale * 0.1, "zoomButton", "zoomButton", 3);
     gridUpdateSet(true);
-    curLevel = zoomLevel.value;
+    if (layoutModeGet()) curLevel = zoomLevel.value;
+    else syncZoomSlider();
   }
 }
 
@@ -59,7 +60,8 @@ export function decrement(): void {
     updateCanvasSet(true);
     changeScale(changeInScale * 0.1, "zoomButton", "zoomButton", 3);
     gridUpdateSet(true);
-    curLevel = zoomLevel.value;
+    if (layoutModeGet()) curLevel = zoomLevel.value;
+    else syncZoomSlider();
   }
 }
 

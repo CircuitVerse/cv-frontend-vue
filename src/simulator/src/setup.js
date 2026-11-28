@@ -8,7 +8,7 @@ import { simulationArea } from './simulationArea'
 import { dots } from './canvasApi'
 import { update, updateSimulationSet, updateCanvasSet } from './engine'
 import { setupUI } from './ux'
-import startMainListeners from './listeners'
+import startMainListeners, { syncZoomSlider } from './listeners'
 import { newCircuit } from './circuit'
 import load from './data/load'
 import save, { setProjectName } from './data/save'
@@ -184,6 +184,7 @@ async function fetchProjectData(projectId) {
                 return
             }
             await load(data)
+            syncZoomSlider()
             await simulationArea.changeClockTime(data.timePeriod || 500)
             fadeOutLoadingIcons()
         } else {
@@ -210,6 +211,7 @@ async function loadProjectData() {
         // Restore unsaved data and save
         const data = JSON.parse(localStorage.getItem('recover_login'))
         await load(data)
+        syncZoomSlider()
         localStorage.removeItem('recover')
         localStorage.removeItem('recover_login')
         await save()
