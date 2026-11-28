@@ -29,7 +29,7 @@ import { toggleLayoutMode, layoutModeGet } from "./layoutMode";
 import { setProjectName } from "./data/save";
 import { changeClockEnable } from "./sequential";
 import { changeInputSize } from "./modules";
-import { verilogModeGet, verilogModeSet } from "./Verilog2CV";
+import { resetVerilogCode, verilogModeGet, verilogModeSet } from "./Verilog2CV";
 import { SimulatorStore } from "#/store/SimulatorStore/SimulatorStore";
 import { toRefs } from "vue";
 import { provideCircuitName } from "#/components/helpers/promptComponent/PromptComponent.vue";
@@ -66,7 +66,7 @@ export function resetScopeList() {
  * Changes UI tab etc
  * Sets flags to make updates, resets most of the things
  */
-export function switchCircuit(id: string) {
+export function switchCircuit(id: string | number) {
   // TODO: fix tomorrow
   const simulatorStore = SimulatorStore();
   const { circuit_list } = toRefs(simulatorStore);
@@ -76,27 +76,31 @@ export function switchCircuit(id: string) {
   if (layoutModeGet()) {
     toggleLayoutMode();
   }
-  if (!scopeList[id].verilogMetadata.isVerilogCircuit) {
-    verilogModeSet(false);
-    simulatorMobileStore.isVerilog.value = false;
-  }
+  const isVerilogCircuit = Boolean(scopeList[id].verilogMetadata.isVerilogCircuit);
+  verilogModeSet(isVerilogCircuit);
+  simulatorMobileStore.isVerilog.value = isVerilogCircuit;
 
   // globalScope.fixLayout();
   scheduleBackup();
-  if (id === globalScope.id) return;
+  if (String(id) === String(globalScope.id)) {
+    simulationArea.lastSelected = globalScope.root;
+    if (!embed) {
+      showProperties(simulationArea.lastSelected);
+    }
+    return;
+  }
   // $(`.circuits`).removeClass('current')
   circuit_list.value.forEach((circuit) => (circuit.focussed ? (circuit.focussed = false) : null));
   simulationArea.lastSelected = undefined;
   simulationArea.multipleObjectSelections = [];
   simulationArea.copyList = [];
   globalScope = scopeList[id];
-  if (globalScope.verilogMetadata.isVerilogCircuit) {
-    verilogModeSet(true);
-    simulatorMobileStore.isVerilog.value = true;
+  if (isVerilogCircuit) {
+    resetVerilogCode();
   }
   if (globalScope.isVisible()) {
     // $(`#${id}`).addClass('current')
-    const index = circuit_list.value.findIndex((circuit) => circuit.id === id);
+    const index = circuit_list.value.findIndex((circuit) => String(circuit.id) === String(id));
     if (index === -1) return;
     circuit_list.value[index].focussed = true;
     activeCircuit.value = {
@@ -274,15 +278,17 @@ export function newCircuit(
 /**
  * Used to change name of a circuit
  */
-export function changeCircuitName(name: string, id = globalScope.id) {
+export function changeCircuitName(name: string, id: string | number = globalScope.id) {
   const simulatorStore = SimulatorStore();
   const { circuit_list, activeCircuit } = toRefs(simulatorStore);
   name = name || "Untitled";
   name = stripTags(name);
   scopeList[id].name = name;
-  const index = circuit_list.value.findIndex((circuit) => circuit.id === id);
-  circuit_list.value[index].name = name;
-  if (activeCircuit.value && activeCircuit.value.id === id) {
+  const index = circuit_list.value.findIndex((circuit) => String(circuit.id) === String(id));
+  if (index !== -1) {
+    circuit_list.value[index].name = name;
+  }
+  if (activeCircuit.value && String(activeCircuit.value.id) === String(id)) {
     activeCircuit.value = { id, name };
   }
 }
@@ -443,11 +449,11 @@ export default class Scope {
    * Checks if this circuit contains directly or indirectly scope with id
    * Recursive nature
    */
-  checkDependency(id: number) {
-    if (id === this.id) return true;
+  checkDependency(id: number | string) {
+    if (String(id) === String(this.id)) return true;
     if (this.SubCircuit) {
       for (let i = 0; i < this.SubCircuit.length; i++) {
-        if (this.SubCircuit[i].id === id) return true;
+        if (String(this.SubCircuit[i].id) === String(id)) return true;
       }
     }
     if (this.SubCircuit) {
