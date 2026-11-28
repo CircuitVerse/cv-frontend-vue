@@ -76,10 +76,9 @@ export function switchCircuit(id: string | number) {
   if (layoutModeGet()) {
     toggleLayoutMode();
   }
-  if (!scopeList[id].verilogMetadata.isVerilogCircuit) {
-    verilogModeSet(false);
-    simulatorMobileStore.isVerilog.value = false;
-  }
+  const isVerilogCircuit = Boolean(scopeList[id].verilogMetadata.isVerilogCircuit);
+  verilogModeSet(isVerilogCircuit);
+  simulatorMobileStore.isVerilog.value = isVerilogCircuit;
 
   // globalScope.fixLayout();
   scheduleBackup();
@@ -90,10 +89,6 @@ export function switchCircuit(id: string | number) {
   simulationArea.multipleObjectSelections = [];
   simulationArea.copyList = [];
   globalScope = scopeList[id];
-  if (globalScope.verilogMetadata.isVerilogCircuit) {
-    verilogModeSet(true);
-    simulatorMobileStore.isVerilog.value = true;
-  }
   if (globalScope.isVisible()) {
     // $(`#${id}`).addClass('current')
     const index = circuit_list.value.findIndex((circuit) => String(circuit.id) === String(id));
