@@ -127,7 +127,7 @@ Once enabled, the Rails app will handle routing and data synchronization between
 We follow the [Code of Conduct](https://github.com/CircuitVerse/CircuitVerse/blob/master/code-of-conduct.md) of the [CircuitVerse](https://circuitverse.org) Community.
 
 ## Contributing
-See [`CONTRIBUTING.md`](https://github.com/CircuitVerse/CircuitVerse/blob/master/CONTRIBUTING.md) for more information on contributing to CircuitVerse.
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for more information on contributing to this repository (see also the [main CircuitVerse contributing guide](https://github.com/CircuitVerse/CircuitVerse/blob/master/CONTRIBUTING.md)).
 
 ## License
 This project is licensed under the [MIT License](LICENSE).
@@ -136,5 +136,5 @@ This project is licensed under the [MIT License](LICENSE).
 1. **Creating the mobile version of the vue simulator** 
 2. **Testing and bug fixing**
 3. **Typescript integration & style Refactoring**
-4. **Creating the desktop application** 
-5. **Removing JQuery**
+4. **Creating the desktop application** (in progress: Tauri configuration available in `src-tauri/`)
+5. **Removing JQuery** (in progress: remaining usage across simulator core modules)
