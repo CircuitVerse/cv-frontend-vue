@@ -29,7 +29,7 @@ import { toggleLayoutMode, layoutModeGet } from "./layoutMode";
 import { setProjectName } from "./data/save";
 import { changeClockEnable } from "./sequential";
 import { changeInputSize } from "./modules";
-import { verilogModeGet, verilogModeSet } from "./Verilog2CV";
+import { resetVerilogCode, verilogModeGet, verilogModeSet } from "./Verilog2CV";
 import { SimulatorStore } from "#/store/SimulatorStore/SimulatorStore";
 import { toRefs } from "vue";
 import { provideCircuitName } from "#/components/helpers/promptComponent/PromptComponent.vue";
@@ -82,13 +82,21 @@ export function switchCircuit(id: string | number) {
 
   // globalScope.fixLayout();
   scheduleBackup();
-  if (String(id) === String(globalScope.id)) return;
+  if (String(id) === String(globalScope.id)) {
+    if (isVerilogCircuit) {
+      resetVerilogCode();
+    }
+    return;
+  }
   // $(`.circuits`).removeClass('current')
   circuit_list.value.forEach((circuit) => (circuit.focussed ? (circuit.focussed = false) : null));
   simulationArea.lastSelected = undefined;
   simulationArea.multipleObjectSelections = [];
   simulationArea.copyList = [];
   globalScope = scopeList[id];
+  if (isVerilogCircuit) {
+    resetVerilogCode();
+  }
   if (globalScope.isVisible()) {
     // $(`#${id}`).addClass('current')
     const index = circuit_list.value.findIndex((circuit) => String(circuit.id) === String(id));
